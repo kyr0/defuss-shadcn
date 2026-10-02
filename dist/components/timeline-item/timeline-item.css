@@ -1,0 +1,48 @@
+/* -- Timeline Item (website · Company) ------------------------------------
+   Describes one dated milestone or historical event - a date, a dot on a line, a title and a short story, optionally with a picture. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-timeline-item, .mk-timeline-item *, .mk-timeline-item ::before, .mk-timeline-item ::after) { box-sizing: border-box; }
+
+  .mk-timeline-list { container: mk-timeline-list / inline-size; display: grid; width: 100%; margin: 0; padding: 0; list-style: none; }
+  .mk-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.375rem;
+    padding: 0 0 2.25rem 1.75rem;
+
+    /* the line and the dot */
+    &::before { content: ""; position: absolute; inset-inline-start: 0.3125rem; top: 0.5rem; bottom: -0.5rem; width: 2px; background: var(--border); }
+    &:last-child::before { bottom: auto; height: 0; }
+    &::after { content: ""; position: absolute; inset-inline-start: 0; top: 0.3rem; width: 0.75rem; height: 0.75rem; border: 2px solid var(--primary); border-radius: 50%; background: var(--background); box-sizing: border-box; }
+  }
+  .mk-timeline-item-date { color: var(--primary); font-size: 0.875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .mk-timeline-item-body { display: grid; gap: 0.375rem; }
+  .mk-timeline-item-title { margin: 0; font-size: 1.125rem; font-weight: 600; letter-spacing: -0.01em; }
+  .mk-timeline-item-text { margin: 0; color: var(--muted-foreground); line-height: 1.65; text-wrap: pretty; }
+  .mk-timeline-item-media { display: block; width: 100%; max-width: 28rem; margin-block-start: 0.5rem; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-lg); }
+
+  .mk-timeline-item[data-variant="milestone"] {
+    &::after { inset-inline-start: -0.125rem; top: 0.875rem; width: 1rem; height: 1rem; border-width: 0; background: var(--primary); box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 18%, transparent); }
+    & .mk-timeline-item-body { padding: 1.25rem; border-radius: var(--radius-xl); background: color-mix(in oklab, var(--primary) 6%, var(--card)); border: 1px solid color-mix(in oklab, var(--primary) 20%, var(--border)); }
+    & .mk-timeline-item-date { padding-block-start: 0.625rem; }
+  }
+
+  @container mk-timeline-list (min-width: 40rem) {
+    .mk-timeline-item { grid-template-columns: 7rem minmax(0, 1fr); gap: 1.5rem; padding-inline-start: 0; }
+    .mk-timeline-item::before { inset-inline-start: 8.8125rem; }
+    .mk-timeline-item::after { inset-inline-start: 8.5rem; }
+    .mk-timeline-item[data-variant="milestone"]::after { inset-inline-start: 8.375rem; }
+    .mk-timeline-item-date { text-align: end; padding-inline-end: 1.75rem; }
+    .mk-timeline-item-body { margin-inline-start: 1.75rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-timeline-item::before { background: CanvasText; }
+    .mk-timeline-item::after { border-color: CanvasText; }
+    .mk-timeline-item[data-variant="milestone"]::after { background: Highlight; }
+  }
+}

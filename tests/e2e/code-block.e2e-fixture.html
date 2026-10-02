@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>code-block e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/code-block/code-block.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<figure class="mk-code-block">
+  <div class="mk-code-block-head">
+  <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
+    <label><input type="radio" name="cb-pm" value="npm" checked>npm</label><label><input type="radio" name="cb-pm" value="pnpm">pnpm</label><label><input type="radio" name="cb-pm" value="bun">bun</label>
+  </div>
+    <button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button>
+  </div>
+  <pre data-tab="npm"><code><span>npm install defuss-shadcn</span></code></pre>
+  <pre data-tab="pnpm"><code><span>pnpm add defuss-shadcn</span></code></pre>
+  <pre data-tab="bun"><code><span>bun add defuss-shadcn</span></code></pre>
+  <span class="mk-code-block-status" role="status"></span>
+</figure>
+    </section>
+    <!-- File -->
+    <section class="fx">
+<figure class="mk-code-block" data-variant="file">
+  <div class="mk-code-block-head"><span class="mk-code-block-file"><i data-lucide="file-code"></i>app/layout.html</span><button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button></div>
+  <pre data-numbers><code><span><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"theme/utils/default-semantic-tokens.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"components/all.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;script</span> type=<span class="mk-code-block-s">"module"</span> src=<span class="mk-code-block-s">"components/all.js"</span><span class="mk-code-block-k">&gt;&lt;/script&gt;</span></span><span><span class="mk-code-block-c">&lt;!-- that's it: every component, styled and wired --&gt;</span></span></code></pre>
+  <span class="mk-code-block-status" role="status"></span>
+</figure>
+    </section>
+    <!-- Inline -->
+    <section class="fx">
+<figure class="mk-code-block" data-variant="inline">
+  <pre><code><span>npx skills add kyr0/defuss-shadcn</span></code></pre>
+  <button class="mk-code-block-copy" type="button" aria-label="Copy command"><i data-lucide="copy"></i></button>
+  <span class="mk-code-block-status" role="status"></span>
+</figure>
+    </section>
+  </body>
+</html>

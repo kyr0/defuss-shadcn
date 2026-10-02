@@ -1,0 +1,68 @@
+---
+title: "Success State"
+description: "Confirms a completed action and offers relevant next steps - a check with a ripple, what happened, and where to go from here."
+slug: "success-state"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="success-state" title="Success State" component="success-state">
+  Confirms a completed action and offers relevant next steps - a check with a ripple, what happened, and where to go from here. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="success-state">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section role="status"&gt;</code>: a check icon with a ripple, the title, a sentence (with what to expect next), a short summary <code>&lt;dl&gt;</code> and the next actions.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="motion stands still on request"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-success-state</code>
+    <code>.mk-success-state-icon</code>
+    <code>.mk-success-state-title</code>
+    <code>.mk-success-state-text</code>
+    <code>.mk-success-state-actions</code>
+    <code>.mk-success-state-summary</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="role=&quot;status&quot;: a check with a ripple (still under reduced motion), what happened, a short summary and the next steps." previewStyle="align-items:stretch;"
+<section class="mk-success-state" role="status" aria-labelledby="ss-1">
+  <span class="mk-success-state-icon" aria-hidden="true"><i data-lucide="check"></i></span>
+  <h2 class="mk-success-state-title" id="ss-1">Invitations sent</h2>
+  <p class="mk-success-state-text">Your three teammates get an email with a link to join. It works for 7 days.</p>
+  <dl class="mk-success-state-summary"><div><dt>Workspace</dt><dd>Acme Product</dd></div><div><dt>Invited</dt><dd>3 people</dd></div><div><dt>Role</dt><dd>Editor</dd></div></dl>
+  <div class="mk-success-state-actions"><a class="btn" href="#">Go to workspace</a><a class="btn" data-variant="outline" href="#">Invite more</a></div>
+</section>
+```
+
+```html example label="Compact" hint="data-variant='compact': a small card - inside a panel or a dialog." previewStyle="align-items:stretch;"
+<section class="mk-success-state" data-variant="compact" role="status" aria-labelledby="ss-2">
+  <span class="mk-success-state-icon" aria-hidden="true"><i data-lucide="check"></i></span>
+  <h2 class="mk-success-state-title" id="ss-2">Published</h2>
+  <p class="mk-success-state-text">"Release notes 4.0" is live.</p>
+  <div class="mk-success-state-actions"><a class="btn" data-variant="outline" data-size="sm" href="#">View page</a></div>
+</section>
+```
+
+<SourceFiles component="success-state" section="css" />
+
+</DocPage>

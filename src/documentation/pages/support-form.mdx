@@ -1,0 +1,76 @@
+---
+title: "Support Form"
+description: "Collects an issue description and supporting attachments - topic, subject, description, priority and files, beside the expected response time and self-help links."
+slug: "support-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="support-form" title="Support Form" component="support-form">
+  Collects an issue description and supporting attachments - topic, subject, description, priority and files, beside the expected response time and self-help links. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="support-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code>: a topic Select, subject, a description Textarea, priority radios (<code>.mk-support-form-priority</code>), a <code>multiple</code> file input in a drop zone and the reply email; beside it an <code>&lt;aside&gt;</code> with the response time and help links.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="select.html">Select</DocLink>, <DocLink href="input.html">Input</DocLink>, <DocLink href="textarea.html">Textarea</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file" title="native file picking"><code>&lt;input type="file"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-support-form</code>
+    <code>.mk-support-form-layout</code>
+    <code>.mk-support-form-field</code>
+    <code>.mk-support-form-priority</code>
+    <code>.mk-support-form-drop</code>
+    <code>.mk-support-form-aside</code>
+    <code>.mk-support-form-sla</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>None.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Topic, subject, description, priority as a segmented radio group (urgent turns red), attachments in a drop zone around a multiple file input, and the reply email - beside the response time and self-help links from 52rem." previewStyle="align-items:stretch;"
+<section class="mk-support-form" aria-labelledby="sp-title">
+  <div class="mk-support-form-layout">
+    <form action="#" method="post">
+      <h2 id="sp-title" style="margin:0;font-size:1.25rem">Contact support</h2>
+      <div class="mk-support-form-field"><label class="label" for="sp-topic">Topic</label><select class="select" id="sp-topic" name="topic" required><option value="">Choose a topic</option><option>Billing</option><option>Sync &amp; offline</option><option>Account access</option><option>Something else</option></select></div>
+      <div class="mk-support-form-field"><label class="label" for="sp-subj">Subject</label><input class="input" id="sp-subj" name="subject" required></div>
+      <div class="mk-support-form-field"><label class="label" for="sp-desc">What happened?</label><textarea class="textarea" id="sp-desc" name="description" rows="5" required placeholder="Steps, what you expected, what you saw…"></textarea></div>
+      <fieldset class="mk-support-form-priority"><legend>Priority</legend><div><label><input type="radio" name="priority" value="low">Low</label><label><input type="radio" name="priority" value="normal" checked>Normal</label><label><input type="radio" name="priority" value="urgent">Urgent</label></div></fieldset>
+      <label class="mk-support-form-drop" for="sp-files"><i data-lucide="paperclip"></i><strong>Attach screenshots or logs</strong><span>Up to 5 files, 20 MB each</span><input id="sp-files" type="file" name="files" multiple></label>
+      <div class="mk-support-form-field"><label class="label" for="sp-mail">Reply to</label><input class="input" id="sp-mail" type="email" name="email" autocomplete="email" required></div>
+      <button class="btn" type="submit">Send request</button>
+    </form>
+    <aside class="mk-support-form-aside" aria-label="Before you write">
+      <div class="mk-support-form-sla"><i data-lucide="clock"></i><span><strong>Usually within 4 hours</strong><br>Mon–Fri, 8:00–20:00 CET</span></div>
+      <h2>These might help</h2>
+      <ul><li><a href="#"><i data-lucide="file-text"></i>Sync is stuck on one device</a></li><li><a href="#"><i data-lucide="file-text"></i>Change your billing email</a></li><li><a href="#"><i data-lucide="file-text"></i>Recover a deleted doc</a></li></ul>
+      <p>Status: all systems normal.</p>
+    </aside>
+  </div>
+</section>
+```
+
+<SourceFiles component="support-form" section="css" />
+
+</DocPage>

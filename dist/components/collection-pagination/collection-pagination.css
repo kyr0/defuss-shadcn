@@ -1,0 +1,22 @@
+/* -- Collection Pagination (website · Search & Navigation) ----------------
+   Navigates between discrete pages of a collection - the range shown, the Pagination component and how many per page; or simply previous / next. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-collection-pagination, .mk-collection-pagination *, .mk-collection-pagination ::before, .mk-collection-pagination ::after) { box-sizing: border-box; }
+
+  .mk-collection-pagination { container: mk-collection-pagination / inline-size; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; width: 100%; padding-block: 1rem; border-block-start: 1px solid var(--border); font-size: 0.875rem; }
+  .mk-collection-pagination-range { color: var(--muted-foreground);
+    & strong { color: var(--foreground); font-variant-numeric: tabular-nums; }
+  }
+  .mk-collection-pagination-size { display: flex; align-items: center; gap: 0.5rem; color: var(--muted-foreground);
+    & .select { width: auto; height: 2rem; font-size: 0.8125rem; }
+  }
+  .mk-collection-pagination[data-variant="simple"] .mk-collection-pagination-page { color: var(--muted-foreground); }
+  .mk-collection-pagination[data-variant="centered"] { flex-direction: column; justify-content: center; }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-collection-pagination { border-color: CanvasText; }
+  }
+}

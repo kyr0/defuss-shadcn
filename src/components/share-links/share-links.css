@@ -1,0 +1,99 @@
+/* -- Share Links (website) ------------------------------------------
+   Sharing actions for the current content: share-intent links (plain
+   <a href>, no third-party script), mailto, and buttons for the page's own
+   copy-link / native-share handlers - all Buttons. Default: a row of icon
+   buttons; labeled: buttons with text; vertical: a rail beside an article. */
+
+@layer components {
+  .mk-share-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .mk-share-links-label {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .mk-share-links-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & svg { flex: none; }
+  }
+
+  /* a confirmation next to the buttons (copy link) - an <output> */
+  .mk-share-links-status {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+
+    &:empty { display: none; }
+  }
+
+  /* vertical: a rail - sticky when the page sets a top */
+  .mk-share-links[data-variant="vertical"] {
+    flex-direction: column;
+    align-items: center;
+    width: max-content;
+
+    & .mk-share-links-list { flex-direction: column; }
+    & .mk-share-links-label { writing-mode: vertical-rl; rotate: 180deg; }
+  }
+
+  /* labeled: the buttons say what they do */
+  .mk-share-links[data-variant="labeled"] .mk-share-links-list { gap: 0.5rem; }
+
+  /* brand: each network in its own colour (data-network on the button) */
+  .mk-share-links[data-variant="brand"] .mk-share-links-list .btn {
+    border-color: transparent;
+    color: #fff;
+
+    &[data-network="x"] { background: #0f1419; }
+    &[data-network="linkedin"] { background: #0a66c2; }
+    &[data-network="bluesky"] { background: #1185fe; }
+    &[data-network="mastodon"] { background: #6364ff; }
+    &[data-network="email"],
+    &[data-network="link"] { background: var(--foreground); color: var(--background); }
+    &:hover { filter: brightness(1.12); }
+  }
+
+  /* pill: a floating toolbar - one rounded surface, the buttons inside */
+  .mk-share-links[data-variant="pill"] {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.3125rem 0.3125rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--popover);
+    box-shadow: var(--shadow-lg);
+
+    & .mk-share-links-list { gap: 0.125rem; }
+    & .mk-share-links-list .btn { border-color: transparent; border-radius: 999px; background: transparent; }
+    & .mk-share-links-list .btn:hover { background: var(--accent); }
+  }
+
+  /* the copy-the-URL field in a share popover: the URL + a copy button */
+  .mk-share-links-url {
+    display: flex;
+    gap: 0.375rem;
+
+    & .input { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: 0.8125rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-share-links-label,
+    .mk-share-links-status { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-share-links-list svg { fill: currentColor; }
+  }
+}

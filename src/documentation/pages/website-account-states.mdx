@@ -1,0 +1,264 @@
+---
+title: "Account & States"
+description: "Website blocks - Account & States: Blocks for accounts and the moments around them: sign in, providers, sign up and password resets, profiles and settings, support, feedback and surveys and form progress - and the states every product needs: empty, error, success, coming soon, maintenance and 404."
+slug: "website-account-states"
+---
+
+import { DocPage, PageHeader, DocText } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-account-states" title="Account & States" introStyle="max-width:42rem;">
+  Blocks for accounts and the moments around them: sign in, providers, sign up and password resets, profiles and settings, support, feedback and surveys and form progress - and the states every product needs: empty, error, success, coming soon, maintenance and 404. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Account & States blocks composed into one page - the source is the page.</DocText>
+
+```html example label="An account area" schema="none" hint="A split Login Form with Social Login, a Profile Header, Security and Notification Settings, a survey step with Form Progress, empty / error / success states - only Account & States blocks." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:3rem;width:100%">
+  <section class="mk-login-form" data-variant="split" aria-labelledby="lf2-title">
+    <div class="mk-login-form-split">
+      <div class="mk-login-form-panel">
+        <div class="mk-login-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="lf2-title">Sign in to Acme</h1></div>
+        <form action="#" method="post">
+          <div class="mk-auth-field"><label class="label" for="lf2-email">Email</label><input class="input" id="lf2-email" type="email" name="email" autocomplete="username" required></div>
+          <div class="mk-auth-field"><label class="label" for="lf2-pass">Password</label><input class="input" id="lf2-pass" type="password" name="password" autocomplete="current-password" required></div>
+          <button class="btn" type="submit">Sign in</button>
+        </form>
+        <p class="mk-login-form-foot"><a href="#">Forgot your password?</a></p>
+      </div>
+      <figure class="mk-login-form-aside" style="margin:0">
+        <img src="https://picsum.photos/seed/login-aside/800/1000" alt="">
+        <blockquote>"Acme gave our team its afternoons back."</blockquote>
+        <figcaption>Marco Rossi, COO at Globex</figcaption>
+      </figure>
+    </div>
+  </section>
+  <div style="display:grid;gap:1rem;max-width:24rem;width:100%">
+    <div class="mk-social-login" data-variant="icons">
+      <a class="btn" data-variant="outline" href="#" aria-label="Continue with Google"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6h-4a12 12 0 0 0 0 10.8l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A11.9 11.9 0 0 0 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9Z"/></svg></a>
+      <a class="btn" data-variant="outline" href="#" aria-label="Continue with Apple"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9a4.8 4.8 0 0 0-3.8-2c-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9a5 5 0 0 0-4.2 2.6c-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.3 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4a10 10 0 0 0 1.4-2.8 4.3 4.3 0 0 1-2.1-4.2ZM14 5.1A4.2 4.2 0 0 0 15 2a4.4 4.4 0 0 0-2.8 1.5 4.1 4.1 0 0 0-1 3c1 .1 2.1-.5 2.8-1.4Z"/></svg></a>
+      <a class="btn" data-variant="outline" href="#" aria-label="Continue with GitHub"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+      <a class="btn" data-variant="outline" href="#" aria-label="Continue with Microsoft"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#F25022" d="M1 1h10.5v10.5H1z"/><path fill="#7FBA00" d="M12.5 1H23v10.5H12.5z"/><path fill="#00A4EF" d="M1 12.5h10.5V23H1z"/><path fill="#FFB900" d="M12.5 12.5H23V23H12.5z"/></svg></a>
+    </div>
+    <p class="mk-social-login-divider">or continue with email</p>
+    <div style="display:grid;gap:0.5rem"><label class="label" for="sl-email">Email</label><input class="input" id="sl-email" type="email" autocomplete="username"></div>
+  </div>
+  <header class="mk-profile-header">
+    <img class="mk-profile-header-cover" src="https://picsum.photos/seed/profile-cover/1400/400" alt="">
+    <div class="mk-profile-header-body">
+      <div class="mk-profile-header-top">
+        <span class="avatar" data-size="xl"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+        <div class="mk-profile-header-actions">
+          <a class="btn" href="#">Follow</a>
+          <a class="btn" data-variant="outline" href="#">Message</a>
+          <button class="btn" data-variant="outline" data-size="icon" type="button" aria-label="More actions"><i data-lucide="ellipsis"></i></button>
+        </div>
+      </div>
+      <div>
+        <h1 class="mk-profile-header-name">Hannah Lee <span class="badge" data-variant="secondary" data-size="sm">Design Lead</span></h1>
+        <p class="mk-profile-header-handle">@hannahdesigns</p>
+      </div>
+      <p class="mk-profile-header-bio">Making software quieter at Northwind. Writing about calm design, type and the space between things.</p>
+      <ul class="mk-profile-header-meta">
+        <li><i data-lucide="map-pin"></i>Lisbon, Portugal</li>
+        <li><i data-lucide="link"></i><a href="#">hannahlee.design</a></li>
+        <li><i data-lucide="calendar"></i>Joined <time datetime="2021-03">March 2021</time></li>
+      </ul>
+      <dl class="mk-profile-header-stats"><div><dt>followers</dt><dd>1.2k</dd></div><div><dt>following</dt><dd>318</dd></div><div><dt>posts</dt><dd>94</dd></div></dl>
+    </div>
+  </header>
+  <div class="mk-security-settings">
+    <section class="mk-security-settings-section" aria-labelledby="sec-sign">
+      <h2 id="sec-sign">Signing in</h2>
+      <div class="mk-security-settings-row"><i data-lucide="key-round"></i><div><strong>Password</strong><p>Last changed <time datetime="2026-07-02">3 months ago</time></p></div><a class="btn" data-variant="outline" data-size="sm" href="#">Change</a></div>
+      <div class="mk-security-settings-row"><i data-lucide="smartphone"></i><div><strong>Two-factor authentication <span class="mk-security-settings-status" data-status="on">On</span></strong><p>Authenticator app · backup codes saved</p></div><div class="switch-item"><input class="switch" type="checkbox" role="switch" id="sec-2fa" checked><label for="sec-2fa" class="sr-only">Two-factor authentication</label></div></div>
+      <div class="mk-security-settings-row"><i data-lucide="fingerprint"></i><div><strong>Passkeys <span class="mk-security-settings-status" data-status="off">None yet</span></strong><p>Sign in with your fingerprint or face - no password.</p></div><a class="btn" data-variant="outline" data-size="sm" href="#">Add a passkey</a></div>
+    </section>
+    <section class="mk-security-settings-section" aria-labelledby="sec-sess">
+      <h2 id="sec-sess">Where you're signed in</h2>
+      <ul class="mk-security-settings-list">
+        <li><span class="mk-security-settings-device"><i data-lucide="laptop"></i></span><div><strong>Chrome on macOS <span class="badge" data-variant="secondary" data-size="sm">This device</span></strong><span>Lisbon · active now</span></div></li>
+        <li><span class="mk-security-settings-device"><i data-lucide="smartphone"></i></span><div><strong>Safari on iPhone</strong><span>Lisbon · 2 hours ago</span></div><button class="btn" data-variant="ghost" data-size="sm" type="button" aria-label="Sign out Safari on iPhone">Sign out</button></li>
+        <li><span class="mk-security-settings-device"><i data-lucide="monitor"></i></span><div><strong>Firefox on Windows</strong><span>Berlin · 3 days ago</span></div><button class="btn" data-variant="ghost" data-size="sm" type="button" aria-label="Sign out Firefox on Windows">Sign out</button></li>
+      </ul>
+      <div class="mk-security-settings-foot"><button class="btn" data-variant="outline" data-size="sm" type="button">Sign out of all other sessions</button></div>
+    </section>
+  </div>
+  <div class="mk-notification-settings">
+    <table>
+      <caption class="sr-only">Notifications by topic and channel</caption>
+      <thead><tr><th scope="col">Topic</th><th scope="col">Email</th><th scope="col">Push</th><th scope="col">SMS</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Mentions<small>When someone @mentions you</small></th><td><input class="checkbox" type="checkbox" name="mentions" value="email" checked aria-label="Mentions by Email"></td><td><input class="checkbox" type="checkbox" name="mentions" value="push" checked aria-label="Mentions by Push"></td><td><input class="checkbox" type="checkbox" name="mentions" value="sms" aria-label="Mentions by SMS"></td></tr>
+        <tr><th scope="row">Comments<small>Replies on your docs and tasks</small></th><td><input class="checkbox" type="checkbox" name="comments" value="email" checked aria-label="Comments by Email"></td><td><input class="checkbox" type="checkbox" name="comments" value="push" aria-label="Comments by Push"></td><td><input class="checkbox" type="checkbox" name="comments" value="sms" aria-label="Comments by SMS"></td></tr>
+        <tr><th scope="row">Assignments<small>Tasks assigned to you</small></th><td><input class="checkbox" type="checkbox" name="assignments" value="email" checked aria-label="Assignments by Email"></td><td><input class="checkbox" type="checkbox" name="assignments" value="push" checked aria-label="Assignments by Push"></td><td><input class="checkbox" type="checkbox" name="assignments" value="sms" checked aria-label="Assignments by SMS"></td></tr>
+        <tr><th scope="row">Weekly digest<small>A summary every Monday</small></th><td><input class="checkbox" type="checkbox" name="weekly-digest" value="email" checked aria-label="Weekly digest by Email"></td><td><input class="checkbox" type="checkbox" name="weekly-digest" value="push" aria-label="Weekly digest by Push"></td><td><input class="checkbox" type="checkbox" name="weekly-digest" value="sms" aria-label="Weekly digest by SMS"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <nav class="mk-form-progress" data-variant="numbered" aria-label="Progress">
+    <ol class="mk-form-progress-steps">
+      <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+      <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Company</li>
+      <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+      <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+    </ol>
+  </nav>
+  <form class="mk-survey-question" action="#" method="post">
+    <div class="mk-survey-question-meta"><span>Question 3 of 8</span><progress class="progress" value="3" max="8" aria-label="Survey progress">3 of 8</progress></div>
+    <fieldset>
+      <legend>How big is your team?</legend>
+      <label class="mk-survey-question-option"><input type="radio" name="team" value="0" required>Just me</label>
+      <label class="mk-survey-question-option"><input type="radio" name="team" value="1" checked required>2–10 people</label>
+      <label class="mk-survey-question-option"><input type="radio" name="team" value="2" required>11–50 people</label>
+      <label class="mk-survey-question-option"><input type="radio" name="team" value="3" required>More than 50</label>
+    </fieldset>
+    <div class="mk-survey-question-actions"><button class="btn" data-variant="ghost" type="button">Back</button><button class="btn" type="submit">Next</button></div>
+  </form>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:2rem;align-items:start">
+    <section class="mk-empty-state" aria-labelledby="es-1">
+      <span class="mk-empty-state-icon" aria-hidden="true"><i data-lucide="folder-open"></i></span>
+      <h2 class="mk-empty-state-title" id="es-1">No projects yet</h2>
+      <p class="mk-empty-state-text">Projects keep plans, docs and tasks together. Create one, or start from a template.</p>
+      <div class="mk-empty-state-actions"><a class="btn" href="#"><i data-lucide="plus"></i> New project</a><a class="btn" data-variant="outline" href="#">Browse templates</a></div>
+    </section>
+    <section class="mk-success-state" role="status" aria-labelledby="ss-1">
+      <span class="mk-success-state-icon" aria-hidden="true"><i data-lucide="check"></i></span>
+      <h2 class="mk-success-state-title" id="ss-1">Invitations sent</h2>
+      <p class="mk-success-state-text">Your three teammates get an email with a link to join. It works for 7 days.</p>
+      <dl class="mk-success-state-summary"><div><dt>Workspace</dt><dd>Acme Product</dd></div><div><dt>Invited</dt><dd>3 people</dd></div><div><dt>Role</dt><dd>Editor</dd></div></dl>
+      <div class="mk-success-state-actions"><a class="btn" href="#">Go to workspace</a><a class="btn" data-variant="outline" href="#">Invite more</a></div>
+    </section>
+  </div>
+  <section class="mk-error-state" data-variant="inline" role="alert" aria-labelledby="er-2">
+    <span class="mk-error-state-icon" aria-hidden="true"><i data-lucide="wifi-off"></i></span>
+    <h2 class="mk-error-state-title" id="er-2">You're offline</h2>
+    <p class="mk-error-state-text">Changes are saved on this device and sync when you're back.</p>
+    <div class="mk-error-state-actions"><button class="btn" data-variant="outline" data-size="sm" type="button">Retry now</button></div>
+  </section>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="login-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Login Form</h3>
+      <p class="card-description">Authenticates a user with account credentials - email, password, "remember me" and a reset link, on a card, beside a picture, or plain.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="social-login.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Social Login</h3>
+      <p class="card-description">Provides authentication through external identity providers - Google, Apple, GitHub, Microsoft - as full-width buttons, an icon row, with a divider to the email form.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="signup-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Signup Form</h3>
+      <p class="card-description">Collects the information needed to create an account - name, email, a new password with its rules, consent - on a card or beside the benefits.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="reset-request.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Reset Request</h3>
+      <p class="card-description">Requests a password-reset link for an account - the email field, then the "check your inbox" state with a way to resend.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="password-reset.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Password Reset</h3>
+      <p class="card-description">Collects and confirms a replacement password - the new password with its rules, the confirmation, and the done state.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="profile-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Profile Header</h3>
+      <p class="card-description">Presents a user's avatar, identity, biography, and relevant actions - a cover, an overlapping avatar, name and handle, bio, details, counts and follow / message.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="profile-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Profile Form</h3>
+      <p class="card-description">Edits a user's personal information - photo, name, username, bio, website and time zone - as settings rows with a description beside each group.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="security-settings.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Security Settings</h3>
+      <p class="card-description">Manages passwords, authentication methods, and active sessions - the password, two-factor methods, passkeys and every signed-in device.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="notification-settings.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Notification Settings</h3>
+      <p class="card-description">Controls notification topics and delivery channels - a matrix of topics by channel, or a list of switches with a digest frequency.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="support-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Support Form</h3>
+      <p class="card-description">Collects an issue description and supporting attachments - topic, subject, description, priority and files, beside the expected response time and self-help links.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="feedback-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Feedback Form</h3>
+      <p class="card-description">Collects a rating or written feedback about an experience - faces and topics on a card, a 0–10 recommendation scale, or "was this helpful?" inline.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="survey-question.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Survey Question</h3>
+      <p class="card-description">Presents one question with its response controls - a single choice as cards, several choices, an agreement scale, or a written answer.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="form-progress.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Form Progress</h3>
+      <p class="card-description">Shows the current stage and remaining steps of a form - a bar with the step names, numbered steps, segments or one compact line.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="empty-state.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Empty State</h3>
+      <p class="card-description">Explains missing content and offers an appropriate next action - an icon, why it is empty, and the first step; on a dashed area or inline in a list.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="error-state.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Error State</h3>
+      <p class="card-description">Explains a failure and provides recovery actions - what went wrong in plain words, what to do, and the technical details on request.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="success-state.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Success State</h3>
+      <p class="card-description">Confirms a completed action and offers relevant next steps - a check with a ripple, what happened, and where to go from here.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="coming-soon.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Coming Soon</h3>
+      <p class="card-description">Announces an upcoming launch and its expected availability - the date, a live rolling countdown, a notify-me form and where to follow along.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="maintenance.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Maintenance</h3>
+      <p class="card-description">Explains temporary unavailability and provides status information - what is happening, when it ends, and where to follow; or a banner announcing it.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="page-not-found.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">404 Page</h3>
+      <p class="card-description">Tells visitors the page does not exist and helps them on - a big 404, a search, the most useful links and the way home.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

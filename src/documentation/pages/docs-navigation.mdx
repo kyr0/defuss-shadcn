@@ -1,0 +1,105 @@
+---
+title: "Docs Navigation"
+description: "Organizes documentation links into a navigable hierarchy - a version switch, sections, collapsible groups, nested pages and the current page marked."
+slug: "docs-navigation"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="docs-navigation" title="Docs Navigation" component="docs-navigation">
+  Organizes documentation links into a navigable hierarchy - a version switch, sections, collapsible groups, nested pages and the current page marked. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="docs-navigation">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;nav aria-label="Documentation"&gt;</code>: a version Select, section headings, nested <code>&lt;ul&gt;</code>s, collapsible groups as <code>&lt;details&gt;</code> and <code>aria-current="page"</code> on the current link.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="select.html">Select</DocLink>, <DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-docs-navigation</code>
+    <code>.mk-docs-navigation-top</code>
+    <code>.mk-docs-navigation-heading</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="bordered"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A version Select, headings, nested lists, groups as <details> (collapse without script) and the current page as a filled pill (aria-current=&quot;page&quot;)." previewStyle="align-items:stretch;"
+<nav class="mk-docs-navigation" aria-label="Documentation">
+  <div class="mk-docs-navigation-top">
+    <label class="sr-only" for="dn-ver">Version</label>
+    <select class="select" id="dn-ver"><option>v4.0 (latest)</option><option>v3.9</option></select>
+  </div>
+  <p class="mk-docs-navigation-heading">Getting started</p>
+  <ul>
+    <li><a href="#">Introduction</a></li>
+    <li><a href="#">Installation</a></li>
+    <li><a href="#" aria-current="page">Quick start</a></li>
+  </ul>
+  <details open>
+    <summary class="mk-docs-navigation-heading">Guides</summary>
+    <ul>
+      <li><a href="#">Workspaces</a></li>
+      <li><a href="#">Offline sync <span class="badge" data-variant="secondary" data-size="sm">New</span></a></li>
+      <li><a href="#">Permissions</a>
+        <ul><li><a href="#">Roles</a></li><li><a href="#">Guests</a></li></ul>
+      </li>
+    </ul>
+  </details>
+  <details>
+    <summary class="mk-docs-navigation-heading">API reference</summary>
+    <ul><li><a href="#">Authentication</a></li><li><a href="#">Docs</a></li><li><a href="#">Tasks</a></li></ul>
+  </details>
+</nav>
+```
+
+```html example label="Bordered" hint="data-variant='bordered': a rail along the edge - the current page lights it in the primary color." previewStyle="align-items:stretch;"
+<nav class="mk-docs-navigation" data-variant="bordered" aria-label="Documentation">
+  <div class="mk-docs-navigation-top">
+    <label class="sr-only" for="dn-verbordered">Version</label>
+    <select class="select" id="dn-verbordered"><option>v4.0 (latest)</option><option>v3.9</option></select>
+  </div>
+  <p class="mk-docs-navigation-heading">Getting started</p>
+  <ul>
+    <li><a href="#">Introduction</a></li>
+    <li><a href="#">Installation</a></li>
+    <li><a href="#" aria-current="page">Quick start</a></li>
+  </ul>
+  <details open>
+    <summary class="mk-docs-navigation-heading">Guides</summary>
+    <ul>
+      <li><a href="#">Workspaces</a></li>
+      <li><a href="#">Offline sync <span class="badge" data-variant="secondary" data-size="sm">New</span></a></li>
+      <li><a href="#">Permissions</a>
+        <ul><li><a href="#">Roles</a></li><li><a href="#">Guests</a></li></ul>
+      </li>
+    </ul>
+  </details>
+  <details>
+    <summary class="mk-docs-navigation-heading">API reference</summary>
+    <ul><li><a href="#">Authentication</a></li><li><a href="#">Docs</a></li><li><a href="#">Tasks</a></li></ul>
+  </details>
+</nav>
+```
+
+<SourceFiles component="docs-navigation" section="css" />
+
+</DocPage>

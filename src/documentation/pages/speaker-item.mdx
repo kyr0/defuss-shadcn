@@ -1,0 +1,120 @@
+---
+title: "Speaker Item"
+description: "Introduces one speaker with a portrait, role, and biography - with their talk, as a card, a featured keynote or a compact row."
+slug: "speaker-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="speaker-item" title="Speaker Item" component="speaker-item">
+  Introduces one speaker with a portrait, role, and biography - with their talk, as a card, a featured keynote or a compact row. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="speaker-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code> named by the speaker: a portrait with descriptive <code>alt</code>, name, role and company, an optional bio and a link to the session.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="stable media boxes, no layout shift"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-speaker-item</code>
+    <code>.mk-speaker-item-photo</code>
+    <code>.mk-speaker-item-body</code>
+    <code>.mk-speaker-item-name</code>
+    <code>.mk-speaker-item-role</code>
+    <code>.mk-speaker-item-bio</code>
+    <code>.mk-speaker-item-talk</code>
+    <code>.mk-speaker-item-keynote</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>featured</code>, <code>compact</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Grid" hint="Default: a square grayscale portrait that turns to color on hover or focus, name, role and a link to the talk." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:2rem 1.25rem;width:100%">
+  <article class="mk-speaker-item" aria-labelledby="sp-1">
+    <img class="mk-speaker-item-photo" src="images/mk-portrait.png" alt="Portrait of Sophie Tan">
+    <div class="mk-speaker-item-body">
+      <h3 class="mk-speaker-item-name" id="sp-1">Sophie Tan</h3>
+      <p class="mk-speaker-item-role">Head of Engineering, Acme</p>
+      <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Sync that never fails</a>
+    </div>
+  </article>
+  <article class="mk-speaker-item" aria-labelledby="sp-2">
+    <img class="mk-speaker-item-photo" src="images/mk-portrait2.png" alt="Portrait of Hannah Lee">
+    <div class="mk-speaker-item-body">
+      <h3 class="mk-speaker-item-name" id="sp-2">Hannah Lee</h3>
+      <p class="mk-speaker-item-role">Design Lead, Northwind</p>
+      <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Every badge must earn its place</a>
+    </div>
+  </article>
+  <article class="mk-speaker-item" aria-labelledby="sp-3">
+    <img class="mk-speaker-item-photo" src="images/mk-portrait.png" alt="Portrait of Marco Rossi">
+    <div class="mk-speaker-item-body">
+      <h3 class="mk-speaker-item-name" id="sp-3">Marco Rossi</h3>
+      <p class="mk-speaker-item-role">CTO, Globex</p>
+      <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Async teams at 400 people</a>
+    </div>
+  </article>
+  <article class="mk-speaker-item" aria-labelledby="sp-4">
+    <img class="mk-speaker-item-photo" src="images/mk-portrait2.png" alt="Portrait of Priya Natarajan">
+    <div class="mk-speaker-item-body">
+      <h3 class="mk-speaker-item-name" id="sp-4">Priya Natarajan</h3>
+      <p class="mk-speaker-item-role">CPO, Orbit</p>
+      <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Research without a research team</a>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Keynote" hint="data-variant='featured': the keynote - a 4:5 portrait beside the bio, larger type, a keynote label." previewStyle="align-items:stretch;"
+<article class="mk-speaker-item" data-variant="featured" aria-labelledby="sp-key">
+  <img class="mk-speaker-item-photo" src="images/mk-portrait2.png" alt="Portrait of Priya Natarajan">
+  <div class="mk-speaker-item-body">
+    <span class="mk-speaker-item-keynote">Opening keynote</span>
+    <h3 class="mk-speaker-item-name" id="sp-key">Priya Natarajan</h3>
+    <p class="mk-speaker-item-role">Chief Product Officer, Orbit</p>
+    <p class="mk-speaker-item-bio">Priya spent eight years building tools for hospitals before leading product at Orbit. She writes about calm design and research without a research team.</p>
+    <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>The quiet product: building for attention, not engagement</a>
+  </div>
+</article>
+```
+
+```html example label="Compact" hint="data-variant='compact': a round portrait with name, role and talk on one row - for agendas and sidebars." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem 2rem;width:100%">
+  <article class="mk-speaker-item" data-variant="compact" aria-labelledby="sp-c1">
+    <img class="mk-speaker-item-photo" src="images/mk-portrait.png" alt="Portrait of Sophie Tan">
+    <div class="mk-speaker-item-body">
+      <h3 class="mk-speaker-item-name" id="sp-c1">Sophie Tan</h3>
+      <p class="mk-speaker-item-role">Acme</p>
+      <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Sync that never fails</a>
+    </div>
+  </article>
+  <article class="mk-speaker-item" data-variant="compact" aria-labelledby="sp-c2">
+    <img class="mk-speaker-item-photo" src="images/mk-portrait2.png" alt="Portrait of Hannah Lee">
+    <div class="mk-speaker-item-body">
+      <h3 class="mk-speaker-item-name" id="sp-c2">Hannah Lee</h3>
+      <p class="mk-speaker-item-role">Northwind</p>
+      <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Every badge must earn its place</a>
+    </div>
+  </article>
+</div>
+```
+
+<SourceFiles component="speaker-item" section="css" />
+
+</DocPage>

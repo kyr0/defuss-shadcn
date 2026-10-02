@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>search-result e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/search-result/search-result.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Results -->
+    <section class="fx">
+<div style="display:grid;max-width:44rem;width:100%">
+  <article class="mk-search-result">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Docs <span aria-hidden="true">›</span> Guides</p>
+      <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
+      <p class="mk-search-result-snippet">Every change is written to your device first. When you are back online, Acme sends the changes - <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p>
+      <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
+    </div>
+  </article>
+  <article class="mk-search-result">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Help <span aria-hidden="true">›</span> Sync &amp; offline</p>
+      <h3 class="mk-search-result-title"><a href="#"><mark>Sync</mark> is stuck on one device</a></h3>
+      <p class="mk-search-result-snippet">If one device stops syncing, sign out and back in. Your unsynced changes are kept on the device until the <mark>sync</mark> completes.</p>
+      <p class="mk-search-result-meta">Help article · 3 min read</p>
+    </div>
+  </article>
+</div>
+    </section>
+    <!-- With thumbnails -->
+    <section class="fx">
+<div style="display:grid;max-width:44rem;width:100%">
+  <article class="mk-search-result" data-variant="media">
+    <img class="mk-search-result-media" src="https://picsum.photos/seed/sr-post/400/250" alt="">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Blog</p>
+      <h3 class="mk-search-result-title"><a href="#">How offline <mark>sync</mark> works in Acme 4.0</a></h3>
+      <p class="mk-search-result-snippet">CRDTs, a write-ahead log and a lot of patience - the story of our <mark>sync</mark> engine.</p>
+      <p class="mk-search-result-meta">Post · Sophie Tan · 8 min</p>
+    </div>
+  </article>
+</div>
+    </section>
+    <!-- Products -->
+    <section class="fx">
+<div style="display:grid;max-width:36rem;width:100%">
+  <article class="mk-search-result" data-variant="product">
+    <img class="mk-search-result-media" src="https://picsum.photos/seed/prod-shirt/300/300" alt="">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Shop <span aria-hidden="true">›</span> Shirts</p>
+      <h3 class="mk-search-result-title"><a href="#"><mark>Linen</mark> shirt</a></h3>
+      <p class="mk-search-result-snippet">Relaxed fit in washed <mark>linen</mark>. Sand, navy or off-white.</p>
+      <p class="mk-search-result-meta">In stock · <strong>€64</strong></p>
+    </div>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

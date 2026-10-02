@@ -1,0 +1,47 @@
+/* -- Error State (website · Account & States) -----------------------------
+   Explains a failure and provides recovery actions - what went wrong in plain words, what to do, and the technical details on request. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-error-state, .mk-error-state *, .mk-error-state ::before, .mk-error-state ::after) { box-sizing: border-box; }
+
+  .mk-error-state { display: grid; justify-items: center; gap: 1rem; width: 100%; max-width: 32rem; margin-inline: auto; padding: 2.5rem 1.5rem; text-align: center; }
+  .mk-error-state-icon { position: relative; display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: color-mix(in oklch, var(--destructive) 12%, transparent); }
+  .mk-error-state-icon svg { width: 1.75rem; height: 1.75rem; }
+  .mk-error-state-title { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+  .mk-error-state-text { margin: 0; color: var(--muted-foreground); line-height: 1.6; text-wrap: pretty; }
+  .mk-error-state-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-block-start: 0.25rem; }
+  .mk-error-state-icon { color: var(--destructive); }
+  .mk-error-state-details { width: 100%; max-width: 26rem; color: var(--muted-foreground); font-size: 0.8125rem; text-align: start;
+    & summary { cursor: pointer; text-align: center; }
+    & pre { margin: 0.5rem 0 0; padding: 0.75rem; overflow-x: auto; border-radius: var(--radius-md); background: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; white-space: pre-wrap; }
+  }
+  .mk-error-state-code { font-size: clamp(4rem, 14vw, 7rem); font-weight: 800; line-height: 1; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 2px var(--border); }
+  .mk-error-state[data-variant="page"] { padding-block: 4rem; max-width: 36rem;
+    & .mk-error-state-icon { display: none; }
+    & .mk-error-state-title { font-size: 1.75rem; }
+  }
+  .mk-error-state[data-variant="inline"] {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    justify-items: start;
+    align-items: center;
+    gap: 0.125rem 1rem;
+    max-width: none;
+    padding: 1rem 1.25rem;
+    border: 1px solid color-mix(in oklab, var(--destructive) 35%, var(--border));
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--destructive) 5%, var(--background));
+    text-align: start;
+
+    & .mk-error-state-icon { grid-row: span 2; width: 2.5rem; height: 2.5rem; & svg { width: 1.125rem; height: 1.125rem; } }
+    & .mk-error-state-title { font-size: 0.9375rem; }
+    & .mk-error-state-text { font-size: 0.875rem; }
+    & .mk-error-state-actions { grid-column: 3; grid-row: 1 / span 2; margin: 0; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-error-state-icon { border: 1px solid CanvasText; }
+    .mk-error-state-code { -webkit-text-stroke-color: CanvasText; }
+  }
+}

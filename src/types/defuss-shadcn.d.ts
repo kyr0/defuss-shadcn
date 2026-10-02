@@ -9,6 +9,13 @@ interface DefussShadcnComponentApi {
   getState(): DefussShadcnComponentState;
 }
 
+/** Registry-level State API (`df$.shadcn.{name}Api`): the element comes first
+ * (AGENTS.md "State API" rule 4) - el.api is the bound per-element form. */
+interface DefussShadcnRegistryApi {
+  setState(el: HTMLElement, stateName: string, config?: Record<string, unknown>): void;
+  getState(el: HTMLElement): DefussShadcnComponentState;
+}
+
 interface DefussShadcnComponentState {
   /** Declared state name ('default' unless setState() was called). */
   name: string;
@@ -95,9 +102,20 @@ interface DefussShadcnShared {
  * `df$.shadcn.toast`, … - the namespace core prepares and components own.
  */
 interface DefussShadcnRegistry {
-  [key: `${string}Api`]: DefussShadcnComponentApi | undefined;
+  [key: `${string}Api`]: DefussShadcnRegistryApi | undefined;
   [key: `${string}States`]: readonly string[] | undefined;
   toast?: DefussShadcnToastApi;
+  /** cookie consent (src/components/cookie-consent/cookie-consent.ts):
+   * create(root, config) / get(root) / init() - and the State API registry */
+  cookieConsent?: typeof import('../components/cookie-consent/cookie-consent.js').cookieConsent;
+  /** panel imperative API (src/components/panel/panel.ts): every method takes
+   * a .panel element, an id or a selector */
+  panel?: {
+    minimize(target: Element | string): Element | null;
+    maximize(target: Element | string): Element | null;
+    restore(target: Element | string): Element | null;
+    toggle(target: Element | string): boolean;
+  };
   /** window imperative API (src/components/window/window.ts): every method
    * takes a .window element, an id or a selector */
   win?: {

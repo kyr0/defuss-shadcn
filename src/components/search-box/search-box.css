@@ -1,0 +1,44 @@
+/* -- Search Box (website · Search & Navigation) ---------------------------
+   Accepts a query and submits a search - with a shortcut hint, as a large hero search with a scope, a pill, or an icon that expands on focus. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-search-box, .mk-search-box *, .mk-search-box ::before, .mk-search-box ::after) { box-sizing: border-box; }
+
+  .mk-search-box { display: block; width: 100%; max-width: 36rem;
+    & form { display: flex; gap: 0.5rem; }
+  }
+  .mk-search-box-field { position: relative; flex: 1; display: flex; align-items: center;
+    & > svg { position: absolute; inset-inline-start: 0.75rem; width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
+    & .input { padding-inline: 2.25rem 3.25rem; }
+    & .input::-webkit-search-cancel-button { display: none; }
+    & .kbd { position: absolute; inset-inline-end: 0.5rem; pointer-events: none; }
+  }
+  .mk-search-box[data-variant="large"] {
+    max-width: 44rem;
+
+    & form { align-items: center; padding: 0.375rem; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--background); box-shadow: var(--shadow-lg); }
+    & .select { flex: none; width: auto; height: 2.75rem; border-color: transparent; background-color: var(--muted); }
+    & .input { height: 2.75rem; border-color: transparent; box-shadow: none; font-size: 1rem; }
+    & .btn { height: 2.75rem; }
+  }
+  .mk-search-box[data-variant="pill"] .input { border-radius: 999px; background: var(--muted); border-color: transparent; }
+  .mk-search-box[data-variant="expand"] {
+    width: auto;
+
+    & .mk-search-box-field { flex: none; }
+    & .input { width: 2.5rem; padding-inline-end: 0; border-radius: 999px; cursor: pointer; transition: width 250ms cubic-bezier(.2,.7,.2,1); }
+    & .input::placeholder { color: transparent; }
+    &:focus-within .input { width: 18rem; padding-inline-end: 0.75rem; cursor: text; }
+    &:focus-within .input::placeholder { color: var(--muted-foreground); }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-search-box[data-variant="expand"] .input { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-search-box[data-variant="large"] form { border-color: CanvasText; }
+  }
+}

@@ -1,0 +1,181 @@
+/* -- Blog Header (website) ------------------------------------------
+   Introduces a blog: eyebrow, title, editorial description, optional
+   actions (subscribe, RSS) and the category chips - the current category
+   marked with aria-current. Centered, or set on a banner surface. */
+
+@layer components {
+  .mk-blog-header {
+    container: mk-blog-header / inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .mk-blog-header-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    max-width: 46rem;
+  }
+
+  .mk-blog-header-eyebrow { color: var(--primary); font-size: 0.875rem; font-weight: 500; }
+
+  .mk-blog-header-title {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .mk-blog-header-desc {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .mk-blog-header-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  /* categories: chips, the current one filled */
+  .mk-blog-header-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3125rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--foreground);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 120ms, border-color 120ms, color 120ms;
+
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &[aria-current] { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    }
+  }
+
+  .mk-blog-header[data-align="center"] {
+    align-items: center;
+    text-align: center;
+
+    & .mk-blog-header-copy { align-items: center; }
+    & :is(.mk-blog-header-actions, .mk-blog-header-categories) { justify-content: center; }
+  }
+
+  /* banner: the header on a muted surface */
+  .mk-blog-header[data-variant="banner"] {
+    padding: 2.5rem 1.5rem;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(120% 140% at 0% 0%, color-mix(in oklch, var(--primary) 14%, transparent), transparent 60%),
+      var(--muted);
+  }
+
+  /* a count inside a category chip */
+  .mk-blog-header-categories a .mk-blog-header-count {
+    padding: 0 0.375rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, currentColor 12%, transparent);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* a toolbar row: search on the left, view / sort on the right */
+  .mk-blog-header-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--border);
+  }
+
+  /* an inline subscribe form: email + button */
+  .mk-blog-header-subscribe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 26rem;
+
+    & .input { flex: 1 1 12rem; }
+  }
+
+  /* split: the copy beside a featured image */
+  .mk-blog-header[data-variant="split"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    align-items: center;
+    gap: 2rem;
+  }
+  .mk-blog-header-media {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    box-shadow: var(--shadow-lg);
+    rotate: 1.5deg;
+
+    & img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  }
+
+  /* editorial: a serif masthead, centered between ornaments */
+  .mk-blog-header[data-variant="editorial"] {
+    align-items: center;
+    text-align: center;
+
+    & .mk-blog-header-copy { align-items: center; }
+    & .mk-blog-header-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+
+      &::before, &::after { content: ""; width: 2.5rem; height: 1px; background: currentColor; }
+    }
+    & .mk-blog-header-title { font-family: var(--font-serif); font-weight: 700; font-style: italic; letter-spacing: -0.01em; }
+    & .mk-blog-header-categories { justify-content: center; }
+    & .mk-blog-header-categories a { border: 0; border-radius: 0; padding-inline: 0.25rem; }
+    & .mk-blog-header-categories a[aria-current] { background: transparent; color: var(--foreground); box-shadow: inset 0 -2px var(--primary); }
+  }
+
+  @container mk-blog-header (min-width: 48rem) {
+    .mk-blog-header-title { font-size: 3rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-blog-header-categories a { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-blog-header-desc { color: var(--foreground); }
+    .mk-blog-header-categories a { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-blog-header-categories a[aria-current] { forced-color-adjust: none; background: Highlight; color: HighlightText; border-color: Highlight; }
+  }
+}

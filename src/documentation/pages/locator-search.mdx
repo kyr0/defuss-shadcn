@@ -1,0 +1,122 @@
+---
+title: "Locator Search"
+description: "Finds nearby locations using an address or current position - a search with &quot;use my location&quot;, a radius and the results."
+slug: "locator-search"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="locator-search" title="Locator Search" component="locator-search">
+  Finds nearby locations using an address or current position - a search with "use my location", a radius and the results. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="locator-search">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;search&gt;</code> with a <code>&lt;form method="get"&gt;</code>: an address Input, a "Use my location" Button (the page script asks the Geolocation API), a radius Select and submit - then a summary and the results as compact location items.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="select.html">Select</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="location-item.html">Location Item</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search" title="the search landmark"><code>&lt;search&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API" title="the visitor's position, on request"><code>Geolocation API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="the browser fills known fields"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="a computed result"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-locator-search</code>
+    <code>.mk-locator-search-form</code>
+    <code>.mk-locator-search-row</code>
+    <code>.mk-locator-search-field</code>
+    <code>.mk-locator-search-query</code>
+    <code>.mk-locator-search-geo</code>
+    <code>.mk-locator-search-summary</code>
+    <code>.mk-locator-search-results</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="inline"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A <search> with a GET form - address, radius, submit - and &quot;Use my location&quot; (the page script asks the Geolocation API only when pressed). Below: the summary (<output aria-live>) and compact Location Items." previewStyle="align-items:stretch;"
+<section class="mk-locator-search" aria-labelledby="ls-title">
+  <h2 id="ls-title" class="sr-only">Find a store</h2>
+  <search>
+    <form class="mk-locator-search-form" action="#" method="get">
+      <div class="mk-locator-search-row">
+        <div class="mk-locator-search-field"><label class="label" for="ls-q">City, address or postcode</label><div class="mk-locator-search-query"><i data-lucide="search"></i><input class="input" id="ls-q" type="search" name="near" placeholder="e.g. Lisbon" autocomplete="address-level2" enterkeyhint="search"></div></div>
+        <div class="mk-locator-search-field"><label class="label" for="ls-r">Within</label><select class="select" id="ls-r" name="radius"><option>5 km</option><option selected>25 km</option><option>100 km</option></select></div>
+        <button class="btn" type="submit">Search</button>
+      </div>
+      <button class="mk-locator-search-geo" type="button" data-locate><i data-lucide="locate-fixed"></i> Use my location</button>
+    </form>
+  </search>
+  <output class="mk-locator-search-summary" aria-live="polite"><strong>2 stores</strong> within 25 km of Lisbon</output>
+  <div class="mk-locator-search-results">
+    <article class="mk-location-item" data-variant="compact">
+      <div class="mk-location-item-body">
+        <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div>
+        <address class="mk-location-item-address">Rua da Prata 120<br>1100-420 Lisboa, Portugal</address>
+        <p class="mk-location-item-status" data-status="open">Open now · until 18:00</p>
+        <div class="mk-location-item-actions">
+          <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Lisbon (opens maps)</span></a>
+          <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"><i data-lucide="phone"></i> +351 21 000 1200</a>
+        </div>
+      </div>
+    </article>
+    <article class="mk-location-item" data-variant="compact">
+      <div class="mk-location-item-body">
+        <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Belém</h3><span class="mk-location-item-distance">6.2 km</span></div>
+        <address class="mk-location-item-address">Rua de Belém 84<br>1300-085 Lisboa</address>
+        <p class="mk-location-item-status" data-status="open">Open now · until 19:00</p>
+        <div class="mk-location-item-actions">
+          <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Belém (opens maps)</span></a>
+          <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"><i data-lucide="phone"></i> +351 21 000 1200</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('[data-locate]').on('click', () => {
+      const out = df$('.mk-locator-search-summary');
+      if (!('geolocation' in navigator)) { out.text('Location is not available in this browser.'); return; }
+      out.text('Finding your location…');
+      navigator.geolocation.getCurrentPosition(
+        (p) => out.text('Stores near ' + p.coords.latitude.toFixed(2) + ', ' + p.coords.longitude.toFixed(2)),
+        () => out.text('Location was not shared - search by address instead.'),
+      );
+    });
+  });
+</script>
+```
+
+```html example label="Inline" hint="data-variant='inline': the fields on one pill-shaped row - for a hero or a header. Labels stay for screen readers." previewStyle="align-items:stretch;"
+<section class="mk-locator-search" data-variant="inline" aria-label="Find a store" style="max-width:40rem">
+  <search>
+    <form class="mk-locator-search-form" action="#" method="get">
+      <div class="mk-locator-search-row">
+        <div class="mk-locator-search-field"><label class="label" for="ls2-q">City or postcode</label><div class="mk-locator-search-query"><i data-lucide="map-pin"></i><input class="input" id="ls2-q" type="search" name="near" placeholder="City or postcode"></div></div>
+        <div class="mk-locator-search-field"><label class="label" for="ls2-r">Radius</label><select class="select" id="ls2-r" name="radius"><option>10 km</option><option>50 km</option></select></div>
+        <button class="btn" type="submit">Find stores</button>
+      </div>
+    </form>
+  </search>
+</section>
+```
+
+<SourceFiles component="locator-search" section="css" />
+
+</DocPage>

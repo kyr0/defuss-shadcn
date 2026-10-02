@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>signup-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/signup-form/signup-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-signup-form" aria-labelledby="su-title">
+  <div class="mk-signup-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="su-title">Create your account</h1><p>Free for 14 days. No credit card.</p></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="su-name">Full name</label><input class="input" id="su-name" name="name" autocomplete="name" required></div>
+    <div class="mk-auth-field"><label class="label" for="su-email">Work email</label><input class="input" id="su-email" type="email" name="email" autocomplete="email" required></div>
+    <div class="mk-auth-field"><label class="label" for="su-pass">Password</label><input class="input" id="su-pass" type="password" name="password" autocomplete="new-password" minlength="12" pattern="(?=.*[0-9\W]).{12,}" required aria-describedby="su-pass-rules"><ul class="mk-signup-form-rules" id="su-pass-rules"><li>At least 12 characters</li><li>A number or a symbol</li><li>Not your email address</li></ul></div>
+    <label class="mk-signup-form-terms"><input class="checkbox" type="checkbox" name="terms" required>I agree to the <a href="#">Terms</a> and the <a href="#">Privacy Policy</a>.</label>
+    <button class="btn" type="submit">Create account</button>
+  </form>
+  <p class="mk-signup-form-foot">Already have an account? <a href="#">Sign in</a></p>
+</section>
+    </section>
+    <!-- Split -->
+    <section class="fx">
+<section class="mk-signup-form" data-variant="split" aria-labelledby="su2-title">
+  <div class="mk-signup-form-layout">
+    <div class="mk-signup-form-pitch">
+      <h2>Everything your team needs</h2>
+      <ul>
+        <li><i data-lucide="layout-dashboard"></i><strong>Plans, docs and tasks</strong><span>One calm surface for all of it.</span></li>
+        <li><i data-lucide="wifi-off"></i><strong>Works offline</strong><span>Sync catches up when you do.</span></li>
+        <li><i data-lucide="shield-check"></i><strong>Private by default</strong><span>Hosted in the EU, never used for training.</span></li>
+      </ul>
+    </div>
+    <div class="mk-signup-form-panel">
+      <div class="mk-signup-form-head"><h1 id="su2-title">Start free</h1></div>
+      <form action="#" method="post">
+        <div class="mk-auth-field"><label class="label" for="su2-email">Work email</label><input class="input" id="su2-email" type="email" name="email" autocomplete="email" required></div>
+        <div class="mk-auth-field"><label class="label" for="su2-pass">Password</label><input class="input" id="su2-pass" type="password" name="password" autocomplete="new-password" minlength="12" required aria-describedby="su2-pass-rules"><ul class="mk-signup-form-rules" id="su2-pass-rules"><li>At least 12 characters</li><li>A number or a symbol</li><li>Not your email address</li></ul></div>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+    </div>
+  </div>
+</section>
+    </section>
+  </body>
+</html>

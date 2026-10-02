@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>event-header e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/event-header/event-header.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<header class="mk-event-header">
+  <div class="mk-event-header-inner">
+    <div class="mk-event-header-copy">
+      <div class="mk-event-header-badges"><span class="badge" data-variant="default">Conference</span><span class="badge" data-variant="outline">3rd edition</span></div>
+      <h1 class="mk-event-header-title">Acme Summit 2026</h1>
+      <p class="mk-event-header-tagline">Two days of talks and workshops on building calm software - for product people, designers and engineers.</p>
+      <ul class="mk-event-header-meta">
+        <li><i data-lucide="calendar"></i><span><time datetime="2026-11-12">12</time>–<time datetime="2026-11-13">13 November 2026</time></span></li>
+        <li><i data-lucide="map-pin"></i><address>Lisbon Congress Centre, Portugal</address></li>
+        <li><i data-lucide="ticket"></i>From €290</li>
+      </ul>
+      <div class="mk-event-header-actions">
+        <a class="btn" data-size="lg" href="#">Register now</a>
+        <a class="btn" data-variant="outline" data-size="lg" href="#" download="acme-summit-2026.ics"><i data-lucide="calendar-plus"></i> Add to calendar</a>
+      </div>
+      <div class="mk-event-header-speakers"><div class="avatar-group"><span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span></div>40+ speakers from 12 countries</div>
+    </div>
+  </div>
+</header>
+    </section>
+    <!-- Over a cover -->
+    <section class="fx">
+<header class="mk-event-header" data-variant="image">
+  <div class="mk-event-header-inner">
+    <img class="mk-event-header-cover" src="https://picsum.photos/seed/ev-cover/1600/800" alt="">
+    <div class="mk-event-header-copy">
+      <div class="mk-event-header-badges"><span class="badge" data-variant="secondary">Meetup</span></div>
+      <h1 class="mk-event-header-title">Calm Product Night</h1>
+      <ul class="mk-event-header-meta">
+        <li><i data-lucide="calendar"></i><time datetime="2026-10-14T18:00+01:00">Tue 14 Oct, 18:00 (WEST)</time></li>
+        <li><i data-lucide="map-pin"></i><address>LX Factory, Lisbon</address></li>
+      </ul>
+      <div class="mk-event-header-actions">
+        <a class="btn" data-variant="secondary" href="#">Save my seat</a>
+        <a class="btn" data-variant="outline" href="#" download="calm-product-night.ics">Add to calendar</a>
+      </div>
+    </div>
+  </div>
+</header>
+    </section>
+    <!-- With a poster -->
+    <section class="fx">
+<header class="mk-event-header" data-variant="split">
+  <div class="mk-event-header-inner">
+    <div class="mk-event-header-copy">
+      <div class="mk-event-header-badges"><span class="badge" data-variant="default">Workshop</span><span class="badge" data-variant="outline">Online</span></div>
+      <h1 class="mk-event-header-title">Design Systems in a Week</h1>
+      <p class="mk-event-header-tagline">A hands-on, five-morning workshop - build and ship a design system with your own team.</p>
+      <ul class="mk-event-header-meta"><li><i data-lucide="calendar"></i><time datetime="2026-11-23">23</time>–<time datetime="2026-11-27">27 Nov</time></li><li><i data-lucide="video"></i>Live on video · 09:00–12:00 CET</li></ul>
+      <div class="mk-event-header-actions"><a class="btn" data-size="lg" href="#">Join the workshop</a></div>
+    </div>
+    <figure class="mk-event-header-poster"><img src="https://picsum.photos/seed/ev-poster/600/800" alt="Workshop poster"></figure>
+  </div>
+</header>
+    </section>
+  </body>
+</html>

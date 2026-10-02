@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
     <link rel="stylesheet" href="/dist/components/input/input.css" />
     <link rel="stylesheet" href="/dist/components/separator/separator.css" />
+    <link rel="stylesheet" href="/dist/components/tabs/tabs.css" />
     <link rel="stylesheet" href="/dist/components/product-showcase/product-showcase.css" />
     <style>
       /* docs-utility stand-in (fixtures carry no doc-site CSS) */
@@ -27,7 +28,83 @@
   </video>
   <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg></button>
 </figure>
+    <!-- an embed in the video's place (YouTube, Vimeo) - a local page here -->
+    <figure class="mk-showcase" id="ps-embed" style="width:100%">
+      <img class="mk-showcase-poster" alt="Embed poster" src="/dist/documentation/images/mk-wide2.png" />
+      <iframe title="Embedded player" src="/dist/components/product-showcase/component-skill.md"></iframe>
+      <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg></button>
+    </figure>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/product-showcase/product-showcase.js"></script>
+      <!-- Browser frame -->
+    <section class="fx">
+<figure class="mk-showcase" data-variant="browser" style="width:100%">
+  <img class="mk-showcase-poster" alt="The Acme planning board" src="/dist/documentation/images/mk-wide.png">
+  <video controls preload="metadata" playsinline><source src="/dist/documentation/videos/demo.webm" type="video/webm"><source src="/dist/documentation/videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+  <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+</figure>
+    </section>
+    <!-- Ratios -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1.5rem;width:100%;align-items:start">
+  <figure class="mk-showcase" data-ratio="wide">
+    <img class="mk-showcase-poster" alt="A product film" src="/dist/documentation/images/mk-wide3.png">
+    <video controls preload="metadata" playsinline><source src="/dist/documentation/videos/demo.webm" type="video/webm"><source src="/dist/documentation/videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+  <figure class="mk-showcase" data-ratio="square">
+    <img class="mk-showcase-poster" alt="A square social clip" src="/dist/documentation/images/mk-square.png">
+    <video controls preload="metadata" playsinline><source src="/dist/documentation/videos/demo.webm" type="video/webm"><source src="/dist/documentation/videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+</div>
+    </section>
+    <!-- Callouts -->
+    <section class="fx">
+<div class="mk-showcase-stage">
+  <figure class="mk-showcase" data-variant="browser">
+    <img class="mk-showcase-poster" alt="The Acme dashboard" src="/dist/documentation/images/mk-wide2.png">
+    <video controls preload="metadata" playsinline><source src="/dist/documentation/videos/demo.webm" type="video/webm"><source src="/dist/documentation/videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+  <div class="mk-showcase-callout" data-pos="top-end"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><div><strong>+38% velocity</strong><span>in the first quarter</span></div></div>
+  <div class="mk-showcase-callout" data-pos="bottom-start"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div><strong>Review approved</strong><span>Hannah signed off 2 min ago</span></div></div>
+</div>
+    </section>
+    <!-- Product tour -->
+    <section class="fx">
+<div class="mk-showcase-tour">
+  <div class="tabs">
+    <div class="tab-list" role="tablist" aria-label="Product tour">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tour-plan" id="tour-tab-plan">Plan</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tour-write" id="tour-tab-write" tabindex="-1">Write</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tour-ship" id="tour-tab-ship" tabindex="-1">Ship</button>
+    </div>
+    <div class="tab-content" role="tabpanel" id="tour-plan" aria-labelledby="tour-tab-plan" tabindex="0">
+      <figure class="mk-showcase" data-variant="browser"><img class="mk-showcase-poster" alt="Roadmap view" src="/dist/documentation/images/mk-wide.png"></figure>
+    </div>
+    <div class="tab-content" role="tabpanel" id="tour-write" aria-labelledby="tour-tab-write" tabindex="0" hidden>
+      <figure class="mk-showcase" data-variant="browser"><img class="mk-showcase-poster" alt="Docs editor" src="/dist/documentation/images/mk-wide2.png"></figure>
+    </div>
+    <div class="tab-content" role="tabpanel" id="tour-ship" aria-labelledby="tour-tab-ship" tabindex="0" hidden>
+      <figure class="mk-showcase" data-variant="browser"><img class="mk-showcase-poster" alt="Release notes" src="/dist/documentation/images/mk-wide3.png"></figure>
+    </div>
+  </div>
+</div>
+    </section>
+    <!-- Tilt on scroll -->
+    <section class="fx">
+<div style="width:100%">
+  <div style="height:520px;display:grid;place-items:center;color:var(--muted-foreground)">Scroll down ↓</div>
+  <div class="mk-showcase-stage" data-tilt>
+    <figure class="mk-showcase" data-variant="browser">
+      <img class="mk-showcase-poster" alt="The Acme planning board" src="/dist/documentation/images/mk-wide.png">
+      <video controls preload="metadata" playsinline><source src="/dist/documentation/videos/demo.webm" type="video/webm"><source src="/dist/documentation/videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+      <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+    </figure>
+  </div>
+  <div style="height:240px"></div>
+</div>
+    </section>
   </body>
 </html>

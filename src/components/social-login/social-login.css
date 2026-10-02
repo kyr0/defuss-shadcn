@@ -1,0 +1,35 @@
+/* -- Social Login (website · Account & States) ----------------------------
+   Provides authentication through external identity providers - Google, Apple, GitHub, Microsoft - as full-width buttons, an icon row, with a divider to the email form. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-social-login, .mk-social-login *, .mk-social-login ::before, .mk-social-login ::after) { box-sizing: border-box; }
+
+  .mk-social-login { display: grid; gap: 0.625rem; width: 100%; max-width: 24rem;
+    & .btn { justify-content: center; gap: 0.625rem; width: 100%; }
+    & svg { flex: none; }
+  }
+  .mk-social-login[data-variant="icons"] {
+    grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr));
+    & .btn { padding-inline: 0; }
+  }
+  .mk-social-login-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 24rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    &::before, &::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-social-login-divider::before, .mk-social-login-divider::after { background: CanvasText; }
+  }
+}

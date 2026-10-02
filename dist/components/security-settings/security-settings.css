@@ -1,0 +1,41 @@
+/* -- Security Settings (website · Account & States) -----------------------
+   Manages passwords, authentication methods, and active sessions - the password, two-factor methods, passkeys and every signed-in device. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-security-settings, .mk-security-settings *, .mk-security-settings ::before, .mk-security-settings ::after) { box-sizing: border-box; }
+
+  .mk-security-settings { container: mk-security-settings / inline-size; display: grid; gap: 1.25rem; width: 100%; max-width: 44rem; }
+  .mk-security-settings-section { padding: 0.5rem 1.25rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    & > h2 { margin: 0; padding-block: 1rem 0.5rem; font-size: 1rem; font-weight: 600; }
+  }
+  .mk-security-settings-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding-block: 1rem;
+    & + & { border-block-start: 1px solid var(--border); }
+    & > svg { width: 1.25rem; height: 1.25rem; color: var(--muted-foreground); }
+    & strong { display: block; font-weight: 600; }
+    & p { margin: 0.125rem 0 0; color: var(--muted-foreground); font-size: 0.875rem; }
+  }
+  .mk-security-settings-status { display: inline-flex; align-items: center; gap: 0.375rem; margin-inline-start: 0.5rem; padding: 0.0625rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; vertical-align: middle;
+    &[data-status="on"] { background: color-mix(in oklch, #16a34a 14%, transparent); color: #15803d; }
+    &[data-status="off"] { background: color-mix(in oklch, #d97706 16%, transparent); color: #b45309; }
+  }
+  .mk-security-settings-list { display: grid; margin: 0; padding: 0; list-style: none;
+    & li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.875rem; padding-block: 0.875rem; border-block-start: 1px solid var(--border); }
+    & li div { display: grid; }
+    & li span:not(.badge, .mk-security-settings-device) { color: var(--muted-foreground); font-size: 0.8125rem; }
+    & strong { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; font-weight: 600; }
+  }
+  .mk-security-settings-device { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-md); background: var(--muted);
+    & svg { width: 1.125rem; height: 1.125rem; }
+  }
+  .mk-security-settings-foot { display: flex; justify-content: flex-end; padding-block: 1rem; border-block-start: 1px solid var(--border); }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-security-settings-section { border-color: CanvasText; }
+    .mk-security-settings-status { border: 1px solid CanvasText; }
+  }
+}

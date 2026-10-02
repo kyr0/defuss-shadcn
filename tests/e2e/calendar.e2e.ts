@@ -16,6 +16,21 @@ const server = startServer();
 const browser = await chromium.launch();
 
 const heading = (page: Page) => page.$eval('#cal-default .calendar-heading', (el) => el.textContent!.trim());
+/** Steps #cal-default forward to a month whose grid shows days of BOTH
+ *  neighbours - whether today's month does depends on the date (a month
+ *  ending on the week's last day has no trailing spillover). */
+const toSpilloverMonth = async (page: Page): Promise<number> => {
+  for (let i = 0; i < 12; i++) {
+    const sides = await page.$$eval('#cal-default .calendar-day[data-outside] button', (els) => els.map((el) => (el as HTMLElement).dataset.outside));
+    if (sides.includes('prev') && sides.includes('next')) return i;
+    await page.click('#cal-default [data-action="next-month"]');
+  }
+  throw new Error('no month with both spillovers within a year');
+};
+/** Steps #cal-default back n months - the checks after these start where the page opened. */
+const backMonths = async (page: Page, n: number): Promise<void> => {
+  for (let i = 0; i < n; i++) await page.click('#cal-default [data-action="prev-month"]');
+};
 const dayCount = (page: Page) => page.$$eval('#cal-default .calendar-day:not([data-outside])', (els) => els.length);
 const selectedDay = (page: Page) =>
   page.$eval('#cal-default .calendar-day[data-selected] button', (el) => el.textContent).catch(() => null);
@@ -61,10 +76,12 @@ try {
   });
 
   await check('leading/trailing days are marked data-outside', async () => {
+    const steps = await toSpilloverMonth(page);
     const outside = await page.$$eval('#cal-default .calendar-day[data-outside] button', (els) =>
       els.map((el) => el.dataset.outside),
     );
     assert.ok(outside.includes('prev') && outside.includes('next'), 'both spillovers rendered');
+    await backMonths(page, steps);
   });
 
   await check('next/prev month navigation updates the heading', async () => {
@@ -138,13 +155,14 @@ try {
   await check('clicking an outside day navigates to that month', async () => {
     // the spillover marker lives on the <button> (the <td> carries bare
     // data-outside), and clicking it advances the view + selects that day
-    await page.click('button[data-outside="next"]');
-    const next = new Date();
-    next.setMonth(next.getMonth() + 1);
-    const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(next);
-    assert.match(await heading(page), new RegExp(monthName), 'navigated into next month');
+    const steps = await toSpilloverMonth(page);
+    const before = await heading(page);
+    await page.click('#cal-default button[data-outside="next"]');
+    assert.notEqual(await heading(page), before, 'navigated into the next month');
     const selected = await page.$eval('#cal-default .calendar-day[data-selected] button', (el) => el.textContent);
     assert.ok(selected, 'the spillover day is selected in the new month');
+    // back to one month past the opening month, where the checks below expect it
+    await backMonths(page, steps);
   });
 
   await check('arrow keys move focus between day cells', async () => {

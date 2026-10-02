@@ -1,0 +1,76 @@
+---
+title: "Filter Sidebar"
+description: "Groups detailed filtering controls beside a collection - categories with counts, a price range, colors, rating and availability, each group collapsible."
+slug: "filter-sidebar"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="filter-sidebar" title="Filter Sidebar" component="filter-sidebar">
+  Groups detailed filtering controls beside a collection - categories with counts, a price range, colors, rating and availability, each group collapsible. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="filter-sidebar">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form method="get"&gt;</code> beside the results: a header with "Clear all", then <code>&lt;details open&gt;</code> groups - category checkboxes with counts, a min / max price, color swatches (checkboxes), a rating radio group and an availability Switch - and Apply.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="input.html">Input</DocLink>, <DocLink href="switch.html">Switch</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inputmode" title="the right on-screen keyboard"><code>inputmode</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-filter-sidebar</code>
+    <code>.mk-filter-sidebar-head</code>
+    <code>.mk-filter-sidebar-group</code>
+    <code>.mk-filter-sidebar-option</code>
+    <code>.mk-filter-sidebar-range</code>
+    <code>.mk-filter-sidebar-swatches</code>
+    <code>.mk-filter-sidebar-swatch</code>
+    <code>.mk-filter-sidebar-stars</code>
+    <code>.mk-filter-sidebar-apply</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>--mk-swatch</code> on color swatches.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="One GET form: &quot;Clear all&quot;, then <details open> groups - categories with counts, min / max price (numeric keyboard), color swatches (checkboxes with their names for screen readers), a rating radio group and an availability Switch." previewStyle="align-items:stretch;"
+<aside class="mk-filter-sidebar" aria-labelledby="fs-title">
+  <form action="#" method="get">
+    <div class="mk-filter-sidebar-head"><h2 id="fs-title">Filters</h2><a href="#">Clear all</a></div>
+    <details class="mk-filter-sidebar-group" open><summary>Category</summary><div><fieldset><legend>Category</legend>
+      <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="shirts" checked>Shirts<small>24</small></label>
+      <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="knitwear">Knitwear<small>18</small></label>
+      <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="trousers">Trousers<small>12</small></label>
+      <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="accessories">Accessories<small>9</small></label>
+    </fieldset></div></details>
+    <details class="mk-filter-sidebar-group" open><summary>Price</summary><div><div class="mk-filter-sidebar-range"><label class="sr-only" for="fs-min">Minimum price</label><input class="input" id="fs-min" name="min" inputmode="numeric" placeholder="€ min"><span>–</span><label class="sr-only" for="fs-max">Maximum price</label><input class="input" id="fs-max" name="max" inputmode="numeric" placeholder="€ max"></div></div></details>
+    <details class="mk-filter-sidebar-group" open><summary>Color</summary><div><fieldset><legend>Color</legend><div class="mk-filter-sidebar-swatches"><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#d8c9a9"><input type="checkbox" name="color" value="sand" checked><span class="sr-only">Sand</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#2f3b4a"><input type="checkbox" name="color" value="navy"><span class="sr-only">Navy</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#f2efe8"><input type="checkbox" name="color" value="off-white"><span class="sr-only">Off-white</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#5a6b5d"><input type="checkbox" name="color" value="moss"><span class="sr-only">Moss</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#8c3b2f"><input type="checkbox" name="color" value="rust"><span class="sr-only">Rust</span></label></div></fieldset></div></details>
+    <details class="mk-filter-sidebar-group"><summary>Rating</summary><div><fieldset><legend>Minimum rating</legend>
+      <label class="mk-filter-sidebar-option"><input class="radio" type="radio" name="rating" value="4"><span class="mk-filter-sidebar-stars" aria-hidden="true">★★★★☆</span>4 & up</label>
+      <label class="mk-filter-sidebar-option"><input class="radio" type="radio" name="rating" value="3"><span class="mk-filter-sidebar-stars" aria-hidden="true">★★★☆☆</span>3 & up</label>
+    </fieldset></div></details>
+    <div class="mk-filter-sidebar-group"><label class="mk-filter-sidebar-option" for="fs-stock">In stock only<input class="switch" type="checkbox" role="switch" id="fs-stock" name="stock" style="margin-inline-start:auto" checked></label></div>
+    <button class="btn mk-filter-sidebar-apply" type="submit">Show 24 products</button>
+  </form>
+</aside>
+```
+
+<SourceFiles component="filter-sidebar" section="css" />
+
+</DocPage>

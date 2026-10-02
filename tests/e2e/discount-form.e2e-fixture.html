@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>discount-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/discount-form/discount-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<form class="mk-discount-form" action="#" method="post">
+  <label class="label" for="dc-1">Discount code</label>
+  <div class="mk-discount-form-row">
+    <input class="input" id="dc-1" name="code" placeholder="e.g. AUTUMN30" pattern="[A-Za-z0-9]{4,12}" required autocomplete="off" spellcheck="false" aria-describedby="dc-1-err">
+    <button class="btn" data-variant="outline" type="submit">Apply</button>
+  </div>
+  <p class="mk-discount-form-error" id="dc-1-err"><i data-lucide="circle-alert"></i><span>This code is not valid or has expired.</span></p>
+</form>
+    </section>
+    <!-- Rejected -->
+    <section class="fx">
+<form class="mk-discount-form" action="#" method="post">
+  <label class="label" for="dc-2">Discount code</label>
+  <div class="mk-discount-form-row">
+    <input class="input" id="dc-2" name="code" placeholder="e.g. AUTUMN30" pattern="[A-Za-z0-9]{4,12}" required autocomplete="off" spellcheck="false" aria-describedby="dc-2-err" value="SUMMER24" aria-invalid="true">
+    <button class="btn" data-variant="outline" type="submit">Apply</button>
+  </div>
+  <p class="mk-discount-form-error" id="dc-2-err"><i data-lucide="circle-alert"></i><span>This code is not valid or has expired.</span></p>
+</form>
+    </section>
+    <!-- Applied -->
+    <section class="fx">
+<div class="mk-discount-form-applied" role="status">
+  <i data-lucide="tag"></i><code>AUTUMN30</code><span>30% off yearly plans</span><strong>−€24.00</strong>
+  <button type="button" aria-label="Remove code AUTUMN30"><i data-lucide="x"></i></button>
+</div>
+    </section>
+    <!-- Collapsed -->
+    <section class="fx">
+<details class="mk-discount-form" data-variant="collapsed">
+  <summary><i data-lucide="plus"></i> Have a discount code?</summary>
+  <form class="mk-discount-form" action="#" method="post">
+    <label class="label" for="dc-3">Discount code</label>
+    <div class="mk-discount-form-row">
+      <input class="input" id="dc-3" name="code" placeholder="e.g. AUTUMN30" pattern="[A-Za-z0-9]{4,12}" required autocomplete="off" spellcheck="false" aria-describedby="dc-3-err">
+      <button class="btn" data-variant="outline" type="submit">Apply</button>
+    </div>
+    <p class="mk-discount-form-error" id="dc-3-err"><i data-lucide="circle-alert"></i><span>This code is not valid or has expired.</span></p>
+  </form>
+</details>
+    </section>
+  </body>
+</html>

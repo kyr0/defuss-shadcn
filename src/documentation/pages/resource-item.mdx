@@ -1,0 +1,134 @@
+---
+title: "Resource Item"
+description: "Previews one guide, document, template, or other resource - its type, title, a line on what is inside, the format and the action."
+slug: "resource-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="resource-item" title="Resource Item" component="resource-item">
+  Previews one guide, document, template, or other resource - its type, title, a line on what is inside, the format and the action. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="resource-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: the type with an icon, a title link stretched over the card, a description, the format or length and a decorative action cue ("Read", "Download", "Watch").</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-resource-item</code>
+    <code>.mk-resource-item-title</code>
+    <code>.mk-resource-item-body</code>
+    <code>.mk-resource-item-type</code>
+    <code>.mk-resource-item-desc</code>
+    <code>.mk-resource-item-meta</code>
+    <code>.mk-resource-item-cta</code>
+    <code>.mk-resource-item-media</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>compact</code>, <code>featured</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Library" hint="Default cards: the type with an icon, the title link covering the card, a description, the format or length and an action cue that matches the type." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem;width:100%">
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+      <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+      <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+      <p class="mk-resource-item-meta">12 min read</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="layout-template"></i>Template</span>
+      <h3 class="mk-resource-item-title"><a href="#">Weekly async update</a></h3>
+      <p class="mk-resource-item-desc">Replace your status meeting with one doc.</p>
+      <p class="mk-resource-item-meta">Acme template · 2.1k uses</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Use template <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="file-text"></i>Whitepaper</span>
+      <h3 class="mk-resource-item-title"><a href="#">Security & data handling</a></h3>
+      <p class="mk-resource-item-desc">Encryption, hosting and compliance in detail.</p>
+      <p class="mk-resource-item-meta">PDF · 24 pages</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Download <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="video"></i>Webinar</span>
+      <h3 class="mk-resource-item-title"><a href="#">Async teams at 400 people</a></h3>
+      <p class="mk-resource-item-desc">Recording of the October session with Q&A.</p>
+      <p class="mk-resource-item-meta">48 min · recording</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Watch <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': one row each - type, title and meta - for long lists." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.5rem;max-width:40rem;width:100%">
+  <article class="mk-resource-item" data-variant="compact">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+      <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+      <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+      <p class="mk-resource-item-meta">12 min read</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item" data-variant="compact">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="layout-template"></i>Template</span>
+      <h3 class="mk-resource-item-title"><a href="#">Weekly async update</a></h3>
+      <p class="mk-resource-item-desc">Replace your status meeting with one doc.</p>
+      <p class="mk-resource-item-meta">Acme template · 2.1k uses</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Use template <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item" data-variant="compact">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="file-text"></i>Whitepaper</span>
+      <h3 class="mk-resource-item-title"><a href="#">Security & data handling</a></h3>
+      <p class="mk-resource-item-desc">Encryption, hosting and compliance in detail.</p>
+      <p class="mk-resource-item-meta">PDF · 24 pages</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Download <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+```
+
+```html example label="Featured" hint="data-variant='featured': a picture beside the text - one highlighted resource." previewStyle="align-items:stretch;"
+<article class="mk-resource-item" data-variant="featured">
+  <img class="mk-resource-item-media" src="https://picsum.photos/seed/res-featured/1000/625" alt="">
+  <div class="mk-resource-item-body">
+    <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+    <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+    <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+    <p class="mk-resource-item-meta">12 min read</p>
+  </div>
+  <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+</article>
+```
+
+<SourceFiles component="resource-item" section="css" />
+
+</DocPage>

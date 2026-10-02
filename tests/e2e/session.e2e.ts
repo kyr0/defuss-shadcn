@@ -60,6 +60,11 @@ try {
     assert.equal(await page.$eval('#s1-start', (b) => getComputedStyle(b).visibility), 'visible', 'something above: the start button shows');
   });
 
+  await check('rows skip rendering off screen but do not clip what draws outside them (bubble tails, reactions)', async () => {
+    const r = await page.$eval('#s1 .session-item', (i) => { const cs = getComputedStyle(i); return [cs.contentVisibility, cs.overflowClipMargin]; });
+    assert.deepEqual(r, ['auto', '16px']);
+  });
+
   await check('the reader scrolls up: it lets go (detached) and the end button appears', async () => {
     await page.$eval(vp('s1'), (v) => { v.scrollTop = 100; });
     await settle();

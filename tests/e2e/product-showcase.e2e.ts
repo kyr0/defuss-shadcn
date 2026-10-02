@@ -142,6 +142,43 @@ try {
     await page.evaluate(() => (document.querySelector('.mk-showcase') as any).api.setState('default'));
   });
 
+  await check('an embed takes the video layer: hidden and click-through until playing, then shown', async () => {
+    const look = () => page.$eval('#ps-embed iframe', (el) => { const s = getComputedStyle(el); const r = el.getBoundingClientRect(); const f = el.parentElement!.getBoundingClientRect(); return [s.opacity, s.pointerEvents, s.position, Math.round(r.width) === Math.round(f.width)]; });
+    assert.deepEqual(await look(), ['0', 'none', 'absolute', true]);
+    await page.click('#ps-embed .mk-showcase-play');
+    await page.waitForTimeout(250);
+    assert.deepEqual(await look(), ['1', 'auto', 'absolute', true]);
+  });
+
+  await check('browser: a window bar on top, the layers below it', async () => {
+    const r = await page.evaluate(() => { const s = document.querySelector('.mk-showcase[data-variant="browser"]')!; return { bar: getComputedStyle(s, '::before').height, top: getComputedStyle(s.querySelector('.mk-showcase-poster')!).top }; });
+    assert.deepEqual(r, { bar: '36px', top: '36px' });
+  });
+  
+  await check('ratios: wide 16:9, square 1:1', async () => {
+    const r = await page.evaluate(() => ['wide', 'square'].map((v) => getComputedStyle(document.querySelector(`.mk-showcase[data-ratio="${v}"]`)!).aspectRatio));
+    assert.deepEqual(r, ['16 / 9', '1 / 1']);
+  });
+  
+  await check('callouts: positioned cards over the stage corners', async () => {
+    const r = await page.evaluate(() => [...document.querySelectorAll('.mk-showcase-callout')].map((c) => ({ pos: getComputedStyle(c).position, z: getComputedStyle(c).zIndex })));
+    assert.equal(r.length >= 2, true);
+    assert.deepEqual(r[0], { pos: 'absolute', z: '12' });
+  });
+  
+  await check('tilt: a scroll-driven animation on the frame; reduced motion stops it', async () => {
+    const name = await page.$eval('.mk-showcase-stage[data-tilt] .mk-showcase', (e) => getComputedStyle(e).animationName);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const still = await page.$eval('.mk-showcase-stage[data-tilt] .mk-showcase', (e) => getComputedStyle(e).animationName);
+    await page.emulateMedia({ reducedMotion: null });
+    assert.deepEqual([name, still], ['mk-showcase-untilt', 'none']);
+  });
+  
+  await check('tour: tabs over browser frames', async () => {
+    const n = await page.evaluate(() => document.querySelectorAll('.mk-showcase-tour .tab-content .mk-showcase[data-variant="browser"]').length);
+    assert.equal(n, 3);
+  });
+
   await check('unknown state names throw', async () => {
     const threw = await page.evaluate(() => {
       try {

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>wishlist-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/wishlist-item/wishlist-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- List -->
+    <section class="fx">
+<ul class="mk-wishlist-list" aria-label="Wishlist, 3 items">
+  <li class="mk-wishlist-item">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-throw/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Wool throw</a></h3>
+      <p class="mk-wishlist-item-options">Oat · 130 × 180 cm</p>
+      <p class="mk-wishlist-item-stock" data-stock="in">In stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-28">3 days ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€120.00</strong>
+    <div class="mk-wishlist-item-actions">
+      <button class="btn" data-size="sm" type="button" aria-label="Add Wool throw to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Wool throw from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+  <li class="mk-wishlist-item">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-vase/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Ceramic vase</a></h3>
+      <p class="mk-wishlist-item-options">Speckled white</p>
+      <p class="mk-wishlist-item-stock" data-stock="low">Only 2 left</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-24">1 week ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€48.00</strong>
+    <div class="mk-wishlist-item-actions">
+      <button class="btn" data-size="sm" type="button" aria-label="Add Ceramic vase to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Ceramic vase from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+  <li class="mk-wishlist-item">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-lamp/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Paper lamp</a></h3>
+      <p class="mk-wishlist-item-options">Ø 45 cm</p>
+      <p class="mk-wishlist-item-stock" data-stock="out">Out of stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-17">2 weeks ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€89.00</strong>
+    <div class="mk-wishlist-item-actions">
+      <a class="btn" data-variant="outline" data-size="sm" href="#">Notify me</a>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Paper lamp from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+</ul>
+    </section>
+    <!-- Cards -->
+    <section class="fx">
+<ul class="mk-wishlist-list" aria-label="Wishlist" style="grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;border:0">
+  <li class="mk-wishlist-item" data-variant="card">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-throw/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Wool throw</a></h3>
+      <p class="mk-wishlist-item-options">Oat</p>
+      <p class="mk-wishlist-item-stock" data-stock="in">In stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-28">3 days ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€120</strong>
+    <div class="mk-wishlist-item-actions">
+      <button class="btn" data-size="sm" type="button" aria-label="Add Wool throw to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Wool throw from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+  <li class="mk-wishlist-item" data-variant="card">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-lamp/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Paper lamp</a></h3>
+      <p class="mk-wishlist-item-options">Ø 45 cm</p>
+      <p class="mk-wishlist-item-stock" data-stock="out">Out of stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-17">2 weeks ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€89</strong>
+    <div class="mk-wishlist-item-actions">
+      <a class="btn" data-variant="outline" data-size="sm" href="#">Notify me</a>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Paper lamp from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+</ul>
+    </section>
+  </body>
+</html>

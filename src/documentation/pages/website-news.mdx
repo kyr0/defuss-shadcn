@@ -1,0 +1,153 @@
+---
+title: "News"
+description: "Website blocks - News: Blocks for a newsroom, a press page or a changelog front: the header with its topics, a ticker of the latest headlines and the stories themselves - as the lead, as rows with thumbnails, or as a compact list."
+slug: "website-news"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-news" title="News" introStyle="max-width:42rem;">
+  Blocks for a newsroom, a press page or a changelog front: the header with its topics, a ticker of the latest headlines and the stories themselves - as the lead, as rows with thumbnails, or as a compact list. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The News blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A news front" schema="none" hint="News Header (masthead) and a breaking News Ticker above a lead story, a compact headline list beside it and story rows below - composed only from the News blocks and layout utilities." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:1.5rem;width:100%">
+  <header class="mk-news-header" data-variant="masthead">
+    <div class="mk-news-header-top">
+      <span class="mk-news-header-kicker">Vol. 12 · No. 274</span>
+      <time class="mk-news-header-date" datetime="2026-10-01">Thursday, 1 October 2026</time>
+    </div>
+    <h1 class="mk-news-header-title">The Acme Times</h1>
+    <nav class="mk-news-header-topics" aria-label="Sections">
+      <a href="#" aria-current="page">Front page</a>
+      <a href="#">Product</a>
+      <a href="#">Company</a>
+      <a href="#">Engineering</a>
+    </nav>
+  </header>
+  <section class="mk-news-ticker" data-variant="breaking" aria-label="Breaking news">
+    <span class="mk-news-ticker-label">Breaking</span>
+    <div class="mk-news-ticker-viewport">
+      <div class="mk-news-ticker-track">
+        <ul class="mk-news-ticker-items">
+          <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+          <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+          <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+        </ul>
+        <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+          <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+          <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+          <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:2rem;align-items:start">
+    <article class="mk-news-item" data-variant="lead">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Product</span>
+          <time datetime="2026-10-01">1 Oct 2026</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">Acme 4.0: the calmest release we have ever shipped</a></h3>
+        <p class="mk-news-item-summary">Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch.</p>
+      </div>
+      <figure class="mk-news-item-media"><img src="images/mk-wide3.png" alt="The new shared spaces view"></figure>
+    </article>
+    <section aria-labelledby="latest-title">
+      <h2 id="latest-title" style="margin:0 0 .25rem;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase">Latest</h2>
+      <article class="mk-news-item" data-variant="compact">
+        <div class="mk-news-item-body">
+          <div class="mk-news-item-meta">
+            <span class="mk-news-item-category">Product</span>
+            <time datetime="2026-10-01T09:41">09:41</time>
+          </div>
+          <h3 class="mk-news-item-title"><a href="#">Offline sync rolls out to every workspace</a></h3>
+        </div>
+      </article>
+      <article class="mk-news-item" data-variant="compact">
+        <div class="mk-news-item-body">
+          <div class="mk-news-item-meta">
+            <span class="mk-news-item-category">Company</span>
+            <time datetime="2026-10-01T08:15">08:15</time>
+          </div>
+          <h3 class="mk-news-item-title"><a href="#">Acme opens an office in Lisbon</a></h3>
+        </div>
+      </article>
+      <article class="mk-news-item" data-variant="compact">
+        <div class="mk-news-item-body">
+          <div class="mk-news-item-meta">
+            <span class="mk-news-item-category">Security</span>
+            <time datetime="2026-09-30">Yesterday</time>
+          </div>
+          <h3 class="mk-news-item-title"><a href="#">Passkeys are now the default sign-in</a></h3>
+        </div>
+      </article>
+      <article class="mk-news-item" data-variant="compact">
+        <div class="mk-news-item-body">
+          <div class="mk-news-item-meta">
+            <span class="mk-news-item-category">Engineering</span>
+            <time datetime="2026-09-30">Yesterday</time>
+          </div>
+          <h3 class="mk-news-item-title"><a href="#">Status: eu-west sync delays resolved</a></h3>
+        </div>
+      </article>
+    </section>
+  </div>
+  <div>
+    <article class="mk-news-item">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Company</span>
+          <time datetime="2026-09-28">28 Sep 2026</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">A million weekly users, still forty people</a></h3>
+        <p class="mk-news-item-summary">The company crossed a million weekly users this summer - and kept its team at forty people.</p>
+      </div>
+      <figure class="mk-news-item-media"><img src="images/mk-wide2.png" alt="The Acme team at their offsite"></figure>
+    </article>
+    <article class="mk-news-item">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Engineering</span>
+          <time datetime="2026-09-27">27 Sep 2026</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">What Tuesday's outage taught us</a></h3>
+        <p class="mk-news-item-summary">A post-mortem of Tuesday's 42-minute outage and the three changes it led to.</p>
+      </div>
+      <figure class="mk-news-item-media"><img src="images/mk-wide.png" alt="A whiteboard with the incident timeline"></figure>
+    </article>
+  </div>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="news-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">News Header</h3>
+      <p class="card-description">Introduces a news collection with its title and editorial context - kicker, dateline, topic links, or a newspaper masthead.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="news-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">News Item</h3>
+      <p class="card-description">Previews one news story with its headline, date, and summary - a row with a thumbnail, the lead story, or a compact headline list.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="news-ticker.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">News Ticker</h3>
+      <p class="card-description">Displays a compact stream of linked news headlines - a seamless CSS marquee that pauses on hover and focus, and stops for reduced motion.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

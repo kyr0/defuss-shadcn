@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>service-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/service-item/service-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;width:100%">
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="compass"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
+    <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="pen-tool"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Product design</a></h3>
+    <p class="mk-service-item-desc">Interfaces your customers understand on the first try.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="code"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Engineering</a></h3>
+    <p class="mk-service-item-desc">Fast, accessible web and mobile apps, shipped every week.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="line-chart"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Growth</a></h3>
+    <p class="mk-service-item-desc">Experiments, analytics and onboarding that turn trials into customers.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+    </section>
+    <!-- With pictures -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem;width:100%">
+  <article class="mk-service-item" data-variant="image">
+    <img class="mk-service-item-media" src="https://picsum.photos/seed/service-0/800/450" alt="">
+    <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
+    <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
+    <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="image">
+    <img class="mk-service-item-media" src="https://picsum.photos/seed/service-1/800/450" alt="">
+    <h3 class="mk-service-item-title"><a href="#">Product design</a></h3>
+    <p class="mk-service-item-desc">Interfaces your customers understand on the first try.</p>
+    <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="image">
+    <img class="mk-service-item-media" src="https://picsum.photos/seed/service-2/800/450" alt="">
+    <h3 class="mk-service-item-title"><a href="#">Engineering</a></h3>
+    <p class="mk-service-item-desc">Fast, accessible web and mobile apps, shipped every week.</p>
+    <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+    </section>
+    <!-- Inline -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:0.5rem 1.5rem;width:100%">
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="compass"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
+    <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="pen-tool"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Product design</a></h3>
+    <p class="mk-service-item-desc">Interfaces your customers understand on the first try.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="code"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Engineering</a></h3>
+    <p class="mk-service-item-desc">Fast, accessible web and mobile apps, shipped every week.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="line-chart"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Growth</a></h3>
+    <p class="mk-service-item-desc">Experiments, analytics and onboarding that turn trials into customers.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>job-details e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/separator/separator.css" />
+    <link rel="stylesheet" href="/dist/components/job-details/job-details.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<article class="mk-job-details" aria-labelledby="jd-title">
+  <header class="mk-job-details-head">
+    <a class="mk-job-details-back" href="#"><i data-lucide="arrow-left"></i> All open roles</a>
+    <h1 class="mk-job-details-title" id="jd-title">Senior Sync Engineer</h1>
+    <div class="mk-job-details-tags">
+      <span class="badge" data-variant="secondary">Engineering</span>
+      <span class="badge" data-variant="outline">Lisbon or remote (EU)</span>
+      <span class="badge" data-variant="outline">Full-time</span>
+    </div>
+  </header>
+  <div class="mk-job-details-layout">
+    <div class="mk-job-details-body">
+      <section aria-labelledby="jd-about"><h2 id="jd-about">About the role</h2><p>You will own the engine that keeps a million workspaces in sync - offline-first, conflict-free and fast on a train in a tunnel. You will work with two other engineers and report to Sophie, our Head of Engineering.</p></section>
+      <section aria-labelledby="jd-do"><h2 id="jd-do">What you will do</h2><ul class="mk-job-details-list"><li>Design and ship the next version of our CRDT-based sync protocol</li><li>Profile and speed up sync on low-end phones and slow networks</li><li>Pair with designers on how conflicts look to people</li></ul></section>
+      <section aria-labelledby="jd-need"><h2 id="jd-need">What you bring</h2><ul class="mk-job-details-list"><li>5+ years building distributed or local-first systems</li><li>Deep TypeScript or Rust; curiosity for both</li><li>Clear writing - we decide in documents, not meetings</li></ul></section>
+      <section aria-labelledby="jd-perks"><h2 id="jd-perks">Benefits</h2><ul class="mk-job-details-benefits"><li><i data-lucide="palm-tree"></i>30 days off</li><li><i data-lucide="laptop"></i>Equipment of your choice</li><li><i data-lucide="graduation-cap"></i>€2k learning budget</li><li><i data-lucide="heart-pulse"></i>Private health insurance</li><li><i data-lucide="plane"></i>Two offsites a year</li><li><i data-lucide="baby"></i>20 weeks parental leave</li></ul></section>
+    </div>
+    <aside class="mk-job-details-summary" aria-label="Summary">
+      <h2>Summary</h2>
+      <dl>
+        <div><dt>Salary</dt><dd>€95k – €120k + equity</dd></div>
+        <div><dt>Location</dt><dd>Lisbon or remote (EU time zones)</dd></div>
+        <div><dt>Team</dt><dd>Sync · 3 engineers</dd></div>
+        <div><dt>Start</dt><dd>As soon as possible</dd></div>
+      </dl>
+      <a class="btn" href="#">Apply for this role</a>
+    </aside>
+  </div>
+</article>
+    </section>
+  </body>
+</html>

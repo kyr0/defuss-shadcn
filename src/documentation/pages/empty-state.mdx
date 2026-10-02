@@ -1,0 +1,76 @@
+---
+title: "Empty State"
+description: "Explains missing content and offers an appropriate next action - an icon, why it is empty, and the first step; on a dashed area or inline in a list."
+slug: "empty-state"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="empty-state" title="Empty State" component="empty-state">
+  Explains missing content and offers an appropriate next action - an icon, why it is empty, and the first step; on a dashed area or inline in a list. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="empty-state">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code>: an icon in soft concentric rings, a heading that says what is empty, a sentence on why or what comes next, and a primary action (plus an optional secondary link).</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-empty-state</code>
+    <code>.mk-empty-state-icon</code>
+    <code>.mk-empty-state-title</code>
+    <code>.mk-empty-state-text</code>
+    <code>.mk-empty-state-actions</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>dashed</code>, <code>compact</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="An icon in soft rings, what is empty, why, and the first step." previewStyle="align-items:stretch;"
+<section class="mk-empty-state" aria-labelledby="es-1">
+  <span class="mk-empty-state-icon" aria-hidden="true"><i data-lucide="folder-open"></i></span>
+  <h2 class="mk-empty-state-title" id="es-1">No projects yet</h2>
+  <p class="mk-empty-state-text">Projects keep plans, docs and tasks together. Create one, or start from a template.</p>
+  <div class="mk-empty-state-actions"><a class="btn" href="#"><i data-lucide="plus"></i> New project</a><a class="btn" data-variant="outline" href="#">Browse templates</a></div>
+</section>
+```
+
+```html example label="Dashed" hint="data-variant='dashed': on a dashed area - an empty board or a place to drop files." previewStyle="align-items:stretch;"
+<section class="mk-empty-state" data-variant="dashed" aria-labelledby="es-2">
+  <span class="mk-empty-state-icon" aria-hidden="true"><i data-lucide="upload-cloud"></i></span>
+  <h2 class="mk-empty-state-title" id="es-2">Drop files to attach them</h2>
+  <p class="mk-empty-state-text">PDF, images or docs up to 50 MB.</p>
+  <div class="mk-empty-state-actions"><a class="btn" data-variant="outline" href="#">Choose files</a></div>
+</section>
+```
+
+```html example label="Compact" hint="data-variant='compact': one row inside a list or table - for &quot;no results&quot; in a filtered view." previewStyle="align-items:stretch;"
+<div style="border:1px solid var(--border);border-radius:var(--radius-lg);width:100%">
+  <section class="mk-empty-state" data-variant="compact" aria-labelledby="es-3">
+    <span class="mk-empty-state-icon" aria-hidden="true"><i data-lucide="search-x"></i></span>
+    <h2 class="mk-empty-state-title" id="es-3">No tasks match "launch"</h2>
+    <p class="mk-empty-state-text">Try another word or clear the filters.</p>
+    <div class="mk-empty-state-actions"><a class="btn" data-variant="ghost" data-size="sm" href="#">Clear filters</a></div>
+  </section>
+</div>
+```
+
+<SourceFiles component="empty-state" section="css" />
+
+</DocPage>

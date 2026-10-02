@@ -1,0 +1,135 @@
+---
+title: "Wishlist Item"
+description: "Displays one saved product with purchase and removal actions - stock status, price, when it was saved, add to cart or get notified."
+slug: "wishlist-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="wishlist-item" title="Wishlist Item" component="wishlist-item">
+  Displays one saved product with purchase and removal actions - stock status, price, when it was saved, add to cart or get notified. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="wishlist-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;li&gt;</code>: thumbnail, name link, options, stock (<code>data-stock="in|low|out"</code>), the saved date, the price and actions - Add to cart (or "Notify me" when out of stock) and a labelled remove button.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-wishlist-list</code>
+    <code>.mk-wishlist-item</code>
+    <code>.mk-wishlist-item-image</code>
+    <code>.mk-wishlist-item-info</code>
+    <code>.mk-wishlist-item-name</code>
+    <code>.mk-wishlist-item-options</code>
+    <code>.mk-wishlist-item-added</code>
+    <code>.mk-wishlist-item-stock</code>
+    <code>.mk-wishlist-item-price</code>
+    <code>.mk-wishlist-item-actions</code>
+    <code>.mk-wishlist-item-remove</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-stock</code>: <code>in</code>, <code>low</code>, <code>out</code>; <code>data-variant="card"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="List" hint="Rows: picture, name link, options, stock as text with a colored dot (data-stock in / low / out - out fades the picture and offers &quot;Notify me&quot;), the saved date, price and labelled actions." previewStyle="align-items:stretch;"
+<ul class="mk-wishlist-list" aria-label="Wishlist, 3 items">
+  <li class="mk-wishlist-item">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-throw/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Wool throw</a></h3>
+      <p class="mk-wishlist-item-options">Oat · 130 × 180 cm</p>
+      <p class="mk-wishlist-item-stock" data-stock="in">In stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-28">3 days ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€120.00</strong>
+    <div class="mk-wishlist-item-actions">
+      <button class="btn" data-size="sm" type="button" aria-label="Add Wool throw to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Wool throw from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+  <li class="mk-wishlist-item">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-vase/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Ceramic vase</a></h3>
+      <p class="mk-wishlist-item-options">Speckled white</p>
+      <p class="mk-wishlist-item-stock" data-stock="low">Only 2 left</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-24">1 week ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€48.00</strong>
+    <div class="mk-wishlist-item-actions">
+      <button class="btn" data-size="sm" type="button" aria-label="Add Ceramic vase to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Ceramic vase from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+  <li class="mk-wishlist-item">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-lamp/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Paper lamp</a></h3>
+      <p class="mk-wishlist-item-options">Ø 45 cm</p>
+      <p class="mk-wishlist-item-stock" data-stock="out">Out of stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-17">2 weeks ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€89.00</strong>
+    <div class="mk-wishlist-item-actions">
+      <a class="btn" data-variant="outline" data-size="sm" href="#">Notify me</a>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Paper lamp from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+</ul>
+```
+
+```html example label="Cards" hint="data-variant='card': the same items as cards in a grid." previewStyle="align-items:stretch;"
+<ul class="mk-wishlist-list" aria-label="Wishlist" style="grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;border:0">
+  <li class="mk-wishlist-item" data-variant="card">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-throw/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Wool throw</a></h3>
+      <p class="mk-wishlist-item-options">Oat</p>
+      <p class="mk-wishlist-item-stock" data-stock="in">In stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-28">3 days ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€120</strong>
+    <div class="mk-wishlist-item-actions">
+      <button class="btn" data-size="sm" type="button" aria-label="Add Wool throw to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Wool throw from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+  <li class="mk-wishlist-item" data-variant="card">
+    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-lamp/300/375" alt="">
+    <div class="mk-wishlist-item-info">
+      <h3 class="mk-wishlist-item-name"><a href="#">Paper lamp</a></h3>
+      <p class="mk-wishlist-item-options">Ø 45 cm</p>
+      <p class="mk-wishlist-item-stock" data-stock="out">Out of stock</p>
+      <p class="mk-wishlist-item-added">Saved <time datetime="2026-09-17">2 weeks ago</time></p>
+    </div>
+    <strong class="mk-wishlist-item-price">€89</strong>
+    <div class="mk-wishlist-item-actions">
+      <a class="btn" data-variant="outline" data-size="sm" href="#">Notify me</a>
+      <button class="mk-wishlist-item-remove" type="button" aria-label="Remove Paper lamp from wishlist"><i data-lucide="trash-2"></i></button>
+    </div>
+  </li>
+</ul>
+```
+
+<SourceFiles component="wishlist-item" section="css" />
+
+</DocPage>

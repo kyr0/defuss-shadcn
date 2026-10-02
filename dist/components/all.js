@@ -4644,7 +4644,14 @@ function mount(el, option = {}) {
   live.add(el);
   watchTheme();
   instance.setOption(option, true);
-  const ro = new ResizeObserver(() => instance.resize());
+  let frame = 0;
+  const ro = new ResizeObserver(() => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      if (!instance.isDisposed?.())
+        instance.resize();
+    });
+  });
   ro.observe(el);
   observers.set(el, ro);
   replayOnSlide(el);
@@ -5691,6 +5698,23 @@ new MutationObserver(init11).observe(document, { childList: true, subtree: true 
 // src/components/context-menu/context-menu.ts
 var df$12 = defussGlobals();
 var contextMenuStates = ["default", "open"];
+function keepInView(menu, x, y) {
+  const fit = () => {
+    const { offsetWidth: w, offsetHeight: h } = menu;
+    const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+    if (x + w > vw - 4)
+      menu.style.left = `${Math.max(4, Math.min(x - w, vw - w - 4))}px`;
+    if (y + h > vh - 4)
+      menu.style.top = `${Math.max(4, Math.min(y - h, vh - h - 4))}px`;
+  };
+  if (menu.matches(":popover-open"))
+    fit();
+  else
+    menu.addEventListener("toggle", (e) => {
+      if (e.newState === "open")
+        fit();
+    }, { once: true });
+}
 function triggerStateChange12(menu, stateName, config) {
   switch (stateName) {
     case "default":
@@ -5703,6 +5727,7 @@ function triggerStateChange12(menu, stateName, config) {
       menu.style.top = `${y}px`;
       menu.style.left = `${x}px`;
       safeShowPopover(menu);
+      keepInView(menu, x, y);
       break;
     }
   }
@@ -5748,6 +5773,7 @@ function openMenuAt(menu, x, y) {
   menu.style.top = `${y}px`;
   menu.style.left = `${x}px`;
   safeShowPopover(menu);
+  keepInView(menu, x, y);
   menu.dataset.stateName = "open";
 }
 function init12() {
@@ -5787,8 +5813,816 @@ function init12() {
 init12();
 new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
-// src/components/countdown/countdown.ts
+// src/components/cookie-consent/cookie-consent.ts
 var df$13 = defussGlobals();
+var q = defussQuery();
+var cookieConsentStates = ["default", "open", "preferences", "services"];
+var builtInLanguages = ["en", "de"];
+var categories = ["essential", "functional", "marketing", "other"];
+var translations = {
+  en: {
+    title: "Your privacy choices",
+    text: "Essential services are always enabled. Choose whether to allow optional services. You can change or withdraw your choices at any time in Privacy settings.",
+    settings: "Privacy settings",
+    close: "Close without saving",
+    language: "Language",
+    preferences: "Privacy preferences",
+    preferencesText: "Choose categories or individual services. Changes apply when you save.",
+    categories: "Categories",
+    services: "Services",
+    acceptAll: "Accept all",
+    denyAll: "Reject optional",
+    save: "Save preferences",
+    required: "Required",
+    privacyPolicy: "Privacy policy",
+    legalNotice: "Legal notice",
+    moreInformation: "More information",
+    blocked: "is blocked until you allow this service.",
+    activate: "Allow this service",
+    thirdParty: "Third-party cookies cannot be removed by this site. Use your browser settings to remove them.",
+    storageError: "Your choice applies to this page, but could not be saved for your next visit.",
+    categoryNames: { essential: "Essential", functional: "Functional", marketing: "Marketing", other: "Other" },
+    categoryDescriptions: {
+      essential: "Required for the basic functions of this website.",
+      functional: "Optional features and measurement of website use.",
+      marketing: "Advertising, targeting, and campaign measurement.",
+      other: "Additional optional data processing services."
+    }
+  },
+  de: {
+    title: "Ihre Datenschutz-Auswahl",
+    text: "Notwendige Dienste sind immer aktiv. Entscheiden Sie, welche optionalen Dienste Sie erlauben. Ihre Auswahl können Sie jederzeit in den Datenschutz-Einstellungen ändern oder widerrufen.",
+    settings: "Datenschutz-Einstellungen",
+    close: "Ohne Speichern schließen",
+    language: "Sprache",
+    preferences: "Datenschutz-Einstellungen",
+    preferencesText: "Wählen Sie Kategorien oder einzelne Dienste. Änderungen gelten erst nach dem Speichern.",
+    categories: "Kategorien",
+    services: "Dienste",
+    acceptAll: "Alle akzeptieren",
+    denyAll: "Optionale ablehnen",
+    save: "Auswahl speichern",
+    required: "Notwendig",
+    privacyPolicy: "Datenschutzerklärung",
+    legalNotice: "Impressum",
+    moreInformation: "Mehr Informationen",
+    blocked: "ist gesperrt, bis Sie diesen Dienst erlauben.",
+    activate: "Diesen Dienst erlauben",
+    thirdParty: "Cookies von Drittanbietern kann diese Website nicht löschen. Entfernen Sie diese in Ihren Browser-Einstellungen.",
+    storageError: "Ihre Auswahl gilt für diese Seite, konnte aber nicht für Ihren nächsten Besuch gespeichert werden.",
+    categoryNames: { essential: "Notwendig", functional: "Funktional", marketing: "Marketing", other: "Sonstige" },
+    categoryDescriptions: {
+      essential: "Für die grundlegenden Funktionen dieser Website erforderlich.",
+      functional: "Optionale Funktionen und Messung der Website-Nutzung.",
+      marketing: "Werbung, Targeting und Kampagnenmessung.",
+      other: "Zusätzliche optionale Dienste zur Datenverarbeitung."
+    }
+  }
+};
+var controllers = new Map;
+var resourceOwners = new WeakMap;
+var executedScripts = new WeakSet;
+var uid = 0;
+function localize(value, language) {
+  if (typeof value === "string")
+    return value;
+  return value?.[language] ?? value?.en ?? Object.values(value ?? {}).find((v) => typeof v === "string") ?? "";
+}
+function languagesOf(config) {
+  return [...new Set([...builtInLanguages, ...Object.keys(config.translations ?? {})])];
+}
+var LANGUAGE = /^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/;
+function languageName(code) {
+  try {
+    const name = new Intl.DisplayNames([code], { type: "language" }).of(code);
+    return name ? name.charAt(0).toLocaleUpperCase(code) + name.slice(1) : code;
+  } catch {
+    return code;
+  }
+}
+function escape(value) {
+  return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+function safeUrl(value, doc) {
+  if (!value)
+    return;
+  try {
+    const url = new URL(value, doc.baseURI);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : undefined;
+  } catch {
+    return;
+  }
+}
+function validateConfig(config) {
+  if (!config || !Array.isArray(config.cookieOrigins))
+    throw new TypeError("cookie-consent: cookieOrigins must be an array");
+  const ids = new Set;
+  for (const origin of config.cookieOrigins) {
+    if (!origin || !/^[a-zA-Z][\w-]*$/.test(origin.id) || ids.has(origin.id))
+      throw new TypeError("cookie-consent: service IDs must be unique and match [a-zA-Z][\\w-]*");
+    if (typeof origin.name !== "string" || !origin.name.trim() || !categories.includes(origin.category) || !(typeof origin.description === "string" || origin.description && typeof origin.description === "object")) {
+      throw new TypeError(`cookie-consent: invalid service ${origin.id}`);
+    }
+    if (origin.cookies?.some((cookie) => !/^[!#$%&'*+.^_`|~0-9a-zA-Z-]+$/.test(typeof cookie === "string" ? cookie : cookie.name) || typeof cookie !== "string" && /[;\r\n]/.test(`${cookie.path ?? ""}${cookie.domain ?? ""}`))) {
+      throw new TypeError(`cookie-consent: invalid cookie descriptor for ${origin.id}`);
+    }
+    ids.add(origin.id);
+  }
+  for (const code of Object.keys(config.translations ?? {})) {
+    if (!LANGUAGE.test(code))
+      throw new TypeError(`cookie-consent: invalid language code ${code}`);
+  }
+  if (config.defaultLanguage !== undefined && !languagesOf(config).includes(config.defaultLanguage)) {
+    throw new TypeError(`cookie-consent: unsupported language ${config.defaultLanguage} - add its texts to translations`);
+  }
+  if (config.revision !== undefined && (typeof config.revision !== "string" || !config.revision))
+    throw new TypeError("cookie-consent: revision must be a nonempty string");
+  if (config.maxAgeDays !== undefined && (!Number.isFinite(config.maxAgeDays) || config.maxAgeDays <= 0))
+    throw new TypeError("cookie-consent: maxAgeDays must be positive");
+}
+
+class Controller {
+  root;
+  config;
+  dialog;
+  doc;
+  scope;
+  key;
+  revision;
+  storage;
+  gates = new Map;
+  off = [];
+  id;
+  observer;
+  state;
+  draft = new Set;
+  view = "default";
+  trigger = null;
+  destroyed = false;
+  storageFailed = false;
+  constructor(root, config) {
+    validateConfig(config);
+    this.root = root;
+    this.config = { ...config, cookieOrigins: config.cookieOrigins.map((origin) => ({ ...origin })) };
+    this.doc = root.ownerDocument;
+    this.scope = config.resourceRoot ?? this.doc;
+    this.id = root.id || `cookie-consent-${++uid}`;
+    if (!/^[a-zA-Z][\w-]*$/.test(this.id))
+      throw new TypeError("cookie-consent: host ID must match [a-zA-Z][\\w-]*");
+    this.key = config.storageKey ?? `defuss-shadcn:${this.id}`;
+    this.revision = config.revision ?? "1";
+    let storage = config.storage;
+    if (storage === undefined) {
+      try {
+        storage = this.doc.defaultView?.localStorage ?? null;
+      } catch {
+        storage = null;
+      }
+    }
+    this.storage = storage;
+    this.state = this.readStored();
+    this.draft = new Set(this.state.acceptedServices);
+    const authoredView = q(root).attr("data-state-name");
+    q(root).attr("id", this.id).attr("data-init", "").attr("data-cookie-consent-ready", "");
+    q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
+    this.dialog = q(".cookie-consent-dialog", root)[0];
+    root.api = this;
+    this.render();
+    this.listen(root, "click", (event) => this.onClick(event));
+    this.listen(root, "change", (event) => this.onChange(event));
+    this.listen(this.dialog, "cancel", () => this.close());
+    this.listen(this.dialog, "close", () => {
+      if (!this.dialog.open)
+        this.finishClose();
+    });
+    this.listen(this.doc, "click", (event) => {
+      const target = event.target instanceof Element ? q(event.target).closest("[data-cookie-consent-open]")[0] : undefined;
+      if (target && q(target).attr("data-cookie-consent-open") === this.id) {
+        this.trigger = target;
+        this.open();
+      }
+    });
+    if (this.doc.defaultView)
+      this.listen(this.doc.defaultView, "storage", (event) => {
+        const e = event;
+        if ((e.key === this.key || e.key === null) && e.storageArea === this.storage) {
+          const previous = this.state;
+          this.state = this.readStored();
+          this.draft = new Set(this.state.acceptedServices);
+          this.revoke(previous);
+          this.updateTagsActivation();
+          this.render();
+          this.emit("storage");
+          if (!this.state.decisionMade && this.config.autoShow !== false)
+            this.open();
+        }
+      });
+    this.observer = new MutationObserver(() => this.updateTagsActivation());
+    this.observer.observe(this.scope, { childList: true, subtree: true });
+    controllers.set(root, this);
+    this.updateTagsActivation();
+    if (authoredView && authoredView !== "default" && cookieConsentStates.includes(authoredView))
+      this.setState(authoredView);
+    else if (!this.state.decisionMade && config.autoShow !== false)
+      this.setState("open");
+  }
+  listen(target, type, handler) {
+    q(target).on(type, handler, { capture: true });
+    this.off.push(() => q(target).off(type, handler));
+  }
+  assertAlive() {
+    if (this.destroyed)
+      throw new Error("cookie-consent: instance was destroyed");
+  }
+  origin(id) {
+    const origin = this.config.cookieOrigins.find((service) => service.id === id);
+    if (!origin)
+      throw new Error(`cookie-consent: unknown service ${id}`);
+    return origin;
+  }
+  normalize(ids) {
+    const selected = new Set(ids);
+    return this.config.cookieOrigins.filter((service) => service.category === "essential" || !service.disabled && selected.has(service.id)).map((service) => service.id).sort();
+  }
+  makeState(ids, decisionMade = false, updatedAt = null, language = this.config.defaultLanguage ?? "en") {
+    const acceptedServices = this.normalize(ids);
+    const optional = this.config.cookieOrigins.filter((s) => s.category !== "essential" && !s.disabled);
+    return {
+      revision: this.revision,
+      decisionMade,
+      language,
+      acceptedServices,
+      updatedAt,
+      acceptedCategories: categories.filter((category) => category === "essential" || (() => {
+        const services = this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled);
+        return services.length > 0 && services.every((s) => acceptedServices.includes(s.id));
+      })()),
+      acceptAll: decisionMade && optional.length > 0 && optional.every((s) => acceptedServices.includes(s.id)),
+      denyAll: decisionMade && optional.every((s) => !acceptedServices.includes(s.id))
+    };
+  }
+  readStored() {
+    const fallback = this.makeState([]);
+    if (!this.storage)
+      return fallback;
+    try {
+      const raw = this.storage.getItem(this.key);
+      if (!raw)
+        return fallback;
+      const saved = JSON.parse(raw);
+      if (!saved || typeof saved !== "object")
+        return fallback;
+      const s = saved;
+      const age = Date.now() - (s.updatedAt ?? 0);
+      if (s.schemaVersion !== 1 || s.revision !== this.revision || s.decisionMade !== true || !languagesOf(this.config).includes(s.language ?? "") || !Array.isArray(s.acceptedServices) || !s.acceptedServices.every((id) => typeof id === "string") || typeof s.updatedAt !== "number" || !Number.isFinite(s.updatedAt) || age < 0 || age > (this.config.maxAgeDays ?? 180) * 86400000)
+        return fallback;
+      return this.makeState(s.acceptedServices, true, s.updatedAt, s.language);
+    } catch {
+      this.storageFailed = true;
+      return fallback;
+    }
+  }
+  persist() {
+    if (!this.storage) {
+      this.storageFailed = this.config.storage !== null;
+      return;
+    }
+    try {
+      const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
+      this.storage.setItem(this.key, JSON.stringify({ schemaVersion: 1, revision, decisionMade, language, acceptedServices, updatedAt }));
+      this.storageFailed = false;
+    } catch {
+      this.storageFailed = true;
+    }
+  }
+  getConsent() {
+    return { ...this.state, acceptedServices: [...this.state.acceptedServices], acceptedCategories: [...this.state.acceptedCategories] };
+  }
+  getDraft() {
+    return [...this.draft].sort();
+  }
+  isServiceAccepted(id) {
+    this.origin(id);
+    return this.state.acceptedServices.includes(id);
+  }
+  getState() {
+    return { name: this.dialog.open ? this.view : "default", config: { language: this.state.language } };
+  }
+  setState(name, config = {}) {
+    this.assertAlive();
+    if (!cookieConsentStates.includes(name))
+      throw new Error(`cookie-consent: unknown state "${name}"`);
+    if (config.language)
+      this.setLanguage(config.language);
+    if (name === "default") {
+      this.close();
+      return;
+    }
+    if (!this.dialog.open) {
+      this.draft = new Set(this.state.acceptedServices);
+      this.trigger ??= this.doc.activeElement instanceof HTMLElement ? this.doc.activeElement : null;
+    }
+    this.view = name;
+    q(this.root).attr("data-state-name", name);
+    this.render();
+    const modal = !(this.isBanner() && name === "open");
+    if (this.dialog.open && this.dialog.matches(":modal") !== modal)
+      this.dialog.close();
+    if (!this.dialog.open) {
+      if (modal)
+        this.dialog.showModal();
+      else
+        this.dialog.show();
+    }
+  }
+  isBanner() {
+    return q(this.root).attr("data-variant") === "banner";
+  }
+  open() {
+    this.setState("preferences");
+  }
+  close() {
+    this.assertAlive();
+    if (this.dialog.open)
+      this.dialog.close();
+    this.finishClose();
+  }
+  finishClose() {
+    this.view = "default";
+    this.draft = new Set(this.state.acceptedServices);
+    q(this.root).attr("data-state-name", "default");
+    if (this.trigger?.isConnected)
+      this.trigger.focus();
+    this.trigger = null;
+  }
+  setLanguage(language) {
+    this.assertAlive();
+    if (!languagesOf(this.config).includes(language))
+      throw new Error(`cookie-consent: unsupported language ${language}`);
+    this.state.language = language;
+    if (this.state.decisionMade)
+      this.persist();
+    this.render();
+    this.refreshOverlays();
+  }
+  commit(ids, reason, close = true) {
+    this.assertAlive();
+    const previous = this.state;
+    this.state = this.makeState(ids, true, Date.now(), previous.language);
+    this.draft = new Set(this.state.acceptedServices);
+    this.persist();
+    this.revoke(previous);
+    this.updateTagsActivation();
+    this.render();
+    if (close)
+      this.close();
+    this.emit(reason);
+  }
+  acceptAll() {
+    this.commit(this.config.cookieOrigins.filter((s) => !s.disabled).map((s) => s.id), "accept");
+  }
+  denyAll() {
+    this.commit([], "deny");
+  }
+  save() {
+    this.commit(this.draft, "save");
+  }
+  acceptService(id) {
+    const origin = this.origin(id);
+    if (origin.disabled && origin.category !== "essential")
+      throw new Error(`cookie-consent: service ${id} is disabled`);
+    this.commit([...this.state.acceptedServices, id], "service", false);
+  }
+  revokeService(id) {
+    if (this.origin(id).category === "essential")
+      throw new Error("cookie-consent: essential services cannot be revoked");
+    this.commit(this.state.acceptedServices.filter((s) => s !== id), "service", false);
+  }
+  reset() {
+    this.assertAlive();
+    try {
+      this.storage?.removeItem(this.key);
+    } catch {
+      this.storageFailed = true;
+    }
+    const previous = this.state;
+    this.state = this.makeState([], false, null, previous.language);
+    this.draft = new Set(this.state.acceptedServices);
+    this.revoke(previous);
+    this.updateTagsActivation();
+    this.setState("open");
+    this.emit("reset");
+  }
+  error(kind, error) {
+    this.root.dispatchEvent(new CustomEvent("cookie-consent:error", { bubbles: true, detail: { kind, error } }));
+  }
+  emit(reason) {
+    this.root.dispatchEvent(new CustomEvent("cookie-consent:change", { bubbles: true, detail: { state: this.getConsent(), reason } }));
+    try {
+      this.config.onChange?.(this.getConsent(), reason);
+    } catch (error) {
+      this.error("callback", error);
+    }
+    const callback = reason === "accept" ? this.config.onAccept : reason === "deny" ? this.config.onDeny : undefined;
+    try {
+      callback?.(this.getConsent());
+    } catch (error) {
+      this.error("callback", error);
+    }
+    if (this.storageFailed)
+      this.error("storage", new Error(this.messages().storageError));
+  }
+  revoke(previous) {
+    for (const origin of this.config.cookieOrigins) {
+      if (!previous.acceptedServices.includes(origin.id) || this.state.acceptedServices.includes(origin.id))
+        continue;
+      try {
+        origin.onRevoke?.();
+      } catch (error) {
+        this.error("revoke", error);
+      }
+      for (const cookie of origin.cookies ?? []) {
+        const c = typeof cookie === "string" ? { name: cookie, path: "/" } : cookie;
+        this.doc.cookie = `${c.name}=; Max-Age=0; Path=${c.path ?? "/"}${c.domain ? `; Domain=${c.domain}` : ""}; SameSite=Lax`;
+      }
+    }
+  }
+  messages() {
+    const base = translations[this.state.language] ?? translations.en;
+    const overrides = this.config.translations?.[this.state.language];
+    return { ...base, ...overrides, categoryNames: { ...base.categoryNames, ...overrides?.categoryNames }, categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions } };
+  }
+  links() {
+    const tr = this.messages();
+    return [[this.config.privacyPolicyUrl, tr.privacyPolicy], [this.config.legalNoticeUrl, tr.legalNotice]].map(([value, label]) => {
+      const url = safeUrl(localize(value, this.state.language), this.doc);
+      return url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>` : "";
+    }).join("");
+  }
+  render() {
+    if (this.destroyed)
+      return;
+    const tr = this.messages();
+    const preferenceView = this.view === "preferences" || this.view === "services";
+    const title = preferenceView ? tr.preferences : tr.title;
+    const description = preferenceView ? tr.preferencesText : tr.text;
+    const button = (action, text, variant = "") => `<button type="button" class="btn"${variant ? ` data-variant="${variant}"` : ""} data-cookie-action="${action}">${escape(text)}</button>`;
+    q(this.dialog).attr("lang", this.state.language);
+    q(this.root).attr("data-state-name", this.view).attr("data-consent-status", this.state.decisionMade ? "decided" : "pending");
+    q(".cookie-consent-content", this.dialog).html(`<header class="dialog-header cookie-consent-header">
+      <div><p class="cookie-consent-eyebrow">${escape(tr.settings)}</p><h2 id="${this.id}-title" class="dialog-title cookie-consent-title" tabindex="-1">${escape(title)}</h2></div>
+      <div class="cookie-consent-tools"><select class="select" data-size="sm" data-cookie-language aria-label="${escape(tr.language)}">${languagesOf(this.config).map((code) => `<option value="${escape(code)}" lang="${escape(code)}">${escape(languageName(code))}</option>`).join("")}</select>
+      <button type="button" class="btn" data-variant="ghost" data-size="icon-sm" data-cookie-action="close" aria-label="${escape(tr.close)}">×</button></div>
+      </header><div class="cookie-consent-body"><p id="${this.id}-description" class="dialog-description cookie-consent-description">${escape(description)}</p>
+      ${preferenceView ? `<div class="tabs cookie-consent-tabs"><div class="tab-list" role="tablist" data-init aria-label="${escape(tr.preferences)}">
+        <button type="button" class="tab-trigger" role="tab" id="${this.id}-categories-tab" data-cookie-action="preferences" aria-controls="${this.id}-categories" aria-selected="${this.view === "preferences"}" tabindex="${this.view === "preferences" ? 0 : -1}">${escape(tr.categories)}</button>
+        <button type="button" class="tab-trigger" role="tab" id="${this.id}-services-tab" data-cookie-action="services" aria-controls="${this.id}-services" aria-selected="${this.view === "services"}" tabindex="${this.view === "services" ? 0 : -1}">${escape(tr.services)}</button></div>
+        <section class="tab-content" role="tabpanel" id="${this.id}-categories" aria-labelledby="${this.id}-categories-tab" ${this.view === "services" ? "hidden" : ""}>${this.categoryMarkup()}</section>
+        <section class="tab-content" role="tabpanel" id="${this.id}-services" aria-labelledby="${this.id}-services-tab" ${this.view !== "services" ? "hidden" : ""}>${this.serviceMarkup()}</section></div>` : ""}
+      <nav class="cookie-consent-links" aria-label="${escape(tr.moreInformation)}">${this.links()}</nav>
+      </div><footer class="dialog-footer cookie-consent-footer">${!preferenceView ? button("preferences", tr.settings, "outline") : button("save", tr.save, "outline")}${button("deny", tr.denyAll)}${button("accept", tr.acceptAll)}</footer>`);
+    q("[data-cookie-language]", this.dialog).val(this.state.language);
+    for (const category of categories) {
+      const services = this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled);
+      const selected = services.filter((s) => this.draft.has(s.id)).length;
+      q(`[data-cookie-category="${category}"]`, this.dialog).prop("checked", category === "essential" || services.length > 0 && selected === services.length).prop("indeterminate", selected > 0 && selected < services.length);
+    }
+    for (const origin of this.config.cookieOrigins) {
+      q(`[data-cookie-service="${origin.id}"]`, this.dialog).prop("checked", this.draft.has(origin.id));
+    }
+    q(".cookie-consent-floating", this.root).remove();
+    if (this.config.showFloatingButton !== false) {
+      q(this.root).append(`<button type="button" class="btn cookie-consent-floating" data-variant="outline" data-size="sm" data-ce-chrome data-cookie-action="preferences" aria-label="${escape(tr.settings)}" aria-haspopup="dialog">${escape(tr.settings)}</button>`);
+    }
+    this.bindTabKeys();
+  }
+  categoryMarkup() {
+    const tr = this.messages();
+    return categories.map((category) => {
+      const ids = this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled).map((s) => s.id);
+      const required = category === "essential";
+      const box = `${this.id}-category-${category}`;
+      return `<div class="cookie-consent-row checkbox-item-block"><input class="checkbox" type="checkbox" id="${box}" data-cookie-category="${category}" ${required || ids.length > 0 && ids.every((id) => this.draft.has(id)) ? "checked" : ""} ${required || ids.length === 0 ? "disabled" : ""} aria-describedby="${box}-description"><div><label for="${box}" class="cookie-consent-label">${escape(tr.categoryNames[category])}${required ? ` <span class="badge" data-variant="secondary">${escape(tr.required)}</span>` : ""}</label><p class="field-description" id="${box}-description">${escape(tr.categoryDescriptions[category])}</p></div></div>`;
+    }).join("");
+  }
+  serviceMarkup() {
+    const tr = this.messages();
+    return this.config.cookieOrigins.map((origin) => {
+      const url = safeUrl(localize(origin.url, this.state.language), this.doc);
+      const data = origin.dataCollected?.[this.state.language] ?? origin.dataCollected?.en ?? Object.values(origin.dataCollected ?? {})[0] ?? [];
+      const box = `${this.id}-service-${origin.id}`;
+      return `<div class="cookie-consent-row checkbox-item-block"><input class="checkbox" type="checkbox" id="${box}" data-cookie-service="${origin.id}" ${this.draft.has(origin.id) ? "checked" : ""} ${origin.category === "essential" || origin.disabled ? "disabled" : ""} aria-describedby="${box}-description"><div><label for="${box}" class="cookie-consent-label">${escape(origin.name)} <span class="badge" data-variant="outline">${escape(tr.categoryNames[origin.category])}</span></label>
+        <p class="field-description" id="${box}-description">${escape(localize(origin.description, this.state.language))}</p>
+        ${url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(tr.moreInformation)}</a>` : ""}
+        ${origin.domain ? `<p class="field-description cookie-consent-note">${escape(origin.domain)} · ${escape(tr.thirdParty)}</p>` : ""}
+        ${data.length ? `<ul class="cookie-consent-data">${data.map((value) => `<li class="badge" data-variant="secondary">${escape(value)}</li>`).join("")}</ul>` : ""}</div></div>`;
+    }).join("");
+  }
+  bindTabKeys() {
+    if (q(this.root).attr("data-cookie-keys") !== null)
+      return;
+    q(this.root).attr("data-cookie-keys", "");
+    this.listen(this.root, "keydown", (event) => {
+      const e = event;
+      const target = e.target instanceof Element ? q(e.target).closest('[role="tab"]')[0] : undefined;
+      if (!target || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key))
+        return;
+      e.preventDefault();
+      const name = e.key === "Home" ? "preferences" : e.key === "End" ? "services" : this.view === "services" ? "preferences" : "services";
+      this.setState(name);
+      q(`[data-cookie-action="${name}"]`, this.dialog)[0]?.focus();
+    });
+  }
+  onClick(event) {
+    if (event.target === this.dialog && this.dialog.matches(":modal")) {
+      this.close();
+      return;
+    }
+    const target = event.target instanceof Element ? q(event.target).closest("[data-cookie-action]")[0] : undefined;
+    if (!target)
+      return;
+    switch (q(target).attr("data-cookie-action")) {
+      case "accept":
+        this.acceptAll();
+        break;
+      case "deny":
+        this.denyAll();
+        break;
+      case "save":
+        this.save();
+        break;
+      case "close":
+        this.close();
+        break;
+      case "preferences":
+        this.setState("preferences");
+        break;
+      case "services":
+        this.setState("services");
+        break;
+    }
+  }
+  onChange(event) {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement))
+      return;
+    if (q(target).attr("data-cookie-language") !== null) {
+      this.setLanguage(q(target).val());
+      return;
+    }
+    if (!(target instanceof HTMLInputElement))
+      return;
+    const service = q(target).attr("data-cookie-service");
+    const category = q(target).attr("data-cookie-category");
+    const checked = Boolean(q(target).prop("checked"));
+    if (service) {
+      const origin = this.origin(service);
+      if (origin.category !== "essential" && !origin.disabled) {
+        if (checked)
+          this.draft.add(service);
+        else
+          this.draft.delete(service);
+      }
+    } else if (category && categories.includes(category) && category !== "essential") {
+      for (const origin of this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled)) {
+        if (checked)
+          this.draft.add(origin.id);
+        else
+          this.draft.delete(origin.id);
+      }
+    } else
+      return;
+    const focusKey = service ? `[data-cookie-service="${service}"]` : `[data-cookie-category="${category}"]`;
+    this.render();
+    q(focusKey, this.dialog)[0]?.focus();
+  }
+  updateTagsActivation() {
+    if (this.destroyed)
+      return;
+    for (const [element, record] of this.gates) {
+      if (!element.isConnected || !this.scope.contains(element)) {
+        if (record.active)
+          q(record.active).remove();
+        record.handlers?.forEach((off) => off());
+        if (record.wrapper && !element.isConnected)
+          q(record.wrapper).remove();
+        this.gates.delete(element);
+        resourceOwners.delete(element);
+      }
+    }
+    for (const element of q("[data-cookie-consent]:not([data-cookie-consent-active])", this.scope)) {
+      const id = q(element).attr("data-cookie-consent");
+      const origin = this.config.cookieOrigins.find((s) => s.id === id);
+      if (!origin || !["SCRIPT", "IFRAME"].includes(element.tagName))
+        continue;
+      const owner = resourceOwners.get(element);
+      if (owner && owner !== this)
+        continue;
+      resourceOwners.set(element, this);
+      let record = this.gates.get(element);
+      if (!record) {
+        record = { service: origin.id, executed: executedScripts.has(element) };
+        this.gates.set(element, record);
+        if (element.tagName === "SCRIPT" && !["text/plain", "text"].includes(q(element).attr("type") ?? "")) {
+          record.executed = true;
+          this.error("markup", new Error(`cookie-consent: ${origin.id} script must be authored inert (type="text/plain")`));
+        }
+        if (element.tagName === "IFRAME" && (q(element).attr("src") || q(element).attr("srcdoc"))) {
+          this.error("markup", new Error(`cookie-consent: ${origin.id} iframe must have no src or srcdoc before consent`));
+        }
+      }
+      if (element.tagName === "SCRIPT")
+        this.syncScript(element, record);
+      else
+        this.syncFrame(element, record, origin);
+    }
+  }
+  syncScript(script, record) {
+    if (!this.state.acceptedServices.includes(record.service)) {
+      if (record.active) {
+        q(record.active).remove();
+        record.active = undefined;
+      }
+      return;
+    }
+    if (record.executed)
+      return;
+    const src = q(script).attr("data-consent-src");
+    const url = src ? safeUrl(src, this.doc) : undefined;
+    if (src && !url) {
+      record.executed = true;
+      this.error("url", new Error("cookie-consent: invalid script URL"));
+      return;
+    }
+    const active2 = this.doc.createElement("script");
+    q(active2).attr("data-cookie-consent-active", this.id);
+    const type = q(script).attr("data-consent-type") ?? "text/javascript";
+    if (!["text/javascript", "module"].includes(type)) {
+      record.executed = true;
+      this.error("markup", new Error("cookie-consent: invalid script type"));
+      return;
+    }
+    q(active2).attr("type", type);
+    for (const name of ["async", "defer", "integrity", "crossorigin", "referrerpolicy", "nomodule"]) {
+      const value = q(script).attr(name);
+      if (value !== null && value !== undefined)
+        q(active2).attr(name, value);
+    }
+    if (script.nonce)
+      q(active2).prop("nonce", script.nonce);
+    if (url)
+      q(active2).attr("src", url);
+    else
+      q(active2).text(q(script).text());
+    record.executed = true;
+    executedScripts.add(script);
+    record.active = active2;
+    q(script).after(active2);
+  }
+  syncFrame(frame, record, origin) {
+    const allowed = this.state.acceptedServices.includes(record.service);
+    if (allowed) {
+      const url = safeUrl(q(frame).attr("data-consent-src") ?? "", this.doc);
+      if (url && q(frame).attr("src") !== url)
+        q(frame).attr("src", url);
+      if (record.overlay)
+        q(record.overlay).prop("hidden", true);
+      q(frame).prop("hidden", false);
+      return;
+    }
+    if (q(frame).attr("src"))
+      q(frame).attr("src", "about:blank").attr("src", null);
+    if (q(frame).attr("srcdoc"))
+      q(frame).attr("srcdoc", null);
+    q(frame).prop("hidden", true);
+    if (q(frame).attr("data-consent-placeholder") === "none")
+      return;
+    if (!record.wrapper) {
+      const wrapper = q('<div class="cookie-consent-embed"></div>')[0];
+      q(frame).before(wrapper);
+      q(frame).appendTo(wrapper);
+      record.wrapper = wrapper;
+      const overlay = q('<div class="cookie-consent-placeholder"></div>')[0];
+      q(wrapper).append(overlay);
+      record.overlay = overlay;
+      this.renderOverlay(record, origin);
+    }
+    if (record.overlay)
+      q(record.overlay).prop("hidden", false);
+  }
+  renderOverlay(record, origin) {
+    if (!record.overlay)
+      return;
+    const tr = this.messages();
+    record.handlers?.forEach((off) => off());
+    q(record.overlay).html(`<p><strong>${escape(origin.name)}</strong> ${escape(tr.blocked)}</p><div class="cookie-consent-embed-actions"><button type="button" class="btn" data-size="sm" data-cookie-allow>${escape(tr.activate)}</button><button type="button" class="btn" data-variant="outline" data-size="sm" data-cookie-settings>${escape(tr.settings)}</button></div>`);
+    const allow = q("[data-cookie-allow]", record.overlay);
+    const settings = q("[data-cookie-settings]", record.overlay);
+    const onAllow = () => this.acceptService(origin.id);
+    const onSettings = () => this.open();
+    allow.prop("disabled", Boolean(origin.disabled)).on("click", onAllow);
+    settings.on("click", onSettings);
+    record.handlers = [() => allow.off("click", onAllow), () => settings.off("click", onSettings)];
+  }
+  refreshOverlays() {
+    for (const record of this.gates.values())
+      this.renderOverlay(record, this.origin(record.service));
+  }
+  destroy() {
+    if (this.destroyed)
+      return;
+    this.close();
+    this.observer.disconnect();
+    this.off.forEach((off) => off());
+    const previous = this.state;
+    this.state = this.makeState([]);
+    this.revoke(previous);
+    for (const [element, record] of this.gates) {
+      if (record.active)
+        q(record.active).remove();
+      record.handlers?.forEach((off) => off());
+      if (element.tagName === "IFRAME") {
+        q(element).attr("src", "about:blank").attr("src", null).prop("hidden", false);
+        if (record.wrapper) {
+          q(record.wrapper).before(element);
+          q(record.wrapper).remove();
+        }
+      }
+      resourceOwners.delete(element);
+    }
+    q(this.dialog).remove();
+    q(".cookie-consent-floating", this.root).remove();
+    q(this.root).attr("data-init", null).attr("data-cookie-consent-ready", null).attr("data-cookie-keys", null);
+    q(this.root).attr("data-cookie-consent-destroyed", "");
+    delete this.root.api;
+    controllers.delete(this.root);
+    this.destroyed = true;
+  }
+}
+function controllerFor(el) {
+  const instance2 = controllers.get(el);
+  if (!instance2)
+    throw new Error("cookie-consent: initialize the element first");
+  return instance2;
+}
+function triggerStateChange13(el, stateName, config) {
+  controllerFor(el).setState(stateName, config);
+}
+var cookieConsentApi = {
+  setState(el, stateName, config = {}) {
+    if (!cookieConsentStates.includes(stateName))
+      throw new Error(`cookie-consent: unknown state "${stateName}"`);
+    triggerStateChange13(el, stateName, config);
+  },
+  getState(el) {
+    return controllerFor(el).getState();
+  }
+};
+var cookieConsent = {
+  create(root, config) {
+    if (controllers.has(root))
+      return controllers.get(root);
+    if (!root.isConnected)
+      throw new Error("cookie-consent: root must be connected");
+    if (!q(root).hasClass("cookie-consent"))
+      q(root).addClass("cookie-consent");
+    q(root).attr("data-cookie-consent-destroyed", null);
+    const controller = new Controller(root, config);
+    controllers.set(root, controller);
+    return controller;
+  },
+  get(root) {
+    return controllers.get(root);
+  },
+  init: init13
+};
+df$13.cookieConsentApi = cookieConsentApi;
+df$13.cookieConsentStates = cookieConsentStates;
+df$13.cookieConsent = cookieConsent;
+function init13() {
+  for (const root of q(".cookie-consent:not([data-cookie-consent-destroyed]):not([data-cookie-consent-error])")) {
+    if (controllers.has(root))
+      continue;
+    const configTag = q('script[type="application/json"][data-cookie-consent-config]', root)[0];
+    if (!configTag)
+      continue;
+    try {
+      cookieConsent.create(root, JSON.parse(q(configTag).text()));
+    } catch (error) {
+      q(root).attr("data-init", "").attr("data-cookie-consent-error", "");
+      root.dispatchEvent(new CustomEvent("cookie-consent:error", { bubbles: true, detail: { kind: "config", error } }));
+      console.error(error);
+    }
+  }
+  for (const [root, instance2] of controllers)
+    if (!root.isConnected)
+      instance2.destroy();
+}
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+
+// src/components/countdown/countdown.ts
+var df$14 = defussGlobals();
 var countdownStates = ["default", "running", "paused", "finished"];
 var UNITS = [
   ["days", 86400],
@@ -5868,7 +6702,7 @@ function authoredDeadline(el) {
     return Date.parse(el.dataset.until);
   return Date.now() + parseFloat(el.dataset.duration || "0") * 1000;
 }
-function triggerStateChange13(el, stateName, config) {
+function triggerStateChange14(el, stateName, config) {
   switch (stateName) {
     case "default":
       if (isTimer(el)) {
@@ -5919,7 +6753,7 @@ var countdownApi = {
       throw new Error(`countdown: unknown state "${stateName}" (supported: ${countdownStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange13(el, stateName, config);
+    triggerStateChange14(el, stateName, config);
   },
   getState(el) {
     const values = {};
@@ -5930,9 +6764,9 @@ var countdownApi = {
     return { name: el.dataset.stateName || "default", config };
   }
 };
-df$13.countdownApi = countdownApi;
-df$13.countdownStates = countdownStates;
-function init13() {
+df$14.countdownApi = countdownApi;
+df$14.countdownStates = countdownStates;
+function init14() {
   document.querySelectorAll(".countdown-group:not([data-init]), .countdown:not([data-init])").forEach((el) => {
     if (el.classList.contains("countdown") && !isTimer(el) && el.parentElement?.closest(".countdown-group[data-until], .countdown-group[data-duration]"))
       return;
@@ -5948,19 +6782,19 @@ function init13() {
       el._authorLabel = el.hasAttribute("aria-label");
       if (!el.hasAttribute("role"))
         el.setAttribute("role", "timer");
-      triggerStateChange13(el, "default", {});
+      triggerStateChange14(el, "default", {});
     } else {
       el.dataset.stateName = "default";
     }
   });
 }
-init13();
-new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
 // src/components/dialog/dialog.ts
-var df$14 = defussGlobals();
+var df$15 = defussGlobals();
 var dialogStates = ["default", "open"];
-function triggerStateChange14(dialog, stateName, _config) {
+function triggerStateChange15(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -5977,7 +6811,7 @@ var dialogApi = {
     if (!dialogStates.includes(stateName)) {
       throw new Error(`dialog: unknown state "${stateName}" (supported: ${dialogStates.join(", ")})`);
     }
-    triggerStateChange14(dialog, stateName, config);
+    triggerStateChange15(dialog, stateName, config);
     dialog.dataset.stateName = stateName;
     dialog._stateConfig = config;
   },
@@ -5985,9 +6819,9 @@ var dialogApi = {
     return { name: dialog.dataset.stateName || "default", config: dialog._stateConfig ?? {} };
   }
 };
-df$14.dialogApi = dialogApi;
-df$14.dialogStates = dialogStates;
-function init14() {
+df$15.dialogApi = dialogApi;
+df$15.dialogStates = dialogStates;
+function init15() {
   document.querySelectorAll("[data-dialog-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const dialog = document.getElementById(trigger2.dataset.dialogTrigger);
@@ -5998,7 +6832,7 @@ function init14() {
       dialog.showModal();
     });
   });
-  document.querySelectorAll("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not([data-init])").forEach((dialog) => {
+  document.querySelectorAll("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").forEach((dialog) => {
     dialog.dataset.init = "";
     dialog.api = {
       setState: (stateName, config) => dialogApi.setState(dialog, stateName, config),
@@ -6022,11 +6856,11 @@ function init14() {
     });
   });
 }
-init14();
-new MutationObserver(init14).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
 // src/components/diff/diff.ts
-var df$15 = defussGlobals();
+var df$16 = defussGlobals();
 var diffStates = ["default", "before", "after"];
 var rangeOf = (el) => el.querySelector(":scope > .diff-range");
 function paint(el) {
@@ -6057,7 +6891,7 @@ function pointerPct(el, e) {
   const x = (e.clientX - r.left) / r.width * 100;
   return getComputedStyle(el).direction === "rtl" ? 100 - x : x;
 }
-function triggerStateChange15(el, stateName, config) {
+function triggerStateChange16(el, stateName, config) {
   switch (stateName) {
     case "default":
       setPosition(el, config?.position ?? el._defaultPosition ?? 50);
@@ -6075,7 +6909,7 @@ var diffApi = {
     if (!diffStates.includes(stateName)) {
       throw new Error(`diff: unknown state "${stateName}" (supported: ${diffStates.join(", ")})`);
     }
-    triggerStateChange15(el, stateName, config);
+    triggerStateChange16(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -6085,9 +6919,9 @@ var diffApi = {
     return { name, config: { ...el._stateConfig, position: Math.round(pct * 100) / 100 } };
   }
 };
-df$15.diffApi = diffApi;
-df$15.diffStates = diffStates;
-function init15() {
+df$16.diffApi = diffApi;
+df$16.diffStates = diffStates;
+function init16() {
   document.querySelectorAll(".diff:not([data-init])").forEach((el) => {
     el.dataset.init = "";
     const range = rangeOf(el);
@@ -6137,11 +6971,11 @@ function init15() {
     el.addEventListener("pointercancel", end);
   });
 }
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+init16();
+new MutationObserver(init16).observe(document, { childList: true, subtree: true });
 
 // src/components/dropdown/dropdown.ts
-var df$16 = defussGlobals();
+var df$17 = defussGlobals();
 var dropdownStates = ["default", "open"];
 var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
@@ -6155,7 +6989,7 @@ var rootOf2 = (menu) => {
 };
 var HOVER_OPEN = 120;
 var HOVER_CLOSE = 220;
-function triggerStateChange16(menu, stateName, _config) {
+function triggerStateChange17(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6172,7 +7006,7 @@ var dropdownApi = {
     if (!dropdownStates.includes(stateName)) {
       throw new Error(`dropdown: unknown state "${stateName}" (supported: ${dropdownStates.join(", ")})`);
     }
-    triggerStateChange16(menu, stateName, config);
+    triggerStateChange17(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -6180,8 +7014,8 @@ var dropdownApi = {
     return { name: menu.dataset.stateName || "default", config: menu._stateConfig ?? {} };
   }
 };
-df$16.dropdownApi = dropdownApi;
-df$16.dropdownStates = dropdownStates;
+df$17.dropdownApi = dropdownApi;
+df$17.dropdownStates = dropdownStates;
 var anchorSeq = 0;
 function highlight(menu, item, focus = true) {
   itemsOf(menu).forEach((i) => {
@@ -6404,7 +7238,7 @@ function wireSub(wrap) {
     highlight(parent, trigger2, false);
   });
 }
-function init16() {
+function init17() {
   document.querySelectorAll("[data-dropdown-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const menu = document.getElementById(trigger2.dataset.dropdownTrigger);
@@ -6453,11 +7287,11 @@ function init16() {
     };
   });
 }
-init16();
-new MutationObserver(init16).observe(document, { childList: true, subtree: true });
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
 // src/components/file-input/file-input.ts
-var df$17 = defussGlobals();
+var df$18 = defussGlobals();
 var fileInputStates = ["default", "dragover", "selected", "error"];
 var inputOf = (el) => el.querySelector(".file-drop-input");
 function accepts(input, file) {
@@ -6573,7 +7407,7 @@ function onPick(el) {
   el._kept = out;
   apply(el, rejected);
 }
-function triggerStateChange17(el, stateName, config) {
+function triggerStateChange18(el, stateName, config) {
   const input = inputOf(el);
   switch (stateName) {
     case "default":
@@ -6606,7 +7440,7 @@ var fileInputApi = {
       throw new Error(`file-input: unknown state "${stateName}" (supported: ${fileInputStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange17(el, stateName, config);
+    triggerStateChange18(el, stateName, config);
   },
   getState(el) {
     const input = inputOf(el);
@@ -6616,9 +7450,9 @@ var fileInputApi = {
     };
   }
 };
-df$17.fileInputApi = fileInputApi;
-df$17.fileInputStates = fileInputStates;
-function init17() {
+df$18.fileInputApi = fileInputApi;
+df$18.fileInputStates = fileInputStates;
+function init18() {
   document.querySelectorAll(".file-drop:not([data-init])").forEach((el) => {
     const input = inputOf(el);
     if (!input)
@@ -6655,14 +7489,14 @@ function init17() {
     });
   });
 }
-init17();
-new MutationObserver(init17).observe(document, { childList: true, subtree: true });
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
 
 // src/components/image/image.ts
-var df$18 = defussGlobals();
+var df$19 = defussGlobals();
 var dfDollar6 = defussQuery();
 var imageStates = ["default", "error"];
-function triggerStateChange18(figure, stateName, _config) {
+function triggerStateChange19(figure, stateName, _config) {
   const img = dfDollar6(figure).find("img")[0];
   if (!img)
     return;
@@ -6680,7 +7514,7 @@ var imageApi = {
     if (!imageStates.includes(stateName)) {
       throw new Error(`image: unknown state "${stateName}" (supported: ${imageStates.join(", ")})`);
     }
-    triggerStateChange18(figure, stateName, config);
+    triggerStateChange19(figure, stateName, config);
     figure.dataset.stateName = stateName;
     figure._stateConfig = config;
   },
@@ -6692,8 +7526,8 @@ var imageApi = {
     };
   }
 };
-df$18.imageApi = imageApi;
-df$18.imageStates = imageStates;
+df$19.imageApi = imageApi;
+df$19.imageStates = imageStates;
 var galleryIO = typeof IntersectionObserver === "function" ? new IntersectionObserver((entries) => {
   for (const e of entries) {
     if (!e.isIntersecting)
@@ -6725,7 +7559,7 @@ function initHoverGalleries() {
       readyGallery(gallery);
   });
 }
-function init18() {
+function init19() {
   initHoverGalleries();
   document.querySelectorAll(".image:not([data-init])").forEach((figure) => {
     figure.dataset.init = "";
@@ -6769,8 +7603,8 @@ function init18() {
     }
   });
 }
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 var lightbox = null;
 var lightboxImg = null;
 var lightboxFigure = null;
@@ -6893,7 +7727,7 @@ if (!document.__imagePreviewInit) {
 }
 
 // src/components/menubar/menubar.ts
-var df$19 = defussGlobals();
+var df$20 = defussGlobals();
 var menubarStates = ["default", "open"];
 var triggersOf = (bar) => Array.from(bar.querySelectorAll(".menubar-trigger")).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
 var menuOf = (trigger2) => document.getElementById(trigger2.dataset.dropdownTrigger || trigger2.getAttribute("popovertarget") || "");
@@ -6923,7 +7757,7 @@ function focusItem(menu, last = false) {
   item?.setAttribute("data-highlighted", "");
   item?.focus({ preventScroll: true });
 }
-function triggerStateChange19(bar, stateName, config) {
+function triggerStateChange20(bar, stateName, config) {
   switch (stateName) {
     case "default": {
       const open = openMenuOf(bar);
@@ -6950,16 +7784,16 @@ var menubarApi = {
     }
     bar._stateConfig = config;
     bar.dataset.stateName = stateName;
-    triggerStateChange19(bar, stateName, config);
+    triggerStateChange20(bar, stateName, config);
   },
   getState(bar) {
     const open = openMenuOf(bar);
     return { name: open ? "open" : "default", config: { ...bar._stateConfig, menu: open?.id ?? null } };
   }
 };
-df$19.menubarApi = menubarApi;
-df$19.menubarStates = menubarStates;
-function init19() {
+df$20.menubarApi = menubarApi;
+df$20.menubarStates = menubarStates;
+function init20() {
   document.querySelectorAll(".menubar:not([data-init])").forEach((bar) => {
     bar.dataset.init = "";
     if (!bar.hasAttribute("role"))
@@ -7035,9 +7869,17 @@ function init19() {
           case "ArrowUp": {
             e.preventDefault();
             const menu = menuOf(ts[i]);
-            openMenu(bar, ts[i]);
-            if (menu)
-              setTimeout(() => focusItem(menu, true), 20);
+            if (menu && !menu.matches(":popover-open")) {
+              menu.addEventListener("toggle", (ev) => {
+                if (ev.newState === "open")
+                  focusItem(menu, true);
+              }, { once: true });
+              openMenu(bar, ts[i]);
+            } else {
+              openMenu(bar, ts[i]);
+              if (menu)
+                focusItem(menu, true);
+            }
             break;
           }
         }
@@ -7055,11 +7897,11 @@ function init19() {
     });
   });
 }
-init19();
-new MutationObserver(init19).observe(document, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document, { childList: true, subtree: true });
 
 // src/components/mermaid/mermaid.ts
-var df$20 = defussGlobals();
+var df$21 = defussGlobals();
 var mermaidStates = ["default", "rendered", "error"];
 var MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs";
 var modulePromise = null;
@@ -7264,7 +8106,7 @@ ${text.split(`
 function renderAll() {
   return Promise.all([...document.querySelectorAll(".mermaid-diagram[data-init]")].map(render2));
 }
-function triggerStateChange20(fig, stateName, config) {
+function triggerStateChange21(fig, stateName, config) {
   switch (stateName) {
     case "default":
       clearError(fig);
@@ -7285,15 +8127,15 @@ var mermaidApi = {
       throw new Error(`mermaid: unknown state "${stateName}" (supported: ${mermaidStates.join(", ")})`);
     }
     fig._stateConfig = config;
-    return triggerStateChange20(fig, stateName, config);
+    return triggerStateChange21(fig, stateName, config);
   },
   getState(fig) {
     return { name: fig.dataset.stateName || "default", config: fig._stateConfig ?? {} };
   }
 };
-df$20.mermaidApi = mermaidApi;
-df$20.mermaidStates = mermaidStates;
-df$20.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
+df$21.mermaidApi = mermaidApi;
+df$21.mermaidStates = mermaidStates;
+df$21.mermaid = { load, render: render2, renderAll, theme: mermaidTheme, url: MERMAID_URL };
 var themeWatched2 = false;
 function watchTheme2() {
   if (themeWatched2)
@@ -7315,7 +8157,7 @@ function watchTheme2() {
     mo.observe(document.head, { childList: true, subtree: true, characterData: true });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", schedule2);
 }
-function init20() {
+function init21() {
   document.querySelectorAll("pre.mermaid:not(.mermaid-diagram > pre)").forEach((pre) => {
     const fig = document.createElement("figure");
     fig.className = "mermaid-diagram";
@@ -7335,13 +8177,13 @@ function init20() {
     render2(fig);
   });
 }
-init20();
-new MutationObserver(init20).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation-menu/navigation-menu.ts
-var df$21 = defussGlobals();
+var df$22 = defussGlobals();
 var navigationMenuStates = ["default", "open"];
-function triggerStateChange21(content, stateName, _config) {
+function triggerStateChange22(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7358,7 +8200,7 @@ var navigationMenuApi = {
     if (!navigationMenuStates.includes(stateName)) {
       throw new Error(`navigation-menu: unknown state "${stateName}" (supported: ${navigationMenuStates.join(", ")})`);
     }
-    triggerStateChange21(content, stateName, config);
+    triggerStateChange22(content, stateName, config);
     content.dataset.stateName = stateName;
     content._stateConfig = config;
   },
@@ -7366,9 +8208,9 @@ var navigationMenuApi = {
     return { name: content.dataset.stateName || "default", config: content._stateConfig ?? {} };
   }
 };
-df$21.navigationMenuApi = navigationMenuApi;
-df$21.navigationMenuStates = navigationMenuStates;
-function init21() {
+df$22.navigationMenuApi = navigationMenuApi;
+df$22.navigationMenuStates = navigationMenuStates;
+function init22() {
   document.querySelectorAll(".nav-menu-trigger[popovertarget]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const content = document.getElementById(trigger2.getAttribute("popovertarget"));
@@ -7386,11 +8228,11 @@ function init21() {
     };
   });
 }
-init21();
-new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/number-input/number-input.ts
-var df$22 = defussGlobals();
+var df$23 = defussGlobals();
 var numberInputStates = ["default"];
 var getInput2 = (wrapper) => wrapper.querySelector('input:not([type="hidden"])');
 function currencyConfig(wrapper) {
@@ -7511,7 +8353,7 @@ function formatDecimals(wrapper, input) {
   if (input.value !== fixed)
     input.value = fixed;
 }
-function triggerStateChange22(wrapper, config) {
+function triggerStateChange23(wrapper, config) {
   const input = getInput2(wrapper);
   if (!input || config?.value === undefined)
     return;
@@ -7531,7 +8373,7 @@ var numberInputApi = {
     if (!numberInputStates.includes(stateName)) {
       throw new Error(`number-input: unknown state "${stateName}" (supported: ${numberInputStates.join(", ")})`);
     }
-    triggerStateChange22(wrapper, config);
+    triggerStateChange23(wrapper, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -7547,9 +8389,9 @@ var numberInputApi = {
     };
   }
 };
-df$22.numberInputApi = numberInputApi;
-df$22.numberInputStates = numberInputStates;
-function init22() {
+df$23.numberInputApi = numberInputApi;
+df$23.numberInputStates = numberInputStates;
+function init23() {
   document.querySelectorAll(".number-input:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     wrapper.api = {
@@ -7625,11 +8467,11 @@ function init22() {
       });
   });
 }
-init22();
-new MutationObserver(init22).observe(document, { childList: true, subtree: true });
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 
 // src/components/otp-input/otp-input.ts
-var df$23 = defussGlobals();
+var df$24 = defussGlobals();
 var otpInputStates = ["default", "filled", "invalid"];
 var PATTERNS = {
   digits: /[^0-9]/g,
@@ -7658,7 +8500,7 @@ function paint2(otp) {
 function announceComplete(otp) {
   otp.dispatchEvent(new CustomEvent("otp-complete", { bubbles: true, detail: { value: otp._field.value } }));
 }
-function triggerStateChange23(otp, stateName, config) {
+function triggerStateChange24(otp, stateName, config) {
   const field = otp._field;
   switch (stateName) {
     case "default":
@@ -7690,7 +8532,7 @@ var otpInputApi = {
     if (!otpInputStates.includes(stateName)) {
       throw new Error(`otp-input: unknown state "${stateName}" (supported: ${otpInputStates.join(", ")})`);
     }
-    triggerStateChange23(otp, stateName, config);
+    triggerStateChange24(otp, stateName, config);
     otp.dataset.stateName = stateName;
     otp._stateConfig = config;
   },
@@ -7698,9 +8540,9 @@ var otpInputApi = {
     return { name: otp.dataset.stateName || "default", config: otp._stateConfig ?? {} };
   }
 };
-df$23.otpInputApi = otpInputApi;
-df$23.otpInputStates = otpInputStates;
-function init23() {
+df$24.otpInputApi = otpInputApi;
+df$24.otpInputStates = otpInputStates;
+function init24() {
   document.querySelectorAll(".otp-input:not([data-init])").forEach((otp) => {
     otp.dataset.init = "";
     const field = otp.querySelector("input");
@@ -7760,11 +8602,11 @@ function init23() {
     otpInputApi.setState(otp, field.value.length === length ? "filled" : "default", {});
   });
 }
-init23();
-new MutationObserver(init23).observe(document, { childList: true, subtree: true });
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
 // src/components/pagination/pagination.ts
-var df$24 = defussGlobals();
+var df$25 = defussGlobals();
 var dfDollar7 = defussQuery();
 var paginationStates = ["default"];
 var numAttr = (el, key, fallback) => {
@@ -7856,7 +8698,7 @@ function setPage(nav, page) {
   nav.dataset.activePage = String(next);
   nav.dispatchEvent(new CustomEvent("pagination-change", { bubbles: true, detail: { page: next } }));
 }
-function triggerStateChange24(nav, stateName, config = {}) {
+function triggerStateChange25(nav, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activePage ?? config.page;
@@ -7875,7 +8717,7 @@ var paginationApi = {
     if (!paginationStates.includes(stateName)) {
       throw new Error(`pagination: unknown state "${stateName}" (supported: ${paginationStates.join(", ")})`);
     }
-    triggerStateChange24(nav, stateName, config);
+    triggerStateChange25(nav, stateName, config);
     nav.dataset.stateName = stateName;
     nav._stateConfig = config;
   },
@@ -7892,9 +8734,9 @@ var paginationApi = {
     };
   }
 };
-df$24.paginationApi = paginationApi;
-df$24.paginationStates = paginationStates;
-function init24() {
+df$25.paginationApi = paginationApi;
+df$25.paginationStates = paginationStates;
+function init25() {
   document.querySelectorAll(".pagination:not([data-init])").forEach((nav) => {
     nav.dataset.init = "";
     nav.api = {
@@ -7927,13 +8769,149 @@ function init24() {
     nav.addEventListener("pagination-prev", () => setPage(nav, numAttr(nav, "activePage", 1) - 1));
   });
 }
-init24();
-new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+init25();
+new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+
+// src/components/panel/panel.ts
+var df$26 = defussGlobals();
+var panelStates = ["default", "minimized", "maximized"];
+var SIDES2 = ["north", "south", "west", "east", "center"];
+var resolve2 = (t) => typeof t === "string" ? document.getElementById(t) ?? document.querySelector(t) : t;
+var toolInput = (panel, tool) => panel.querySelector(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`);
+function regionOf2(panel) {
+  const parent = panel.parentElement;
+  if (!parent)
+    return null;
+  if (parent.classList.contains("border-layout"))
+    return panel;
+  if (parent.classList.contains("resizer") && parent.parentElement?.classList.contains("border-layout"))
+    return parent;
+  if (parent.classList.contains("border-layout-center") && parent.parentElement?.classList.contains("border-layout"))
+    return parent;
+  return null;
+}
+var sideOf = (region) => region ? SIDES2.find((s) => region.classList.contains(`border-layout-${s}`)) ?? null : null;
+var hostOf = (panel) => panel.parentElement?.closest(".border-layout, [data-panel-host]") ?? null;
+function triggerStateChange26(panel, stateName) {
+  const minimized = stateName === "minimized";
+  const maximized = stateName === "maximized";
+  panel.toggleAttribute("data-minimized", minimized);
+  panel.toggleAttribute("data-maximized", maximized);
+  const min = toolInput(panel, "minimize");
+  const max = toolInput(panel, "maximize");
+  if (min)
+    min.checked = minimized;
+  if (max)
+    max.checked = maximized;
+  const body = panel.querySelector(":scope > .panel-body");
+  if (body)
+    body.toggleAttribute("inert", minimized);
+  const region = regionOf2(panel);
+  if (region && region !== panel) {
+    region.toggleAttribute("data-panel-minimized", minimized);
+    const handle = region.querySelector(":scope > .resizer-handle");
+    if (handle)
+      handle.inert = minimized || maximized;
+  }
+  const host = hostOf(panel);
+  if (maximized && host) {
+    panel._host = host;
+    host.setAttribute("data-panel-maximized", "");
+  } else if (panel._host) {
+    if (!panel._host.querySelector(".panel[data-maximized]"))
+      panel._host.removeAttribute("data-panel-maximized");
+    panel._host = null;
+  }
+}
+var panelApi = {
+  setState(panel, stateName, config = {}) {
+    if (!panelStates.includes(stateName)) {
+      throw new Error(`panel: unknown state "${stateName}" (supported: ${panelStates.join(", ")})`);
+    }
+    const from = panel.dataset.stateName || "default";
+    triggerStateChange26(panel, stateName);
+    panel.dataset.stateName = stateName;
+    panel._stateConfig = config;
+    if (from !== stateName) {
+      panel.dispatchEvent(new CustomEvent("panel-change", { bubbles: true, detail: { state: stateName, previous: from, region: sideOf(regionOf2(panel)) } }));
+    }
+  },
+  getState(panel) {
+    return { name: panel.dataset.stateName || "default", config: panel._stateConfig ?? {} };
+  }
+};
+df$26.panelApi = panelApi;
+df$26.panelStates = panelStates;
+function init26() {
+  document.querySelectorAll(".panel:not([data-init])").forEach((panel) => {
+    panel.dataset.init = "";
+    const side = sideOf(regionOf2(panel));
+    if (side)
+      panel.dataset.region = side;
+    const header = panel.querySelector(":scope > .panel-header");
+    const body = panel.querySelector(":scope > .panel-body");
+    if (body) {
+      if (!body.id)
+        body.id = `panel-${Math.random().toString(36).slice(2, 8)}-body`;
+      toolInput(panel, "minimize")?.setAttribute("aria-controls", body.id);
+    }
+    panel.addEventListener("change", (e) => {
+      const input = e.target;
+      if (!(input instanceof HTMLInputElement) || input.closest(".panel") !== panel)
+        return;
+      if (input === toolInput(panel, "minimize"))
+        panelApi.setState(panel, input.checked ? "minimized" : "default");
+      else if (input === toolInput(panel, "maximize"))
+        panelApi.setState(panel, input.checked ? "maximized" : "default");
+    });
+    header?.addEventListener("dblclick", (e) => {
+      if (panel.dataset.titleCollapse === "false" || e.target.closest(".panel-tools") || !toolInput(panel, "minimize"))
+        return;
+      document.getSelection()?.removeAllRanges();
+      panelApi.setState(panel, panel.hasAttribute("data-minimized") ? "default" : "minimized");
+    });
+    panel.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || !panel.hasAttribute("data-maximized"))
+        return;
+      e.stopPropagation();
+      panelApi.setState(panel, "default");
+      toolInput(panel, "maximize")?.focus();
+    });
+    panel.api = {
+      setState: (stateName, config) => panelApi.setState(panel, stateName, config),
+      getState: () => panelApi.getState(panel)
+    };
+    const start = panel.hasAttribute("data-maximized") || toolInput(panel, "maximize")?.checked ? "maximized" : panel.hasAttribute("data-minimized") || toolInput(panel, "minimize")?.checked ? "minimized" : "default";
+    triggerStateChange26(panel, start);
+    panel.dataset.stateName = start;
+    panel._stateConfig = {};
+  });
+}
+var act = (t, state) => {
+  const panel = resolve2(t);
+  if (panel?.api)
+    panel.api.setState(state);
+  return panel ?? null;
+};
+df$26.panel = {
+  minimize: (t) => act(t, "minimized"),
+  maximize: (t) => act(t, "maximized"),
+  restore: (t) => act(t, "default"),
+  toggle: (t) => {
+    const panel = resolve2(t);
+    if (!panel?.api)
+      return false;
+    panel.api.setState(panel.hasAttribute("data-minimized") ? "default" : "minimized");
+    return panel.hasAttribute("data-minimized");
+  }
+};
+init26();
+new MutationObserver(init26).observe(document, { childList: true, subtree: true });
 
 // src/components/popover/popover.ts
-var df$25 = defussGlobals();
+var df$27 = defussGlobals();
 var popoverStates = ["default", "open"];
-function triggerStateChange25(popover, stateName, _config) {
+function triggerStateChange27(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7950,7 +8928,7 @@ var popoverApi = {
     if (!popoverStates.includes(stateName)) {
       throw new Error(`popover: unknown state "${stateName}" (supported: ${popoverStates.join(", ")})`);
     }
-    triggerStateChange25(popover, stateName, config);
+    triggerStateChange27(popover, stateName, config);
     popover.dataset.stateName = stateName;
     popover._stateConfig = config;
   },
@@ -7958,9 +8936,9 @@ var popoverApi = {
     return { name: popover.dataset.stateName || "default", config: popover._stateConfig ?? {} };
   }
 };
-df$25.popoverApi = popoverApi;
-df$25.popoverStates = popoverStates;
-function init25() {
+df$27.popoverApi = popoverApi;
+df$27.popoverStates = popoverStates;
+function init27() {
   document.querySelectorAll("[popovertarget]:not([data-init])").forEach((trigger2) => {
     const id = trigger2.getAttribute("popovertarget");
     const popover = document.getElementById(id);
@@ -7979,11 +8957,11 @@ function init25() {
     };
   });
 }
-init25();
-new MutationObserver(init25).observe(document, { childList: true, subtree: true });
+init27();
+new MutationObserver(init27).observe(document, { childList: true, subtree: true });
 
 // src/components/presentation/presentation.ts
-var df$26 = defussGlobals();
+var df$28 = defussGlobals();
 var presentationStates = ["default", "notes", "fullscreen"];
 var DEFAULT_IN = "fadeIn";
 var DEFAULT_OUT = "fadeOut";
@@ -8094,7 +9072,7 @@ function exitFullscreen(root) {
   if (nativeDeck === root)
     nativeDeck = null;
 }
-function triggerStateChange26(root, stateName, config = {}) {
+function triggerStateChange28(root, stateName, config = {}) {
   if (!presentationStates.includes(stateName)) {
     throw new Error(`presentation: unknown state "${stateName}" (supported: ${presentationStates.join(", ")})`);
   }
@@ -8118,7 +9096,7 @@ function triggerStateChange26(root, stateName, config = {}) {
 }
 var presentationApi = {
   setState(root, stateName, config = {}) {
-    triggerStateChange26(root, stateName, config);
+    triggerStateChange28(root, stateName, config);
     root.dataset.stateName = stateName;
     root._stateConfig = config;
   },
@@ -8134,8 +9112,8 @@ var presentationApi = {
     };
   }
 };
-df$26.presentationApi = presentationApi;
-df$26.presentationStates = presentationStates;
+df$28.presentationApi = presentationApi;
+df$28.presentationStates = presentationStates;
 var keysBound2 = false;
 function bindKeyboard() {
   if (keysBound2)
@@ -8180,7 +9158,7 @@ function bindKeyboard() {
         break;
       case "f":
       case "F":
-        triggerStateChange26(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+        triggerStateChange28(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
         break;
       default:
         handled = false;
@@ -8221,7 +9199,7 @@ function bindFullscreen() {
     }
   });
 }
-function init26() {
+function init28() {
   document.querySelectorAll(".presentation:not([data-init])").forEach((root) => {
     root.dataset.init = "";
     root.api = {
@@ -8372,7 +9350,7 @@ function init26() {
           root.toggleAttribute("data-notes");
           break;
         case "fullscreen":
-          triggerStateChange26(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
+          triggerStateChange28(root, "fullscreen", { value: !root.hasAttribute("data-fullscreen") });
           break;
       }
     });
@@ -8385,13 +9363,13 @@ function init26() {
     applyScale();
   });
 }
-init26();
-new MutationObserver(init26).observe(document, { childList: true, subtree: true });
+init28();
+new MutationObserver(init28).observe(document, { childList: true, subtree: true });
 
 // src/components/product-showcase/product-showcase.ts
-var df$27 = defussGlobals();
+var df$29 = defussGlobals();
 var productShowcaseStates = ["default", "playing"];
-function triggerStateChange27(showcase, stateName, _config) {
+function triggerStateChange29(showcase, stateName, _config) {
   const video = showcase.querySelector("video");
   switch (stateName) {
     case "default":
@@ -8415,7 +9393,7 @@ var productShowcaseApi = {
     if (!productShowcaseStates.includes(stateName)) {
       throw new Error(`product-showcase: unknown state "${stateName}" (supported: ${productShowcaseStates.join(", ")})`);
     }
-    triggerStateChange27(showcase, stateName, config);
+    triggerStateChange29(showcase, stateName, config);
     showcase.dataset.stateName = stateName;
     showcase._stateConfig = config;
   },
@@ -8427,9 +9405,9 @@ var productShowcaseApi = {
     };
   }
 };
-df$27.productShowcaseApi = productShowcaseApi;
-df$27.productShowcaseStates = productShowcaseStates;
-function init27() {
+df$29.productShowcaseApi = productShowcaseApi;
+df$29.productShowcaseStates = productShowcaseStates;
+function init29() {
   document.querySelectorAll(".mk-showcase:not([data-init])").forEach((showcase) => {
     showcase.dataset.init = "";
     showcase.dataset.state = "default";
@@ -8446,11 +9424,11 @@ function init27() {
     });
   });
 }
-init27();
-new MutationObserver(init27).observe(document, { childList: true, subtree: true });
+init29();
+new MutationObserver(init29).observe(document, { childList: true, subtree: true });
 
 // src/components/progress/progress.ts
-var df$28 = defussGlobals();
+var df$30 = defussGlobals();
 var progressStates = ["default", "indeterminate", "complete"];
 var SELECTOR = "progress.progress";
 var reducedMotion4 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -8547,7 +9525,7 @@ function tween(el, to, duration) {
 }
 var stepOf = (el) => parseFloat(el.dataset.step || "") || maxOf(el) / 10;
 var durationOf = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function triggerStateChange28(el, stateName, config) {
+function triggerStateChange30(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null)
@@ -8586,7 +9564,7 @@ var progressApi = {
       throw new Error(`progress: unknown state "${stateName}" (supported: ${progressStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange28(el, stateName, config);
+    triggerStateChange30(el, stateName, config);
   },
   getState(el) {
     const indeterminate = el.position < 0;
@@ -8596,8 +9574,8 @@ var progressApi = {
     };
   }
 };
-df$28.progressApi = progressApi;
-df$28.progressStates = progressStates;
+df$30.progressApi = progressApi;
+df$30.progressStates = progressStates;
 function run(el, command) {
   const now = el.position < 0 ? 0 : el.value;
   switch (command) {
@@ -8634,7 +9612,7 @@ function run(el, command) {
   return true;
 }
 var COMMANDS = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init28() {
+function init30() {
   document.querySelectorAll(`${SELECTOR}:not([data-init])`).forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -8671,11 +9649,11 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["value", "max"] });
-init28();
-new MutationObserver(init28).observe(document, { childList: true, subtree: true });
+init30();
+new MutationObserver(init30).observe(document, { childList: true, subtree: true });
 
 // src/components/radial-progress/radial-progress.ts
-var df$29 = defussGlobals();
+var df$31 = defussGlobals();
 var radialProgressStates = ["default", "indeterminate", "complete"];
 var SELECTOR2 = ".radial-progress";
 var reducedMotion5 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -8768,7 +9746,7 @@ function tween2(el, to, duration) {
 }
 var stepOf2 = (el) => parseFloat(el.dataset.step || "") || maxOf2(el) / 10;
 var durationOf2 = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function triggerStateChange29(el, stateName, config) {
+function triggerStateChange31(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null)
@@ -8804,7 +9782,7 @@ var radialProgressApi = {
       throw new Error(`radial-progress: unknown state "${stateName}" (supported: ${radialProgressStates.join(", ")})`);
     }
     el._stateConfig = config;
-    triggerStateChange29(el, stateName, config);
+    triggerStateChange31(el, stateName, config);
   },
   getState(el) {
     const v = valueOf(el);
@@ -8814,8 +9792,8 @@ var radialProgressApi = {
     };
   }
 };
-df$29.radialProgressApi = radialProgressApi;
-df$29.radialProgressStates = radialProgressStates;
+df$31.radialProgressApi = radialProgressApi;
+df$31.radialProgressStates = radialProgressStates;
 function run2(el, command) {
   const now = valueOf(el) ?? 0;
   switch (command) {
@@ -8850,7 +9828,7 @@ function run2(el, command) {
   }
 }
 var COMMANDS2 = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init29() {
+function init31() {
   document.querySelectorAll(`${SELECTOR2}:not([data-init])`).forEach((el) => {
     el.dataset.init = "";
     el.api = {
@@ -8895,11 +9873,11 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["aria-valuenow", "aria-valuemax"] });
-init29();
-new MutationObserver(init29).observe(document, { childList: true, subtree: true });
+init31();
+new MutationObserver(init31).observe(document, { childList: true, subtree: true });
 
 // src/components/resizer/resizer.ts
-var df$30 = defussGlobals();
+var df$32 = defussGlobals();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -9023,7 +10001,7 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function triggerStateChange30(wrapper, stateName, config = {}) {
+function triggerStateChange32(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -9036,7 +10014,7 @@ var resizerApi = {
     if (!resizerStates.includes(stateName)) {
       throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(", ")})`);
     }
-    triggerStateChange30(wrapper, stateName, config);
+    triggerStateChange32(wrapper, stateName, config);
     wrapper.dataset.stateName = stateName;
     wrapper._stateConfig = config;
   },
@@ -9052,8 +10030,8 @@ var resizerApi = {
     };
   }
 };
-df$30.resizerApi = resizerApi;
-df$30.resizerStates = resizerStates;
+df$32.resizerApi = resizerApi;
+df$32.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -9076,6 +10054,10 @@ function makeHandle(wrapper, h) {
   el.setAttribute("data-ce-chrome", "");
   el.addEventListener("pointerdown", (ev) => startDrag(wrapper, el, ev));
   el.addEventListener("keydown", (ev) => handleKeys(wrapper, el, ev));
+  el.addEventListener("dblclick", () => {
+    if (wrapper.dataset.variant === "divider")
+      resizerApi.setState(wrapper, "default");
+  });
   return el;
 }
 function syncHandles(wrapper) {
@@ -9150,7 +10132,7 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init30() {
+function init32() {
   document.querySelectorAll(".resizer:not([data-init])").forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (!targetOf(wrapper))
@@ -9178,11 +10160,11 @@ function init30() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init30();
-new MutationObserver(init30).observe(document, { childList: true, subtree: true });
+init32();
+new MutationObserver(init32).observe(document, { childList: true, subtree: true });
 
 // src/components/search-filter/search-filter.ts
-var df$31 = defussGlobals();
+var df$33 = defussGlobals();
 var searchFilterStates = ["default", "filled", "searching"];
 function setValue2(box, value) {
   const field = box._field;
@@ -9191,7 +10173,7 @@ function setValue2(box, value) {
   field.value = value;
   field.dispatchEvent(new Event("input", { bubbles: true }));
 }
-function triggerStateChange31(box, stateName, config) {
+function triggerStateChange33(box, stateName, config) {
   const field = box._field;
   const value = typeof config.value === "string" ? config.value : undefined;
   if (stateName === "searching")
@@ -9216,20 +10198,20 @@ var searchFilterApi = {
     }
     box.dataset.stateName = stateName;
     box._stateConfig = config;
-    triggerStateChange31(box, stateName, config);
+    triggerStateChange33(box, stateName, config);
   },
   getState(box) {
     return { name: box.dataset.stateName || "default", config: box._stateConfig ?? {} };
   }
 };
-df$31.searchFilterApi = searchFilterApi;
-df$31.searchFilterStates = searchFilterStates;
+df$33.searchFilterApi = searchFilterApi;
+df$33.searchFilterStates = searchFilterStates;
 function clear(box) {
   searchFilterApi.setState(box, "default", {});
   box._field.focus();
   box.dispatchEvent(new CustomEvent("search-clear", { bubbles: true }));
 }
-function init31() {
+function init33() {
   document.querySelectorAll(".search-box:not([data-init])").forEach((box) => {
     box.dataset.init = "";
     const field = box.querySelector(":scope > input");
@@ -9268,18 +10250,18 @@ function init31() {
     searchFilterApi.setState(box, field.value === "" ? "default" : "filled", {});
   });
 }
-init31();
-new MutationObserver(init31).observe(document, { childList: true, subtree: true });
+init33();
+new MutationObserver(init33).observe(document, { childList: true, subtree: true });
 
 // src/components/session/session.ts
-var df$32 = defussGlobals();
+var df$34 = defussGlobals();
 var sessionStates = ["default", "detached", "streaming"];
 var num3 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
   return Number.isFinite(v) ? v : fallback;
 };
 var reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-var resolve2 = (t) => typeof t === "string" ? document.getElementById(t) ?? document.querySelector(t) : t;
+var resolve3 = (t) => typeof t === "string" ? document.getElementById(t) ?? document.querySelector(t) : t;
 var parts = (s) => ({
   viewport: s.querySelector(":scope > .session-viewport"),
   content: s.querySelector(":scope > .session-viewport > .session-content")
@@ -9379,7 +10361,7 @@ function scrollToMessage(s, id, { smooth = true } = {}) {
   hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
   return true;
 }
-function triggerStateChange32(s, stateName, config) {
+function triggerStateChange34(s, stateName, config) {
   const { content } = s._parts;
   if (stateName === "streaming")
     content.setAttribute("aria-busy", "true");
@@ -9409,14 +10391,14 @@ var sessionApi = {
     }
     s.dataset.stateName = stateName;
     s._stateConfig = config;
-    triggerStateChange32(s, stateName, config);
+    triggerStateChange34(s, stateName, config);
   },
   getState(s) {
     return { name: s.dataset.stateName || "default", config: s._stateConfig ?? {} };
   }
 };
-df$32.sessionApi = sessionApi;
-df$32.sessionStates = sessionStates;
+df$34.sessionApi = sessionApi;
+df$34.sessionStates = sessionStates;
 function onItems(s, records) {
   const { viewport } = s._parts;
   const before = s._height ?? viewport.scrollHeight;
@@ -9549,7 +10531,7 @@ function follow(s, options = {}) {
   else
     sessionApi.setState(s, "default", options);
 }
-function init32() {
+function init34() {
   document.querySelectorAll(".session:not([data-init])").forEach((s) => {
     const p = parts(s);
     if (!p.viewport || !p.content)
@@ -9623,45 +10605,45 @@ function toItem(content, { id, anchor } = {}) {
     item.setAttribute("data-anchor", "");
   return item;
 }
-df$32.session = {
+df$34.session = {
   append(t, content, options) {
-    const s = resolve2(t);
+    const s = resolve3(t);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
   prepend(t, content, options) {
-    const s = resolve2(t);
+    const s = resolve3(t);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
   scrollToEnd: (t, o) => {
-    const s = resolve2(t);
+    const s = resolve3(t);
     if (s)
       follow(s, o);
   },
   scrollToStart: (t, o) => {
-    const s = resolve2(t);
+    const s = resolve3(t);
     if (s)
       scrollToStart(s, o);
   },
   scrollToMessage: (t, id, o) => {
-    const s = resolve2(t);
+    const s = resolve3(t);
     return s ? scrollToMessage(s, id, o) : false;
   },
   isAtEnd: (t) => {
-    const s = resolve2(t);
+    const s = resolve3(t);
     return !!s && fromEnd(s._parts.viewport) <= num3(s, "threshold", 48);
   }
 };
-init32();
-new MutationObserver(init32).observe(document, { childList: true, subtree: true });
+init34();
+new MutationObserver(init34).observe(document, { childList: true, subtree: true });
 
 // src/components/sheet/sheet.ts
-var df$33 = defussGlobals();
+var df$35 = defussGlobals();
 var sheetStates = ["default", "open"];
-function triggerStateChange33(sheet, stateName, _config) {
+function triggerStateChange35(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -9678,7 +10660,7 @@ var sheetApi = {
     if (!sheetStates.includes(stateName)) {
       throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(", ")})`);
     }
-    triggerStateChange33(sheet, stateName, config);
+    triggerStateChange35(sheet, stateName, config);
     sheet.dataset.stateName = stateName;
     sheet._stateConfig = config;
   },
@@ -9686,9 +10668,9 @@ var sheetApi = {
     return { name: sheet.dataset.stateName || "default", config: sheet._stateConfig ?? {} };
   }
 };
-df$33.sheetApi = sheetApi;
-df$33.sheetStates = sheetStates;
-function init33() {
+df$35.sheetApi = sheetApi;
+df$35.sheetStates = sheetStates;
+function init35() {
   document.querySelectorAll("[data-sheet-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const sheet = document.getElementById(trigger2.dataset.sheetTrigger);
@@ -9723,13 +10705,13 @@ function init33() {
     });
   });
 }
-init33();
-new MutationObserver(init33).observe(document, { childList: true, subtree: true });
+init35();
+new MutationObserver(init35).observe(document, { childList: true, subtree: true });
 
 // src/components/sidebar/sidebar.ts
-var df$34 = defussGlobals();
+var df$36 = defussGlobals();
 var sidebarStates = ["default", "collapsed"];
-function triggerStateChange34(sidebar, stateName, _config) {
+function triggerStateChange36(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = sidebar._defaultState ?? "expanded";
@@ -9744,7 +10726,7 @@ var sidebarApi = {
     if (!sidebarStates.includes(stateName)) {
       throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(", ")})`);
     }
-    triggerStateChange34(sidebar, stateName, config);
+    triggerStateChange36(sidebar, stateName, config);
     sidebar.dataset.stateName = stateName;
     sidebar._stateConfig = config;
   },
@@ -9755,9 +10737,9 @@ var sidebarApi = {
     };
   }
 };
-df$34.sidebarApi = sidebarApi;
-df$34.sidebarStates = sidebarStates;
-function init34() {
+df$36.sidebarApi = sidebarApi;
+df$36.sidebarStates = sidebarStates;
+function init36() {
   document.querySelectorAll(".app-sidebar:not([data-init])").forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
@@ -9805,16 +10787,23 @@ function autoCollapseSidebar(sidebar) {
   }
 }
 if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
+  const pending = new Set;
+  let frame = 0;
   document.__sidebarAutoRo = new ResizeObserver((entries) => {
     for (const entry of entries) {
       if (entry.target.classList?.contains("app-sidebar"))
-        autoCollapseSidebar(entry.target);
-      entry.target.querySelectorAll?.(".app-sidebar").forEach(autoCollapseSidebar);
+        pending.add(entry.target);
+      entry.target.querySelectorAll?.(".app-sidebar").forEach((s) => pending.add(s));
     }
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      pending.forEach(autoCollapseSidebar);
+      pending.clear();
+    });
   });
 }
-init34();
-new MutationObserver(init34).observe(document, { childList: true, subtree: true });
+init36();
+new MutationObserver(init36).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
@@ -9831,7 +10820,7 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/slider/slider.ts
-var df$35 = defussGlobals();
+var df$37 = defussGlobals();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -9934,7 +10923,7 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function triggerStateChange35(el, stateName, config) {
+function triggerStateChange37(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -9952,7 +10941,7 @@ var sliderApi = {
     if (!sliderStates.includes(stateName)) {
       throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(", ")})`);
     }
-    triggerStateChange35(el, stateName, config);
+    triggerStateChange37(el, stateName, config);
     el.dataset.stateName = stateName;
     el._stateConfig = config;
   },
@@ -9963,9 +10952,9 @@ var sliderApi = {
     };
   }
 };
-df$35.sliderApi = sliderApi;
-df$35.sliderStates = sliderStates;
-function init35() {
+df$37.sliderApi = sliderApi;
+df$37.sliderStates = sliderStates;
+function init37() {
   document.querySelectorAll(".slider-range:not([data-init])").forEach((range) => {
     range.dataset.init = "";
     initRange(range);
@@ -9983,16 +10972,16 @@ function init35() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init35();
-new MutationObserver(init35).observe(document, { childList: true, subtree: true });
+init37();
+new MutationObserver(init37).observe(document, { childList: true, subtree: true });
 
 // src/components/sortable/sortable.ts
-var df$36 = defussGlobals();
+var df$38 = defussGlobals();
 var dfDollar8 = defussQuery();
 var sortableStates = ["default"];
 var drag = null;
 var sortableLabels = (list) => dfDollar8(list).find(".sortable-item").map((item) => dfDollar8(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
-function triggerStateChange36(list, stateName, config) {
+function triggerStateChange38(list, stateName, config) {
   if (stateName !== "default")
     return;
   dfDollar8(list).append(list._defaultOrder ?? []);
@@ -10007,7 +10996,7 @@ var sortableApi = {
     if (!sortableStates.includes(stateName)) {
       throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(", ")})`);
     }
-    triggerStateChange36(list, stateName, config);
+    triggerStateChange38(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -10024,9 +11013,9 @@ var sortableApi = {
     };
   }
 };
-df$36.sortableApi = sortableApi;
-df$36.sortableStates = sortableStates;
-function init36() {
+df$38.sortableApi = sortableApi;
+df$38.sortableStates = sortableStates;
+function init38() {
   document.querySelectorAll(".sortable:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     list.api = {
@@ -10305,11 +11294,11 @@ function init36() {
     });
   });
 }
-init36();
-new MutationObserver(init36).observe(document, { childList: true, subtree: true });
+init38();
+new MutationObserver(init38).observe(document, { childList: true, subtree: true });
 
 // src/components/steps/steps.ts
-var df$37 = defussGlobals();
+var df$39 = defussGlobals();
 var stepsStates = ["default"];
 var numAttr3 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
@@ -10338,7 +11327,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function triggerStateChange37(ol, stateName, config = {}) {
+function triggerStateChange39(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -10359,7 +11348,7 @@ var stepsApi = {
     if (!stepsStates.includes(stateName)) {
       throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(", ")})`);
     }
-    triggerStateChange37(ol, stateName, config);
+    triggerStateChange39(ol, stateName, config);
     ol.dataset.stateName = stateName;
     ol._stateConfig = config;
   },
@@ -10376,9 +11365,9 @@ var stepsApi = {
     };
   }
 };
-df$37.stepsApi = stepsApi;
-df$37.stepsStates = stepsStates;
-function init37() {
+df$39.stepsApi = stepsApi;
+df$39.stepsStates = stepsStates;
+function init39() {
   document.querySelectorAll(".steps:not([data-init])").forEach((ol) => {
     ol.dataset.init = "";
     ol.api = {
@@ -10413,11 +11402,11 @@ function init37() {
     });
   });
 }
-init37();
-new MutationObserver(init37).observe(document, { childList: true, subtree: true });
+init39();
+new MutationObserver(init39).observe(document, { childList: true, subtree: true });
 
 // src/components/table/table.ts
-var df$38 = defussGlobals();
+var df$40 = defussGlobals();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
@@ -10569,7 +11558,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange38(table, stateName, config) {
+function triggerStateChange40(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -10588,7 +11577,7 @@ var tableApi = {
     if (!tableStates.includes(stateName)) {
       throw new Error(`table: unknown state "${stateName}" (supported: ${tableStates.join(", ")})`);
     }
-    triggerStateChange38(table, stateName, config);
+    triggerStateChange40(table, stateName, config);
     table.dataset.stateName = stateName;
     table._stateConfig = config;
   },
@@ -10597,9 +11586,9 @@ var tableApi = {
     return { name: table.dataset.stateName || "default", config: { ...table._stateConfig, sort: table._sort ?? null, selected } };
   }
 };
-df$38.tableApi = tableApi;
-df$38.tableStates = tableStates;
-function init38() {
+df$40.tableApi = tableApi;
+df$40.tableStates = tableStates;
+function init40() {
   document.querySelectorAll("table.table:not([data-init])").forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
@@ -10663,15 +11652,19 @@ function init38() {
       initReorder(table);
     if (table.dataset.lockStart) {
       measureLocks(table);
-      new ResizeObserver(() => measureLocks(table)).observe(table);
+      let frame = 0;
+      new ResizeObserver(() => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => measureLocks(table));
+      }).observe(table);
     }
   });
 }
-init38();
-new MutationObserver(init38).observe(document, { childList: true, subtree: true });
+init40();
+new MutationObserver(init40).observe(document, { childList: true, subtree: true });
 
 // src/components/tabs/tabs.ts
-var df$39 = defussGlobals();
+var df$41 = defussGlobals();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
@@ -10759,7 +11752,7 @@ var restoreTab = (tab) => {
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange39(el, stateName, config) {
+function triggerStateChange41(el, stateName, config) {
   const triggers = triggersOf2(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
@@ -10835,7 +11828,7 @@ var tabsApi = {
     if (!tabsStates.includes(stateName)) {
       throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(", ")})`);
     }
-    triggerStateChange39(el, stateName, config);
+    triggerStateChange41(el, stateName, config);
     el._stateConfig = { ...el._stateConfig, ...config };
   },
   getState(el) {
@@ -10852,9 +11845,9 @@ var tabsApi = {
     };
   }
 };
-df$39.tabsApi = tabsApi;
-df$39.tabsStates = tabsStates;
-function init39() {
+df$41.tabsApi = tabsApi;
+df$41.tabsStates = tabsStates;
+function init41() {
   document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
     tablist.dataset.init = "";
     if (!tablist.querySelector(".tab-trigger"))
@@ -10935,11 +11928,11 @@ function init39() {
     });
   });
 }
-init39();
-new MutationObserver(init39).observe(document, { childList: true, subtree: true });
+init41();
+new MutationObserver(init41).observe(document, { childList: true, subtree: true });
 
 // src/components/theme-switcher/theme-switcher.ts
-var df$40 = defussGlobals();
+var df$42 = defussGlobals();
 var dfDollar9 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
@@ -11014,7 +12007,7 @@ function syncTrigger(root, id) {
     dfDollar9(label2).text(active2?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function triggerStateChange40(menu, stateName, _config) {
+function triggerStateChange42(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -11031,7 +12024,7 @@ var themeSwitcherApi = {
     if (!themeSwitcherStates.includes(stateName)) {
       throw new Error(`theme-switcher: unknown state "${stateName}" (supported: ${themeSwitcherStates.join(", ")})`);
     }
-    triggerStateChange40(menu, stateName, config);
+    triggerStateChange42(menu, stateName, config);
     menu.dataset.stateName = stateName;
     menu._stateConfig = config;
   },
@@ -11045,9 +12038,9 @@ var themeSwitcherApi = {
     applyThemeId(root, id);
   }
 };
-df$40.themeSwitcherApi = themeSwitcherApi;
-df$40.themeSwitcherStates = themeSwitcherStates;
-function init40() {
+df$42.themeSwitcherApi = themeSwitcherApi;
+df$42.themeSwitcherStates = themeSwitcherStates;
+function init42() {
   document.querySelectorAll(".theme-switcher-menu:not([data-init])").forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
@@ -11118,14 +12111,14 @@ document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
   document.querySelectorAll(".theme-switcher").forEach((root) => syncTrigger(root, id));
 });
-init40();
-new MutationObserver(init40).observe(document, { childList: true, subtree: true });
+init42();
+new MutationObserver(init42).observe(document, { childList: true, subtree: true });
 
 // src/components/toast/toast.ts
-var df$41 = defussGlobals();
+var df$43 = defussGlobals();
 var dfDollar10 = defussQuery();
 var toastStates = ["default"];
-function triggerStateChange41(container, stateName, _config) {
+function triggerStateChange43(container, stateName, _config) {
   if (stateName !== "default")
     return;
   container.querySelectorAll(".toast").forEach((el) => toastDismiss(el));
@@ -11135,7 +12128,7 @@ var toastApi = {
     if (!toastStates.includes(stateName)) {
       throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(", ")})`);
     }
-    triggerStateChange41(container, stateName, config);
+    triggerStateChange43(container, stateName, config);
     container.dataset.stateName = stateName;
     container._stateConfig = config;
   },
@@ -11146,8 +12139,8 @@ var toastApi = {
     };
   }
 };
-df$41.toastApi = toastApi;
-df$41.toastStates = toastStates;
+df$43.toastApi = toastApi;
+df$43.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
@@ -11301,7 +12294,7 @@ var toastCreate = (options) => {
     toastDismiss(toasts[0]);
   return el;
 };
-function init41() {
+function init43() {
   document.querySelectorAll("#toast-container:not([data-init])").forEach((container) => {
     container.dataset.init = "";
     container.api = {
@@ -11354,8 +12347,8 @@ function init41() {
     });
   });
 }
-init41();
-new MutationObserver(init41).observe(document.body, { childList: true, subtree: true });
+init43();
+new MutationObserver(init43).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -11364,7 +12357,7 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$41.toast = {
+df$43.toast = {
   configure: toastConfigure,
   show: toastCreate,
   success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
@@ -11379,9 +12372,9 @@ df$41.toast = {
 };
 
 // src/components/toggle/toggle.ts
-var df$42 = defussGlobals();
+var df$44 = defussGlobals();
 var toggleStates = ["default", "pressed"];
-function triggerStateChange42(toggle, stateName, _config) {
+function triggerStateChange44(toggle, stateName, _config) {
   switch (stateName) {
     case "default":
       toggle.setAttribute("aria-pressed", toggle._defaultPressed ?? "false");
@@ -11396,7 +12389,7 @@ var toggleApi = {
     if (!toggleStates.includes(stateName)) {
       throw new Error(`toggle: unknown state "${stateName}" (supported: ${toggleStates.join(", ")})`);
     }
-    triggerStateChange42(toggle, stateName, config);
+    triggerStateChange44(toggle, stateName, config);
     toggle.dataset.stateName = stateName;
     toggle._stateConfig = config;
   },
@@ -11408,9 +12401,9 @@ var toggleApi = {
     };
   }
 };
-df$42.toggleApi = toggleApi;
-df$42.toggleStates = toggleStates;
-function init42() {
+df$44.toggleApi = toggleApi;
+df$44.toggleStates = toggleStates;
+function init44() {
   document.querySelectorAll(".toggle:not([data-init]):not(.toggle-group .toggle)").forEach((toggle) => {
     toggle.dataset.init = "";
     toggle._defaultPressed = toggle.getAttribute("aria-pressed") || "false";
@@ -11425,13 +12418,13 @@ function init42() {
     });
   });
 }
-init42();
-new MutationObserver(init42).observe(document, { childList: true, subtree: true });
+init44();
+new MutationObserver(init44).observe(document, { childList: true, subtree: true });
 
 // src/components/toggle-group/toggle-group.ts
-var df$43 = defussGlobals();
+var df$45 = defussGlobals();
 var toggleGroupStates = ["default", "disabled"];
-function triggerStateChange43(group, stateName, _config) {
+function triggerStateChange45(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -11446,7 +12439,7 @@ var toggleGroupApi = {
     if (!toggleGroupStates.includes(stateName)) {
       throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(", ")})`);
     }
-    triggerStateChange43(group, stateName, config);
+    triggerStateChange45(group, stateName, config);
     group.dataset.stateName = stateName;
     group._stateConfig = config;
   },
@@ -11457,9 +12450,9 @@ var toggleGroupApi = {
     };
   }
 };
-df$43.toggleGroupApi = toggleGroupApi;
-df$43.toggleGroupStates = toggleGroupStates;
-function init43() {
+df$45.toggleGroupApi = toggleGroupApi;
+df$45.toggleGroupStates = toggleGroupStates;
+function init45() {
   document.querySelectorAll(".toggle-group:not([data-init])").forEach((group) => {
     group.dataset.init = "";
     group.api = {
@@ -11527,13 +12520,13 @@ function init43() {
     });
   });
 }
-init43();
-new MutationObserver(init43).observe(document, { childList: true, subtree: true });
+init45();
+new MutationObserver(init45).observe(document, { childList: true, subtree: true });
 
 // src/components/toolbar/toolbar.ts
-var df$44 = defussGlobals();
+var df$46 = defussGlobals();
 var toolbarStates = ["default"];
-function triggerStateChange44(toolbar, items, stateName, config) {
+function triggerStateChange46(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -11547,7 +12540,7 @@ var toolbarApi = {
       throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(", ")})`);
     }
     const items = toolbarItems(toolbar);
-    triggerStateChange44(toolbar, items, stateName, config);
+    triggerStateChange46(toolbar, items, stateName, config);
     toolbar.dataset.stateName = stateName;
     toolbar._stateConfig = config;
   },
@@ -11560,10 +12553,10 @@ var toolbarApi = {
     };
   }
 };
-df$44.toolbarApi = toolbarApi;
-df$44.toolbarStates = toolbarStates;
+df$46.toolbarApi = toolbarApi;
+df$46.toolbarStates = toolbarStates;
 var toolbarItems = (toolbar) => Array.from(toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'));
-function init44() {
+function init46() {
   document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
     toolbar.dataset.init = "";
     toolbar.api = {
@@ -11605,13 +12598,13 @@ function init44() {
     });
   });
 }
-init44();
-new MutationObserver(init44).observe(document, { childList: true, subtree: true });
+init46();
+new MutationObserver(init46).observe(document, { childList: true, subtree: true });
 
 // src/components/tooltip/tooltip.ts
-var df$45 = defussGlobals();
+var df$47 = defussGlobals();
 var tooltipStates = ["default", "visible"];
-function triggerStateChange45(tip, stateName, _config) {
+function triggerStateChange47(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -11629,7 +12622,7 @@ var tooltipApi = {
     if (!tooltipStates.includes(stateName)) {
       throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(", ")})`);
     }
-    triggerStateChange45(tip, stateName, config);
+    triggerStateChange47(tip, stateName, config);
     tip.dataset.stateName = stateName;
     tip._stateConfig = config;
   },
@@ -11637,8 +12630,8 @@ var tooltipApi = {
     return { name: tip.dataset.stateName || "default", config: tip._stateConfig ?? {} };
   }
 };
-df$45.tooltipApi = tooltipApi;
-df$45.tooltipStates = tooltipStates;
+df$47.tooltipApi = tooltipApi;
+df$47.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -11654,7 +12647,7 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init45() {
+function init47() {
   document.querySelectorAll("[data-tooltip-trigger]:not([data-init])").forEach((trigger2) => {
     trigger2.dataset.init = "";
     const tip = document.getElementById(trigger2.dataset.tooltipTrigger);
@@ -11702,8 +12695,8 @@ function init45() {
     };
   });
 }
-init45();
-new MutationObserver(init45).observe(document, { childList: true, subtree: true });
+init47();
+new MutationObserver(init47).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
@@ -11716,9 +12709,9 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/tree-view/tree-view.ts
-var df$46 = defussGlobals();
+var df$48 = defussGlobals();
 var treeViewStates = ["default", "expanded"];
-function triggerStateChange46(details, stateName, _config) {
+function triggerStateChange48(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -11733,7 +12726,7 @@ var treeViewApi = {
     if (!treeViewStates.includes(stateName)) {
       throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(", ")})`);
     }
-    triggerStateChange46(details, stateName, config);
+    triggerStateChange48(details, stateName, config);
     details.dataset.stateName = stateName;
     details._stateConfig = config;
   },
@@ -11744,8 +12737,8 @@ var treeViewApi = {
     };
   }
 };
-df$46.treeViewApi = treeViewApi;
-df$46.treeViewStates = treeViewStates;
+df$48.treeViewApi = treeViewApi;
+df$48.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
 var isDisabled2 = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
@@ -11917,7 +12910,7 @@ function moveByKey(tree, row, dir) {
   row.focus();
   announceMove2(tree, item);
 }
-function init46() {
+function init48() {
   document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
@@ -12039,11 +13032,11 @@ function init46() {
     });
   });
 }
-init46();
-new MutationObserver(init46).observe(document, { childList: true, subtree: true });
+init48();
+new MutationObserver(init48).observe(document, { childList: true, subtree: true });
 
 // src/components/typewriter/typewriter.ts
-var df$47 = defussGlobals();
+var df$49 = defussGlobals();
 var typewriterStates = ["default", "paused", "done"];
 var num4 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
@@ -12128,7 +13121,7 @@ function run3(tw, delay = 0) {
   else
     go();
 }
-function triggerStateChange47(tw, stateName, config, previous) {
+function triggerStateChange49(tw, stateName, config, previous) {
   const count = tw._sources.length;
   const asked = config.index === undefined || config.index === "" ? NaN : Number(config.index);
   const pick = Number.isInteger(asked) ? Math.min(Math.max(asked, 0), count - 1) : undefined;
@@ -12164,15 +13157,15 @@ var typewriterApi = {
     const previous = tw.dataset.stateName;
     tw.dataset.stateName = stateName;
     tw._stateConfig = config;
-    triggerStateChange47(tw, stateName, config, previous);
+    triggerStateChange49(tw, stateName, config, previous);
   },
   getState(tw) {
     return { name: tw.dataset.stateName || "default", config: tw._stateConfig ?? {} };
   }
 };
-df$47.typewriterApi = typewriterApi;
-df$47.typewriterStates = typewriterStates;
-function init47() {
+df$49.typewriterApi = typewriterApi;
+df$49.typewriterStates = typewriterStates;
+function init49() {
   document.querySelectorAll(".typewriter:not([data-init])").forEach((tw) => {
     tw.dataset.init = "";
     const children = Array.from(tw.children);
@@ -12225,11 +13218,11 @@ function init47() {
     }
   });
 }
-init47();
-new MutationObserver(init47).observe(document, { childList: true, subtree: true });
+init49();
+new MutationObserver(init49).observe(document, { childList: true, subtree: true });
 
 // src/components/virtual-list/virtual-list.ts
-var df$48 = defussGlobals();
+var df$50 = defussGlobals();
 var virtualListStates = ["default", "loading", "empty"];
 var OVERSCAN = 4;
 var MAX_SIZER_PX = 15000000;
@@ -12307,7 +13300,7 @@ function render3(list) {
 var defaultRenderRow = (row, index) => {
   row.textContent = `Row ${index + 1}`;
 };
-function triggerStateChange48(list, stateName, config) {
+function triggerStateChange50(list, stateName, config) {
   list.dataset.state = stateName;
   switch (stateName) {
     case "default":
@@ -12335,7 +13328,7 @@ var virtualListApi = {
     if (!virtualListStates.includes(stateName)) {
       throw new Error(`virtual-list: unknown state "${stateName}" (supported: ${virtualListStates.join(", ")})`);
     }
-    triggerStateChange48(list, stateName, config);
+    triggerStateChange50(list, stateName, config);
     list.dataset.stateName = stateName;
     list._stateConfig = config;
   },
@@ -12343,9 +13336,9 @@ var virtualListApi = {
     return { name: list.dataset.stateName || "default", config: list._stateConfig ?? {} };
   }
 };
-df$48.virtualListApi = virtualListApi;
-df$48.virtualListStates = virtualListStates;
-df$48.virtualList = {
+df$50.virtualListApi = virtualListApi;
+df$50.virtualListStates = virtualListStates;
+df$50.virtualList = {
   setData(list, count, renderRow) {
     list._count = Math.max(0, Math.floor(count) || 0);
     if (renderRow)
@@ -12363,7 +13356,7 @@ df$48.virtualList = {
     virtualListApi.setState(list, list._count ? "default" : "empty");
   }
 };
-function init48() {
+function init50() {
   document.querySelectorAll(".virtual-list:not([data-init])").forEach((list) => {
     list.dataset.init = "";
     let sizer = list.querySelector(".virtual-list-sizer");
@@ -12413,15 +13406,15 @@ function init48() {
     virtualListApi.setState(list, list._count ? "default" : "empty");
   });
 }
-init48();
-new MutationObserver(init48).observe(document, { childList: true, subtree: true });
+init50();
+new MutationObserver(init50).observe(document, { childList: true, subtree: true });
 
 // src/components/window/window.ts
-var df$49 = defussGlobals();
+var df$51 = defussGlobals();
 var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
-var resolve3 = (target) => typeof target === "string" ? document.getElementById(target) ?? document.querySelector(target) : target;
+var resolve4 = (target) => typeof target === "string" ? document.getElementById(target) ?? document.querySelector(target) : target;
 var titleOf = (w) => w.querySelector(".window-title")?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
@@ -12482,7 +13475,7 @@ function restoreSize(w) {
   w.style.height = w._stash.height;
   w._stash = null;
 }
-function triggerStateChange49(w, stateName, config) {
+function triggerStateChange51(w, stateName, config) {
   const maxBtn = w.querySelector(".window-maximize");
   if (stateName !== "closed" && !w.open)
     showQuietly(w);
@@ -12522,15 +13515,15 @@ var windowApi = {
     }
     w.dataset.stateName = stateName;
     w._stateConfig = config;
-    triggerStateChange49(w, stateName, config);
+    triggerStateChange51(w, stateName, config);
   },
   getState(w) {
     const name = !w.open ? "closed" : w.dataset.stateName || "default";
     return { name, config: name === "closed" ? {} : w._stateConfig ?? {} };
   }
 };
-df$49.windowApi = windowApi;
-df$49.windowStates = windowStates;
+df$51.windowApi = windowApi;
+df$51.windowStates = windowStates;
 function bindDrag(w, bar) {
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
@@ -12571,7 +13564,7 @@ function bindDrag(w, bar) {
     w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
   });
 }
-function init49() {
+function init51() {
   document.querySelectorAll("dialog.window:not([data-init])").forEach((w) => {
     w.dataset.init = "";
     const bar = w.querySelector(":scope > .window-titlebar");
@@ -12634,7 +13627,7 @@ function create(options = {}) {
     focus = true,
     flush = false
   } = options;
-  const host = resolve3(parent) ?? document.querySelector(".window-desktop") ?? document.body;
+  const host = resolve4(parent) ?? document.querySelector(".window-desktop") ?? document.body;
   const w = document.createElement("dialog");
   w.className = "window";
   if (id)
@@ -12690,7 +13683,7 @@ function create(options = {}) {
     w.append(s);
   }
   host.append(w);
-  init49();
+  init51();
   showQuietly(w);
   if (focus)
     windowApi.setState(w, "default", {});
@@ -12698,7 +13691,7 @@ function create(options = {}) {
     globalThis.lucide?.createIcons?.();
   return w;
 }
-var list = (scope, all = false) => Array.from((resolve3(scope) ?? document).querySelectorAll(all ? ".window" : ".window[open]"));
+var list = (scope, all = false) => Array.from((resolve4(scope) ?? document).querySelectorAll(all ? ".window" : ".window[open]"));
 function cascade(scope, step2 = 28) {
   list(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
     windowApi.setState(w, "default", {});
@@ -12724,32 +13717,32 @@ function tile(scope) {
     moveTo(w, i % cols * cw, Math.floor(i / cols) * ch);
   });
 }
-df$49.win = {
+df$51.win = {
   create,
   open: (t, config = {}) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
   close: (t) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
   focus: (t) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w?.open)
       raise(w);
     return w;
   },
   move: (t, x, y) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     return w ? moveTo(w, x, y) : null;
   },
   resize: (t, width, height) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (!w)
       return null;
     w.style.width = "";
@@ -12760,25 +13753,25 @@ df$49.win = {
     return w;
   },
   maximize: (t) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
   minimize: (t) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
   restore: (t) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
   toggleMaximize: (t) => {
-    const w = resolve3(t);
+    const w = resolve4(t);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
@@ -12788,9 +13781,9 @@ df$49.win = {
   cascade,
   tile
 };
-init49();
-new MutationObserver(init49).observe(document, { childList: true, subtree: true });
+init51();
+new MutationObserver(init51).observe(document, { childList: true, subtree: true });
 
-//# debugId=90A8B25251D2F3FD64756E2164756E21
+//# debugId=3823E44C0DFB116564756E2164756E21
 /* defuss-shadcn v0.9.3 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

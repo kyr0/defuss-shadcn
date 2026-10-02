@@ -1,0 +1,81 @@
+---
+title: "Order Summary"
+description: "Displays an order's items and charge breakdown - pictures with quantity badges, the lines, discount, shipping and total; collapsible on small screens."
+slug: "order-summary"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="order-summary" title="Order Summary" component="order-summary">
+  Displays an order's items and charge breakdown - pictures with quantity badges, the lines, discount, shipping and total; collapsible on small screens. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="order-summary">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;aside&gt;</code> (or a <code>&lt;details&gt;</code> for the collapsible variant): the items as a list with a quantity badge on each thumbnail, then a <code>&lt;dl&gt;</code> of subtotal, discount, shipping and the total.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-order-summary</code>
+    <code>.mk-order-summary-title</code>
+    <code>.mk-order-summary-items</code>
+    <code>.mk-order-summary-thumb</code>
+    <code>.mk-order-summary-name</code>
+    <code>.mk-order-summary-price</code>
+    <code>.mk-order-summary-totals</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="collapsible"</code> (on a <code>&lt;details&gt;</code>).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The items with a quantity badge on each thumbnail, then the breakdown (<dl>): subtotal, discount, shipping and the total with VAT." previewStyle="align-items:stretch;"
+<aside class="mk-order-summary" aria-labelledby="os-title">
+  <h2 class="mk-order-summary-title" id="os-title">Your order</h2>
+  <ul class="mk-order-summary-items">
+    <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-shirt/160/200" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
+    <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-mug/160/200" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
+  </ul>
+  <dl class="mk-order-summary-totals">
+    <div><dt>Subtotal</dt><dd>€108.00</dd></div>
+    <div data-discount><dt>Discount (AUTUMN30)</dt><dd>−€24.00</dd></div>
+    <div><dt>Shipping · Standard</dt><dd>€4.90</dd></div>
+    <div data-total><dt>Total <small>incl. €16.62 VAT</small></dt><dd>€88.90</dd></div>
+  </dl>
+</aside>
+```
+
+```html example label="Collapsible" hint="data-variant='collapsible' on a <details>: on a small screen the summary shows only &quot;Show order summary&quot; and the total; it opens natively." previewStyle="align-items:stretch;"
+<details class="mk-order-summary" data-variant="collapsible">
+  <summary><span><i data-lucide="shopping-bag"></i> Show order summary <i data-lucide="chevron-down"></i></span><b>€88.90</b></summary>
+  <div>
+    <ul class="mk-order-summary-items">
+      <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-shirt/160/200" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
+      <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-mug/160/200" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
+    </ul>
+    <dl class="mk-order-summary-totals">
+      <div><dt>Subtotal</dt><dd>€108.00</dd></div>
+      <div data-discount><dt>Discount (AUTUMN30)</dt><dd>−€24.00</dd></div>
+      <div><dt>Shipping · Standard</dt><dd>€4.90</dd></div>
+      <div data-total><dt>Total <small>incl. €16.62 VAT</small></dt><dd>€88.90</dd></div>
+    </dl>
+  </div>
+</details>
+```
+
+<SourceFiles component="order-summary" section="css" />
+
+</DocPage>

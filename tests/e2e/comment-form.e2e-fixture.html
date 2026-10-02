@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>comment-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/tabs/tabs.css" />
+    <link rel="stylesheet" href="/dist/components/toggle/toggle.css" />
+    <link rel="stylesheet" href="/dist/components/toggle-group/toggle-group.css" />
+    <link rel="stylesheet" href="/dist/components/separator/separator.css" />
+    <link rel="stylesheet" href="/dist/components/kbd/kbd.css" />
+    <link rel="stylesheet" href="/dist/components/alert/alert.css" />
+    <link rel="stylesheet" href="/dist/components/rating/rating.css" />
+    <link rel="stylesheet" href="/dist/components/comment-form/comment-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<form class="mk-comment-form" aria-label="Add a comment" style="max-width:42rem">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+  <div class="mk-comment-form-main">
+    <textarea class="textarea" name="comment" rows="3" required minlength="2" placeholder="Join the discussion…" aria-label="Comment" aria-describedby="comment-hint"></textarea>
+    <div class="mk-comment-form-footer">
+      <p class="mk-comment-form-hint" id="comment-hint">Markdown works. Be kind.</p>
+      <button type="submit" class="btn">Post comment</button>
+    </div>
+  </div>
+</form>
+    </section>
+    <!-- Guest -->
+    <section class="fx">
+<form class="mk-comment-form" aria-label="Leave a reply" style="max-width:42rem">
+  <div class="mk-comment-form-main">
+    <div class="mk-comment-form-fields">
+      <div><label class="label" for="guest-name">Name</label><input class="input" id="guest-name" name="name" autocomplete="name" required></div>
+      <div><label class="label" for="guest-email">Email</label><input class="input" id="guest-email" name="email" type="email" autocomplete="email" required aria-describedby="guest-hint"></div>
+    </div>
+    <textarea class="textarea" name="comment" rows="3" required placeholder="Your reply…" aria-label="Reply"></textarea>
+    <div class="mk-comment-form-footer">
+      <p class="mk-comment-form-hint" id="guest-hint">Your email is never shown.</p>
+      <button type="submit" class="btn">Post reply</button>
+    </div>
+  </div>
+</form>
+    </section>
+    <!-- Reply -->
+    <section class="fx">
+<form class="mk-comment-form" data-variant="reply" aria-label="Reply to Hannah Lee" style="max-width:36rem">
+  <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+  <div class="mk-comment-form-main">
+    <textarea class="textarea" name="reply" rows="2" required placeholder="Reply to Hannah…" aria-label="Reply to Hannah Lee"></textarea>
+    <div class="mk-comment-form-footer">
+      <button type="reset" class="btn" data-variant="ghost" data-size="sm">Cancel</button>
+      <button type="submit" class="btn" data-size="sm">Reply</button>
+    </div>
+  </div>
+</form>
+    </section>
+    <!-- Write and preview -->
+    <section class="fx">
+<form class="mk-comment-form" data-variant="framed" aria-label="Add a comment" style="max-width:44rem">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+  <div class="mk-comment-form-main">
+    <div class="tabs">
+      <div class="mk-comment-form-toolbar">
+        <div class="tab-list" role="tablist" aria-label="Editor">
+          <button class="tab-trigger" role="tab" type="button" aria-selected="true" aria-controls="cf-write" id="cf-tab-write">Write</button>
+          <button class="tab-trigger" role="tab" type="button" aria-selected="false" aria-controls="cf-preview" id="cf-tab-preview" tabindex="-1">Preview</button>
+        </div>
+        <div class="separator" data-orientation="vertical" role="separator" style="height:1.25rem;margin-inline:.25rem"></div>
+        <div class="toggle-group" role="group" aria-label="Formatting" data-type="multiple" data-size="sm">
+          <button class="toggle" type="button" aria-pressed="false" aria-label="Bold"><i data-lucide="bold"></i></button>
+          <button class="toggle" type="button" aria-pressed="false" aria-label="Italic"><i data-lucide="italic"></i></button>
+          <button class="toggle" type="button" aria-pressed="false" aria-label="Code"><i data-lucide="code"></i></button>
+        </div>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" aria-label="Insert link"><i data-lucide="link"></i></button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="cf-write" aria-labelledby="cf-tab-write">
+        <textarea class="textarea" name="comment" rows="3" required minlength="2" placeholder="Join the discussion… Markdown works." aria-label="Comment"></textarea>
+      </div>
+      <div class="tab-content" role="tabpanel" id="cf-preview" aria-labelledby="cf-tab-preview" hidden>
+        <p style="margin:0;padding:.75rem;font-size:.875rem">The preview renders your <strong>Markdown</strong> here.</p>
+      </div>
+    </div>
+    <div class="mk-comment-form-footer">
+      <p class="mk-comment-form-hint"><kbd class="kbd">⌘</kbd> <kbd class="kbd">Enter</kbd> to post</p>
+      <button type="submit" class="btn" data-size="sm">Post comment</button>
+    </div>
+  </div>
+</form>
+    </section>
+    <!-- Signed out -->
+    <section class="fx">
+<div class="alert" role="note" style="max-width:44rem">
+  <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+  <div class="alert-content">
+    <h5 class="alert-title">Join the discussion</h5>
+    <p class="alert-description">Sign in to comment - it takes ten seconds with a passkey.</p>
+  </div>
+  <div class="alert-action"><a class="btn" data-size="sm" href="#">Sign in</a></div>
+</div>
+    </section>
+    <!-- Review with a rating -->
+    <section class="fx">
+<form class="mk-comment-form" aria-label="Write a review" style="max-width:40rem">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+  <div class="mk-comment-form-main">
+    <fieldset class="rating" aria-label="Your rating">
+      <label class="rating-item"><input class="rating-input" type="radio" name="stars" value="1" aria-label="1 star" required></label>
+      <label class="rating-item"><input class="rating-input" type="radio" name="stars" value="2" aria-label="2 stars"></label>
+      <label class="rating-item"><input class="rating-input" type="radio" name="stars" value="3" aria-label="3 stars"></label>
+      <label class="rating-item"><input class="rating-input" type="radio" name="stars" value="4" aria-label="4 stars"></label>
+      <label class="rating-item"><input class="rating-input" type="radio" name="stars" value="5" aria-label="5 stars"></label>
+    </fieldset>
+    <textarea class="textarea" name="review" rows="3" required placeholder="What did you like? What should change?" aria-label="Review"></textarea>
+    <div class="mk-comment-form-footer">
+      <button type="submit" class="btn">Post review</button>
+    </div>
+  </div>
+</form>
+    </section>
+  </body>
+</html>

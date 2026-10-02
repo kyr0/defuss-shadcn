@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>feedback-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/feedback-form/feedback-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-feedback-form" aria-labelledby="fb-title">
+  <h2 id="fb-title">How was your first week with Acme?</h2>
+  <form action="#" method="post">
+    <fieldset><legend class="sr-only">Your rating</legend><div class="mk-feedback-form-faces"><label><input type="radio" name="rating" value="1" aria-label="Very bad" required>😞</label><label><input type="radio" name="rating" value="2" aria-label="Bad" required>🙁</label><label><input type="radio" name="rating" value="3" aria-label="Okay" required>😐</label><label><input type="radio" name="rating" value="4" aria-label="Good" checked required>🙂</label><label><input type="radio" name="rating" value="5" aria-label="Great" required>😍</label></div></fieldset>
+    <fieldset><legend>What could be better?</legend><div class="mk-feedback-form-chips"><label><input type="checkbox" name="topics" value="speed">Speed</label><label><input type="checkbox" name="topics" value="search" checked>Search</label><label><input type="checkbox" name="topics" value="onboarding">Onboarding</label><label><input type="checkbox" name="topics" value="mobile app">Mobile app</label><label><input type="checkbox" name="topics" value="pricing">Pricing</label></div></fieldset>
+    <div style="display:grid;gap:0.375rem"><label class="label" for="fb-text">Anything else?</label><textarea class="textarea" id="fb-text" name="comment" rows="3"></textarea></div>
+    <button class="btn" type="submit">Send feedback</button>
+  </form>
+</section>
+    </section>
+    <!-- NPS -->
+    <section class="fx">
+<section class="mk-feedback-form" data-variant="nps" aria-labelledby="fb2-title">
+  <form action="#" method="post">
+    <fieldset>
+      <legend id="fb2-title">How likely are you to recommend Acme to a colleague?</legend>
+      <div class="mk-feedback-form-scale"><label><input type="radio" name="nps" value="0" required>0</label><label><input type="radio" name="nps" value="1" required>1</label><label><input type="radio" name="nps" value="2" required>2</label><label><input type="radio" name="nps" value="3" required>3</label><label><input type="radio" name="nps" value="4" required>4</label><label><input type="radio" name="nps" value="5" required>5</label><label><input type="radio" name="nps" value="6" required>6</label><label><input type="radio" name="nps" value="7" required>7</label><label><input type="radio" name="nps" value="8" required>8</label><label><input type="radio" name="nps" value="9" checked required>9</label><label><input type="radio" name="nps" value="10" required>10</label></div>
+      <div class="mk-feedback-form-ends" aria-hidden="true"><span>0 · Not at all likely</span><span>10 · Extremely likely</span></div>
+    </fieldset>
+    <button class="btn" type="submit">Submit</button>
+  </form>
+</section>
+    </section>
+    <!-- Was this helpful? -->
+    <section class="fx">
+<form class="mk-feedback-form" data-variant="inline" action="#" method="post">
+  <fieldset><legend>Was this page helpful?</legend><div class="mk-feedback-form-yesno"><label><input type="radio" name="helpful" value="yes"><i data-lucide="thumbs-up"></i> Yes</label><label><input type="radio" name="helpful" value="no"><i data-lucide="thumbs-down"></i> No</label></div></fieldset>
+  <p class="mk-feedback-form-thanks" role="status">Thanks - your answer helps us improve this page.</p>
+</form>
+    </section>
+  </body>
+</html>

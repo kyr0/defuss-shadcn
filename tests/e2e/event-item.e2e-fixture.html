@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>event-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/event-item/event-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- List -->
+    <section class="fx">
+<div style="display:grid;gap:0.25rem;width:100%">
+  <article class="mk-event-item">
+    <time class="mk-event-item-date" datetime="2026-10-14T18:00"><span>Oct</span><b>14</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup Lisbon</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Tue 18:00 – 21:00</li><li><i data-lucide="map-pin"></i>LX Factory, Lisbon</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">In person</span><span class="badge" data-variant="secondary" data-size="sm">Free</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Calm Product Meetup Lisbon">Register</a>
+  </article>
+  <article class="mk-event-item">
+    <time class="mk-event-item-date" datetime="2026-10-22T16:00"><span>Oct</span><b>22</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Webinar: Planning launches with five teams</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Wed 16:00 – 17:00 UTC</li><li><i data-lucide="video"></i>Online</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Webinar</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Webinar: Planning launches with five teams">Register</a>
+  </article>
+  <article class="mk-event-item">
+    <time class="mk-event-item-date" datetime="2026-11-12"><span>Nov</span><b>12</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Acme Summit 2026</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>12–13 Nov</li><li><i data-lucide="map-pin"></i>Lisbon Congress Centre</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Conference</span><span class="badge" data-variant="secondary" data-size="sm">Tickets</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Acme Summit 2026">Register</a>
+  </article>
+</div>
+    </section>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem;width:100%">
+  <article class="mk-event-item" data-variant="card">
+    <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-meetup/800/450" alt="">
+    <time class="mk-event-item-date" datetime="2026-10-14T18:00"><span>Oct</span><b>14</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup Lisbon</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Tue 18:00</li><li><i data-lucide="map-pin"></i>Lisbon</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">In person</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Calm Product Meetup Lisbon">Register</a>
+  </article>
+  <article class="mk-event-item" data-variant="card">
+    <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-design/800/450" alt="">
+    <time class="mk-event-item-date" datetime="2026-11-05T17:00"><span>Nov</span><b>05</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Design Systems Night</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Thu 17:00</li><li><i data-lucide="map-pin"></i>Berlin</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Talks</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Design Systems Night">Register</a>
+  </article>
+  <article class="mk-event-item" data-variant="card">
+    <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-summit/800/450" alt="">
+    <time class="mk-event-item-date" datetime="2026-11-12"><span>Nov</span><b>12</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Acme Summit 2026</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>12–13 Nov</li><li><i data-lucide="map-pin"></i>Lisbon</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Conference</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Acme Summit 2026">Register</a>
+  </article>
+</div>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div style="display:grid;max-width:22rem;width:100%">
+  <article class="mk-event-item" data-variant="compact">
+    <time class="mk-event-item-date" datetime="2026-10-14"><span>Oct</span><b>14</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>18:00</li><li><i data-lucide="map-pin"></i>Lisbon</li></ul>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Calm Product Meetup">Register</a>
+  </article>
+  <article class="mk-event-item" data-variant="compact">
+    <time class="mk-event-item-date" datetime="2026-10-22"><span>Oct</span><b>22</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Planning launches (webinar)</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>16:00 UTC</li><li><i data-lucide="video"></i>Online</li></ul>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Planning launches (webinar)">Register</a>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

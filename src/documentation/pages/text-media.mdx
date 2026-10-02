@@ -1,0 +1,92 @@
+---
+title: "Text Media"
+description: "Pairs explanatory text with an image, illustration, or video - side by side, reversed, or with the text card overlapping the picture."
+slug: "text-media"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="text-media" title="Text Media" component="text-media">
+  Pairs explanatory text with an image, illustration, or video - side by side, reversed, or with the text card overlapping the picture. Part of the <DocLink href="website-media.html">Media</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="text-media">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code>: an eyebrow, a heading, paragraphs, an optional check list and link, beside a <code>&lt;figure&gt;</code> with an <code>&lt;img&gt;</code>, an SVG illustration or a <code>&lt;video&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="media with its caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video" title="native playback controls"><code>&lt;video&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced titles, pretty paragraphs"><code>text-wrap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-text-media</code>
+    <code>.mk-text-media-layout</code>
+    <code>.mk-text-media-copy</code>
+    <code>.mk-text-media-eyebrow</code>
+    <code>.mk-text-media-title</code>
+    <code>.mk-text-media-text</code>
+    <code>.mk-text-media-list</code>
+    <code>.mk-text-media-link</code>
+    <code>.mk-text-media-media</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>reverse</code>, <code>overlap</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Text left - eyebrow, title, paragraph, a check list and a link - and a picture right, from 48rem." previewStyle="align-items:stretch;"
+<section class="mk-text-media" aria-labelledby="tm-1">
+  <div class="mk-text-media-layout">
+    <div class="mk-text-media-copy">
+      <span class="mk-text-media-eyebrow">Offline first</span>
+      <h2 class="mk-text-media-title" id="tm-1">Your work travels with you</h2>
+      <p class="mk-text-media-text">Every change is saved on your device first and synced when you are back online - on a plane, in a tunnel, at the cabin.</p>
+      <ul class="mk-text-media-list"><li><i data-lucide="check"></i>Edits never wait for the network</li><li><i data-lucide="check"></i>Conflicts resolve themselves</li><li><i data-lucide="check"></i>Works on every device</li></ul>
+      <a class="mk-text-media-link" href="#">How sync works <i data-lucide="arrow-right"></i></a>
+    </div>
+    <figure class="mk-text-media-media"><img src="https://picsum.photos/seed/tm-cabin/1000/750" alt="A laptop on a table in a mountain cabin"></figure>
+  </div>
+</section>
+```
+
+```html example label="Reverse with video" hint="data-variant='reverse': the media moves left from 48rem - here a <video> with native controls and a poster." previewStyle="align-items:stretch;"
+<section class="mk-text-media" data-variant="reverse" aria-labelledby="tm-2">
+  <div class="mk-text-media-layout">
+    <div class="mk-text-media-copy">
+      <span class="mk-text-media-eyebrow">In 60 seconds</span>
+      <h2 class="mk-text-media-title" id="tm-2">From idea to shipped, on one board</h2>
+      <p class="mk-text-media-text">Watch a feature go from a rough note to release notes - without leaving Acme.</p>
+    </div>
+    <figure class="mk-text-media-media"><video controls preload="metadata" playsinline poster="images/mk-wide2.png"><source src="videos/demo.webm" type="video/webm"><source src="videos/demo.mp4" type="video/mp4">Your browser does not support video.</video></figure>
+  </div>
+</section>
+```
+
+```html example label="Overlap" hint="data-variant='overlap': a wide picture with the text card overlapping its edge - below it when narrow, beside it from 48rem." previewStyle="align-items:stretch;"
+<section class="mk-text-media" data-variant="overlap" aria-labelledby="tm-3">
+  <div class="mk-text-media-layout">
+    <figure class="mk-text-media-media"><img src="https://picsum.photos/seed/tm-office/1400/800" alt=""></figure>
+    <div class="mk-text-media-copy">
+      <span class="mk-text-media-eyebrow">Our office</span>
+      <h2 class="mk-text-media-title" id="tm-3">A quiet place to think</h2>
+      <p class="mk-text-media-text">No open-plan noise: our Lisbon office has more library than meeting rooms. Visit us any Friday.</p>
+      <a class="mk-text-media-link" href="#">Plan a visit <i data-lucide="arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+```
+
+<SourceFiles component="text-media" section="css" />
+
+</DocPage>

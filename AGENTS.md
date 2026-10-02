@@ -164,14 +164,14 @@ full rationale lives in [ARCH.md](ARCH.md).
 ### Each component owns its dialog
 
 `dialog.js`'s init claims plain `<dialog>` elements for backdrop-click close —
-via a `dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not([data-init])`
+via a `dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])`
 selector. **Any component that ships its own `<dialog class="…">` with custom
 behavior must be `:not()`-excluded there**, or dialog.js (loaded before every
 component script on all doc pages) stamps `data-init` first and the real
 owner's init silently skips the element - the docs search palette was dead
 exactly this way once. `verify`'s `dialog ownership boundary` gate enforces
-the exclusion list for the four dialog owners (alert-dialog, sheet, command,
-window); extend the list in both places when a fifth appears.
+the exclusion list for the five dialog owners (alert-dialog, sheet, command,
+window, cookie-consent); extend the list in both places when a sixth appears.
 
 The docs header search is the shipped command component itself: clicking the
 input (or ⌘/Ctrl+K) opens `<dialog class="command" id="docs-palette">` (static
@@ -546,8 +546,12 @@ contract that keeps everything else honest.
   divergence bug is structurally impossible; `FORBIDDEN_CODE_EXAMPLE_PROPS` +
   the `example fence rules` verify gate enforce it). The fence renders an SSR
   card; the runtime boots a sandboxed iframe (`srcdoc`, `sandbox="allow-scripts allow-forms"` -
-  forms only so submit/invalid handlers run; the bridge cancels the navigation -
-  per-example channel id) that loads the real token CSS + all.js + lucide, runs
+  forms only so submit/invalid handlers run; the bridge cancels the navigation
+  except `method="dialog"` - per-example channel id; `sandbox="embed"` on a
+  fence is the ONE opt-in, for an example hosting a third-party player such as
+  YouTube: it adds allow-same-origin / allow-presentation / allow-popups and
+  delegates autoplay / fullscreen to that card only - a test pins every other
+  card strict) that loads the real token CSS + all.js + lucide, runs
   the example verbatim, and bridges state both ways: the State tab's editors are
   generated **exclusively** from the schema (editorFor in scripts/lib/schema.ts),
   and observed DOM values (never defaults) mirror back onto
@@ -1157,7 +1161,7 @@ index, and TOC pick the page up automatically.
 
 The sidebar is ordered by dependency (primitives first):
 1. Introduction (Getting Started, Installation, Vibe Coding / Agentic Engineering, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
-2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
+2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris, Parallax}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Typewriter, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)
 5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Search & Filter, Form)
@@ -1167,11 +1171,11 @@ The sidebar is ordered by dependency (primitives first):
 9. Feedback & Status (Spinner, Skeleton, Progress, Radial Progress, Alert, Alert Dialog, Toast)
 10. Overlays (Popover, Tooltip, Context Menu, Dialog, Sheet, Accordion, Command)
 11. Navigation (Navbar, Dock, Breadcrumb, Pagination, Steps, Tabs, Dropdown Menu, Menubar, Navigation Menu)
-12. Application (Sidebar, Resizer, Border Layout, Window)
+12. Application (Sidebar, Resizer, Border Layout, Panel, Window, Scaffolds → {Admin Dashboard, Messenger, Issue Tracker, Notes & Docs, Status Page, Desktop}) - Scaffolds are clickable whole-application templates (`type: 'TPL'`) composed only from shipped components; each scaffold page's single example fence also becomes a full-screen page `app-{name}.html` (`STANDALONE_APPS` in `scripts/lib/docs-ssg.ts`, written by `scripts/build-docs.ts`, driven by an e2e test); the app height is `var(--scaffold-height, 50rem)` - the full-screen page sets `100dvh`
 13. Chat (Bubble, Marker, Message, Session) - the conversation surfaces: message rows (avatar, name, time, status, actions, groups), message bubbles (variants, groups, tails, reactions, typing), markers (inline status, spinners, shimmer, separators) and the session that hosts and scrolls a whole conversation (follow / detach, history, anchored turns, streaming, drop target) above the textarea composer
 14. Mockup (Code) - device and window mockups, starting with a terminal for commands and output (generated prompts never copied, tones, highlights, chrome)
 15. Presentations (Presentation, Deck Gallery → {The System in Numbers - flagship deck: defuss-shadcn presents itself as a newsroom study report (engine curtain transitions, section route, bespoke SVG set-pieces, real numbers from dist/stats.json); 32 design-study decks (all 32 echarts-feat studies): Editorial Highlight Bars, Lollipop Ranking, Dumbbell Before/After, Slopegraph, Diverging Bars, Waterfall, Normalized Stack, Bump Ranking, Bar Race, Confidence Band, Annotated Time Series, Small Multiples, Scatter Quadrants, Jittered Distribution, Heatmap Matrix, Calendar Heatmap, Theme River, Treemap, Sunburst, Sankey, Chord, Editorial Gauge, Parliament Hemicycle, Election Majority Bar, Election Hex Cartogram, Election Shift Arrows, Universal Transition, Waffle Dot Matrix, Boxplot, Violin - Custom Series, Custom Wind Vectors, Story State Machine}) - Deck Gallery is a parent page with nested submenu children (`NavItem.children`); every deck is a 12-slide English presentation on its own real-world topic with its own (synthetic) numbers, adapting one echarts-feat design study - every slide animates in and out through the df$.anim engine (data-anim-in/-out on the deck or slide; curtains in a colour that contrasts with both slide surfaces), every chart slide plays on ONE deck-level chart (`.chart.presentation-stage` + `df$.shadcn.chart.deck()`, slides name states via `data-chart-state`) so the charts morph into each other, and every deck includes photo or video, table, quote and accordion slides
-16. Marketing (Site Header, Hero, Product Showcase, Brand Logos, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Site Footer) - CSS-only page sections composed from the same tokens + primitives
+16. Website - CSS-only page blocks composed from the same tokens + primitives, grouped in twelve sub-sections; each sub-section is a parent page (`NavItem.children`) that composes its blocks into a live template (`type: 'TPL'`) and lists them: Landing Page → {Site Header, Hero, Product Showcase, Brand Logos, Section Header, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Cookie Consent, Site Footer}, News → {News Header, News Item, News Ticker}, Blog → {Blog Header, Blog Item, Archive Index}, Article → {Article Header, Article Body, Author Bio, Author List, Related Item, Share Links, Article Navigation}, Comments → {Comment Header, Comment Item, Comment Form}, Company → {About Intro, Team Member, Job Item, Job Details, Application Form, Service Item, Process Step, Use Case, Case Preview, Case Study, Project Item, Project Details, Timeline Item, Integration Item, Comparison Table, Credential Item, Press Item}, Events & Promotions → {CTA, Announcement, Offer Banner, Event Countdown, Booking Form, Event Item, Event Header, Event Description, Speaker Item, Session Item, Registration Form, Location Item, Location Map, Locator Search, Opening Hours}, Media → {Gallery Item, Media Gallery, Text Media, Video Player, Audio Player, Playlist Item, Before After, Social Post}, Shop → {Collection Item, Product Item, Cart Item, Cart Summary, Discount Form, Address Form, Delivery Options, Payment Form, Order Summary, Order Confirmation, Tracking Status, Wishlist Item}, Account & States → {Login Form, Social Login, Signup Form, Reset Request, Password Reset, Profile Header, Profile Form, Security Settings, Notification Settings, Support Form, Feedback Form, Survey Question, Form Progress, Empty State, Error State, Success State, Coming Soon, Maintenance, 404 Page}, Docs & Help → {Resource Item, Download Item, Docs Navigation, Docs Content, Code Example (slug code-block), Release Header, Release Item, Roadmap Item, Help Category, Help Article}, Search & Navigation → {Search Box, Search Suggestions, Search Summary, Search Result, Filter Bar, Filter Sidebar, Active Filters, Sort Control, View Switcher, Collection Pagination, Load More, Tag Cloud, Tag List, Category Menu, Breadcrumbs, Contents, Quick Links}. The second-wave blocks scope `box-sizing: border-box` to their own root (zero specificity) so they render the same on any page, and interactive behavior stays native: radios / checkboxes read by :has(), non-modal `<dialog open>` + `<form method="dialog">` for dismissible notices, popovers anchored with CSS anchor positioning Block classes keep the `mk-` prefix (from the section's former name, Marketing) so consumer markup stays stable
 
 Every section except Introduction (and the section holding the current
 page) renders **collapsed** - on every page. Only Introduction remembers a

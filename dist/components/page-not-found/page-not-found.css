@@ -1,0 +1,41 @@
+/* -- 404 Page (website · Account & States) --------------------------------
+   Tells visitors the page does not exist and helps them on - a big 404, a search, the most useful links and the way home. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-page-not-found, .mk-page-not-found *, .mk-page-not-found ::before, .mk-page-not-found ::after) { box-sizing: border-box; }
+
+  .mk-page-not-found { container: mk-page-not-found / inline-size; position: relative; isolation: isolate; display: grid; justify-items: center; gap: 1.25rem; width: 100%; padding: 3rem 1.5rem; overflow: hidden; text-align: center; }
+  .mk-page-not-found-code { margin: 0; font-size: clamp(5rem, 22cqi, 10rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 2px color-mix(in oklch, var(--foreground) 25%, transparent); font-variant-numeric: tabular-nums; }
+  .mk-page-not-found-title { margin: 0; font-size: 1.875rem; font-weight: 700; letter-spacing: -0.02em; }
+  .mk-page-not-found-text { margin: 0; max-width: 28rem; color: var(--muted-foreground); text-wrap: pretty; }
+  .mk-page-not-found-search { display: flex; gap: 0.5rem; width: 100%; max-width: 24rem;
+    & .input { flex: 1; min-width: 0; }
+  }
+  .mk-page-not-found-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 0.5rem; width: 100%; max-width: 36rem; margin: 0.5rem 0 0; padding: 0; list-style: none; text-align: start;
+    & a { display: grid; gap: 0.125rem; padding: 0.875rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); color: inherit; text-decoration: none; transition: border-color 150ms ease; }
+    & a:hover { border-color: color-mix(in oklch, var(--foreground) 30%, var(--border)); }
+    & a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    & strong { display: flex; align-items: center; gap: 0.375rem; font-size: 0.9375rem; }
+    & strong svg { width: 1rem; height: 1rem; }
+    & span { color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+
+  .mk-page-not-found[data-variant="illustrated"] {
+    padding-block: 6rem;
+
+    & .mk-page-not-found-code { position: absolute; top: 50%; left: 50%; z-index: -1; translate: -50% -55%; font-size: clamp(9rem, 45cqi, 22rem); -webkit-text-stroke: 0; background: linear-gradient(180deg, color-mix(in oklab, var(--chart-1) 30%, transparent), transparent 85%); -webkit-background-clip: text; background-clip: text; }
+  }
+  .mk-page-not-found[data-variant="minimal"] { gap: 0.75rem; padding-block: 2rem;
+    & .mk-page-not-found-code { font-size: 4rem; -webkit-text-stroke: 0; color: var(--muted-foreground); }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-page-not-found-links a { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-page-not-found-code { -webkit-text-stroke-color: CanvasText; background: none; color: GrayText; }
+  }
+}

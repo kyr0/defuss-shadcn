@@ -1,0 +1,97 @@
+---
+title: "Case Preview"
+description: "Summarizes one case study and links to its full account - the client, the headline result and a picture, as a card or a wide row."
+slug: "case-preview"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="case-preview" title="Case Preview" component="case-preview">
+  Summarizes one case study and links to its full account - the client, the headline result and a picture, as a card or a wide row. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="case-preview">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: a picture, the client mark and industry Badge, a title link that covers the card and the headline metric.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="media with its caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-case-preview</code>
+    <code>.mk-case-preview-title</code>
+    <code>.mk-case-preview-media</code>
+    <code>.mk-case-preview-body</code>
+    <code>.mk-case-preview-meta</code>
+    <code>.mk-case-preview-logo</code>
+    <code>.mk-case-preview-metric</code>
+    <code>.mk-case-preview-more</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="wide"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Grid" hint="Default cards: a picture that zooms a little on hover, the client and industry, the title link (it covers the card) and the headline metric." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1.25rem;width:100%">
+  <article class="mk-case-preview">
+    <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-nw/800/500" alt=""></figure>
+    <div class="mk-case-preview-body">
+      <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Northwind</span><span class="badge" data-variant="outline">Logistics</span></div>
+      <h3 class="mk-case-preview-title"><a href="#">How Northwind cut planning meetings in half</a></h3>
+      <p class="mk-case-preview-metric"><strong>−52%</strong> meeting time</p>
+      <span class="mk-case-preview-more" aria-hidden="true">Read the case study <i data-lucide="arrow-up-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-case-preview">
+    <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-gx/800/500" alt=""></figure>
+    <div class="mk-case-preview-body">
+      <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Globex</span><span class="badge" data-variant="outline">Research</span></div>
+      <h3 class="mk-case-preview-title"><a href="#">Globex brings 400 researchers onto one wiki</a></h3>
+      <p class="mk-case-preview-metric"><strong>400</strong> researchers</p>
+      <span class="mk-case-preview-more" aria-hidden="true">Read the case study <i data-lucide="arrow-up-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-case-preview">
+    <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-it/800/500" alt=""></figure>
+    <div class="mk-case-preview-body">
+      <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Initech</span><span class="badge" data-variant="outline">SaaS</span></div>
+      <h3 class="mk-case-preview-title"><a href="#">Initech ships weekly instead of quarterly</a></h3>
+      <p class="mk-case-preview-metric"><strong>12×</strong> more releases</p>
+      <span class="mk-case-preview-more" aria-hidden="true">Read the case study <i data-lucide="arrow-up-right"></i></span>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Wide" hint="data-variant='wide': the picture beside the text - one featured story." previewStyle="align-items:stretch;"
+<article class="mk-case-preview" data-variant="wide">
+  <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-um/1000/700" alt=""></figure>
+  <div class="mk-case-preview-body">
+    <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Umbrella</span><span class="badge" data-variant="outline">Healthcare</span></div>
+    <h3 class="mk-case-preview-title"><a href="#">Umbrella Health moved 2,000 clinicians off email for handovers</a></h3>
+    <p class="mk-case-preview-metric"><strong>3 h</strong> saved per clinician, every week</p>
+    <span class="mk-case-preview-more" aria-hidden="true">Read the case study <i data-lucide="arrow-up-right"></i></span>
+  </div>
+</article>
+```
+
+<SourceFiles component="case-preview" section="css" />
+
+</DocPage>

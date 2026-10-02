@@ -1,0 +1,28 @@
+/* -- Search Summary (website · Search & Navigation) -----------------------
+   Shows the active query and number of matches - the count, the query, a "did you mean", how long it took and how to clear it. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-search-summary, .mk-search-summary *, .mk-search-summary ::before, .mk-search-summary ::after) { box-sizing: border-box; }
+
+  .mk-search-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 1rem; padding-block: 0.75rem; border-block-end: 1px solid var(--border); font-size: 0.9375rem;
+    & p { margin: 0; }
+    & strong { font-weight: 700; }
+    & q { font-weight: 600; quotes: "“" "”"; }
+  }
+  .mk-search-summary-time { color: var(--muted-foreground); font-size: 0.8125rem; }
+  .mk-search-summary-suggest { flex-basis: 100%; color: var(--muted-foreground); font-size: 0.875rem;
+    & a { color: var(--primary); font-weight: 600; font-style: italic; }
+  }
+  .mk-search-summary-clear { margin-inline-start: auto; color: var(--muted-foreground); font-size: 0.8125rem;
+    &:hover { color: var(--foreground); }
+  }
+  .mk-search-summary[data-variant="compact"] { padding-block: 0.375rem; border: 0; font-size: 0.8125rem; color: var(--muted-foreground);
+    & strong { color: var(--foreground); }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-search-summary { border-color: CanvasText; }
+  }
+}

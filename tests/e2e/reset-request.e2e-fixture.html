@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>reset-request e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/reset-request/reset-request.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-reset-request" aria-labelledby="rr-title">
+  <div class="mk-reset-request-head"><span class="mk-reset-request-icon"><i data-lucide="key-round"></i></span><h1 id="rr-title">Forgot your password?</h1><p>Enter your email and we'll send you a link to reset it.</p></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="rr-email">Email</label><input class="input" id="rr-email" type="email" name="email" autocomplete="email" required></div>
+    <button class="btn" type="submit">Send reset link</button>
+  </form>
+  <a class="mk-reset-request-back" href="#"><i data-lucide="arrow-left"></i> Back to sign in</a>
+</section>
+    </section>
+    <!-- Sent -->
+    <section class="fx">
+<section class="mk-reset-request" data-variant="sent" role="status" aria-labelledby="rr2-title">
+  <div class="mk-reset-request-head"><span class="mk-reset-request-icon"><i data-lucide="mail-check"></i></span><h1 id="rr2-title">Check your inbox</h1><p>If an account exists for <strong>anna@example.com</strong>, a reset link is on its way. It expires in 30 minutes.</p></div>
+  <a class="btn" href="#">Open email app</a>
+  <p class="mk-reset-request-foot">Nothing arrived? <a href="#">Send it again</a></p>
+</section>
+    </section>
+  </body>
+</html>

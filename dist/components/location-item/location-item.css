@@ -1,0 +1,44 @@
+/* -- Location Item (website · Events & Promotions) ------------------------
+   Presents one physical location with its address and directions - the address, whether it is open now, the phone and a directions link. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-location-item, .mk-location-item *, .mk-location-item ::before, .mk-location-item ::after) { box-sizing: border-box; }
+
+  .mk-location-item { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); }
+  .mk-location-item-media { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .mk-location-item-body { display: grid; gap: 0.625rem; padding: 1.25rem; }
+  .mk-location-item-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .mk-location-item-name { margin: 0; font-size: 1.0625rem; font-weight: 600; }
+  .mk-location-item-distance { color: var(--muted-foreground); font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .mk-location-item-address { color: var(--muted-foreground); font-size: 0.9375rem; font-style: normal; line-height: 1.55; }
+  .mk-location-item-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 3px color-mix(in oklch, #16a34a 20%, transparent); }
+    &[data-status="open"] { color: #15803d; }
+    &[data-status="closed"] { color: var(--muted-foreground); }
+    &[data-status="closed"]::before { background: var(--muted-foreground); box-shadow: none; }
+  }
+  .mk-location-item-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 0.25rem; }
+
+  .mk-location-item[data-variant="compact"] {
+    & .mk-location-item-body { grid-template-columns: minmax(0, 1fr) auto; column-gap: 1.5rem; padding: 1rem 1.25rem; }
+    & .mk-location-item-head, & .mk-location-item-address, & .mk-location-item-status { grid-column: 1; }
+    & .mk-location-item-actions { grid-column: 2; grid-row: 1 / span 3; flex-direction: column; align-self: center; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-location-item { border-color: CanvasText; }
+    .mk-location-item-status::before { forced-color-adjust: none; }
+  }
+}

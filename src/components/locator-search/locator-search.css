@@ -1,0 +1,47 @@
+/* -- Locator Search (website · Events & Promotions) -----------------------
+   Finds nearby locations using an address or current position - a search with "use my location", a radius and the results. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-locator-search, .mk-locator-search *, .mk-locator-search ::before, .mk-locator-search ::after) { box-sizing: border-box; }
+
+  .mk-locator-search { container: mk-locator-search / inline-size; display: grid; gap: 1.25rem; width: 100%; }
+  .mk-locator-search-form {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+  .mk-locator-search-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: end; }
+  .mk-locator-search-field { display: grid; gap: 0.375rem; flex: 1 1 14rem;
+    & + .mk-locator-search-field { flex: 0 1 9rem; }
+  }
+  .mk-locator-search-query { position: relative;
+    & svg { position: absolute; inset-inline-start: 0.75rem; top: 50%; translate: 0 -50%; width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
+    & .input { padding-inline-start: 2.25rem; }
+  }
+  .mk-locator-search-geo { display: inline-flex; align-items: center; gap: 0.375rem; width: fit-content; padding: 0; border: 0; background: none; color: var(--primary); font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { text-decoration: underline; text-underline-offset: 3px; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
+  .mk-locator-search-summary { color: var(--muted-foreground); font-size: 0.875rem;
+    & strong { color: var(--foreground); }
+  }
+  .mk-locator-search-results { display: grid; gap: 0.75rem; }
+
+  .mk-locator-search[data-variant="inline"] .mk-locator-search-form { padding: 0.5rem; border-radius: 999px; box-shadow: var(--shadow-lg);
+    & .mk-locator-search-row { flex-wrap: nowrap; align-items: center; }
+    & .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    & .input, & .select { border-color: transparent; box-shadow: none; }
+    & .btn { border-radius: 999px; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-locator-search-form { border-color: CanvasText; }
+  }
+}

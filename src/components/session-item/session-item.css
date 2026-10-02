@@ -1,0 +1,84 @@
+/* -- Session Item (website · Events & Promotions) -------------------------
+   Presents one scheduled session with its time, topic, and speakers - with its track, room and an "add to my schedule" toggle; breaks and keynotes styled apart. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-session-item, .mk-session-item *, .mk-session-item ::before, .mk-session-item ::after) { box-sizing: border-box; }
+
+  .mk-session-item {
+    --mk-session-color: var(--chart-1);
+
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 1rem 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-inline-start: 3px solid var(--mk-session-color);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+  }
+  .mk-session-item-time { display: grid; font-variant-numeric: tabular-nums; line-height: 1.3;
+    & time { font-size: 1.0625rem; font-weight: 700; }
+    & span { color: var(--muted-foreground); font-size: 0.875rem; }
+    & small { margin-block-start: 0.25rem; color: var(--muted-foreground); font-size: 0.75rem; }
+  }
+  .mk-session-item-body { display: grid; gap: 0.5rem; }
+  .mk-session-item-track { width: fit-content; padding: 0.0625rem 0.5rem; border-radius: 999px; background: color-mix(in oklch, var(--mk-session-color) 15%, transparent); color: color-mix(in oklab, var(--mk-session-color) 70%, var(--foreground)); font-size: 0.75rem; font-weight: 700; }
+  .mk-session-item-title { margin: 0; font-size: 1.0625rem; font-weight: 600; text-wrap: balance; }
+  .mk-session-item-desc { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; line-height: 1.6; text-wrap: pretty; }
+  .mk-session-item-speakers { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; font-weight: 500;
+    & li { display: inline-flex; align-items: center; gap: 0.5rem; }
+  }
+  .mk-session-item-room { display: inline-flex; align-items: center; gap: 0.375rem; color: var(--muted-foreground); font-size: 0.8125rem;
+    & svg { width: 0.875rem; height: 0.875rem; }
+  }
+
+  /* the save toggle: a checkbox in a button-like label */
+  .mk-session-item-save {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 2rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+
+    & input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    & span { display: inline-flex; align-items: center; gap: 0.25rem; }
+    & svg { width: 0.875rem; height: 0.875rem; }
+    & .mk-session-item-save-on { display: none; }
+    &:has(input:checked) { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+    &:has(input:checked) .mk-session-item-save-off { display: none; }
+    &:has(input:checked) .mk-session-item-save-on { display: inline-flex; }
+    &:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  .mk-session-item[data-variant="keynote"] {
+    border-color: color-mix(in oklab, var(--mk-session-color) 40%, var(--border));
+    background: color-mix(in oklab, var(--mk-session-color) 8%, var(--card));
+
+    & .mk-session-item-title { font-size: 1.375rem; letter-spacing: -0.02em; }
+  }
+  .mk-session-item[data-variant="break"] {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    padding-block: 0.75rem;
+    border-style: dashed;
+    border-inline-start: 1px dashed var(--border);
+    background: transparent;
+    color: var(--muted-foreground);
+
+    & .mk-session-item-title { font-size: 0.9375rem; font-weight: 500; }
+    & .mk-session-item-time time { font-size: 0.9375rem; font-weight: 600; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-session-item { border-inline-start-color: CanvasText; }
+    .mk-session-item-save:has(input:checked) { background: Highlight; color: HighlightText; }
+  }
+}

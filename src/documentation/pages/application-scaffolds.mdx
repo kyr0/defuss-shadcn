@@ -1,0 +1,64 @@
+---
+title: "Application Scaffolds"
+description: "Complete, clickable application UIs built only from the shipped components - start a product from a working shell instead of a blank page."
+slug: "application-scaffolds"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="application-scaffolds" title="Application Scaffolds" introStyle="max-width:44rem;">
+  Clickdummies of whole applications - the shell, the navigation, real screens and the moments in between (palettes, sheets, dialogs, toasts) - composed only from the library's components. Open one, click through it, then copy the source and start building.
+</PageHeader>
+
+<h2 id="scaffolds" class="h2-display">Scaffolds</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(18rem,1fr))">
+  <a class="card" href="scaffold-admin-dashboard.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title">Admin Dashboard</h3>
+      <p class="card-description">A store admin: sidebar and ⌘K palette, KPIs with live charts, orders with tabs and bulk actions, customers, settings with a guarded danger zone - plus dark mode and a full-screen version.</p>
+    </div>
+    <div class="card-footer flex-wrap"><span class="badge" data-variant="secondary">Sidebar</span> <span class="badge" data-variant="secondary">Command</span> <span class="badge" data-variant="secondary">Chart</span> <span class="badge" data-variant="secondary">Table</span> <span class="badge" data-variant="secondary">Sheet</span></div>
+  </a>
+  <a class="card" href="scaffold-messenger.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title">Messenger</h3>
+      <p class="card-description">A WhatsApp-style messenger: chat list with filters, voice notes, photos, replies and reactions, live sending with read receipts and replies, calls, contact info and dark mode.</p>
+    </div>
+    <div class="card-footer flex-wrap"><span class="badge" data-variant="secondary">Session</span> <span class="badge" data-variant="secondary">Bubble</span> <span class="badge" data-variant="secondary">Textarea</span> <span class="badge" data-variant="secondary">Dialog</span> <span class="badge" data-variant="secondary">Popover</span></div>
+  </a>
+  <a class="card" href="scaffold-issue-tracker.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title">Issue Tracker</h3>
+      <p class="card-description">A Linear-style tracker: issues as a list or a drag-and-drop board, issue pages with editable properties and comments, right-click actions, C to create, J / K to move, inbox, cycles and projects.</p>
+    </div>
+    <div class="card-footer flex-wrap"><span class="badge" data-variant="secondary">Context Menu</span> <span class="badge" data-variant="secondary">Toggle Group</span> <span class="badge" data-variant="secondary">Command</span> <span class="badge" data-variant="secondary">Dialog</span> <span class="badge" data-variant="secondary">Select</span></div>
+  </a>
+  <a class="card" href="scaffold-notes.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title">Notes &amp; Docs</h3>
+      <p class="card-description">A Notion-style workspace: a page tree, a block editor with a slash menu, markdown shortcuts, a format bar and drag to move, sharing, favorites, trash and a database with table, board and gallery views.</p>
+    </div>
+    <div class="card-footer flex-wrap"><span class="badge" data-variant="secondary">Tree View</span> <span class="badge" data-variant="secondary">Context Menu</span> <span class="badge" data-variant="secondary">Toolbar</span> <span class="badge" data-variant="secondary">Sheet</span> <span class="badge" data-variant="secondary">Table</span></div>
+  </a>
+  <a class="card" href="scaffold-status-page.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title">Status Page</h3>
+      <p class="card-description">A Statuspage-style status page: overall status, incidents with timelines, maintenance with a countdown, 90-day uptime bars and metrics - plus the console that creates, updates and resolves incidents live.</p>
+    </div>
+    <div class="card-footer flex-wrap"><span class="badge" data-variant="secondary">Tabs</span> <span class="badge" data-variant="secondary">Countdown</span> <span class="badge" data-variant="secondary">Chart</span> <span class="badge" data-variant="secondary">Dialog</span> <span class="badge" data-variant="secondary">Radio</span></div>
+  </a>
+  <a class="card" href="scaffold-desktop.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title">Desktop</h3>
+      <p class="card-description">A Windows-style desktop: movable windows, a taskbar with start menu, quick settings and calendar, context menus for layout and theme, and working apps - an editor, a calculator, a browser and settings.</p>
+    </div>
+    <div class="card-footer flex-wrap"><span class="badge" data-variant="secondary">Window</span> <span class="badge" data-variant="secondary">Context Menu</span> <span class="badge" data-variant="secondary">Menubar</span> <span class="badge" data-variant="secondary">Calendar</span> <span class="badge" data-variant="secondary">Tabs</span></div>
+  </a>
+</div>
+
+<DocText>Every scaffold has a full-screen version (<DocLink href="app-admin-dashboard.html">admin dashboard</DocLink>, <DocLink href="app-messenger.html">messenger</DocLink>, <DocLink href="app-issue-tracker.html">issue tracker</DocLink>, <DocLink href="app-notes.html">notes &amp; docs</DocLink>, <DocLink href="app-status-page.html">status page</DocLink>, <DocLink href="app-desktop.html">desktop</DocLink>) generated from its page's example - the same source you read in the docs.</DocText>
+
+</DocPage>

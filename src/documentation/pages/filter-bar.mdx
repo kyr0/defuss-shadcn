@@ -1,0 +1,76 @@
+---
+title: "Filter Bar"
+description: "Presents compact controls for narrowing a collection - selects, toggle chips and a &quot;more filters&quot; action on one scrollable row, with the count."
+slug: "filter-bar"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="filter-bar" title="Filter Bar" component="filter-bar">
+  Presents compact controls for narrowing a collection - selects, toggle chips and a "more filters" action on one scrollable row, with the count. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="filter-bar">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form method="get"&gt;</code> in one row: native Selects, checkbox chips (<code>.mk-filter-bar-chip</code>), a "More filters" Button with a count, and the result count; it scrolls on small screens.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="select.html">Select</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap" title="rows that snap per item"><code>CSS scroll snap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-filter-bar</code>
+    <code>.mk-filter-bar-chip</code>
+    <code>.mk-filter-bar-sep</code>
+    <code>.mk-filter-bar-count</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="sticky"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A GET form on one row - native Selects as pills, checkbox chips (:has(:checked) fills them), &quot;More filters&quot; with a count, and the result count; the row scrolls sideways on small screens." previewStyle="align-items:stretch;"
+<div class="mk-filter-bar">
+  <form action="#" method="get" aria-label="Filters">
+    <select class="select" name="category" aria-label="Category"><option>All categories</option><option>Shirts</option><option>Knitwear</option></select>
+    <select class="select" name="price" aria-label="Price"><option>Any price</option><option>Under €50</option><option>€50 – €100</option></select>
+    <span class="mk-filter-bar-sep" aria-hidden="true"></span>
+    <label class="mk-filter-bar-chip"><input type="checkbox" name="sale" checked><i data-lucide="percent"></i>On sale</label>
+    <label class="mk-filter-bar-chip"><input type="checkbox" name="new">New in</label>
+    <label class="mk-filter-bar-chip"><input type="checkbox" name="organic">Organic</label>
+    <button class="btn" data-variant="outline" data-size="sm" type="button"><i data-lucide="sliders-horizontal"></i> More filters <span class="badge" data-variant="secondary" data-size="sm">2</span></button>
+    <output class="mk-filter-bar-count">36 products</output>
+  </form>
+</div>
+```
+
+```html example label="Sticky" height="20" hint="data-variant='sticky': sticks to the top of its scroll container on a blurred surface - scroll the box." previewStyle="align-items:stretch;"
+<div style="max-height:16rem;overflow:auto;width:100%;border:1px solid var(--border);border-radius:var(--radius-md)">
+  <div class="mk-filter-bar" data-variant="sticky">
+    <form action="#" method="get" aria-label="Filters" style="padding-inline:0.75rem">
+      <label class="mk-filter-bar-chip"><input type="checkbox" name="open" checked>Open now</label>
+      <label class="mk-filter-bar-chip"><input type="checkbox" name="wifi">Wi-Fi</label>
+      <label class="mk-filter-bar-chip"><input type="checkbox" name="quiet">Quiet</label>
+      <output class="mk-filter-bar-count">12 cafés</output>
+    </form>
+  </div>
+  <div style="padding:1rem;display:grid;gap:0.75rem"><p style="margin:0;color:var(--muted-foreground)">Café 1</p><p style="margin:0;color:var(--muted-foreground)">Café 2</p><p style="margin:0;color:var(--muted-foreground)">Café 3</p><p style="margin:0;color:var(--muted-foreground)">Café 4</p><p style="margin:0;color:var(--muted-foreground)">Café 5</p><p style="margin:0;color:var(--muted-foreground)">Café 6</p><p style="margin:0;color:var(--muted-foreground)">Café 7</p><p style="margin:0;color:var(--muted-foreground)">Café 8</p><p style="margin:0;color:var(--muted-foreground)">Café 9</p><p style="margin:0;color:var(--muted-foreground)">Café 10</p></div>
+</div>
+```
+
+<SourceFiles component="filter-bar" section="css" />
+
+</DocPage>

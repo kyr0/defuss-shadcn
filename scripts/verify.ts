@@ -33,7 +33,7 @@ import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from '.
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
-import { docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile } from './lib/docs-ssg.ts';
+import { docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 import { versionDrift } from './lib/version-sites.ts';
 import {
@@ -173,8 +173,10 @@ for (const [page, html] of docHtml) {
         ? existsSync(join(COMPS, comp, `${comp}.css`)) && readFileSync(join(COMPS, comp, `${comp}.css`), 'utf8')
         : existsSync(join(COMPS, comp, `${comp}.ts`)) && readFileSync(join(COMPS, comp, `${comp}.ts`), 'utf8');
     if (!expected) continue;
-    const shown = section.querySelector('pre > code')?.textContent ?? '';
-    if (shown !== expected) {
+    // the listing is a Code Mockup: one <pre><code> per source line
+    const lines = [...section.querySelectorAll('.mockup-code > pre > code')].map((c) => c.textContent ?? '');
+    const shown = lines.length ? lines.join('\n') : (section.querySelector('pre > code')?.textContent ?? '');
+    if (shown !== expected.replace(/\n+$/, '')) {
       snippetProblems.push(`${page} - #source-${ext} listing differs from src/components/${comp}/${comp}.${ext === 'css' ? 'css' : 'ts'} (rebuild docs)`);
     }
   }
@@ -252,7 +254,7 @@ check(
 // the chrome-free standalone decks, which are frames of a page that IS in the
 // sidebar (their own .mdx), never navigation targets themselves
 const navSrc = readFileSync(join(DOCS, 'lib/nav.ts'), 'utf8');
-const standaloneDeckPages = new Set(STANDALONE_DECKS.map(standaloneDeckFile));
+const standaloneDeckPages = new Set([...STANDALONE_DECKS.map(standaloneDeckFile), ...STANDALONE_APPS.map(standaloneAppFile)]);
 check(
   'sidebar coverage',
   docPages.filter((p) => !standaloneDeckPages.has(p) && !navSrc.includes(`'${p}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
@@ -337,6 +339,25 @@ check(
   'minified artifacts',
   artifactProblems.slice(0, 8),
   'run `bun run build` (compiles + minifies via scripts/minify.ts; `make minify` for the post-pass alone)',
+);
+
+// 10b. scroll-driven animations survive minification: the minifier folds an
+// `animation-timeline` declared next to the `animation` shorthand INTO the
+// shorthand, where the timeline is reset-only - browsers drop the whole
+// declaration and the effect silently dies in the minified bundle only (the
+// unminified per-component files - and their e2e fixtures - still work). A
+// news-header overflow hint and the article reading bar were lost that way.
+const timelineProblems = existsSync(DIST)
+  ? walk(DIST, ['.min.css']).flatMap((f) =>
+      [...readFileSync(f, 'utf8').matchAll(/animation:[^;}]*\b(?:scroll|view)\([^;}]*/g)].map(
+        (m) => `${relative(ROOT, f)}: ${m[0].slice(0, 80)}`,
+      ),
+    )
+  : [];
+check(
+  'scroll timelines survive minify',
+  timelineProblems.slice(0, 8),
+  'declare `animation-timeline` in its own rule - `@supports (animation-timeline: scroll()) { .x { animation-timeline: scroll(…); } }` - so the minifier cannot fold it into the `animation` shorthand',
 );
 
 // 10d. dist/stats.json must match the CURRENT dist/components/ tree - it is
@@ -1241,13 +1262,13 @@ check(
   
   // 28. component boundary: dialog.js init() claims dialogs generically via a
   // :not(...) selector - every component that owns its own <dialog> (command,
-  // alert-dialog, sheet, window) must be excluded there, or dialog.js - loaded first on
+  // alert-dialog, sheet, window, cookie-consent) must be excluded there, or dialog.js - loaded first on
   // every page - stamps data-init and the real owner's init() silently skips
   // the element (this exact bug disabled the docs search palette once).
   {
     const dialogSrc = readFileSync(join(COMPS, 'dialog', 'dialog.ts'), 'utf8');
     const claim = dialogSrc.match(/querySelectorAll\((['"])dialog:not\([\s\S]*?\1\)/);
-    const owned = ['alert-dialog', 'sheet', 'command', 'window'].filter(
+    const owned = ['alert-dialog', 'sheet', 'command', 'window', 'cookie-consent-dialog'].filter(
       (c) => claim && !claim[0].includes(`not(.${c})`),
     );
     check(

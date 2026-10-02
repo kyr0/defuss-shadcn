@@ -1,0 +1,81 @@
+/* -- Offer Banner (website · Events & Promotions) -------------------------
+   Presents a promotion with its conditions and action - a gradient card, a slim ribbon or a coupon with a tear-off edge. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-offer-banner, .mk-offer-banner *, .mk-offer-banner ::before, .mk-offer-banner ::after) { box-sizing: border-box; }
+
+  .mk-offer-banner { container: mk-offer-banner / inline-size; width: 100%; }
+  .mk-offer-banner-inner {
+    display: grid;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(60% 120% at 0% 0%, color-mix(in oklch, var(--chart-1) 32%, transparent), transparent 70%),
+      radial-gradient(60% 120% at 100% 100%, color-mix(in oklch, var(--chart-3) 28%, transparent), transparent 70%),
+      var(--card);
+    border: 1px solid var(--border);
+  }
+  .mk-offer-banner-discount { font-size: clamp(3rem, 10cqi, 5rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+  .mk-offer-banner-copy { display: grid; gap: 0.5rem; }
+  .mk-offer-banner-title { margin: 0; font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
+  .mk-offer-banner-terms { color: var(--muted-foreground); font-size: 0.8125rem; line-height: 1.5; }
+  .mk-offer-banner-action { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .mk-offer-banner-code {
+    padding: 0.375rem 0.75rem;
+    border: 1.5px dashed currentColor;
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    user-select: all;
+  }
+
+  .mk-offer-banner[data-variant="ribbon"] .mk-offer-banner-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    padding: 0.625rem 1rem;
+    border: 0;
+    border-radius: 0;
+    background: linear-gradient(90deg, var(--chart-1), var(--chart-3));
+    color: #fff;
+    font-size: 0.875rem;
+    text-align: center;
+
+    & .mk-offer-banner-title { font-size: 0.875rem; font-weight: 600; }
+    & .mk-offer-banner-code { padding: 0.0625rem 0.5rem; font-size: 0.8125rem; border-color: oklch(1 0 0 / 0.7); }
+    & .mk-offer-banner-terms { color: oklch(1 0 0 / 0.85); }
+  }
+
+  /* coupon: notched edges and a dashed tear line */
+  .mk-offer-banner[data-variant="coupon"] .mk-offer-banner-inner {
+    --_notch: 0.875rem;
+
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    background: color-mix(in oklab, var(--chart-4) 18%, var(--card));
+    mask:
+      radial-gradient(circle at 0 50%, #0000 var(--_notch), #000 calc(var(--_notch) + 0.5px)) left / 51% 100% no-repeat,
+      radial-gradient(circle at 100% 50%, #0000 var(--_notch), #000 calc(var(--_notch) + 0.5px)) right / 51% 100% no-repeat;
+
+    & .mk-offer-banner-discount { display: grid; place-items: center; height: 100%; padding: 1.5rem 2rem; border-inline-end: 2px dashed color-mix(in oklch, var(--foreground) 25%, transparent); font-size: clamp(2.25rem, 7cqi, 3.5rem); }
+    & .mk-offer-banner-copy { padding: 1.5rem 2rem; }
+  }
+
+  @container mk-offer-banner (min-width: 44rem) {
+    .mk-offer-banner:not([data-variant]) .mk-offer-banner-inner { grid-template-columns: auto minmax(0, 1fr) auto; gap: 2.5rem; padding: 2rem 2.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-offer-banner-inner { border: 1px solid CanvasText; }
+    .mk-offer-banner[data-variant="coupon"] .mk-offer-banner-inner { mask: none; }
+  }
+}

@@ -99,6 +99,21 @@ try {
     assert.ok(mirror && Math.abs(Number(mirror) - 300) <= 2, `data-width mirrors the box (${mirror})`);
   });
 
+  await check('divider: the e handle is a full-height strip with no chip; dragging draws no outline; a double-click resets', async () => {
+    const h = page.locator('#rz-div .resizer-handle[data-handle="e"]');
+    const g = await h.evaluate((el) => { const cs = getComputedStyle(el); return { h: Math.round(el.getBoundingClientRect().height), bw: cs.borderTopWidth, cursor: cs.cursor, line: getComputedStyle(el, '::before').opacity }; });
+    assert.deepEqual(g, { h: 140, bw: '0px', cursor: 'col-resize', line: '0' });
+    await drag(page, h, 50);
+    assert.ok(Math.abs((await sizeOf(boxOf(page, 'rz-div-box')))[0] - 230) <= 2);
+    const outline = await page.$eval('#rz-div', (w) => { w.setAttribute('data-resizing', ''); const o = getComputedStyle(w).outlineStyle; w.removeAttribute('data-resizing'); return o; });
+    assert.equal(outline, 'none');
+    await h.dblclick();
+    assert.equal((await sizeOf(boxOf(page, 'rz-div-box')))[0], 180);
+    await h.focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal((await sizeOf(boxOf(page, 'rz-div-box')))[0], 190, 'with data-keys=edge ArrowRight moves the e edge right');
+  });
+
   await check('keyboard parity: ArrowRight +10, End=clamp max, Home=min', async () => {
     const h = page.locator('#rz-px .resizer-handle[data-handle="e"]');
     await h.focus();

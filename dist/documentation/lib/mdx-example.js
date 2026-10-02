@@ -103,6 +103,8 @@ function codeExampleNode(node, pageComponent) {
         attributes.push(jsxAttr('mode', attrs.mode));
     if (attrs.previewStyle)
         attributes.push(jsxAttr('previewStyle', attrs.previewStyle));
+    if (attrs.sandbox)
+        attributes.push(jsxAttr('sandbox', attrs.sandbox));
     return { type: 'mdxJsxFlowElement', name: 'CodeExample', attributes, children: [] };
 }
 function statesTableNode(node) {

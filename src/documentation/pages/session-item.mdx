@@ -1,0 +1,99 @@
+---
+title: "Session Item"
+description: "Presents one scheduled session with its time, topic, and speakers - with its track, room and an &quot;add to my schedule&quot; toggle; breaks and keynotes styled apart."
+slug: "session-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="session-item" title="Session Item" component="session-item">
+  Presents one scheduled session with its time, topic, and speakers - with its track, room and an "add to my schedule" toggle; breaks and keynotes styled apart. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="session-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: a time column (<code>&lt;time&gt;</code> start, end, duration), the track (colored by <code>--mk-session-color</code>), title, description, speakers (Avatars) and room, and a checkbox labelled "Add … to my schedule".</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-session-item</code>
+    <code>.mk-session-item-time</code>
+    <code>.mk-session-item-body</code>
+    <code>.mk-session-item-track</code>
+    <code>.mk-session-item-title</code>
+    <code>.mk-session-item-desc</code>
+    <code>.mk-session-item-speakers</code>
+    <code>.mk-session-item-room</code>
+    <code>.mk-session-item-save</code>
+    <code>.mk-session-item-save-on</code>
+    <code>.mk-session-item-save-off</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>keynote</code>, <code>break</code>; <code>--mk-session-color</code> for the track.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Agenda" hint="A day of sessions: time column, track in its color (--mk-session-color), title, speakers, room and an &quot;Add&quot; toggle - a real checkbox, :has(:checked) swaps it to &quot;Added&quot;. A keynote (data-variant=&quot;keynote&quot;) and a break (data-variant=&quot;break&quot;) are styled apart." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.75rem;width:100%">
+  <article class="mk-session-item" data-variant="keynote" aria-labelledby="ss-1" style="--mk-session-color:oklch(0.6 0.2 300)">
+    <div class="mk-session-item-time"><time datetime="2026-11-12T09:30">09:30</time><span>10:15</span><small>45 min</small></div>
+    <div class="mk-session-item-body">
+      <span class="mk-session-item-track">Keynote</span>
+      <h3 class="mk-session-item-title" id="ss-1">The quiet product: building for attention, not engagement</h3>
+      <ul class="mk-session-item-speakers"><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>Priya Natarajan</li></ul>
+      <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Main hall</span>
+    </div>
+    <label class="mk-session-item-save"><input type="checkbox" name="schedule" value="ss-1" checked><span class="mk-session-item-save-off"><i data-lucide="plus"></i> Add</span><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span><span class="sr-only"> The quiet product: building for attention, not engagement to my schedule</span></label>
+  </article>
+  <article class="mk-session-item" data-variant="break" aria-labelledby="ss-b">
+    <div class="mk-session-item-time"><time datetime="2026-11-12T10:15">10:15</time><span>10:45</span><small>30 min</small></div>
+    <div class="mk-session-item-body">
+      <h3 class="mk-session-item-title" id="ss-b">Coffee break ☕</h3>
+    </div>
+  </article>
+  <article class="mk-session-item" aria-labelledby="ss-2" style="--mk-session-color:oklch(0.62 0.17 240)">
+    <div class="mk-session-item-time"><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div>
+    <div class="mk-session-item-body">
+      <span class="mk-session-item-track">Engineering</span>
+      <h3 class="mk-session-item-title" id="ss-2">Sync that never fails</h3>
+      <p class="mk-session-item-desc">How a CRDT engine survives trains, tunnels and transatlantic flights.</p>
+      <ul class="mk-session-item-speakers"><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>Sophie Tan</li></ul>
+      <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Room A</span>
+    </div>
+    <label class="mk-session-item-save"><input type="checkbox" name="schedule" value="ss-2"><span class="mk-session-item-save-off"><i data-lucide="plus"></i> Add</span><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span><span class="sr-only"> Sync that never fails to my schedule</span></label>
+  </article>
+  <article class="mk-session-item" aria-labelledby="ss-3" style="--mk-session-color:oklch(0.65 0.17 30)">
+    <div class="mk-session-item-time"><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div>
+    <div class="mk-session-item-body">
+      <span class="mk-session-item-track">Design</span>
+      <h3 class="mk-session-item-title" id="ss-3">Every badge must earn its place</h3>
+      <p class="mk-session-item-desc">A field guide to quieter interfaces - with before and after.</p>
+      <ul class="mk-session-item-speakers"><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>Hannah Lee</li><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>Aron Homberg</li></ul>
+      <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Room B</span>
+    </div>
+    <label class="mk-session-item-save"><input type="checkbox" name="schedule" value="ss-3"><span class="mk-session-item-save-off"><i data-lucide="plus"></i> Add</span><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span><span class="sr-only"> Every badge must earn its place to my schedule</span></label>
+  </article>
+</div>
+```
+
+<SourceFiles component="session-item" section="css" />
+
+</DocPage>

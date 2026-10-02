@@ -1,0 +1,52 @@
+/* -- Delivery Options (website · Shop) ------------------------------------
+   Presents available delivery methods with costs and estimates - radio cards with an icon, the arrival window and the price. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-delivery-options, .mk-delivery-options *, .mk-delivery-options ::before, .mk-delivery-options ::after) { box-sizing: border-box; }
+
+  .mk-delivery-options { display: grid; gap: 0.625rem; margin: 0; padding: 0; border: 0; min-width: 0;
+    & legend { margin-block-end: 0.75rem; padding: 0; font-size: 1.0625rem; font-weight: 600; }
+  }
+  .mk-delivery-options-option {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: border-color 150ms ease, background-color 150ms ease;
+
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 30%, var(--border)); }
+    &:has(input:checked) { border-color: var(--primary); background: color-mix(in oklch, var(--primary) 5%, transparent); box-shadow: 0 0 0 1px var(--primary); }
+  }
+  .mk-delivery-options-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-md); background: var(--muted);
+    & svg { width: 1.125rem; height: 1.125rem; }
+  }
+  .mk-delivery-options-text { display: grid; gap: 0.125rem;
+    & strong { font-size: 0.9375rem; font-weight: 600; }
+    & small { color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+  .mk-delivery-options-price { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .mk-delivery-options[data-variant="grid"] {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+
+    & legend { grid-column: 1 / -1; }
+    & .mk-delivery-options-option { grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: start; }
+    & .mk-delivery-options-option input { grid-column: 2; grid-row: 1; }
+    & .mk-delivery-options-icon { grid-column: 1; grid-row: 1; }
+    & .mk-delivery-options-text, & .mk-delivery-options-price { grid-column: 1 / -1; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-delivery-options-option { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-delivery-options-option:has(input:checked) { border-color: Highlight; }
+  }
+}

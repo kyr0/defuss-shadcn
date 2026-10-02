@@ -1,0 +1,53 @@
+/* -- Event Description (website · Events & Promotions) --------------------
+   Explains an event's purpose, audience, and participation details - the story, who it is for, what you take away, and the practical facts. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-event-description, .mk-event-description *, .mk-event-description ::before, .mk-event-description ::after) { box-sizing: border-box; }
+
+  .mk-event-description { container: mk-event-description / inline-size; width: 100%; }
+  .mk-event-description-layout { display: grid; gap: 2.5rem; }
+  .mk-event-description-body { display: grid; gap: 2rem; min-width: 0;
+    & section { display: grid; gap: 0.75rem; }
+    & h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+    & p { margin: 0; color: var(--muted-foreground); line-height: 1.75; text-wrap: pretty; }
+  }
+  .mk-event-description-audience { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none;
+    & li { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; border-radius: 999px; background: var(--muted); font-size: 0.875rem; font-weight: 500; }
+    & svg { width: 0.875rem; height: 0.875rem; color: var(--primary); }
+  }
+  .mk-event-description-takeaways { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 0.75rem 1.5rem; margin: 0; padding: 0; list-style: none;
+    & li { display: flex; gap: 0.625rem; align-items: flex-start; line-height: 1.5; }
+    & svg { flex: none; width: 1.125rem; height: 1.125rem; margin-block-start: 0.125rem; color: #16a34a; }
+  }
+  .mk-event-description-facts {
+    display: grid;
+    gap: 1.25rem;
+    align-self: start;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & dl { display: grid; gap: 0.875rem; margin: 0; }
+    & dl div { display: flex; justify-content: space-between; gap: 1rem; padding-block-end: 0.875rem; border-block-end: 1px solid var(--border); font-size: 0.9375rem; }
+    & dt { color: var(--muted-foreground); }
+    & dd { margin: 0; font-weight: 500; text-align: end; }
+    & .btn { width: 100%; }
+  }
+  .mk-event-description-capacity { display: grid; gap: 0.375rem; font-size: 0.8125rem; color: var(--muted-foreground);
+    & meter { width: 100%; height: 0.5rem; }
+    & strong { color: var(--foreground); }
+  }
+
+  @container mk-event-description (min-width: 52rem) {
+    .mk-event-description-layout { grid-template-columns: minmax(0, 1fr) 20rem; gap: 4rem; }
+    .mk-event-description-facts { position: sticky; top: 1.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-event-description-facts { border-color: CanvasText; }
+  }
+}

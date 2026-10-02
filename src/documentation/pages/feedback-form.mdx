@@ -1,0 +1,83 @@
+---
+title: "Feedback Form"
+description: "Collects a rating or written feedback about an experience - faces and topics on a card, a 0–10 recommendation scale, or &quot;was this helpful?&quot; inline."
+slug: "feedback-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="feedback-form" title="Feedback Form" component="feedback-form">
+  Collects a rating or written feedback about an experience - faces and topics on a card, a 0–10 recommendation scale, or "was this helpful?" inline. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="feedback-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code> with a <code>&lt;fieldset&gt;</code> of radios (faces, 0–10 or yes / no), optional topic checkboxes as chips and a Textarea. The inline variant shows its thank-you through <code>:has(:checked)</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="textarea.html">Textarea</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-feedback-form</code>
+    <code>.mk-feedback-form-faces</code>
+    <code>.mk-feedback-form-chips</code>
+    <code>.mk-feedback-form-scale</code>
+    <code>.mk-feedback-form-ends</code>
+    <code>.mk-feedback-form-yesno</code>
+    <code>.mk-feedback-form-thanks</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>nps</code>, <code>inline</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Five faces (radios named &quot;Very bad&quot; … &quot;Great&quot; - the emoji are never the only name; the choice gets color and a ring), topic chips (checkboxes) and a comment." previewStyle="align-items:stretch;"
+<section class="mk-feedback-form" aria-labelledby="fb-title">
+  <h2 id="fb-title">How was your first week with Acme?</h2>
+  <form action="#" method="post">
+    <fieldset><legend class="sr-only">Your rating</legend><div class="mk-feedback-form-faces"><label><input type="radio" name="rating" value="1" aria-label="Very bad" required>😞</label><label><input type="radio" name="rating" value="2" aria-label="Bad" required>🙁</label><label><input type="radio" name="rating" value="3" aria-label="Okay" required>😐</label><label><input type="radio" name="rating" value="4" aria-label="Good" checked required>🙂</label><label><input type="radio" name="rating" value="5" aria-label="Great" required>😍</label></div></fieldset>
+    <fieldset><legend>What could be better?</legend><div class="mk-feedback-form-chips"><label><input type="checkbox" name="topics" value="speed">Speed</label><label><input type="checkbox" name="topics" value="search" checked>Search</label><label><input type="checkbox" name="topics" value="onboarding">Onboarding</label><label><input type="checkbox" name="topics" value="mobile app">Mobile app</label><label><input type="checkbox" name="topics" value="pricing">Pricing</label></div></fieldset>
+    <div style="display:grid;gap:0.375rem"><label class="label" for="fb-text">Anything else?</label><textarea class="textarea" id="fb-text" name="comment" rows="3"></textarea></div>
+    <button class="btn" type="submit">Send feedback</button>
+  </form>
+</section>
+```
+
+```html example label="NPS" hint="data-variant='nps': a 0–10 radio scale with the meaning of both ends written out." previewStyle="align-items:stretch;"
+<section class="mk-feedback-form" data-variant="nps" aria-labelledby="fb2-title">
+  <form action="#" method="post">
+    <fieldset>
+      <legend id="fb2-title">How likely are you to recommend Acme to a colleague?</legend>
+      <div class="mk-feedback-form-scale"><label><input type="radio" name="nps" value="0" required>0</label><label><input type="radio" name="nps" value="1" required>1</label><label><input type="radio" name="nps" value="2" required>2</label><label><input type="radio" name="nps" value="3" required>3</label><label><input type="radio" name="nps" value="4" required>4</label><label><input type="radio" name="nps" value="5" required>5</label><label><input type="radio" name="nps" value="6" required>6</label><label><input type="radio" name="nps" value="7" required>7</label><label><input type="radio" name="nps" value="8" required>8</label><label><input type="radio" name="nps" value="9" checked required>9</label><label><input type="radio" name="nps" value="10" required>10</label></div>
+      <div class="mk-feedback-form-ends" aria-hidden="true"><span>0 · Not at all likely</span><span>10 · Extremely likely</span></div>
+    </fieldset>
+    <button class="btn" type="submit">Submit</button>
+  </form>
+</section>
+```
+
+```html example label="Was this helpful?" hint="data-variant='inline': Yes / No as radios - choosing one swaps the question for a thank-you (role=&quot;status&quot;) through :has(:checked), no script. Click one." previewStyle="align-items:stretch;"
+<form class="mk-feedback-form" data-variant="inline" action="#" method="post">
+  <fieldset><legend>Was this page helpful?</legend><div class="mk-feedback-form-yesno"><label><input type="radio" name="helpful" value="yes"><i data-lucide="thumbs-up"></i> Yes</label><label><input type="radio" name="helpful" value="no"><i data-lucide="thumbs-down"></i> No</label></div></fieldset>
+  <p class="mk-feedback-form-thanks" role="status">Thanks - your answer helps us improve this page.</p>
+</form>
+```
+
+<SourceFiles component="feedback-form" section="css" />
+
+</DocPage>

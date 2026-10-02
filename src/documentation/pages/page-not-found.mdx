@@ -1,0 +1,81 @@
+---
+title: "404 Page"
+description: "Tells visitors the page does not exist and helps them on - a big 404, a search, the most useful links and the way home."
+slug: "page-not-found"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="page-not-found" title="404 Page" component="page-not-found">
+  Tells visitors the page does not exist and helps them on - a big 404, a search, the most useful links and the way home. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="page-not-found">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code>: a large "404" (decorative, <code>aria-hidden</code>), an <code>&lt;h1&gt;</code>, one sentence, a <code>&lt;search&gt;</code> GET form, a list of helpful links and the way home.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search" title="the search landmark"><code>&lt;search&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-page-not-found</code>
+    <code>.mk-page-not-found-code</code>
+    <code>.mk-page-not-found-title</code>
+    <code>.mk-page-not-found-text</code>
+    <code>.mk-page-not-found-search</code>
+    <code>.mk-page-not-found-links</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>illustrated</code>, <code>minimal</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A large outlined 404 (decorative), the <h1>, a <search> GET form, the most useful destinations and the way home - all without script." previewStyle="align-items:stretch;"
+<section class="mk-page-not-found" aria-labelledby="nf-1">
+  <p class="mk-page-not-found-code" aria-hidden="true">404</p>
+  <h1 class="mk-page-not-found-title" id="nf-1">Page not found</h1>
+  <p class="mk-page-not-found-text">The page may have moved, or the link has a typo. Search, or start from one of these:</p>
+  <search><form class="mk-page-not-found-search" action="#" method="get"><label class="sr-only" for="nf-q">Search the site</label><input class="input" id="nf-q" type="search" name="q" placeholder="Search Acme" enterkeyhint="search"><button class="btn" type="submit">Search</button></form></search>
+  <ul class="mk-page-not-found-links">
+    <li><a href="#"><strong><i data-lucide="book-open"></i>Docs</strong><span>Guides and reference</span></a></li>
+    <li><a href="#"><strong><i data-lucide="tag"></i>Pricing</strong><span>Plans for every team</span></a></li>
+    <li><a href="#"><strong><i data-lucide="life-buoy"></i>Help center</strong><span>Answers in minutes</span></a></li>
+  </ul>
+  <a class="btn" data-variant="ghost" href="#"><i data-lucide="arrow-left"></i> Back to home</a>
+</section>
+```
+
+```html example label="Illustrated" hint="data-variant='illustrated': a giant 404 in a fading chart-color gradient behind the copy." previewStyle="align-items:stretch;"
+<section class="mk-page-not-found" data-variant="illustrated" aria-labelledby="nf-2">
+  <p class="mk-page-not-found-code" aria-hidden="true">404</p>
+  <h1 class="mk-page-not-found-title" id="nf-2">This page took a day off</h1>
+  <p class="mk-page-not-found-text">We couldn't find what you were looking for.</p>
+  <a class="btn" href="#">Take me home</a>
+</section>
+```
+
+```html example label="Minimal" hint="data-variant='minimal': the number, a title and the way home - for apps." previewStyle="align-items:stretch;"
+<section class="mk-page-not-found" data-variant="minimal" aria-labelledby="nf-3">
+  <p class="mk-page-not-found-code" aria-hidden="true">404</p>
+  <h1 class="mk-page-not-found-title" id="nf-3">Nothing here</h1>
+  <a class="btn" data-variant="outline" data-size="sm" href="#">Go to dashboard</a>
+</section>
+```
+
+<SourceFiles component="page-not-found" section="css" />
+
+</DocPage>

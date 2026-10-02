@@ -1,0 +1,43 @@
+/* -- Search Suggestions (website · Search & Navigation) -------------------
+   Displays suggested queries or matches while typing - recent searches, matching pages and people grouped in a panel with the match highlighted, or native suggestions. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-search-suggestions, .mk-search-suggestions *, .mk-search-suggestions ::before, .mk-search-suggestions ::after) { box-sizing: border-box; }
+
+  .mk-search-suggestions { position: relative; width: 100%; max-width: 32rem; }
+  .mk-search-suggestions-field { position: relative;
+    & > svg { position: absolute; inset-inline-start: 0.75rem; top: 50%; translate: 0 -50%; width: 1rem; height: 1rem; color: var(--muted-foreground); }
+    & .input { padding-inline-start: 2.25rem; }
+  }
+  .mk-search-suggestions-panel {
+    display: grid;
+    gap: 0.25rem;
+    margin-block-start: 0.375rem;
+    padding: 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-lg);
+  }
+  .mk-search-suggestions-group { display: grid;
+    & > span { padding: 0.375rem 0.625rem 0.25rem; color: var(--muted-foreground); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  }
+  .mk-search-suggestions-option { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.625rem; padding: 0.5rem 0.625rem; border-radius: var(--radius-md); font-size: 0.875rem; cursor: pointer;
+    & > svg { width: 1rem; height: 1rem; color: var(--muted-foreground); }
+    & small { color: var(--muted-foreground); font-size: 0.75rem; }
+    & mark { background: none; color: var(--primary); font-weight: 700; }
+    &:hover, &[aria-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
+  }
+  .mk-search-suggestions-foot { display: flex; gap: 1rem; padding: 0.5rem 0.625rem 0.25rem; border-block-start: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.75rem;
+    & .kbd { font-size: 0.6875rem; }
+  }
+  .mk-search-suggestions[data-variant="native"] .mk-search-suggestions-hint { margin: 0.375rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-search-suggestions-option[aria-selected="true"] { outline: 2px solid Highlight; }
+    .mk-search-suggestions-option mark { color: Highlight; }
+  }
+}

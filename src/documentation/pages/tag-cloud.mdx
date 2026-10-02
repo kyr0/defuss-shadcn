@@ -1,0 +1,69 @@
+---
+title: "Tag Cloud"
+description: "Displays linked tags with optional frequency-based emphasis - five weights from data-weight, or even pills with counts."
+slug: "tag-cloud"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tag-cloud" title="Tag Cloud" component="tag-cloud">
+  Displays linked tags with optional frequency-based emphasis - five weights from data-weight, or even pills with counts. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="tag-cloud">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;ul&gt;</code> of tag links with <code>data-weight="1"</code>…<code>"5"</code> (frequency buckets) and the count in the link text for screen readers.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-tag-cloud</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-weight="1–5"</code> on links; <code>data-variant="pills"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Cloud" hint="Tag links sized in five steps by data-weight (frequency buckets); the count is in the text for screen readers." previewStyle="align-items:stretch;"
+<ul class="mk-tag-cloud" aria-label="Topics">
+  <li><a href="#" data-weight="5">design<span class="sr-only"> (128 posts)</span></a></li>
+  <li><a href="#" data-weight="4">engineering<span class="sr-only"> (96 posts)</span></a></li>
+  <li><a href="#" data-weight="4">product<span class="sr-only"> (88 posts)</span></a></li>
+  <li><a href="#" data-weight="3">async<span class="sr-only"> (54 posts)</span></a></li>
+  <li><a href="#" data-weight="3">offline<span class="sr-only"> (47 posts)</span></a></li>
+  <li><a href="#" data-weight="2">accessibility<span class="sr-only"> (31 posts)</span></a></li>
+  <li><a href="#" data-weight="2">hiring<span class="sr-only"> (22 posts)</span></a></li>
+  <li><a href="#" data-weight="1">typography<span class="sr-only"> (12 posts)</span></a></li>
+  <li><a href="#" data-weight="2">culture<span class="sr-only"> (26 posts)</span></a></li>
+  <li><a href="#" data-weight="1">security<span class="sr-only"> (9 posts)</span></a></li>
+  <li><a href="#" data-weight="3">research<span class="sr-only"> (40 posts)</span></a></li>
+  <li><a href="#" data-weight="2">remote<span class="sr-only"> (19 posts)</span></a></li>
+</ul>
+```
+
+```html example label="Pills" hint="data-variant='pills': even pills with the count visible." previewStyle="align-items:stretch;"
+<ul class="mk-tag-cloud" data-variant="pills" aria-label="Topics">
+  <li><a href="#" data-weight="5">design<small>128</small></a></li>
+  <li><a href="#" data-weight="4">engineering<small>96</small></a></li>
+  <li><a href="#" data-weight="4">product<small>88</small></a></li>
+  <li><a href="#" data-weight="3">async<small>54</small></a></li>
+  <li><a href="#" data-weight="3">offline<small>47</small></a></li>
+  <li><a href="#" data-weight="2">accessibility<small>31</small></a></li>
+  <li><a href="#" data-weight="2">hiring<small>22</small></a></li>
+  <li><a href="#" data-weight="1">typography<small>12</small></a></li>
+</ul>
+```
+
+<SourceFiles component="tag-cloud" section="css" />
+
+</DocPage>

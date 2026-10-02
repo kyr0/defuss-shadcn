@@ -1,0 +1,85 @@
+---
+title: "Contents"
+description: "Links to headings within the current page - an &quot;on this page&quot; rail with the current section marked, a numbered box at the top, or a disclosure for small screens."
+slug: "contents"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="contents" title="Contents" component="contents">
+  Links to headings within the current page - an "on this page" rail with the current section marked, a numbered box at the top, or a disclosure for small screens. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="contents">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;nav aria-labelledby&gt;</code> titled "On this page" with a nested <code>&lt;ol&gt;</code> of <code>#fragment</code> links; <code>aria-current="location"</code> marks the section in view.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters" title="numbering without markup"><code>CSS counters</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-contents</code>
+    <code>.mk-contents-title</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>boxed</code>, <code>dropdown</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Rail" hint="Nested fragment links on a rail; aria-current=&quot;location&quot; lights the section in view (set it from your scroll observer - the links work without it)." previewStyle="align-items:stretch;"
+<nav class="mk-contents" aria-labelledby="toc-1">
+  <p class="mk-contents-title" id="toc-1">On this page</p>
+  <ol>
+      <li><a href="#" aria-current="location">Turn it on</a></li>
+      <li><a href="#">How sync works</a>
+        <ol><li><a href="#">The write-ahead log</a></li><li><a href="#">Merging changes</a></li></ol>
+      </li>
+      <li><a href="#">Conflicts</a></li>
+      <li><a href="#">Troubleshooting</a></li>
+    </ol>
+</nav>
+```
+
+```html example label="Boxed" hint="data-variant='boxed': a numbered box at the start of a long article." previewStyle="align-items:stretch;"
+<nav class="mk-contents" data-variant="boxed" aria-labelledby="toc-2">
+  <p class="mk-contents-title" id="toc-2">In this guide</p>
+  <ol>
+      <li><a href="#" aria-current="location">Turn it on</a></li>
+      <li><a href="#">How sync works</a>
+        <ol><li><a href="#">The write-ahead log</a></li><li><a href="#">Merging changes</a></li></ol>
+      </li>
+      <li><a href="#">Conflicts</a></li>
+      <li><a href="#">Troubleshooting</a></li>
+    </ol>
+</nav>
+```
+
+```html example label="Dropdown" hint="data-variant='dropdown': a <details> for small screens - closed until asked." previewStyle="align-items:stretch;"
+<details class="mk-contents" data-variant="dropdown">
+  <summary>On this page</summary>
+  <ol>
+      <li><a href="#" aria-current="location">Turn it on</a></li>
+      <li><a href="#">How sync works</a>
+        <ol><li><a href="#">The write-ahead log</a></li><li><a href="#">Merging changes</a></li></ol>
+      </li>
+      <li><a href="#">Conflicts</a></li>
+      <li><a href="#">Troubleshooting</a></li>
+    </ol>
+</details>
+```
+
+<SourceFiles component="contents" section="css" />
+
+</DocPage>

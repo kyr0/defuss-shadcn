@@ -1,0 +1,322 @@
+---
+title: "Shop"
+description: "Website blocks - Shop: Blocks for a store front and its checkout: collections and products, the cart and its summary, discount codes, address, delivery and payment, the order summary and confirmation, shipment tracking and the wishlist."
+slug: "website-shop"
+---
+
+import { DocPage, PageHeader, DocText } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-shop" title="Shop" introStyle="max-width:42rem;">
+  Blocks for a store front and its checkout: collections and products, the cart and its summary, discount codes, address, delivery and payment, the order summary and confirmation, shipment tracking and the wishlist. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Shop blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A store and its checkout" schema="none" hint="A collection banner, product cards, then the cart (Cart Items beside the Cart Summary), the checkout (address, delivery and payment beside the Order Summary) and the confirmation - only Shop blocks." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:4rem;width:100%">
+  <article class="mk-collection-item" data-variant="banner">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-banner/1600/690" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">The autumn edit</a></h3>
+      <p class="mk-collection-item-count">Warm layers, soft colors - 56 pieces</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Discover <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:2rem 1.25rem;width:100%">
+    <article class="mk-product-item">
+      <div class="mk-product-item-media">
+        <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-shirt/600/750" alt="">
+        <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-shirt-b/600/750" alt="">
+        <span class="badge mk-product-item-badge" data-variant="default" data-sale>−20%</span>
+        <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p1"><i data-lucide="heart"></i><span class="sr-only">Save Linen shirt to your wishlist</span></label>
+      </div>
+      <div class="mk-product-item-body">
+        <h3 class="mk-product-item-name"><a href="#">Linen shirt</a></h3>
+        <p class="mk-product-item-desc">Relaxed fit · Sand</p>
+        <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.5" role="img" aria-label="4.5 out of 5 stars">★★★★★</span>(128)</p>
+        <p class="mk-product-item-price"><strong>€64</strong> <del><span class="sr-only">was </span>€80</del></p>
+        <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#d8c9a9" aria-current="true"><span class="sr-only">Sand</span></li><li style="--mk-swatch:#2f3b4a"><span class="sr-only">Navy</span></li><li style="--mk-swatch:#f2efe8"><span class="sr-only">Off-white</span></li></ul>
+      </div>
+      <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen shirt to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+    </article>
+    <article class="mk-product-item">
+      <div class="mk-product-item-media">
+        <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-mug/600/750" alt="">
+        <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-mug-b/600/750" alt="">
+        <span class="badge mk-product-item-badge" data-variant="default">New</span>
+        <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p2"><i data-lucide="heart"></i><span class="sr-only">Save Stoneware mug to your wishlist</span></label>
+      </div>
+      <div class="mk-product-item-body">
+        <h3 class="mk-product-item-name"><a href="#">Stoneware mug</a></h3>
+        <p class="mk-product-item-desc">Handmade · 350 ml</p>
+        <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.9" role="img" aria-label="4.9 out of 5 stars">★★★★★</span>(412)</p>
+        <p class="mk-product-item-price"><strong>€22</strong></p>
+        <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#c9b49a" aria-current="true"><span class="sr-only">Oat</span></li><li style="--mk-swatch:#5a6b5d"><span class="sr-only">Moss</span></li></ul>
+      </div>
+      <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Stoneware mug to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+    </article>
+    <article class="mk-product-item">
+      <div class="mk-product-item-media">
+        <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="">
+        <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-bag-b/600/750" alt="">
+        <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p3"><i data-lucide="heart"></i><span class="sr-only">Save Canvas tote to your wishlist</span></label>
+      </div>
+      <div class="mk-product-item-body">
+        <h3 class="mk-product-item-name"><a href="#">Canvas tote</a></h3>
+        <p class="mk-product-item-desc">Organic cotton</p>
+        <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.2" role="img" aria-label="4.2 out of 5 stars">★★★★★</span>(57)</p>
+        <p class="mk-product-item-price"><strong>€38</strong></p>
+      </div>
+      <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Canvas tote to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+    </article>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:2rem;align-items:start">
+    <ul class="mk-cart-list" aria-label="Cart, 2 items">
+      <li class="mk-cart-item">
+        <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-shirt/240/300" alt="">
+        <div class="mk-cart-item-info">
+          <h3 class="mk-cart-item-name"><a href="#">Linen shirt</a></h3>
+          <p class="mk-cart-item-options">Sand · Size M</p>
+          <p class="mk-cart-item-unit">€64.00 each</p>
+        </div>
+        <div class="mk-cart-item-qty">
+          <label class="sr-only" for="ci-1-qty">Quantity of Linen shirt</label>
+          <div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease quantity of Linen shirt">−</button><input type="number" id="ci-1-qty" name="qty" min="0" max="10" value="1" inputmode="numeric"><button type="button" data-action="increment" aria-label="Increase quantity of Linen shirt">+</button></div>
+        </div>
+        <output class="mk-cart-item-total" for="ci-1-qty">€64.00</output>
+        <button class="mk-cart-item-remove" type="button" aria-label="Remove Linen shirt from cart"><i data-lucide="x"></i></button>
+      </li>
+      <li class="mk-cart-item">
+        <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-mug/240/300" alt="">
+        <div class="mk-cart-item-info">
+          <h3 class="mk-cart-item-name"><a href="#">Stoneware mug</a></h3>
+          <p class="mk-cart-item-options">Oat · 350 ml</p>
+          <p class="mk-cart-item-unit">€22.00 each</p>
+        </div>
+        <div class="mk-cart-item-qty">
+          <label class="sr-only" for="ci-2-qty">Quantity of Stoneware mug</label>
+          <div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease quantity of Stoneware mug">−</button><input type="number" id="ci-2-qty" name="qty" min="0" max="10" value="2" inputmode="numeric"><button type="button" data-action="increment" aria-label="Increase quantity of Stoneware mug">+</button></div>
+        </div>
+        <output class="mk-cart-item-total" for="ci-2-qty">€44.00</output>
+        <button class="mk-cart-item-remove" type="button" aria-label="Remove Stoneware mug from cart"><i data-lucide="x"></i></button>
+      </li>
+    </ul>
+    <aside class="mk-cart-summary" aria-labelledby="cs-title" style="max-width:24rem">
+      <h2 class="mk-cart-summary-title" id="cs-title">Order summary</h2>
+      <div class="mk-cart-summary-shipping"><label for="cs-free">Add <strong>€16.00</strong> more for free shipping</label><progress class="progress" id="cs-free" value="84" max="100">84%</progress></div>
+      <dl class="mk-cart-summary-lines">
+        <div><dt>Subtotal (3 items)</dt><dd>€108.00</dd></div>
+        <div data-discount><dt>Discount · AUTUMN30</dt><dd>−€24.00</dd></div>
+        <div><dt>Shipping</dt><dd>€4.90</dd></div>
+        <div><dt>VAT (included)</dt><dd>€16.62</dd></div>
+      </dl>
+      <div class="mk-cart-summary-total"><span>Total<small>incl. VAT</small></span><output aria-live="polite">€88.90</output></div>
+      <a class="btn mk-cart-summary-checkout" data-size="lg" href="#">Checkout <i data-lucide="arrow-right"></i></a>
+      <ul class="mk-cart-summary-pay" aria-label="We accept"><li>VISA</li><li>MASTERCARD</li><li>PAYPAL</li><li>APPLE PAY</li><li>KLARNA</li></ul>
+      <p class="mk-cart-summary-note"><i data-lucide="lock"></i> Secure checkout · 30-day returns</p>
+    </aside>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:2rem;align-items:start">
+    <div style="display:grid;gap:2rem">
+      <fieldset class="mk-address-form">
+        <legend>Shipping address</legend>
+        <div class="mk-address-form-grid">
+          <div class="mk-address-form-field"><label class="label" for="ad-country">Country / region</label><select class="select" id="ad-country" name="country" autocomplete="country"><option value="PT">Portugal</option><option value="DE">Germany</option><option value="FR">France</option></select></div>
+          <div class="mk-address-form-field" data-span="4"><label class="label" for="ad-name">Full name</label><input class="input" id="ad-name" name="name" autocomplete="shipping name" required></div>
+          <div class="mk-address-form-field" data-span="2"><label class="label" for="ad-org">Company <small>(optional)</small></label><input class="input" id="ad-org" name="organization" autocomplete="shipping organization"></div>
+          <div class="mk-address-form-field"><label class="label" for="ad-l1">Street and number</label><input class="input" id="ad-l1" name="address1" autocomplete="shipping address-line1" required></div>
+          <div class="mk-address-form-field"><label class="label" for="ad-l2">Apartment, floor <small>(optional)</small></label><input class="input" id="ad-l2" name="address2" autocomplete="shipping address-line2"></div>
+          <div class="mk-address-form-field" data-span="2"><label class="label" for="ad-zip">Postal code</label><input class="input" id="ad-zip" name="postal" autocomplete="shipping postal-code" required></div>
+          <div class="mk-address-form-field" data-span="4"><label class="label" for="ad-city">City</label><input class="input" id="ad-city" name="city" autocomplete="shipping address-level2" required></div>
+          <div class="mk-address-form-field" data-span="3"><label class="label" for="ad-tel">Phone <small>(for the courier)</small></label><input class="input" id="ad-tel" type="tel" name="tel" autocomplete="shipping tel" inputmode="tel"></div>
+          <div class="mk-address-form-field" data-span="3"><label class="label" for="ad-mail">Email</label><input class="input" id="ad-mail" type="email" name="email" autocomplete="email" required></div>
+        </div>
+        <div class="mk-address-form-same"><input class="checkbox" type="checkbox" id="ad-same" name="billing-same" checked><label for="ad-same">Billing address is the same</label></div>
+      </fieldset>
+      <fieldset class="mk-delivery-options" style="max-width:34rem">
+        <legend>Delivery</legend>
+        <label class="mk-delivery-options-option" for="dl-std">
+          <input class="radio" type="radio" name="delivery" id="dl-std" value="dl-std" checked required>
+          <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="truck"></i></span>
+          <span class="mk-delivery-options-text"><strong>Standard</strong><small>Arrives <time datetime="2026-10-07">Tue 7 – Thu 9 Oct</time></small></span>
+          <b class="mk-delivery-options-price">Free</b>
+        </label>
+        <label class="mk-delivery-options-option" for="dl-exp">
+          <input class="radio" type="radio" name="delivery" id="dl-exp" value="dl-exp" required>
+          <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="zap"></i></span>
+          <span class="mk-delivery-options-text"><strong>Express</strong><small>Arrives <time datetime="2026-10-03">tomorrow, Fri 3 Oct</time></small></span>
+          <b class="mk-delivery-options-price">€9.90</b>
+        </label>
+        <label class="mk-delivery-options-option" for="dl-pick">
+          <input class="radio" type="radio" name="delivery" id="dl-pick" value="dl-pick" required>
+          <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="store"></i></span>
+          <span class="mk-delivery-options-text"><strong>Pick up in store</strong><small>Arrives <time datetime="2026-10-02">today after 16:00</time></small><small>Acme Lisbon · Rua da Prata 120</small></span>
+          <b class="mk-delivery-options-price">Free</b>
+        </label>
+      </fieldset>
+      <form action="#" method="post">
+      <fieldset class="mk-payment-form">
+        <legend>Payment</legend>
+        <div class="mk-payment-form-methods">
+          <label><input type="radio" name="method" value="card" checked><i data-lucide="credit-card"></i>Card</label>
+          <label><input type="radio" name="method" value="paypal"><i data-lucide="wallet"></i>PayPal</label>
+          <label><input type="radio" name="method" value="bank"><i data-lucide="landmark"></i>Bank transfer</label>
+        </div>
+        <div class="mk-payment-form-panel" data-method="card">
+          <div class="mk-payment-form-fields">
+            <div class="mk-payment-form-field mk-payment-form-number" data-span="full"><label class="label" for="pf-num">Card number</label><div class="mk-payment-form-number"><input class="input" id="pf-num" name="cc-number" autocomplete="cc-number" inputmode="numeric" pattern="[0-9 ]{13,23}" placeholder="1234 1234 1234 1234"><ul aria-hidden="true"><li>VISA</li><li>MC</li><li>AMEX</li></ul></div></div>
+            <div class="mk-payment-form-field"><label class="label" for="pf-exp">Expiry</label><input class="input" id="pf-exp" name="cc-exp" autocomplete="cc-exp" inputmode="numeric" placeholder="MM / YY"></div>
+            <div class="mk-payment-form-field"><label class="label" for="pf-cvc">Security code</label><input class="input" id="pf-cvc" name="cc-csc" autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="CVC"></div>
+            <div class="mk-payment-form-field" data-span="full"><label class="label" for="pf-name">Name on card</label><input class="input" id="pf-name" name="cc-name" autocomplete="cc-name"></div>
+          </div>
+          <div class="checkbox-item"><input class="checkbox" type="checkbox" id="pf-save" name="save"><label for="pf-save">Save this card for next time</label></div>
+        </div>
+        <div class="mk-payment-form-panel" data-method="paypal"><p>You will be sent to PayPal to approve the payment, then back here to confirm.</p></div>
+        <div class="mk-payment-form-panel" data-method="bank">
+          <p>Transfer the total within 7 days. Your order ships when the money arrives.</p>
+          <dl><div><dt>IBAN</dt><dd>PT50 0002 0123 1234 5678 9015 4</dd></div><div><dt>Reference</dt><dd>A-20481</dd></div></dl>
+        </div>
+        <button class="btn" data-size="lg" type="submit">Pay €88.90</button>
+        <p class="mk-payment-form-note"><i data-lucide="lock"></i> Payments are encrypted and processed by our payment provider.</p>
+      </fieldset>
+      </form>
+    </div>
+    <aside class="mk-order-summary" aria-labelledby="os-title">
+      <h2 class="mk-order-summary-title" id="os-title">Your order</h2>
+      <ul class="mk-order-summary-items">
+        <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-shirt/160/200" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
+        <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-mug/160/200" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
+      </ul>
+      <dl class="mk-order-summary-totals">
+        <div><dt>Subtotal</dt><dd>€108.00</dd></div>
+        <div data-discount><dt>Discount (AUTUMN30)</dt><dd>−€24.00</dd></div>
+        <div><dt>Shipping · Standard</dt><dd>€4.90</dd></div>
+        <div data-total><dt>Total <small>incl. €16.62 VAT</small></dt><dd>€88.90</dd></div>
+      </dl>
+    </aside>
+  </div>
+  <section class="mk-order-confirmation" role="status" aria-labelledby="oc-title">
+    <svg class="mk-order-confirmation-check" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><path d="m14 25 7 7 13-15"/></svg>
+    <h1 class="mk-order-confirmation-title" id="oc-title">Thank you, Anna!</h1>
+    <p class="mk-order-confirmation-lead">Your order <code>A-20481</code> is confirmed. We sent the details to anna@example.com.</p>
+    <dl class="mk-order-confirmation-details">
+      <div><dt>Order date</dt><dd><time datetime="2026-10-01T14:32">1 October 2026, 14:32</time></dd></div>
+      <div><dt>Payment</dt><dd>Visa •••• 4242 · €88.90</dd></div>
+      <div><dt>Delivery to</dt><dd><address>Anna Silva<br>Rua da Prata 120, 2º<br>1100-420 Lisboa</address></dd></div>
+      <div><dt>Estimated delivery</dt><dd><time datetime="2026-10-07">Tue 7</time> – <time datetime="2026-10-09">Thu 9 October</time></dd></div>
+    </dl>
+    <ol class="mk-order-confirmation-steps" aria-label="What happens next">
+      <li><div>We pack your order <span>- usually within a day.</span></div></li>
+      <li><div>You get a tracking link <span>by email when it ships.</span></div></li>
+      <li><div>Not right? <span>Returns are free for 30 days.</span></div></li>
+    </ol>
+    <div class="mk-order-confirmation-actions">
+      <a class="btn" href="#">Track your order</a>
+      <a class="btn" data-variant="outline" href="#">Continue shopping</a>
+    </div>
+  </section>
+  <section class="mk-tracking-status" aria-labelledby="ts-title">
+    <div class="mk-tracking-status-head">
+      <div><h2 id="ts-title">Estimated arrival</h2><p><time datetime="2026-10-02">Thursday, 2 October</time></p></div>
+      <div class="mk-tracking-status-carrier"><span>DHL Express</span><a href="#" target="_blank" rel="noopener">JD0146 0012 3456<span class="sr-only"> (opens the carrier site)</span></a></div>
+    </div>
+    <ol class="mk-tracking-status-steps" style="--mk-tracking-progress:66%">
+      <li data-done><span class="mk-tracking-status-dot" aria-hidden="true"><i data-lucide="check"></i></span><strong>Ordered</strong><small>1 Oct, 14:32</small></li>
+      <li data-done><span class="mk-tracking-status-dot" aria-hidden="true"><i data-lucide="check"></i></span><strong>Shipped</strong><small>1 Oct, 18:05</small></li>
+      <li aria-current="step"><span class="mk-tracking-status-dot" aria-hidden="true"></span><strong>Out for delivery</strong><small>Today, 07:40</small></li>
+      <li><span class="mk-tracking-status-dot" aria-hidden="true"></span><strong>Delivered</strong><small>Expected by 18:00</small></li>
+    </ol>
+    <details class="mk-tracking-status-log">
+      <summary>Shipment history</summary>
+      <ol>
+        <li><time datetime="2026-10-02T07:40">2 Oct, 07:40</time><div>Out for delivery <span>· Lisbon</span></div></li>
+        <li><time datetime="2026-10-02T02:10">2 Oct, 02:10</time><div>Arrived at delivery centre <span>· Lisbon</span></div></li>
+        <li><time datetime="2026-10-01T18:05">1 Oct, 18:05</time><div>Picked up by DHL <span>· Porto</span></div></li>
+      </ol>
+    </details>
+  </section>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="collection-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Collection Item</h3>
+      <p class="card-description">Links to one product collection with imagery and context - a picture with the name and count, text over the picture, or a wide banner.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="product-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Product Item</h3>
+      <p class="card-description">Displays one catalog entry with its image, name, price, and link - a second picture on hover, badges, rating, colors, a wishlist heart and add to cart.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="cart-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Cart Item</h3>
+      <p class="card-description">Displays one selected product with quantity and removal controls - picture, name, options, a quantity stepper, the line total and remove.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="cart-summary.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Cart Summary</h3>
+      <p class="card-description">Shows cart totals and the action to proceed to checkout - a free-shipping progress bar, the breakdown, the total, checkout and how you can pay.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="discount-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Discount Form</h3>
+      <p class="card-description">Accepts a promotional code and displays its application result - the field, the error when it fails, and the applied code with its saving.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="address-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Address Form</h3>
+      <p class="card-description">Collects a shipping or billing address - the fields every browser can autofill, laid out in a grid, with saved addresses to pick from.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="delivery-options.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Delivery Options</h3>
+      <p class="card-description">Presents available delivery methods with costs and estimates - radio cards with an icon, the arrival window and the price.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="payment-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Payment Form</h3>
+      <p class="card-description">Collects or selects a payment method - card, PayPal or bank transfer as tabs, the card fields with the right keyboards and autofill, or a saved card.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="order-summary.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Order Summary</h3>
+      <p class="card-description">Displays an order's items and charge breakdown - pictures with quantity badges, the lines, discount, shipping and total; collapsible on small screens.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="order-confirmation.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Order Confirmation</h3>
+      <p class="card-description">Confirms a completed purchase and provides its reference - a check that draws itself, the order number, what happens next and where to go.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="tracking-status.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Tracking Status</h3>
+      <p class="card-description">Shows an order's fulfillment progress and shipment links - the estimated arrival, the steps from ordered to delivered, and the carrier's event log.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="wishlist-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Wishlist Item</h3>
+      <p class="card-description">Displays one saved product with purchase and removal actions - stock status, price, when it was saved, add to cart or get notified.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

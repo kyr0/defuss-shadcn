@@ -1,0 +1,84 @@
+/* -- Job Details (website · Company) --------------------------------------
+   Describes one position's responsibilities, requirements, and benefits - with a summary that stays in view and the apply action. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-job-details, .mk-job-details *, .mk-job-details ::before, .mk-job-details ::after) { box-sizing: border-box; }
+
+  .mk-job-details { container: mk-job-details / inline-size; width: 100%; }
+  .mk-job-details-head { display: grid; gap: 0.75rem; padding-block-end: 2rem; border-block-end: 1px solid var(--border); }
+  .mk-job-details-back { display: inline-flex; align-items: center; gap: 0.25rem; width: fit-content; color: var(--muted-foreground); font-size: 0.875rem; text-decoration: none;
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { color: var(--foreground); }
+  }
+  .mk-job-details-title { margin: 0; font-size: clamp(1.75rem, 4cqi, 2.5rem); font-weight: 600; letter-spacing: -0.025em; text-wrap: balance; }
+  .mk-job-details-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .mk-job-details-layout { display: grid; gap: 2.5rem; padding-block-start: 2rem; }
+  .mk-job-details-body {
+    display: grid;
+    gap: 2rem;
+    min-width: 0;
+
+    & section { display: grid; gap: 0.75rem; }
+    & h2 { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+    & p { margin: 0; color: var(--muted-foreground); line-height: 1.7; text-wrap: pretty; }
+  }
+  .mk-job-details-list {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li { position: relative; padding-inline-start: 1.75rem; line-height: 1.6; }
+    & li::before {
+      content: "";
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0.3em;
+      width: 1.125rem;
+      height: 1.125rem;
+      border-radius: 50%;
+      background: color-mix(in oklch, var(--primary) 12%, transparent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 0.625rem no-repeat;
+    }
+  }
+  .mk-job-details-benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; border-radius: var(--radius-lg); background: var(--muted); font-size: 0.9375rem; font-weight: 500; }
+    & svg { flex: none; width: 1.25rem; height: 1.25rem; color: var(--primary); }
+  }
+  .mk-job-details-summary {
+    display: grid;
+    gap: 1.25rem;
+    align-self: start;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+    & dl { display: grid; gap: 0.875rem; margin: 0; }
+    & dl div { display: grid; gap: 0.125rem; }
+    & dt { color: var(--muted-foreground); font-size: 0.8125rem; }
+    & dd { margin: 0; font-weight: 500; }
+    & .btn { width: 100%; }
+  }
+
+  @container mk-job-details (min-width: 52rem) {
+    .mk-job-details-layout { grid-template-columns: minmax(0, 1fr) 18rem; gap: 4rem; }
+    .mk-job-details-summary { position: sticky; top: 1.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-job-details-list li::before { background: CanvasText; forced-color-adjust: none; }
+    .mk-job-details-summary { border-color: CanvasText; }
+  }
+}

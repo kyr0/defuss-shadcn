@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
     <link rel="stylesheet" href="/dist/theme/utils/sizing.css" />
     <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/components/switch/switch.css" />
     <link rel="stylesheet" href="/dist/components/form/form.css" />
     <link rel="stylesheet" href="/dist/components/label/label.css" />
     <!-- the ladder check below pairs form glue with every field control it wraps -->
@@ -53,6 +54,11 @@
       <input class="input date-input" type="date" id="ld-date" />
       <div class="color-picker" id="ld-color"><input type="color" value="#3b82f6" /><span class="color-picker-value">#3B82F6</span></div>
       <input class="file-input" type="file" id="ld-file" />
+    </div>
+    <!-- Switch rows (notifications) -->
+    <div class="form-group" id="fm-rows">
+      <div class="form-field-row"><div><label class="label" for="fm-mkt">Marketing emails</label><p class="field-description">Product news.</p></div><input class="switch" type="checkbox" role="switch" id="fm-mkt"></div>
+      <div class="form-field-row"><div><label class="label" for="fm-sec">Security emails</label><p class="field-description">Account security.</p></div><input class="switch" type="checkbox" role="switch" id="fm-sec" checked disabled></div>
     </div>
   </body>
 </html>

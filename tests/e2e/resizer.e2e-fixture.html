@@ -48,6 +48,17 @@
       </div>
     </section>
 
+    <!-- divider: a split pane's edge - full-length strip, no outline, dblclick resets -->
+    <section aria-labelledby="rz-div-h">
+      <h2 id="rz-div-h">divider</h2>
+      <div style="display:flex;height:140px;">
+        <div class="resizer" id="rz-div" data-variant="divider" data-handles="e" data-axis="w" data-keys="edge" data-min="100" data-max="400">
+          <div id="rz-div-box" style="width:180px;height:100%;background:var(--muted);"></div>
+        </div>
+        <div style="flex:1;"></div>
+      </div>
+    </section>
+
     <!-- default single-SE (the contract default), for the ARIA + init checks -->
     <section aria-labelledby="rz-se-h">
       <h2 id="rz-se-h">default se</h2>

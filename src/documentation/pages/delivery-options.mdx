@@ -1,0 +1,97 @@
+---
+title: "Delivery Options"
+description: "Presents available delivery methods with costs and estimates - radio cards with an icon, the arrival window and the price."
+slug: "delivery-options"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="delivery-options" title="Delivery Options" component="delivery-options">
+  Presents available delivery methods with costs and estimates - radio cards with an icon, the arrival window and the price. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="delivery-options">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;fieldset&gt;</code> of radio cards (<code>&lt;label&gt;</code> around each <code>&lt;input type="radio"&gt;</code>): an icon, the method, "Arrives <code>&lt;time&gt;</code>…", optional detail (pickup store) and the price.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="radio.html">Radio</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-delivery-options</code>
+    <code>.mk-delivery-options-option</code>
+    <code>.mk-delivery-options-icon</code>
+    <code>.mk-delivery-options-text</code>
+    <code>.mk-delivery-options-price</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="grid"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Radio cards in a fieldset: icon, method, the arrival window as <time>, pickup detail and the price; :has(:checked) highlights the choice." previewStyle="align-items:stretch;"
+<fieldset class="mk-delivery-options" style="max-width:34rem">
+  <legend>Delivery</legend>
+  <label class="mk-delivery-options-option" for="dl-std">
+    <input class="radio" type="radio" name="delivery" id="dl-std" value="dl-std" checked required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="truck"></i></span>
+    <span class="mk-delivery-options-text"><strong>Standard</strong><small>Arrives <time datetime="2026-10-07">Tue 7 – Thu 9 Oct</time></small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-exp">
+    <input class="radio" type="radio" name="delivery" id="dl-exp" value="dl-exp" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="zap"></i></span>
+    <span class="mk-delivery-options-text"><strong>Express</strong><small>Arrives <time datetime="2026-10-03">tomorrow, Fri 3 Oct</time></small></span>
+    <b class="mk-delivery-options-price">€9.90</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-pick">
+    <input class="radio" type="radio" name="delivery" id="dl-pick" value="dl-pick" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="store"></i></span>
+    <span class="mk-delivery-options-text"><strong>Pick up in store</strong><small>Arrives <time datetime="2026-10-02">today after 16:00</time></small><small>Acme Lisbon · Rua da Prata 120</small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+</fieldset>
+```
+
+```html example label="Grid" hint="data-variant='grid': the same choices as cards side by side." previewStyle="align-items:stretch;"
+<fieldset class="mk-delivery-options" data-variant="grid">
+  <legend>Delivery</legend>
+  <label class="mk-delivery-options-option" for="dl-std-g">
+    <input class="radio" type="radio" name="delivery" id="dl-std-g" value="dl-std-g" checked required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="truck"></i></span>
+    <span class="mk-delivery-options-text"><strong>Standard</strong><small>Arrives <time datetime="2026-10-07">Tue 7 – Thu 9 Oct</time></small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-exp-g">
+    <input class="radio" type="radio" name="delivery" id="dl-exp-g" value="dl-exp-g" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="zap"></i></span>
+    <span class="mk-delivery-options-text"><strong>Express</strong><small>Arrives <time datetime="2026-10-03">tomorrow, Fri 3 Oct</time></small></span>
+    <b class="mk-delivery-options-price">€9.90</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-pick-g">
+    <input class="radio" type="radio" name="delivery" id="dl-pick-g" value="dl-pick-g" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="store"></i></span>
+    <span class="mk-delivery-options-text"><strong>Pick up in store</strong><small>Arrives <time datetime="2026-10-02">today after 16:00</time></small><small>Acme Lisbon · Rua da Prata 120</small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+</fieldset>
+```
+
+<SourceFiles component="delivery-options" section="css" />
+
+</DocPage>

@@ -60,4 +60,178 @@
     .mk-hero-title { font-size: 3.75rem; }
     .mk-hero-actions { flex-direction: row; width: fit-content; }
   }
+
+
+  /* -- variants ------------------------------------------------- */
+  /* start-aligned copy (a hero beside a sidebar, a docs landing) */
+  .mk-hero[data-align="start"] .mk-hero-copy { align-items: flex-start; margin-inline: 0; text-align: start; }
+
+  /* an announcement pill above the title: a link with a chip and an arrow */
+  .mk-hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--background) 80%, transparent);
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: start;
+    transition: border-color 150ms ease;
+
+    & .badge { flex: none; border-radius: 999px; }
+    & svg { flex: none; width: 0.875rem; height: 0.875rem; transition: translate 150ms ease; }
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 30%, var(--border)); }
+    &:hover svg { translate: 0.125rem 0; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* split: the copy beside a picture or video (auto-fit: stacks when narrow) */
+  .mk-hero[data-variant="split"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    align-items: center;
+    gap: 2.5rem 3rem;
+
+    & .mk-hero-copy { align-items: flex-start; margin: 0; text-align: start; }
+    & .mk-hero-title { font-size: clamp(2.25rem, 5.5cqi, 3.5rem); }
+  }
+  .mk-hero-media {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+
+    & :is(img, video) { display: block; width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  /* image: a full-bleed photo behind the copy, a scrim keeps it readable */
+  .mk-hero[data-variant="image"] {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 6rem 1.5rem;
+    border-radius: var(--radius-xl);
+    color: #fff;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to top, oklch(0.15 0.02 260 / 0.85), oklch(0.15 0.02 260 / 0.35));
+    }
+    & .mk-hero-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+    & .mk-hero-desc { color: oklch(1 0 0 / 0.82); }
+    & .mk-hero-badge { border-color: oklch(1 0 0 / 0.3); background: oklch(1 0 0 / 0.12); color: #fff; backdrop-filter: blur(6px); }
+    & .btn[data-variant="outline"] { border-color: oklch(1 0 0 / 0.4); background: transparent; color: #fff; }
+  }
+
+  /* glow: a soft brand light over a fading grid; the title fades into the page */
+  .mk-hero[data-variant="glow"] {
+    position: relative;
+    isolation: isolate;
+    padding-block: 5rem 3rem;
+
+    &::before,
+    &::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+    &::before {
+      /* the chart palette, not --primary: a near-black primary would smudge */
+      background:
+        radial-gradient(28% 40% at 50% 8%, color-mix(in oklch, var(--chart-1) 30%, transparent), transparent),
+        radial-gradient(22% 32% at 70% 30%, color-mix(in oklch, var(--chart-2) 26%, transparent), transparent),
+        radial-gradient(22% 32% at 30% 34%, color-mix(in oklch, var(--chart-3) 22%, transparent), transparent);
+      filter: blur(24px);
+    }
+    &::after {
+      background-image:
+        linear-gradient(color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(60% 55% at 50% 30%, #000, transparent 75%);
+    }
+    & .mk-hero-title {
+      background: linear-gradient(180deg, var(--foreground) 40%, color-mix(in oklch, var(--foreground) 55%, transparent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  /* signup: an inline email form under the copy */
+  .mk-hero-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 28rem;
+
+    & .input { flex: 1; min-width: 0; }
+  }
+  .mk-hero-note { margin: 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+
+  /* social proof: an avatar group, stars and a line */
+  .mk-hero-proof {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    text-align: start;
+
+    & > div:last-child { display: grid; gap: 0.125rem; }
+    & strong { color: var(--foreground); font-weight: 600; }
+  }
+  .mk-hero-stars {
+    display: flex;
+    gap: 1px;
+    color: oklch(0.78 0.16 75);
+
+    & svg { width: 0.875rem; height: 0.875rem; fill: currentColor; }
+  }
+
+  /* stage: the product under the copy - a framed screenshot with depth */
+  .mk-hero-stage {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    box-shadow: var(--shadow-2xl);
+
+    & img { display: block; width: 100%; height: auto; }
+    /* fade the bottom edge into the page */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 35%;
+      background: linear-gradient(transparent, var(--background));
+    }
+  }
+
+  @container mk-hero (min-width: 30rem) {
+    .mk-hero-form { flex-direction: row; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-hero-pill, .mk-hero-pill svg { transition: none; }
+    .mk-hero-pill:hover svg { translate: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-hero[data-variant="glow"] .mk-hero-title { background: none; color: CanvasText; }
+    .mk-hero-pill { border-color: CanvasText; }
+  }
 }

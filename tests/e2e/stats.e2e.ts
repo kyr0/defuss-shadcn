@@ -7,9 +7,19 @@ import { cssSmoke } from './lib/css-smoke.ts';
  */
 await cssSmoke('stats', [
   {
-    label: 'metric has a 1px left rule with 24px padding',
+    label: 'metric has a 3px accent rule with 20px padding',
     selector: '.mk-stat',
-    css: { 'border-left-width': '1px', 'padding-left': '24px' },
+    css: { 'border-left-width': '3px', 'padding-left': '20px' },
+  },
+  {
+    label: 'each metric takes its own accent from the chart palette; the trend chip is green',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const s = [...document.querySelectorAll('.mk-stat')].slice(0, 4).map((e) => getComputedStyle(e).borderLeftColor);
+        return { tones: new Set(s).size, trend: getComputedStyle(document.querySelector('.mk-stat-trend[data-trend="up"]')!).color };
+      });
+      if (r.tones !== 4 || r.trend !== 'rgb(22, 163, 74)') throw new Error(JSON.stringify(r));
+    },
   },
   {
     label: 'value is 30px/500 vs 16px muted label (distinct sizes)',
@@ -43,4 +53,16 @@ await cssSmoke('stats', [
     selector: '.mk-stats-media',
     css: { 'aspect-ratio': '1 / 1' },
   },
+  { label: 'cards: metrics on bordered cards with a sparkline in the accent color', run: async (page) => {
+    const r = await page.evaluate(() => { const g = document.querySelector('.mk-stats-grid[data-variant="cards"]')!; const s = g.querySelector('.mk-stat')!; return { border: getComputedStyle(s).borderTopWidth, pad: getComputedStyle(s).paddingTop, spark: getComputedStyle(s.querySelector('.mk-stat-spark')!).color === getComputedStyle(s).borderLeftColor }; });
+    if (r.border !== '1px' || r.pad !== '20px' || !r.spark) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'band: a dark band of centered numbers', run: async (page) => {
+    const r = await page.evaluate(() => { const b = document.querySelector('.mk-stats-band')!; return { dark: getComputedStyle(b).backgroundColor !== getComputedStyle(document.body).backgroundColor, align: getComputedStyle(b.querySelector('.mk-stat')!).textAlign }; });
+    if (!r.dark || r.align !== 'center') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'rings: radial progress per percentage', run: async (page) => {
+    const n = await page.evaluate(() => document.querySelectorAll('.mk-stats-rings .radial-progress').length);
+    if (n !== 3) throw new Error(String(n));
+  } },
 ]);

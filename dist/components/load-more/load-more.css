@@ -1,0 +1,29 @@
+/* -- Load More (website · Search & Navigation) ----------------------------
+   Loads another batch into the current collection - how many are shown, a progress bar and the button, with a busy state while loading. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-load-more, .mk-load-more *, .mk-load-more ::before, .mk-load-more ::after) { box-sizing: border-box; }
+
+  .mk-load-more { display: grid; justify-items: center; gap: 0.75rem; width: 100%; padding-block: 1.5rem;
+    & output { color: var(--muted-foreground); font-size: 0.875rem; }
+    & output strong { color: var(--foreground); }
+    & progress { width: min(100%, 14rem); height: 0.25rem; }
+  }
+  .mk-load-more-button {
+    & .mk-load-more-spin { display: none; width: 1rem; height: 1rem; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 50%; animation: mk-load-more-spin 700ms linear infinite; }
+    &[aria-busy="true"] { pointer-events: none; opacity: 0.75; }
+    &[aria-busy="true"] .mk-load-more-spin { display: inline-block; }
+    &[aria-busy="true"] svg { display: none; }
+  }
+  @keyframes mk-load-more-spin { to { rotate: 1turn; } }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-load-more-spin { animation-duration: 2.4s; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-load-more-spin { border-color: CanvasText; border-inline-end-color: transparent; }
+  }
+}

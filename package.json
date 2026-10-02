@@ -21,7 +21,7 @@
   "scripts": {
     "dev": "vite",
     "build": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/verify.ts",
-    "build:docs": "node scripts/build-docs.ts",
+    "build:docs": "node --max-old-space-size=14336 scripts/build-docs.ts",
     "docs": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts",
     "minify": "bun scripts/minify.ts",
     "stats": "bun scripts/stats.ts",

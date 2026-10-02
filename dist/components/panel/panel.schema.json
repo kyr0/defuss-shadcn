@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "panel",
+  "states": {
+    "minimized": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".panel"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "minimized"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "maximized": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".panel"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "maximized"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

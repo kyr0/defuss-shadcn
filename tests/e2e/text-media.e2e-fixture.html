@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>text-media e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/text-media/text-media.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-text-media" aria-labelledby="tm-1">
+  <div class="mk-text-media-layout">
+    <div class="mk-text-media-copy">
+      <span class="mk-text-media-eyebrow">Offline first</span>
+      <h2 class="mk-text-media-title" id="tm-1">Your work travels with you</h2>
+      <p class="mk-text-media-text">Every change is saved on your device first and synced when you are back online - on a plane, in a tunnel, at the cabin.</p>
+      <ul class="mk-text-media-list"><li><i data-lucide="check"></i>Edits never wait for the network</li><li><i data-lucide="check"></i>Conflicts resolve themselves</li><li><i data-lucide="check"></i>Works on every device</li></ul>
+      <a class="mk-text-media-link" href="#">How sync works <i data-lucide="arrow-right"></i></a>
+    </div>
+    <figure class="mk-text-media-media"><img src="https://picsum.photos/seed/tm-cabin/1000/750" alt="A laptop on a table in a mountain cabin"></figure>
+  </div>
+</section>
+    </section>
+    <!-- Reverse with video -->
+    <section class="fx">
+<section class="mk-text-media" data-variant="reverse" aria-labelledby="tm-2">
+  <div class="mk-text-media-layout">
+    <div class="mk-text-media-copy">
+      <span class="mk-text-media-eyebrow">In 60 seconds</span>
+      <h2 class="mk-text-media-title" id="tm-2">From idea to shipped, on one board</h2>
+      <p class="mk-text-media-text">Watch a feature go from a rough note to release notes - without leaving Acme.</p>
+    </div>
+    <figure class="mk-text-media-media"><video controls preload="metadata" playsinline poster="/dist/documentation/images/mk-wide2.png"><source src="/dist/documentation/videos/demo.webm" type="video/webm"><source src="/dist/documentation/videos/demo.mp4" type="video/mp4">Your browser does not support video.</video></figure>
+  </div>
+</section>
+    </section>
+    <!-- Overlap -->
+    <section class="fx">
+<section class="mk-text-media" data-variant="overlap" aria-labelledby="tm-3">
+  <div class="mk-text-media-layout">
+    <figure class="mk-text-media-media"><img src="https://picsum.photos/seed/tm-office/1400/800" alt=""></figure>
+    <div class="mk-text-media-copy">
+      <span class="mk-text-media-eyebrow">Our office</span>
+      <h2 class="mk-text-media-title" id="tm-3">A quiet place to think</h2>
+      <p class="mk-text-media-text">No open-plan noise: our Lisbon office has more library than meeting rooms. Visit us any Friday.</p>
+      <a class="mk-text-media-link" href="#">Plan a visit <i data-lucide="arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+---
+title: "Order Confirmation"
+description: "Confirms a completed purchase and provides its reference - a check that draws itself, the order number, what happens next and where to go."
+slug: "order-confirmation"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="order-confirmation" title="Order Confirmation" component="order-confirmation">
+  Confirms a completed purchase and provides its reference - a check that draws itself, the order number, what happens next and where to go. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="order-confirmation">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section role="status"&gt;</code>: an animated check, the thank-you heading, the order number (<code>&lt;code&gt;</code>, selectable), a <code>&lt;dl&gt;</code> of date, payment, delivery address (<code>&lt;address&gt;</code>) and estimate, the next steps as an <code>&lt;ol&gt;</code> and two actions.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address" title="contact information"><code>&lt;address&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="an ordered sequence"><code>&lt;ol&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="motion stands still on request"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-order-confirmation</code>
+    <code>.mk-order-confirmation-check</code>
+    <code>.mk-order-confirmation-title</code>
+    <code>.mk-order-confirmation-lead</code>
+    <code>.mk-order-confirmation-details</code>
+    <code>.mk-order-confirmation-steps</code>
+    <code>.mk-order-confirmation-actions</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>None.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A check that draws itself (static under reduced motion), the order number in a <code> you select with one click, the details (<dl> with <address>), the next steps and two actions - all in role=&quot;status&quot;." previewStyle="align-items:stretch;"
+<section class="mk-order-confirmation" role="status" aria-labelledby="oc-title">
+  <svg class="mk-order-confirmation-check" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><path d="m14 25 7 7 13-15"/></svg>
+  <h1 class="mk-order-confirmation-title" id="oc-title">Thank you, Anna!</h1>
+  <p class="mk-order-confirmation-lead">Your order <code>A-20481</code> is confirmed. We sent the details to anna@example.com.</p>
+  <dl class="mk-order-confirmation-details">
+    <div><dt>Order date</dt><dd><time datetime="2026-10-01T14:32">1 October 2026, 14:32</time></dd></div>
+    <div><dt>Payment</dt><dd>Visa •••• 4242 · €88.90</dd></div>
+    <div><dt>Delivery to</dt><dd><address>Anna Silva<br>Rua da Prata 120, 2º<br>1100-420 Lisboa</address></dd></div>
+    <div><dt>Estimated delivery</dt><dd><time datetime="2026-10-07">Tue 7</time> – <time datetime="2026-10-09">Thu 9 October</time></dd></div>
+  </dl>
+  <ol class="mk-order-confirmation-steps" aria-label="What happens next">
+    <li><div>We pack your order <span>- usually within a day.</span></div></li>
+    <li><div>You get a tracking link <span>by email when it ships.</span></div></li>
+    <li><div>Not right? <span>Returns are free for 30 days.</span></div></li>
+  </ol>
+  <div class="mk-order-confirmation-actions">
+    <a class="btn" href="#">Track your order</a>
+    <a class="btn" data-variant="outline" href="#">Continue shopping</a>
+  </div>
+</section>
+```
+
+<SourceFiles component="order-confirmation" section="css" />
+
+</DocPage>

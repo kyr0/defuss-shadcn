@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>related-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+
+    <link rel="stylesheet" href="/dist/components/related-item/related-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div style="display:grid;gap:1.25rem;width:100%;max-width:26rem">
+<article class="mk-related-item">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Article</span>
+    <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+  </div>
+</article>
+<article class="mk-related-item">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-square.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+  </div>
+</article>
+<article class="mk-related-item">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">4:12</p>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Card -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1.5rem;width:100%">
+<article class="mk-related-item" data-variant="card">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Article</span>
+    <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="card">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-square.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="card">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">4:12</p>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Text -->
+    <section class="fx">
+<div style="width:100%;max-width:30rem">
+<article class="mk-related-item" data-variant="text">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Article</span>
+    <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+  </div>
+  <i data-lucide="arrow-right" class="mk-related-item-arrow" aria-hidden="true"></i>
+</article>
+<article class="mk-related-item" data-variant="text">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+  </div>
+  <i data-lucide="arrow-right" class="mk-related-item-arrow" aria-hidden="true"></i>
+</article>
+<article class="mk-related-item" data-variant="text">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">4:12</p>
+  </div>
+  <i data-lucide="arrow-right" class="mk-related-item-arrow" aria-hidden="true"></i>
+</article>
+</div>
+    </section>
+    <!-- Numbered -->
+    <section class="fx">
+<div style="display:grid;gap:1rem;width:100%;max-width:28rem">
+<article class="mk-related-item" data-variant="numbered" data-rank="1">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Sync, explained</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 1: Why CRDTs</a></h3>
+    <p class="mk-related-item-meta">6 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="numbered" data-rank="2">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">You are here</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 2: The write-ahead log</a></h3>
+    <p class="mk-related-item-meta">8 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="numbered" data-rank="3">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Sync, explained</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 3: Testing with a lossy network</a></h3>
+    <p class="mk-related-item-meta">10 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="numbered" data-rank="4">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Sync, explained</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 4: Garbage collection</a></h3>
+    <p class="mk-related-item-meta">12 min read</p>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Overlay with badges -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:1rem;width:100%">
+<article class="mk-related-item" data-variant="overlay">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt=""><span class="mk-related-item-badge">4:12</span></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">1 Oct 2026</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="overlay">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt=""><span class="mk-related-item-badge">38 min</span></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Podcast</span>
+    <h3 class="mk-related-item-title"><a href="#">Sync without tears</a></h3>
+    <p class="mk-related-item-meta">Episode 42</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="overlay">
+  <figure class="mk-related-item-media"><img src="/dist/documentation/images/mk-wide.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">11 min read</p>
+  </div>
+</article>
+</div>
+    </section>
+  </body>
+</html>

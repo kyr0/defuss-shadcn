@@ -30,6 +30,7 @@
   }
 
   .mk-newsletter-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -47,7 +48,28 @@
 
   .mk-newsletter-form .btn { width: 100%; }
 
-  .mk-newsletter-note { color: var(--muted-foreground); font-size: 0.75rem; }
+  /* note and error sit just inside the input's edge */
+  .mk-newsletter-note,
+  .mk-newsletter-error {
+    padding-inline-start: 0.375rem;
+    font-size: 0.75rem;
+  }
+  .mk-newsletter-note { color: var(--muted-foreground); }
+
+  /* the error shows only after an attempt - :user-invalid, no script */
+  .mk-newsletter-error {
+    display: none;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--destructive);
+    font-weight: 500;
+
+    & svg { width: 0.875rem; height: 0.875rem; flex: none; }
+  }
+  .mk-newsletter-form-col:has(input:user-invalid) {
+    & .mk-newsletter-error { display: flex; }
+    & .mk-newsletter-note { display: none; }
+  }
 
   @container mk-newsletter (min-width: 30rem) {
     .mk-newsletter-layout { flex-direction: row; }
@@ -61,5 +83,90 @@
     .mk-newsletter-layout { gap: 4rem; }
     .mk-newsletter-title { font-size: 2.25rem; }
     .mk-newsletter-form-col { gap: 0.75rem; }
+  }
+  /* card: centered on a surface - an icon, the form, social proof */
+  .mk-newsletter[data-variant="card"] .mk-newsletter-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 36rem;
+    margin-inline: auto;
+    padding: 2.5rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(80% 60% at 50% 0%, color-mix(in oklch, var(--primary) 10%, transparent), transparent 70%),
+      var(--card);
+    text-align: center;
+
+    & .mk-newsletter-copy { align-items: center; text-align: center; }
+    & .mk-newsletter-form-col { align-self: stretch; }
+    /* centered card: the input + button row and the note/error under it center too */
+    & :is(.mk-newsletter-note, .mk-newsletter-error) { justify-content: center; padding-inline-start: 0; text-align: center; }
+  }
+  @container mk-newsletter (min-width: 30rem) {
+    .mk-newsletter[data-variant="card"] .mk-newsletter-form { justify-content: center; }
+    .mk-newsletter[data-variant="card"] .mk-newsletter-form .input { flex: 0 1 18rem; width: auto; }
+  }
+  .mk-newsletter-icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-lg);
+    background: var(--primary);
+    color: var(--primary-foreground);
+
+    & svg { width: 1.375rem; height: 1.375rem; }
+  }
+  .mk-newsletter-proof {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+
+    & strong { color: var(--foreground); }
+  }
+
+  /* banner: a gradient strip - copy and form on one row */
+  .mk-newsletter[data-variant="banner"] .mk-newsletter-layout {
+    align-items: center;
+    padding: 1.75rem 2rem;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(120deg, var(--primary), color-mix(in oklch, var(--chart-2) 70%, var(--primary)));
+    color: var(--primary-foreground);
+
+    & .mk-newsletter-title { font-size: 1.5rem; }
+    & .mk-newsletter-desc,
+    & .mk-newsletter-note { color: color-mix(in oklch, var(--primary-foreground) 75%, transparent); }
+    & .input { background: color-mix(in oklch, var(--primary-foreground) 92%, transparent); color: #111; }
+    & .btn { background: var(--primary-foreground); color: var(--primary); }
+  }
+
+  /* topics: pick lists with Checkboxes */
+  .mk-newsletter-topics {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    & legend { margin-block-end: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+  }
+  .mk-newsletter-split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 2rem 3rem;
+    align-items: center;
+
+    & img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-xl); }
+    & form { display: grid; gap: 1rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-newsletter[data-variant="banner"] .mk-newsletter-layout { border: 1px solid CanvasText; }
   }
 }

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>job-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/job-item/job-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Grouped list -->
+    <section class="fx">
+<div style="display:grid;gap:2rem;width:100%">
+  <section class="mk-job-group" aria-labelledby="jobs-eng">
+    <h2 class="mk-job-group-title" id="jobs-eng">Engineering · 3 roles</h2>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Senior Sync Engineer</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Engineering</li>
+          <li><i data-lucide="map-pin"></i>Lisbon or remote (EU)</li>
+          <li><i data-lucide="clock"></i>Full-time</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€95k – €120k</span>
+        <time class="mk-job-item-posted" datetime="2026-09-29">Posted 2 days ago</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Frontend Engineer, Editor</a></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Engineering</li>
+          <li><i data-lucide="map-pin"></i>Berlin</li>
+          <li><i data-lucide="clock"></i>Full-time</li>
+          <li><i data-lucide="wifi"></i>Hybrid</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€80k – €100k</span>
+        <time class="mk-job-item-posted" datetime="2026-09-24">Posted 1 week ago</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Site Reliability Engineer</a></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Engineering</li>
+          <li><i data-lucide="map-pin"></i>Remote (EU)</li>
+          <li><i data-lucide="clock"></i>Full-time</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€90k – €110k</span>
+        <time class="mk-job-item-posted" datetime="2026-09-10">Posted 3 weeks ago</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+  </section>
+  <section class="mk-job-group" aria-labelledby="jobs-design">
+    <h2 class="mk-job-group-title" id="jobs-design">Design · 1 role</h2>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Product Designer, Mobile</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Design</li>
+          <li><i data-lucide="map-pin"></i>Lisbon</li>
+          <li><i data-lucide="clock"></i>Part-time</li>
+          <li><i data-lucide="wifi"></i>Hybrid</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€55k – €70k (80%)</span>
+        <time class="mk-job-item-posted" datetime="2026-10-01">Posted today</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+  </section>
+</div>
+    </section>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+  <article class="mk-job-item" data-variant="card">
+    <div class="mk-job-item-main">
+      <h3 class="mk-job-item-title"><a href="#">Head of Support</a></h3>
+      <ul class="mk-job-item-meta">
+        <li><i data-lucide="briefcase"></i>Customer</li>
+        <li><i data-lucide="map-pin"></i>Lisbon</li>
+        <li><i data-lucide="clock"></i>Full-time</li>
+      </ul>
+    </div>
+    <div class="mk-job-item-side">
+      <span class="mk-job-item-salary">€75k – €90k</span>
+      <time class="mk-job-item-posted" datetime="2026-09-29">2 days ago</time>
+    </div>
+    <i data-lucide="arrow-right"></i>
+  </article>
+  <article class="mk-job-item" data-variant="card">
+    <div class="mk-job-item-main">
+      <h3 class="mk-job-item-title"><a href="#">Data Engineer</a></h3>
+      <ul class="mk-job-item-meta">
+        <li><i data-lucide="briefcase"></i>Engineering</li>
+        <li><i data-lucide="map-pin"></i>Remote (EU)</li>
+        <li><i data-lucide="clock"></i>Contract</li>
+      </ul>
+    </div>
+    <div class="mk-job-item-side">
+      <span class="mk-job-item-salary">€600 / day</span>
+      <time class="mk-job-item-posted" datetime="2026-09-26">5 days ago</time>
+    </div>
+    <i data-lucide="arrow-right"></i>
+  </article>
+  <article class="mk-job-item" data-variant="card">
+    <div class="mk-job-item-main">
+      <h3 class="mk-job-item-title"><a href="#">Content Designer</a></h3>
+      <ul class="mk-job-item-meta">
+        <li><i data-lucide="briefcase"></i>Design</li>
+        <li><i data-lucide="map-pin"></i>Berlin</li>
+        <li><i data-lucide="clock"></i>Full-time</li>
+      </ul>
+    </div>
+    <div class="mk-job-item-side">
+      <span class="mk-job-item-salary">€60k – €75k</span>
+      <time class="mk-job-item-posted" datetime="2026-09-24">1 week ago</time>
+    </div>
+    <i data-lucide="arrow-right"></i>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

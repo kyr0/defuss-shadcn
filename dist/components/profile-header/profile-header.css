@@ -1,0 +1,43 @@
+/* -- Profile Header (website · Account & States) --------------------------
+   Presents a user's avatar, identity, biography, and relevant actions - a cover, an overlapping avatar, name and handle, bio, details, counts and follow / message. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-profile-header, .mk-profile-header *, .mk-profile-header ::before, .mk-profile-header ::after) { box-sizing: border-box; }
+
+  .mk-profile-header { container: mk-profile-header / inline-size; width: 100%; overflow: hidden; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); }
+  .mk-profile-header-cover { display: block; width: 100%; height: 10rem; object-fit: cover; background: linear-gradient(120deg, color-mix(in oklab, var(--chart-1) 60%, var(--muted)), color-mix(in oklab, var(--chart-3) 60%, var(--muted))); }
+  .mk-profile-header-body { display: grid; gap: 1rem; padding: 0 1.5rem 1.5rem; }
+  .mk-profile-header-top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem; margin-block-start: -2.75rem;
+    & .avatar { width: 6rem; height: 6rem; border: 4px solid var(--card); box-shadow: var(--shadow-md); }
+  }
+  .mk-profile-header-actions { display: flex; gap: 0.5rem; }
+  .mk-profile-header-name { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  .mk-profile-header-handle { margin: 0; color: var(--muted-foreground); }
+  .mk-profile-header-bio { margin: 0; max-width: 40rem; line-height: 1.6; text-wrap: pretty; }
+  .mk-profile-header-meta { display: flex; flex-wrap: wrap; gap: 0.375rem 1.25rem; margin: 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: 0.875rem;
+    & li { display: inline-flex; align-items: center; gap: 0.375rem; }
+    & svg { width: 1rem; height: 1rem; }
+    & a { color: var(--primary); text-decoration: none; }
+  }
+  .mk-profile-header-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 0;
+    & div { display: flex; flex-direction: row-reverse; gap: 0.375rem; font-size: 0.9375rem; }
+    & dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+    & dt { color: var(--muted-foreground); }
+  }
+
+  .mk-profile-header[data-variant="compact"] {
+    & .mk-profile-header-body { padding: 1.25rem; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.25rem 1rem; }
+    & .avatar { width: 3.5rem; height: 3.5rem; grid-row: span 2; }
+    & .mk-profile-header-name { font-size: 1.0625rem; }
+    & .mk-profile-header-actions { grid-column: 3; grid-row: 1 / span 2; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-profile-header { border-color: CanvasText; }
+  }
+}

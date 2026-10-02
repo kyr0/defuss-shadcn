@@ -256,7 +256,13 @@ function init() {
 
     if (table.dataset.lockStart) {
       measureLocks(table);
-      new ResizeObserver(() => measureLocks(table)).observe(table);
+      // measured on the next frame: re-pinning the locked columns inside the
+      // observer would change layout mid-delivery (the "ResizeObserver loop")
+      let frame = 0;
+      new ResizeObserver(() => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => measureLocks(table));
+      }).observe(table);
     }
   });
 }

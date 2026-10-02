@@ -1,0 +1,91 @@
+/* -- Tracking Status (website · Shop) -------------------------------------
+   Shows an order's fulfillment progress and shipment links - the estimated arrival, the steps from ordered to delivered, and the carrier's event log. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-tracking-status, .mk-tracking-status *, .mk-tracking-status ::before, .mk-tracking-status ::after) { box-sizing: border-box; }
+
+  .mk-tracking-status { container: mk-tracking-status / inline-size; display: grid; gap: 1.5rem; width: 100%; padding: 1.5rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); }
+  .mk-tracking-status-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem;
+    & h2 { margin: 0; font-size: 0.875rem; font-weight: 500; color: var(--muted-foreground); }
+    & p { margin: 0.125rem 0 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  }
+  .mk-tracking-status-carrier { display: grid; justify-items: end; gap: 0.125rem; font-size: 0.875rem;
+    & span { color: var(--muted-foreground); }
+    & a { color: var(--primary); font-family: var(--font-mono); font-weight: 600; text-decoration: none; }
+    & a:hover { text-decoration: underline; }
+  }
+  .mk-tracking-status-steps {
+    --mk-tracking-progress: 0%;
+
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); gap: 0 0.75rem; align-items: center; }
+    & strong { font-size: 0.9375rem; font-weight: 600; }
+    & small { grid-column: 2; color: var(--muted-foreground); font-size: 0.8125rem; }
+    & li:not([data-done], [aria-current]) strong { color: var(--muted-foreground); font-weight: 500; }
+  }
+  .mk-tracking-status-dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    grid-row: span 2;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    background: var(--card);
+    box-sizing: border-box;
+
+    & svg { width: 0.875rem; height: 0.875rem; }
+  }
+  [data-done] > .mk-tracking-status-dot { border-color: #16a34a; background: #16a34a; color: #fff; }
+  [aria-current] > .mk-tracking-status-dot { border-color: #16a34a; box-shadow: 0 0 0 4px color-mix(in oklch, #16a34a 18%, transparent); }
+  [aria-current] > .mk-tracking-status-dot::after { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #16a34a; }
+  .mk-tracking-status-log {
+    border-block-start: 1px solid var(--border);
+    padding-block-start: 1rem;
+
+    & summary { cursor: pointer; font-size: 0.875rem; font-weight: 600; }
+    & summary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+    & ol { display: grid; gap: 0.75rem; margin: 0.875rem 0 0; padding: 0; list-style: none; }
+    & li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; font-size: 0.875rem; }
+    & time { color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+    & span { color: var(--muted-foreground); }
+  }
+
+  .mk-tracking-status[data-variant="compact"] { gap: 0.75rem; padding: 1rem 1.25rem;
+    & .mk-tracking-status-head p { font-size: 1rem; }
+  }
+  .mk-tracking-status-bar { height: 0.375rem; border-radius: 999px; background: linear-gradient(90deg, #16a34a var(--mk-tracking-progress, 0%), var(--muted) 0); }
+
+  @container mk-tracking-status (min-width: 40rem) {
+    .mk-tracking-status-steps {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      gap: 0.5rem;
+
+      & li { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 0.25rem; text-align: center; }
+      & small { grid-column: 1; }
+      &::before, &::after { content: ""; position: absolute; top: 0.8125rem; left: 12.5%; height: 2px; }
+      &::before { right: 12.5%; background: var(--border); }
+      &::after { width: calc((75%) * var(--mk-tracking-progress) / 100%); background: #16a34a; }
+    }
+    .mk-tracking-status-dot { grid-row: auto; margin-block-end: 0.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    [data-done] > .mk-tracking-status-dot, [aria-current] > .mk-tracking-status-dot::after { background: Highlight; forced-color-adjust: none; }
+    .mk-tracking-status-steps::after { background: Highlight; }
+  }
+}

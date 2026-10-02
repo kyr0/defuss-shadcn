@@ -1,0 +1,51 @@
+---
+title: "Tag List"
+description: "Displays the tags associated with a content item - outlined chips, plain hashtags, or colored labels."
+slug: "tag-list"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tag-list" title="Tag List" component="tag-list">
+  Displays the tags associated with a content item - outlined chips, plain hashtags, or colored labels. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="tag-list">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;ul aria-label="Tags"&gt;</code> of tag links; the colored variant sets <code>--mk-tag-color</code> per tag.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tints derived from the theme tokens"><code>color-mix()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-tag-list</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>plain</code>, <code>colored</code>; <code>--mk-tag-color</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A labelled list of outlined tag chips." previewStyle="align-items:stretch;"
+<ul class="mk-tag-list" aria-label="Tags"><li><a href="#">Engineering</a></li><li><a href="#">Offline</a></li><li><a href="#">CRDT</a></li><li><a href="#">Performance</a></li></ul>
+```
+
+```html example label="Plain" hint="data-variant='plain': hashtags - the # is drawn by CSS with empty alt text, so it is not read out." previewStyle="align-items:stretch;"
+<ul class="mk-tag-list" data-variant="plain" aria-label="Tags"><li><a href="#">calmsoftware</a></li><li><a href="#">localfirst</a></li><li><a href="#">design</a></li></ul>
+```
+
+```html example label="Colored" hint="data-variant='colored': each tag tinted by its own --mk-tag-color." previewStyle="align-items:stretch;"
+<ul class="mk-tag-list" data-variant="colored" aria-label="Labels"><li><a href="#" style="--mk-tag-color:#16a34a">Shipped</a></li><li><a href="#" style="--mk-tag-color:#2563eb">Engineering</a></li><li><a href="#" style="--mk-tag-color:#d97706">Needs review</a></li><li><a href="#" style="--mk-tag-color:#db2777">Design</a></li></ul>
+```
+
+<SourceFiles component="tag-list" section="css" />
+
+</DocPage>

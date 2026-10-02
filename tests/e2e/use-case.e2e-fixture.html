@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>use-case e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/use-case/use-case.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<article class="mk-use-case" aria-labelledby="uc-launch">
+  <div class="mk-use-case-layout">
+    <div class="mk-use-case-copy">
+      <span class="mk-use-case-eyebrow"><i data-lucide="rocket"></i> For product teams</span>
+      <h2 class="mk-use-case-title" id="uc-launch">Launch with five teams - without the war room</h2>
+      <p class="mk-use-case-text">Launches stall when marketing, support and engineering plan in different tools. Acme puts the launch plan, the docs and every open question on one board, so each team sees what the others need.</p>
+      <ul class="mk-use-case-outcomes">
+        <li><i data-lucide="check"></i>One launch board that every team updates</li>
+        <li><i data-lucide="check"></i>Release notes drafted from the shipped work</li>
+        <li><i data-lucide="check"></i>Support briefed before customers ask</li>
+      </ul>
+      <p class="mk-use-case-metric"><strong>−40%</strong> time from code freeze to launch</p>
+    </div>
+    <figure class="mk-use-case-media"><img src="https://picsum.photos/seed/usecase-launch/1000/750" alt=""></figure>
+  </div>
+</article>
+    </section>
+    <!-- Reverse -->
+    <section class="fx">
+<article class="mk-use-case" data-variant="reverse" aria-labelledby="uc-onboard">
+  <div class="mk-use-case-layout">
+    <div class="mk-use-case-copy">
+      <span class="mk-use-case-eyebrow"><i data-lucide="users"></i> For people teams</span>
+      <h2 class="mk-use-case-title" id="uc-onboard">Onboard new hires in a week, not a quarter</h2>
+      <p class="mk-use-case-text">Templates turn your onboarding into a checklist every manager can run - with the right docs linked at the right day.</p>
+      <ul class="mk-use-case-outcomes">
+        <li><i data-lucide="check"></i>A first-week plan per role</li>
+        <li><i data-lucide="check"></i>Buddies and check-ins scheduled automatically</li>
+      </ul>
+      <p class="mk-use-case-metric"><strong>5 days</strong> to the first shipped task</p>
+    </div>
+    <figure class="mk-use-case-media"><img src="https://picsum.photos/seed/usecase-onboard/1000/750" alt=""></figure>
+  </div>
+</article>
+    </section>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1rem;width:100%">
+  <article class="mk-use-case" data-variant="card" aria-labelledby="uc-c1"><div class="mk-use-case-copy"><span class="mk-use-case-eyebrow"><i data-lucide="headphones"></i> Support</span><h3 class="mk-use-case-title" id="uc-c1">Answer tickets from one knowledge base</h3><p class="mk-use-case-text">Docs your agents and your customers both search.</p><p class="mk-use-case-metric"><strong>2×</strong> faster first replies</p></div></article>
+  <article class="mk-use-case" data-variant="card" aria-labelledby="uc-c2"><div class="mk-use-case-copy"><span class="mk-use-case-eyebrow"><i data-lucide="megaphone"></i> Marketing</span><h3 class="mk-use-case-title" id="uc-c2">Plan campaigns with the product team</h3><p class="mk-use-case-text">One calendar for launches, content and ads.</p><p class="mk-use-case-metric"><strong>+25%</strong> campaigns on time</p></div></article>
+  <article class="mk-use-case" data-variant="card" aria-labelledby="uc-c3"><div class="mk-use-case-copy"><span class="mk-use-case-eyebrow"><i data-lucide="graduation-cap"></i> Education</span><h3 class="mk-use-case-title" id="uc-c3">Run a semester of projects</h3><p class="mk-use-case-text">Students, teachers and deadlines in one space.</p><p class="mk-use-case-metric"><strong>300</strong> schools on Acme</p></div></article>
+</div>
+    </section>
+  </body>
+</html>

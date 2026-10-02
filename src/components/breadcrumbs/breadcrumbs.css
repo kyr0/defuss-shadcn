@@ -1,0 +1,39 @@
+/* -- Breadcrumbs (website · Search & Navigation) --------------------------
+   Shows the current position within a content hierarchy - the trail above the page title, collapsing to a back link on small screens, or hiding the middle levels in a menu. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-breadcrumbs, .mk-breadcrumbs *, .mk-breadcrumbs ::before, .mk-breadcrumbs ::after) { box-sizing: border-box; }
+
+  .mk-breadcrumbs { container: mk-breadcrumbs / inline-size; display: grid; gap: 0.5rem; width: 100%;
+    & .breadcrumb-link svg { width: 0.875rem; height: 0.875rem; vertical-align: -0.125rem; }
+  }
+  .mk-breadcrumbs-back { display: none; align-items: center; gap: 0.25rem; width: fit-content; color: var(--muted-foreground); font-size: 0.875rem; text-decoration: none;
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { color: var(--foreground); }
+  }
+  .mk-breadcrumbs-title { margin: 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .mk-breadcrumbs-more { display: grid; place-items: center; width: 1.75rem; height: 1.5rem; padding: 0; border: 0; border-radius: var(--radius-sm); background: var(--muted); color: var(--muted-foreground); cursor: pointer;
+    &:hover { color: var(--foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+  .mk-breadcrumbs-menu { margin: 0; padding: 0.25rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--popover); box-shadow: var(--shadow-lg);
+    & ul { display: grid; margin: 0; padding: 0; list-style: none; }
+    & a { display: block; padding: 0.375rem 0.75rem; border-radius: var(--radius-sm); color: var(--popover-foreground); font-size: 0.875rem; text-decoration: none; }
+    & a:hover { background: var(--accent); }
+  }
+  @supports (position-anchor: --a) {
+    .mk-breadcrumbs-menu { inset: auto; margin-block-start: 0.25rem; position-area: bottom span-right; }
+  }
+
+  @container mk-breadcrumbs (max-width: 30rem) {
+    .mk-breadcrumbs:not([data-variant]) .breadcrumb { display: none; }
+    .mk-breadcrumbs:not([data-variant]) .mk-breadcrumbs-back { display: inline-flex; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-breadcrumbs-more { border: 1px solid ButtonText; }
+  }
+}

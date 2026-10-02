@@ -1,0 +1,103 @@
+---
+title: "Survey Question"
+description: "Presents one question with its response controls - a single choice as cards, several choices, an agreement scale, or a written answer."
+slug: "survey-question"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="survey-question" title="Survey Question" component="survey-question">
+  Presents one question with its response controls - a single choice as cards, several choices, an agreement scale, or a written answer. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="survey-question">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code> holding one <code>&lt;fieldset&gt;</code>: the position (a native <code>&lt;progress&gt;</code>), the question as <code>&lt;legend&gt;</code>, a hint (<code>aria-describedby</code>), the controls and back / next Buttons.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="progress.html">Progress</DocLink>, <DocLink href="textarea.html">Textarea</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native completion bar"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-survey-question</code>
+    <code>.mk-survey-question-meta</code>
+    <code>.mk-survey-question-hint</code>
+    <code>.mk-survey-question-option</code>
+    <code>.mk-survey-question-actions</code>
+    <code>.mk-survey-question-scale</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>multiple</code>, <code>scale</code>, <code>text</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Single choice" hint="A fieldset with its legend, the position as a native <progress>, radio cards (:has(:checked) highlights) and back / next." previewStyle="align-items:stretch;"
+<form class="mk-survey-question" action="#" method="post">
+  <div class="mk-survey-question-meta"><span>Question 3 of 8</span><progress class="progress" value="3" max="8" aria-label="Survey progress">3 of 8</progress></div>
+  <fieldset>
+    <legend>How big is your team?</legend>
+    <label class="mk-survey-question-option"><input type="radio" name="team" value="0" required>Just me</label>
+    <label class="mk-survey-question-option"><input type="radio" name="team" value="1" checked required>2–10 people</label>
+    <label class="mk-survey-question-option"><input type="radio" name="team" value="2" required>11–50 people</label>
+    <label class="mk-survey-question-option"><input type="radio" name="team" value="3" required>More than 50</label>
+  </fieldset>
+  <div class="mk-survey-question-actions"><button class="btn" data-variant="ghost" type="button">Back</button><button class="btn" type="submit">Next</button></div>
+</form>
+```
+
+```html example label="Multiple choice" hint="data-variant='multiple': checkbox cards with a &quot;choose all that apply&quot; hint as the fieldset's description." previewStyle="align-items:stretch;"
+<form class="mk-survey-question" data-variant="multiple" action="#" method="post">
+  <div class="mk-survey-question-meta"><span>Question 4 of 8</span><progress class="progress" value="4" max="8" aria-label="Survey progress">4 of 8</progress></div>
+  <fieldset aria-describedby="sq-hint">
+    <legend>Which tools does your team use today?</legend>
+    <p class="mk-survey-question-hint" id="sq-hint">Choose all that apply.</p>
+    <label class="mk-survey-question-option"><input type="checkbox" name="tools" value="0" checked>Spreadsheets</label>
+    <label class="mk-survey-question-option"><input type="checkbox" name="tools" value="1" checked>A wiki</label>
+    <label class="mk-survey-question-option"><input type="checkbox" name="tools" value="2">A task tracker</label>
+    <label class="mk-survey-question-option"><input type="checkbox" name="tools" value="3">Chat only</label>
+  </fieldset>
+  <div class="mk-survey-question-actions"><button class="btn" data-variant="ghost" type="button">Back</button><button class="btn" type="submit">Next</button></div>
+</form>
+```
+
+```html example label="Scale" hint="data-variant='scale': five steps from strongly disagree to strongly agree - each option's label is its full meaning." previewStyle="align-items:stretch;"
+<form class="mk-survey-question" data-variant="scale" action="#" method="post">
+  <div class="mk-survey-question-meta"><span>Question 5 of 8</span><progress class="progress" value="5" max="8" aria-label="Survey progress">5 of 8</progress></div>
+  <fieldset>
+    <legend>"Planning takes less time than before."</legend>
+    <div class="mk-survey-question-scale"><label class="mk-survey-question-option"><input type="radio" name="agree" value="1" required>Strongly disagree</label><label class="mk-survey-question-option"><input type="radio" name="agree" value="2" required>Disagree</label><label class="mk-survey-question-option"><input type="radio" name="agree" value="3" required>Neutral</label><label class="mk-survey-question-option"><input type="radio" name="agree" value="4" checked required>Agree</label><label class="mk-survey-question-option"><input type="radio" name="agree" value="5" required>Strongly agree</label></div>
+  </fieldset>
+  <div class="mk-survey-question-actions"><button class="btn" data-variant="ghost" type="button">Back</button><button class="btn" type="submit">Next</button></div>
+</form>
+```
+
+```html example label="Written answer" hint="data-variant='text': a Textarea with the expected length stated." previewStyle="align-items:stretch;"
+<form class="mk-survey-question" data-variant="text" action="#" method="post">
+  <div class="mk-survey-question-meta"><span>Question 8 of 8</span><progress class="progress" value="8" max="8" aria-label="Survey progress">8 of 8</progress></div>
+  <fieldset>
+    <legend><label for="sq-text">What would make Acme indispensable for you?</label></legend>
+    <p class="mk-survey-question-hint">A sentence or two is plenty.</p>
+    <textarea class="textarea" id="sq-text" name="answer" maxlength="500"></textarea>
+  </fieldset>
+  <div class="mk-survey-question-actions"><button class="btn" data-variant="ghost" type="button">Back</button><button class="btn" type="submit">Finish</button></div>
+</form>
+```
+
+<SourceFiles component="survey-question" section="css" />
+
+</DocPage>

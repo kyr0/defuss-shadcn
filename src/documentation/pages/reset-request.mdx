@@ -1,0 +1,69 @@
+---
+title: "Reset Request"
+description: "Requests a password-reset link for an account - the email field, then the &quot;check your inbox&quot; state with a way to resend."
+slug: "reset-request"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="reset-request" title="Reset Request" component="reset-request">
+  Requests a password-reset link for an account - the email field, then the "check your inbox" state with a way to resend. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="reset-request">
+  <SkillField label="Native basis">
+<SkillText>A card with an icon, a title, one email Input (<code>autocomplete="email"</code>) and submit, and a link back to sign in. <code>data-variant="sent"</code> shows the confirmation (<code>role="status"</code>) with the address and a resend action.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="the browser fills known fields"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-reset-request</code>
+    <code>.mk-reset-request-head</code>
+    <code>.mk-auth-field</code>
+    <code>.mk-reset-request-row</code>
+    <code>.mk-reset-request-foot</code>
+    <code>.mk-reset-request-icon</code>
+    <code>.mk-reset-request-back</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="sent"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="An icon, one email field (autocomplete=&quot;email&quot;) and submit, and the way back to sign in." previewStyle="align-items:stretch;"
+<section class="mk-reset-request" aria-labelledby="rr-title">
+  <div class="mk-reset-request-head"><span class="mk-reset-request-icon"><i data-lucide="key-round"></i></span><h1 id="rr-title">Forgot your password?</h1><p>Enter your email and we'll send you a link to reset it.</p></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="rr-email">Email</label><input class="input" id="rr-email" type="email" name="email" autocomplete="email" required></div>
+    <button class="btn" type="submit">Send reset link</button>
+  </form>
+  <a class="mk-reset-request-back" href="#"><i data-lucide="arrow-left"></i> Back to sign in</a>
+</section>
+```
+
+```html example label="Sent" hint="data-variant='sent': the confirmation (role=&quot;status&quot;) - the same message whether or not the account exists - with an email-app button and resend." previewStyle="align-items:stretch;"
+<section class="mk-reset-request" data-variant="sent" role="status" aria-labelledby="rr2-title">
+  <div class="mk-reset-request-head"><span class="mk-reset-request-icon"><i data-lucide="mail-check"></i></span><h1 id="rr2-title">Check your inbox</h1><p>If an account exists for <strong>anna@example.com</strong>, a reset link is on its way. It expires in 30 minutes.</p></div>
+  <a class="btn" href="#">Open email app</a>
+  <p class="mk-reset-request-foot">Nothing arrived? <a href="#">Send it again</a></p>
+</section>
+```
+
+<SourceFiles component="reset-request" section="css" />
+
+</DocPage>

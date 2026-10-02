@@ -73,6 +73,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 # Components
 
+## About Intro
+
+**Type:** BLK
+**Why:** Headings, paragraphs and a definition list for the facts; container queries switch the split - no script.
+**When:** The opening of an about or company page. For one person use team-member; for dated history use timeline-item.
+**Files:** dist/components/about-intro/about-intro.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/about-intro.png
+**Skill:** [components/about-intro/component-skill.md](components/about-intro/component-skill.md)
+
 ## Accordion
 
 **Type:** ATM
@@ -82,6 +92,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, all-open, all-closed
 **Screenshots:** screenshots/{light,dark}/accordion.png, screenshots/{light,dark}/accordion-all-open.png, screenshots/{light,dark}/accordion-all-closed.png
 **Skill:** [components/accordion/component-skill.md](components/accordion/component-skill.md)
+
+## Active Filters
+
+**Type:** BLK
+**Why:** Each chip is a link to the same results without that filter - removal works without script, and every link says what it removes.
+**When:** Above filtered results, under filter-bar or beside filter-sidebar.
+**Files:** dist/components/active-filters/active-filters.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/active-filters.png
+**Skill:** [components/active-filters/component-skill.md](components/active-filters/component-skill.md)
+
+## Address Form
+
+**Type:** BLK
+**Why:** The autocomplete tokens (name, address-line1, postal-code, country…) let browsers and password managers fill the whole form in one tap - no script.
+**When:** Checkout, account settings, event shipping. Payment details are payment-form.
+**Files:** dist/components/address-form/address-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/address-form.png
+**Skill:** [components/address-form/component-skill.md](components/address-form/component-skill.md)
 
 ## Alert
 
@@ -113,6 +143,96 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/anim-canvas.png, screenshots/{light,dark}/anim-canvas-overview.png
 **Skill:** [components/anim-canvas/component-skill.md](components/anim-canvas/component-skill.md)
 
+## Announcement
+
+**Type:** BLK
+**Why:** A non-modal <dialog open>: a <form method="dialog"> button dismisses it natively - no script, and Escape-free so it never steals focus.
+**When:** Releases, outages, policy changes, events. Promotions with a code are offer-banner; transient feedback is the toast component.
+**Files:** dist/components/announcement/announcement.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/announcement.png
+**Skill:** [components/announcement/component-skill.md](components/announcement/component-skill.md)
+
+## Application Form
+
+**Type:** BLK
+**Why:** Native form fields with autocomplete, required and type checks; a file input styled as a drop zone; :user-invalid shows errors only after trying - no script.
+**When:** Below a job-details page or on its own page. A general contact form is get-in-touch; support requests use support-form.
+**Files:** dist/components/application-form/application-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/application-form.png
+**Skill:** [components/application-form/component-skill.md](components/application-form/component-skill.md)
+
+## Archive Index
+
+**Type:** BLK
+**Why:** Each year is a native <details name="archive"> - exclusive, keyboard-operable, animated with ::details-content and interpolate-size; months are plain links with counts.
+**When:** A blog or news archive in a sidebar or on its own page. Topic-based navigation takes blog-header categories; deep trees take tree-view.
+**Files:** dist/components/archive-index/archive-index.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/archive-index.png
+**Skill:** [components/archive-index/component-skill.md](components/archive-index/component-skill.md)
+
+## Article Body
+
+**Type:** BLK
+**Why:** Styles the plain elements a CMS or Markdown renderer emits - no classes inside - at one readable measure; hanging-punctuation, text-wrap: pretty and ::first-letter do the typography.
+**When:** The running text of an article, post or docs page. Short UI copy takes typography; a single quote block takes blockquote.
+**Files:** dist/components/article-body/article-body.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/article-body.png
+**Skill:** [components/article-body/component-skill.md](components/article-body/component-skill.md)
+
+## Article Header
+
+**Type:** BLK
+**Why:** An h1, a subtitle, a byline from Avatar + <time>, and a <figure> with <figcaption> - the cover variant layers the copy over the figure with a gradient, all CSS.
+**When:** The top of a single article or post. A blog or news front takes blog-header / news-header.
+**Files:** dist/components/article-header/article-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/article-header.png
+**Skill:** [components/article-header/component-skill.md](components/article-header/component-skill.md)
+
+## Article Navigation
+
+**Type:** BLK
+**Why:** Two links with rel="prev" / rel="next" in a nav - the relations are machine-readable; a two-column grid keeps a lone next link on its side, a container query stacks them when narrow.
+**When:** At the end of an article or docs page. Page numbers take pagination; a list of further reading takes related-item.
+**Files:** dist/components/article-navigation/article-navigation.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/article-navigation.png
+**Skill:** [components/article-navigation/component-skill.md](components/article-navigation/component-skill.md)
+
+## Audio Player
+
+**Type:** BLK
+**Why:** The browser's <audio controls> plays, seeks and handles media keys; the block styles the frame around it - no player library.
+**When:** Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player.
+**Files:** dist/components/audio-player/audio-player.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/audio-player.png
+**Skill:** [components/audio-player/component-skill.md](components/audio-player/component-skill.md)
+
+## Author Bio
+
+**Type:** BLK
+**Why:** An Avatar, a heading with the author link, a role, a paragraph and a list of icon Buttons - semantic HTML, no script.
+**When:** Under an article, on an author page, in a sidebar. Several contributors take author-list.
+**Files:** dist/components/author-bio/author-bio.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/author-bio.png
+**Skill:** [components/author-bio/component-skill.md](components/author-bio/component-skill.md)
+
+## Author List
+
+**Type:** BLK
+**Why:** A list of Avatars with name links and roles; the stack variant overlaps them and hides the names visually - they stay in the accessibility tree and the tab order.
+**When:** Article contributors, a publication's masthead, an authors page. One author takes author-bio.
+**Files:** dist/components/author-list/author-list.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/author-list.png
+**Skill:** [components/author-list/component-skill.md](components/author-list/component-skill.md)
+
 ## Avatar
 
 **Type:** ATM
@@ -133,6 +253,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/badge.png
 **Skill:** [components/badge/component-skill.md](components/badge/component-skill.md)
 
+## Before After
+
+**Type:** BLK
+**Why:** One custom property (--mk-ba-pos) drives a clip-path; the slider is a native range input (keyboard-operable); the toggle variant is a checkbox read by :has() - CSS-only.
+**When:** Edits, renovations, redesigns, restorations. Two unrelated pictures belong in a gallery.
+**Files:** dist/components/before-after/before-after.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/before-after.png
+**Skill:** [components/before-after/component-skill.md](components/before-after/component-skill.md)
+
 ## Blog
 
 **Type:** BLK
@@ -143,9 +273,39 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/blog.png
 **Skill:** [components/blog/component-skill.md](components/blog/component-skill.md)
 
+## Blog Header
+
+**Type:** BLK
+**Why:** An h1, a description, Buttons and a nav of category links (aria-current marks the current one) - chips are plain links, so filtering is a real URL with no script.
+**When:** The front of a blog or a category page. A news front takes news-header; a single post takes article-header.
+**Files:** dist/components/blog-header/blog-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/blog-header.png
+**Skill:** [components/blog-header/component-skill.md](components/blog-header/component-skill.md)
+
+## Blog Item
+
+**Type:** BLK
+**Why:** An <article> whose title link stretches over the item - one tab stop and click target; a Badge for the category, an Avatar byline, line-clamp for the excerpt, flex-wrap for the horizontal fallback.
+**When:** Post lists and grids on a blog front or a category page. A news story takes news-item; a link under an article takes related-item; a landing-page teaser row takes blog.
+**Files:** dist/components/blog-item/blog-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/blog-item.png
+**Skill:** [components/blog-item/component-skill.md](components/blog-item/component-skill.md)
+
+## Booking Form
+
+**Type:** BLK
+**Why:** Radio inputs are the selection state: :has(:checked) highlights the card or chip, disabled marks booked slots, the browser validates - no script.
+**When:** Appointments, demos, consultations, table reservations. Event tickets use registration-form.
+**Files:** dist/components/booking-form/booking-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/booking-form.png
+**Skill:** [components/booking-form/component-skill.md](components/booking-form/component-skill.md)
+
 ## Border Layout
 
-**Type:** MOL
+**Type:** ORG
 **Why:** A CSS grid with named areas places north, south, west and east around a center; each resizable region reuses the Resizer (pointer capture, keyboard, clamps) with its handle redrawn as a full-length divider - the runtime adds the layout rules: the center's minimum, collapsing, remembered sizes.
 **When:** Application frames - an editor with a file tree and a terminal, a mail client, a dashboard with an inspector; any split that the user should be able to resize: two panes side by side (horizontal split), stacked (vertical split), three columns, nested splits. A single resizable box takes resizer; fixed columns take the grid utilities.
 **Files:** dist/components/border-layout/border-layout.css + dist/components/border-layout/border-layout.js (+ the resizer)
@@ -172,6 +332,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/breadcrumb.png
 **Skill:** [components/breadcrumb/component-skill.md](components/breadcrumb/component-skill.md)
+
+## Breadcrumbs
+
+**Type:** BLK
+**Why:** The Breadcrumb component in a <nav>; a container query swaps the trail for a back link when narrow; the collapsed levels are a popover - no script.
+**When:** Above the title of nested pages: docs, help, shop categories. Sibling sections are category-menu.
+**Files:** dist/components/breadcrumbs/breadcrumbs.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/breadcrumbs.png
+**Skill:** [components/breadcrumbs/component-skill.md](components/breadcrumbs/component-skill.md)
 
 ## Bubble
 
@@ -233,6 +403,56 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/carousel.png
 **Skill:** [components/carousel/component-skill.md](components/carousel/component-skill.md)
 
+## Cart Item
+
+**Type:** BLK
+**Why:** The Number Input component steps the quantity; the line total is an <output>; remove is a labelled button - all native controls.
+**When:** Cart pages and mini carts. The totals go in cart-summary; checkout recap uses order-summary.
+**Files:** dist/components/cart-item/cart-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/cart-item.png
+**Skill:** [components/cart-item/component-skill.md](components/cart-item/component-skill.md)
+
+## Cart Summary
+
+**Type:** BLK
+**Why:** A <dl> for the breakdown, a native <progress> toward free shipping and a polite live region for the total - no script needed to render.
+**When:** Beside cart-item rows, or in a mini cart. During checkout use order-summary.
+**Files:** dist/components/cart-summary/cart-summary.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/cart-summary.png
+**Skill:** [components/cart-summary/component-skill.md](components/cart-summary/component-skill.md)
+
+## Case Preview
+
+**Type:** BLK
+**Why:** A stretched heading link and a figure; the picture zooms on hover with a CSS transition - no script.
+**When:** Customer and portfolio grids. The full story is case-study; anonymous scenarios are use-case.
+**Files:** dist/components/case-preview/case-preview.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/case-preview.png
+**Skill:** [components/case-preview/component-skill.md](components/case-preview/component-skill.md)
+
+## Case Study
+
+**Type:** BLK
+**Why:** Sections, an ordered list for the approach, a <dl> for the results and a <blockquote> - long-form structure the browser and readers already know.
+**When:** The full story behind a case-preview. For a short anonymous scenario use use-case.
+**Files:** dist/components/case-study/case-study.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/case-study.png
+**Skill:** [components/case-study/component-skill.md](components/case-study/component-skill.md)
+
+## Category Menu
+
+**Type:** BLK
+**Why:** A <nav> of links with aria-current - each category has its own URL; the variants are layout only. No script.
+**When:** Blog, shop and help-center category navigation. Facets that combine are filter-bar; page sections are contents.
+**Files:** dist/components/category-menu/category-menu.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/category-menu.png
+**Skill:** [components/category-menu/component-skill.md](components/category-menu/component-skill.md)
+
 ## Chart
 
 **Type:** MOL
@@ -253,6 +473,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/checkbox.png
 **Skill:** [components/checkbox/component-skill.md](components/checkbox/component-skill.md)
 
+## Code Example
+
+**Type:** BLK
+**Why:** The tabs are radio inputs read by :has() - no script to switch; line numbers are CSS counters; copying is the one line of page script (Clipboard API).
+**When:** Install instructions, snippets and examples in docs and blog posts. A full terminal mockup is the Code mockup component.
+**Files:** dist/components/code-block/code-block.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/code-block.png
+**Skill:** [components/code-block/component-skill.md](components/code-block/component-skill.md)
+
 ## Collapsible
 
 **Type:** ATM
@@ -262,6 +492,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/collapsible.png
 **Skill:** [components/collapsible/component-skill.md](components/collapsible/component-skill.md)
+
+## Collection Item
+
+**Type:** BLK
+**Why:** A picture and a heading link stretched over the card; the zoom and arrow are CSS transitions - no script.
+**When:** Shop home pages and category overviews. A single product is product-item; editorial categories are category-menu.
+**Files:** dist/components/collection-item/collection-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/collection-item.png
+**Skill:** [components/collection-item/component-skill.md](components/collection-item/component-skill.md)
+
+## Collection Pagination
+
+**Type:** BLK
+**Why:** Links, not buttons - every page has a URL; the per-page choice is a GET Select. No script.
+**When:** Under search results, tables and catalogs. An endless list uses load-more.
+**Files:** dist/components/collection-pagination/collection-pagination.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/collection-pagination.png
+**Skill:** [components/collection-pagination/component-skill.md](components/collection-pagination/component-skill.md)
 
 ## Color Picker
 
@@ -283,6 +533,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/combobox.png, screenshots/{light,dark}/combobox-open.png
 **Skill:** [components/combobox/component-skill.md](components/combobox/component-skill.md)
 
+## Coming Soon
+
+**Type:** BLK
+**Why:** A plain page section: the Countdown component ticks from data-until, the notify form is a real form - and everything reads without script.
+**When:** A pre-launch page or a feature that is not out yet. A live launch event uses event-countdown; downtime uses maintenance.
+**Files:** dist/components/coming-soon/coming-soon.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/coming-soon.png
+**Skill:** [components/coming-soon/component-skill.md](components/coming-soon/component-skill.md)
+
 ## Command Palette
 
 **Type:** ATM
@@ -292,6 +552,56 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/command.png, screenshots/{light,dark}/command-open.png
 **Skill:** [components/command/component-skill.md](components/command/component-skill.md)
+
+## Comment Form
+
+**Type:** BLK
+**Why:** A real <form> with a Textarea that grows with field-sizing: content, Inputs for guests and native validation (required, minlength, type=email) - :user-invalid marks fields only after an attempt.
+**When:** Under a comment thread, inline under a comment (reply). A chat composer takes textarea-group.
+**Files:** dist/components/comment-form/comment-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/comment-form.png
+**Skill:** [components/comment-form/component-skill.md](components/comment-form/component-skill.md)
+
+## Comment Header
+
+**Type:** BLK
+**Why:** A heading with the count (Badge) and a native Select (or links with aria-current) for the order - the page re-renders by the chosen order, no list script.
+**When:** Above a comment thread or a reviews list. A section intro without sorting takes section-header.
+**Files:** dist/components/comment-header/comment-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/comment-header.png
+**Skill:** [components/comment-header/component-skill.md](components/comment-header/component-skill.md)
+
+## Comment Item
+
+**Type:** BLK
+**Why:** An <article> with an Avatar, an author link, a <time> permalink to the comment's own id, the text and ghost Buttons - replies nest in an <ol>; :target highlights the comment a permalink opens.
+**When:** Comment threads, reviews, discussion boards. Chat messages take message / bubble.
+**Files:** dist/components/comment-item/comment-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/comment-item.png
+**Skill:** [components/comment-item/component-skill.md](components/comment-item/component-skill.md)
+
+## Comparison Table
+
+**Type:** BLK
+**Why:** A <table> with row and column headers is the accessible way to compare; position: sticky keeps the criteria in view while the table scrolls sideways.
+**When:** Product vs. competitors, plan vs. plan, before vs. after. Plan prices with buy buttons use pricing.
+**Files:** dist/components/comparison-table/comparison-table.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/comparison-table.png
+**Skill:** [components/comparison-table/component-skill.md](components/comparison-table/component-skill.md)
+
+## Contents
+
+**Type:** BLK
+**Why:** A nav of fragment links; nesting shows the outline, aria-current="location" the section in view (set by your scroll observer or server-side) - the links work alone.
+**When:** Long articles and docs pages. Navigation between pages is docs-navigation; the site-wide trail is breadcrumbs.
+**Files:** dist/components/contents/contents.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/contents.png
+**Skill:** [components/contents/component-skill.md](components/contents/component-skill.md)
 
 ## Context Menu
 
@@ -303,6 +613,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/context-menu.png, screenshots/{light,dark}/context-menu-open.png
 **Skill:** [components/context-menu/component-skill.md](components/context-menu/component-skill.md)
 
+## Cookie Consent
+
+**Type:** ORG
+**Why:** Built from the library - a Dialog (native modal, focus, Escape, backdrop) holding Buttons, a Select, Tabs, Checkbox rows and Badges; defuss-query owns querying and DOM writes, so consent logic is the only new code.
+**When:** Collect, persist, reopen, or withdraw service-specific privacy choices and gate optional scripts or embeds.
+**Files:** dist/components/cookie-consent/cookie-consent.css + dist/components/cookie-consent/cookie-consent.js (+ dialog, button, select, tabs, checkbox, badge CSS - all.css has them)
+**Supported states:** default, open, preferences, services
+**Screenshots:** screenshots/{light,dark}/cookie-consent.png, screenshots/{light,dark}/cookie-consent-open.png, screenshots/{light,dark}/cookie-consent-preferences.png, screenshots/{light,dark}/cookie-consent-services.png
+**Skill:** [components/cookie-consent/component-skill.md](components/cookie-consent/component-skill.md)
+
 ## Countdown
 
 **Type:** ATM
@@ -313,6 +633,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/countdown.png, screenshots/{light,dark}/countdown-running.png, screenshots/{light,dark}/countdown-paused.png, screenshots/{light,dark}/countdown-finished.png
 **Skill:** [components/countdown/component-skill.md](components/countdown/component-skill.md)
 
+## Credential Item
+
+**Type:** BLK
+**Why:** An article with a <dl> of dates (<time>) and an external verify link with full context for screen readers - no script.
+**When:** Trust, security and compliance pages. Customer logos are brand-logos; press coverage is press-item.
+**Files:** dist/components/credential-item/credential-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/credential-item.png
+**Skill:** [components/credential-item/component-skill.md](components/credential-item/component-skill.md)
+
+## CTA
+
+**Type:** BLK
+**Why:** A heading, one sentence and links styled as Buttons; container queries switch the split - no script.
+**When:** Between sections or at the end of a page, whenever one action matters most. A list of choices is pricing; an email field alone is newsletter.
+**Files:** dist/components/cta/cta.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/cta.png
+**Skill:** [components/cta/component-skill.md](components/cta/component-skill.md)
+
 ## Date Picker
 
 **Type:** ATM
@@ -322,6 +662,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/date-picker.png
 **Skill:** [components/date-picker/component-skill.md](components/date-picker/component-skill.md)
+
+## Delivery Options
+
+**Type:** BLK
+**Why:** A radio group is the selection; :has(:checked) highlights the card; arrival dates are <time>s - no script.
+**When:** Checkout, between address-form and payment-form.
+**Files:** dist/components/delivery-options/delivery-options.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/delivery-options.png
+**Skill:** [components/delivery-options/component-skill.md](components/delivery-options/component-skill.md)
 
 ## Dialog
 
@@ -343,6 +693,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/diff.png, screenshots/{light,dark}/diff-before.png, screenshots/{light,dark}/diff-after.png
 **Skill:** [components/diff/component-skill.md](components/diff/component-skill.md)
 
+## Discount Form
+
+**Type:** BLK
+**Why:** pattern + required check the format in the browser, :user-invalid and aria-invalid show the error - the applied state is plain markup with a remove button.
+**When:** Cart and checkout. Gift cards with a balance need their own form; a promotion banner is offer-banner.
+**Files:** dist/components/discount-form/discount-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/discount-form.png
+**Skill:** [components/discount-form/component-skill.md](components/discount-form/component-skill.md)
+
 ## Dock
 
 **Type:** ATM
@@ -353,6 +713,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/dock.png
 **Skill:** [components/dock/component-skill.md](components/dock/component-skill.md)
 
+## Docs Content
+
+**Type:** BLK
+**Why:** Long-form HTML - headings, paragraphs, <pre><code>, tables, notes - styled for reading in one class scope; no script.
+**When:** A page of documentation. The surrounding nav is docs-navigation; a how-to answer is help-article; code with tabs and copy is code-block.
+**Files:** dist/components/docs-content/docs-content.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/docs-content.png
+**Skill:** [components/docs-content/component-skill.md](components/docs-content/component-skill.md)
+
+## Docs Navigation
+
+**Type:** BLK
+**Why:** Lists inside a <nav>, groups as <details> - collapsible without script; aria-current="page" marks where you are.
+**When:** The sidebar of a documentation site or help center. The headings of one page are contents; a trail is breadcrumbs.
+**Files:** dist/components/docs-navigation/docs-navigation.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/docs-navigation.png
+**Skill:** [components/docs-navigation/component-skill.md](components/docs-navigation/component-skill.md)
+
+## Download Item
+
+**Type:** BLK
+**Why:** An <a download> link with the format and size in its name; the checksum is a <details> - no script.
+**When:** Download pages, release assets, press kits. A resource to read online is resource-item.
+**Files:** dist/components/download-item/download-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/download-item.png
+**Skill:** [components/download-item/component-skill.md](components/download-item/component-skill.md)
+
 ## Dropdown Menu
 
 **Type:** ATM
@@ -362,6 +752,66 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/dropdown.png, screenshots/{light,dark}/dropdown-open.png
 **Skill:** [components/dropdown/component-skill.md](components/dropdown/component-skill.md)
+
+## Empty State
+
+**Type:** BLK
+**Why:** A heading, a sentence and one or two real actions - no script, no illustration library.
+**When:** An empty list, inbox, search, project or dashboard. A failure is error-state; "nothing found" for a query also fits here.
+**Files:** dist/components/empty-state/empty-state.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/empty-state.png
+**Skill:** [components/empty-state/component-skill.md](components/empty-state/component-skill.md)
+
+## Error State
+
+**Type:** BLK
+**Why:** role="alert" announces it; the details are a <details> with the error code in <code> - copyable, no script.
+**When:** Failed loads, server errors, lost connections. A missing page is page-not-found; a field error belongs next to the field.
+**Files:** dist/components/error-state/error-state.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/error-state.png
+**Skill:** [components/error-state/component-skill.md](components/error-state/component-skill.md)
+
+## Event Countdown
+
+**Type:** BLK
+**Why:** The Countdown component ticks from one data-until date and announces itself as a timer; the block only lays out the date, the units and the action.
+**When:** Launches, sales deadlines, event openings. A static date is enough for most events - use event-header; for a page before launch use coming-soon.
+**Files:** dist/components/event-countdown/event-countdown.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/event-countdown.png
+**Skill:** [components/event-countdown/component-skill.md](components/event-countdown/component-skill.md)
+
+## Event Description
+
+**Type:** BLK
+**Why:** Sections and lists for the story, a <dl> for the facts and a <meter> for the seats left - all native, no script.
+**When:** Below an event-header. Times and talks go in session-item; the people in speaker-item.
+**Files:** dist/components/event-description/event-description.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/event-description.png
+**Skill:** [components/event-description/component-skill.md](components/event-description/component-skill.md)
+
+## Event Header
+
+**Type:** BLK
+**Why:** A header with a <time> range, the venue in <address> and two links - registration and an .ics calendar file - no script.
+**When:** The top of an event or conference page. A list of events uses event-item; the details below are event-description.
+**Files:** dist/components/event-header/event-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/event-header.png
+**Skill:** [components/event-header/component-skill.md](components/event-header/component-skill.md)
+
+## Event Item
+
+**Type:** BLK
+**Why:** A <time> tile, a stretched title link and a separately labelled register link - two targets, no script.
+**When:** Event listings, meetups, webinars. The event page itself starts with event-header.
+**Files:** dist/components/event-item/event-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/event-item.png
+**Skill:** [components/event-item/component-skill.md](components/event-item/component-skill.md)
 
 ## FAB
 
@@ -393,6 +843,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/feature-details.png
 **Skill:** [components/feature-details/component-skill.md](components/feature-details/component-skill.md)
 
+## Feedback Form
+
+**Type:** BLK
+**Why:** Ratings are radio inputs; :has(:checked) highlights the choice and - in the inline variant - swaps the question for a thank-you. No script.
+**When:** After a task, at the end of a help article, in a periodic survey. Bug reports go through support-form; multi-question surveys use survey-question.
+**Files:** dist/components/feedback-form/feedback-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/feedback-form.png
+**Skill:** [components/feedback-form/component-skill.md](components/feedback-form/component-skill.md)
+
 ## File Input
 
 **Type:** ATM
@@ -403,6 +863,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/file-input.png, screenshots/{light,dark}/file-input-dragover.png, screenshots/{light,dark}/file-input-selected.png, screenshots/{light,dark}/file-input-error.png
 **Skill:** [components/file-input/component-skill.md](components/file-input/component-skill.md)
 
+## Filter Bar
+
+**Type:** BLK
+**Why:** A GET form of native selects and checkbox chips (:has(:checked) fills them) - filters are shareable URLs; the row scrolls sideways when narrow.
+**When:** Above product grids, listings and tables with a few filters. Many filters belong in filter-sidebar; applied ones show in active-filters.
+**Files:** dist/components/filter-bar/filter-bar.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/filter-bar.png
+**Skill:** [components/filter-bar/component-skill.md](components/filter-bar/component-skill.md)
+
+## Filter Sidebar
+
+**Type:** BLK
+**Why:** Groups are <details>, controls are checkboxes, radios, number inputs and a switch in one GET form - the filter state is the URL. No script.
+**When:** Catalogs and listings with many facets. A few quick filters fit in filter-bar.
+**Files:** dist/components/filter-sidebar/filter-sidebar.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/filter-sidebar.png
+**Skill:** [components/filter-sidebar/component-skill.md](components/filter-sidebar/component-skill.md)
+
 ## Form
 
 **Type:** MOL
@@ -412,6 +892,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/form.png
 **Skill:** [components/form/component-skill.md](components/form/component-skill.md)
+
+## Form Progress
+
+**Type:** BLK
+**Why:** A native <progress> for the fraction and an ordered list with aria-current="step" for the stages - no script.
+**When:** Multi-step forms: checkout, onboarding, applications. A workflow explanation is process-step; shipment progress is tracking-status.
+**Files:** dist/components/form-progress/form-progress.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/form-progress.png
+**Skill:** [components/form-progress/component-skill.md](components/form-progress/component-skill.md)
+
+## Gallery Item
+
+**Type:** BLK
+**Why:** A button with commandfor / command="show-modal" opens a <dialog> - focus trap, Escape and backdrop are the browser's; a method="dialog" form closes it. No script.
+**When:** Photo grids, portfolios, product shots. A whole collection with shared controls is media-gallery; a plain responsive picture is the image component.
+**Files:** dist/components/gallery-item/gallery-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/gallery-item.png
+**Skill:** [components/gallery-item/component-skill.md](components/gallery-item/component-skill.md)
 
 ## Get In Touch
 
@@ -432,6 +932,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/heading-anchor.png
 **Skill:** [components/heading-anchor/component-skill.md](components/heading-anchor/component-skill.md)
+
+## Help Article
+
+**Type:** BLK
+**Why:** An ordered list of steps with counters, a <details> for "still stuck", a CSS-only "was this helpful?" - no script.
+**When:** Help-center articles and how-tos. Reference documentation is docs-content.
+**Files:** dist/components/help-article/help-article.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/help-article.png
+**Skill:** [components/help-article/component-skill.md](components/help-article/component-skill.md)
+
+## Help Category
+
+**Type:** BLK
+**Why:** The title link covers the card; the popular-article links stay clickable above it - two levels of targets, no script.
+**When:** Help-center front pages. A single article is help-article; a resource library is resource-item.
+**Files:** dist/components/help-category/help-category.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/help-category.png
+**Skill:** [components/help-category/component-skill.md](components/help-category/component-skill.md)
 
 ## Hero
 
@@ -483,6 +1003,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/input.png
 **Skill:** [components/input/component-skill.md](components/input/component-skill.md)
 
+## Integration Item
+
+**Type:** BLK
+**Why:** A small article with a labelled action; the logo tile is a text mark tinted by one custom property - no images needed.
+**When:** Integration directories and "works with your tools" sections. A grid of logos only is brand-logos.
+**Files:** dist/components/integration-item/integration-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/integration-item.png
+**Skill:** [components/integration-item/component-skill.md](components/integration-item/component-skill.md)
+
+## Job Details
+
+**Type:** BLK
+**Why:** Sections with headings, check lists and a <dl> summary; the summary is sticky from 52rem - CSS only.
+**When:** The page for one vacancy. Lists of vacancies use job-item; the form below uses application-form.
+**Files:** dist/components/job-details/job-details.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/job-details.png
+**Skill:** [components/job-details/component-skill.md](components/job-details/component-skill.md)
+
+## Job Item
+
+**Type:** BLK
+**Why:** A heading link stretched over the row, the facts as a list, a <time> for the posting date - no script.
+**When:** Careers pages and job boards. The full posting is job-details; the form is application-form.
+**Files:** dist/components/job-item/job-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/job-item.png
+**Skill:** [components/job-item/component-skill.md](components/job-item/component-skill.md)
+
 ## Kbd
 
 **Type:** ATM
@@ -503,6 +1053,66 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/label.png
 **Skill:** [components/label/component-skill.md](components/label/component-skill.md)
 
+## Load More
+
+**Type:** BLK
+**Why:** The button is a link to the next page (works without script); aria-busy on it switches the label to a spinner in CSS while your script fetches.
+**When:** Feeds, galleries and catalogs where page numbers matter less. Exact pages use collection-pagination.
+**Files:** dist/components/load-more/load-more.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/load-more.png
+**Skill:** [components/load-more/component-skill.md](components/load-more/component-skill.md)
+
+## Location Item
+
+**Type:** BLK
+**Why:** An <address> with real tel: and maps links; the open / closed state is one data attribute - no script.
+**When:** Store, office and venue lists. Several places on a map use location-map; finding the nearest uses locator-search.
+**Files:** dist/components/location-item/location-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/location-item.png
+**Skill:** [components/location-item/component-skill.md](components/location-item/component-skill.md)
+
+## Location Map
+
+**Type:** BLK
+**Why:** Pins are buttons with popovertarget; their cards are popovers placed by CSS anchor positioning - interactive, keyboard-accessible, no script and no map library.
+**When:** A handful of places on a stylized map. Searching many places uses locator-search; a single address is location-item. Swap the SVG for an embedded map provider when you need real streets.
+**Files:** dist/components/location-map/location-map.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/location-map.png
+**Skill:** [components/location-map/component-skill.md](components/location-map/component-skill.md)
+
+## Locator Search
+
+**Type:** BLK
+**Why:** A <search> landmark and a GET form work without script; the "use my location" button is the one progressive addition (Geolocation API, on request only).
+**When:** Store finders and venue locators with many places. A handful of places fit on location-map.
+**Files:** dist/components/locator-search/locator-search.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/locator-search.png
+**Skill:** [components/locator-search/component-skill.md](components/locator-search/component-skill.md)
+
+## Login Form
+
+**Type:** BLK
+**Why:** A real <form> with autocomplete="username" / "current-password" lets password managers fill and save it; validation is the browser's - no script.
+**When:** The sign-in page or a sign-in dialog. External providers are social-login; creating an account is signup-form.
+**Files:** dist/components/login-form/login-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/login-form.png
+**Skill:** [components/login-form/component-skill.md](components/login-form/component-skill.md)
+
+## Maintenance
+
+**Type:** BLK
+**Why:** Text, a <time> for the expected end and an indeterminate <progress> - honest, readable, no script.
+**When:** Planned downtime and degraded service. A failed request is error-state; a release in the future is coming-soon.
+**Files:** dist/components/maintenance/maintenance.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/maintenance.png
+**Skill:** [components/maintenance/component-skill.md](components/maintenance/component-skill.md)
+
 ## Marker
 
 **Type:** ATM
@@ -512,6 +1122,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/marker.png
 **Skill:** [components/marker/component-skill.md](components/marker/component-skill.md)
+
+## Media Gallery
+
+**Type:** BLK
+**Why:** The layout switch is three radio inputs read by :has() - no script; the slideshow is a modal <dialog> with a scroll-snapped track.
+**When:** Albums, project galleries, event photos. One picture with a large view is gallery-item; a single hero picture is the image component.
+**Files:** dist/components/media-gallery/media-gallery.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/media-gallery.png
+**Skill:** [components/media-gallery/component-skill.md](components/media-gallery/component-skill.md)
 
 ## Menubar
 
@@ -583,6 +1203,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/navigation-menu.png, screenshots/{light,dark}/navigation-menu-open.png
 **Skill:** [components/navigation-menu/component-skill.md](components/navigation-menu/component-skill.md)
 
+## News Header
+
+**Type:** BLK
+**Why:** A header with an h1, a <time> dateline and a nav of topic links (aria-current marks the current one) - the topic row scrolls natively, no tab script.
+**When:** On a newsroom / press / changelog front. A blog front takes blog-header; a single story takes article-header.
+**Files:** dist/components/news-header/news-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/news-header.png
+**Skill:** [components/news-header/component-skill.md](components/news-header/component-skill.md)
+
+## News Item
+
+**Type:** BLK
+**Why:** An <article> whose headline link stretches over the whole item (::after inset 0) - one tab stop, one click target, the headline as its name; line-clamp trims the summary.
+**When:** News fronts, press pages, "latest updates" lists. A blog post preview with byline takes blog-item; a link under an article takes related-item.
+**Files:** dist/components/news-item/news-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/news-item.png
+**Skill:** [components/news-item/component-skill.md](components/news-item/component-skill.md)
+
+## News Ticker
+
+**Type:** BLK
+**Why:** The headline list runs twice in one track (the copy is inert and aria-hidden) sliding by half its width - a seamless loop in pure CSS; :hover / :focus-within pause it, prefers-reduced-motion turns it into a scrolling row.
+**When:** A strip of latest or breaking headlines above a news front. A list someone should read takes news-item (compact).
+**Files:** dist/components/news-ticker/news-ticker.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/news-ticker.png
+**Skill:** [components/news-ticker/component-skill.md](components/news-ticker/component-skill.md)
+
 ## Newsletter
 
 **Type:** BLK
@@ -592,6 +1242,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/newsletter.png
 **Skill:** [components/newsletter/component-skill.md](components/newsletter/component-skill.md)
+
+## Notification Settings
+
+**Type:** BLK
+**Why:** A real <table> of checkboxes - every box labelled "Mentions by email" - or a list of Switches; nothing but form controls.
+**When:** Account or workspace settings. Marketing email preferences belong in an unsubscribe page; cookie choices in the Cookie Consent component.
+**Files:** dist/components/notification-settings/notification-settings.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/notification-settings.png
+**Skill:** [components/notification-settings/component-skill.md](components/notification-settings/component-skill.md)
 
 ## Number Input
 
@@ -603,6 +1263,46 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/number-input.png
 **Skill:** [components/number-input/component-skill.md](components/number-input/component-skill.md)
 
+## Offer Banner
+
+**Type:** BLK
+**Why:** Text, a <code> for the code, <time> for the deadline and <small> for the conditions; the coupon notches are a CSS mask - no images, no script.
+**When:** Sales, launch discounts, seasonal offers. Plain news is announcement; a plan list is pricing.
+**Files:** dist/components/offer-banner/offer-banner.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/offer-banner.png
+**Skill:** [components/offer-banner/component-skill.md](components/offer-banner/component-skill.md)
+
+## Opening Hours
+
+**Type:** BLK
+**Why:** A <dl> of days; aria-current="date" marks today for assistive technology and styling alike; exceptions are <time>s - no script.
+**When:** Stores, offices, venues, support desks. Use inside location-item or on its own.
+**Files:** dist/components/opening-hours/opening-hours.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/opening-hours.png
+**Skill:** [components/opening-hours/component-skill.md](components/opening-hours/component-skill.md)
+
+## Order Confirmation
+
+**Type:** BLK
+**Why:** Headings, a <dl> of the details and an ordered list of next steps; the check animation is SVG stroke-dashoffset with @starting-style-free CSS keyframes, off under reduced motion.
+**When:** After payment succeeds. Shipment progress afterwards is tracking-status; a generic success is success-state.
+**Files:** dist/components/order-confirmation/order-confirmation.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/order-confirmation.png
+**Skill:** [components/order-confirmation/component-skill.md](components/order-confirmation/component-skill.md)
+
+## Order Summary
+
+**Type:** BLK
+**Why:** A list and a <dl>; the mobile version is a <details> whose summary shows the total - opens and closes natively, no script.
+**When:** Beside the checkout steps and on the confirmation page. In the cart use cart-item + cart-summary.
+**Files:** dist/components/order-summary/order-summary.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/order-summary.png
+**Skill:** [components/order-summary/component-skill.md](components/order-summary/component-skill.md)
+
 ## OTP Input
 
 **Type:** MOL
@@ -613,6 +1313,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/otp-input.png, screenshots/{light,dark}/otp-input-filled.png, screenshots/{light,dark}/otp-input-invalid.png
 **Skill:** [components/otp-input/component-skill.md](components/otp-input/component-skill.md)
 
+## 404 Page
+
+**Type:** BLK
+**Why:** A heading, a GET search form and a list of links - the page works fully without script, as an error page must.
+**When:** The 404 page of a site. Server failures are error-state (data-variant="page").
+**Files:** dist/components/page-not-found/page-not-found.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/page-not-found.png
+**Skill:** [components/page-not-found/component-skill.md](components/page-not-found/component-skill.md)
+
 ## Pagination
 
 **Type:** MOL
@@ -622,6 +1332,56 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/pagination.png
 **Skill:** [components/pagination/component-skill.md](components/pagination/component-skill.md)
+
+## Panel
+
+**Type:** MOL
+**Why:** A titled .card whose minimize / maximize tools are Swaps - a native checkbox each, so the face and the keyboard are the browser's; the runtime keeps the state in step and makes the panel a border-layout region that folds to its title bar (a vertical tab in west / east) like the ExtJS 4 border layout.
+**When:** Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window.
+**Files:** dist/components/panel/panel.css + dist/components/panel/panel.js (+ card, swap)
+**Supported states:** default, minimized, maximized
+**Screenshots:** screenshots/{light,dark}/panel.png, screenshots/{light,dark}/panel-minimized.png, screenshots/{light,dark}/panel-maximized.png
+**Skill:** [components/panel/component-skill.md](components/panel/component-skill.md)
+
+## Parallax
+
+**Type:** ATM
+**Why:** Scroll-driven animations - a view timeline on the scene drives each layer's translate, animation-timeline view() drives the reveals; the compositor runs it, no scroll listener or IntersectionObserver.
+**When:** Depth in heroes and illustrations, a photo drifting behind copy, sections and cards that rise into view on a long page. Entrance animations that play once on load take motion; animations that play on demand take anim-canvas / the df$.anim engine.
+**Files:** dist/components/parallax/parallax.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/parallax.png
+**Skill:** [components/parallax/component-skill.md](components/parallax/component-skill.md)
+
+## Password Reset
+
+**Type:** BLK
+**Why:** autocomplete="new-password" on both fields lets the browser generate and fill one strong password; minlength checks it - no script for the form itself.
+**When:** The page behind the reset link from reset-request. Changing a password while signed in lives in security-settings.
+**Files:** dist/components/password-reset/password-reset.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/password-reset.png
+**Skill:** [components/password-reset/component-skill.md](components/password-reset/component-skill.md)
+
+## Payment Form
+
+**Type:** BLK
+**Why:** The method tabs are radio inputs and :has(:checked) shows the matching panel; the card fields use cc-* autocomplete tokens and inputmode - no script.
+**When:** The last step of checkout. Shipping comes from address-form and delivery-options.
+**Files:** dist/components/payment-form/payment-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/payment-form.png
+**Skill:** [components/payment-form/component-skill.md](components/payment-form/component-skill.md)
+
+## Playlist Item
+
+**Type:** BLK
+**Why:** Each item is a radio input in a label: one selection, arrow keys move it, :has(:checked) highlights it and animates the bars - no script.
+**When:** Track lists, episode lists, lesson lists. The player itself is audio-player or video-player.
+**Files:** dist/components/playlist-item/playlist-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/playlist-item.png
+**Skill:** [components/playlist-item/component-skill.md](components/playlist-item/component-skill.md)
 
 ## Popover
 
@@ -643,6 +1403,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/presentation.png, screenshots/{light,dark}/presentation-notes.png, screenshots/{light,dark}/presentation-fullscreen.png
 **Skill:** [components/presentation/component-skill.md](components/presentation/component-skill.md)
 
+## Press Item
+
+**Type:** BLK
+**Why:** An article whose external headline link covers the item, with the outlet and a <time> - and a new-tab hint for screen readers. No script.
+**When:** Press and "in the news" pages. Your own announcements are news-item; customer quotes are testimonials.
+**Files:** dist/components/press-item/press-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/press-item.png
+**Skill:** [components/press-item/component-skill.md](components/press-item/component-skill.md)
+
 ## Pricing
 
 **Type:** BLK
@@ -652,6 +1422,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/pricing.png
 **Skill:** [components/pricing/component-skill.md](components/pricing/component-skill.md)
+
+## Process Step
+
+**Type:** BLK
+**Why:** An ordered list (<ol>) carries the sequence; the connector line and numbers are pure CSS - no script.
+**When:** How-we-work, onboarding or "how it works" sections. For dated history use timeline-item; for a form wizard use form-progress.
+**Files:** dist/components/process-step/process-step.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/process-step.png
+**Skill:** [components/process-step/component-skill.md](components/process-step/component-skill.md)
+
+## Product Item
+
+**Type:** BLK
+**Why:** The name link covers the card; the heart is a checkbox read by :has(), the hover picture a CSS crossfade, the stars a clipped background - no script for any of it.
+**When:** Product grids, carousels and search results. Cart lines are cart-item; saved items are wishlist-item.
+**Files:** dist/components/product-item/product-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/product-item.png
+**Skill:** [components/product-item/component-skill.md](components/product-item/component-skill.md)
 
 ## Product Showcase
 
@@ -663,6 +1453,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/product-showcase.png, screenshots/{light,dark}/product-showcase-playing.png
 **Skill:** [components/product-showcase/component-skill.md](components/product-showcase/component-skill.md)
 
+## Profile Form
+
+**Type:** BLK
+**Why:** Native fields with autocomplete and maxlength; the username prefix is an addon beside the input; the form submits like any other - no script.
+**When:** Account settings. Passwords, two-factor and sessions are security-settings; notifications are notification-settings.
+**Files:** dist/components/profile-form/profile-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/profile-form.png
+**Skill:** [components/profile-form/component-skill.md](components/profile-form/component-skill.md)
+
+## Profile Header
+
+**Type:** BLK
+**Why:** A header with an <h1>, a <dl> for the counts and real links / buttons - the overlap is a negative margin, no script.
+**When:** Public profile pages, community members, creators. Your own team pages use team-member; article bylines use author-bio.
+**Files:** dist/components/profile-header/profile-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/profile-header.png
+**Skill:** [components/profile-header/component-skill.md](components/profile-header/component-skill.md)
+
 ## Progress
 
 **Type:** ATM
@@ -672,6 +1482,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, indeterminate, complete
 **Screenshots:** screenshots/{light,dark}/progress.png, screenshots/{light,dark}/progress-indeterminate.png, screenshots/{light,dark}/progress-complete.png
 **Skill:** [components/progress/component-skill.md](components/progress/component-skill.md)
+
+## Project Details
+
+**Type:** BLK
+**Why:** A header, a <dl> of facts, a list of deliverables and a grid of figures - the gallery mixes wide and tall pictures with CSS grid only.
+**When:** The page behind a project-item. A client result story is case-study.
+**Files:** dist/components/project-details/project-details.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/project-details.png
+**Skill:** [components/project-details/component-skill.md](components/project-details/component-skill.md)
+
+## Project Item
+
+**Type:** BLK
+**Why:** A figure and a stretched heading link; the caption reveal and zoom are CSS transitions keyed to :hover and :focus-within - no script.
+**When:** Portfolio and work grids. The full project page is project-details; client results are case-preview.
+**Files:** dist/components/project-item/project-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/project-item.png
+**Skill:** [components/project-item/component-skill.md](components/project-item/component-skill.md)
+
+## Quick Links
+
+**Type:** BLK
+**Why:** A nav of plain links - the variants are layout and emphasis only. No script.
+**When:** Dashboards, help-center fronts, 404 pages, footers of long pages. Content categories are category-menu.
+**Files:** dist/components/quick-links/quick-links.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/quick-links.png
+**Skill:** [components/quick-links/component-skill.md](components/quick-links/component-skill.md)
 
 ## Radial Progress
 
@@ -703,6 +1543,56 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/rating.png
 **Skill:** [components/rating/component-skill.md](components/rating/component-skill.md)
 
+## Registration Form
+
+**Type:** BLK
+**Why:** Radio cards and checkboxes hold every choice (:has(:checked) shows it); fieldsets name the groups; the browser validates - no script.
+**When:** Conference and event sign-up. Appointments use booking-form; account creation is signup-form.
+**Files:** dist/components/registration-form/registration-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/registration-form.png
+**Skill:** [components/registration-form/component-skill.md](components/registration-form/component-skill.md)
+
+## Related Item
+
+**Type:** BLK
+**Why:** An <article> whose title link stretches over the item - a thumbnail, a kind label and meta; line-clamp keeps titles to two lines.
+**When:** "Read next" under an article, sidebars, resource lists. A story in a news list takes news-item; a post on a blog front takes blog-item.
+**Files:** dist/components/related-item/related-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/related-item.png
+**Skill:** [components/related-item/component-skill.md](components/related-item/component-skill.md)
+
+## Release Header
+
+**Type:** BLK
+**Why:** A header with a <time>, badges and links - nothing to run.
+**When:** The top of a changelog entry or release page. The individual changes are release-item; plans are roadmap-item.
+**Files:** dist/components/release-header/release-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/release-header.png
+**Skill:** [components/release-header/component-skill.md](components/release-header/component-skill.md)
+
+## Release Item
+
+**Type:** BLK
+**Why:** An article with a typed label (one data attribute colors it) - the kind is always written, not only colored. No script.
+**When:** The entries under a release-header. Future work is roadmap-item.
+**Files:** dist/components/release-item/release-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/release-item.png
+**Skill:** [components/release-item/component-skill.md](components/release-item/component-skill.md)
+
+## Reset Request
+
+**Type:** BLK
+**Why:** One field and a submit; the sent state is plain markup with role="status" - no script.
+**When:** Linked from login-form. Setting the new password is password-reset.
+**Files:** dist/components/reset-request/reset-request.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/reset-request.png
+**Skill:** [components/reset-request/component-skill.md](components/reset-request/component-skill.md)
+
 ## Resizer
 
 **Type:** ATM
@@ -712,6 +1602,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/resizer.png
 **Skill:** [components/resizer/component-skill.md](components/resizer/component-skill.md)
+
+## Resource Item
+
+**Type:** BLK
+**Why:** A card whose title link covers it; the type label and the action cue change with the resource - no script.
+**When:** Resource libraries, learning centers, "further reading". A file with format and size is download-item; a help topic is help-category.
+**Files:** dist/components/resource-item/resource-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/resource-item.png
+**Skill:** [components/resource-item/component-skill.md](components/resource-item/component-skill.md)
+
+## Roadmap Item
+
+**Type:** BLK
+**Why:** Status is one data attribute, progress a native <progress>, the vote a checkbox read by :has() - no script.
+**When:** Public roadmaps and feature boards. Shipped changes belong in release-item.
+**Files:** dist/components/roadmap-item/roadmap-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/roadmap-item.png
+**Skill:** [components/roadmap-item/component-skill.md](components/roadmap-item/component-skill.md)
 
 ## Scroll Area
 
@@ -723,6 +1633,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/scroll-area.png
 **Skill:** [components/scroll-area/component-skill.md](components/scroll-area/component-skill.md)
 
+## Search Box
+
+**Type:** BLK
+**Why:** A <search> landmark around a GET form: it works without script and the URL is shareable; the expanding variant is a :focus-within transition.
+**When:** Site and app search. Suggestions while typing are search-suggestions; the results page uses search-summary and search-result.
+**Files:** dist/components/search-box/search-box.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/search-box.png
+**Skill:** [components/search-box/component-skill.md](components/search-box/component-skill.md)
+
 ## Search & Filter
 
 **Type:** ATM
@@ -732,6 +1652,56 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, filled, searching
 **Screenshots:** screenshots/{light,dark}/search-filter.png, screenshots/{light,dark}/search-filter-filled.png, screenshots/{light,dark}/search-filter-searching.png
 **Skill:** [components/search-filter/component-skill.md](components/search-filter/component-skill.md)
+
+## Search Result
+
+**Type:** BLK
+**Why:** An article with a stretched title link and <mark>ed matches - all text, all native.
+**When:** Search results pages and command-palette lists. Catalog grids are product-item.
+**Files:** dist/components/search-result/search-result.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/search-result.png
+**Skill:** [components/search-result/component-skill.md](components/search-result/component-skill.md)
+
+## Search Suggestions
+
+**Type:** BLK
+**Why:** The panel follows the ARIA combobox / listbox pattern; matches are <mark>s. The native variant is a <datalist> - zero script.
+**When:** Under a search-box. The full results page is search-summary + search-result.
+**Files:** dist/components/search-suggestions/search-suggestions.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/search-suggestions.png
+**Skill:** [components/search-suggestions/component-skill.md](components/search-suggestions/component-skill.md)
+
+## Search Summary
+
+**Type:** BLK
+**Why:** A polite live region (role="status") announces new counts as filters change - a sentence, not a widget.
+**When:** At the top of search results and filtered collections. The query field itself is search-box.
+**Files:** dist/components/search-summary/search-summary.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/search-summary.png
+**Skill:** [components/search-summary/component-skill.md](components/search-summary/component-skill.md)
+
+## Section Header
+
+**Type:** BLK
+**Why:** Plain heading + paragraph + links; flex-wrap gives the split layout its fallback and a container query scales the title - no breakpoints, no script.
+**When:** Above any page section (features, pricing, a list of posts). A whole-page opener with media takes hero; a news or blog front takes news-header / blog-header.
+**Files:** dist/components/section-header/section-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/section-header.png
+**Skill:** [components/section-header/component-skill.md](components/section-header/component-skill.md)
+
+## Security Settings
+
+**Type:** BLK
+**Why:** Sections of rows with real buttons; two-factor is a Switch (a checkbox); sessions are a list with labelled actions - no script in the markup.
+**When:** Account settings. Profile details are profile-form; notifications are notification-settings.
+**Files:** dist/components/security-settings/security-settings.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/security-settings.png
+**Skill:** [components/security-settings/component-skill.md](components/security-settings/component-skill.md)
 
 ## Select
 
@@ -753,6 +1723,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/separator.png
 **Skill:** [components/separator/component-skill.md](components/separator/component-skill.md)
 
+## Service Item
+
+**Type:** BLK
+**Why:** One heading link stretched over the card; the hover lift and arrow are CSS transitions - no script.
+**When:** Agency and consultancy service grids. Product capabilities use feature-details; an applied scenario uses use-case.
+**Files:** dist/components/service-item/service-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/service-item.png
+**Skill:** [components/service-item/component-skill.md](components/service-item/component-skill.md)
+
 ## Session
 
 **Type:** ORG
@@ -762,6 +1742,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, detached, streaming
 **Screenshots:** screenshots/{light,dark}/session.png, screenshots/{light,dark}/session-detached.png, screenshots/{light,dark}/session-streaming.png
 **Skill:** [components/session/component-skill.md](components/session/component-skill.md)
+
+## Session Item
+
+**Type:** BLK
+**Why:** The toggle is a checkbox in a label - :has(:checked) swaps "Add" for "Added" with no script; times are <time>.
+**When:** Conference agendas and event schedules. Speakers on their own are speaker-item; a single event is event-item.
+**Files:** dist/components/session-item/session-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/session-item.png
+**Skill:** [components/session-item/component-skill.md](components/session-item/component-skill.md)
+
+## Share Links
+
+**Type:** BLK
+**Why:** Share intents are plain <a href> URLs - no third-party scripts, no tracking; copy link and the native share sheet are two lines of page script (navigator.clipboard / navigator.share).
+**When:** Under or beside an article, on a product page. A single "copy link" action can stay a Button.
+**Files:** dist/components/share-links/share-links.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/share-links.png
+**Skill:** [components/share-links/component-skill.md](components/share-links/component-skill.md)
 
 ## Sheet
 
@@ -782,6 +1782,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, collapsed
 **Screenshots:** screenshots/{light,dark}/sidebar.png, screenshots/{light,dark}/sidebar-collapsed.png
 **Skill:** [components/sidebar/component-skill.md](components/sidebar/component-skill.md)
+
+## Signup Form
+
+**Type:** BLK
+**Why:** autocomplete="new-password" lets the browser suggest a strong password; minlength and pattern check it; :user-valid confirms each field - no script.
+**When:** Account creation. Existing users sign in with login-form; providers are social-login.
+**Files:** dist/components/signup-form/signup-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/signup-form.png
+**Skill:** [components/signup-form/component-skill.md](components/signup-form/component-skill.md)
 
 ## Site Footer
 
@@ -823,6 +1833,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/slider.png, screenshots/{light,dark}/slider-disabled.png
 **Skill:** [components/slider/component-skill.md](components/slider/component-skill.md)
 
+## Social Login
+
+**Type:** BLK
+**Why:** Links to each provider's sign-in flow (OAuth / OpenID Connect redirects) - no SDK, no script in the page; brand marks are inline SVG.
+**When:** Above or below a login-form or signup-form. Single sign-on for companies is usually one "Continue with SSO" button.
+**Files:** dist/components/social-login/social-login.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/social-login.png
+**Skill:** [components/social-login/component-skill.md](components/social-login/component-skill.md)
+
+## Social Post
+
+**Type:** BLK
+**Why:** Rendered locally from your own markup: no third-party embed script, no tracking, no layout shift - an article with a <time> and labelled numbers.
+**When:** Social proof, "what people say" walls, press kits. Curated customer quotes are testimonials; a feed of your own updates is news-item.
+**Files:** dist/components/social-post/social-post.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/social-post.png
+**Skill:** [components/social-post/component-skill.md](components/social-post/component-skill.md)
+
+## Sort Control
+
+**Type:** BLK
+**Why:** A native Select, a radio group, or a popover holding radios - each submits with the form; none needs script to render or choose.
+**When:** Above lists, grids and tables. Narrowing is filter-bar; changing the layout is view-switcher.
+**Files:** dist/components/sort-control/sort-control.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/sort-control.png
+**Skill:** [components/sort-control/component-skill.md](components/sort-control/component-skill.md)
+
 ## Sortable
 
 **Type:** ATM
@@ -832,6 +1872,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/sortable.png
 **Skill:** [components/sortable/component-skill.md](components/sortable/component-skill.md)
+
+## Speaker Item
+
+**Type:** BLK
+**Why:** An article with a portrait, a heading and a link to the talk; the duotone-to-color hover is a CSS filter transition - no script.
+**When:** Conference and event speaker grids. Your own team uses team-member; article authors use author-bio.
+**Files:** dist/components/speaker-item/speaker-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/speaker-item.png
+**Skill:** [components/speaker-item/component-skill.md](components/speaker-item/component-skill.md)
 
 ## Spinner
 
@@ -873,6 +1923,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/steps.png
 **Skill:** [components/steps/component-skill.md](components/steps/component-skill.md)
 
+## Success State
+
+**Type:** BLK
+**Why:** role="status" announces it politely; the ripple is a CSS animation that stands still under reduced motion.
+**When:** After saving, sending, inviting, publishing. A completed purchase is order-confirmation; transient confirmations are toasts.
+**Files:** dist/components/success-state/success-state.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/success-state.png
+**Skill:** [components/success-state/component-skill.md](components/success-state/component-skill.md)
+
+## Support Form
+
+**Type:** BLK
+**Why:** Native form fields; priority is a radio group styled as a segmented control; attachments are a multiple file input in a drop zone - no script.
+**When:** Help centers and in-app support. General contact is get-in-touch; product feedback is feedback-form.
+**Files:** dist/components/support-form/support-form.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/support-form.png
+**Skill:** [components/support-form/component-skill.md](components/support-form/component-skill.md)
+
+## Survey Question
+
+**Type:** BLK
+**Why:** Each question is a <fieldset> with its <legend>; responses are native radios, checkboxes or a textarea; :has(:checked) styles the choice. No script.
+**When:** Surveys, onboarding questionnaires, research screeners. A single quick rating is feedback-form.
+**Files:** dist/components/survey-question/survey-question.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/survey-question.png
+**Skill:** [components/survey-question/component-skill.md](components/survey-question/component-skill.md)
+
 ## Swap
 
 **Type:** ATM
@@ -913,6 +1993,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/tabs.png, screenshots/{light,dark}/tabs-active.png, screenshots/{light,dark}/tabs-disabled.png
 **Skill:** [components/tabs/component-skill.md](components/tabs/component-skill.md)
 
+## Tag Cloud
+
+**Type:** BLK
+**Why:** A list of links; one data attribute sets the size step, the count is text - no script.
+**When:** Blog and knowledge-base sidebars, archive pages. The tags of one item are tag-list.
+**Files:** dist/components/tag-cloud/tag-cloud.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/tag-cloud.png
+**Skill:** [components/tag-cloud/component-skill.md](components/tag-cloud/component-skill.md)
+
+## Tag List
+
+**Type:** BLK
+**Why:** A labelled list of links; colors come from one custom property per tag. No script.
+**When:** Under a post title, on a card, in a task. All tags of a site are tag-cloud.
+**Files:** dist/components/tag-list/tag-list.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/tag-list.png
+**Skill:** [components/tag-list/component-skill.md](components/tag-list/component-skill.md)
+
+## Team Member
+
+**Type:** BLK
+**Why:** An <article> per person with a real portrait, a heading and labelled links; the reveal is a :hover / :focus-within transition - keyboard users get it too, touch screens always show the links. No script.
+**When:** Team, leadership and board pages. For an article author use author-bio; for event speakers use speaker-item.
+**Files:** dist/components/team-member/team-member.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/team-member.png
+**Skill:** [components/team-member/component-skill.md](components/team-member/component-skill.md)
+
 ## Testimonials
 
 **Type:** BLK
@@ -922,6 +2032,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/testimonials.png
 **Skill:** [components/testimonials/component-skill.md](components/testimonials/component-skill.md)
+
+## Text Media
+
+**Type:** BLK
+**Why:** Copy and a figure in a two-column container-query grid; the overlap is a negative margin - no script.
+**When:** Explaining one idea with a visual. Product features in a row use feature-details; a whole scenario uses use-case.
+**Files:** dist/components/text-media/text-media.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/text-media.png
+**Skill:** [components/text-media/component-skill.md](components/text-media/component-skill.md)
 
 ## Text Rotate
 
@@ -962,6 +2082,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/timeline.png
 **Skill:** [components/timeline/component-skill.md](components/timeline/component-skill.md)
+
+## Timeline Item
+
+**Type:** BLK
+**Why:** A <time> and a heading in a list item; the line and dots are borders and pseudo-elements - no script.
+**When:** Company history, "our story" and milestone pages. Generic event lists are the timeline component; numbered workflow stages are process-step.
+**Files:** dist/components/timeline-item/timeline-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/timeline-item.png
+**Skill:** [components/timeline-item/component-skill.md](components/timeline-item/component-skill.md)
 
 ## Toast
 
@@ -1023,6 +2153,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/tooltip.png, screenshots/{light,dark}/tooltip-visible.png
 **Skill:** [components/tooltip/component-skill.md](components/tooltip/component-skill.md)
 
+## Tracking Status
+
+**Type:** BLK
+**Why:** An ordered list with aria-current="step" carries the progress; the line fills by a custom property; the log is a <details> - no script.
+**When:** Order pages and tracking emails' landing pages. Before shipping, show order-confirmation.
+**Files:** dist/components/tracking-status/tracking-status.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/tracking-status.png
+**Skill:** [components/tracking-status/component-skill.md](components/tracking-status/component-skill.md)
+
 ## Tree View
 
 **Type:** ATM
@@ -1063,6 +2203,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/typography.png
 **Skill:** [components/typography/component-skill.md](components/typography/component-skill.md)
 
+## Use Case
+
+**Type:** BLK
+**Why:** A heading, lists and one figure; the split layout and the alternating side are container-query CSS - no script.
+**When:** Solution pages by industry, role or job-to-be-done. A customer story with real numbers is case-preview / case-study.
+**Files:** dist/components/use-case/use-case.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/use-case.png
+**Skill:** [components/use-case/component-skill.md](components/use-case/component-skill.md)
+
+## Video Player
+
+**Type:** BLK
+**Why:** The browser's own <video controls> plays, seeks, goes fullscreen and shows captions from a <track> - accessible and keyboard-ready, no player library.
+**When:** Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media.
+**Files:** dist/components/video-player/video-player.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/video-player.png
+**Skill:** [components/video-player/component-skill.md](components/video-player/component-skill.md)
+
+## View Switcher
+
+**Type:** BLK
+**Why:** Radio inputs read by :has() on the shared parent switch the collection's layout - the choice is keyboard-accessible and survives as a form value.
+**When:** Above galleries, file lists, products. Ordering is sort-control; narrowing is filter-bar.
+**Files:** dist/components/view-switcher/view-switcher.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/view-switcher.png
+**Skill:** [components/view-switcher/component-skill.md](components/view-switcher/component-skill.md)
+
 ## Virtual List
 
 **Type:** ATM
@@ -1082,3 +2252,13 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, maximized, minimized, closed
 **Screenshots:** screenshots/{light,dark}/window.png, screenshots/{light,dark}/window-maximized.png, screenshots/{light,dark}/window-minimized.png, screenshots/{light,dark}/window-closed.png
 **Skill:** [components/window/component-skill.md](components/window/component-skill.md)
+
+## Wishlist Item
+
+**Type:** BLK
+**Why:** A list item with real buttons and a stock state in one data attribute - status reads as text, not color alone. No script.
+**When:** Wishlists and "saved for later" lists. Items in the cart are cart-item; catalog cards are product-item.
+**Files:** dist/components/wishlist-item/wishlist-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/wishlist-item.png
+**Skill:** [components/wishlist-item/component-skill.md](components/wishlist-item/component-skill.md)

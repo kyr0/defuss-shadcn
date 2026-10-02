@@ -1,0 +1,766 @@
+---
+title: "Admin Dashboard"
+description: "Application scaffold: a complete, clickable admin dashboard - sidebar, command palette, KPIs with live charts, orders with bulk actions, customers, settings - built only from the shipped components."
+slug: "scaffold-admin-dashboard"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="scaffold-admin-dashboard" title="Admin Dashboard" introStyle="max-width:44rem;">
+  A typical admin dashboard as a clickdummy: navigate with the sidebar, press <kbd class="kbd">⌘K</kbd>, switch the revenue period, select orders, create one, invite a customer, flip dark mode. Every control is a shipped component; the scaffold adds only layout glue and a few lines of wiring. Part of the <DocLink href="application-scaffolds.html">Application Scaffolds</DocLink>.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="app-admin-dashboard.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+  <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
+</div>
+
+```html example label="Admin dashboard" schema="none" height="50" mode="desktop" hint="The whole application in one source. Views are URL fragments (#orders, #customers, #settings) shown with :target - the browser history works; ⌘K opens the Command palette; New order opens a Sheet; checking orders reveals the bulk bar (:has); the 7d / 30d / 12m switch morphs the Chart; the moon toggles dark mode." previewStyle="align-items:stretch;padding:0;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<style>
+  /* the scaffold's own glue - layout only; every control is a shipped component */
+  /* a fixed app height: 50rem in the docs preview, the whole viewport in the
+     full-screen page (it sets --scaffold-height: 100dvh) */
+  .dash { container: dash / inline-size; display: flex; width: 100%; height: var(--scaffold-height, 50rem); min-height: 0; overflow: hidden; background: var(--background); color: var(--foreground); }
+  .dash .app-sidebar { position: relative; height: 100%; flex: none; }
+  .dash-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
+  .dash-workspace, .dash-user { display: flex; align-items: center; gap: 0.625rem; width: 100%; padding: 0.375rem; border: 0; border-radius: var(--radius-md); background: none; color: inherit; font: inherit; text-align: start; cursor: pointer;
+    &:hover { background: var(--sidebar-accent); }
+    &:focus-visible { outline: 2px solid var(--sidebar-ring); outline-offset: -2px; }
+    & > svg:last-child { width: 1rem; height: 1rem; margin-inline-start: auto; color: var(--muted-foreground); }
+  }
+  .dash-workspace-text { display: grid; min-width: 0; line-height: 1.25;
+    & strong { overflow: hidden; font-size: 0.875rem; text-overflow: ellipsis; white-space: nowrap; }
+    & small { overflow: hidden; color: var(--muted-foreground); font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+  }
+  .dash-logo { display: grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: var(--radius-md); background: var(--sidebar-primary); color: var(--sidebar-primary-foreground); font-size: 0.75rem; font-weight: 800;
+    &[data-size="sm"] { width: 1.25rem; height: 1.25rem; border-radius: 0.3rem; & svg { width: 0.75rem; height: 0.75rem; } }
+    &[data-tone="2"] { background: var(--chart-2); color: #fff; }
+  }
+  .app-sidebar[data-state="collapsed"] :is(.dash-workspace-text, .dash-workspace > svg:last-child, .dash-user > svg:last-child, .dash-usage) { display: none; }
+  .dash-usage { display: grid; gap: 0.5rem; margin-block-end: 0.5rem; padding: 0.75rem; border: 1px solid var(--sidebar-border); border-radius: var(--radius-lg); font-size: 0.75rem;
+    & > div { display: flex; justify-content: space-between; gap: 0.5rem; }
+    & span { color: var(--muted-foreground); }
+    & progress { width: 100%; height: 0.375rem; }
+    & .btn { width: 100%; }
+  }
+  .dash-topbar { display: flex; flex: none; align-items: center; gap: 0.5rem; height: 3.5rem; padding-inline: 0.75rem 1rem; border-block-end: 1px solid var(--border); background: color-mix(in oklch, var(--background) 88%, transparent); backdrop-filter: blur(10px);
+    & .breadcrumb { margin-inline: 0.25rem auto; }
+  }
+  .dash-mobile-trigger { display: none; }
+  .dash-search { display: inline-flex; align-items: center; gap: 0.5rem; width: min(18rem, 34cqi); height: 2.25rem; padding-inline: 0.75rem 0.375rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: color-mix(in oklch, var(--muted) 60%, transparent); color: var(--muted-foreground); font: inherit; font-size: 0.8125rem; cursor: pointer;
+    & svg { width: 1rem; height: 1rem; flex: none; }
+    & span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    & .kbd { margin-inline-start: auto; }
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 25%, var(--border)); color: var(--foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  .dash-bell { position: relative; }
+  .dash-bell-dot { position: absolute; top: 0.5rem; right: 0.5rem; width: 0.5rem; height: 0.5rem; border: 2px solid var(--background); border-radius: 50%; background: var(--destructive); box-sizing: content-box; }
+  .dash-notes { width: 22rem; padding: 0; }
+  .dash-notes-head { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-block-end: 1px solid var(--border); }
+  .dash-notes-list { display: grid; margin: 0; padding: 0.375rem; list-style: none;
+    & li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.75rem; padding: 0.625rem; border-radius: var(--radius-md); font-size: 0.8125rem; }
+    & li:hover { background: var(--accent); }
+    & li[data-unread] { background: color-mix(in oklch, var(--primary) 5%, transparent); }
+    & li[data-unread] p::after { content: ""; position: absolute; top: 0.25rem; right: 0; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: var(--chart-1); }
+    & p { position: relative; margin: 0; padding-inline-end: 1rem; line-height: 1.45; }
+    & time { display: block; color: var(--muted-foreground); font-size: 0.75rem; }
+    & a { color: var(--primary); font-weight: 600; }
+  }
+
+  .dash-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+  .dash-view { display: none; align-content: start; gap: 1.25rem; max-width: 84rem; margin-inline: auto; padding: 1.5rem; scroll-margin-top: 0; }
+  .dash-view:target, .dash-views:not(:has(.dash-view:target)) > .dash-view[data-default] { display: grid; animation: dash-in 260ms ease both; }
+  @keyframes dash-in { from { opacity: 0; translate: 0 0.5rem; } }
+  .dash-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem;
+    & h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    & p { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.875rem; }
+  }
+  .dash-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .dash-card { display: grid; align-content: start; gap: 1rem; min-width: 0; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); color: var(--card-foreground); box-shadow: var(--shadow-xs); }
+  .dash-card-head { display: flex; align-items: start; justify-content: space-between; gap: 1rem;
+    & h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+    & p { margin: 0.125rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+  .dash-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .dash-kpi { gap: 0.25rem; padding-block-end: 0; overflow: hidden; }
+  .dash-kpi-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 500;
+    & p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    & svg { flex: none; width: 1rem; height: 1rem; }
+  }
+  .dash-kpi-value { margin: 0.25rem 0 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .dash-kpi-trend { display: flex; align-items: center; gap: 0.375rem; margin: 0; overflow: hidden; color: var(--muted-foreground); font-size: 0.75rem; white-space: nowrap; }
+  .dash-spark { display: block; width: calc(100% + 2.5rem); height: 2.75rem; margin: 0.5rem -1.25rem 0; }
+  .dash-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .dash-stack { display: grid; align-content: start; gap: 1rem; }
+  .dash-chart { width: 100%; height: 18rem; }
+  .dash-who { display: flex; align-items: center; gap: 0.625rem; min-width: 0;
+    & div { display: grid; min-width: 0; line-height: 1.3; }
+    & strong { font-weight: 500; white-space: nowrap; }
+    & span { overflow: hidden; color: var(--muted-foreground); font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+  }
+  .dash-dot { display: inline-block; width: 0.4375rem; height: 0.4375rem; margin-inline-end: 0.375rem; border-radius: 50%; background: var(--muted-foreground);
+    &[data-status="paid"] { background: #16a34a; }
+    &[data-status="pending"] { background: #d97706; }
+    &[data-status="shipped"] { background: #2563eb; }
+    &[data-status="refunded"] { background: var(--destructive); }
+  }
+  .dash-num { text-align: end; font-variant-numeric: tabular-nums; }
+  .dash-muted { color: var(--muted-foreground); }
+  .dash-mono { font-family: var(--font-mono); font-size: 0.8125rem; }
+  .dash-row-actions { width: 2.5rem; text-align: end; }
+  .dash-check { width: 2.5rem; }
+  .dash-bars { display: grid; gap: 0.875rem; margin: 0; padding: 0; list-style: none;
+    & li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.375rem 1rem; font-size: 0.875rem; }
+    & b { font-weight: 600; font-variant-numeric: tabular-nums; }
+    & progress { grid-column: 1 / -1; width: 100%; height: 0.375rem; }
+  }
+  .dash-feed { display: grid; gap: 0.875rem; margin: 0; padding: 0; list-style: none;
+    & li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.75rem; align-items: start; font-size: 0.875rem; }
+    & p { margin: 0; line-height: 1.4; }
+    & time { display: block; color: var(--muted-foreground); font-size: 0.75rem; }
+  }
+  .dash-feed-icon { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--chart-1) 14%, transparent); color: var(--chart-1);
+    &[data-tone="2"] { background: color-mix(in oklch, var(--chart-2) 14%, transparent); color: var(--chart-2); }
+    &[data-tone="3"] { background: color-mix(in oklch, var(--chart-3) 14%, transparent); color: var(--chart-3); }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  .dash-table-card { padding: 0; gap: 0; overflow: clip;
+    & .table-container { border: 0; border-radius: 0; }
+  }
+  .dash-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.875rem 1rem; border-block-end: 1px solid var(--border);
+    & .select { width: auto; }
+  }
+  .dash-filter { position: relative; flex: 1 1 14rem; max-width: 20rem;
+    & svg { position: absolute; inset-inline-start: 0.75rem; top: 50%; translate: 0 -50%; width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
+    & .input { padding-inline-start: 2.25rem; }
+  }
+  /* the bulk bar floats over the bottom of the scroll area while rows are
+     checked (:has - no script); the wiring only writes the count */
+  .dash-bulk { position: sticky; bottom: 1rem; z-index: 2; display: none; align-items: center; gap: 0.5rem; width: fit-content; margin: 0.75rem auto; padding: 0.375rem 0.375rem 0.375rem 0.875rem; border-radius: 999px; background: var(--foreground); color: var(--background); box-shadow: var(--shadow-xl); font-size: 0.8125rem; font-weight: 600; animation: dash-in 200ms ease both;
+    & .btn { border-radius: 999px; }
+    & > svg { width: 1rem; height: 1rem; }
+    & .btn { color: inherit; }
+    & .btn[data-variant="outline"] { border-color: color-mix(in oklch, var(--background) 30%, transparent); background: transparent; }
+  }
+  .dash-orders:has(tbody .checkbox:checked) .dash-bulk { display: flex; }
+  .dash-orders tbody tr:has(.checkbox:checked) { background: color-mix(in oklch, var(--primary) 5%, transparent); }
+  .dash-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.75rem 1rem; border-block-start: 1px solid var(--border); font-size: 0.8125rem; }
+  .dash-empty { justify-items: center; padding-block: 3rem; text-align: center;
+    & > span { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--muted); }
+    & h2 { margin: 0; font-size: 1.0625rem; }
+    & p { margin: 0; color: var(--muted-foreground); }
+  }
+  .dash-people { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+  .dash-person {
+    & h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+    & p { display: flex; align-items: center; gap: 0.25rem; margin: 0.125rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+    & p svg { width: 0.875rem; height: 0.875rem; }
+  }
+  .dash-person-top { display: flex; align-items: start; justify-content: space-between; }
+  .dash-person-stats { display: grid; grid-template-columns: 1fr 1fr; margin: 0; padding-block: 0.75rem; border-block: 1px solid var(--border);
+    & div { display: grid; }
+    & dt { color: var(--muted-foreground); font-size: 0.75rem; }
+    & dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  }
+  .dash-person-actions { display: flex; gap: 0.5rem; }
+  .dash-form { padding: 0; gap: 0; }
+  .dash-form-row { display: grid; gap: 1rem 2rem; padding: 1.25rem; border-block-end: 1px solid var(--border);
+    & h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+    & p { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+  .dash-form-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 1rem; max-width: 40rem; }
+  .dash-switches { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+  .dash-field { display: grid; gap: 0.375rem; align-content: start; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .dash-key { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+    & code { padding: 0.375rem 0.625rem; border-radius: var(--radius-md); background: var(--muted); font-family: var(--font-mono); font-size: 0.8125rem; }
+  }
+  .dash-form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.25rem; }
+  .dash-danger { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; border-color: color-mix(in oklab, var(--destructive) 40%, var(--border));
+    & h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+    & p { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+  .dash-sheet-body { display: grid; gap: 1rem; }
+  .dash-ship { gap: 0.5rem;
+    & label { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-lg); cursor: pointer; }
+    & label:has(:checked) { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+    & span { display: grid; }
+    & small { color: var(--muted-foreground); }
+  }
+
+  @container dash (min-width: 60rem) {
+    .dash-split { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); }
+    .dash-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .dash-form-row { grid-template-columns: 14rem minmax(0, 1fr); }
+  }
+  @container dash (max-width: 44rem) {
+    .dash .app-sidebar { display: none; }
+    .dash-mobile-trigger { display: inline-flex; }
+    .dash-topbar .sidebar-trigger:not(.dash-mobile-trigger) { display: none; }
+    .dash-search span, .dash-search .kbd { display: none; }
+    .dash-search { width: 2.25rem; padding: 0; justify-content: center; }
+    .dash-view { padding: 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dash-view:target, .dash-views:not(:has(.dash-view:target)) > .dash-view[data-default], .dash-bulk { animation: none; }
+  }
+</style>
+<div class="dash" data-dash>
+  <aside class="app-sidebar" id="dash-sidebar" data-state="expanded" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <button class="dash-workspace" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-ws" data-dropdown-trigger="dash-ws">
+        <span class="dash-logo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+        <span class="dash-workspace-text"><strong>Acme Inc.</strong><small>Enterprise</small></span>
+        <i data-lucide="chevrons-up-down"></i>
+      </button>
+      <div id="dash-ws" role="menu" popover class="dropdown-content" aria-label="Workspaces">
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><span class="dash-logo" data-size="sm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Acme Inc. <span class="dropdown-shortcut">⌘1</span></button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><span class="dash-logo" data-size="sm" data-tone="2">G</span> Globex <span class="dropdown-shortcut">⌘2</span></button>
+        <div class="dropdown-separator" role="separator"></div>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="plus"></i> Add workspace</button>
+      </div>
+    </div>
+    <div class="sidebar-content">
+      <details class="sidebar-group" open>
+          <summary><span>Platform</span><i data-lucide="chevron-right"></i></summary>
+          <nav class="sidebar-nav" aria-label="Platform">
+            <a class="sidebar-link" href="#overview" aria-current="page"><i data-lucide="layout-dashboard"></i><span>Overview</span></a>
+            <a class="sidebar-link" href="#orders"><i data-lucide="shopping-bag"></i><span>Orders</span><span class="sidebar-badge">12</span></a>
+            <a class="sidebar-link" href="#customers"><i data-lucide="users"></i><span>Customers</span></a>
+            <details class="sidebar-submenu">
+              <summary><i data-lucide="chart-column"></i><span>Analytics</span><i data-lucide="chevron-right"></i></summary>
+              <nav class="sidebar-nav" aria-label="Analytics">
+                <a class="sidebar-link" href="#overview" data-alias="d"><span>Traffic</span></a>
+                <a class="sidebar-link" href="#overview" data-alias="d"><span>Conversion</span></a>
+              </nav>
+            </details>
+          </nav>
+        </details>
+        <details class="sidebar-group" open>
+          <summary><span>Workspace</span><i data-lucide="chevron-right"></i></summary>
+          <nav class="sidebar-nav" aria-label="Workspace">
+            <a class="sidebar-link" href="#settings"><i data-lucide="settings"></i><span>Settings</span></a>
+            <a class="sidebar-link" href="#settings" data-alias="d"><i data-lucide="credit-card"></i><span>Billing</span></a>
+          </nav>
+        </details>
+    </div>
+    <div class="sidebar-footer">
+      <div class="dash-usage">
+        <div><strong>Storage</strong><span>7.2 of 10 GB</span></div>
+        <progress class="progress" value="72" max="100" aria-label="Storage used: 72%">72%</progress>
+        <a class="btn" data-variant="outline" data-size="sm" href="#settings"><i data-lucide="sparkles"></i> Upgrade plan</a>
+      </div>
+      <button class="dash-user" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-user-menu" data-dropdown-trigger="dash-user-menu">
+        <span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""></span>
+        <span class="dash-workspace-text"><strong>Anna Silva</strong><small>anna@acme.com</small></span>
+        <i data-lucide="chevrons-up-down"></i>
+      </button>
+      <div id="dash-user-menu" role="menu" popover class="dropdown-content" aria-label="Account">
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="user"></i> Profile</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="credit-card"></i> Billing</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1" data-go="settings"><i data-lucide="settings"></i> Settings <span class="dropdown-shortcut">⌘,</span></button>
+        <div class="dropdown-separator" role="separator"></div>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="log-out"></i> Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <dialog class="sidebar-mobile" id="dash-mobile-nav" aria-label="Navigation">
+    <button class="sidebar-mobile-close" aria-label="Close navigation"><i data-lucide="x"></i></button>
+    <div class="sidebar-content">
+      <details class="sidebar-group" open>
+          <summary><span>Platform</span><i data-lucide="chevron-right"></i></summary>
+          <nav class="sidebar-nav" aria-label="Platform">
+            <a class="sidebar-link" href="#overview" aria-current="page"><i data-lucide="layout-dashboard"></i><span>Overview</span></a>
+            <a class="sidebar-link" href="#orders"><i data-lucide="shopping-bag"></i><span>Orders</span><span class="sidebar-badge">12</span></a>
+            <a class="sidebar-link" href="#customers"><i data-lucide="users"></i><span>Customers</span></a>
+            <details class="sidebar-submenu">
+              <summary><i data-lucide="chart-column"></i><span>Analytics</span><i data-lucide="chevron-right"></i></summary>
+              <nav class="sidebar-nav" aria-label="Analytics">
+                <a class="sidebar-link" href="#overview" data-alias="m"><span>Traffic</span></a>
+                <a class="sidebar-link" href="#overview" data-alias="m"><span>Conversion</span></a>
+              </nav>
+            </details>
+          </nav>
+        </details>
+        <details class="sidebar-group" open>
+          <summary><span>Workspace</span><i data-lucide="chevron-right"></i></summary>
+          <nav class="sidebar-nav" aria-label="Workspace">
+            <a class="sidebar-link" href="#settings"><i data-lucide="settings"></i><span>Settings</span></a>
+            <a class="sidebar-link" href="#settings" data-alias="m"><i data-lucide="credit-card"></i><span>Billing</span></a>
+          </nav>
+        </details>
+    </div>
+  </dialog>
+
+  <div class="dash-main">
+    <header class="dash-topbar">
+      <button class="sidebar-trigger" data-sidebar-trigger="dash-sidebar" aria-label="Toggle sidebar"><i data-lucide="panel-left"></i></button>
+      <button class="sidebar-trigger dash-mobile-trigger" data-sidebar-mobile="dash-mobile-nav" aria-label="Open navigation"><i data-lucide="menu"></i></button>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a class="breadcrumb-link" href="#overview">Acme</a></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page" data-dash-crumb>Overview</span></li>
+        </ol>
+      </nav>
+      <button class="dash-search" type="button" data-command-trigger="dash-cmd"><i data-lucide="search"></i><span>Search or jump to…</span><kbd class="kbd">⌘K</kbd></button>
+      <button class="btn dash-bell" data-variant="ghost" data-size="icon" type="button" popovertarget="dash-notes" aria-label="Notifications, 3 unread"><i data-lucide="bell"></i><span class="dash-bell-dot" aria-hidden="true"></span></button>
+      <div class="popover dash-notes" id="dash-notes" popover>
+        <div class="popover-header dash-notes-head"><p class="popover-title">Notifications</p><button class="btn" data-variant="ghost" data-size="xs" type="button" data-toast="All notifications marked as read">Mark all read</button></div>
+        <ul class="dash-notes-list">
+          <li data-unread><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""></span><p><strong>Marco Rossi</strong> placed order <a href="#orders">#A-20480</a><time datetime="2026-10-02T11:05">2h ago</time></p></li>
+          <li data-unread><span class="avatar" data-size="sm"><span class="avatar-fallback">AI</span></span><p>Weekly report is ready - revenue <strong>+12.4%</strong><time datetime="2026-10-02T08:00">5h ago</time></p></li>
+          <li data-unread><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""></span><p><strong>Hannah Lee</strong> requested a refund<time datetime="2026-10-01T16:20">Yesterday</time></p></li>
+          <li><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt=""></span><p><strong>Sophie Tan</strong> joined the workspace<time datetime="2026-09-30">2d ago</time></p></li>
+        </ul>
+      </div>
+      <button class="btn" data-variant="ghost" data-size="icon" type="button" data-dash-theme aria-label="Toggle dark mode"><i data-lucide="moon"></i></button>
+    </header>
+
+    <main class="dash-scroll">
+      <div class="dash-views">
+
+        <!-- Overview -->
+        <section class="dash-view" id="overview" data-default aria-labelledby="dash-h-overview">
+          <div class="dash-head">
+            <div><h1 id="dash-h-overview">Good afternoon, Anna</h1><p>Here's what happened in your store this month.</p></div>
+            <div class="dash-actions">
+              <div class="toggle-group" role="group" aria-label="Period" data-type="single" data-dash-period>
+                <button class="toggle" aria-pressed="false" value="7d">7d</button>
+                <button class="toggle" aria-pressed="true" value="30d">30d</button>
+                <button class="toggle" aria-pressed="false" value="12m">12m</button>
+              </div>
+              <button class="btn" data-variant="outline" type="button" data-toast="Report exported" data-toast-desc="acme-september.csv is in your downloads"><i data-lucide="download"></i> Export</button>
+              <button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"><i data-lucide="plus"></i> New order</button>
+            </div>
+          </div>
+
+          <div class="dash-kpis">
+            <article class="dash-card dash-kpi"><div class="dash-kpi-top"><p>Revenue</p><i data-lucide="euro"></i></div><p class="dash-kpi-value">€48,290</p><p class="dash-kpi-trend"><span class="statistic-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>12.4%</span>vs. Sep</p><svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-1)"><defs><linearGradient id="g18" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M0 32 L0 24 L13.333333333333334 22 L26.666666666666668 23 L40 18 L53.333333333333336 19 L66.66666666666667 15 L80 13 L93.33333333333333 14 L106.66666666666667 9 L120 6 L120 32 Z" fill="url(#g18)"/><polyline points="0,24 13.333333333333334,22 26.666666666666668,23 40,18 53.333333333333336,19 66.66666666666667,15 80,13 93.33333333333333,14 106.66666666666667,9 120,6" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg></article>
+            <article class="dash-card dash-kpi"><div class="dash-kpi-top"><p>Orders</p><i data-lucide="shopping-bag"></i></div><p class="dash-kpi-value">1,284</p><p class="dash-kpi-trend"><span class="statistic-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>4.1%</span>vs. Sep</p><svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-2)"><defs><linearGradient id="g212" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M0 32 L0 20 L13.333333333333334 21 L26.666666666666668 18 L40 19 L53.333333333333336 17 L66.66666666666667 18 L80 15 L93.33333333333333 16 L106.66666666666667 14 L120 13 L120 32 Z" fill="url(#g212)"/><polyline points="0,20 13.333333333333334,21 26.666666666666668,18 40,19 53.333333333333336,17 66.66666666666667,18 80,15 93.33333333333333,16 106.66666666666667,14 120,13" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg></article>
+            <article class="dash-card dash-kpi"><div class="dash-kpi-top"><p>New customers</p><i data-lucide="user-plus"></i></div><p class="dash-kpi-value">312</p><p class="dash-kpi-trend"><span class="statistic-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>2.3%</span>vs. Sep</p><svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-3)"><defs><linearGradient id="g36" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M0 32 L0 26 L13.333333333333334 23 L26.666666666666668 24 L40 22 L53.333333333333336 20 L66.66666666666667 21 L80 19 L93.33333333333333 20 L106.66666666666667 17 L120 16 L120 32 Z" fill="url(#g36)"/><polyline points="0,26 13.333333333333334,23 26.666666666666668,24 40,22 53.333333333333336,20 66.66666666666667,21 80,19 93.33333333333333,20 106.66666666666667,17 120,16" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg></article>
+            <article class="dash-card dash-kpi"><div class="dash-kpi-top"><p>Conversion</p><i data-lucide="activity"></i></div><p class="dash-kpi-value">3.2%</p><p class="dash-kpi-trend"><span class="statistic-trend" data-trend="down"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>0.4%</span>vs. Sep</p><svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-4)"><defs><linearGradient id="g420" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M0 32 L0 12 L13.333333333333334 13 L26.666666666666668 11 L40 14 L53.333333333333336 15 L66.66666666666667 14 L80 16 L93.33333333333333 15 L106.66666666666667 17 L120 16 L120 32 Z" fill="url(#g420)"/><polyline points="0,12 13.333333333333334,13 26.666666666666668,11 40,14 53.333333333333336,15 66.66666666666667,14 80,16 93.33333333333333,15 106.66666666666667,17 120,16" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg></article>
+          </div>
+
+          <div class="dash-split">
+            <article class="dash-card">
+              <div class="dash-card-head"><div><h2>Revenue</h2><p>This period vs. the one before</p></div><span class="badge" data-variant="secondary">+12.4%</span></div>
+              <div class="chart dash-chart" id="dash-revenue" role="img" aria-label="Revenue per day for the last 30 days, compared with the previous period"
+                   data-chart='{"tooltip":{"trigger":"axis"},"legend":{"top":0,"right":0,"icon":"roundRect"},"grid":{"left":48,"right":12,"top":36,"bottom":28},"xAxis":{"type":"category","boundaryGap":false,"data":["1","3","5","7","9","11","13","15","17","19","21","23","25","27","29"]},"yAxis":{"type":"value","axisLabel":{"formatter":"€{value}"}},"series":[{"id":"now","name":"This period","type":"line","smooth":true,"symbol":"none","areaStyle":{"opacity":0.18},"data":[1180,1320,1240,1510,1460,1680,1720,1590,1850,1930,1870,2110,2240,2190,2420]},{"id":"prev","name":"Previous period","type":"line","smooth":true,"symbol":"none","lineStyle":{"type":"dashed","width":1.5},"data":[1050,1110,1090,1240,1210,1330,1360,1300,1420,1480,1450,1560,1620,1590,1700]}]}'></div>
+            </article>
+            <article class="dash-card">
+              <div class="dash-card-head"><div><h2>Sales by channel</h2><p>Share of revenue</p></div></div>
+              <div class="chart dash-chart" role="img" aria-label="Donut chart: online store 54%, marketplace 26%, retail 14%, wholesale 6%"
+                   data-chart='{"tooltip":{"trigger":"item","valueFormatter":"{value}%"},"legend":{"bottom":0,"icon":"circle","itemGap":14},"series":[{"type":"pie","radius":["50%","70%"],"center":["50%","40%"],"avoidLabelOverlap":true,"label":{"show":false},"itemStyle":{"borderWidth":3,"borderColor":"var(--card)","borderRadius":6},"data":[{"name":"Online store","value":54},{"name":"Marketplace","value":26},{"name":"Retail","value":14},{"name":"Wholesale","value":6}]}]}'></div>
+            </article>
+          </div>
+
+          <div class="dash-split">
+            <article class="dash-card">
+              <div class="dash-card-head"><div><h2>Recent orders</h2><p>The last five orders across all channels</p></div><a class="btn" data-variant="outline" data-size="sm" href="#orders">View all <i data-lucide="arrow-right"></i></a></div>
+              <div class="table-container">
+                <table class="table">
+                  <thead><tr class="table-row"><th class="table-head" scope="col">Customer</th><th class="table-head" scope="col">Status</th><th class="table-head" scope="col">Date</th><th class="table-head dash-num" scope="col">Total</th><th class="table-head" scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+                  <tbody>
+                    <tr class="table-row"><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""></span><div><strong>Anna Silva</strong><span>anna@silva.pt</span></div></div></td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="paid"></span>Paid</span></td><td class="table-cell dash-muted">Today, 14:32</td><td class="table-cell dash-num">€128.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20481" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o0" data-dropdown-trigger="dash-m-o0"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-o0" role="menu" popover class="dropdown-content" aria-label="Order #A-20481">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20481 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20481"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                    <tr class="table-row"><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""></span><div><strong>Marco Rossi</strong><span>marco@globex.io</span></div></div></td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="pending"></span>Pending</span></td><td class="table-cell dash-muted">Today, 11:05</td><td class="table-cell dash-num">€120.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20480" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o1" data-dropdown-trigger="dash-m-o1"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-o1" role="menu" popover class="dropdown-content" aria-label="Order #A-20480">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20480 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20480"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                    <tr class="table-row"><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt=""></span><div><strong>Priya Natarajan</strong><span>priya@orbit.dev</span></div></div></td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="shipped"></span>Shipped</span></td><td class="table-cell dash-muted">Yesterday</td><td class="table-cell dash-num">€88.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20479" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o2" data-dropdown-trigger="dash-m-o2"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-o2" role="menu" popover class="dropdown-content" aria-label="Order #A-20479">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20479 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20479"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                    <tr class="table-row"><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><span class="avatar-fallback">JW</span></span><div><strong>Jonas Weber</strong><span>jonas@weber.de</span></div></div></td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="shipped"></span>Shipped</span></td><td class="table-cell dash-muted">Yesterday</td><td class="table-cell dash-num">€36.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20478" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o3" data-dropdown-trigger="dash-m-o3"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-o3" role="menu" popover class="dropdown-content" aria-label="Order #A-20478">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20478 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20478"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                    <tr class="table-row"><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""></span><div><strong>Hannah Lee</strong><span>hannah@northwind.com</span></div></div></td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="refunded"></span>Refunded</span></td><td class="table-cell dash-muted">29 Sep</td><td class="table-cell dash-num">€89.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20477" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o4" data-dropdown-trigger="dash-m-o4"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-o4" role="menu" popover class="dropdown-content" aria-label="Order #A-20477">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20477 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20477"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <div class="dash-stack">
+              <article class="dash-card">
+                <div class="dash-card-head"><div><h2>Top products</h2><p>By revenue this month</p></div></div>
+                <ul class="dash-bars">
+                  <li><span>Linen shirt</span><b>€9,840</b><progress class="progress" value="92" max="100" aria-label="Linen shirt: 92% of the top seller"></progress></li>
+                  <li><span>Wool throw</span><b>€7,320</b><progress class="progress" value="68" max="100" aria-label="Wool throw: 68%"></progress></li>
+                  <li><span>Stoneware mug</span><b>€5,110</b><progress class="progress" value="48" max="100" aria-label="Stoneware mug: 48%"></progress></li>
+                  <li><span>Paper lamp</span><b>€3,560</b><progress class="progress" value="33" max="100" aria-label="Paper lamp: 33%"></progress></li>
+                </ul>
+              </article>
+              <article class="dash-card">
+                <div class="dash-card-head"><div><h2>Activity</h2></div></div>
+                <ol class="dash-feed">
+                  <li><span class="dash-feed-icon" data-tone="1"><i data-lucide="package-check"></i></span><p>12 orders shipped<time>1h ago</time></p></li>
+                  <li><span class="dash-feed-icon" data-tone="2"><i data-lucide="message-square"></i></span><p>New review on Wool throw ★★★★★<time>3h ago</time></p></li>
+                  <li><span class="dash-feed-icon" data-tone="3"><i data-lucide="tag"></i></span><p>AUTUMN30 used 48 times<time>Yesterday</time></p></li>
+                </ol>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Orders -->
+        <section class="dash-view dash-orders" id="orders" aria-labelledby="dash-h-orders">
+          <div class="dash-head">
+            <div><h1 id="dash-h-orders">Orders</h1><p>1,284 orders this month · 12 need attention</p></div>
+            <div class="dash-actions">
+              <button class="btn" data-variant="outline" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-export" data-dropdown-trigger="dash-export"><i data-lucide="download"></i> Export <i data-lucide="chevron-down"></i></button>
+              <div id="dash-export" role="menu" popover class="dropdown-content" aria-label="Export">
+                <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as CSV">CSV</button>
+                <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as Excel">Excel</button>
+                <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as PDF">PDF</button>
+              </div>
+              <button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"><i data-lucide="plus"></i> New order</button>
+            </div>
+          </div>
+          <div class="tabs">
+            <div class="tab-list" role="tablist" aria-label="Order status">
+              <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="dash-t-all" id="dash-tab-all">All <span class="badge" data-variant="secondary" data-size="sm">1,284</span></button>
+              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="dash-t-pending" id="dash-tab-pending" tabindex="-1">Pending <span class="badge" data-variant="secondary" data-size="sm">12</span></button>
+              <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="dash-t-shipped" id="dash-tab-shipped" tabindex="-1">Shipped</button>
+            </div>
+            <div class="tab-content" role="tabpanel" id="dash-t-all" aria-labelledby="dash-tab-all" tabindex="0">
+              <article class="dash-card dash-table-card">
+                <div class="dash-toolbar">
+                  <div class="dash-filter"><i data-lucide="search"></i><label class="sr-only" for="dash-q">Search orders</label><input class="input" id="dash-q" type="search" placeholder="Search orders, customers…"></div>
+                  <label class="sr-only" for="dash-st">Status</label>
+                  <select class="select" id="dash-st"><option>All statuses</option><option>Paid</option><option>Pending</option><option>Shipped</option><option>Refunded</option></select>
+                </div>
+                <div class="table-container">
+                  <table class="table">
+                    <thead><tr class="table-row"><th class="table-head dash-check" scope="col"><input class="checkbox" type="checkbox" aria-label="Select all orders" data-dash-all></th><th class="table-head" scope="col">Order</th><th class="table-head" scope="col">Customer</th><th class="table-head" scope="col">Product</th><th class="table-head" scope="col">Status</th><th class="table-head" scope="col">Date</th><th class="table-head dash-num" scope="col">Total</th><th class="table-head" scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+                    <tbody>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20481"></td><td class="table-cell dash-mono">#A-20481</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""></span><div><strong>Anna Silva</strong><span>anna@silva.pt</span></div></div></td><td class="table-cell dash-muted">Linen shirt · 2</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="paid"></span>Paid</span></td><td class="table-cell dash-muted">Today, 14:32</td><td class="table-cell dash-num">€128.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20481" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t0" data-dropdown-trigger="dash-m-t0"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t0" role="menu" popover class="dropdown-content" aria-label="Order #A-20481">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20481 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20481"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20480"></td><td class="table-cell dash-mono">#A-20480</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""></span><div><strong>Marco Rossi</strong><span>marco@globex.io</span></div></div></td><td class="table-cell dash-muted">Wool throw</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="pending"></span>Pending</span></td><td class="table-cell dash-muted">Today, 11:05</td><td class="table-cell dash-num">€120.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20480" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t1" data-dropdown-trigger="dash-m-t1"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t1" role="menu" popover class="dropdown-content" aria-label="Order #A-20480">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20480 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20480"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20479"></td><td class="table-cell dash-mono">#A-20479</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt=""></span><div><strong>Priya Natarajan</strong><span>priya@orbit.dev</span></div></div></td><td class="table-cell dash-muted">Stoneware mug · 4</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="shipped"></span>Shipped</span></td><td class="table-cell dash-muted">Yesterday</td><td class="table-cell dash-num">€88.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20479" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t2" data-dropdown-trigger="dash-m-t2"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t2" role="menu" popover class="dropdown-content" aria-label="Order #A-20479">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20479 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20479"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20478"></td><td class="table-cell dash-mono">#A-20478</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><span class="avatar-fallback">JW</span></span><div><strong>Jonas Weber</strong><span>jonas@weber.de</span></div></div></td><td class="table-cell dash-muted">Oak tray</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="shipped"></span>Shipped</span></td><td class="table-cell dash-muted">Yesterday</td><td class="table-cell dash-num">€36.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20478" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t3" data-dropdown-trigger="dash-m-t3"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t3" role="menu" popover class="dropdown-content" aria-label="Order #A-20478">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20478 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20478"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20477"></td><td class="table-cell dash-mono">#A-20477</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""></span><div><strong>Hannah Lee</strong><span>hannah@northwind.com</span></div></div></td><td class="table-cell dash-muted">Paper lamp</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="refunded"></span>Refunded</span></td><td class="table-cell dash-muted">29 Sep</td><td class="table-cell dash-num">€89.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20477" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t4" data-dropdown-trigger="dash-m-t4"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t4" role="menu" popover class="dropdown-content" aria-label="Order #A-20477">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20477 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20477"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20476"></td><td class="table-cell dash-mono">#A-20476</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt=""></span><div><strong>Sophie Tan</strong><span>sophie@acme.com</span></div></div></td><td class="table-cell dash-muted">Canvas tote · 3</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="paid"></span>Paid</span></td><td class="table-cell dash-muted">29 Sep</td><td class="table-cell dash-num">€114.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20476" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t5" data-dropdown-trigger="dash-m-t5"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t5" role="menu" popover class="dropdown-content" aria-label="Order #A-20476">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20476 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20476"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20475"></td><td class="table-cell dash-mono">#A-20475</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=5" alt=""></span><div><strong>Emily Carter</strong><span>emily@initech.co</span></div></div></td><td class="table-cell dash-muted">Ceramic vase</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="pending"></span>Pending</span></td><td class="table-cell dash-muted">28 Sep</td><td class="table-cell dash-num">€48.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20475" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t6" data-dropdown-trigger="dash-m-t6"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t6" role="menu" popover class="dropdown-content" aria-label="Order #A-20475">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20475 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20475"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                      <tr class="table-row"><td class="table-cell dash-check"><input class="checkbox" type="checkbox" aria-label="Select order #A-20474"></td><td class="table-cell dash-mono">#A-20474</td><td class="table-cell"><div class="dash-who"><span class="avatar" data-size="sm"><span class="avatar-fallback">LO</span></span><div><strong>Luis Ortega</strong><span>luis@ortega.mx</span></div></div></td><td class="table-cell dash-muted">Linen napkins · 6</td><td class="table-cell"><span class="badge" data-variant="outline"><span class="dash-dot" data-status="shipped"></span>Shipped</span></td><td class="table-cell dash-muted">28 Sep</td><td class="table-cell dash-num">€84.00</td><td class="table-cell dash-row-actions"><button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20474" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-t7" data-dropdown-trigger="dash-m-t7"><i data-lucide="ellipsis"></i></button>
+            <div id="dash-m-t7" role="menu" popover class="dropdown-content" aria-label="Order #A-20474">
+              <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="eye"></i> View order</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20474 marked as shipped"><i data-lucide="truck"></i> Mark as shipped</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20474"><i data-lucide="undo-2"></i> Refund</button>
+            </div></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="dash-bulk" role="status"><i data-lucide="check-check"></i><span class="dash-bulk-count">Orders selected</span><button class="btn" data-variant="outline" data-size="sm" type="button" data-toast="Selected orders marked as shipped"><i data-lucide="truck"></i> Mark shipped</button><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Selected orders archived"><i data-lucide="archive"></i> Archive</button></div>
+                <div class="dash-pager">
+                  <span class="dash-muted">Showing <strong>1–8</strong> of 1,284</span>
+                  <nav class="pagination" aria-label="Pagination"><ul class="pagination-list">
+                    <li><a class="pagination-prev" href="#orders" aria-label="Go to previous page"><i data-lucide="chevron-left"></i></a></li>
+                    <li><a class="pagination-link pagination-active" href="#orders" aria-current="page">1</a></li>
+                    <li><a class="pagination-link" href="#orders">2</a></li>
+                    <li><a class="pagination-link" href="#orders">3</a></li>
+                    <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
+                    <li><a class="pagination-next" href="#orders" aria-label="Go to next page"><i data-lucide="chevron-right"></i></a></li>
+                  </ul></nav>
+                </div>
+              </article>
+            </div>
+            <div class="tab-content" role="tabpanel" id="dash-t-pending" aria-labelledby="dash-tab-pending" tabindex="0" hidden>
+              <article class="dash-card dash-empty"><span><i data-lucide="inbox"></i></span><h2>12 orders wait for payment</h2><p>Send a friendly reminder to every customer at once.</p><button class="btn" type="button" data-toast="Reminders sent to 12 customers"><i data-lucide="send"></i> Send reminders</button></article>
+            </div>
+            <div class="tab-content" role="tabpanel" id="dash-t-shipped" aria-labelledby="dash-tab-shipped" tabindex="0" hidden>
+              <article class="dash-card dash-empty"><span><i data-lucide="truck"></i></span><h2>Everything shipped on time</h2><p>412 orders left the warehouse this month - none late.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Customers -->
+        <section class="dash-view" id="customers" aria-labelledby="dash-h-customers">
+          <div class="dash-head">
+            <div><h1 id="dash-h-customers">Customers</h1><p>9,842 customers · 312 new this month</p></div>
+            <div class="dash-actions"><button class="btn" type="button" data-dialog-trigger="dash-invite" aria-haspopup="dialog"><i data-lucide="user-plus"></i> Invite customer</button></div>
+          </div>
+          <div class="dash-people">
+            <article class="dash-card dash-person">
+              <div class="dash-person-top"><span class="avatar" data-size="lg"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""></span><span class="badge" data-variant="default" data-size="sm">VIP</span></div>
+              <div><h2>Anna Silva</h2><p><i data-lucide="map-pin"></i>Lisbon, PT</p></div>
+              <dl class="dash-person-stats"><div><dt>Spent</dt><dd>€1,284</dd></div><div><dt>Orders</dt><dd>18</dd></div></dl>
+              <div class="dash-person-actions"><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Anna Silva"><i data-lucide="mail"></i> Message</button></div>
+            </article>
+            <article class="dash-card dash-person">
+              <div class="dash-person-top"><span class="avatar" data-size="lg"><img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""></span></div>
+              <div><h2>Marco Rossi</h2><p><i data-lucide="map-pin"></i>Milan, IT</p></div>
+              <dl class="dash-person-stats"><div><dt>Spent</dt><dd>€892</dd></div><div><dt>Orders</dt><dd>11</dd></div></dl>
+              <div class="dash-person-actions"><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Marco Rossi"><i data-lucide="mail"></i> Message</button></div>
+            </article>
+            <article class="dash-card dash-person">
+              <div class="dash-person-top"><span class="avatar" data-size="lg"><img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt=""></span><span class="badge" data-variant="default" data-size="sm">VIP</span></div>
+              <div><h2>Priya Natarajan</h2><p><i data-lucide="map-pin"></i>Bangalore, IN</p></div>
+              <dl class="dash-person-stats"><div><dt>Spent</dt><dd>€2,410</dd></div><div><dt>Orders</dt><dd>27</dd></div></dl>
+              <div class="dash-person-actions"><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Priya Natarajan"><i data-lucide="mail"></i> Message</button></div>
+            </article>
+            <article class="dash-card dash-person">
+              <div class="dash-person-top"><span class="avatar" data-size="lg"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""></span><span class="badge" data-variant="secondary" data-size="sm">New</span></div>
+              <div><h2>Hannah Lee</h2><p><i data-lucide="map-pin"></i>Berlin, DE</p></div>
+              <dl class="dash-person-stats"><div><dt>Spent</dt><dd>€318</dd></div><div><dt>Orders</dt><dd>4</dd></div></dl>
+              <div class="dash-person-actions"><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Hannah Lee"><i data-lucide="mail"></i> Message</button></div>
+            </article>
+            <article class="dash-card dash-person">
+              <div class="dash-person-top"><span class="avatar" data-size="lg"><img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt=""></span></div>
+              <div><h2>Sophie Tan</h2><p><i data-lucide="map-pin"></i>Singapore</p></div>
+              <dl class="dash-person-stats"><div><dt>Spent</dt><dd>€1,056</dd></div><div><dt>Orders</dt><dd>15</dd></div></dl>
+              <div class="dash-person-actions"><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Sophie Tan"><i data-lucide="mail"></i> Message</button></div>
+            </article>
+            <article class="dash-card dash-person">
+              <div class="dash-person-top"><span class="avatar" data-size="lg"><img class="avatar-image" src="https://i.pravatar.cc/96?img=5" alt=""></span><span class="badge" data-variant="secondary" data-size="sm">New</span></div>
+              <div><h2>Emily Carter</h2><p><i data-lucide="map-pin"></i>Austin, US</p></div>
+              <dl class="dash-person-stats"><div><dt>Spent</dt><dd>€640</dd></div><div><dt>Orders</dt><dd>9</dd></div></dl>
+              <div class="dash-person-actions"><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Emily Carter"><i data-lucide="mail"></i> Message</button></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Settings -->
+        <section class="dash-view" id="settings" aria-labelledby="dash-h-settings">
+          <div class="dash-head"><div><h1 id="dash-h-settings">Settings</h1><p>Manage the workspace, notifications and API access.</p></div></div>
+          <form class="dash-card dash-form" action="#" method="post" data-dash-save>
+            <div class="dash-form-row"><div><h2>Workspace</h2><p>Shown on invoices and emails.</p></div>
+              <div class="dash-form-fields">
+                <div class="dash-field"><label class="label" for="dash-ws-name">Name</label><input class="input" id="dash-ws-name" value="Acme Inc." required></div>
+                <div class="dash-field"><label class="label" for="dash-ws-mail">Support email</label><input class="input" id="dash-ws-mail" type="email" value="hello@acme.com" required></div>
+                <div class="dash-field"><label class="label" for="dash-ws-cur">Currency</label><select class="select" id="dash-ws-cur"><option>EUR - Euro</option><option>USD - US Dollar</option><option>GBP - Pound</option></select></div>
+              </div>
+            </div>
+            <div class="dash-form-row"><div><h2>Notifications</h2><p>What lands in your inbox.</p></div>
+              <div class="dash-form-fields dash-switches">
+                <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="dash-n1" checked><label for="dash-n1">New orders</label></div>
+                <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="dash-n2" checked><label for="dash-n2">Refund requests</label></div>
+                <div class="switch-item"><input class="switch" type="checkbox" role="switch" id="dash-n3"><label for="dash-n3">Weekly report</label></div>
+              </div>
+            </div>
+            <div class="dash-form-row"><div><h2>API key</h2><p>Use it to connect your shop.</p></div>
+              <div class="dash-form-fields"><div class="dash-key"><code>sk_live_••••••••••••4f2a</code><button class="btn" data-variant="outline" data-size="sm" type="button" data-toast="API key copied"><i data-lucide="copy"></i> Copy</button><button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="A new key was created" data-toast-desc="The old one stops working in 24 hours."><i data-lucide="refresh-cw"></i> Roll key</button></div></div>
+            </div>
+            <div class="dash-form-actions"><button class="btn" data-variant="ghost" type="reset">Discard</button><button class="btn" type="submit">Save changes</button></div>
+          </form>
+          <article class="dash-card dash-danger">
+            <div><h2>Delete workspace</h2><p>Removes all orders, customers and files. This cannot be undone.</p></div>
+            <button class="btn" data-variant="destructive" type="button" data-alert-dialog-trigger="dash-delete">Delete workspace</button>
+          </article>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- overlays: command palette, new-order sheet, invite dialog, delete confirmation -->
+  <dialog id="dash-cmd" class="command" role="dialog" aria-modal="true" aria-label="Command menu">
+    <div class="command-content">
+      <div class="command-input-wrapper"><i data-lucide="search"></i><input class="command-input" type="text" placeholder="Type a command or search…" autocomplete="off" spellcheck="false"></div>
+      <div class="command-list">
+        <div class="command-group">
+          <p class="command-group-heading">Go to</p>
+          <button class="command-item" data-go="overview"><i data-lucide="layout-dashboard"></i> Overview</button>
+          <button class="command-item" data-go="orders"><i data-lucide="shopping-bag"></i> Orders</button>
+          <button class="command-item" data-go="customers"><i data-lucide="users"></i> Customers</button>
+          <button class="command-item" data-go="settings"><i data-lucide="settings"></i> Settings <span class="command-shortcut">⌘,</span></button>
+        </div>
+        <div class="command-separator"></div>
+        <div class="command-group">
+          <p class="command-group-heading">Actions</p>
+          <button class="command-item" data-open-sheet="dash-new-order"><i data-lucide="plus"></i> New order <span class="command-shortcut">N</span></button>
+          <button class="command-item" data-open-dialog="dash-invite"><i data-lucide="user-plus"></i> Invite customer</button>
+          <button class="command-item" data-dash-theme><i data-lucide="moon"></i> Toggle dark mode</button>
+        </div>
+      </div>
+      <div class="command-empty" hidden>No results found.</div>
+    </div>
+  </dialog>
+
+  <dialog id="dash-new-order" class="sheet" data-side="right" role="dialog" aria-modal="true" aria-labelledby="dash-no-title">
+    <form class="sheet-content" method="dialog" data-dash-order>
+      <div class="sheet-header">
+        <h2 class="sheet-title" id="dash-no-title">New order</h2>
+        <p class="sheet-description">Create a manual order - the customer gets a payment link.</p>
+      </div>
+      <div class="sheet-body dash-sheet-body">
+        <div class="dash-field"><label class="label" for="dash-no-cust">Customer</label><select class="select" id="dash-no-cust" required><option value="">Choose a customer</option><option>Anna Silva</option><option>Marco Rossi</option><option>Priya Natarajan</option></select></div>
+        <div class="dash-field"><label class="label" for="dash-no-prod">Product</label><select class="select" id="dash-no-prod"><option>Linen shirt - €64</option><option>Wool throw - €120</option><option>Stoneware mug - €22</option></select></div>
+        <div class="dash-field"><label class="label" for="dash-no-qty">Quantity</label><div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease">−</button><input type="number" id="dash-no-qty" min="1" max="99" value="1"><button type="button" data-action="increment" aria-label="Increase">+</button></div></div>
+        <fieldset class="dash-field dash-ship"><legend class="label">Shipping</legend>
+          <label><input class="radio" type="radio" name="ship" checked><span><strong>Standard</strong><small>3–5 days · free</small></span></label>
+          <label><input class="radio" type="radio" name="ship"><span><strong>Express</strong><small>Next day · €9.90</small></span></label>
+        </fieldset>
+        <div class="dash-field"><label class="label" for="dash-no-note">Note</label><textarea class="textarea" id="dash-no-note" rows="3" placeholder="Visible to the customer"></textarea></div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn" data-variant="outline" type="button" data-sheet-close>Cancel</button>
+        <button class="btn" type="submit">Create order</button>
+      </div>
+    </form>
+    <button class="sheet-close-x" data-sheet-close aria-label="Close"><i data-lucide="x"></i></button>
+  </dialog>
+
+  <dialog id="dash-invite" class="dialog" role="dialog" aria-modal="true" aria-labelledby="dash-inv-title">
+    <div class="dialog-content">
+      <div class="dialog-header"><h2 class="dialog-title" id="dash-inv-title">Invite a customer</h2><p class="dialog-description">They get an email with a link to their account.</p></div>
+      <div class="dialog-body dash-sheet-body">
+        <div class="dash-field"><label class="label" for="dash-inv-mail">Email</label><input class="input" id="dash-inv-mail" type="email" placeholder="name@company.com"></div>
+        <div class="dash-field"><label class="label" for="dash-inv-seg">Segment</label><select class="select" id="dash-inv-seg"><option>Retail</option><option>Wholesale</option><option>VIP</option></select></div>
+      </div>
+      <div class="dialog-footer"><button class="btn" data-variant="outline" data-dialog-close>Cancel</button><button class="btn" data-dialog-close data-toast="Invitation sent">Send invite</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="dash-delete" class="alert-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dash-del-title" aria-describedby="dash-del-desc">
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header"><h2 class="alert-dialog-title" id="dash-del-title">Delete Acme Inc.?</h2><p class="alert-dialog-description" id="dash-del-desc">All orders, customers and files are removed for good. Type nothing - this is a demo, nothing will be deleted.</p></div>
+      <div class="alert-dialog-footer"><button class="btn" data-variant="outline" data-alert-dialog-close>Cancel</button><button class="btn" data-variant="destructive" data-alert-dialog-close data-toast="Nothing was deleted" data-toast-desc="This is a clickdummy.">Delete workspace</button></div>
+    </div>
+  </dialog>
+</div>
+<script>
+  // the clickdummy's only wiring: which view is current, a few actions, toasts
+  (() => {
+    const app = document.querySelector('[data-dash]');
+    const TITLES = { overview: 'Overview', orders: 'Orders', customers: 'Customers', settings: 'Settings' };
+    const current = () => (location.hash.slice(1) in TITLES ? location.hash.slice(1) : 'overview');
+    const sync = () => {
+      const id = current();
+      app.querySelectorAll('.sidebar-link[href^="#"]').forEach((a) => {
+        if (a.getAttribute('href') === '#' + id && !a.dataset.alias) a.setAttribute('aria-current', 'page');
+        else a.removeAttribute('aria-current');
+      });
+      app.querySelector('[data-dash-crumb]').textContent = TITLES[id];
+      const mobile = document.getElementById('dash-mobile-nav');
+      if (mobile && mobile.open) mobile.close();
+    };
+    addEventListener('hashchange', sync);
+    sync();
+    const toast = (title, description) => df$.shadcn.toast.success(description ? { title, description } : { title });
+    app.addEventListener('click', (e) => {
+      const go = e.target.closest('[data-go]');
+      if (go) location.hash = go.dataset.go;
+      const t = e.target.closest('[data-toast]');
+      if (t) toast(t.dataset.toast, t.dataset.toastDesc);
+      if (e.target.closest('[data-dash-theme]')) document.documentElement.classList.toggle('dark');
+      const sheet = e.target.closest('[data-open-sheet]');
+      if (sheet) document.getElementById(sheet.dataset.openSheet).showModal();
+      const dlg = e.target.closest('[data-open-dialog]');
+      if (dlg) document.getElementById(dlg.dataset.openDialog).showModal();
+    });
+    // select all / some: the header box follows the rows
+    const all = app.querySelector('[data-dash-all]');
+    const rows = () => [...app.querySelectorAll('#orders tbody .checkbox')];
+    const count = () => {
+      const n = rows().filter((c) => c.checked).length;
+      all.checked = n === rows().length;
+      all.indeterminate = n > 0 && n < rows().length;
+      app.querySelector('.dash-bulk-count').textContent = n + (n === 1 ? ' order' : ' orders') + ' selected';
+    };
+    all.addEventListener('change', () => { rows().forEach((c) => { c.checked = all.checked; }); count(); });
+    app.querySelector('#orders tbody').addEventListener('change', count);
+    app.querySelector('[data-dash-order]').addEventListener('submit', () => {
+      const who = document.getElementById('dash-no-cust').value;
+      toast('Order created', who + ' gets a payment link by email.');
+    });
+    app.querySelector('[data-dash-save]').addEventListener('submit', (e) => { e.preventDefault(); toast('Settings saved'); });
+    // the period switch swaps the revenue series - same chart, morphed
+    const SERIES = {
+      '7d': { x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], now: [1640, 1720, 1810, 1760, 2050, 2380, 2190], prev: [1500, 1580, 1610, 1640, 1820, 2010, 1930] },
+      '30d': { x: ['1', '3', '5', '7', '9', '11', '13', '15', '17', '19', '21', '23', '25', '27', '29'], now: [1180, 1320, 1240, 1510, 1460, 1680, 1720, 1590, 1850, 1930, 1870, 2110, 2240, 2190, 2420], prev: [1050, 1110, 1090, 1240, 1210, 1330, 1360, 1300, 1420, 1480, 1450, 1560, 1620, 1590, 1700] },
+      '12m': { x: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], now: [31, 38, 29, 30, 34, 36, 39, 41, 40, 44, 47, 48].map((v) => v * 1000), prev: [26, 33, 25, 26, 29, 31, 32, 35, 34, 37, 40, 41].map((v) => v * 1000) },
+    };
+    app.querySelector('[data-dash-period]').addEventListener('click', (e) => {
+      const b = e.target.closest('button[value]');
+      const chart = df$.shadcn.chart && df$.shadcn.chart.instance(document.getElementById('dash-revenue'));
+      if (!b || !chart) return;
+      const s = SERIES[b.value];
+      chart.setOption({ xAxis: { data: s.x }, series: [{ id: 'now', data: s.now }, { id: 'prev', data: s.prev }] });
+    });
+  })();
+</script>
+```
+
+<h2 id="how-it-works" class="h2-display">How it works</h2>
+
+<DocText>The scaffold is a page, not a component: it composes the library and keeps its own glue small.</DocText>
+
+<ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
+  <li><strong>Shell</strong> - <DocLink href="sidebar.html">Sidebar</DocLink> (collapsible with the trigger or <kbd class="kbd">⌘B</kbd>, a mobile drawer below 44rem of width), a top bar with <DocLink href="breadcrumb.html">Breadcrumb</DocLink>, a <DocLink href="popover.html">Popover</DocLink> of notifications and the theme toggle.</li>
+  <li><strong>Navigation</strong> - every view is a section with an id; links point at <code>#orders</code> and CSS shows <code>.dash-view:target</code> (the first view when nothing is targeted). Back and forward buttons work, views are linkable. Six lines of script move <code>aria-current</code> and the breadcrumb.</li>
+  <li><strong>Command palette</strong> - the <DocLink href="command.html">Command</DocLink> component: <kbd class="kbd">⌘K</kbd>, type to filter, <kbd class="kbd">↵</kbd> to run; items jump to views or open the Sheet and the Dialog.</li>
+  <li><strong>Overview</strong> - KPI cards with the <DocLink href="statistic.html">Statistic</DocLink> trend chips and SVG sparklines, two <DocLink href="chart.html">Charts</DocLink> (the <DocLink href="toggle-group.html">Toggle Group</DocLink> swaps the series and the chart morphs), a <DocLink href="table.html">Table</DocLink> with <DocLink href="dropdown.html">Dropdown</DocLink> row actions and <DocLink href="progress.html">Progress</DocLink> bars.</li>
+  <li><strong>Orders</strong> - <DocLink href="tabs.html">Tabs</DocLink>, a search field, a select, checkboxes - the bulk-action bar appears through <code>:has(:checked)</code>, no script - and <DocLink href="pagination.html">Pagination</DocLink>. <em>New order</em> opens a <DocLink href="sheet.html">Sheet</DocLink> with a <DocLink href="number-input.html">Number Input</DocLink>; submitting shows a <DocLink href="toast.html">Toast</DocLink>.</li>
+  <li><strong>Customers and Settings</strong> - <DocLink href="avatar.html">Avatars</DocLink>, <DocLink href="badge.html">Badges</DocLink>, a <DocLink href="dialog.html">Dialog</DocLink> to invite, <DocLink href="switch.html">Switches</DocLink>, and an <DocLink href="alert-dialog.html">Alert Dialog</DocLink> guarding the danger zone.</li>
+  <li><strong>Full screen</strong> - <DocLink href="app-admin-dashboard.html">app-admin-dashboard.html</DocLink> is generated from this page's example at build time: one source, two ways to view it.</li>
+</ul>
+
+</DocPage>

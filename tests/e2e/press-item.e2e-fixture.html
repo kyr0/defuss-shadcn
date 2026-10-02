@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>press-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/press-item/press-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem;width:100%">
+  <article class="mk-press-item">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication">TechDaily</span><time datetime="2026-09-28">28 Sep 2026</time></div>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">Acme 4.0 makes offline-first the default for team software<span class="sr-only"> (TechDaily, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on TechDaily <i data-lucide="arrow-up-right"></i></span>
+  </article>
+  <article class="mk-press-item">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication" style="font-family:var(--font-serif)">The Ledger</span><time datetime="2026-08-12">12 Aug 2026</time></div>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">The 40-person company quietly taking on the giants<span class="sr-only"> (The Ledger, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on The Ledger <i data-lucide="arrow-up-right"></i></span>
+  </article>
+  <article class="mk-press-item">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication">Wired Weekly</span><time datetime="2026-07-03">3 Jul 2026</time></div>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">Why calm software is the next big thing in productivity<span class="sr-only"> (Wired Weekly, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on Wired Weekly <i data-lucide="arrow-up-right"></i></span>
+  </article>
+</div>
+    </section>
+    <!-- Quotes -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(18rem,1fr));gap:1rem;width:100%">
+  <article class="mk-press-item" data-variant="quote">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication" style="font-family:var(--font-serif)">The Ledger</span><time datetime="2026-08-12">12 Aug 2026</time></div>
+    <blockquote class="mk-press-item-quote"><p>The rare productivity tool that gives you your afternoon back.</p></blockquote>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">The 40-person company quietly taking on the giants<span class="sr-only"> (The Ledger, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on The Ledger <i data-lucide="arrow-up-right"></i></span>
+  </article>
+  <article class="mk-press-item" data-variant="quote">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication">TechDaily</span><time datetime="2026-09-28">28 Sep 2026</time></div>
+    <blockquote class="mk-press-item-quote"><p>Sync that simply never fails - we tried, on a transatlantic flight.</p></blockquote>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">Acme 4.0 makes offline-first the default<span class="sr-only"> (TechDaily, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on TechDaily <i data-lucide="arrow-up-right"></i></span>
+  </article>
+</div>
+    </section>
+    <!-- Compact list -->
+    <section class="fx">
+<div style="width:100%">
+  <article class="mk-press-item" data-variant="compact">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication">TechDaily</span><time datetime="2026-09-28">28 Sep 2026</time></div>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">Acme 4.0 makes offline-first the default for team software<span class="sr-only"> (TechDaily, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on TechDaily <i data-lucide="arrow-up-right"></i></span>
+  </article>
+  <article class="mk-press-item" data-variant="compact">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication" style="font-family:var(--font-serif)">The Ledger</span><time datetime="2026-08-12">12 Aug 2026</time></div>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">The 40-person company quietly taking on the giants<span class="sr-only"> (The Ledger, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on The Ledger <i data-lucide="arrow-up-right"></i></span>
+  </article>
+  <article class="mk-press-item" data-variant="compact">
+    <div class="mk-press-item-meta"><span class="mk-press-item-publication">Wired Weekly</span><time datetime="2026-07-03">3 Jul 2026</time></div>
+    <h3 class="mk-press-item-title"><a href="#" target="_blank" rel="noopener">Why calm software is the next big thing in productivity<span class="sr-only"> (Wired Weekly, opens in a new tab)</span></a></h3>
+    <span class="mk-press-item-more" aria-hidden="true">Read on Wired Weekly <i data-lucide="arrow-up-right"></i></span>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

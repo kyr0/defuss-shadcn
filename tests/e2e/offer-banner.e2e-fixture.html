@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>offer-banner e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/offer-banner/offer-banner.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-offer-banner" aria-labelledby="offer-1">
+  <div class="mk-offer-banner-inner">
+    <span class="mk-offer-banner-discount">−30%</span>
+    <div class="mk-offer-banner-copy">
+      <h2 class="mk-offer-banner-title" id="offer-1">Autumn sale: 30% off every yearly plan</h2>
+      <small class="mk-offer-banner-terms">New subscriptions only. Ends <time datetime="2026-10-31">31 October 2026</time>. Cannot be combined with other offers.</small>
+    </div>
+    <div class="mk-offer-banner-action">
+      <code class="mk-offer-banner-code">AUTUMN30</code>
+      <a class="btn" href="#">Claim offer</a>
+    </div>
+  </div>
+</section>
+    </section>
+    <!-- Ribbon -->
+    <section class="fx">
+<section class="mk-offer-banner" data-variant="ribbon" aria-labelledby="offer-2">
+  <div class="mk-offer-banner-inner">
+    <strong class="mk-offer-banner-title" id="offer-2">Black Friday: 40% off yearly plans</strong>
+    <span>Use code <code class="mk-offer-banner-code">BF40</code></span>
+    <small class="mk-offer-banner-terms">until <time datetime="2026-11-30">30 Nov</time></small>
+  </div>
+</section>
+    </section>
+    <!-- Coupon -->
+    <section class="fx">
+<section class="mk-offer-banner" data-variant="coupon" aria-labelledby="offer-3" style="max-width:34rem">
+  <div class="mk-offer-banner-inner">
+    <span class="mk-offer-banner-discount">€20</span>
+    <div class="mk-offer-banner-copy">
+      <h2 class="mk-offer-banner-title" id="offer-3">Welcome gift</h2>
+      <small class="mk-offer-banner-terms">On your first order over €80 · valid until <time datetime="2026-12-31">31 Dec 2026</time></small>
+      <div class="mk-offer-banner-action"><code class="mk-offer-banner-code">HELLO20</code></div>
+    </div>
+  </div>
+</section>
+    </section>
+  </body>
+</html>

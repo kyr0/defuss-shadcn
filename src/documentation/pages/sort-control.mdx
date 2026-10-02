@@ -1,0 +1,67 @@
+---
+title: "Sort Control"
+description: "Changes the ordering of a collection - a labelled select, a segmented choice, or a button that opens a menu of options."
+slug: "sort-control"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="sort-control" title="Sort Control" component="sort-control">
+  Changes the ordering of a collection - a labelled select, a segmented choice, or a button that opens a menu of options. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="sort-control">
+  <SkillField label="Native basis">
+<SkillText>A labelled <code>&lt;select name="sort"&gt;</code>; or a radio group styled as segments; or a button with <code>popovertarget</code> opening a <code>popover</code> of radios (the menu stays a form control).</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="select.html">Select</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="light-dismiss panels without script"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="popovers placed next to their trigger"><code>CSS anchor positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-sort-control</code>
+    <code>.mk-sort-control-menu</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>segmented</code>, <code>menu</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A visible &quot;Sort by&quot; label and a native Select." previewStyle="align-items:stretch;"
+<div class="mk-sort-control"><label for="so-1">Sort by</label><select class="select" id="so-1" name="sort"><option>Most relevant</option><option>Newest</option><option>Price: low to high</option><option>Price: high to low</option></select></div>
+```
+
+```html example label="Segmented" hint="data-variant='segmented': a radio group styled as segments." previewStyle="align-items:stretch;"
+<fieldset class="mk-sort-control" data-variant="segmented"><legend>Sort by</legend><label><input type="radio" name="sort2" value="popular" checked>Popular</label><label><input type="radio" name="sort2" value="newest">Newest</label><label><input type="radio" name="sort2" value="price">Price</label></fieldset>
+```
+
+```html example label="Menu" hint="data-variant='menu': a button (popovertarget) opens a popover of radios anchored to it - Escape or a click outside closes it; the choice is a real form value." previewStyle="align-items:stretch;"
+<div class="mk-sort-control" data-variant="menu">
+  <button class="btn" data-variant="outline" data-size="sm" type="button" popovertarget="so-menu" style="anchor-name:--so-menu"><i data-lucide="arrow-up-down"></i> Newest</button>
+  <div class="mk-sort-control-menu" id="so-menu" popover style="position-anchor:--so-menu" role="radiogroup" aria-label="Sort by">
+    <label><input type="radio" name="sort3" value="0">Most relevant</label>
+    <label><input type="radio" name="sort3" value="1" checked>Newest</label>
+    <label><input type="radio" name="sort3" value="2">Price: low to high</label>
+    <label><input type="radio" name="sort3" value="3">Price: high to low</label>
+  </div>
+</div>
+```
+
+<SourceFiles component="sort-control" section="css" />
+
+</DocPage>

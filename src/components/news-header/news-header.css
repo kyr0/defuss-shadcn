@@ -1,0 +1,222 @@
+/* -- News Header (website) ------------------------------------------
+   Introduces a news collection: kicker + dateline, the title, a line of
+   editorial context and the topic links (the current one marked with
+   aria-current). The masthead variant sets it like a newspaper front page. */
+
+/* the overflow hint's strength (0-1), animated by the topic row's scroll */
+@property --mk-news-header-more {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer components {
+  .mk-news-header {
+    container: mk-news-header / inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .mk-news-header-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .mk-news-header-kicker {
+    color: var(--primary);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .mk-news-header-date { color: var(--muted-foreground); }
+
+  .mk-news-header-title {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .mk-news-header-desc {
+    margin: 0;
+    max-width: 44rem;
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  /* topics: one scrolling row, the current topic underlined */
+  .mk-news-header-topics {
+    display: flex;
+    gap: 1.25rem;
+    margin-block-start: 0.5rem;
+    border-block-end: 1px solid var(--border);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+
+    & a {
+      flex: none;
+      padding-block: 0.625rem;
+      border-block-end: 2px solid transparent;
+      margin-block-end: -1px;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 120ms, border-color 120ms;
+
+      &:hover { color: var(--foreground); }
+      &[aria-current] { color: var(--foreground); border-block-end-color: var(--primary); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: var(--radius-sm); }
+    }
+  }
+
+  /* more topics than fit: an overlay at the row's end - a fade into the
+     background and a chevron. Its strength follows the row's own scroll (a
+     scroll-driven animation): full while there is more to see, gone at the
+     end; a row that fits has no active timeline, so no hint at all. The
+     overlay takes no room (width = -margin) and sticks to the row's end. */
+  .mk-news-header-topics {
+    --mk-news-header-more: 0;
+
+    animation: mk-news-header-more linear both;
+
+    &::after {
+      content: "›";
+      position: sticky;
+      inset-inline-end: 0;
+      flex: none;
+      width: 3rem;
+      margin-inline-start: -3rem;
+      padding-inline-end: 0.125rem;
+      background: linear-gradient(to right, transparent, var(--background) 65%);
+      color: var(--foreground);
+      font-size: 1.25rem;
+      line-height: 1;
+      text-align: end;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      opacity: var(--mk-news-header-more);
+      pointer-events: none;
+    }
+  }
+  @keyframes mk-news-header-more {
+    from { --mk-news-header-more: 1; }
+    to { --mk-news-header-more: 0; }
+  }
+  /* the timeline in its own rule: a minifier must not fold it into the
+     `animation` shorthand (reset-only there - the declaration would be
+     dropped). Unsupported: the animation runs once (0s) and ends at 0 - no
+     hint, no harm */
+  @supports (animation-timeline: scroll()) {
+    .mk-news-header-topics { animation-timeline: scroll(self inline); }
+    .mk-news-header-topics[data-wrap] { animation: none; }
+  }
+
+  /* data-wrap: break the topics onto more lines instead of scrolling */
+  .mk-news-header-topics[data-wrap] {
+    flex-wrap: wrap;
+    column-gap: 1.25rem;
+    overflow: visible;
+    animation: none;
+
+    &::after { content: none; }
+  }
+
+  /* masthead: a newspaper front - serif, centered, between double rules */
+  .mk-news-header[data-variant="masthead"] {
+    align-items: center;
+    text-align: center;
+
+    & .mk-news-header-top {
+      width: 100%;
+      padding-block: 0.375rem;
+      border-block: 1px solid var(--foreground);
+    }
+    & .mk-news-header-title {
+      font-family: var(--font-serif);
+      font-weight: 800;
+      font-size: 3rem;
+      letter-spacing: -0.02em;
+    }
+    & .mk-news-header-topics {
+      justify-content: safe center;
+      width: 100%;
+      border-block: 3px double var(--foreground);
+      & a { padding-block: 0.5rem; border-block-end: 0; margin: 0; }
+      & a[aria-current] { text-decoration: underline; text-underline-offset: 0.3em; text-decoration-color: var(--primary); }
+    }
+  }
+
+  /* the live line: a pinging Indicator dot + "updated …" */
+  .mk-news-header-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+
+    & strong { color: oklch(0.58 0.22 27); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  }
+
+  /* tools on the right of the top line: search, view switch, subscribe */
+  .mk-news-header-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* bar: one compact row - title, topics, tools */
+  .mk-news-header[data-variant="bar"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+    padding-block: 0.75rem;
+    border-block: 1px solid var(--border);
+
+    & .mk-news-header-title { font-size: 1.375rem; letter-spacing: -0.02em; }
+    & .mk-news-header-topics { flex: 1 1 8rem; min-width: 0; margin: 0; border: 0; }
+    & .mk-news-header-topics a { padding-block: 0.25rem; }
+    & .mk-news-header-tools { margin-inline-start: auto; }
+  }
+
+  @container mk-news-header (min-width: 48rem) {
+    .mk-news-header[data-variant="bar"] .mk-news-header-title { font-size: 1.5rem; }
+    .mk-news-header-title { font-size: 3rem; }
+    .mk-news-header[data-variant="masthead"] .mk-news-header-title { font-size: 4.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-news-header-topics a { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-news-header-desc,
+    .mk-news-header-topics a { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-news-header-topics a[aria-current] { border-block-end-color: Highlight; }
+  }
+}

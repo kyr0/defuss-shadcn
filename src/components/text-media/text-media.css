@@ -1,0 +1,54 @@
+/* -- Text Media (website · Media) -----------------------------------------
+   Pairs explanatory text with an image, illustration, or video - side by side, reversed, or with the text card overlapping the picture. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-text-media, .mk-text-media *, .mk-text-media ::before, .mk-text-media ::after) { box-sizing: border-box; }
+
+  .mk-text-media { container: mk-text-media / inline-size; width: 100%; }
+  .mk-text-media-layout { display: grid; gap: 2rem; align-items: center; }
+  .mk-text-media-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .mk-text-media-eyebrow { color: var(--primary); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mk-text-media-title { margin: 0; font-size: clamp(1.5rem, 3.5cqi, 2.25rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.025em; text-wrap: balance; }
+  .mk-text-media-text { margin: 0; color: var(--muted-foreground); line-height: 1.75; text-wrap: pretty; }
+  .mk-text-media-list { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none;
+    & li { display: flex; gap: 0.625rem; align-items: flex-start; }
+    & svg { flex: none; width: 1.125rem; height: 1.125rem; margin-block-start: 0.15rem; color: var(--primary); }
+  }
+  .mk-text-media-link { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--primary); font-weight: 600; text-decoration: none;
+    & svg { width: 1rem; height: 1rem; transition: translate 150ms ease; }
+    &:hover svg { translate: 0.25rem 0; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
+  .mk-text-media-media { margin: 0; overflow: hidden; border-radius: var(--radius-xl); background: var(--muted);
+    & :is(img, video) { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+    & svg { display: block; width: 100%; height: auto; }
+  }
+
+  .mk-text-media[data-variant="overlap"] {
+    & .mk-text-media-layout { gap: 0; }
+    & .mk-text-media-media :is(img, video) { aspect-ratio: 16 / 9; }
+    & .mk-text-media-copy { position: relative; z-index: 1; margin: -3rem 1rem 0; padding: 1.75rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); box-shadow: var(--shadow-xl); }
+  }
+
+  @container mk-text-media (min-width: 48rem) {
+    .mk-text-media:not([data-variant="overlap"]) .mk-text-media-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; }
+    .mk-text-media[data-variant="reverse"] .mk-text-media-media { order: -1; }
+    .mk-text-media[data-variant="overlap"] .mk-text-media-layout { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .mk-text-media[data-variant="overlap"] .mk-text-media-media { grid-column: 1 / span 9; grid-row: 1; }
+    .mk-text-media[data-variant="overlap"] .mk-text-media-copy { grid-column: 7 / -1; grid-row: 1; margin: 0; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-text-media-link svg { transition: none; }
+    .mk-text-media-link:hover svg { translate: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-text-media[data-variant="overlap"] .mk-text-media-copy { border-color: CanvasText; }
+  }
+}

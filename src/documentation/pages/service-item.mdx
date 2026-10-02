@@ -1,0 +1,128 @@
+---
+title: "Service Item"
+description: "Introduces one service with its description and detail link - as a card with an icon, a card with a picture, or an inline row."
+slug: "service-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="service-item" title="Service Item" component="service-item">
+  Introduces one service with its description and detail link - as a card with an icon, a card with a picture, or an inline row. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="service-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code> with an icon tile (or a picture), a heading whose link covers the card, a description and a "Learn more" cue (decorative - the title link is the accessible name).</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced titles, pretty paragraphs"><code>text-wrap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-service-item</code>
+    <code>.mk-service-item-title</code>
+    <code>.mk-service-item-icon</code>
+    <code>.mk-service-item-media</code>
+    <code>.mk-service-item-desc</code>
+    <code>.mk-service-item-more</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="image"</code>, <code>data-variant="inline"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Cards" hint="Default cards: an icon tile, the title (its link covers the card), a description and an arrow cue that slides on hover; the card lifts a little." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem;width:100%">
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="compass"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
+    <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="pen-tool"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Product design</a></h3>
+    <p class="mk-service-item-desc">Interfaces your customers understand on the first try.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="code"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Engineering</a></h3>
+    <p class="mk-service-item-desc">Fast, accessible web and mobile apps, shipped every week.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item">
+    <span class="mk-service-item-icon"><i data-lucide="line-chart"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Growth</a></h3>
+    <p class="mk-service-item-desc">Experiments, analytics and onboarding that turn trials into customers.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+```
+
+```html example label="With pictures" hint="data-variant='image': a 16:9 picture bleeds into the top of the card instead of the icon." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem;width:100%">
+  <article class="mk-service-item" data-variant="image">
+    <img class="mk-service-item-media" src="https://picsum.photos/seed/service-0/800/450" alt="">
+    <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
+    <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
+    <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="image">
+    <img class="mk-service-item-media" src="https://picsum.photos/seed/service-1/800/450" alt="">
+    <h3 class="mk-service-item-title"><a href="#">Product design</a></h3>
+    <p class="mk-service-item-desc">Interfaces your customers understand on the first try.</p>
+    <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="image">
+    <img class="mk-service-item-media" src="https://picsum.photos/seed/service-2/800/450" alt="">
+    <h3 class="mk-service-item-title"><a href="#">Engineering</a></h3>
+    <p class="mk-service-item-desc">Fast, accessible web and mobile apps, shipped every week.</p>
+    <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+```
+
+```html example label="Inline" hint="data-variant='inline': no card - the icon beside the text, a quiet highlight on hover. For dense lists and sidebars." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:0.5rem 1.5rem;width:100%">
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="compass"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
+    <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="pen-tool"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Product design</a></h3>
+    <p class="mk-service-item-desc">Interfaces your customers understand on the first try.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="code"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Engineering</a></h3>
+    <p class="mk-service-item-desc">Fast, accessible web and mobile apps, shipped every week.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-service-item" data-variant="inline">
+    <span class="mk-service-item-icon"><i data-lucide="line-chart"></i></span>
+    <h3 class="mk-service-item-title"><a href="#">Growth</a></h3>
+    <p class="mk-service-item-desc">Experiments, analytics and onboarding that turn trials into customers.</p>
+    <span class="mk-service-item-more" aria-hidden="true">Learn more <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+```
+
+<SourceFiles component="service-item" section="css" />
+
+</DocPage>

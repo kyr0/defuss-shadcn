@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>cta e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/cta/cta.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-cta" aria-labelledby="cta-1">
+  <div class="mk-cta-inner">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-1">Ready to work calmer?</h2>
+      <p class="mk-cta-desc">Join 12,000 teams who plan, write and ship in one place.</p>
+    </div>
+    <div class="mk-cta-actions">
+      <a class="btn" data-size="lg" href="#">Start free trial</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">Talk to sales</a>
+    </div>
+    <p class="mk-cta-note">Free for 14 days · No credit card required</p>
+  </div>
+</section>
+    </section>
+    <!-- Split -->
+    <section class="fx">
+<section class="mk-cta" data-variant="split" aria-labelledby="cta-2">
+  <div class="mk-cta-inner">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-2">See Acme in 20 minutes</h2>
+      <p class="mk-cta-desc">A live walkthrough with a product specialist - bring your questions.</p>
+    </div>
+    <div class="mk-cta-actions"><a class="btn" data-size="lg" href="#">Book a demo <i data-lucide="arrow-right"></i></a></div>
+  </div>
+</section>
+    </section>
+    <!-- Dark with a form -->
+    <section class="fx">
+<section class="mk-cta" data-variant="dark" aria-labelledby="cta-3">
+  <div class="mk-cta-inner">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-3">Get early access to Spaces</h2>
+      <p class="mk-cta-desc">Shared spaces for every project. Invites go out this month.</p>
+    </div>
+    <form class="mk-cta-form" action="#" method="post">
+      <label class="sr-only" for="cta-email">Email address</label>
+      <input class="input" id="cta-email" type="email" name="email" placeholder="you@company.com" required autocomplete="email">
+      <button class="btn" data-variant="secondary" type="submit">Request invite</button>
+    </form>
+    <p class="mk-cta-note">2,400 people joined this week.</p>
+  </div>
+</section>
+    </section>
+    <!-- Over a picture -->
+    <section class="fx">
+<section class="mk-cta" data-variant="image" aria-labelledby="cta-4">
+  <div class="mk-cta-inner">
+    <img class="mk-cta-bg" src="https://picsum.photos/seed/cta-summit/1600/700" alt="">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-4">Acme Summit · 12–13 November, Lisbon</h2>
+      <p class="mk-cta-desc">Two days of talks and workshops on calm software. Early-bird ends Friday.</p>
+    </div>
+    <div class="mk-cta-actions">
+      <a class="btn" data-variant="secondary" data-size="lg" href="#">Get your ticket</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">See the agenda</a>
+    </div>
+  </div>
+</section>
+    </section>
+  </body>
+</html>

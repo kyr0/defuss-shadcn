@@ -1,0 +1,91 @@
+/* -- Case Study (website · Company) ---------------------------------------
+   Describes a project's problem, approach, and documented outcome - a header with the client, results as figures, the story in sections and a pull quote. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-case-study, .mk-case-study *, .mk-case-study ::before, .mk-case-study ::after) { box-sizing: border-box; }
+
+  .mk-case-study { container: mk-case-study / inline-size; display: grid; gap: 2.5rem; width: 100%; }
+  .mk-case-study-head { display: grid; gap: 1rem; }
+  .mk-case-study-client { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; color: var(--muted-foreground); font-size: 0.875rem;
+    & strong { color: var(--foreground); font-size: 1.125rem; font-weight: 800; letter-spacing: -0.03em; }
+  }
+  .mk-case-study-title { margin: 0; max-width: 48rem; font-size: clamp(1.75rem, 4.5cqi, 3rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; text-wrap: balance; }
+  .mk-case-study-cover { margin: 0; overflow: hidden; border-radius: var(--radius-xl); background: var(--muted);
+    & img { display: block; width: 100%; aspect-ratio: 21 / 9; object-fit: cover; }
+  }
+  .mk-case-study-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: 1px;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--border);
+
+    & div { display: flex; flex-direction: column-reverse; gap: 0.25rem; padding: 1.5rem; background: var(--card); }
+    & dd { margin: 0; font-size: 2.25rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    & dt { color: var(--muted-foreground); font-size: 0.875rem; }
+  }
+  .mk-case-study-layout { display: grid; gap: 2.5rem; }
+  .mk-case-study-body {
+    display: grid;
+    gap: 2.25rem;
+    min-width: 0;
+
+    & section { display: grid; gap: 0.75rem; }
+    & h2 { margin: 0; font-size: 1.375rem; font-weight: 600; letter-spacing: -0.015em; }
+    & p { margin: 0; color: var(--muted-foreground); line-height: 1.75; text-wrap: pretty; }
+  }
+  .mk-case-study-steps {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: mk-case-step;
+
+    & li { counter-increment: mk-case-step; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 0.25rem 0.75rem; }
+    & li::before { content: counter(mk-case-step); grid-row: span 2; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--muted); font-size: 0.875rem; font-weight: 700; }
+    & strong { font-weight: 600; }
+    & span { color: var(--muted-foreground); }
+  }
+  .mk-case-study-quote {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+
+    & blockquote { margin: 0; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.45; text-wrap: pretty; }
+    & figcaption { display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; }
+    & figcaption span { color: var(--muted-foreground); }
+  }
+  .mk-case-study-facts {
+    display: grid;
+    gap: 1rem;
+    align-self: start;
+    margin: 0;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & div { display: grid; gap: 0.125rem; }
+    & dt { color: var(--muted-foreground); font-size: 0.8125rem; }
+    & dd { margin: 0; font-weight: 500; }
+  }
+
+  @container mk-case-study (min-width: 52rem) {
+    .mk-case-study-layout { grid-template-columns: minmax(0, 1fr) 16rem; gap: 4rem; }
+    .mk-case-study-facts { position: sticky; top: 1.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-case-study-results, .mk-case-study-facts { border-color: CanvasText; }
+  }
+}

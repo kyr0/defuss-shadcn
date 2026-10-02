@@ -1,0 +1,28 @@
+/* -- Filter Bar (website · Search & Navigation) ---------------------------
+   Presents compact controls for narrowing a collection - selects, toggle chips and a "more filters" action on one scrollable row, with the count. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-filter-bar, .mk-filter-bar *, .mk-filter-bar ::before, .mk-filter-bar ::after) { box-sizing: border-box; }
+
+  .mk-filter-bar { width: 100%;
+    & form { display: flex; align-items: center; gap: 0.5rem; padding-block: 0.5rem; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+    & .select { width: auto; height: 2rem; padding-block: 0; font-size: 0.8125rem; border-radius: 999px; flex: none; }
+    & .btn { flex: none; border-radius: 999px; }
+  }
+  .mk-filter-bar-chip { position: relative; display: inline-flex; align-items: center; gap: 0.375rem; height: 2rem; padding-inline: 0.75rem; border: 1px solid var(--border); border-radius: 999px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap;
+    flex: none;
+    & input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    & svg { width: 0.875rem; height: 0.875rem; }
+    &:has(:checked) { border-color: var(--foreground); background: var(--foreground); color: var(--background); }
+    &:has(:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  .mk-filter-bar-sep { flex: none; width: 1px; height: 1.25rem; background: var(--border); }
+  .mk-filter-bar-count { flex: none; margin-inline-start: auto; padding-inline-start: 1rem; color: var(--muted-foreground); font-size: 0.8125rem; white-space: nowrap; }
+  .mk-filter-bar[data-variant="sticky"] { position: sticky; top: 0; z-index: 10; border-block-end: 1px solid var(--border); background: color-mix(in oklch, var(--background) 85%, transparent); backdrop-filter: blur(10px); }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-filter-bar-chip:has(:checked) { background: Highlight; color: HighlightText; }
+  }
+}

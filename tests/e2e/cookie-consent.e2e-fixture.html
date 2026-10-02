@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cookie Consent e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <!-- the library components the consent dialog is built from -->
+  <link rel="stylesheet" href="/dist/components/dialog/dialog.css">
+  <link rel="stylesheet" href="/dist/components/button/button.css">
+  <link rel="stylesheet" href="/dist/components/select/select.css">
+  <link rel="stylesheet" href="/dist/components/tabs/tabs.css">
+  <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css">
+  <link rel="stylesheet" href="/dist/components/badge/badge.css">
+  <link rel="stylesheet" href="/dist/components/cookie-consent/cookie-consent.css">
+</head>
+<body>
+  <!-- mirrors the doc page: a persisted host with every category, gated
+       scripts (optional, essential, unknown) and a gated iframe; variant
+       hosts (sizes, density, corner + German, RTL, a long list) are created
+       below; dialog.js loads too - it must leave the consent dialog alone -->
+  <button id="trigger" type="button" class="btn" data-variant="outline" data-cookie-consent-open="test" aria-haspopup="dialog">Open privacy</button>
+  <div id="test" class="cookie-consent" data-state-demo>
+    <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storageKey": "consent:test", "revision": "r1", "showFloatingButton": true, "cookieOrigins": [
+      { "id": "session", "name": "Session", "category": "essential", "description": "Required." },
+      { "id": "analytics", "name": "Analytics", "category": "functional", "description": "Usage measurement.", "cookies": ["test_analytics"] },
+      { "id": "video", "name": "Video", "category": "functional", "description": "Embedded video.", "dataCollected": { "en": ["IP address", "Player events"], "de": ["IP-Adresse", "Player-Ereignisse"] } },
+      { "id": "ads", "name": "Ads", "category": "marketing", "description": "Advertising." },
+      { "id": "other", "name": "Other", "category": "other", "description": "Optional." },
+      { "id": "disabled", "name": "Disabled", "category": "marketing", "description": "Always off.", "disabled": true, "consent": true }
+    ] }</script>
+  </div>
+  <script type="text/plain" data-cookie-consent="analytics">globalThis.analyticsRuns = (globalThis.analyticsRuns ?? 0) + 1; document.cookie = 'test_analytics=1; Path=/';</script>
+  <script type="text/plain" data-cookie-consent="session">globalThis.essentialRuns = (globalThis.essentialRuns ?? 0) + 1;</script>
+  <script type="text/plain" data-cookie-consent="unknown">globalThis.unknownRuns = (globalThis.unknownRuns ?? 0) + 1;</script>
+  <iframe title="Gated content" data-cookie-consent="video" data-consent-src="/dist/components/cookie-consent/component-skill.md"></iframe>
+
+  <!-- texts and languages: overrides for en / de, French added through translations -->
+  <button type="button" data-cookie-consent-open="i18n">Languages</button>
+  <div id="i18n" class="cookie-consent">
+    <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "defaultLanguage": "en",
+      "translations": {
+        "en": { "title": "Cookies at Studio", "acceptAll": "Allow all" },
+        "de": { "title": "Cookies bei Studio" },
+        "fr": { "title": "Les cookies chez Studio", "acceptAll": "Tout autoriser" }
+      },
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": { "en": "Keeps you signed in.", "de": "Hält Sie angemeldet.", "fr": "Vous garde connecté." } },
+        { "id": "support", "name": "Support", "category": "functional", "description": { "en": "Chat with us.", "fr": "Discuter avec nous." }, "dataCollected": { "en": ["Messages"], "fr": ["Messages (fr)"] } }
+      ] }</script>
+  </div>
+  <!-- an embed that brings its own placeholder (a poster) -->
+  <div id="own-host" class="cookie-consent"></div>
+  <figure id="own-figure" style="position:relative;width:320px;height:180px;margin:0;">
+    <img alt="poster" src="/dist/documentation/images/mk-wide2.png" style="width:100%;height:100%;object-fit:cover;">
+    <iframe id="own-frame" title="Own placeholder" data-cookie-consent="clip" data-consent-placeholder="none" data-consent-src="/dist/components/cookie-consent/component-skill.md"></iframe>
+  </figure>
+  <!-- banner: the first-visit bar (non-modal); Settings reopens it modal -->
+  <div id="banner" class="cookie-consent" data-variant="banner">
+    <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [
+      { "id": "session", "name": "Session", "category": "essential", "description": "Required." },
+      { "id": "analytics", "name": "Analytics", "category": "functional", "description": "Usage measurement." }
+    ] }</script>
+  </div>
+  <button type="button" data-cookie-consent-open="small">Small / compact</button><div id="small" class="cookie-consent" data-size="sm" data-density="compact"></div>
+  <button type="button" data-cookie-consent-open="medium">Medium / comfortable</button><div id="medium" class="cookie-consent" data-size="md" data-density="comfortable"></div>
+  <button type="button" data-cookie-consent-open="large">Large / spacious</button><div id="large" class="cookie-consent" data-size="lg" data-density="spacious"></div>
+  <button type="button" data-cookie-consent-open="corner">Corner / German</button><div id="corner" class="cookie-consent" data-variant="corner"></div>
+  <button type="button" data-cookie-consent-open="rtl">RTL</button><div id="rtl" class="cookie-consent" dir="rtl"></div>
+  <button type="button" data-cookie-consent-open="long">Long list</button><div id="long" class="cookie-consent"></div>
+
+  <script type="module">
+    import '/dist/components/core.js';
+    import '/dist/components/dialog/dialog.js';
+    import '/dist/components/cookie-consent/cookie-consent.js';
+    const q = globalThis.df$;
+    q.shadcn.cookieConsent.create(q('#own-host')[0], {
+      autoShow: false, storage: null, showFloatingButton: false, resourceRoot: q('#own-figure')[0],
+      cookieOrigins: [{ id: 'clip', name: 'Clip', category: 'functional', description: 'An embedded clip.' }],
+    });
+    for (const id of ['small', 'medium', 'large', 'corner', 'rtl', 'long']) {
+      q.shadcn.cookieConsent.create(q(`#${id}`)[0], {
+        autoShow: false, storage: null, showFloatingButton: false, resourceRoot: q(`#${id}`)[0],
+        defaultLanguage: id === 'corner' ? 'de' : 'en',
+        cookieOrigins: [{ id: 'session', name: 'Session', category: 'essential', description: 'Required site functions.' },
+          ...Array.from({ length: id === 'long' ? 18 : 2 }, (_, i) => ({ id: `feature-${i}`, name: `Feature ${i + 1}`, category: 'functional', description: 'Optional additional feature.' }))],
+      });
+    }
+  </script>
+</body>
+</html>

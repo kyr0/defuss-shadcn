@@ -89,6 +89,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Split-pane divider" hint="data-variant='divider': the e handle becomes a full-height strip on the list's edge - a thin line shows on hover, focus and drag, there is no outline while it resizes, and a double-click puts the column back to its authored width. With data-keys='edge' the arrow keys move the edge." component="resizer" height="16"
+<div style="display:flex;height:14rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+  <div class="resizer" data-variant="divider" data-handles="e" data-axis="w" data-keys="edge" data-min="140" data-max="360">
+    <nav style="width:12rem;height:100%;padding:0.75rem;border-inline-end:1px solid var(--border);background:var(--muted);box-sizing:border-box;">
+      <p style="margin:0 0 0.5rem;font-weight:600;">Inbox</p>
+      <p style="margin:0;color:var(--muted-foreground);font-size:0.875rem;">Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p>
+    </nav>
+  </div>
+  <main style="flex:1;padding:0.75rem;">Message</main>
+</div>
+```
+
 ```html example label="Class-based sizing" hint="data-resize-mode='classes' snaps to the sizing.css ladder: the element's class attribute IS the size (open State/Code while dragging to watch w-*/h-* swap)." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-resize-mode="classes">
   <div class="card w-64 h-40" style="padding:1rem;">

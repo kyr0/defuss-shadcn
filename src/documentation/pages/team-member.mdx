@@ -1,0 +1,258 @@
+---
+title: "Team Member"
+description: "Presents one person with a portrait, role, and biography - a portrait card whose links slide in on hover, a profile beside its bio, or a compact row for long lists."
+slug: "team-member"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="team-member" title="Team Member" component="team-member">
+  Presents one person with a portrait, role, and biography - a portrait card whose links slide in on hover, a profile beside its bio, or a compact row for long lists. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="team-member">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code> labelled by the name: a portrait (descriptive <code>alt</code>) with an optional location tag and a list of icon links over its bottom edge, then the name, the role and a short bio.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="stable media boxes, no layout shift"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="motion stands still on request"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-team-member</code>
+    <code>.mk-team-member-portrait</code>
+    <code>.mk-team-member-photo</code>
+    <code>.mk-team-member-tag</code>
+    <code>.mk-team-member-links</code>
+    <code>.mk-team-member-body</code>
+    <code>.mk-team-member-name</code>
+    <code>.mk-team-member-role</code>
+    <code>.mk-team-member-bio</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="horizontal"</code>, <code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Team grid" hint="Portrait cards: hover a card - or Tab into it - and the LinkedIn, GitHub, X and email links slide up over the photo (labelled per person; always shown on touch screens). A location tag sits in the corner." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));gap:2rem 1.25rem;width:100%">
+  <article class="mk-team-member" aria-labelledby="tm-0">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan">
+      <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Sophie Tan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Sophie Tan on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Sophie Tan on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Sophie Tan"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-0">Sophie Tan</h3>
+      <p class="mk-team-member-role">Head of Engineering</p>
+      <p class="mk-team-member-bio">Builds the sync engine. Previously at a database company you have heard of.</p>
+    </div>
+  </article>
+  <article class="mk-team-member" aria-labelledby="tm-1">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=32" alt="Portrait of Hannah Lee">
+      <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Berlin</span>
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Hannah Lee on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Hannah Lee on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Hannah Lee on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Hannah Lee"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-1">Hannah Lee</h3>
+      <p class="mk-team-member-role">Design Lead</p>
+      <p class="mk-team-member-bio">Makes Acme quiet. Believes every badge has to earn its place.</p>
+    </div>
+  </article>
+  <article class="mk-team-member" aria-labelledby="tm-2">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=12" alt="Portrait of Aron Homberg">
+      <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Aron Homberg on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Aron Homberg on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Aron Homberg on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Aron Homberg"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-2">Aron Homberg</h3>
+      <p class="mk-team-member-role">Co-founder & CEO</p>
+      <p class="mk-team-member-bio">Writes the weekly letter and still answers support on Fridays.</p>
+    </div>
+  </article>
+  <article class="mk-team-member" aria-labelledby="tm-3">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=16" alt="Portrait of Priya Natarajan">
+      <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Remote</span>
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Priya Natarajan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Priya Natarajan on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Priya Natarajan on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Priya Natarajan"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-3">Priya Natarajan</h3>
+      <p class="mk-team-member-role">Chief Product Officer</p>
+      <p class="mk-team-member-bio">Leads product and research after eight years building tools for hospitals.</p>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Horizontal" hint="data-variant='horizontal': a card with the portrait beside the bio and the links always shown - for leadership and board pages." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(22rem,1fr));gap:1.25rem;width:100%">
+  <article class="mk-team-member" data-variant="horizontal" aria-labelledby="tm-h0">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=16" alt="Portrait of Priya Natarajan">
+      <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Remote</span>
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Priya Natarajan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Priya Natarajan on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Priya Natarajan on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Priya Natarajan"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-h0">Priya Natarajan</h3>
+      <p class="mk-team-member-role">Chief Product Officer</p>
+      <p class="mk-team-member-bio">Leads product and research after eight years building tools for hospitals.</p>
+    </div>
+  </article>
+  <article class="mk-team-member" data-variant="horizontal" aria-labelledby="tm-h1">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=68" alt="Portrait of Marco Rossi">
+      <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Montreal</span>
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Marco Rossi on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Marco Rossi on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Marco Rossi on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Marco Rossi"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-h1">Marco Rossi</h3>
+      <p class="mk-team-member-role">Chief Operating Officer</p>
+      <p class="mk-team-member-bio">Runs finance, people and the three offices. Makes the best espresso in Lisbon.</p>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': a round portrait with a ring, the name and the role on one row - for long team lists." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:1.25rem 2rem;width:100%">
+  <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c0">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan">
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Sophie Tan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Sophie Tan on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Sophie Tan on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Sophie Tan"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-c0">Sophie Tan</h3>
+      <p class="mk-team-member-role">Head of Engineering</p>
+    </div>
+  </article>
+  <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c1">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=32" alt="Portrait of Hannah Lee">
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Hannah Lee on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Hannah Lee on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Hannah Lee on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Hannah Lee"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-c1">Hannah Lee</h3>
+      <p class="mk-team-member-role">Design Lead</p>
+    </div>
+  </article>
+  <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c2">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=12" alt="Portrait of Aron Homberg">
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Aron Homberg on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Aron Homberg on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Aron Homberg on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Aron Homberg"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-c2">Aron Homberg</h3>
+      <p class="mk-team-member-role">Co-founder & CEO</p>
+    </div>
+  </article>
+  <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c3">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=16" alt="Portrait of Priya Natarajan">
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Priya Natarajan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Priya Natarajan on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Priya Natarajan on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Priya Natarajan"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-c3">Priya Natarajan</h3>
+      <p class="mk-team-member-role">Chief Product Officer</p>
+    </div>
+  </article>
+  <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c4">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=68" alt="Portrait of Marco Rossi">
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Marco Rossi on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Marco Rossi on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Marco Rossi on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Marco Rossi"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-c4">Marco Rossi</h3>
+      <p class="mk-team-member-role">Chief Operating Officer</p>
+    </div>
+  </article>
+  <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c5">
+    <div class="mk-team-member-portrait">
+      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=5" alt="Portrait of Emily Carter">
+      <ul class="mk-team-member-links">
+        <li><a href="#" aria-label="Emily Carter on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a href="#" aria-label="Emily Carter on GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg></a></li>
+        <li><a href="#" aria-label="Emily Carter on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a href="#" aria-label="Email Emily Carter"><i data-lucide="mail"></i></a></li>
+      </ul>
+    </div>
+    <div class="mk-team-member-body">
+      <h3 class="mk-team-member-name" id="tm-c5">Emily Carter</h3>
+      <p class="mk-team-member-role">Head of Support</p>
+    </div>
+  </article>
+</div>
+```
+
+<SourceFiles component="team-member" section="css" />
+
+</DocPage>

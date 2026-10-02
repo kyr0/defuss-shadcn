@@ -1,0 +1,99 @@
+---
+title: "Media Gallery"
+description: "Coordinates a collection of images with shared viewing controls - switch between grid, masonry and filmstrip, and open a slideshow of every picture."
+slug: "media-gallery"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="media-gallery" title="Media Gallery" component="media-gallery">
+  Coordinates a collection of images with shared viewing controls - switch between grid, masonry and filmstrip, and open a slideshow of every picture. Part of the <DocLink href="website-media.html">Media</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="media-gallery">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code>: a header with the count, a radio group for the layout (grid / masonry / filmstrip - <code>:has(:checked)</code> switches the list), a slideshow Button (<code>commandfor</code> → <code>&lt;dialog&gt;</code>), the pictures as a list of <code>&lt;figure&gt;</code>s, and the dialog with a <code>scroll-snap</code> track.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>, <DocLink href="dialog.html">Dialog</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap" title="rows that snap per item"><code>CSS scroll snap</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="native dialog; method=&quot;dialog&quot; forms close it"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#command" title="a button opens a dialog declaratively"><code>commandfor / command</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-media-gallery</code>
+    <code>.mk-media-gallery-head</code>
+    <code>.mk-media-gallery-tools</code>
+    <code>.mk-media-gallery-views</code>
+    <code>.mk-media-gallery-grid</code>
+    <code>.mk-media-gallery-viewer</code>
+    <code>.mk-media-gallery-viewer-inner</code>
+    <code>.mk-media-gallery-track</code>
+    <code>.mk-media-gallery-close</code>
+    <code>.mk-media-gallery-hint</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>The layout radios (<code>value="grid|masonry|strip"</code>).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Three radios switch the layout - grid, masonry (CSS columns, every picture in its own ratio) and filmstrip (snapping row) - read by :has(), no script. &quot;Slideshow&quot; opens a modal <dialog> whose track scroll-snaps per picture; swipe, scroll or use the arrow keys." previewStyle="align-items:stretch;"
+<section class="mk-media-gallery" aria-labelledby="mg-title">
+  <header class="mk-media-gallery-head">
+    <h2 id="mg-title">Lisbon, autumn 2026</h2>
+    <span>8 photos</span>
+    <div class="mk-media-gallery-tools">
+      <div class="mk-media-gallery-views" role="radiogroup" aria-label="Layout">
+        <label><input type="radio" name="mg-view" value="grid" checked><i data-lucide="layout-grid"></i><span class="sr-only">Grid</span></label>
+        <label><input type="radio" name="mg-view" value="masonry"><i data-lucide="layout-dashboard"></i><span class="sr-only">Masonry</span></label>
+        <label><input type="radio" name="mg-view" value="strip"><i data-lucide="gallery-horizontal"></i><span class="sr-only">Filmstrip</span></label>
+      </div>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="mg-viewer" command="show-modal"><i data-lucide="play"></i> Slideshow</button>
+    </div>
+  </header>
+  <ul class="mk-media-gallery-grid">
+    <li><figure><img src="https://picsum.photos/seed/mg-1/800/600" alt="Harbour at dawn"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-2/600/800" alt="Stairs in Alfama"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-3/800/500" alt="River light"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-4/600/600" alt="Tiles"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-5/800/600" alt="Market morning"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-6/600/900" alt="Old tram"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-7/800/600" alt="Coastline"></figure></li>
+    <li><figure><img src="https://picsum.photos/seed/mg-8/700/500" alt="Rooftops"></figure></li>
+  </ul>
+  <dialog class="mk-media-gallery-viewer" id="mg-viewer" aria-label="Slideshow: Lisbon, autumn 2026">
+    <div class="mk-media-gallery-viewer-inner">
+      <ul class="mk-media-gallery-track" tabindex="0" aria-label="Photos - scroll sideways">
+        <li><img src="https://picsum.photos/seed/mg-1/1600/1200" alt="Harbour at dawn"><p>1 / 8 · Harbour at dawn</p></li>
+        <li><img src="https://picsum.photos/seed/mg-2/1200/1600" alt="Stairs in Alfama"><p>2 / 8 · Stairs in Alfama</p></li>
+        <li><img src="https://picsum.photos/seed/mg-3/1600/1000" alt="River light"><p>3 / 8 · River light</p></li>
+        <li><img src="https://picsum.photos/seed/mg-4/1200/1200" alt="Tiles"><p>4 / 8 · Tiles</p></li>
+        <li><img src="https://picsum.photos/seed/mg-5/1600/1200" alt="Market morning"><p>5 / 8 · Market morning</p></li>
+        <li><img src="https://picsum.photos/seed/mg-6/1200/1800" alt="Old tram"><p>6 / 8 · Old tram</p></li>
+        <li><img src="https://picsum.photos/seed/mg-7/1600/1200" alt="Coastline"><p>7 / 8 · Coastline</p></li>
+        <li><img src="https://picsum.photos/seed/mg-8/1400/1000" alt="Rooftops"><p>8 / 8 · Rooftops</p></li>
+      </ul>
+      <p class="mk-media-gallery-hint">Swipe, scroll or use ← → · Esc closes</p>
+      <form method="dialog"><button class="mk-media-gallery-close" aria-label="Close slideshow"><i data-lucide="x"></i></button></form>
+    </div>
+  </dialog>
+</section>
+```
+
+<SourceFiles component="media-gallery" section="css" />
+
+</DocPage>

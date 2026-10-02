@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>docs-navigation e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/docs-navigation/docs-navigation.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<nav class="mk-docs-navigation" aria-label="Documentation">
+  <div class="mk-docs-navigation-top">
+    <label class="sr-only" for="dn-ver">Version</label>
+    <select class="select" id="dn-ver"><option>v4.0 (latest)</option><option>v3.9</option></select>
+  </div>
+  <p class="mk-docs-navigation-heading">Getting started</p>
+  <ul>
+    <li><a href="#">Introduction</a></li>
+    <li><a href="#">Installation</a></li>
+    <li><a href="#" aria-current="page">Quick start</a></li>
+  </ul>
+  <details open>
+    <summary class="mk-docs-navigation-heading">Guides</summary>
+    <ul>
+      <li><a href="#">Workspaces</a></li>
+      <li><a href="#">Offline sync <span class="badge" data-variant="secondary" data-size="sm">New</span></a></li>
+      <li><a href="#">Permissions</a>
+        <ul><li><a href="#">Roles</a></li><li><a href="#">Guests</a></li></ul>
+      </li>
+    </ul>
+  </details>
+  <details>
+    <summary class="mk-docs-navigation-heading">API reference</summary>
+    <ul><li><a href="#">Authentication</a></li><li><a href="#">Docs</a></li><li><a href="#">Tasks</a></li></ul>
+  </details>
+</nav>
+    </section>
+    <!-- Bordered -->
+    <section class="fx">
+<nav class="mk-docs-navigation" data-variant="bordered" aria-label="Documentation">
+  <div class="mk-docs-navigation-top">
+    <label class="sr-only" for="dn-verbordered">Version</label>
+    <select class="select" id="dn-verbordered"><option>v4.0 (latest)</option><option>v3.9</option></select>
+  </div>
+  <p class="mk-docs-navigation-heading">Getting started</p>
+  <ul>
+    <li><a href="#">Introduction</a></li>
+    <li><a href="#">Installation</a></li>
+    <li><a href="#" aria-current="page">Quick start</a></li>
+  </ul>
+  <details open>
+    <summary class="mk-docs-navigation-heading">Guides</summary>
+    <ul>
+      <li><a href="#">Workspaces</a></li>
+      <li><a href="#">Offline sync <span class="badge" data-variant="secondary" data-size="sm">New</span></a></li>
+      <li><a href="#">Permissions</a>
+        <ul><li><a href="#">Roles</a></li><li><a href="#">Guests</a></li></ul>
+      </li>
+    </ul>
+  </details>
+  <details>
+    <summary class="mk-docs-navigation-heading">API reference</summary>
+    <ul><li><a href="#">Authentication</a></li><li><a href="#">Docs</a></li><li><a href="#">Tasks</a></li></ul>
+  </details>
+</nav>
+    </section>
+  </body>
+</html>

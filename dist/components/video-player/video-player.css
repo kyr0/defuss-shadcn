@@ -1,0 +1,53 @@
+/* -- Video Player (website · Media) ---------------------------------------
+   Plays one video with playback controls and captions - native controls, a WebVTT captions track, title and details, chapters or a transcript. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-video-player, .mk-video-player *, .mk-video-player ::before, .mk-video-player ::after) { box-sizing: border-box; }
+
+  .mk-video-player { container: mk-video-player / inline-size; display: grid; gap: 1rem; width: 100%; margin: 0; }
+  .mk-video-player-frame { overflow: hidden; border-radius: var(--radius-xl); background: oklch(0.12 0.01 260); box-shadow: var(--shadow-lg);
+    & video { display: block; width: 100%; aspect-ratio: 16 / 9; background: inherit; }
+    & video::cue { background: oklch(0 0 0 / 0.72); color: #fff; font-family: var(--font-sans); }
+  }
+  .mk-video-player-caption { display: grid; gap: 0.375rem;
+    & h3 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+    & p { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; line-height: 1.6; }
+  }
+  .mk-video-player-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; color: var(--muted-foreground); font-size: 0.8125rem;
+    & span { display: inline-flex; align-items: center; gap: 0.375rem; }
+    & svg { width: 0.875rem; height: 0.875rem; }
+  }
+  .mk-video-player-chapters { margin: 0; padding: 0; list-style: none; border-block-start: 1px solid var(--border);
+    & li { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); gap: 0.75rem; padding: 0.625rem 0; border-block-end: 1px solid var(--border); font-size: 0.875rem; }
+    & time { color: var(--primary); font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 600; }
+  }
+  .mk-video-player-transcript { display: grid; align-content: start; gap: 0.75rem; max-height: 22rem; padding: 1.25rem; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    & h3 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+    & p { margin: 0; display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 0.5rem; color: var(--muted-foreground); font-size: 0.875rem; line-height: 1.55; }
+    & time { color: var(--primary); font-family: var(--font-mono); font-size: 0.75rem; }
+  }
+
+  .mk-video-player[data-variant="theater"] {
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    background: oklch(0.14 0.01 260);
+    color: #fff;
+
+    & .mk-video-player-frame { max-width: 56rem; margin-inline: auto; width: 100%; box-shadow: 0 30px 80px -20px oklch(0 0 0 / 0.8); }
+    & .mk-video-player-caption { max-width: 56rem; margin-inline: auto; width: 100%; }
+    & :is(.mk-video-player-caption p, .mk-video-player-meta) { color: oklch(1 0 0 / 0.65); }
+  }
+
+  @container mk-video-player (min-width: 52rem) {
+    .mk-video-player[data-variant="transcript"] .mk-video-player-layout { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 1rem; align-items: start; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-video-player-frame { border: 1px solid CanvasText; }
+  }
+}

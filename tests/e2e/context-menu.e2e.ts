@@ -111,6 +111,17 @@ try {
     assert.deepEqual({ x: state.config.x, y: state.config.y }, { x: 120, y: 80 });
   });
 
+  await check('near the viewport edge the menu opens toward the other side of the point', async () => {
+    const vp = page.viewportSize()!;
+    await setState(page, 'default');
+    await page.waitForTimeout(250);
+    await setState(page, 'open', { x: vp.width - 6, y: vp.height - 6 });
+    await page.waitForFunction(() => document.querySelector('#demo-ctx')!.matches(':popover-open'));
+    const r = await page.$eval('#demo-ctx', (el) => { const b = el.getBoundingClientRect(); return { left: b.left, top: b.top, w: (el as HTMLElement).offsetWidth, h: (el as HTMLElement).offsetHeight }; });
+    assert.ok(r.left + r.w <= vp.width && r.top + r.h <= vp.height, JSON.stringify(r));
+    assert.ok(r.left < vp.width - 6 - r.w / 2, 'flipped to the left of the point');
+  });
+
   await check("state API: setState('default') hides the menu", async () => {
     await setState(page, 'default');
     assert.equal(await isOpen(page), false);

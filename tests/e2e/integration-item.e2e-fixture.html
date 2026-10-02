@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>integration-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/integration-item/integration-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Directory -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:1rem;width:100%">
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#24292f" aria-hidden="true">GH</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">GitHub <span class="badge" data-variant="secondary" data-size="sm">Connected</span></h3>
+      <span class="mk-integration-item-category">Engineering</span>
+      <p class="mk-integration-item-desc">Link pull requests to tasks; close them when the PR merges.</p>
+    </div>
+    <a class="btn" data-variant="ghost" data-size="sm" href="#" aria-label="Manage GitHub">Manage</a>
+  </article>
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#a259ff" aria-hidden="true">Fi</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Figma</h3>
+      <span class="mk-integration-item-category">Design</span>
+      <p class="mk-integration-item-desc">Live previews of frames inside any doc.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Figma">Connect</a>
+  </article>
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#4a154b" aria-hidden="true">Sl</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Slack</h3>
+      <span class="mk-integration-item-category">Communication</span>
+      <p class="mk-integration-item-desc">Get updates in channels; turn messages into tasks.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Slack">Connect</a>
+  </article>
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#1a73e8" aria-hidden="true">Dr</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Google Drive</h3>
+      <span class="mk-integration-item-category">Files</span>
+      <p class="mk-integration-item-desc">Attach and search Drive files from Acme.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Google Drive">Connect</a>
+  </article>
+</div>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div style="display:grid;gap:0.5rem;max-width:32rem;width:100%">
+  <article class="mk-integration-item" data-variant="compact">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#24292f" aria-hidden="true">GH</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">GitHub <span class="badge" data-variant="secondary" data-size="sm">Connected</span></h3>
+      <span class="mk-integration-item-category">Engineering</span>
+      <p class="mk-integration-item-desc">Link pull requests to tasks; close them when the PR merges.</p>
+    </div>
+    <a class="btn" data-variant="ghost" data-size="sm" href="#" aria-label="Manage GitHub">Manage</a>
+  </article>
+  <article class="mk-integration-item" data-variant="compact">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#a259ff" aria-hidden="true">Fi</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Figma</h3>
+      <span class="mk-integration-item-category">Design</span>
+      <p class="mk-integration-item-desc">Live previews of frames inside any doc.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Figma">Connect</a>
+  </article>
+  <article class="mk-integration-item" data-variant="compact">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#4a154b" aria-hidden="true">Sl</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Slack</h3>
+      <span class="mk-integration-item-category">Communication</span>
+      <p class="mk-integration-item-desc">Get updates in channels; turn messages into tasks.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Slack">Connect</a>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

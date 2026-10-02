@@ -61,3 +61,7 @@ supportedStates: default
 
 - Use descriptive text content - badges are read inline by screen readers.
 - If the badge is purely decorative, add `aria-hidden="true"`.
+
+## Notes
+
+- A badge keeps its label on one line and does not shrink in a flex row (`white-space: nowrap`, `flex-shrink: 0`, as in shadcn/ui). Keep labels short; in a row of badges, let the **container** wrap (`flex-wrap` on a `.card-footer` or any flex parent) instead of the badges.

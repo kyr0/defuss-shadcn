@@ -1,0 +1,321 @@
+---
+title: "Events & Promotions"
+description: "Website blocks - Events & Promotions: Blocks for campaigns, events and places: calls to action, announcements, offers and countdowns, bookings, event listings and pages - header, description, speakers, sessions and registration - and locations with maps, a store finder and opening hours."
+slug: "website-events-promotions"
+---
+
+import { DocPage, PageHeader, DocText } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-events-promotions" title="Events & Promotions" introStyle="max-width:42rem;">
+  Blocks for campaigns, events and places: calls to action, announcements, offers and countdowns, bookings, event listings and pages - header, description, speakers, sessions and registration - and locations with maps, a store finder and opening hours. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Events & Promotions blocks composed into one page - the source is the page.</DocText>
+
+```html example label="An event page" schema="none" hint="An announcement, the Event Header, a Countdown bar, the Event Description, the agenda (Session Items), the speakers, the venue (Location Map + Opening Hours) and a final CTA - only Events & Promotions blocks." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:3.5rem;width:100%">
+  <dialog class="mk-announcement" data-variant="primary" open aria-labelledby="ann-2">
+    <div class="mk-announcement-inner">
+      <i data-lucide="calendar"></i>
+      <p id="ann-2">Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</p>
+      <a href="#">Get tickets <i data-lucide="arrow-right"></i></a>
+      <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss summit announcement"><i data-lucide="x"></i></button></form>
+    </div>
+  </dialog>
+  <header class="mk-event-header">
+    <div class="mk-event-header-inner">
+      <div class="mk-event-header-copy">
+        <div class="mk-event-header-badges"><span class="badge" data-variant="default">Conference</span><span class="badge" data-variant="outline">3rd edition</span></div>
+        <h1 class="mk-event-header-title">Acme Summit 2026</h1>
+        <p class="mk-event-header-tagline">Two days of talks and workshops on building calm software - for product people, designers and engineers.</p>
+        <ul class="mk-event-header-meta">
+          <li><i data-lucide="calendar"></i><span><time datetime="2026-11-12">12</time>–<time datetime="2026-11-13">13 November 2026</time></span></li>
+          <li><i data-lucide="map-pin"></i><address>Lisbon Congress Centre, Portugal</address></li>
+          <li><i data-lucide="ticket"></i>From €290</li>
+        </ul>
+        <div class="mk-event-header-actions">
+          <a class="btn" data-size="lg" href="#">Register now</a>
+          <a class="btn" data-variant="outline" data-size="lg" href="#" download="acme-summit-2026.ics"><i data-lucide="calendar-plus"></i> Add to calendar</a>
+        </div>
+        <div class="mk-event-header-speakers"><div class="avatar-group"><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span></div>40+ speakers from 12 countries</div>
+      </div>
+    </div>
+  </header>
+  <section class="mk-event-countdown" data-variant="inline" aria-labelledby="ec-3">
+    <div class="mk-event-countdown-inner">
+      <h2 class="mk-event-countdown-title" id="ec-3">Early-bird ends in</h2>
+      <div class="countdown-group mk-event-countdown-timer" data-until="2026-10-31T23:59:59Z">
+        <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl"><span data-unit="days" style="--value:41">41</span></span><span class="countdown-label">days</span></div>
+        <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:9">09</span></span><span class="countdown-label">hours</span></div>
+        <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:30">30</span></span><span class="countdown-label">min</span></div>
+        <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:0">00</span></span><span class="countdown-label">sec</span></div>
+      </div>
+      <a class="btn" data-size="sm" href="#">Save 30%</a>
+    </div>
+  </section>
+  <section class="mk-event-description" aria-label="About the event">
+    <div class="mk-event-description-layout">
+      <div class="mk-event-description-body">
+        <section aria-labelledby="ed-about"><h2 id="ed-about">About</h2><p>Acme Summit brings together the people who build the tools teams use every day. Two days, one track, no sponsor pitches - just honest talks on making software calmer, and workshops where you leave with something built.</p></section>
+        <section aria-labelledby="ed-who"><h2 id="ed-who">Who it is for</h2>
+          <ul class="mk-event-description-audience"><li><i data-lucide="lightbulb"></i>Product managers</li><li><i data-lucide="pen-tool"></i>Designers</li><li><i data-lucide="code"></i>Engineers</li><li><i data-lucide="users"></i>Team leads</li></ul>
+        </section>
+        <section aria-labelledby="ed-take"><h2 id="ed-take">What you will take away</h2>
+          <ul class="mk-event-description-takeaways"><li><i data-lucide="check"></i>A playbook for async planning</li><li><i data-lucide="check"></i>Patterns for quiet, accessible UI</li><li><i data-lucide="check"></i>How offline-first sync really works</li><li><i data-lucide="check"></i>Fifty new colleagues to ask</li></ul>
+        </section>
+      </div>
+      <aside class="mk-event-description-facts" aria-label="Event facts">
+        <dl>
+          <div><dt>Date</dt><dd>12–13 Nov 2026</dd></div>
+          <div><dt>Format</dt><dd>In person + stream</dd></div>
+          <div><dt>Language</dt><dd>English</dd></div>
+          <div><dt>Price</dt><dd>From €290</dd></div>
+          <div><dt>Recordings</dt><dd>For all attendees</dd></div>
+        </dl>
+        <div class="mk-event-description-capacity"><label for="ed-seats"><strong>320 of 400</strong> seats taken</label><meter id="ed-seats" min="0" max="400" low="300" high="380" optimum="0" value="320">320 of 400</meter></div>
+        <a class="btn" href="#">Register</a>
+      </aside>
+    </div>
+  </section>
+  <div style="display:grid;gap:0.75rem;width:100%">
+    <article class="mk-session-item" data-variant="keynote" aria-labelledby="ss-1" style="--mk-session-color:oklch(0.6 0.2 300)">
+      <div class="mk-session-item-time"><time datetime="2026-11-12T09:30">09:30</time><span>10:15</span><small>45 min</small></div>
+      <div class="mk-session-item-body">
+        <span class="mk-session-item-track">Keynote</span>
+        <h3 class="mk-session-item-title" id="ss-1">The quiet product: building for attention, not engagement</h3>
+        <ul class="mk-session-item-speakers"><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>Priya Natarajan</li></ul>
+        <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Main hall</span>
+      </div>
+      <label class="mk-session-item-save"><input type="checkbox" name="schedule" value="ss-1" checked><span class="mk-session-item-save-off"><i data-lucide="plus"></i> Add</span><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span><span class="sr-only"> The quiet product: building for attention, not engagement to my schedule</span></label>
+    </article>
+    <article class="mk-session-item" data-variant="break" aria-labelledby="ss-b">
+      <div class="mk-session-item-time"><time datetime="2026-11-12T10:15">10:15</time><span>10:45</span><small>30 min</small></div>
+      <div class="mk-session-item-body">
+        <h3 class="mk-session-item-title" id="ss-b">Coffee break ☕</h3>
+      </div>
+    </article>
+    <article class="mk-session-item" aria-labelledby="ss-2" style="--mk-session-color:oklch(0.62 0.17 240)">
+      <div class="mk-session-item-time"><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div>
+      <div class="mk-session-item-body">
+        <span class="mk-session-item-track">Engineering</span>
+        <h3 class="mk-session-item-title" id="ss-2">Sync that never fails</h3>
+        <p class="mk-session-item-desc">How a CRDT engine survives trains, tunnels and transatlantic flights.</p>
+        <ul class="mk-session-item-speakers"><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>Sophie Tan</li></ul>
+        <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Room A</span>
+      </div>
+      <label class="mk-session-item-save"><input type="checkbox" name="schedule" value="ss-2"><span class="mk-session-item-save-off"><i data-lucide="plus"></i> Add</span><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span><span class="sr-only"> Sync that never fails to my schedule</span></label>
+    </article>
+    <article class="mk-session-item" aria-labelledby="ss-3" style="--mk-session-color:oklch(0.65 0.17 30)">
+      <div class="mk-session-item-time"><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div>
+      <div class="mk-session-item-body">
+        <span class="mk-session-item-track">Design</span>
+        <h3 class="mk-session-item-title" id="ss-3">Every badge must earn its place</h3>
+        <p class="mk-session-item-desc">A field guide to quieter interfaces - with before and after.</p>
+        <ul class="mk-session-item-speakers"><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>Hannah Lee</li><li><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>Aron Homberg</li></ul>
+        <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Room B</span>
+      </div>
+      <label class="mk-session-item-save"><input type="checkbox" name="schedule" value="ss-3"><span class="mk-session-item-save-off"><i data-lucide="plus"></i> Add</span><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span><span class="sr-only"> Every badge must earn its place to my schedule</span></label>
+    </article>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:2rem 1.25rem;width:100%">
+    <article class="mk-speaker-item" aria-labelledby="sp-1">
+      <img class="mk-speaker-item-photo" src="images/mk-portrait.png" alt="Portrait of Sophie Tan">
+      <div class="mk-speaker-item-body">
+        <h3 class="mk-speaker-item-name" id="sp-1">Sophie Tan</h3>
+        <p class="mk-speaker-item-role">Head of Engineering, Acme</p>
+        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Sync that never fails</a>
+      </div>
+    </article>
+    <article class="mk-speaker-item" aria-labelledby="sp-2">
+      <img class="mk-speaker-item-photo" src="images/mk-portrait2.png" alt="Portrait of Hannah Lee">
+      <div class="mk-speaker-item-body">
+        <h3 class="mk-speaker-item-name" id="sp-2">Hannah Lee</h3>
+        <p class="mk-speaker-item-role">Design Lead, Northwind</p>
+        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Every badge must earn its place</a>
+      </div>
+    </article>
+    <article class="mk-speaker-item" aria-labelledby="sp-3">
+      <img class="mk-speaker-item-photo" src="images/mk-portrait.png" alt="Portrait of Marco Rossi">
+      <div class="mk-speaker-item-body">
+        <h3 class="mk-speaker-item-name" id="sp-3">Marco Rossi</h3>
+        <p class="mk-speaker-item-role">CTO, Globex</p>
+        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Async teams at 400 people</a>
+      </div>
+    </article>
+    <article class="mk-speaker-item" aria-labelledby="sp-4">
+      <img class="mk-speaker-item-photo" src="images/mk-portrait2.png" alt="Portrait of Priya Natarajan">
+      <div class="mk-speaker-item-body">
+        <h3 class="mk-speaker-item-name" id="sp-4">Priya Natarajan</h3>
+        <p class="mk-speaker-item-role">CPO, Orbit</p>
+        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Research without a research team</a>
+      </div>
+    </article>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:2rem;align-items:start">
+    <section class="mk-location-map" aria-labelledby="lm-title">
+      <h2 id="lm-title" class="sr-only">Our cafés in Lisbon</h2>
+      <div class="mk-location-map-layout">
+        <div class="mk-location-map-canvas">
+          <svg class="mk-location-map-art" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="800" height="500" class="mk-location-map-land"/>
+          <path class="mk-location-map-water" d="M0 380 C120 350 220 420 340 400 S560 330 800 370 V500 H0 Z"/>
+          <path class="mk-location-map-park" d="M520 80 h150 a20 20 0 0 1 20 20 v80 a20 20 0 0 1 -20 20 h-150 a20 20 0 0 1 -20 -20 v-80 a20 20 0 0 1 20 -20 Z"/>
+          <g class="mk-location-map-roads"><path d="M0 120 H800"/><path d="M0 260 C200 250 420 300 800 240"/><path d="M180 0 V400"/><path d="M430 0 C440 160 400 260 420 420"/><path d="M640 0 V360"/></g>
+          <g class="mk-location-map-streets"><path d="M0 60 H800"/><path d="M0 190 H800"/><path d="M90 0 V400"/><path d="M300 0 V400"/><path d="M540 0 V380"/><path d="M730 0 V360"/></g>
+        </svg>
+          <button class="mk-location-map-pin" type="button" popovertarget="lm-1" style="--x:24%;--y:38%;anchor-name:--lm-1" aria-label="Café Baixa"><i data-lucide="map-pin"></i></button>
+        <div class="mk-location-map-popup" id="lm-1" popover style="position-anchor:--lm-1">
+          <strong>Café Baixa</strong><address>Rua da Prata 120</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+        </div>
+          <button class="mk-location-map-pin" type="button" popovertarget="lm-2" style="--x:58%;--y:30%;anchor-name:--lm-2" aria-label="Café Príncipe Real"><i data-lucide="map-pin"></i></button>
+        <div class="mk-location-map-popup" id="lm-2" popover style="position-anchor:--lm-2">
+          <strong>Café Príncipe Real</strong><address>Praça do Príncipe Real 5</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+        </div>
+          <button class="mk-location-map-pin" type="button" popovertarget="lm-3" style="--x:76%;--y:62%;anchor-name:--lm-3" aria-label="Café Alfama"><i data-lucide="map-pin"></i></button>
+        <div class="mk-location-map-popup" id="lm-3" popover style="position-anchor:--lm-3">
+          <strong>Café Alfama</strong><address>Rua de São Miguel 18</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+        </div>
+        </div>
+        <ol class="mk-location-map-list">
+          <li><b>1</b><strong>Café Baixa</strong><span>Rua da Prata 120 · open until 19:00</span></li>
+          <li><b>2</b><strong>Café Príncipe Real</strong><span>Praça do Príncipe Real 5 · open until 20:00</span></li>
+          <li><b>3</b><strong>Café Alfama</strong><span>Rua de São Miguel 18 · closed today</span></li>
+        </ol>
+      </div>
+    </section>
+    <section class="mk-opening-hours" aria-labelledby="oh-title">
+      <h3 class="mk-opening-hours-title" id="oh-title">Opening hours</h3>
+      <p class="mk-opening-hours-status">Open now <span>· until 20:00</span></p>
+      <dl class="mk-opening-hours-days">
+          <div><dt>Monday</dt><dd>09:00 – 18:00</dd></div>
+          <div><dt>Tuesday</dt><dd>09:00 – 18:00</dd></div>
+          <div><dt>Wednesday</dt><dd>09:00 – 18:00</dd></div>
+          <div aria-current="date"><dt>Thursday</dt><dd>09:00 – 20:00</dd></div>
+          <div><dt>Friday</dt><dd>09:00 – 18:00</dd></div>
+          <div><dt>Saturday</dt><dd>10:00 – 14:00</dd></div>
+          <div data-closed><dt>Sunday</dt><dd>Closed</dd></div>
+        </dl>
+      <ul class="mk-opening-hours-exceptions" aria-label="Exceptions">
+        <li><time datetime="2026-12-24">24 Dec</time><span>09:00 – 13:00</span></li>
+        <li><time datetime="2026-12-25">25–26 Dec</time><span>Closed</span></li>
+        <li><time datetime="2027-01-01">1 Jan</time><span>Closed</span></li>
+      </ul>
+    </section>
+  </div>
+  <section class="mk-cta" data-variant="dark" aria-labelledby="cta-3">
+    <div class="mk-cta-inner">
+      <div class="mk-cta-copy">
+        <h2 class="mk-cta-title" id="cta-3">Get early access to Spaces</h2>
+        <p class="mk-cta-desc">Shared spaces for every project. Invites go out this month.</p>
+      </div>
+      <form class="mk-cta-form" action="#" method="post">
+        <label class="sr-only" for="cta-email">Email address</label>
+        <input class="input" id="cta-email" type="email" name="email" placeholder="you@company.com" required autocomplete="email">
+        <button class="btn" data-variant="secondary" type="submit">Request invite</button>
+      </form>
+      <p class="mk-cta-note">2,400 people joined this week.</p>
+    </div>
+  </section>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="cta.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">CTA</h3>
+      <p class="card-description">Combines a focused message with a prominent action - centered, split, on a dark glow or over a picture.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="announcement.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Announcement</h3>
+      <p class="card-description">Highlights an important update with an optional link or dismissal - a bar, a filled strip, an inline card or a floating notice.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="offer-banner.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Offer Banner</h3>
+      <p class="card-description">Presents a promotion with its conditions and action - a gradient card, a slim ribbon or a coupon with a tear-off edge.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="event-countdown.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Event Countdown</h3>
+      <p class="card-description">Displays the remaining time until a specified event - days, hours, minutes and seconds ticking down beside the date and the action.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="booking-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Booking Form</h3>
+      <p class="card-description">Collects a service selection, available slot, and customer details - radio cards, a native date, time chips and the contact fields.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="event-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Event Item</h3>
+      <p class="card-description">Previews one event with its date, location, and attendance link - a calendar tile, the title, time and place, and a register action.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="event-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Event Header</h3>
+      <p class="card-description">Introduces an event with its title, date, venue, and primary action - on a gradient band, over a cover picture, or beside a poster.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="event-description.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Event Description</h3>
+      <p class="card-description">Explains an event's purpose, audience, and participation details - the story, who it is for, what you take away, and the practical facts.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="speaker-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Speaker Item</h3>
+      <p class="card-description">Introduces one speaker with a portrait, role, and biography - with their talk, as a card, a featured keynote or a compact row.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="session-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Session Item</h3>
+      <p class="card-description">Presents one scheduled session with its time, topic, and speakers - with its track, room and an "add to my schedule" toggle; breaks and keynotes styled apart.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="registration-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Registration Form</h3>
+      <p class="card-description">Collects attendee information and event participation choices - the ticket, the attendee, the workshops and the practical needs.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="location-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Location Item</h3>
+      <p class="card-description">Presents one physical location with its address and directions - the address, whether it is open now, the phone and a directions link.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="location-map.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Location Map</h3>
+      <p class="card-description">Displays one or more locations on an interactive map - pins open a card anchored to them, a list beside the map names every place.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="locator-search.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Locator Search</h3>
+      <p class="card-description">Finds nearby locations using an address or current position - a search with "use my location", a radius and the results.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="opening-hours.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Opening Hours</h3>
+      <p class="card-description">Displays operating hours and date-specific exceptions - the week with today marked, whether it is open now, and the holidays.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

@@ -1,0 +1,140 @@
+---
+title: "Event Item"
+description: "Previews one event with its date, location, and attendance link - a calendar tile, the title, time and place, and a register action."
+slug: "event-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="event-item" title="Event Item" component="event-item">
+  Previews one event with its date, location, and attendance link - a calendar tile, the title, time and place, and a register action. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="event-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: a <code>&lt;time datetime&gt;</code> calendar tile, a title link covering the item, time and place, tags, and a register link that stays clickable above the stretched link.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-event-item</code>
+    <code>.mk-event-item-title</code>
+    <code>.mk-event-item-date</code>
+    <code>.mk-event-item-body</code>
+    <code>.mk-event-item-meta</code>
+    <code>.mk-event-item-tags</code>
+    <code>.mk-event-item-media</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>card</code>, <code>compact</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="List" hint="Default rows: a calendar tile (<time>), the title link covering the row, time and place, tags, and a separately labelled Register link." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.25rem;width:100%">
+  <article class="mk-event-item">
+    <time class="mk-event-item-date" datetime="2026-10-14T18:00"><span>Oct</span><b>14</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup Lisbon</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Tue 18:00 – 21:00</li><li><i data-lucide="map-pin"></i>LX Factory, Lisbon</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">In person</span><span class="badge" data-variant="secondary" data-size="sm">Free</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Calm Product Meetup Lisbon">Register</a>
+  </article>
+  <article class="mk-event-item">
+    <time class="mk-event-item-date" datetime="2026-10-22T16:00"><span>Oct</span><b>22</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Webinar: Planning launches with five teams</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Wed 16:00 – 17:00 UTC</li><li><i data-lucide="video"></i>Online</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Webinar</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Webinar: Planning launches with five teams">Register</a>
+  </article>
+  <article class="mk-event-item">
+    <time class="mk-event-item-date" datetime="2026-11-12"><span>Nov</span><b>12</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Acme Summit 2026</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>12–13 Nov</li><li><i data-lucide="map-pin"></i>Lisbon Congress Centre</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Conference</span><span class="badge" data-variant="secondary" data-size="sm">Tickets</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Acme Summit 2026">Register</a>
+  </article>
+</div>
+```
+
+```html example label="Cards" hint="data-variant='card': a 16:9 picture with the date tile over its corner." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem;width:100%">
+  <article class="mk-event-item" data-variant="card">
+    <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-meetup/800/450" alt="">
+    <time class="mk-event-item-date" datetime="2026-10-14T18:00"><span>Oct</span><b>14</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup Lisbon</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Tue 18:00</li><li><i data-lucide="map-pin"></i>Lisbon</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">In person</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Calm Product Meetup Lisbon">Register</a>
+  </article>
+  <article class="mk-event-item" data-variant="card">
+    <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-design/800/450" alt="">
+    <time class="mk-event-item-date" datetime="2026-11-05T17:00"><span>Nov</span><b>05</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Design Systems Night</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>Thu 17:00</li><li><i data-lucide="map-pin"></i>Berlin</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Talks</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Design Systems Night">Register</a>
+  </article>
+  <article class="mk-event-item" data-variant="card">
+    <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-summit/800/450" alt="">
+    <time class="mk-event-item-date" datetime="2026-11-12"><span>Nov</span><b>12</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Acme Summit 2026</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>12–13 Nov</li><li><i data-lucide="map-pin"></i>Lisbon</li></ul>
+      <div class="mk-event-item-tags"><span class="badge" data-variant="secondary" data-size="sm">Conference</span></div>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Acme Summit 2026">Register</a>
+  </article>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': smaller tile and title, no tags or button - for a sidebar." previewStyle="align-items:stretch;"
+<div style="display:grid;max-width:22rem;width:100%">
+  <article class="mk-event-item" data-variant="compact">
+    <time class="mk-event-item-date" datetime="2026-10-14"><span>Oct</span><b>14</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>18:00</li><li><i data-lucide="map-pin"></i>Lisbon</li></ul>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Calm Product Meetup">Register</a>
+  </article>
+  <article class="mk-event-item" data-variant="compact">
+    <time class="mk-event-item-date" datetime="2026-10-22"><span>Oct</span><b>22</b></time>
+    <div class="mk-event-item-body">
+      <h3 class="mk-event-item-title"><a href="#">Planning launches (webinar)</a></h3>
+      <ul class="mk-event-item-meta"><li><i data-lucide="clock"></i>16:00 UTC</li><li><i data-lucide="video"></i>Online</li></ul>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Register for Planning launches (webinar)">Register</a>
+  </article>
+</div>
+```
+
+<SourceFiles component="event-item" section="css" />
+
+</DocPage>

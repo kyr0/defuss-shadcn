@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>blog-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/swap/swap.css" />
+    <link rel="stylesheet" href="/dist/components/blog-item/blog-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:2rem;width:100%">
+<article class="mk-blog-item">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide.png" alt="A whiteboard full of sketches"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Engineering</span><span>8 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
+    <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience: the design behind sync that never loses a keystroke.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt="Two designers reviewing a layout"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen - and why our metrics went up.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+      <span class="mk-blog-item-author">Hannah Lee</span>
+      <time class="mk-blog-item-date" datetime="2026-09-24">24 Sep 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt="A small team around a table"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Company</span><span>4 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Why we stay small</a></h3>
+    <p class="mk-blog-item-excerpt">A million users, forty people. What we say no to, and how we decide.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Aron Homberg</span>
+      <time class="mk-blog-item-date" datetime="2026-09-17">17 Sep 2026</time>
+    </div>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Horizontal -->
+    <section class="fx">
+<div style="display:grid;gap:2rem;width:100%;max-width:52rem">
+<article class="mk-blog-item" data-variant="horizontal">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt="Two designers reviewing a layout"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen - and why our metrics went up.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+      <span class="mk-blog-item-author">Hannah Lee</span>
+      <time class="mk-blog-item-date" datetime="2026-09-24">24 Sep 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item" data-variant="horizontal">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-square.png" alt="A product screenshot"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Product</span><span>6 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Shared spaces, explained</a></h3>
+    <p class="mk-blog-item-excerpt">One place for a team's docs, tasks and decisions - with permissions that read like a sentence.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-09-10">10 Sep 2026</time>
+    </div>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Featured -->
+    <section class="fx">
+<div style="width:100%;max-width:52rem">
+<article class="mk-blog-item" data-variant="featured">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt="The Acme team at their offsite"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Company</span><span>12 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Ten years of Acme: what we got right, and what we would do differently</a></h3>
+    <p class="mk-blog-item-excerpt">A long look back at a decade of building calm software - the bets that paid off, the ones that did not, and what comes next.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Aron Homberg</span>
+      <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Cards with tags and bookmarks -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1.5rem;width:100%">
+<article class="mk-blog-item" data-variant="card">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide.png" alt="A whiteboard full of sketches"></figure>
+  <div class="mk-blog-item-actions">
+    <label class="swap" data-size="sm" data-variant="rotate">
+      <input type="checkbox" aria-label="Save post">
+      <span class="swap-on"><i data-lucide="bookmark-check"></i></span>
+      <span class="swap-off"><i data-lucide="bookmark"></i></span>
+    </label>
+  </div>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Engineering</span><span>8 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
+    <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience.</p>
+    <div class="mk-blog-item-tags"><a class="badge" data-variant="outline" href="#">#sync</a><a class="badge" data-variant="outline" href="#">#crdt</a></div>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item" data-variant="card">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt="Two designers reviewing a layout"></figure>
+  <div class="mk-blog-item-actions">
+    <label class="swap" data-size="sm" data-variant="rotate">
+      <input type="checkbox" aria-label="Save post">
+      <span class="swap-on"><i data-lucide="bookmark-check"></i></span>
+      <span class="swap-off"><i data-lucide="bookmark"></i></span>
+    </label>
+  </div>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen.</p>
+    <div class="mk-blog-item-tags"><a class="badge" data-variant="outline" href="#">#design</a></div>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+      <span class="mk-blog-item-author">Hannah Lee</span>
+      <time class="mk-blog-item-date" datetime="2026-09-24">24 Sep 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item" data-variant="card">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-square.png" alt="A product screenshot"></figure>
+  <div class="mk-blog-item-actions">
+    <label class="swap" data-size="sm" data-variant="rotate">
+      <input type="checkbox" aria-label="Save post">
+      <span class="swap-on"><i data-lucide="bookmark-check"></i></span>
+      <span class="swap-off"><i data-lucide="bookmark"></i></span>
+    </label>
+  </div>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Product</span><span>6 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Shared spaces, explained</a></h3>
+    <p class="mk-blog-item-excerpt">One place for a team's docs, tasks and decisions.</p>
+    <div class="mk-blog-item-tags"><a class="badge" data-variant="outline" href="#">#product</a><a class="badge" data-variant="outline" href="#">#teams</a></div>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-09-10">10 Sep 2026</time>
+    </div>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Minimal -->
+    <section class="fx">
+<div style="width:100%;max-width:44rem">
+<article class="mk-blog-item" data-variant="minimal">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide.png" alt=""></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Engineering</span><span>8 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
+    <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience: the design behind sync that never loses a keystroke.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item" data-variant="minimal">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide.png" alt=""></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen - and why our metrics went up.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-09-24">24 Sep 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item" data-variant="minimal">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide.png" alt=""></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Company</span><span>4 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Why we stay small</a></h3>
+    <p class="mk-blog-item-excerpt">A million users, forty people. What we say no to, and how we decide.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-09-17">17 Sep 2026</time>
+    </div>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Quote and podcast -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:1.5rem;width:100%;align-items:start">
+<article class="mk-blog-item" data-variant="quote">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-wide.png" alt=""></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Essay</span><span>6 min read</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">The best feature is the one you never have to explain.</a></h3>
+    <p class="mk-blog-item-excerpt">On designing defaults that disappear.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+      <span class="mk-blog-item-author">Hannah Lee</span>
+      <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+  </div>
+</article>
+<article class="mk-blog-item" data-variant="podcast">
+  <figure class="mk-blog-item-media"><img src="/dist/documentation/images/mk-square.png" alt="The Calm Software podcast cover"></figure>
+  <div class="mk-blog-item-body">
+    <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Podcast</span><span>Episode 42 · 38 min</span></div>
+    <h3 class="mk-blog-item-title"><a href="#">Sync without tears</a></h3>
+    <p class="mk-blog-item-excerpt">Sophie and Alex on CRDTs, outages, and shipping slowly on purpose.</p>
+    <div class="mk-blog-item-byline">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="mk-blog-item-author">Sophie Tan</span>
+      <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+  </div>
+  <audio class="mk-blog-item-player" controls preload="none" src="/dist/documentation/videos/demo.mp4" aria-label="Play episode 42"></audio>
+</article>
+</div>
+    </section>
+  </body>
+</html>

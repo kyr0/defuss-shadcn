@@ -45,6 +45,7 @@
   }
 
   .mk-contact-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -61,7 +62,83 @@
     .mk-contact-cta { width: auto; }
   }
 
+  /* split: a contact form beside the ways to reach you */
+  .mk-contact[data-variant="split"] {
+    align-items: stretch;
+    padding: 2rem;
+  }
+  .mk-contact-split {
+    display: grid;
+    gap: 2rem 3rem;
+    width: 100%;
+
+    & form { display: grid; gap: 1rem; }
+    & .mk-contact-copy { align-items: flex-start; text-align: start; margin: 0; }
+  }
+  /* the info column beside the form once the section has room */
+  @container mk-contact (min-width: 44rem) {
+    .mk-contact-split { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  }
+  .mk-contact-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 1rem; }
+  .mk-contact-field { display: grid; gap: 0.375rem; }
+  .mk-contact-info {
+    display: grid;
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+
+    & li { display: flex; gap: 0.875rem; align-items: flex-start; }
+    & li > svg { flex: none; width: 2.25rem; height: 2.25rem; padding: 0.5rem; box-sizing: border-box; border-radius: var(--radius-md); background: var(--muted); color: var(--primary); }
+    & strong { display: block; font-size: 0.9375rem; }
+    & a, & span { color: var(--muted-foreground); font-size: 0.875rem; text-decoration: none; }
+    & a:hover { color: var(--foreground); text-decoration: underline; }
+  }
+
+  /* channels: one card per way in - sales, support, press */
+  .mk-contact-channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+  .mk-contact-channel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    text-align: start;
+
+    & > svg { width: 1.5rem; height: 1.5rem; color: var(--primary); }
+    & h3 { margin: 0.5rem 0 0; font-size: 1.0625rem; font-weight: 600; }
+    & p { margin: 0; flex: 1; color: var(--muted-foreground); font-size: 0.875rem; line-height: 1.55; }
+    & .btn { align-self: flex-start; margin-block-start: 0.5rem; }
+  }
+
+  /* band: "talk to a human" - a dark band with an online indicator */
+  .mk-contact[data-variant="band"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 2rem;
+    border: 0;
+    background:
+      radial-gradient(60% 120% at 100% 0%, color-mix(in oklch, var(--chart-2) 35%, transparent), transparent 60%),
+      var(--foreground);
+    color: var(--background);
+
+    & .mk-contact-copy { align-items: flex-start; text-align: start; margin: 0; flex: 1 1 20rem; }
+    & .mk-contact-desc { color: color-mix(in oklch, var(--background) 72%, transparent); }
+    & .mk-contact-avatars .avatar { outline-color: var(--foreground); filter: none; }
+    & .mk-contact-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  }
+  .mk-contact-online { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; }
+
   /* -- Accessibility ------------------------------------------- */
+
   @media (prefers-reduced-transparency: reduce) {
     /* grayscale is decorative identity, keep it; only guarantee contrast */
     .mk-contact-avatars .avatar { filter: none; }

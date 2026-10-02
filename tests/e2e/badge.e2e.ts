@@ -20,6 +20,11 @@ await cssSmoke('badge', [
     },
   },
   {
+    label: 'a badge never wraps its label or shrinks in a flex row',
+    selector: '#b-default',
+    css: { 'white-space': 'nowrap', 'flex-shrink': '0' },
+  },
+  {
     label: 'all three variants carry distinct background colors',
     distinct: [
       { selector: '#b-default', prop: 'background-color' },

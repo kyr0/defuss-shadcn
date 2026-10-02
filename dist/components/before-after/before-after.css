@@ -1,0 +1,98 @@
+/* -- Before After (website · Media) ---------------------------------------
+   Compares two images through aligned views or a slider - drag a divider, toggle between them, or set them side by side. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-before-after, .mk-before-after *, .mk-before-after ::before, .mk-before-after ::after) { box-sizing: border-box; }
+
+  .mk-before-after {
+    --mk-ba-pos: 50%;
+
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+  }
+  .mk-before-after-stage {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+
+    & img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+  }
+  /* the before picture sets the size; the after picture lies on top, clipped */
+  .mk-before-after-before { position: relative; }
+  .mk-before-after-after { position: absolute; inset: 0; height: 100%; clip-path: inset(0 0 0 var(--mk-ba-pos)); }
+  .mk-before-after-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--mk-ba-pos);
+    width: 2px;
+    translate: -50% 0;
+    background: #fff;
+    box-shadow: 0 0 0 1px oklch(0 0 0 / 0.15);
+    pointer-events: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      translate: -50% -50%;
+      border-radius: 50%;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18 3 12l6-6M15 6l6 6-6 6'/%3E%3C/svg%3E") center / 1.25rem no-repeat;
+      box-shadow: var(--shadow-lg);
+    }
+  }
+  .mk-before-after-range { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+  .mk-before-after-stage:has(.mk-before-after-range:focus-visible) .mk-before-after-handle::after { outline: 3px solid var(--ring); outline-offset: 2px; }
+  .mk-before-after-label {
+    position: absolute;
+    top: 0.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: oklch(0.12 0.02 260 / 0.65);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+
+    &[data-side="before"] { left: 0.75rem; }
+    &[data-side="after"] { right: 0.75rem; }
+  }
+  .mk-before-after-caption { color: var(--muted-foreground); font-size: 0.875rem; text-align: center; }
+
+  /* toggle: a switch reveals the after picture */
+  .mk-before-after[data-variant="toggle"] {
+    & .mk-before-after-after { clip-path: inset(0 0 0 100%); transition: clip-path 600ms cubic-bezier(.6,0,.2,1); }
+    &:has(.mk-before-after-toggle input:checked) .mk-before-after-after { clip-path: inset(0); }
+  }
+  .mk-before-after-toggle { justify-self: center; }
+
+  /* split: side by side */
+  .mk-before-after[data-variant="split"] .mk-before-after-stage {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0.5rem;
+    overflow: visible;
+    background: none;
+
+    & > div { position: relative; overflow: hidden; border-radius: var(--radius-xl); }
+    & .mk-before-after-after { position: static; clip-path: none; }
+    & .mk-before-after-label[data-side="after"] { left: 0.75rem; right: auto; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-before-after[data-variant="toggle"] .mk-before-after-after { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-before-after-handle { background: CanvasText; }
+  }
+}

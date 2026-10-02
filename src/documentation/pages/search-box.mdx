@@ -1,0 +1,88 @@
+---
+title: "Search Box"
+description: "Accepts a query and submits a search - with a shortcut hint, as a large hero search with a scope, a pill, or an icon that expands on focus."
+slug: "search-box"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="search-box" title="Search Box" component="search-box">
+  Accepts a query and submits a search - with a shortcut hint, as a large hero search with a scope, a pill, or an icon that expands on focus. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="search-box">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;search&gt;</code> with a <code>&lt;form method="get"&gt;</code>: a visually hidden label, a search icon, an <code>&lt;input type="search" name="q"&gt;</code> (<code>enterkeyhint="search"</code>), a Kbd shortcut hint and submit.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="kbd.html">Kbd</DocLink>, <DocLink href="select.html">Select</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search" title="the search landmark"><code>&lt;search&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd" title="keyboard input"><code>&lt;kbd&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-search-box</code>
+    <code>.mk-search-box-field</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>large</code>, <code>pill</code>, <code>expand</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A <search> landmark around a GET form: hidden label, icon, input type=search with enterkeyhint, a ⌘K hint and submit - works without script, the URL is shareable." previewStyle="align-items:stretch;"
+<search class="mk-search-box">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-1">Search</label>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-1" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+    <button class="btn" type="submit">Search</button>
+  </form>
+</search>
+```
+
+```html example label="Large" hint="data-variant='large': a hero search on a raised surface with a scope Select." previewStyle="align-items:stretch;"
+<search class="mk-search-box" data-variant="large">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-2">Search</label>
+    <select class="select" name="scope" aria-label="Search in"><option>Everything</option><option>Docs</option><option>Tasks</option><option>People</option></select>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-2" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+    <button class="btn" type="submit">Search</button>
+  </form>
+</search>
+```
+
+```html example label="Pill" hint="data-variant='pill': a rounded muted field, Enter submits." previewStyle="align-items:stretch;"
+<search class="mk-search-box" data-variant="pill">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-3">Search</label>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-3" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+    
+  </form>
+</search>
+```
+
+```html example label="Expand on focus" hint="data-variant='expand': an icon-wide field that widens when it gets focus (:focus-within) - click or Tab into it." previewStyle="align-items:stretch;"
+<search class="mk-search-box" data-variant="expand">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-4">Search</label>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-4" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"></span>
+    
+  </form>
+</search>
+```
+
+<SourceFiles component="search-box" section="css" />
+
+</DocPage>

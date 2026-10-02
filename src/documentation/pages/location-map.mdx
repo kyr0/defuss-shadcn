@@ -1,0 +1,105 @@
+---
+title: "Location Map"
+description: "Displays one or more locations on an interactive map - pins open a card anchored to them, a list beside the map names every place."
+slug: "location-map"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="location-map" title="Location Map" component="location-map">
+  Displays one or more locations on an interactive map - pins open a card anchored to them, a list beside the map names every place. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="location-map">
+  <SkillField label="Native basis">
+<SkillText>A map surface (an inline SVG - or an embedded map image) with absolutely placed pins (<code>--x</code> / <code>--y</code>): each pin is a <code>&lt;button popovertarget&gt;</code> whose <code>popover</code> card is anchored to it (<code>anchor-name</code> / <code>position-anchor</code>). A list beside it repeats every place as text.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="light-dismiss panels without script"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="popovers placed next to their trigger"><code>CSS anchor positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address" title="contact information"><code>&lt;address&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-location-map</code>
+    <code>.mk-location-map-canvas</code>
+    <code>.mk-location-map-art</code>
+    <code>.mk-location-map-land</code>
+    <code>.mk-location-map-water</code>
+    <code>.mk-location-map-park</code>
+    <code>.mk-location-map-roads</code>
+    <code>.mk-location-map-streets</code>
+    <code>.mk-location-map-pin</code>
+    <code>.mk-location-map-popup</code>
+    <code>.mk-location-map-list</code>
+    <code>.mk-location-map-layout</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="full"</code>; <code>--x</code> / <code>--y</code> (percent) on pins.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Pins are buttons (popovertarget) placed with --x / --y; each card is a popover anchored to its pin by CSS anchor positioning - click a pin, Escape closes. The list beside the map names every place as text." previewStyle="align-items:stretch;"
+<section class="mk-location-map" aria-labelledby="lm-title">
+  <h2 id="lm-title" class="sr-only">Our cafés in Lisbon</h2>
+  <div class="mk-location-map-layout">
+    <div class="mk-location-map-canvas">
+      <svg class="mk-location-map-art" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="800" height="500" class="mk-location-map-land"/>
+      <path class="mk-location-map-water" d="M0 380 C120 350 220 420 340 400 S560 330 800 370 V500 H0 Z"/>
+      <path class="mk-location-map-park" d="M520 80 h150 a20 20 0 0 1 20 20 v80 a20 20 0 0 1 -20 20 h-150 a20 20 0 0 1 -20 -20 v-80 a20 20 0 0 1 20 -20 Z"/>
+      <g class="mk-location-map-roads"><path d="M0 120 H800"/><path d="M0 260 C200 250 420 300 800 240"/><path d="M180 0 V400"/><path d="M430 0 C440 160 400 260 420 420"/><path d="M640 0 V360"/></g>
+      <g class="mk-location-map-streets"><path d="M0 60 H800"/><path d="M0 190 H800"/><path d="M90 0 V400"/><path d="M300 0 V400"/><path d="M540 0 V380"/><path d="M730 0 V360"/></g>
+    </svg>
+      <button class="mk-location-map-pin" type="button" popovertarget="lm-1" style="--x:24%;--y:38%;anchor-name:--lm-1" aria-label="Café Baixa"><i data-lucide="map-pin"></i></button>
+    <div class="mk-location-map-popup" id="lm-1" popover style="position-anchor:--lm-1">
+      <strong>Café Baixa</strong><address>Rua da Prata 120</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+    </div>
+      <button class="mk-location-map-pin" type="button" popovertarget="lm-2" style="--x:58%;--y:30%;anchor-name:--lm-2" aria-label="Café Príncipe Real"><i data-lucide="map-pin"></i></button>
+    <div class="mk-location-map-popup" id="lm-2" popover style="position-anchor:--lm-2">
+      <strong>Café Príncipe Real</strong><address>Praça do Príncipe Real 5</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+    </div>
+      <button class="mk-location-map-pin" type="button" popovertarget="lm-3" style="--x:76%;--y:62%;anchor-name:--lm-3" aria-label="Café Alfama"><i data-lucide="map-pin"></i></button>
+    <div class="mk-location-map-popup" id="lm-3" popover style="position-anchor:--lm-3">
+      <strong>Café Alfama</strong><address>Rua de São Miguel 18</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+    </div>
+    </div>
+    <ol class="mk-location-map-list">
+      <li><b>1</b><strong>Café Baixa</strong><span>Rua da Prata 120 · open until 19:00</span></li>
+      <li><b>2</b><strong>Café Príncipe Real</strong><span>Praça do Príncipe Real 5 · open until 20:00</span></li>
+      <li><b>3</b><strong>Café Alfama</strong><span>Rua de São Miguel 18 · closed today</span></li>
+    </ol>
+  </div>
+</section>
+```
+
+```html example label="Full" hint="data-variant='full': the map alone, taller - one pin opened by default would need script, so it starts closed; click it." previewStyle="align-items:stretch;"
+<section class="mk-location-map" data-variant="full" aria-label="Venue">
+  <div class="mk-location-map-canvas">
+    <svg class="mk-location-map-art" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="800" height="500" class="mk-location-map-land"/>
+      <path class="mk-location-map-water" d="M0 380 C120 350 220 420 340 400 S560 330 800 370 V500 H0 Z"/>
+      <path class="mk-location-map-park" d="M520 80 h150 a20 20 0 0 1 20 20 v80 a20 20 0 0 1 -20 20 h-150 a20 20 0 0 1 -20 -20 v-80 a20 20 0 0 1 20 -20 Z"/>
+      <g class="mk-location-map-roads"><path d="M0 120 H800"/><path d="M0 260 C200 250 420 300 800 240"/><path d="M180 0 V400"/><path d="M430 0 C440 160 400 260 420 420"/><path d="M640 0 V360"/></g>
+      <g class="mk-location-map-streets"><path d="M0 60 H800"/><path d="M0 190 H800"/><path d="M90 0 V400"/><path d="M300 0 V400"/><path d="M540 0 V380"/><path d="M730 0 V360"/></g>
+    </svg>
+    <button class="mk-location-map-pin" type="button" popovertarget="lm-v" style="--x:50%;--y:48%;anchor-name:--lm-v" aria-label="Lisbon Congress Centre"><i data-lucide="map-pin"></i></button>
+    <div class="mk-location-map-popup" id="lm-v" popover style="position-anchor:--lm-v">
+      <strong>Lisbon Congress Centre</strong><address>Praça das Indústrias 1</address><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+    </div>
+  </div>
+</section>
+```
+
+<SourceFiles component="location-map" section="css" />
+
+</DocPage>

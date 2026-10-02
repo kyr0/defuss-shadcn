@@ -1,0 +1,106 @@
+/* -- Announcement (website · Events & Promotions) -------------------------
+   Highlights an important update with an optional link or dismissal - a bar, a filled strip, an inline card or a floating notice. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-announcement, .mk-announcement *, .mk-announcement ::before, .mk-announcement ::after) { box-sizing: border-box; }
+
+  .mk-announcement {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--muted);
+    color: var(--foreground);
+
+    &:not([open]) { display: none; }
+  }
+  .mk-announcement-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem 0.75rem;
+    padding: 0.625rem 3rem;
+    font-size: 0.875rem;
+    text-align: center;
+
+    & > svg { flex: none; width: 1rem; height: 1rem; }
+    & p { margin: 0; }
+    & a { display: inline-flex; align-items: center; gap: 0.25rem; color: inherit; font-weight: 600; text-underline-offset: 3px; }
+    & a svg { width: 0.875rem; height: 0.875rem; }
+    & a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
+  .mk-announcement-close {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0.5rem;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { opacity: 1; background: color-mix(in oklch, currentColor 12%, transparent); }
+    &:focus-visible { opacity: 1; outline: 2px solid currentColor; outline-offset: 1px; }
+  }
+  .mk-announcement-tag { padding: 0.0625rem 0.5rem; border-radius: 999px; background: var(--foreground); color: var(--background); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .mk-announcement[data-variant="primary"] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+
+    & .mk-announcement-tag { background: var(--primary-foreground); color: var(--primary); }
+  }
+
+  .mk-announcement[data-variant="inline"] {
+    border: 1px solid color-mix(in oklab, var(--chart-1) 35%, var(--border));
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklab, var(--chart-1) 7%, var(--card));
+
+    & .mk-announcement-inner { justify-content: flex-start; padding: 1rem 3.25rem 1rem 1.25rem; text-align: start; }
+    & .mk-announcement-inner > svg { color: var(--chart-1); width: 1.25rem; height: 1.25rem; }
+    & .mk-announcement-close { top: 0.75rem; translate: none; }
+  }
+
+  .mk-announcement[data-variant="floating"] {
+    position: fixed;
+    inset: auto 1rem 1rem;
+    z-index: 40;
+    width: auto;
+    max-width: 34rem;
+    margin-inline: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-xl);
+
+    & .mk-announcement-inner { justify-content: flex-start; padding: 0.875rem 3.25rem 0.875rem 1rem; text-align: start; }
+  }
+  @starting-style {
+    .mk-announcement[data-variant="floating"][open] { opacity: 0; translate: 0 1rem; }
+  }
+  .mk-announcement[data-variant="floating"] { transition: opacity 300ms ease, translate 300ms ease; }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-announcement[data-variant="floating"] { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-announcement { border-block-end: 1px solid CanvasText; }
+    .mk-announcement-close { border: 1px solid ButtonText; }
+  }
+}

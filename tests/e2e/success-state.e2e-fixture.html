@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>success-state e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/success-state/success-state.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-success-state" role="status" aria-labelledby="ss-1">
+  <span class="mk-success-state-icon" aria-hidden="true"><i data-lucide="check"></i></span>
+  <h2 class="mk-success-state-title" id="ss-1">Invitations sent</h2>
+  <p class="mk-success-state-text">Your three teammates get an email with a link to join. It works for 7 days.</p>
+  <dl class="mk-success-state-summary"><div><dt>Workspace</dt><dd>Acme Product</dd></div><div><dt>Invited</dt><dd>3 people</dd></div><div><dt>Role</dt><dd>Editor</dd></div></dl>
+  <div class="mk-success-state-actions"><a class="btn" href="#">Go to workspace</a><a class="btn" data-variant="outline" href="#">Invite more</a></div>
+</section>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<section class="mk-success-state" data-variant="compact" role="status" aria-labelledby="ss-2">
+  <span class="mk-success-state-icon" aria-hidden="true"><i data-lucide="check"></i></span>
+  <h2 class="mk-success-state-title" id="ss-2">Published</h2>
+  <p class="mk-success-state-text">"Release notes 4.0" is live.</p>
+  <div class="mk-success-state-actions"><a class="btn" data-variant="outline" data-size="sm" href="#">View page</a></div>
+</section>
+    </section>
+  </body>
+</html>

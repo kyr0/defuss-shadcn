@@ -1,0 +1,227 @@
+---
+title: "Archive Index"
+description: "Links to content grouped by publication year or month - native disclosures with post counts, or the years side by side."
+slug: "archive-index"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="archive-index" title="Archive Index" component="archive-index">
+  Links to content grouped by publication year or month - native disclosures with post counts, or the years side by side. Part of the <DocLink href="website-blog.html">Blog</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="archive-index">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;nav&gt;</code> of <code>&lt;details name="archive"&gt;</code> disclosures - one per year, exclusive by the shared <code>name</code>, animated with <code>::details-content</code> - each a list of month links with post counts.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="timeline.html">Timeline</DocLink>, <DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="exclusive year disclosures"><code>&lt;details name&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content" title="the open / close animation"><code>::details-content</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size" title="animates to auto height"><code>interpolate-size</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the month being shown"><code>aria-current</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-archive-index</code>
+    <code>.mk-archive-index-title</code>
+    <code>.mk-archive-index-year</code>
+    <code>.mk-archive-index-count</code>
+    <code>.mk-archive-index-legend</code>
+    <code>.mk-archive-index-tags</code>
+    <code>.mk-archive-index-months</code>
+    <code>.mk-archive-index-pick</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="columns"</code>; <code>open</code> and <code>name</code> on the year disclosures; <code>aria-current</code> on the current month; <code>data-variant="calendar"</code> (+ <code>data-level</code> 0-4 on the month links, <code>.mk-archive-index-legend</code>); <code>.mk-archive-index-tags</code> (+ <code>data-weight</code> 1-5), <code>.mk-archive-index-months</code>, <code>.mk-archive-index-pick</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="One native details per year; the shared name makes them exclusive - open 2025 and 2026 closes. Counts sit at the end of each row." previewStyle="align-items:stretch;"
+<nav class="mk-archive-index" aria-labelledby="archive-title" style="max-width:18rem">
+  <h2 class="mk-archive-index-title" id="archive-title">Archive</h2>
+  <details class="mk-archive-index-year" name="archive" open>
+    <summary>2026 <span class="mk-archive-index-count">31</span></summary>
+    <ul>
+      <li><a href="#" aria-current="page">October</a><span class="mk-archive-index-count">3</span></li>
+      <li><a href="#">September</a><span class="mk-archive-index-count">6</span></li>
+      <li><a href="#">August</a><span class="mk-archive-index-count">4</span></li>
+      <li><a href="#">July</a><span class="mk-archive-index-count">5</span></li>
+      <li><a href="#">June</a><span class="mk-archive-index-count">7</span></li>
+      <li><a href="#">May</a><span class="mk-archive-index-count">6</span></li>
+    </ul>
+  </details>
+  <details class="mk-archive-index-year" name="archive">
+    <summary>2025 <span class="mk-archive-index-count">48</span></summary>
+    <ul>
+      <li><a href="#">December</a><span class="mk-archive-index-count">5</span></li>
+      <li><a href="#">November</a><span class="mk-archive-index-count">4</span></li>
+      <li><a href="#">October</a><span class="mk-archive-index-count">6</span></li>
+      <li><a href="#">September</a><span class="mk-archive-index-count">3</span></li>
+    </ul>
+  </details>
+  <details class="mk-archive-index-year" name="archive">
+    <summary>2024 <span class="mk-archive-index-count">39</span></summary>
+    <ul>
+      <li><a href="#">December</a><span class="mk-archive-index-count">3</span></li>
+      <li><a href="#">November</a><span class="mk-archive-index-count">4</span></li>
+      <li><a href="#">October</a><span class="mk-archive-index-count">5</span></li>
+    </ul>
+  </details>
+</nav>
+```
+
+```html example label="Columns" hint="data-variant='columns': the years side by side, each open - an archive page rather than a sidebar." previewStyle="align-items:stretch;"
+<nav class="mk-archive-index" data-variant="columns" aria-labelledby="archive-cols-title">
+  <h2 class="mk-archive-index-title" id="archive-cols-title">Browse by year</h2>
+  <details class="mk-archive-index-year" open>
+    <summary>2026 <span class="mk-archive-index-count">31</span></summary>
+    <ul>
+      <li><a href="#">October</a><span class="mk-archive-index-count">3</span></li>
+      <li><a href="#">September</a><span class="mk-archive-index-count">6</span></li>
+      <li><a href="#">August</a><span class="mk-archive-index-count">4</span></li>
+      <li><a href="#">July</a><span class="mk-archive-index-count">5</span></li>
+    </ul>
+  </details>
+  <details class="mk-archive-index-year" open>
+    <summary>2025 <span class="mk-archive-index-count">48</span></summary>
+    <ul>
+      <li><a href="#">December</a><span class="mk-archive-index-count">5</span></li>
+      <li><a href="#">November</a><span class="mk-archive-index-count">4</span></li>
+      <li><a href="#">October</a><span class="mk-archive-index-count">6</span></li>
+      <li><a href="#">September</a><span class="mk-archive-index-count">3</span></li>
+    </ul>
+  </details>
+  <details class="mk-archive-index-year" open>
+    <summary>2024 <span class="mk-archive-index-count">39</span></summary>
+    <ul>
+      <li><a href="#">December</a><span class="mk-archive-index-count">3</span></li>
+      <li><a href="#">November</a><span class="mk-archive-index-count">4</span></li>
+      <li><a href="#">October</a><span class="mk-archive-index-count">5</span></li>
+      <li><a href="#">September</a><span class="mk-archive-index-count">2</span></li>
+    </ul>
+  </details>
+</nav>
+```
+
+```html example label="Calendar" hint="data-variant='calendar': every month a cell, shaded by how much was published (data-level 0-4 on the link) - a contribution graph for an archive. Each cell is a link; the label names month and count." previewStyle="align-items:stretch;"
+<nav class="mk-archive-index" data-variant="calendar" aria-labelledby="cal-title" style="max-width:24rem">
+  <h2 class="mk-archive-index-title" id="cal-title">Publishing calendar</h2>
+  <details class="mk-archive-index-year" open>
+    <summary>2026 <span class="mk-archive-index-count">45</span></summary>
+    <ul>
+      <li><a href="#2026-01" data-level="2" aria-label="Jan 2026: 4 posts">Jan</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2026-02" data-level="1" aria-label="Feb 2026: 2 posts">Feb</a><span class="mk-archive-index-count" aria-hidden="true">2</span></li>
+      <li><a href="#2026-03" data-level="3" aria-label="Mar 2026: 6 posts">Mar</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+      <li><a href="#2026-04" data-level="2" aria-label="Apr 2026: 4 posts">Apr</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2026-05" data-level="3" aria-label="May 2026: 6 posts">May</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+      <li><a href="#2026-06" data-level="4" aria-label="Jun 2026: 9 posts">Jun</a><span class="mk-archive-index-count" aria-hidden="true">9</span></li>
+      <li><a href="#2026-07" data-level="2" aria-label="Jul 2026: 4 posts">Jul</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2026-08" data-level="1" aria-label="Aug 2026: 2 posts">Aug</a><span class="mk-archive-index-count" aria-hidden="true">2</span></li>
+      <li><a href="#2026-09" data-level="3" aria-label="Sep 2026: 6 posts">Sep</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+      <li><a href="#2026-10" data-level="1" aria-label="Oct 2026: 2 posts">Oct</a><span class="mk-archive-index-count" aria-hidden="true">2</span></li>
+      <li><a href="#2026-11" data-level="0" aria-label="Nov 2026: 0 posts">Nov</a><span class="mk-archive-index-count" aria-hidden="true">0</span></li>
+      <li><a href="#2026-12" data-level="0" aria-label="Dec 2026: 0 posts">Dec</a><span class="mk-archive-index-count" aria-hidden="true">0</span></li>
+    </ul>
+  </details>
+  <details class="mk-archive-index-year" open>
+    <summary>2025 <span class="mk-archive-index-count">53</span></summary>
+    <ul>
+      <li><a href="#2025-01" data-level="1" aria-label="Jan 2025: 2 posts">Jan</a><span class="mk-archive-index-count" aria-hidden="true">2</span></li>
+      <li><a href="#2025-02" data-level="2" aria-label="Feb 2025: 4 posts">Feb</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2025-03" data-level="2" aria-label="Mar 2025: 4 posts">Mar</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2025-04" data-level="3" aria-label="Apr 2025: 6 posts">Apr</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+      <li><a href="#2025-05" data-level="1" aria-label="May 2025: 2 posts">May</a><span class="mk-archive-index-count" aria-hidden="true">2</span></li>
+      <li><a href="#2025-06" data-level="0" aria-label="Jun 2025: 0 posts">Jun</a><span class="mk-archive-index-count" aria-hidden="true">0</span></li>
+      <li><a href="#2025-07" data-level="2" aria-label="Jul 2025: 4 posts">Jul</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2025-08" data-level="3" aria-label="Aug 2025: 6 posts">Aug</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+      <li><a href="#2025-09" data-level="4" aria-label="Sep 2025: 9 posts">Sep</a><span class="mk-archive-index-count" aria-hidden="true">9</span></li>
+      <li><a href="#2025-10" data-level="3" aria-label="Oct 2025: 6 posts">Oct</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+      <li><a href="#2025-11" data-level="2" aria-label="Nov 2025: 4 posts">Nov</a><span class="mk-archive-index-count" aria-hidden="true">4</span></li>
+      <li><a href="#2025-12" data-level="3" aria-label="Dec 2025: 6 posts">Dec</a><span class="mk-archive-index-count" aria-hidden="true">6</span></li>
+    </ul>
+  </details>
+  <p class="mk-archive-index-legend">Less <i></i><i></i><i></i><i></i><i></i> More</p>
+</nav>
+```
+
+```html example label="Timeline" hint="The archive on the Timeline component: one entry per year - the title carries a count Badge, the months are pill links with their counts (.mk-archive-index-months; aria-current fills the month you are reading), and the year closes with its most-read post (.mk-archive-index-pick)." previewStyle="align-items:stretch;"
+<nav class="mk-archive-index" aria-labelledby="tl-title" style="max-width:30rem">
+  <h2 class="mk-archive-index-title" id="tl-title">Archive</h2>
+  <ol class="timeline">
+    <li class="timeline-item">
+      <div class="timeline-dot" data-variant="active"></div>
+      <div class="timeline-content">
+        <p class="timeline-title">2026 <span class="badge" data-variant="secondary" data-size="sm">31 posts</span></p>
+        <ul class="mk-archive-index-months">
+          <li><a href="#2026-october" aria-current="page">October<span class="mk-archive-index-count">3</span></a></li>
+          <li><a href="#2026-september">September<span class="mk-archive-index-count">6</span></a></li>
+          <li><a href="#2026-august">August<span class="mk-archive-index-count">4</span></a></li>
+          <li><a href="#2026-july">July<span class="mk-archive-index-count">5</span></a></li>
+        </ul>
+        <p class="mk-archive-index-pick">Most read: <a href="#">How offline sync works in Acme 4.0</a></p>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <p class="timeline-title">2025 <span class="badge" data-variant="secondary" data-size="sm">48 posts</span></p>
+        <ul class="mk-archive-index-months">
+          <li><a href="#2025-december">December<span class="mk-archive-index-count">5</span></a></li>
+          <li><a href="#2025-november">November<span class="mk-archive-index-count">4</span></a></li>
+          <li><a href="#2025-october">October<span class="mk-archive-index-count">6</span></a></li>
+          <li><a href="#2025-september">September<span class="mk-archive-index-count">3</span></a></li>
+        </ul>
+        <p class="mk-archive-index-pick">Most read: <a href="#">Designing for calm</a></p>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <p class="timeline-title">2024 <span class="badge" data-variant="secondary" data-size="sm">39 posts</span></p>
+        <ul class="mk-archive-index-months">
+          <li><a href="#2024-december">December<span class="mk-archive-index-count">3</span></a></li>
+          <li><a href="#2024-november">November<span class="mk-archive-index-count">4</span></a></li>
+          <li><a href="#2024-october">October<span class="mk-archive-index-count">5</span></a></li>
+        </ul>
+        <p class="mk-archive-index-pick">Most read: <a href="#">Why we stay small</a></p>
+      </div>
+    </li>
+  </ol>
+</nav>
+```
+
+```html example label="Tags" hint=".mk-archive-index-tags: a tag cloud - data-weight 1-5 scales size and weight, the heaviest takes the primary colour. Counts in <sup>." previewStyle="align-items:stretch;"
+<nav class="mk-archive-index" aria-labelledby="tags-title" style="max-width:28rem">
+  <h2 class="mk-archive-index-title" id="tags-title">Topics</h2>
+  <ul class="mk-archive-index-tags">
+    <li><a href="#tag-sync" data-weight="5">sync<sup>42</sup></a></li>
+    <li><a href="#tag-design" data-weight="4">design<sup>31</sup></a></li>
+    <li><a href="#tag-crdt" data-weight="3">crdt<sup>18</sup></a></li>
+    <li><a href="#tag-testing" data-weight="3">testing<sup>16</sup></a></li>
+    <li><a href="#tag-culture" data-weight="2">culture<sup>9</sup></a></li>
+    <li><a href="#tag-security" data-weight="2">security<sup>8</sup></a></li>
+    <li><a href="#tag-offline" data-weight="4">offline<sup>27</sup></a></li>
+    <li><a href="#tag-hiring" data-weight="1">hiring<sup>3</sup></a></li>
+    <li><a href="#tag-performance" data-weight="3">performance<sup>14</sup></a></li>
+    <li><a href="#tag-accessibility" data-weight="2">accessibility<sup>7</sup></a></li>
+    <li><a href="#tag-releases" data-weight="4">releases<sup>25</sup></a></li>
+    <li><a href="#tag-remote" data-weight="1">remote<sup>4</sup></a></li>
+  </ul>
+</nav>
+```
+
+<SourceFiles component="archive-index" section="css" />
+
+</DocPage>

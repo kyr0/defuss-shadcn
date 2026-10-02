@@ -1,0 +1,226 @@
+---
+title: "Author List"
+description: "Lists contributors associated with a publication or article - rows with roles and counts, a card grid, or a stack of overlapping avatars."
+slug: "author-list"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="author-list" title="Author List" component="author-list">
+  Lists contributors associated with a publication or article - rows with roles and counts, a card grid, or a stack of overlapping avatars. Part of the <DocLink href="website-article.html">Article</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="author-list">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code> with a <code>&lt;ul&gt;</code>: each contributor an Avatar, the name (a link), a role and an optional count. The stack variant overlaps the avatars and keeps the names for assistive tech.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="progress.html">Progress</DocLink>, <DocLink href="tooltip.html">Tooltip</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" title="visually hidden names (stack)"><code>clip-path</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="focus ring on the avatar"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns" title="the card grid"><code>auto-fill grid</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-author-list</code>
+    <code>.mk-author-list-title</code>
+    <code>.mk-author-list-items</code>
+    <code>.mk-author-list-item</code>
+    <code>.mk-author-list-who</code>
+    <code>.mk-author-list-name</code>
+    <code>.mk-author-list-role</code>
+    <code>.mk-author-list-count</code>
+    <code>.mk-author-list-summary</code>
+    <code>.mk-author-list-action</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>grid</code>, <code>stack</code>); <code>data-variant="ranked"</code> (+ <code>data-rank</code> on the items); <code>.mk-author-list-action</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Rows: avatar, the name (a link) and role, a count at the end." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:28rem">
+<section class="mk-author-list" aria-labelledby="contributors">
+  <h2 class="mk-author-list-title" id="contributors">Contributors</h2>
+  <ul class="mk-author-list-items">
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Staff engineer</span></div>
+      <span class="mk-author-list-count">42 articles</span>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Design lead</span></div>
+      <span class="mk-author-list-count">18 articles</span>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div>
+      <span class="mk-author-list-count">9 articles</span>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Priya Natarajan</a><span class="mk-author-list-role">Product manager</span></div>
+      <span class="mk-author-list-count">6 articles</span>
+    </li>
+  </ul>
+</section>
+</div>
+```
+
+```html example label="Grid" hint="data-variant='grid': contributor cards in an auto-fill grid - an authors page." previewStyle="align-items:stretch;"
+<section class="mk-author-list" data-variant="grid" aria-labelledby="our-writers">
+  <h2 class="mk-author-list-title" id="our-writers">Our writers</h2>
+  <ul class="mk-author-list-items">
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Staff engineer</span></div>
+      <span class="mk-author-list-count">42 articles</span>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Design lead</span></div>
+      <span class="mk-author-list-count">18 articles</span>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div>
+      <span class="mk-author-list-count">9 articles</span>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Priya Natarajan</a><span class="mk-author-list-role">Product manager</span></div>
+      <span class="mk-author-list-count">6 articles</span>
+    </li>
+  </ul>
+</section>
+```
+
+```html example label="Stack" hint="data-variant='stack': overlapping avatars and a summary line. The names are visually hidden but still read and focusable - Tab through and the focused avatar rings." previewStyle="align-items:stretch;"
+<section class="mk-author-list" data-variant="stack" aria-labelledby="written-by">
+  <h2 class="mk-author-list-title" id="written-by">Written by</h2>
+  <ul class="mk-author-list-items">
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Staff engineer</span></div>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Design lead</span></div>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Priya Natarajan</a><span class="mk-author-list-role">Product manager</span></div>
+    </li>
+  </ul>
+  <p class="mk-author-list-summary">By Sophie Tan, Hannah Lee and 2 others</p>
+</section>
+```
+
+```html example label="Ranked" hint="data-variant='ranked': a leaderboard - data-rank on each item (medals for the top three) and a Progress bar showing the share of all articles." previewStyle="align-items:stretch;"
+<section class="mk-author-list" data-variant="ranked" aria-labelledby="top-writers" style="max-width:28rem">
+  <h2 class="mk-author-list-title" id="top-writers">Top writers this year</h2>
+  <ul class="mk-author-list-items">
+    <li class="mk-author-list-item" data-rank="1">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Staff engineer</span></div>
+      <span class="mk-author-list-count">42 articles</span>
+      <progress class="progress" value="42" max="100" aria-label="Sophie Tan: 42% of all articles"></progress>
+    </li>
+    <li class="mk-author-list-item" data-rank="2">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Design lead</span></div>
+      <span class="mk-author-list-count">31 articles</span>
+      <progress class="progress" value="31" max="100" aria-label="Hannah Lee: 31% of all articles"></progress>
+    </li>
+    <li class="mk-author-list-item" data-rank="3">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div>
+      <span class="mk-author-list-count">18 articles</span>
+      <progress class="progress" value="18" max="100" aria-label="Aron Homberg: 18% of all articles"></progress>
+    </li>
+    <li class="mk-author-list-item" data-rank="4">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Priya Natarajan</a><span class="mk-author-list-role">Product manager</span></div>
+      <span class="mk-author-list-count">9 articles</span>
+      <progress class="progress" value="9" max="100" aria-label="Priya Natarajan: 9% of all articles"></progress>
+    </li>
+  </ul>
+</section>
+```
+
+```html example label="Grid with follow" hint="The grid variant with a Follow Button per writer (.mk-author-list-action at the row end)." previewStyle="align-items:stretch;"
+<section class="mk-author-list" data-variant="grid" aria-labelledby="writers-to-follow">
+  <h2 class="mk-author-list-title" id="writers-to-follow">Writers to follow</h2>
+  <ul class="mk-author-list-items">
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Staff engineer</span></div>
+      <a class="btn mk-author-list-action" data-variant="outline" data-size="sm" href="#">Follow</a>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Design lead</span></div>
+      <a class="btn mk-author-list-action" data-variant="outline" data-size="sm" href="#">Follow</a>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div>
+      <a class="btn mk-author-list-action" data-variant="outline" data-size="sm" href="#">Follow</a>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Priya Natarajan</a><span class="mk-author-list-role">Product manager</span></div>
+      <a class="btn mk-author-list-action" data-variant="outline" data-size="sm" href="#">Follow</a>
+    </li>
+  </ul>
+</section>
+```
+
+```html example label="Stack with tooltips" hint="The stack variant with a Tooltip on every avatar - hover one to see the name (the names stay in the accessibility tree either way)." previewStyle="align-items:stretch;"
+<section class="mk-author-list" data-variant="stack" aria-labelledby="contributors">
+  <h2 class="mk-author-list-title" id="contributors">Contributors</h2>
+  <ul class="mk-author-list-items">
+    <li class="mk-author-list-item">
+      <span class="avatar" data-tooltip-trigger="tip-0"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Writer</span></div>
+      <div class="tooltip" id="tip-0" popover="hint" role="tooltip">Sophie Tan</div>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar" data-tooltip-trigger="tip-1"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Writer</span></div>
+      <div class="tooltip" id="tip-1" popover="hint" role="tooltip">Hannah Lee</div>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar" data-tooltip-trigger="tip-2"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">Writer</span></div>
+      <div class="tooltip" id="tip-2" popover="hint" role="tooltip">Aron Homberg</div>
+    </li>
+    <li class="mk-author-list-item">
+      <span class="avatar" data-tooltip-trigger="tip-3"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Priya Natarajan</a><span class="mk-author-list-role">Writer</span></div>
+      <div class="tooltip" id="tip-3" popover="hint" role="tooltip">Priya Natarajan</div>
+    </li>
+  </ul>
+  <p class="mk-author-list-summary">Sophie, Hannah, Alex and Priya wrote this guide</p>
+</section>
+```
+
+<SourceFiles component="author-list" section="css" />
+
+</DocPage>

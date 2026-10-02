@@ -84,6 +84,23 @@ open - a second click does the main thing, Escape / outside click closes.
 `.fab-text` in the trigger makes a pill. `data-shrink="scroll"` folds the
 label away over the first 120px of page scroll (scroll-driven animation).
 
+### Back to top
+
+```html
+<div class="fab" data-scroll-top>
+  <a class="btn fab-trigger" href="#top" aria-label="Back to top"><span class="fab-icon" aria-hidden="true">↑</span></a>
+</div>
+```
+
+`data-scroll-top` makes the trigger a link to the start: `href="#top"` scrolls the
+document to its top natively (no element with that id needed); in a
+scrolling container, link to an element at its start (and give the FAB
+`--fab-timeline` like `data-shrink`). A scroll-driven animation keeps it
+hidden - and unfocusable - near the top and fades it in between
+`--fab-scroll-top-from` and `--fab-scroll-top-to` (160px - 320px). The page
+scrolls smoothly unless reduced motion is requested; under reduced motion the
+button simply stays visible.
+
 ---
 
 ## Position (`data-position`)

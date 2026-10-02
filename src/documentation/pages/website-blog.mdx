@@ -1,0 +1,123 @@
+---
+title: "Blog"
+description: "Website blocks - Blog: Blocks for the front of a blog or a category: the header with subscribe actions and category chips, the post previews - card, horizontal or featured - and the archive by year and month."
+slug: "website-blog"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-blog" title="Blog" introStyle="max-width:42rem;">
+  Blocks for the front of a blog or a category: the header with subscribe actions and category chips, the post previews - card, horizontal or featured - and the archive by year and month. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Blog blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A blog front" schema="none" hint="Blog Header, a featured Blog Item, a grid of cards and the Archive Index in a sidebar - only Blog blocks and layout utilities." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:2.5rem;width:100%">
+  <header class="mk-blog-header">
+    <div class="mk-blog-header-copy">
+      <span class="mk-blog-header-eyebrow">The Acme Blog</span>
+      <h1 class="mk-blog-header-title">Notes on building calm software</h1>
+      <p class="mk-blog-header-desc">Essays on product, engineering and design - one post a week, no hot takes.</p>
+    </div>
+    <nav class="mk-blog-header-categories" aria-label="Categories">
+      <a href="#" aria-current="page">All posts</a>
+      <a href="#">Engineering</a>
+      <a href="#">Design</a>
+      <a href="#">Company</a>
+    </nav>
+  </header>
+  <div style="display:flex;flex-wrap:wrap;gap:2.5rem;align-items:flex-start">
+    <div style="flex:999 1 30rem;display:flex;flex-direction:column;gap:2rem;min-width:0">
+      <article class="mk-blog-item" data-variant="featured">
+        <figure class="mk-blog-item-media"><img src="images/mk-wide3.png" alt="The Acme team at their offsite"></figure>
+        <div class="mk-blog-item-body">
+          <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Company</span><span>12 min read</span></div>
+          <h3 class="mk-blog-item-title"><a href="#">Ten years of Acme: what we got right</a></h3>
+          <p class="mk-blog-item-excerpt">A long look back at a decade of building calm software.</p>
+          <div class="mk-blog-item-byline">
+            <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+            <span class="mk-blog-item-author">Aron Homberg</span>
+            <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+          </div>
+        </div>
+      </article>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:2rem">
+        <article class="mk-blog-item">
+          <figure class="mk-blog-item-media"><img src="images/mk-wide.png" alt="A whiteboard full of sketches"></figure>
+          <div class="mk-blog-item-body">
+            <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Engineering</span><span>8 min read</span></div>
+            <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
+            <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience.</p>
+            <div class="mk-blog-item-byline">
+              <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+              <span class="mk-blog-item-author">Sophie Tan</span>
+              <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
+            </div>
+          </div>
+        </article>
+        <article class="mk-blog-item">
+          <figure class="mk-blog-item-media"><img src="images/mk-wide2.png" alt="Two designers reviewing a layout"></figure>
+          <div class="mk-blog-item-body">
+            <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div>
+            <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
+            <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen.</p>
+            <div class="mk-blog-item-byline">
+              <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+              <span class="mk-blog-item-author">Hannah Lee</span>
+              <time class="mk-blog-item-date" datetime="2026-09-24">24 Sep 2026</time>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <nav class="mk-archive-index" aria-labelledby="blog-archive-title" style="flex:1 1 13rem">
+      <h2 class="mk-archive-index-title" id="blog-archive-title">Archive</h2>
+      <details class="mk-archive-index-year" name="archive" open>
+        <summary>2026 <span class="mk-archive-index-count">31</span></summary>
+        <ul>
+          <li><a href="#" aria-current="page">October</a><span class="mk-archive-index-count">3</span></li>
+          <li><a href="#">September</a><span class="mk-archive-index-count">6</span></li>
+          <li><a href="#">August</a><span class="mk-archive-index-count">4</span></li>
+        </ul>
+      </details>
+      <details class="mk-archive-index-year" name="archive">
+        <summary>2025 <span class="mk-archive-index-count">48</span></summary>
+        <ul>
+          <li><a href="#">December</a><span class="mk-archive-index-count">5</span></li>
+          <li><a href="#">November</a><span class="mk-archive-index-count">4</span></li>
+        </ul>
+      </details>
+    </nav>
+  </div>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="blog-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Blog Header</h3>
+      <p class="card-description">Introduces a blog with its title and editorial description - actions (subscribe, RSS), category chips, centered or on a banner.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="blog-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Blog Item</h3>
+      <p class="card-description">Previews one post with its image, excerpt, and metadata - a card, a horizontal row, or a featured post with the copy over the image.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="archive-index.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Archive Index</h3>
+      <p class="card-description">Links to content grouped by publication year or month - native disclosures with post counts, or the years side by side.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

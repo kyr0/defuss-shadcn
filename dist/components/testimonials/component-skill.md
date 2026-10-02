@@ -45,13 +45,13 @@ photo with `position` + `z-index` + `color-mix(... transparent)` +
   </div>
   <div class="mk-testimonial-cards">
     <figure class="mk-testimonial-card">
-      <img src="images/mk-portrait.png" alt="Alex Morgan" />
+      <img src="images/mk-portrait.png" alt="Aron Homberg" />
       <figcaption class="mk-testimonial-card-body">
         <div class="mk-testimonial-card-info">
           <div class="mk-stars" aria-label="5 out of 5 stars">
             <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15 9 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 9"/></svg>
           </div>
-          <span class="mk-testimonial-card-name">Alex Morgan</span>
+          <span class="mk-testimonial-card-name">Aron Homberg</span>
           <span class="mk-testimonial-card-role">Product Manager</span>
         </div>
       </figcaption>
@@ -61,6 +61,19 @@ photo with `position` + `z-index` + `color-mix(... transparent)` +
 ```
 
 Repeat the star `<svg>` five times; the star polygon above is shortened for brevity - copy the full lucide `star` path (with `fill: currentColor` from `.mk-stars svg`).
+
+---
+
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| *(omitted)* | A photo card - the review floats over the picture |
+| `data-variant="quote"` | A quote card: stars, the review, the author with an Avatar |
+| `data-variant="wall"` (on `.mk-testimonial-cards`) | A masonry wall of quote cards - CSS columns, cards of any length |
+| `.mk-testimonial-marquee` + `-track` | Rows gliding sideways (`data-direction="reverse"` on the second); pauses on hover / focus, scrolls by hand under reduced motion |
+| `.mk-testimonial-spotlight` | One big quote, centered, with the author and the company |
+| `.mk-testimonial-card-metric` | A result line in a quote card ("+42% faster releases") |
 
 ---
 
@@ -78,3 +91,4 @@ Repeat the star `<svg>` five times; the star polygon above is shortened for brev
 - Star rating is an inline SVG group; label the group, hide the children - never one SR announcement per SVG.
 - The overlay uses `margin-block-start: auto` inside a flex `.mk-testimonial-card` (`items-end`) - the card stays photo-dominant at any aspect.
 - Photos need `alt` with the person's name; the role line adds the context a face can't convey.
+- Two card styles: `data-variant="quote"` (stars, the review in `.mk-testimonial-card-text`, the author in `.mk-testimonial-card-author` with an Avatar) and the photo card (the review floats over the picture). Quote cards flow one column on phones, as many 16rem columns as fit above.

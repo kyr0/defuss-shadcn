@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <!-- the components a panel is built from and lives in -->
+  <link rel="stylesheet" href="/dist/components/card/card.css">
+  <link rel="stylesheet" href="/dist/components/swap/swap.css">
+  <link rel="stylesheet" href="/dist/components/button/button.css">
+  <link rel="stylesheet" href="/dist/components/resizer/resizer.css">
+  <link rel="stylesheet" href="/dist/components/border-layout/border-layout.css">
+  <link rel="stylesheet" href="/dist/components/panel/panel.css">
+  <style>body { margin: 16px; font-family: sans-serif; } .stack { display: flex; flex-direction: column; gap: 16px; }</style>
+</head>
+<body>
+  <!-- mirrors the doc page: a standalone panel (state demo), a border layout
+       whose every region is a panel, a gap layout (west/east dominant), an
+       east panel that starts minimized, a tools-less panel, a host -->
+  <div class="stack">
+    <div style="width:360px">
+<section class="card panel" id="solo" aria-labelledby="solo-t" style="height:200px" data-state-demo>
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="solo-t">Files</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Files"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Files"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Files body</p><button type="button" class="btn">Inside Files</button></div>
+  <footer class="panel-footer">Files footer</footer>
+</section>
+    </div>
+
+    <div class="border-layout" id="bl" style="height:420px; width:900px;">
+      <div class="resizer border-layout-north" id="r-n">
+<section class="card panel" id="p-n" aria-labelledby="p-n-t" style="height:96px">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="p-n-t">Project</h3>
+    <div class="panel-tools">
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Project"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Project body</p><button type="button" class="btn">Inside Project</button></div>
+</section>
+      </div>
+      <div class="resizer border-layout-west" id="r-w">
+<section class="card panel" id="p-w" aria-labelledby="p-w-t" style="width:200px">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="p-w-t">Explorer</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Explorer"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Explorer"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Explorer body</p><button type="button" class="btn">Inside Explorer</button></div>
+</section>
+      </div>
+      <main class="border-layout-center" id="center" style="view-transition-name: fixture-center">
+<section class="card panel" id="p-c" aria-labelledby="p-c-t" style="height:100%">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="p-c-t">Editor</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Editor"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Editor body</p><button type="button" class="btn">Inside Editor</button></div>
+</section>
+      </main>
+      <div class="resizer border-layout-east" id="r-e">
+<section class="card panel" id="p-e" aria-labelledby="p-e-t" style="width:180px">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="p-e-t">Properties</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Properties"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Properties"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Properties body</p><button type="button" class="btn">Inside Properties</button></div>
+</section>
+      </div>
+      <div class="resizer border-layout-south" id="r-s">
+<section class="card panel" id="p-s" aria-labelledby="p-s-t" style="height:110px">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="p-s-t">Console</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Console"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Console"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Console body</p><button type="button" class="btn">Inside Console</button></div>
+</section>
+      </div>
+    </div>
+
+    <div class="border-layout" id="gap" data-divider="gap" data-dominant="we" style="height:240px; width:700px;">
+      <div class="resizer border-layout-west">
+<section class="card panel" id="g-w" aria-labelledby="g-w-t" style="width:160px">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="g-w-t">Outline</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Outline"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Outline"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Outline body</p><button type="button" class="btn">Inside Outline</button></div>
+</section>
+      </div>
+      <main class="border-layout-center border-layout-pane">Center</main>
+    </div>
+
+    <div class="border-layout" id="start" style="height:200px; width:600px;">
+      <main class="border-layout-center border-layout-pane">Center</main>
+      <div class="resizer border-layout-east" id="r-start">
+<section class="card panel" id="p-start" aria-labelledby="p-start-t" style="width:200px" data-minimized>
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="p-start-t">Inspector</h3>
+    <div class="panel-tools">
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Inspector"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Inspector body</p><button type="button" class="btn">Inside Inspector</button></div>
+</section>
+      </div>
+    </div>
+
+    <div style="width:300px">
+<section class="card panel" id="bare" aria-labelledby="bare-t">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="bare-t">Notes</h3>
+    <div class="panel-tools">
+    </div>
+  </header>
+  <div class="panel-body"><p>Notes body</p><button type="button" class="btn">Inside Notes</button></div>
+</section>
+    </div>
+
+    <div data-panel-host id="host" style="width:500px; height:240px; border:1px dashed gray;">
+      <div style="width:240px">
+<section class="card panel" id="hosted" aria-labelledby="hosted-t" style="height:160px" data-title-collapse="false">
+  <header class="panel-header">
+    <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18v13H3z"/></svg></span>
+    <h3 class="panel-title" id="hosted-t">Hosted</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Hosted"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Hosted"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>Hosted body</p><button type="button" class="btn">Inside Hosted</button></div>
+</section>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import '/dist/components/core.js';
+    import '/dist/components/resizer/resizer.js';
+    import '/dist/components/border-layout/border-layout.js';
+    import '/dist/components/panel/panel.js';
+  </script>
+</body>
+</html>

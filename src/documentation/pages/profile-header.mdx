@@ -1,0 +1,95 @@
+---
+title: "Profile Header"
+description: "Presents a user's avatar, identity, biography, and relevant actions - a cover, an overlapping avatar, name and handle, bio, details, counts and follow / message."
+slug: "profile-header"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="profile-header" title="Profile Header" component="profile-header">
+  Presents a user's avatar, identity, biography, and relevant actions - a cover, an overlapping avatar, name and handle, bio, details, counts and follow / message. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="profile-header">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;header&gt;</code>: a cover picture, an Avatar overlapping it, the name (<code>&lt;h1&gt;</code>) with a verified mark and handle, a bio, details (location, website, joined - <code>&lt;time&gt;</code>), counts as a <code>&lt;dl&gt;</code> and actions.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-profile-header</code>
+    <code>.mk-profile-header-cover</code>
+    <code>.mk-profile-header-body</code>
+    <code>.mk-profile-header-top</code>
+    <code>.mk-profile-header-actions</code>
+    <code>.mk-profile-header-name</code>
+    <code>.mk-profile-header-handle</code>
+    <code>.mk-profile-header-bio</code>
+    <code>.mk-profile-header-meta</code>
+    <code>.mk-profile-header-stats</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A cover picture, the Avatar overlapping it (bordered in the card color), name with a verified Badge, handle, bio, details with <time>, the counts as a <dl> and the actions." previewStyle="align-items:stretch;"
+<header class="mk-profile-header">
+  <img class="mk-profile-header-cover" src="https://picsum.photos/seed/profile-cover/1400/400" alt="">
+  <div class="mk-profile-header-body">
+    <div class="mk-profile-header-top">
+      <span class="avatar" data-size="xl"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-profile-header-actions">
+        <a class="btn" href="#">Follow</a>
+        <a class="btn" data-variant="outline" href="#">Message</a>
+        <button class="btn" data-variant="outline" data-size="icon" type="button" aria-label="More actions"><i data-lucide="ellipsis"></i></button>
+      </div>
+    </div>
+    <div>
+      <h1 class="mk-profile-header-name">Hannah Lee <span class="badge" data-variant="secondary" data-size="sm">Design Lead</span></h1>
+      <p class="mk-profile-header-handle">@hannahdesigns</p>
+    </div>
+    <p class="mk-profile-header-bio">Making software quieter at Northwind. Writing about calm design, type and the space between things.</p>
+    <ul class="mk-profile-header-meta">
+      <li><i data-lucide="map-pin"></i>Lisbon, Portugal</li>
+      <li><i data-lucide="link"></i><a href="#">hannahlee.design</a></li>
+      <li><i data-lucide="calendar"></i>Joined <time datetime="2021-03">March 2021</time></li>
+    </ul>
+    <dl class="mk-profile-header-stats"><div><dt>followers</dt><dd>1.2k</dd></div><div><dt>following</dt><dd>318</dd></div><div><dt>posts</dt><dd>94</dd></div></dl>
+  </div>
+</header>
+```
+
+```html example label="Compact" hint="data-variant='compact': no cover - the avatar beside name and handle, the action at the end. For member lists." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.75rem;max-width:34rem;width:100%">
+  <header class="mk-profile-header" data-variant="compact">
+    <div class="mk-profile-header-body">
+      <span class="avatar" data-size="lg"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <h2 class="mk-profile-header-name">Sophie Tan</h2>
+      <p class="mk-profile-header-handle">@sophie_builds · Lisbon</p>
+      <div class="mk-profile-header-actions"><a class="btn" data-variant="outline" data-size="sm" href="#">Follow</a></div>
+    </div>
+  </header>
+</div>
+```
+
+<SourceFiles component="profile-header" section="css" />
+
+</DocPage>

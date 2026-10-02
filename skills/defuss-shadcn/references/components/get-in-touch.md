@@ -49,6 +49,16 @@ forced-colors).
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="split"` + `.mk-contact-split` | A contact form (Inputs, Select, Textarea) beside the ways to reach you (`.mk-contact-info`) |
+| `.mk-contact-channels` + `.mk-contact-channel` | One card per way in - sales, support, press |
+| `data-variant="band"` | A dark "talk to a human" band - avatars, an online Indicator, two actions |
+
+---
+
 ## ARIA
 
 | Attribute | Element          | Purpose                                    |

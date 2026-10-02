@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>tag-list e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/tag-list/tag-list.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<ul class="mk-tag-list" aria-label="Tags"><li><a href="#">Engineering</a></li><li><a href="#">Offline</a></li><li><a href="#">CRDT</a></li><li><a href="#">Performance</a></li></ul>
+    </section>
+    <!-- Plain -->
+    <section class="fx">
+<ul class="mk-tag-list" data-variant="plain" aria-label="Tags"><li><a href="#">calmsoftware</a></li><li><a href="#">localfirst</a></li><li><a href="#">design</a></li></ul>
+    </section>
+    <!-- Colored -->
+    <section class="fx">
+<ul class="mk-tag-list" data-variant="colored" aria-label="Labels"><li><a href="#" style="--mk-tag-color:#16a34a">Shipped</a></li><li><a href="#" style="--mk-tag-color:#2563eb">Engineering</a></li><li><a href="#" style="--mk-tag-color:#d97706">Needs review</a></li><li><a href="#" style="--mk-tag-color:#db2777">Design</a></li></ul>
+    </section>
+  </body>
+</html>

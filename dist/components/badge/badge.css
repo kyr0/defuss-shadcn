@@ -10,6 +10,10 @@
     font-weight: 500;
     letter-spacing: 0.01em;
     line-height: 1.5rem;
+    /* a pill never breaks its label or gets squeezed in a flex row (as in
+       shadcn/ui) - a wrapped badge doubles its line-height into a lozenge */
+    white-space: nowrap;
+    flex-shrink: 0;
 
     /* -- Sizes: font, vertical padding and the line-height (which gives the
        pill its height) scale together. Default (no attribute) == md. */

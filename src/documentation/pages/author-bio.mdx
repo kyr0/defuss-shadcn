@@ -1,0 +1,163 @@
+---
+title: "Author Bio"
+description: "Introduces one author with a portrait, biography, and links - between rules under an article, on a card, or as a centered profile."
+slug: "author-bio"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="author-bio" title="Author Bio" component="author-bio">
+  Introduces one author with a portrait, biography, and links - between rules under an article, on a card, or as a centered profile. Part of the <DocLink href="website-article.html">Article</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="author-bio">
+  <SkillField label="Native basis">
+<SkillText>A labelled <code>&lt;section&gt;</code>: the portrait (Avatar), a label, the name as a heading linking to the author page, a role, the biography and a list of links (icon Buttons).</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="statistic.html">Statistic</DocLink>, <DocLink href="toggle.html">Toggle</DocLink>, <DocLink href="popover.html">Popover</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section" title="a named region"><code>&lt;section aria-labelledby&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="the biography"><code>text-wrap: pretty</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-author-bio</code>
+    <code>.mk-author-bio-body</code>
+    <code>.mk-author-bio-label</code>
+    <code>.mk-author-bio-name</code>
+    <code>.mk-author-bio-role</code>
+    <code>.mk-author-bio-text</code>
+    <code>.mk-author-bio-links</code>
+    <code>.mk-author-bio-topics</code>
+    <code>.mk-author-bio-stats</code>
+    <code>.mk-author-bio-actions</code>
+    <code>.mk-author-bio-cover</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>card</code>, <code>centered</code>); <code>data-variant</code> (<code>cover</code>, <code>inline</code>); <code>.mk-author-bio-cover</code>, <code>.mk-author-bio-stats</code>, <code>.mk-author-bio-actions</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A row between rules - portrait (Avatar), label, the name linking to the author page, role, biography and icon links." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:42rem">
+<section class="mk-author-bio" aria-labelledby="bio-1">
+  <span class="avatar" data-size="lg"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+  <div class="mk-author-bio-body">
+    <span class="mk-author-bio-label">Written by</span>
+    <h2 class="mk-author-bio-name" id="bio-1"><a href="#">Sophie Tan</a></h2>
+    <p class="mk-author-bio-role">Staff engineer, Sync team</p>
+    <p class="mk-author-bio-text">Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of. She writes about distributed systems, testing, and calm engineering.</p>
+    <ul class="mk-author-bio-links">
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Website"><i data-lucide="globe"></i></a></li>
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Email Sophie"><i data-lucide="mail"></i></a></li>
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" aria-label="RSS feed of Sophie's posts"><i data-lucide="rss"></i></a></li>
+    </ul>
+  </div>
+</section>
+</div>
+```
+
+```html example label="Card" hint="data-variant='card': a raised profile card - a primary wash from the corner, a shadow and a ringed portrait - with the topics the author writes about (Badges) and a Follow Toggle. For sidebars and author pages; the default stays the quiet byline under an article." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:30rem">
+<section class="mk-author-bio" data-variant="card" aria-labelledby="bio-2">
+  <span class="avatar" data-size="lg"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+  <div class="mk-author-bio-body">
+    <span class="mk-author-bio-label">Written by</span>
+    <h2 class="mk-author-bio-name" id="bio-2"><a href="#">Sophie Tan</a></h2>
+    <p class="mk-author-bio-role">Staff engineer, Sync team</p>
+    <p class="mk-author-bio-text">Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of. She writes about distributed systems, testing, and calm engineering.</p>
+    <ul class="mk-author-bio-links">
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Website"><i data-lucide="globe"></i></a></li>
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Email Sophie"><i data-lucide="mail"></i></a></li>
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" aria-label="RSS feed of Sophie's posts"><i data-lucide="rss"></i></a></li>
+    </ul>
+    <div class="mk-author-bio-topics"><span class="badge" data-variant="secondary">Distributed systems</span><span class="badge" data-variant="secondary">Testing</span><span class="badge" data-variant="secondary">Sync</span></div>
+    <div class="mk-author-bio-actions"><button class="toggle" data-variant="outline" data-size="sm" aria-pressed="false"><i data-lucide="user-plus"></i> Follow</button><a class="btn" data-variant="ghost" data-size="sm" href="#">All 42 articles <i data-lucide="arrow-right"></i></a></div>
+  </div>
+</section>
+</div>
+```
+
+```html example label="Centered" hint="data-variant='centered': a profile stack - the top of an author page." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:28rem">
+<section class="mk-author-bio" data-variant="centered" aria-labelledby="bio-3">
+  <span class="avatar" data-size="xl"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+  <div class="mk-author-bio-body">
+    <span class="mk-author-bio-label">Written by</span>
+    <h2 class="mk-author-bio-name" id="bio-3"><a href="#">Sophie Tan</a></h2>
+    <p class="mk-author-bio-role">Staff engineer, Sync team</p>
+    <p class="mk-author-bio-text">Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of. She writes about distributed systems, testing, and calm engineering.</p>
+    <ul class="mk-author-bio-links">
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Website"><i data-lucide="globe"></i></a></li>
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Email Sophie"><i data-lucide="mail"></i></a></li>
+      <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" aria-label="RSS feed of Sophie's posts"><i data-lucide="rss"></i></a></li>
+    </ul>
+  </div>
+</section>
+</div>
+```
+
+```html example label="Cover with stats" hint="data-variant='cover': a banner on top and the portrait overlapping it; Statistics for the numbers and a Follow Toggle (aria-pressed) - click it." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:26rem">
+<section class="mk-author-bio" data-variant="cover" aria-labelledby="bio-cover">
+  <img class="mk-author-bio-cover" src="images/mk-wide3.png" alt="">
+  <span class="avatar" data-size="xl"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+  <div class="mk-author-bio-body">
+    <h2 class="mk-author-bio-name" id="bio-cover"><a href="#">Sophie Tan</a></h2>
+    <p class="mk-author-bio-role">Staff engineer, Sync team</p>
+    <p class="mk-author-bio-text">Distributed systems, testing and calm engineering. Previously storage engines at two databases you know.</p>
+    <div class="mk-author-bio-stats">
+      <div class="statistic"><p class="statistic-title">Articles</p><p class="statistic-value">42</p></div>
+      <div class="statistic"><p class="statistic-title">Readers</p><p class="statistic-value">18.4k</p></div>
+      <div class="statistic"><p class="statistic-title">Since</p><p class="statistic-value">2019</p></div>
+    </div>
+    <div class="mk-author-bio-actions"><button class="toggle" data-variant="outline" data-size="sm" aria-pressed="false"><i data-lucide="user-plus"></i> Follow</button><a class="btn" data-variant="ghost" data-size="sm" href="#"><i data-lucide="rss"></i> Feed</a></div>
+  </div>
+</section>
+</div>
+```
+
+```html example label="Inline byline with a hover card" hint="data-variant='inline': a one-row byline. The name opens a Popover with the full bio (a card variant inside) - a hover card for author names." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:40rem">
+<section class="mk-author-bio" data-variant="inline" aria-labelledby="bio-inline">
+  <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+  <div class="mk-author-bio-body">
+    <span class="mk-author-bio-label">By</span>
+    <h2 class="mk-author-bio-name" id="bio-inline"><button class="btn" data-variant="link" data-size="sm" type="button" popovertarget="bio-card" style="padding:0;height:auto">Hannah Lee</button></h2>
+    <p class="mk-author-bio-role">Design lead</p>
+  </div>
+  <div class="mk-author-bio-actions"><button class="toggle" data-variant="outline" data-size="sm" aria-pressed="false"><i data-lucide="user-plus"></i> Follow</button></div>
+</section>
+<div class="popover" id="bio-card" popover style="width:22rem;padding:0">
+<section class="mk-author-bio" data-variant="card" aria-labelledby="bio-pop">
+    <span class="avatar" data-size="lg"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+    <div class="mk-author-bio-body">
+      <span class="mk-author-bio-label">Written by</span>
+      <h2 class="mk-author-bio-name" id="bio-pop"><a href="#">Hannah Lee</a></h2>
+      <p class="mk-author-bio-role">Design lead</p>
+      <p class="mk-author-bio-text">Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of. She writes about distributed systems, testing, and calm engineering.</p>
+      <ul class="mk-author-bio-links">
+        <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Website"><i data-lucide="globe"></i></a></li>
+        <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Email Sophie"><i data-lucide="mail"></i></a></li>
+        <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" aria-label="RSS feed of Sophie's posts"><i data-lucide="rss"></i></a></li>
+      </ul>
+    </div>
+  </section>
+</div>
+</div>
+```
+
+<SourceFiles component="author-bio" section="css" />
+
+</DocPage>

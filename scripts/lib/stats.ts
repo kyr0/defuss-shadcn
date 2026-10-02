@@ -67,7 +67,17 @@ export const EMPTY_BUNDLE: BundleStats = {
 /** The whole dist/stats.json document. */
 export type StatsDoc = {
   total: number;
+  /** component folders per taxonomy type (sums to total) */
   byType: Record<ComponentType, number>;
+  /** pages that are whole templates (decks, website templates) - TPL in the
+   *  nav without a component folder of their own */
+  templatePages: number;
+  /** every template: TPL components + template pages */
+  templates: number;
+  /** TOK - the design tokens (custom properties of the token file) */
+  tokens: number;
+  /** EXL - the live examples on the documentation pages */
+  examples: number;
   withJs: number;
   withoutJs: number;
   totalSize: number;
@@ -95,10 +105,16 @@ export function aggregateStats(
   components: readonly ComponentMeasure[],
   bundle: BundleStats = EMPTY_BUNDLE,
   core: BundleStats = EMPTY_BUNDLE,
+  templatePages = 0,
+  extra: { tokens?: number; examples?: number } = {},
 ): StatsDoc {
   const doc: StatsDoc = {
     total: components.length,
     byType: Object.fromEntries(COMPONENT_TYPES.map((t) => [t, 0])) as Record<ComponentType, number>,
+    templatePages,
+    templates: templatePages,
+    tokens: extra.tokens ?? 0,
+    examples: extra.examples ?? 0,
     withJs: 0,
     withoutJs: 0,
     totalSize: 0,
@@ -118,6 +134,7 @@ export function aggregateStats(
       totalSizeMinified: c.jsSizeMinified + c.cssSizeMinified,
     };
     doc.byType[c.type]++;
+    if (c.type === 'TPL') doc.templates++;
     if (c.withJs) doc.withJs++;
     else doc.withoutJs++;
     doc.totalSize += stats.totalSize;
@@ -139,8 +156,10 @@ export function buildStatsText(
   components: readonly ComponentMeasure[],
   bundle: BundleStats = EMPTY_BUNDLE,
   core: BundleStats = EMPTY_BUNDLE,
+  templatePages = 0,
+  extra: { tokens?: number; examples?: number } = {},
 ): string {
-  return `${JSON.stringify(aggregateStats(components, bundle, core), null, 2)}\n`;
+  return `${JSON.stringify(aggregateStats(components, bundle, core, templatePages, extra), null, 2)}\n`;
 }
 
 /**

@@ -1,0 +1,31 @@
+/* -- Active Filters (website · Search & Navigation) -----------------------
+   Displays applied filters with individual and combined removal actions - one chip per filter that removes it, and "clear all". */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-active-filters, .mk-active-filters *, .mk-active-filters ::before, .mk-active-filters ::after) { box-sizing: border-box; }
+
+  .mk-active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; width: 100%;
+    & ul { display: contents; }
+    & li { list-style: none; }
+  }
+  .mk-active-filters-chip { display: inline-flex; align-items: center; gap: 0.25rem; height: 1.75rem; padding-inline: 0.625rem 0.375rem; border-radius: 999px; background: var(--muted); color: var(--foreground); font-size: 0.8125rem; font-weight: 500; text-decoration: none;
+    & span { color: var(--muted-foreground); font-weight: 400; }
+    & svg { width: 0.875rem; height: 0.875rem; padding: 0.0625rem; border-radius: 50%; }
+    &:hover svg { background: var(--foreground); color: var(--background); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  .mk-active-filters-clear { margin-inline-start: 0.25rem; color: var(--primary); font-size: 0.8125rem; font-weight: 600; text-decoration: none;
+    &:hover { text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .mk-active-filters-label { color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 600; }
+  .mk-active-filters[data-variant="bar"] { padding: 0.625rem 0.875rem; border-radius: var(--radius-lg); background: var(--muted);
+    & .mk-active-filters-chip { background: var(--background); box-shadow: var(--shadow-xs); }
+    & output { margin-inline-start: auto; color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-active-filters-chip { border: 1px solid CanvasText; }
+  }
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>video-player e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/video-player/video-player.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<figure class="mk-video-player">
+  <div class="mk-video-player-frame">
+    <video id="vp-1" controls preload="metadata" playsinline poster="/dist/documentation/images/mk-wide3.png">
+      <source src="/dist/documentation/videos/demo.webm" type="video/webm">
+      <source src="/dist/documentation/videos/demo.mp4" type="video/mp4">
+      <track kind="captions" src="/dist/documentation/videos/demo.en.vtt" srclang="en" label="English" default>
+      Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+    </video>
+  </div>
+  <figcaption class="mk-video-player-caption">
+    <h3>Acme in 60 seconds</h3>
+    <div class="mk-video-player-meta"><span><i data-lucide="clock"></i>0:06</span><span><i data-lucide="calendar"></i><time datetime="2026-09-28">28 Sep 2026</time></span><span><i data-lucide="captions"></i>English captions</span></div>
+    <p>A feature from rough note to release notes - plan, write and ship on one board.</p>
+  </figcaption>
+  <ol class="mk-video-player-chapters" aria-label="Chapters">
+    <li><time datetime="PT0S">0:00</time>Plan the week</li>
+    <li><time datetime="PT2S">0:02</time>Write the docs</li>
+    <li><time datetime="PT4S">0:04</time>Ship and share</li>
+  </ol>
+</figure>
+    </section>
+    <!-- Theater -->
+    <section class="fx">
+<figure class="mk-video-player" data-variant="theater">
+  <div class="mk-video-player-frame">
+    <video id="vp-2" controls preload="metadata" playsinline poster="/dist/documentation/images/mk-wide3.png">
+      <source src="/dist/documentation/videos/demo.webm" type="video/webm">
+      <source src="/dist/documentation/videos/demo.mp4" type="video/mp4">
+      <track kind="captions" src="/dist/documentation/videos/demo.en.vtt" srclang="en" label="English" default>
+      Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+    </video>
+  </div>
+  <figcaption class="mk-video-player-caption">
+    <h3>Keynote: The quiet product</h3>
+    <div class="mk-video-player-meta"><span>Priya Natarajan · Acme Summit 2025</span><span><i data-lucide="captions"></i>Captions</span></div>
+  </figcaption>
+</figure>
+    </section>
+    <!-- With transcript -->
+    <section class="fx">
+<figure class="mk-video-player" data-variant="transcript">
+  <div class="mk-video-player-layout">
+    <div class="mk-video-player-frame">
+      <video id="vp-3" controls preload="metadata" playsinline poster="/dist/documentation/images/mk-wide3.png">
+      <source src="/dist/documentation/videos/demo.webm" type="video/webm">
+      <source src="/dist/documentation/videos/demo.mp4" type="video/mp4">
+      <track kind="captions" src="/dist/documentation/videos/demo.en.vtt" srclang="en" label="English" default>
+      Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+    </video>
+    </div>
+    <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
+      <h3 id="vp-tr">Transcript</h3>
+      <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
+      <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
+      <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
+    </section>
+  </div>
+  <figcaption class="mk-video-player-caption"><h3>Acme in 60 seconds</h3></figcaption>
+</figure>
+    </section>
+  </body>
+</html>

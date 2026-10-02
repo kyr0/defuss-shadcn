@@ -78,6 +78,13 @@ origin instead.
 | `data-variant` | Purpose                                        |
 |----------------|------------------------------------------------|
 | `sticky`       | Header sticks to the top on scroll (opt-in)    |
+| `data-variant="floating"` | A blurred pill that floats over the page and stays on top (sticky) |
+| `data-variant="overlay"` | Transparent over a hero picture, white text - place it in a positioned wrapper |
+| `data-variant="centered"` | The brand in the middle, the nav left, the actions right |
+| `data-elevate` | With `data-variant="sticky"`: gains a rule and a shadow once the page scrolls (scroll-driven) |
+| `.mk-header-announcement` | An announcement bar above the header row |
+| `.mk-header-search` | An inline search field (shown from 48rem) |
+| `.mk-header-icon` + `.mk-header-count` | An icon button with a count bubble (cart, inbox) |
 
 ---
 
@@ -95,3 +102,4 @@ origin instead.
 - `.mk-header-nav` is hidden below a 30rem **container** width - put the header in a wide container to see the links.
 - Plain destinations are `.nav-menu-link` anchors; only sections that open a dropdown get a trigger `<button>`.
 - Give each `nav-menu-content` id a page-unique prefix (ids are document-global; two headers on one page collide otherwise).
+- Narrow (below 40rem of header width): the nav hides and `.mk-header-menu` (a ghost icon Button with `data-sheet-trigger`) opens a Sheet (`<dialog class="sheet" data-side="right">`) holding the navigation - `.mk-header-sheet-label` group labels, `.mk-header-sheet-nav` lists of 44px tap targets (links carry `data-sheet-close`), `.mk-header-sheet-actions` for the buttons. Secondary actions marked `.mk-header-wide` (Login) hide on narrow widths.

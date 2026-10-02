@@ -53,6 +53,19 @@ not this block.
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="accordion"` (on `.mk-faq`) | The head centered above an Accordion (`.mk-faq-accordion`) - one answer open at a time |
+| `.mk-faq-split` | The head (sticky from 52rem) beside the questions |
+| `data-variant="cards"` (on `.mk-faq-grid`) | Each question and answer on a bordered card |
+| `data-variant="numbered"` (on `.mk-faq-grid`) | A mono counter (01, 02…) instead of the icon, a rule on top |
+| `.mk-faq-search` + `.mk-faq-topics` | A search field and topic links above the questions |
+| `.mk-faq-contact` | "Still have questions?" with the team (Avatar group) and an action |
+
+---
+
 ## ARIA
 
 | Attribute | Element        | Purpose                          |
@@ -66,3 +79,4 @@ not this block.
 - Visible-answer FAQs are indexed by search engines and read linearly - prefer this over accordions until the list is long.
 - The icon tile is decoration next to a text question: keep the SVG `aria-hidden`.
 - `mk-faq-item` caps at `max-width: 36rem` so prose lines stay readable in the 3-column layout.
+- Every answer links to its detail page with `.mk-faq-link` (descriptive text + an arrow that nudges on hover).

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>profile-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/profile-form/profile-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-profile-form" aria-labelledby="pf-title">
+  <h2 id="pf-title" class="sr-only">Profile settings</h2>
+  <form action="#" method="post">
+    <div class="mk-profile-form-section">
+      <div><h2>Photo</h2><p>Shown next to everything you write.</p></div>
+      <div class="mk-profile-form-photo">
+        <span class="avatar" data-size="xl"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt="Current photo"></span>
+        <label class="btn mk-profile-form-upload" data-variant="outline" data-size="sm"><i data-lucide="upload"></i> Upload new<input type="file" name="photo" accept="image/*"></label>
+        <button class="btn" data-variant="ghost" data-size="sm" type="button">Remove</button>
+      </div>
+    </div>
+    <div class="mk-profile-form-section">
+      <div><h2>Personal</h2><p>Your name as colleagues see it.</p></div>
+      <div class="mk-profile-form-fields">
+        <div class="mk-profile-form-field"><label class="label" for="pf-first">First name</label><input class="input" id="pf-first" name="given-name" autocomplete="given-name" value="Hannah"></div>
+        <div class="mk-profile-form-field"><label class="label" for="pf-last">Last name</label><input class="input" id="pf-last" name="family-name" autocomplete="family-name" value="Lee"></div>
+        <div class="mk-profile-form-field" data-span="full"><label class="label" for="pf-user">Username</label><div class="mk-profile-form-prefix"><span id="pf-user-prefix">acme.com/</span><input class="input" id="pf-user" name="username" autocomplete="username" value="hannahdesigns" pattern="[a-z0-9_]{3,20}" aria-describedby="pf-user-prefix pf-user-hint"></div><span class="mk-profile-form-hint" id="pf-user-hint">3–20 lowercase letters, numbers or _</span></div>
+        <div class="mk-profile-form-field" data-span="full"><label class="label" for="pf-bio">Bio</label><textarea class="textarea" id="pf-bio" name="bio" rows="3" maxlength="160" aria-describedby="pf-bio-hint">Making software quieter at Northwind.</textarea><span class="mk-profile-form-hint" id="pf-bio-hint">Up to 160 characters.</span></div>
+      </div>
+    </div>
+    <div class="mk-profile-form-section">
+      <div><h2>Details</h2><p>Optional.</p></div>
+      <div class="mk-profile-form-fields">
+        <div class="mk-profile-form-field"><label class="label" for="pf-url">Website</label><input class="input" id="pf-url" type="url" name="url" autocomplete="url" placeholder="https://"></div>
+        <div class="mk-profile-form-field"><label class="label" for="pf-tz">Time zone</label><select class="select" id="pf-tz" name="tz"><option>Europe/Lisbon (WEST)</option><option>Europe/Berlin (CEST)</option><option>America/Montreal (EDT)</option></select></div>
+      </div>
+    </div>
+    <div class="mk-profile-form-actions"><button class="btn" data-variant="ghost" type="reset">Cancel</button><button class="btn" type="submit">Save changes</button></div>
+  </form>
+</section>
+    </section>
+  </body>
+</html>

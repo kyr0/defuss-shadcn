@@ -1,0 +1,112 @@
+---
+title: "Comment Header"
+description: "Introduces a discussion with its comment count and sorting options - a native Select, or sort links in a segmented row."
+slug: "comment-header"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="comment-header" title="Comment Header" component="comment-header">
+  Introduces a discussion with its comment count and sorting options - a native Select, or sort links in a segmented row. Part of the <DocLink href="website-comments.html">Comments</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="comment-header">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;header&gt;</code>: the title with the comment count (a Badge), the sort - a native Select inside its <code>&lt;label&gt;</code>, or sort links with <code>aria-current</code> - and optional actions.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>, <DocLink href="select.html">Select</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="toggle-group.html">Toggle Group</DocLink>, <DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="alert.html">Alert</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select" title="the sort order"><code>&lt;select&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" title="wraps &quot;Sort by&quot; + the select"><code>&lt;label&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current sort link"><code>aria-current</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-comment-header</code>
+    <code>.mk-comment-header-title</code>
+    <code>.mk-comment-header-actions</code>
+    <code>.mk-comment-header-sort</code>
+    <code>.mk-comment-header-tabs</code>
+    <code>.mk-comment-header-people</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="plain"</code>; <code>.mk-comment-header-tabs</code> for sort links; <code>.mk-comment-header-people</code> (an Avatar group + a sentence).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Title with the count (a Badge), the sort - a native Select in its label - and a follow action, over a rule." previewStyle="align-items:stretch;"
+<header class="mk-comment-header">
+  <h2 class="mk-comment-header-title">Comments <span class="badge" data-variant="secondary">128</span></h2>
+  <div class="mk-comment-header-actions">
+    <label class="mk-comment-header-sort">Sort by
+      <select class="select" data-size="sm" name="sort">
+        <option>Top</option>
+        <option>Newest</option>
+        <option>Oldest</option>
+      </select>
+    </label>
+    <button type="button" class="btn" data-variant="outline" data-size="sm"><i data-lucide="bell"></i> Follow</button>
+  </div>
+</header>
+```
+
+```html example label="Sort links" hint="The sort as links (aria-current marks the order) in a segmented row - no script at all; data-variant='plain' drops the rule." previewStyle="align-items:stretch;"
+<header class="mk-comment-header" data-variant="plain">
+  <h2 class="mk-comment-header-title">Discussion <span class="badge" data-variant="secondary">42</span></h2>
+  <nav class="mk-comment-header-tabs" aria-label="Sort comments">
+    <a href="#" aria-current="page">Top</a>
+    <a href="#">Newest</a>
+    <a href="#">Oldest</a>
+  </nav>
+</header>
+```
+
+```html example label="Toggle sort and participants" hint="The sort as a Toggle Group (single), and who is talking - an Avatar group with a sentence on its own row (.mk-comment-header-people)." previewStyle="align-items:stretch;"
+<header class="mk-comment-header">
+  <h2 class="mk-comment-header-title">Discussion <span class="badge" data-variant="secondary">86</span></h2>
+  <div class="toggle-group" role="group" aria-label="Sort comments" data-type="single" data-size="sm">
+    <button class="toggle" aria-pressed="true" value="top"><i data-lucide="flame"></i> Top</button>
+    <button class="toggle" aria-pressed="false" value="new"><i data-lucide="clock"></i> New</button>
+    <button class="toggle" aria-pressed="false" value="old">Oldest</button>
+  </div>
+  <div class="mk-comment-header-people">
+    <div class="avatar-group">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <span class="avatar-group-count">+12</span>
+    </div>
+    <span><strong>Hannah</strong>, <strong>Sophie</strong> and 12 others are talking</span>
+  </div>
+</header>
+```
+
+```html example label="Closed" hint="A closed thread: the header stays, an Alert explains - the count still tells how much was said." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:1rem;width:100%">
+  <header class="mk-comment-header">
+    <h2 class="mk-comment-header-title">Comments <span class="badge" data-variant="secondary">214</span></h2>
+  </header>
+  <div class="alert" role="status">
+    <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <div class="alert-content">
+      <h5 class="alert-title">Comments are closed</h5>
+      <p class="alert-description">This discussion was archived 30 days after publication.</p>
+    </div>
+  </div>
+</div>
+```
+
+<SourceFiles component="comment-header" section="css" />
+
+</DocPage>

@@ -1,0 +1,66 @@
+---
+title: "Active Filters"
+description: "Displays applied filters with individual and combined removal actions - one chip per filter that removes it, and &quot;clear all&quot;."
+slug: "active-filters"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="active-filters" title="Active Filters" component="active-filters">
+  Displays applied filters with individual and combined removal actions - one chip per filter that removes it, and "clear all". Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="active-filters">
+  <SkillField label="Native basis">
+<SkillText>A list of links (<code>.mk-active-filters-chip</code>) whose <code>aria-label</code> says "Remove filter Color: Sand", plus a "Clear all" link; optionally a label and the count.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-active-filters</code>
+    <code>.mk-active-filters-chip</code>
+    <code>.mk-active-filters-clear</code>
+    <code>.mk-active-filters-label</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="bar"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="One chip per applied filter - each a link to the results without it, labelled &quot;Remove filter …&quot; - and Clear all." previewStyle="align-items:stretch;"
+<nav class="mk-active-filters" aria-label="Active filters">
+  <ul>
+    <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Category: Shirts"><span>Category:</span> Shirts <i data-lucide="x"></i></a></li>
+    <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Color: Sand"><span>Color:</span> Sand <i data-lucide="x"></i></a></li>
+    <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Price: €50 – €100"><span>Price:</span> €50 – €100 <i data-lucide="x"></i></a></li>
+  </ul>
+  <a class="mk-active-filters-clear" href="#">Clear all</a>
+</nav>
+```
+
+```html example label="Bar" hint="data-variant='bar': a muted bar with a label and the result count." previewStyle="align-items:stretch;"
+<nav class="mk-active-filters" data-variant="bar" aria-label="Active filters">
+  <span class="mk-active-filters-label">Filters:</span>
+  <ul>
+    <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Open now: Yes"><span>Open now:</span> Yes <i data-lucide="x"></i></a></li>
+    <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Distance: ≤ 2 km"><span>Distance:</span> ≤ 2 km <i data-lucide="x"></i></a></li>
+  </ul>
+  <a class="mk-active-filters-clear" href="#">Clear all</a>
+  <output>12 results</output>
+</nav>
+```
+
+<SourceFiles component="active-filters" section="css" />
+
+</DocPage>

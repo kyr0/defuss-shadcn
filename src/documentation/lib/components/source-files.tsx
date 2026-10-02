@@ -56,8 +56,14 @@ export function SourceFiles({
     if (source === null) return null;
     if (kind === 'js' && !componentHasJs(component)) return null;
     const title = kind === 'css' ? cssTitle ?? 'CSS' : jsTitle ?? 'JavaScript';
-    const lang = kind === 'css' ? cssLang ?? 'scss' : jsLang ?? 'javascript';
+    // the listing is the shipped Code Mockup window: one numbered line per
+    // source line, the file name in the bar, Shiki colouring the lines
+    // (shiki-highlight.ts: .mockup-code[data-lang]) - the copy button joins
+    // the lines' text, never the numbers
+    const lang = kind === 'css' ? cssLang ?? 'css' : jsLang ?? 'typescript';
     const ext = kind === 'css' ? 'css' : 'js';
+    const file = `${component}.${kind === 'css' ? 'css' : 'ts'}`;
+    const lines = source.replace(/\n+$/, '').split('\n');
     return (
       <section style="margin-top:3rem;" id={`source-${kind}`}>
         <h2 style={H2_STYLE}>
@@ -71,9 +77,13 @@ export function SourceFiles({
         ))}
         <div style="position:relative;margin-top:0.5rem;">
           <CopyButton />
-          <pre>
-            <code class={`language-${lang}`}>{source}</code>
-          </pre>
+          <div class="mockup-code" data-numbers="" data-title={file} data-lang={lang === 'scss' ? 'css' : lang}>
+            {lines.map((line) => (
+              <pre>
+                <code>{line}</code>
+              </pre>
+            ))}
+          </div>
         </div>
       </section>
     );

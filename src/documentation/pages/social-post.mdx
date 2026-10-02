@@ -1,0 +1,123 @@
+---
+title: "Social Post"
+description: "Displays one embedded or locally rendered social post - author, text with links, media, time and engagement, as a post, a photo post or a quote."
+slug: "social-post"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="social-post" title="Social Post" component="social-post">
+  Displays one embedded or locally rendered social post - author, text with links, media, time and engagement, as a post, a photo post or a quote. Part of the <DocLink href="website-media.html">Media</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="social-post">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: the author (Avatar, name, verified mark, handle), the network glyph, the text with links and hashtags, optional media, a permalink <code>&lt;time&gt;</code> and the counts with screen-reader labels.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote" title="a quoted post with its source"><code>&lt;blockquote&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-social-post</code>
+    <code>.mk-social-post-head</code>
+    <code>.mk-social-post-who</code>
+    <code>.mk-social-post-name</code>
+    <code>.mk-social-post-verified</code>
+    <code>.mk-social-post-handle</code>
+    <code>.mk-social-post-network</code>
+    <code>.mk-social-post-text</code>
+    <code>.mk-social-post-media</code>
+    <code>.mk-social-post-foot</code>
+    <code>.mk-social-post-time</code>
+    <code>.mk-social-post-stats</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>photo</code>, <code>quote</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Post" hint="Rendered from your own markup - no embed script: author with a verified mark, the network glyph, text with a link and hashtags, a picture, the permalink time and labelled counts." previewStyle="align-items:stretch;"
+<div style="max-width:34rem;width:100%">
+  <article class="mk-social-post">
+    <header class="mk-social-post-head">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-social-post-who"><a class="mk-social-post-name" href="#">Sophie Tan<svg class="mk-social-post-verified" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Verified account"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="mk-social-post-handle">@sophie_builds</span></div>
+      <span class="mk-social-post-network" role="img" aria-label="Posted on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></span>
+    </header>
+    <div class="mk-social-post-text"><p>Shipped offline sync to every Acme workspace today 🎉
+  Four years, two rewrites and one very patient team. Thank you all. <a href="#">#calmsoftware</a> <a href="#">#localfirst</a></p></div>
+    <img class="mk-social-post-media" src="https://picsum.photos/seed/post-launch/1000/625" alt="">
+    <footer class="mk-social-post-foot">
+      <a class="mk-social-post-time" href="#"><time datetime="2026-10-01T09:41">9:41 AM · Oct 1, 2026</time></a>
+      <ul class="mk-social-post-stats"><li><i data-lucide="message-circle"></i>48<span class="sr-only"> replies</span></li><li><i data-lucide="repeat-2"></i>212<span class="sr-only"> reposts</span></li><li><i data-lucide="heart"></i>1.4k<span class="sr-only"> likes</span></li></ul>
+    </footer>
+  </article>
+</div>
+```
+
+```html example label="Photo post" hint="data-variant='photo': a square picture first, then the author, caption and counts - like a photo network." previewStyle="align-items:stretch;"
+<div style="max-width:24rem;width:100%">
+  <article class="mk-social-post" data-variant="photo">
+    <img class="mk-social-post-media" src="https://picsum.photos/seed/post-office/800/800" alt="">
+    <header class="mk-social-post-head">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-social-post-who"><a class="mk-social-post-name" href="#">Acme<svg class="mk-social-post-verified" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Verified account"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="mk-social-post-handle">@acme</span></div>
+      <span class="mk-social-post-network" role="img" aria-label="Posted on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></span>
+    </header>
+    <div class="mk-social-post-text"><p>Friday at the Lisbon office. The plants are doing better than the build. 🌿</p></div>
+    <footer class="mk-social-post-foot">
+      <a class="mk-social-post-time" href="#"><time datetime="2026-09-29">2 days ago</time></a>
+      <ul class="mk-social-post-stats"><li><i data-lucide="heart"></i>864<span class="sr-only"> likes</span></li><li><i data-lucide="message-circle"></i>32<span class="sr-only"> comments</span></li></ul>
+    </footer>
+  </article>
+</div>
+```
+
+```html example label="Quote wall" hint="data-variant='quote': text first and larger, the author below - for a wall of praise next to testimonials." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+  <article class="mk-social-post" data-variant="quote">
+    <header class="mk-social-post-head">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-social-post-who"><a class="mk-social-post-name" href="#">Hannah Lee<svg class="mk-social-post-verified" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Verified account"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="mk-social-post-handle">@hannahdesigns</span></div>
+      <span class="mk-social-post-network" role="img" aria-label="Posted on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></span>
+    </header>
+    <div class="mk-social-post-text"><p>Acme is the first tool my designers asked to keep after the trial. That never happens.</p></div>
+    <footer class="mk-social-post-foot">
+      <a class="mk-social-post-time" href="#"><time datetime="2026-09-12">Sep 12, 2026</time></a>
+      <ul class="mk-social-post-stats"><li><i data-lucide="heart"></i>320<span class="sr-only"> likes</span></li></ul>
+    </footer>
+  </article>
+  <article class="mk-social-post" data-variant="quote">
+    <header class="mk-social-post-head">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-social-post-who"><a class="mk-social-post-name" href="#">Marco Rossi<svg class="mk-social-post-verified" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Verified account"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="mk-social-post-handle">@marco</span></div>
+      <span class="mk-social-post-network" role="img" aria-label="Posted on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></span>
+    </header>
+    <div class="mk-social-post-text"><p>Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</p></div>
+    <footer class="mk-social-post-foot">
+      <a class="mk-social-post-time" href="#"><time datetime="2026-08-30">Aug 30, 2026</time></a>
+      <ul class="mk-social-post-stats"><li><i data-lucide="heart"></i>188<span class="sr-only"> likes</span></li></ul>
+    </footer>
+  </article>
+</div>
+```
+
+<SourceFiles component="social-post" section="css" />
+
+</DocPage>

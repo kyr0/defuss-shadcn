@@ -55,4 +55,33 @@ await cssSmoke('testimonials', [
       if (r.fill !== r.color) throw new Error('fill ' + r.fill + ' != currentColor ' + r.color);
     },
   },
+  {
+    label: 'quote cards: stars, the review, an Avatar with name and role',
+    run: async (page) => {
+      const r = await page.evaluate(() => { const c = document.querySelector('.mk-testimonial-card[data-variant="quote"]')!; return { text: !!c.querySelector('.mk-testimonial-card-text')?.textContent, avatar: !!c.querySelector('.mk-testimonial-card-author .avatar'), aspect: getComputedStyle(c).aspectRatio, quote: getComputedStyle(c.querySelector('.mk-testimonial-card-text')!, '::before').content }; });
+      if (!r.text || !r.avatar || r.aspect !== 'auto' || r.quote !== '"“"') throw new Error(JSON.stringify(r));
+    },
+  },
+  {
+    label: 'photo cards carry the review line too',
+    run: async (page) => {
+      const n = await page.evaluate(() => document.querySelectorAll('.mk-testimonial-card-body .mk-testimonial-card-text').length);
+      if (n < 4) throw new Error(String(n));
+    },
+  },
+  { label: 'wall: CSS columns, cards never split', run: async (page) => {
+    const r = await page.evaluate(() => { const w = document.querySelector('.mk-testimonial-cards[data-variant="wall"]')!; return { cols: getComputedStyle(w).columnWidth, brk: getComputedStyle(w.querySelector('.mk-testimonial-card')!).breakInside, metric: !!w.querySelector('.mk-testimonial-card-metric strong') }; });
+    if (r.cols !== '256px' || r.brk !== 'avoid' || !r.metric) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'marquee: the tracks run (the second reversed), the copy is inert; reduced motion stops them', run: async (page) => {
+    const r = await page.evaluate(() => { const [a, b] = document.querySelectorAll('.mk-testimonial-marquee-track'); return { a: getComputedStyle(a).animationName, dir: getComputedStyle(b).animationDirection, inert: !!(a.querySelector('[inert][aria-hidden="true"]') as HTMLElement | null)?.inert }; });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const still = await page.evaluate(() => getComputedStyle(document.querySelector('.mk-testimonial-marquee-track')!).animationName);
+    await page.emulateMedia({ reducedMotion: null });
+    if (r.a !== 'mk-testimonial-marquee' || r.dir !== 'reverse' || !r.inert || still !== 'none') throw new Error(JSON.stringify({ ...r, still }));
+  } },
+  { label: 'spotlight: centered serif quote, author row with the company', run: async (page) => {
+    const r = await page.evaluate(() => { const s = document.querySelector('.mk-testimonial-spotlight')!; return { align: getComputedStyle(s).textAlign, serif: getComputedStyle(s.querySelector('.mk-testimonial-spotlight-quote')!).fontFamily !== getComputedStyle(s).fontFamily, logo: !!s.querySelector('.mk-testimonial-spotlight-logo') }; });
+    if (r.align !== 'center' || !r.serif || !r.logo) throw new Error(JSON.stringify(r));
+  } },
 ]);

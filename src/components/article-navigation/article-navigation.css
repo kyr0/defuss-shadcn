@@ -1,0 +1,126 @@
+/* -- Article Navigation (website) -----------------------------------
+   Links to the previous and next article (rel="prev" / rel="next"): a
+   direction label and the title, the next link aligned to the end. A lone
+   next link keeps its side. Default: two cards; minimal: text between rules. */
+
+@layer components {
+  .mk-article-nav {
+    container: mk-article-nav / inline-size;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .mk-article-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    min-width: 0;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--foreground);
+    text-decoration: none;
+    transition: border-color 120ms, background-color 120ms;
+
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 35%, var(--border)); background: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    &[rel~="next"] { align-items: flex-end; text-align: end; }
+    /* only a next link: it stays on the end side */
+    &[rel~="next"]:only-child { grid-column: 2; }
+  }
+
+  .mk-article-nav-dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 500;
+
+    & svg { width: 1rem; height: 1rem; transition: translate 150ms ease; }
+  }
+  .mk-article-nav-link[rel~="prev"]:hover .mk-article-nav-dir svg { translate: -0.2rem 0; }
+  .mk-article-nav-link[rel~="next"]:hover .mk-article-nav-dir svg { translate: 0.2rem 0; }
+
+  .mk-article-nav-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  /* narrow: the links stack */
+  @container mk-article-nav (max-width: 32rem) {
+    .mk-article-nav > .mk-article-nav-link[rel] { grid-column: 1 / -1; }
+  }
+
+  /* media: a thumbnail on each card (start for prev, end for next) */
+  .mk-article-nav[data-variant="media"] .mk-article-nav-link {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: 0.25rem 1rem;
+    padding: 0.75rem;
+
+    & img { grid-row: 1 / span 2; width: 4.5rem; aspect-ratio: 1; border-radius: var(--radius-md); object-fit: cover; background: var(--muted); }
+    &[rel~="next"] { grid-template-columns: minmax(0, 1fr) 4.5rem; justify-items: end; }
+    &[rel~="next"] img { grid-column: 2; grid-row: 1 / span 2; }
+    &[rel~="next"] :is(.mk-article-nav-dir, .mk-article-nav-title) { grid-column: 1; }
+  }
+
+  /* compact: two small pill links with the titles truncated */
+  .mk-article-nav[data-variant="compact"] {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    & .mk-article-nav-link {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      max-width: 48%;
+      padding: 0.375rem 0.875rem;
+      border-radius: 999px;
+    }
+    & .mk-article-nav-link[rel~="next"]:only-child { margin-inline-start: auto; }
+    & .mk-article-nav-title { overflow: hidden; font-size: 0.875rem; white-space: nowrap; text-overflow: ellipsis; }
+    & .mk-article-nav-dir { flex: none; }
+    & .mk-article-nav-dir span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  }
+
+  /* minimal: no cards, a rule above */
+  .mk-article-nav[data-variant="minimal"] {
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--border);
+
+    & .mk-article-nav-link {
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-sm);
+
+      &:hover { background: transparent; }
+      &:hover .mk-article-nav-title { text-decoration: underline; text-underline-offset: 0.2em; }
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-article-nav-link,
+    .mk-article-nav-dir svg { transition: none; }
+    .mk-article-nav-link:hover .mk-article-nav-dir svg { translate: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-article-nav-link { border-color: var(--foreground); }
+    .mk-article-nav-dir { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-article-nav-link { color: LinkText; border-color: LinkText; }
+  }
+}

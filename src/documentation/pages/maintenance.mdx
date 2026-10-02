@@ -1,0 +1,68 @@
+---
+title: "Maintenance"
+description: "Explains temporary unavailability and provides status information - what is happening, when it ends, and where to follow; or a banner announcing it."
+slug: "maintenance"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="maintenance" title="Maintenance" component="maintenance">
+  Explains temporary unavailability and provides status information - what is happening, when it ends, and where to follow; or a banner announcing it. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="maintenance">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section role="status"&gt;</code>: an icon, the title, an explanation, the expected end as <code>&lt;time&gt;</code>, an indeterminate <code>&lt;progress&gt;</code>, a status-page link and contact. The banner variant is one line for the app header.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="progress.html">Progress</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native completion bar"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="motion stands still on request"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-maintenance</code>
+    <code>.mk-maintenance-icon</code>
+    <code>.mk-maintenance-title</code>
+    <code>.mk-maintenance-text</code>
+    <code>.mk-maintenance-eta</code>
+    <code>.mk-maintenance-links</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="banner"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="role=&quot;status&quot;: a wrench that turns now and then (still under reduced motion), what is happening, the expected end as <time> with the time zone, an indeterminate <progress> and where to follow." previewStyle="align-items:stretch;"
+<section class="mk-maintenance" role="status" aria-labelledby="mt-title">
+  <span class="mk-maintenance-icon" aria-hidden="true"><i data-lucide="wrench"></i></span>
+  <h1 class="mk-maintenance-title" id="mt-title">We're upgrading Acme</h1>
+  <p class="mk-maintenance-text">Our database moves to faster servers. Your data is safe and nothing is lost - you just can't sign in for a little while.</p>
+  <div class="mk-maintenance-eta"><span>Back by <strong><time datetime="2026-10-05T03:00Z">03:00 UTC</time></strong> (in about 40 minutes)</span><progress class="progress" max="100" aria-label="Work in progress"></progress></div>
+  <div class="mk-maintenance-links"><a class="btn" data-variant="outline" href="#"><i data-lucide="activity"></i> Status page</a><a class="btn" data-variant="ghost" href="#">Contact support</a></div>
+</section>
+```
+
+```html example label="Banner" hint="data-variant='banner': one amber line in the app announcing the planned window." previewStyle="align-items:stretch;"
+<section class="mk-maintenance" data-variant="banner" role="status" aria-label="Scheduled maintenance">
+  <span class="mk-maintenance-icon" aria-hidden="true"><i data-lucide="calendar-clock"></i></span>
+  <p class="mk-maintenance-text">Scheduled maintenance <time datetime="2026-10-05T02:00Z">Sunday 5 October, 02:00–03:00 UTC</time> - sync pauses for up to 10 minutes.</p>
+  <a href="#">Details</a>
+</section>
+```
+
+<SourceFiles component="maintenance" section="css" />
+
+</DocPage>

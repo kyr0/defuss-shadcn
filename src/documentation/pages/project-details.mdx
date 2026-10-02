@@ -1,0 +1,81 @@
+---
+title: "Project Details"
+description: "Presents one project's brief, scope, deliverables, and media - a cover, the facts, the story and a gallery, ending with the next project."
+slug: "project-details"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="project-details" title="Project Details" component="project-details">
+  Presents one project's brief, scope, deliverables, and media - a cover, the facts, the story and a gallery, ending with the next project. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="project-details">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: title and summary over a cover picture, a facts <code>&lt;dl&gt;</code> (client, year, role, services), the brief, deliverables as a list, a gallery of <code>&lt;figure&gt;</code>s and a link to the next project.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="media with its caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-project-details</code>
+    <code>.mk-project-details-head</code>
+    <code>.mk-project-details-title</code>
+    <code>.mk-project-details-summary</code>
+    <code>.mk-project-details-cover</code>
+    <code>.mk-project-details-facts</code>
+    <code>.mk-project-details-brief</code>
+    <code>.mk-project-details-deliverables</code>
+    <code>.mk-project-details-gallery</code>
+    <code>.mk-project-details-next</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-span="wide"</code> / <code>"tall"</code> on gallery figures.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Title and summary over a cover, the facts (<dl>), the brief beside the deliverables (from 48rem), a dense gallery with wide and tall pictures (data-span) and the next project." previewStyle="align-items:stretch;"
+<article class="mk-project-details" aria-labelledby="pd-title">
+  <header class="mk-project-details-head">
+    <h1 class="mk-project-details-title" id="pd-title">Nordlicht Coffee</h1>
+    <p class="mk-project-details-summary">A brand for a Hamburg roastery that wanted to feel like the first light of a northern morning - calm, warm and a little bit wild.</p>
+  </header>
+  <figure class="mk-project-details-cover"><img src="https://picsum.photos/seed/pd-cover/1600/800" alt="Nordlicht Coffee bags on a wooden shelf"></figure>
+  <dl class="mk-project-details-facts">
+    <div><dt>Client</dt><dd>Nordlicht GmbH</dd></div>
+    <div><dt>Year</dt><dd>2026</dd></div>
+    <div><dt>Role</dt><dd>Lead studio</dd></div>
+    <div><dt>Services</dt><dd>Identity, packaging, web</dd></div>
+  </dl>
+  <div class="mk-project-details-brief">
+    <section aria-labelledby="pd-brief"><h2 id="pd-brief">The brief</h2><p>Nordlicht had outgrown its farmers-market look. They needed packaging that stood out on a supermarket shelf without shouting, and a website that sells subscriptions.</p></section>
+    <section aria-labelledby="pd-deliv"><h2 id="pd-deliv">Deliverables</h2>
+      <ul class="mk-project-details-deliverables"><li>Logo &amp; wordmark <span>Identity</span></li><li>12 bag designs <span>Packaging</span></li><li>Subscription shop <span>Web</span></li><li>Launch film <span>Motion</span></li></ul>
+    </section>
+  </div>
+  <div class="mk-project-details-gallery">
+    <figure data-span="wide"><img src="https://picsum.photos/seed/pd-g1/1200/600" alt=""><figcaption>The shelf test</figcaption></figure>
+    <figure data-span="tall"><img src="https://picsum.photos/seed/pd-g2/600/1200" alt=""><figcaption>Bag, front</figcaption></figure>
+    <figure><img src="https://picsum.photos/seed/pd-g3/600/600" alt=""></figure>
+    <figure><img src="https://picsum.photos/seed/pd-g4/600/600" alt=""></figure>
+  </div>
+  <a class="mk-project-details-next" href="#" rel="next"><span><small>Next project</small><strong>Atlas Transit app</strong></span><i data-lucide="arrow-right"></i></a>
+</article>
+```
+
+<SourceFiles component="project-details" section="css" />
+
+</DocPage>

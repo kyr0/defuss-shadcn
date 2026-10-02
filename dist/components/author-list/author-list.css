@@ -1,0 +1,147 @@
+/* -- Author List (website) ------------------------------------------
+   Lists the contributors of a publication or article: avatar, name (a
+   link), role and an optional count. Default: rows; grid: cards; stack:
+   overlapping avatars with a one-line summary - the names stay in the
+   accessibility tree, visually hidden. */
+
+@layer components {
+  .mk-author-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .mk-author-list-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .mk-author-list-items {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mk-author-list-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 0.625rem;
+    border-block-end: 1px solid var(--border);
+
+    &:last-child { border-block-end: 0; }
+    & > .avatar { flex: none; }
+  }
+
+  .mk-author-list-who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .mk-author-list-name {
+    color: var(--foreground);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
+
+  .mk-author-list-role { color: var(--muted-foreground); font-size: 0.8125rem; }
+
+  .mk-author-list-count {
+    margin-inline-start: auto;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .mk-author-list-summary { margin: 0; color: var(--muted-foreground); font-size: 0.875rem; }
+
+  /* grid: contributor cards */
+  .mk-author-list[data-variant="grid"] .mk-author-list-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 0.75rem;
+  }
+  .mk-author-list[data-variant="grid"] .mk-author-list-item {
+    padding: 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+  }
+
+  /* stack: overlapping avatars + a summary line */
+  .mk-author-list[data-variant="stack"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+
+    & .mk-author-list-title { flex-basis: 100%; }
+    & .mk-author-list-items { flex-direction: row; padding-inline-start: 0.5rem; }
+    & .mk-author-list-item { padding: 0; border: 0; margin-inline-start: -0.5rem; }
+    & .mk-author-list-item > .avatar { box-shadow: 0 0 0 2px var(--background); }
+    /* the names stay readable to assistive tech */
+    & :is(.mk-author-list-who, .mk-author-list-count) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    & .mk-author-list-item:has(.mk-author-list-name:focus-visible) > .avatar { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* ranked: a leaderboard - the rank from data-rank, a Progress bar for the share */
+  .mk-author-list[data-variant="ranked"] {
+    & .mk-author-list-item {
+      display: grid;
+      grid-template-columns: 1.75rem auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.25rem 0.75rem;
+
+      &::before {
+        content: attr(data-rank);
+        color: var(--muted-foreground);
+        font-size: 0.875rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+      }
+      &[data-rank="1"]::before { content: "🥇"; font-size: 1.125rem; }
+      &[data-rank="2"]::before { content: "🥈"; font-size: 1.125rem; }
+      &[data-rank="3"]::before { content: "🥉"; font-size: 1.125rem; }
+    }
+    & .progress { grid-column: 3 / -1; height: 0.375rem; }
+  }
+
+  /* the item's own action (follow) - at the row end */
+  .mk-author-list-action { margin-inline-start: auto; }
+  .mk-author-list-item:has(.mk-author-list-action) .mk-author-list-count { margin-inline-start: 0; }
+  .mk-author-list[data-variant="grid"] .mk-author-list-item:has(.mk-author-list-action) { flex-wrap: wrap; }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-author-list-role,
+    .mk-author-list-count,
+    .mk-author-list-summary { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-author-list[data-variant="grid"] .mk-author-list-item { border-color: CanvasText; }
+  }
+}

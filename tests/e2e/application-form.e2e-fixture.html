@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>application-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/application-form/application-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-application-form" aria-labelledby="apply-title">
+  <h2 id="apply-title" class="sr-only">Apply for Senior Sync Engineer</h2>
+  <form action="#" method="post">
+    <fieldset class="mk-application-form-section">
+      <legend class="mk-application-form-legend"><strong>Personal details</strong><span>How we reach you.</span></legend>
+      <div class="mk-application-form-fields">
+        <div class="mk-application-form-field"><label class="label" for="ap-name">Full name</label><input class="input" id="ap-name" name="name" autocomplete="name" required></div>
+        <div class="mk-application-form-field"><label class="label" for="ap-email">Email</label><input class="input" id="ap-email" type="email" name="email" autocomplete="email" required></div>
+        <div class="mk-application-form-field"><label class="label" for="ap-phone">Phone <span class="mk-application-form-hint">(optional)</span></label><input class="input" id="ap-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel"></div>
+        <div class="mk-application-form-field"><label class="label" for="ap-where">Where are you based?</label><select class="select" id="ap-where" name="location"><option>Portugal</option><option>Germany</option><option>Elsewhere in the EU</option></select></div>
+      </div>
+    </fieldset>
+    <fieldset class="mk-application-form-section">
+      <legend class="mk-application-form-legend"><strong>Documents</strong><span>PDF or DOCX, up to 10 MB.</span></legend>
+      <div class="mk-application-form-fields">
+        <div class="mk-application-form-field" data-span="full">
+          <label class="mk-application-form-upload" for="ap-cv"><i data-lucide="upload"></i><strong>Upload your résumé</strong><span>or drop it here</span>
+            <input id="ap-cv" type="file" name="cv" accept=".pdf,.docx" required aria-describedby="ap-cv-hint">
+          </label>
+          <span class="mk-application-form-hint" id="ap-cv-hint">Required - PDF or DOCX.</span>
+        </div>
+        <div class="mk-application-form-field" data-span="full"><label class="label" for="ap-note">Why Acme? <span class="mk-application-form-hint">(a few sentences)</span></label><textarea class="textarea" id="ap-note" name="note" rows="4"></textarea></div>
+      </div>
+    </fieldset>
+    <fieldset class="mk-application-form-section">
+      <legend class="mk-application-form-legend"><strong>Links</strong><span>Anything that shows your work.</span></legend>
+      <div class="mk-application-form-fields">
+        <div class="mk-application-form-field"><label class="label" for="ap-in">LinkedIn</label><input class="input" id="ap-in" type="url" name="linkedin" placeholder="https://linkedin.com/in/…"></div>
+        <div class="mk-application-form-field"><label class="label" for="ap-gh">GitHub or portfolio</label><input class="input" id="ap-gh" type="url" name="portfolio" placeholder="https://…"></div>
+      </div>
+    </fieldset>
+    <div class="mk-application-form-actions">
+      <label class="mk-application-form-consent"><input class="checkbox" type="checkbox" name="consent" required>I agree that Acme stores my application for 12 months.</label>
+      <button class="btn" type="submit">Submit application</button>
+    </div>
+  </form>
+</section>
+    </section>
+    <!-- Card -->
+    <section class="fx">
+<section class="mk-application-form" data-variant="card" aria-labelledby="apply-quick">
+  <form action="#" method="post">
+    <fieldset class="mk-application-form-section">
+      <legend class="mk-application-form-legend"><strong id="apply-quick">Quick apply</strong><span>Two minutes, no cover letter.</span></legend>
+      <div class="mk-application-form-fields">
+        <div class="mk-application-form-field"><label class="label" for="aq-name">Full name</label><input class="input" id="aq-name" name="name" autocomplete="name" required></div>
+        <div class="mk-application-form-field"><label class="label" for="aq-email">Email</label><input class="input" id="aq-email" type="email" name="email" autocomplete="email" required></div>
+        <div class="mk-application-form-field"><label class="mk-application-form-upload" for="aq-cv"><i data-lucide="file-text"></i><strong>Attach résumé</strong><input id="aq-cv" type="file" name="cv" accept=".pdf,.docx" required></label></div>
+      </div>
+    </fieldset>
+    <button class="btn" type="submit">Apply</button>
+  </form>
+</section>
+    </section>
+  </body>
+</html>

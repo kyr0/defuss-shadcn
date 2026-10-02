@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>maintenance e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/progress/progress.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/maintenance/maintenance.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-maintenance" role="status" aria-labelledby="mt-title">
+  <span class="mk-maintenance-icon" aria-hidden="true"><i data-lucide="wrench"></i></span>
+  <h1 class="mk-maintenance-title" id="mt-title">We're upgrading Acme</h1>
+  <p class="mk-maintenance-text">Our database moves to faster servers. Your data is safe and nothing is lost - you just can't sign in for a little while.</p>
+  <div class="mk-maintenance-eta"><span>Back by <strong><time datetime="2026-10-05T03:00Z">03:00 UTC</time></strong> (in about 40 minutes)</span><progress class="progress" max="100" aria-label="Work in progress"></progress></div>
+  <div class="mk-maintenance-links"><a class="btn" data-variant="outline" href="#"><i data-lucide="activity"></i> Status page</a><a class="btn" data-variant="ghost" href="#">Contact support</a></div>
+</section>
+    </section>
+    <!-- Banner -->
+    <section class="fx">
+<section class="mk-maintenance" data-variant="banner" role="status" aria-label="Scheduled maintenance">
+  <span class="mk-maintenance-icon" aria-hidden="true"><i data-lucide="calendar-clock"></i></span>
+  <p class="mk-maintenance-text">Scheduled maintenance <time datetime="2026-10-05T02:00Z">Sunday 5 October, 02:00–03:00 UTC</time> - sync pauses for up to 10 minutes.</p>
+  <a href="#">Details</a>
+</section>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,413 @@
+---
+title: "Panel"
+description: "Panel component - a title bar inside a card: icon, title, minimize and maximize tools (Swaps). In a border layout it folds its region like ExtJS 4: north / south to the title bar, west / east to a vertical tab."
+slug: "panel"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="panel" title="Panel" component="panel">
+  A title bar inside a <DocLink href="card.html">Card</DocLink> - an optional icon, the title and small tools on the right. Minimize and maximize are <DocLink href="swap.html">Swaps</DocLink>: a checkbox each, the faces swap without script. Minimized, the card goes and only the title bar stays. Put panels into a <DocLink href="border-layout.html">Border Layout</DocLink> and they take their region with them, the way the ExtJS 4 border layout did: north and south shrink to the title bar, west and east turn it into a vertical tab with the icon, title and restore tool still showing. Maximized, a panel fills its layout (or the viewport); Escape brings it back.
+</PageHeader>
+
+<SkillPanel component="panel">
+  <SkillField label="Native basis">
+<SkillText>A <code>.card</code> section with a title bar; the tools are Swaps - a hidden <code>&lt;input type="checkbox"&gt;</code> each.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="card.html">Card</DocLink> (surface), <DocLink href="swap.html">Swap</DocLink> (minimize / maximize tools), <DocLink href="border-layout.html">Border Layout</DocLink> (regions).</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" title="the tools' state (via Swap)"><code>checkbox</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode" title="the vertical tab in west / east"><code>writing-mode</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert" title="hidden body, resting divider"><code>inert</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="the swap faces"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="panel-change"><code>CustomEvent</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.panel</code>
+    <code>.panel-header</code>
+    <code>.panel-icon</code>
+    <code>.panel-title</code>
+    <code>.panel-tools</code>
+    <code>.panel-minimize</code>
+    <code>.panel-maximize</code>
+    <code>.panel-body</code>
+    <code>.panel-footer</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-minimized</code>, <code>data-maximized</code>, <code>data-title-collapse="false"</code>, <code>data-region</code> (set by the runtime); <code>data-flush</code> on the body; <code>data-panel-host</code> on what a maximized panel fills; event <code>panel-change</code>; API <code>df$.shadcn.panel</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Panel" height="22" hint="A title bar inside a card: icon, title and two Swaps - maximize and minimize. Minimize: the card goes, the title bar stays and the space below is released (a double-click on the title does the same). Maximize fills the view; Escape or the tool brings it back."
+<div class="max-w-96">
+<section class="card panel" id="files" aria-labelledby="files-title" style="height:14rem" data-state-demo>
+  <header class="panel-header">
+    <i data-lucide="folder" class="panel-icon" aria-hidden="true"></i>
+    <h3 class="panel-title" id="files-title">Files</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize">
+        <input type="checkbox" aria-label="Maximize Files">
+        <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+        <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+      </label>
+      <label class="swap panel-minimize">
+        <input type="checkbox" aria-label="Minimize Files">
+        <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+        <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+      </label>
+    </div>
+  </header>
+  <div class="panel-body">
+      <ul class="text-sm m-0 ps-4 flex flex-col gap-1">
+        <li>src/</li><li>components/</li><li>panel.ts</li><li>panel.css</li><li>README.md</li>
+      </ul>
+    </div>
+  <footer class="panel-footer">5 items</footer>
+</section>
+</div>
+```
+
+```html example label="In a border layout" schema="none" height="32" hint="Every region's pane is a panel. Minimize north or south and the region shrinks to the title bar; minimize west or east and the title bar flips into a vertical tab - icon, title and the restore tool stay - and the region shrinks to its width. The chevron points where the region folds. The divider rests while its panel is folded; drag sizes come back on restore. Maximize the editor: it fills the whole layout."
+<div class="border-layout" id="ide" style="height:26rem;">
+  <div class="resizer border-layout-north">
+    <section class="card panel" id="ide-toolbar" aria-labelledby="ide-toolbar-title" style="height:6rem">
+      <header class="panel-header">
+        <i data-lucide="layout-dashboard" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="ide-toolbar-title">Project</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Project">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">North - minimize it and the region folds to its title bar.</p></div>
+    </section>
+  </div>
+  <div class="resizer border-layout-west">
+    <section class="card panel" id="ide-files" aria-labelledby="ide-files-title" style="width:12rem">
+      <header class="panel-header">
+        <i data-lucide="folder" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="ide-files-title">Files</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Files">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Files">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body">
+      <ul class="text-sm m-0 ps-4 flex flex-col gap-1">
+        <li>src/</li><li>components/</li><li>panel.ts</li><li>panel.css</li><li>README.md</li>
+      </ul>
+    </div>
+    </section>
+  </div>
+  <main class="border-layout-center">
+    <section class="card panel" id="ide-editor" aria-labelledby="ide-editor-title" style="height:100%">
+      <header class="panel-header">
+        <i data-lucide="file-code" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="ide-editor-title">panel.ts</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize panel.ts">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">Center: the editor. Maximize it to fill the whole layout - Escape brings it back.</p></div>
+    </section>
+  </main>
+  <div class="resizer border-layout-east">
+    <section class="card panel" id="ide-props" aria-labelledby="ide-props-title" style="width:11rem">
+      <header class="panel-header">
+        <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="ide-props-title">Properties</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Properties">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Properties">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">East - minimized, it becomes a vertical tab.</p></div>
+    </section>
+  </div>
+  <div class="resizer border-layout-south">
+    <section class="card panel" id="ide-console" aria-labelledby="ide-console-title" style="height:7rem">
+      <header class="panel-header">
+        <i data-lucide="terminal" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="ide-console-title">Console</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Console">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Console">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><code class="text-xs">$ bun run build - done in 4.2s</code></div>
+    </section>
+  </div>
+</div>
+```
+
+```html example label="Gap dividers" schema="none" height="32" hint="data-divider='gap' on the layout: the regions float as cards in a gutter, so the panels keep their card look. West and east dominate (data-dominant='we')."
+<div class="border-layout" id="gap" data-dominant="we" data-divider="gap" style="height:26rem;">
+  <div class="resizer border-layout-north">
+    <section class="card panel" id="gap-toolbar" aria-labelledby="gap-toolbar-title" style="height:6rem">
+      <header class="panel-header">
+        <i data-lucide="layout-dashboard" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="gap-toolbar-title">Project</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Project">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">North - minimize it and the region folds to its title bar.</p></div>
+    </section>
+  </div>
+  <div class="resizer border-layout-west">
+    <section class="card panel" id="gap-files" aria-labelledby="gap-files-title" style="width:12rem">
+      <header class="panel-header">
+        <i data-lucide="folder" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="gap-files-title">Files</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Files">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Files">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body">
+      <ul class="text-sm m-0 ps-4 flex flex-col gap-1">
+        <li>src/</li><li>components/</li><li>panel.ts</li><li>panel.css</li><li>README.md</li>
+      </ul>
+    </div>
+    </section>
+  </div>
+  <main class="border-layout-center">
+    <section class="card panel" id="gap-editor" aria-labelledby="gap-editor-title" style="height:100%">
+      <header class="panel-header">
+        <i data-lucide="file-code" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="gap-editor-title">panel.ts</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize panel.ts">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">Center: the editor. Maximize it to fill the whole layout - Escape brings it back.</p></div>
+    </section>
+  </main>
+  <div class="resizer border-layout-east">
+    <section class="card panel" id="gap-props" aria-labelledby="gap-props-title" style="width:11rem">
+      <header class="panel-header">
+        <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="gap-props-title">Properties</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Properties">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Properties">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">East - minimized, it becomes a vertical tab.</p></div>
+    </section>
+  </div>
+  <div class="resizer border-layout-south">
+    <section class="card panel" id="gap-console" aria-labelledby="gap-console-title" style="height:7rem">
+      <header class="panel-header">
+        <i data-lucide="terminal" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="gap-console-title">Console</h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Console">
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Console">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><code class="text-xs">$ bun run build - done in 4.2s</code></div>
+    </section>
+  </div>
+</div>
+```
+
+```html example label="Start minimized" schema="none" height="22" hint="data-minimized on the panel (or a checked minimize swap) folds it from the first paint - here the east inspector starts as a vertical tab."
+<div class="border-layout" style="height:14rem;">
+  <main class="border-layout-center border-layout-pane"><p class="text-sm text-muted-foreground m-0">The center takes the room the folded inspector leaves.</p></main>
+  <div class="resizer border-layout-east">
+    <section class="card panel" id="inspector" aria-labelledby="inspector-title" style="width:12rem" data-minimized>
+      <header class="panel-header">
+        <i data-lucide="info" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="inspector-title">Inspector</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Inspector">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm text-muted-foreground m-0">Opened from the vertical tab.</p></div>
+    </section>
+  </div>
+</div>
+```
+
+```html example label="More tools, flush body" schema="none" height="24" hint="Extra tools are buttons in .panel-tools next to the swaps; data-flush drops the body padding for a list or a table. Without .panel-maximize there is no maximize - every tool is optional."
+<div class="max-w-96">
+<section class="card panel" id="tasks" aria-labelledby="tasks-title">
+  <header class="panel-header">
+    <i data-lucide="list-checks" class="panel-icon" aria-hidden="true"></i>
+    <h3 class="panel-title" id="tasks-title">Tasks</h3>
+    <div class="panel-tools">
+      <button type="button" class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Add task"><i data-lucide="plus"></i></button>
+      <button type="button" class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Refresh"><i data-lucide="refresh-cw"></i></button>
+      <label class="swap panel-minimize">
+        <input type="checkbox" aria-label="Minimize Tasks">
+        <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+        <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+      </label>
+    </div>
+  </header>
+  <div class="panel-body" data-flush>
+    <table class="table">
+      <tbody>
+        <tr class="table-row"><td class="table-cell">Ship the panel</td><td class="table-cell" style="text-align:end"><span class="badge" data-variant="secondary">today</span></td></tr>
+        <tr class="table-row"><td class="table-cell">Fold west to a tab</td><td class="table-cell" style="text-align:end"><span class="badge" data-variant="outline">done</span></td></tr>
+        <tr class="table-row"><td class="table-cell">Write the changelog</td><td class="table-cell" style="text-align:end"><span class="badge" data-variant="outline">later</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="panel-footer">3 open</footer>
+</section>
+</div>
+```
+
+```html example label="Driven from script" schema="none" height="30" hint="df$.shadcn.panel.minimize / maximize / restore / toggle take a panel, an id or a selector; every change fires panel-change with the state, the previous state and the region."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-do="toggle">Toggle console</button>
+    <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-do="maximize">Maximize console</button>
+    <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-do="restore">Restore</button>
+    <output class="text-sm text-muted-foreground" id="panel-log">No change yet.</output>
+  </div>
+  <div class="border-layout" style="height:16rem;">
+    <main class="border-layout-center border-layout-pane"><p class="text-sm text-muted-foreground m-0">The console sits south.</p></main>
+    <div class="resizer border-layout-south">
+      <section class="card panel" id="script-console" aria-labelledby="script-console-title" style="height:8rem">
+        <header class="panel-header">
+          <i data-lucide="terminal" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="script-console-title">Console</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Console">
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Console">
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><code class="text-xs">$ df$.shadcn.panel.toggle(&quot;#script-console&quot;)</code></div>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('[data-panel-do]').on('click', (e) => {
+      const action = e.target.closest('[data-panel-do]').dataset.panelDo;
+      df$.shadcn.panel[action]('#script-console');
+    });
+    df$('#script-console').on('panel-change', (e) => {
+      const { state, previous, region } = e.detail;
+      df$('#panel-log').text(`${region}: ${previous} → ${state}`);
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per panel through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - title bar and body at the authored size</li>
+    <li><code>minimized</code> - the title bar only; in a border layout region the region folds with it (a vertical tab in west / east)</li>
+    <li><code>maximized</code> - fills its border layout, <code>[data-panel-host]</code> or the viewport</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/panel-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/panel.schema.json"><code>panel.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `minimized` | `boolean` | `true`, `false` | `false` | The title bar only - in a border layout region, the region folds with it. |
+| `maximized` | `boolean` | `true`, `false` | `false` | Fills its border layout, a `[data-panel-host]` or the viewport. |
+```
+
+</StatesSection>
+
+<SourceFiles component="panel" section="css" />
+
+<SourceFiles component="panel" section="js" jsTitle="JS" />
+
+</DocPage>

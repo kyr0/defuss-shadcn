@@ -1,0 +1,115 @@
+---
+title: "CTA"
+description: "Combines a focused message with a prominent action - centered, split, on a dark glow or over a picture."
+slug: "cta"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="cta" title="CTA" component="cta">
+  Combines a focused message with a prominent action - centered, split, on a dark glow or over a picture. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="cta">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code> named by its heading, one supporting sentence, one primary and at most one secondary action (Buttons) and an optional note.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tints derived from the theme tokens"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced titles, pretty paragraphs"><code>text-wrap</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-cta</code>
+    <code>.mk-cta-inner</code>
+    <code>.mk-cta-copy</code>
+    <code>.mk-cta-title</code>
+    <code>.mk-cta-desc</code>
+    <code>.mk-cta-actions</code>
+    <code>.mk-cta-note</code>
+    <code>.mk-cta-form</code>
+    <code>.mk-cta-bg</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>split</code>, <code>dark</code>, <code>image</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Centered on a muted surface: a heading, one sentence, a primary and a secondary action and a short note." previewStyle="align-items:stretch;"
+<section class="mk-cta" aria-labelledby="cta-1">
+  <div class="mk-cta-inner">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-1">Ready to work calmer?</h2>
+      <p class="mk-cta-desc">Join 12,000 teams who plan, write and ship in one place.</p>
+    </div>
+    <div class="mk-cta-actions">
+      <a class="btn" data-size="lg" href="#">Start free trial</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">Talk to sales</a>
+    </div>
+    <p class="mk-cta-note">Free for 14 days · No credit card required</p>
+  </div>
+</section>
+```
+
+```html example label="Split" hint="data-variant='split': copy left, actions right once the block is 44rem wide." previewStyle="align-items:stretch;"
+<section class="mk-cta" data-variant="split" aria-labelledby="cta-2">
+  <div class="mk-cta-inner">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-2">See Acme in 20 minutes</h2>
+      <p class="mk-cta-desc">A live walkthrough with a product specialist - bring your questions.</p>
+    </div>
+    <div class="mk-cta-actions"><a class="btn" data-size="lg" href="#">Book a demo <i data-lucide="arrow-right"></i></a></div>
+  </div>
+</section>
+```
+
+```html example label="Dark with a form" hint="data-variant='dark': inverted, with a glow in the theme's chart colors - here with an inline email form." previewStyle="align-items:stretch;"
+<section class="mk-cta" data-variant="dark" aria-labelledby="cta-3">
+  <div class="mk-cta-inner">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-3">Get early access to Spaces</h2>
+      <p class="mk-cta-desc">Shared spaces for every project. Invites go out this month.</p>
+    </div>
+    <form class="mk-cta-form" action="#" method="post">
+      <label class="sr-only" for="cta-email">Email address</label>
+      <input class="input" id="cta-email" type="email" name="email" placeholder="you@company.com" required autocomplete="email">
+      <button class="btn" data-variant="secondary" type="submit">Request invite</button>
+    </form>
+    <p class="mk-cta-note">2,400 people joined this week.</p>
+  </div>
+</section>
+```
+
+```html example label="Over a picture" hint="data-variant='image': the copy over a picture (.mk-cta-bg) with a dark scrim - white text and an outlined secondary action." previewStyle="align-items:stretch;"
+<section class="mk-cta" data-variant="image" aria-labelledby="cta-4">
+  <div class="mk-cta-inner">
+    <img class="mk-cta-bg" src="https://picsum.photos/seed/cta-summit/1600/700" alt="">
+    <div class="mk-cta-copy">
+      <h2 class="mk-cta-title" id="cta-4">Acme Summit · 12–13 November, Lisbon</h2>
+      <p class="mk-cta-desc">Two days of talks and workshops on calm software. Early-bird ends Friday.</p>
+    </div>
+    <div class="mk-cta-actions">
+      <a class="btn" data-variant="secondary" data-size="lg" href="#">Get your ticket</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">See the agenda</a>
+    </div>
+  </div>
+</section>
+```
+
+<SourceFiles component="cta" section="css" />
+
+</DocPage>

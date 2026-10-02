@@ -1,0 +1,93 @@
+---
+title: "Category Menu"
+description: "Navigates between content categories - underlined tabs that scroll sideways, pills, a vertical list with counts, or icon tiles."
+slug: "category-menu"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="category-menu" title="Category Menu" component="category-menu">
+  Navigates between content categories - underlined tabs that scroll sideways, pills, a vertical list with counts, or icon tiles. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="category-menu">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;nav aria-label="Categories"&gt;</code> with a list of links - an icon, the name and a count - and <code>aria-current="page"</code> on the current one.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap" title="rows that snap per item"><code>CSS scroll snap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-category-menu</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>pills</code>, <code>vertical</code>, <code>tiles</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Underlined tabs on a rule - links with aria-current=&quot;page&quot; - that scroll sideways and snap on small screens." previewStyle="align-items:stretch;"
+<nav class="mk-category-menu" aria-label="Categories">
+  <ul>
+    <li><a href="#" aria-current="page"><i data-lucide="layout-grid"></i><span>All</span><small>248</small></a></li>
+    <li><a href="#"><i data-lucide="box"></i><span>Product</span><small>64</small></a></li>
+    <li><a href="#"><i data-lucide="code"></i><span>Engineering</span><small>81</small></a></li>
+    <li><a href="#"><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a></li>
+    <li><a href="#"><i data-lucide="building-2"></i><span>Company</span><small>31</small></a></li>
+    <li><a href="#"><i data-lucide="book-open"></i><span>Guides</span><small>25</small></a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Pills" hint="data-variant='pills': pills, the current one filled." previewStyle="align-items:stretch;"
+<nav class="mk-category-menu" data-variant="pills" aria-label="Categories">
+  <ul>
+    <li><a href="#" aria-current="page"><i data-lucide="layout-grid"></i><span>All</span><small>248</small></a></li>
+    <li><a href="#"><i data-lucide="box"></i><span>Product</span><small>64</small></a></li>
+    <li><a href="#"><i data-lucide="code"></i><span>Engineering</span><small>81</small></a></li>
+    <li><a href="#"><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a></li>
+    <li><a href="#"><i data-lucide="building-2"></i><span>Company</span><small>31</small></a></li>
+    <li><a href="#"><i data-lucide="book-open"></i><span>Guides</span><small>25</small></a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Vertical" hint="data-variant='vertical': a sidebar list with counts." previewStyle="align-items:stretch;"
+<nav class="mk-category-menu" data-variant="vertical" aria-label="Categories">
+  <ul>
+    <li><a href="#" aria-current="page"><i data-lucide="layout-grid"></i><span>All</span><small>248</small></a></li>
+    <li><a href="#"><i data-lucide="box"></i><span>Product</span><small>64</small></a></li>
+    <li><a href="#"><i data-lucide="code"></i><span>Engineering</span><small>81</small></a></li>
+    <li><a href="#"><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a></li>
+    <li><a href="#"><i data-lucide="building-2"></i><span>Company</span><small>31</small></a></li>
+    <li><a href="#"><i data-lucide="book-open"></i><span>Guides</span><small>25</small></a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Tiles" hint="data-variant='tiles': icon tiles in a grid - for a shop or help-center front." previewStyle="align-items:stretch;"
+<nav class="mk-category-menu" data-variant="tiles" aria-label="Categories">
+  <ul>
+    <li><a href="#" aria-current="page"><i data-lucide="layout-grid"></i><span>All</span><small>248</small></a></li>
+    <li><a href="#"><i data-lucide="box"></i><span>Product</span><small>64</small></a></li>
+    <li><a href="#"><i data-lucide="code"></i><span>Engineering</span><small>81</small></a></li>
+    <li><a href="#"><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a></li>
+    <li><a href="#"><i data-lucide="building-2"></i><span>Company</span><small>31</small></a></li>
+    <li><a href="#"><i data-lucide="book-open"></i><span>Guides</span><small>25</small></a></li>
+  </ul>
+</nav>
+```
+
+<SourceFiles component="category-menu" section="css" />
+
+</DocPage>

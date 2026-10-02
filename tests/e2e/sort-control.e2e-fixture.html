@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>sort-control e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/sort-control/sort-control.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-sort-control"><label for="so-1">Sort by</label><select class="select" id="so-1" name="sort"><option>Most relevant</option><option>Newest</option><option>Price: low to high</option><option>Price: high to low</option></select></div>
+    </section>
+    <!-- Segmented -->
+    <section class="fx">
+<fieldset class="mk-sort-control" data-variant="segmented"><legend>Sort by</legend><label><input type="radio" name="sort2" value="popular" checked>Popular</label><label><input type="radio" name="sort2" value="newest">Newest</label><label><input type="radio" name="sort2" value="price">Price</label></fieldset>
+    </section>
+    <!-- Menu -->
+    <section class="fx">
+<div class="mk-sort-control" data-variant="menu">
+  <button class="btn" data-variant="outline" data-size="sm" type="button" popovertarget="so-menu" style="anchor-name:--so-menu"><i data-lucide="arrow-up-down"></i> Newest</button>
+  <div class="mk-sort-control-menu" id="so-menu" popover style="position-anchor:--so-menu" role="radiogroup" aria-label="Sort by">
+    <label><input type="radio" name="sort3" value="0">Most relevant</label>
+    <label><input type="radio" name="sort3" value="1" checked>Newest</label>
+    <label><input type="radio" name="sort3" value="2">Price: low to high</label>
+    <label><input type="radio" name="sort3" value="3">Price: high to low</label>
+  </div>
+</div>
+    </section>
+  </body>
+</html>

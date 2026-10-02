@@ -308,7 +308,7 @@ export const mermaidApi = {
   },
 };
 
-df$.mermaidApi = mermaidApi as unknown as DefussShadcnComponentApi;
+df$.mermaidApi = mermaidApi;
 df$.mermaidStates = mermaidStates;
 // public imperative API (AGENTS.md "No window globals": df$.shadcn.mermaid)
 df$.mermaid = { load, render, renderAll, theme: mermaidTheme, url: MERMAID_URL };

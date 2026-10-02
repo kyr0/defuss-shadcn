@@ -1,0 +1,79 @@
+---
+title: "Error State"
+description: "Explains a failure and provides recovery actions - what went wrong in plain words, what to do, and the technical details on request."
+slug: "error-state"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="error-state" title="Error State" component="error-state">
+  Explains a failure and provides recovery actions - what went wrong in plain words, what to do, and the technical details on request. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="error-state">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section role="alert"&gt;</code>: a destructive-tinted icon, a plain-words title and explanation, recovery actions (try again, go back, contact) and a <code>&lt;details&gt;</code> with the technical error.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-error-state</code>
+    <code>.mk-error-state-icon</code>
+    <code>.mk-error-state-title</code>
+    <code>.mk-error-state-text</code>
+    <code>.mk-error-state-actions</code>
+    <code>.mk-error-state-details</code>
+    <code>.mk-error-state-code</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>inline</code>, <code>page</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="role=&quot;alert&quot;: what went wrong in plain words, recovery actions, and the technical error in a <details> for support." previewStyle="align-items:stretch;"
+<section class="mk-error-state" role="alert" aria-labelledby="er-1">
+  <span class="mk-error-state-icon" aria-hidden="true"><i data-lucide="triangle-alert"></i></span>
+  <h2 class="mk-error-state-title" id="er-1">We couldn't load your board</h2>
+  <p class="mk-error-state-text">Our servers took too long to answer. Your work is safe - nothing was lost.</p>
+  <div class="mk-error-state-actions"><a class="btn" href="#"><i data-lucide="rotate-cw"></i> Try again</a><a class="btn" data-variant="outline" href="#">Go to dashboard</a></div>
+  <details class="mk-error-state-details"><summary>Technical details</summary><pre><code>Error 504 · gateway timeout
+Request id: req_8f2c41a0 · 2026-10-01 14:32:08 UTC</code></pre></details>
+</section>
+```
+
+```html example label="Inline" hint="data-variant='inline': a row inside the content - one widget failed, the rest of the page works." previewStyle="align-items:stretch;"
+<section class="mk-error-state" data-variant="inline" role="alert" aria-labelledby="er-2">
+  <span class="mk-error-state-icon" aria-hidden="true"><i data-lucide="wifi-off"></i></span>
+  <h2 class="mk-error-state-title" id="er-2">You're offline</h2>
+  <p class="mk-error-state-text">Changes are saved on this device and sync when you're back.</p>
+  <div class="mk-error-state-actions"><button class="btn" data-variant="outline" data-size="sm" type="button">Retry now</button></div>
+</section>
+```
+
+```html example label="Page" hint="data-variant='page': a whole error page - a large outlined status code instead of the icon." previewStyle="align-items:stretch;"
+<section class="mk-error-state" data-variant="page" role="alert" aria-labelledby="er-3">
+  <p class="mk-error-state-code" aria-hidden="true">500</p>
+  <h1 class="mk-error-state-title" id="er-3">Something broke on our side</h1>
+  <p class="mk-error-state-text">We've been notified and are on it. Please try again in a few minutes.</p>
+  <div class="mk-error-state-actions"><a class="btn" href="#">Reload</a><a class="btn" data-variant="ghost" href="#">Status page</a></div>
+</section>
+```
+
+<SourceFiles component="error-state" section="css" />
+
+</DocPage>

@@ -21,6 +21,7 @@
   .mk-pricing-eyebrow { color: var(--primary); font-size: 1rem; font-weight: 500; }
 
   .mk-pricing-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -75,10 +76,12 @@
   .mk-plans { display: grid; align-items: stretch; gap: 1.25rem; }
 
   .mk-plan {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
     width: 100%;
+    box-sizing: border-box;
     padding-block: 1.5rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -86,15 +89,28 @@
     color: var(--card-foreground);
     box-shadow: var(--shadow-sm);
 
-    /* featured plan: 2px primary border (same box size → no shift) */
+    /* featured plan: 2px primary border (same box size → no shift) and a
+       soft primary wash from the top */
     &[data-featured] {
       border: 2px solid var(--primary);
+      background:
+        radial-gradient(120% 60% at 50% 0%, color-mix(in oklch, var(--primary) 9%, transparent), transparent 70%),
+        var(--card);
+      box-shadow: var(--shadow-lg);
     }
+
   }
+
+  /* in an aura (shapes.css): the light is the border - the plan drops its own */
+  .aura > .mk-plan {
+    border-color: transparent;
+    border-radius: var(--radius-lg);
+  }
+  .mk-plans > .aura { --shape-round: var(--radius-lg); }
 
   .mk-plan-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
     padding-inline: 1.5rem;
@@ -116,9 +132,9 @@
 
   .mk-plan-body { display: flex; flex-direction: column; gap: 0.5rem; padding-inline: 1.5rem; }
 
-  .mk-plan-title { font-size: 1.125rem; font-weight: 600; }
+  .mk-plan-title { font-size: 1.125rem; font-weight: 600; line-height: 1.3; margin: 0; }
 
-  .mk-plan-desc { font-size: 0.875rem; color: var(--muted-foreground); }
+  .mk-plan-desc { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--muted-foreground); }
 
   .mk-plan-price {
     display: flex;
@@ -150,20 +166,133 @@
     padding-inline: 1.5rem;
   }
 
+  .mk-plan-features { margin: 0 1.5rem; padding: 1.25rem 0 0; border-block-start: 1px dashed var(--border); list-style: none; }
+
+  /* the check sits in a small tinted disc */
   .mk-plan-feature {
     display: flex;
-    gap: 0.375rem;
+    align-items: flex-start;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
 
-    & svg { width: 1rem; height: 1rem; margin-block-start: 0.25rem; color: var(--muted-foreground); flex-shrink: 0; }
-    & span { flex: 1; font-size: 1rem; }
+    & svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      margin-block-start: 0.125rem;
+      padding: 0.1875rem;
+      border-radius: 50%;
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: var(--primary);
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    & span { flex: 1; }
+    &[data-muted] { color: var(--muted-foreground); }
+    &[data-muted] svg { background: var(--muted); color: var(--muted-foreground); }
   }
 
-  @container mk-pricing (min-width: 52rem) {
+  /* the featured plan's label: a filled Badge with a sparkle */
+  .mk-plan-badge { gap: 0.25rem; }
+
+  /* a saving next to the billing choice (a Badge) */
+  .mk-pricing-billing .badge { margin-inline-start: 0.125rem; }
+
+  @container mk-pricing (min-width: 44rem) {
     .mk-pricing-title { font-size: 2.25rem; }
-    .mk-plans { grid-template-columns: repeat(3, 1fr); }
+    .mk-plans { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; }
+    /* the featured plan stands a little taller than its neighbours */
+    .mk-plans > .mk-plan[data-featured],
+    .mk-plans > .aura > .mk-plan { padding-block: 2.25rem; }
+  }
+
+  /* compare: a Table of features per plan - the featured column tinted */
+  .mk-pricing-compare {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    & .table { min-width: 36rem; }
+    & :is(th, td):not(:first-child) { text-align: center; }
+    & [data-featured] { background: color-mix(in oklch, var(--primary) 6%, transparent); }
+    & thead [data-featured] { box-shadow: inset 0 3px 0 var(--primary); }
+    & .mk-pricing-yes { color: var(--primary); }
+    & .mk-pricing-no { color: var(--muted-foreground); opacity: 0.5; }
+    & svg { width: 1rem; height: 1rem; vertical-align: middle; }
+    & tbody th { font-weight: 500; text-align: start; }
+  }
+
+  /* compact: plans as rows of one list - name, price, CTA */
+  .mk-plans[data-variant="compact"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    & .mk-plan {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+      align-items: center;
+      gap: 0.75rem 1.5rem;
+      padding: 1.25rem 1.5rem;
+      border: 0;
+      border-block-end: 1px solid var(--border);
+      border-radius: 0;
+      box-shadow: none;
+
+      &:last-child { border-block-end: 0; }
+      &[data-featured] { border: 0; border-block-end: 1px solid var(--border); background: color-mix(in oklch, var(--primary) 5%, var(--card)); }
+      & :is(.mk-plan-body, .mk-plan-price, .mk-plan-cta) { padding: 0; margin: 0; }
+      & .mk-plan-amount { font-size: 2rem; }
+    }
+  }
+
+  /* wide: one plan, features in two columns beside the price */
+  .mk-plan[data-variant="wide"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.5rem 2.5rem;
+    padding: 2rem;
+
+    & > * { padding-inline: 0; }
+    & .mk-plan-features { margin: 0; padding: 0; border: 0; columns: 2 12rem; display: block; }
+    & .mk-plan-feature { margin-block-end: 0.75rem; break-inside: avoid; }
+  }
+
+  /* usage: a Slider picks the seats, an <output> shows the price */
+  .mk-pricing-usage {
+    display: grid;
+    gap: 1rem;
+    max-width: 36rem;
+    margin-inline: auto;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+
+    & .mk-pricing-usage-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+    & output { font-size: 2.5rem; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  }
+
+  /* cta: an enterprise strip - talk to sales */
+  .mk-pricing-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: var(--radius-xl);
+    background: var(--foreground);
+    color: var(--background);
+
+    & p { margin: 0.25rem 0 0; color: color-mix(in oklch, var(--background) 70%, transparent); font-size: 0.9375rem; }
+    & strong { font-size: 1.125rem; }
   }
 
   /* -- Accessibility ------------------------------------------- */
+
   @media (forced-colors: active) {
     .mk-plan { border-color: CanvasText; }
     .mk-pricing-billing label:has(input:checked) { outline: 1px solid Highlight; }

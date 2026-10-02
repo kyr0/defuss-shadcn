@@ -1,0 +1,73 @@
+---
+title: "Opening Hours"
+description: "Displays operating hours and date-specific exceptions - the week with today marked, whether it is open now, and the holidays."
+slug: "opening-hours"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="opening-hours" title="Opening Hours" component="opening-hours">
+  Displays operating hours and date-specific exceptions - the week with today marked, whether it is open now, and the holidays. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="opening-hours">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code>: a status line, a <code>&lt;dl&gt;</code> of day / hours rows (today with <code>aria-current="date"</code>, closed days with <code>data-closed</code>) and a list of exceptions with <code>&lt;time&gt;</code>s.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-opening-hours</code>
+    <code>.mk-opening-hours-title</code>
+    <code>.mk-opening-hours-status</code>
+    <code>.mk-opening-hours-days</code>
+    <code>.mk-opening-hours-exceptions</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>; <code>aria-current="date"</code> and <code>data-closed</code> on rows.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A status line (open now, and the next change), the week as a <dl> - today marked with aria-current=&quot;date&quot;, closed days muted - and the exceptions with <time>s." previewStyle="align-items:stretch;"
+<section class="mk-opening-hours" aria-labelledby="oh-title">
+  <h3 class="mk-opening-hours-title" id="oh-title">Opening hours</h3>
+  <p class="mk-opening-hours-status">Open now <span>· until 20:00</span></p>
+  <dl class="mk-opening-hours-days">
+      <div><dt>Monday</dt><dd>09:00 – 18:00</dd></div>
+      <div><dt>Tuesday</dt><dd>09:00 – 18:00</dd></div>
+      <div><dt>Wednesday</dt><dd>09:00 – 18:00</dd></div>
+      <div aria-current="date"><dt>Thursday</dt><dd>09:00 – 20:00</dd></div>
+      <div><dt>Friday</dt><dd>09:00 – 18:00</dd></div>
+      <div><dt>Saturday</dt><dd>10:00 – 14:00</dd></div>
+      <div data-closed><dt>Sunday</dt><dd>Closed</dd></div>
+    </dl>
+  <ul class="mk-opening-hours-exceptions" aria-label="Exceptions">
+    <li><time datetime="2026-12-24">24 Dec</time><span>09:00 – 13:00</span></li>
+    <li><time datetime="2026-12-25">25–26 Dec</time><span>Closed</span></li>
+    <li><time datetime="2027-01-01">1 Jan</time><span>Closed</span></li>
+  </ul>
+</section>
+```
+
+```html example label="Compact" hint="data-variant='compact': grouped ranges on two lines - for a footer or a location card." previewStyle="align-items:stretch;"
+<section class="mk-opening-hours" data-variant="compact" aria-label="Opening hours">
+  <p><strong>Mon – Fri</strong> 09:00 – 18:00 (Thu until 20:00)</p>
+  <p><strong>Sat</strong> 10:00 – 14:00 · <strong>Sun</strong> closed</p>
+</section>
+```
+
+<SourceFiles component="opening-hours" section="css" />
+
+</DocPage>

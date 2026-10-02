@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>delivery-options e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/radio/radio.css" />
+    <link rel="stylesheet" href="/dist/components/delivery-options/delivery-options.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<fieldset class="mk-delivery-options" style="max-width:34rem">
+  <legend>Delivery</legend>
+  <label class="mk-delivery-options-option" for="dl-std">
+    <input class="radio" type="radio" name="delivery" id="dl-std" value="dl-std" checked required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="truck"></i></span>
+    <span class="mk-delivery-options-text"><strong>Standard</strong><small>Arrives <time datetime="2026-10-07">Tue 7 – Thu 9 Oct</time></small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-exp">
+    <input class="radio" type="radio" name="delivery" id="dl-exp" value="dl-exp" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="zap"></i></span>
+    <span class="mk-delivery-options-text"><strong>Express</strong><small>Arrives <time datetime="2026-10-03">tomorrow, Fri 3 Oct</time></small></span>
+    <b class="mk-delivery-options-price">€9.90</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-pick">
+    <input class="radio" type="radio" name="delivery" id="dl-pick" value="dl-pick" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="store"></i></span>
+    <span class="mk-delivery-options-text"><strong>Pick up in store</strong><small>Arrives <time datetime="2026-10-02">today after 16:00</time></small><small>Acme Lisbon · Rua da Prata 120</small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+</fieldset>
+    </section>
+    <!-- Grid -->
+    <section class="fx">
+<fieldset class="mk-delivery-options" data-variant="grid">
+  <legend>Delivery</legend>
+  <label class="mk-delivery-options-option" for="dl-std-g">
+    <input class="radio" type="radio" name="delivery" id="dl-std-g" value="dl-std-g" checked required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="truck"></i></span>
+    <span class="mk-delivery-options-text"><strong>Standard</strong><small>Arrives <time datetime="2026-10-07">Tue 7 – Thu 9 Oct</time></small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-exp-g">
+    <input class="radio" type="radio" name="delivery" id="dl-exp-g" value="dl-exp-g" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="zap"></i></span>
+    <span class="mk-delivery-options-text"><strong>Express</strong><small>Arrives <time datetime="2026-10-03">tomorrow, Fri 3 Oct</time></small></span>
+    <b class="mk-delivery-options-price">€9.90</b>
+  </label>
+  <label class="mk-delivery-options-option" for="dl-pick-g">
+    <input class="radio" type="radio" name="delivery" id="dl-pick-g" value="dl-pick-g" required>
+    <span class="mk-delivery-options-icon" aria-hidden="true"><i data-lucide="store"></i></span>
+    <span class="mk-delivery-options-text"><strong>Pick up in store</strong><small>Arrives <time datetime="2026-10-02">today after 16:00</time></small><small>Acme Lisbon · Rua da Prata 120</small></span>
+    <b class="mk-delivery-options-price">Free</b>
+  </label>
+</fieldset>
+    </section>
+  </body>
+</html>

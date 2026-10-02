@@ -19,6 +19,24 @@ if (!__df$shared || __df$shared.abi !== '0.9.3') {
 const { defussGlobals, safeShowPopover } = __df$shared;
 const df$ = defussGlobals();
 const contextMenuStates = ['default', 'open'];
+/** Like a native menu: where there is no room right of / below the point,
+ * open toward its other side, and never past the viewport. Measured right
+ * after the (usually synchronous) show - else once the deferred show lands. */
+function keepInView(menu, x, y) {
+    const fit = () => {
+        const w = menu.offsetWidth, h = menu.offsetHeight;
+        const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+        if (x + w > vw - 4)
+            menu.style.left = `${Math.max(4, Math.min(x - w, vw - w - 4))}px`;
+        if (y + h > vh - 4)
+            menu.style.top = `${Math.max(4, Math.min(y - h, vh - h - 4))}px`;
+    };
+    if (menu.matches(':popover-open'))
+        fit();
+    else
+        menu.addEventListener('toggle', (e) => { if (e.newState === 'open')
+            fit(); }, { once: true });
+}
 /**
  * UI side of setState (per menu popover): 'open' shows the menu at { x, y }
  * (falling back to the top-left of the viewport - there is no pointer event
@@ -38,6 +56,7 @@ function triggerStateChange(menu, stateName, config) {
             // deferred show: showPopover() while a previous exit transition is
             // still running crashes the headless renderer (setState after Escape)
             safeShowPopover(menu);
+            keepInView(menu, x, y);
             break;
         }
     }
@@ -96,6 +115,7 @@ function openMenuAt(menu, x, y) {
     menu.style.top = `${y}px`;
     menu.style.left = `${x}px`;
     safeShowPopover(menu);
+    keepInView(menu, x, y);
     menu.dataset.stateName = 'open';
 }
 function init() {

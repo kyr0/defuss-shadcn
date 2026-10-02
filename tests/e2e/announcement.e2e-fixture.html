@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>announcement e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/announcement/announcement.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Bar -->
+    <section class="fx">
+<dialog class="mk-announcement" open aria-labelledby="ann-1">
+  <div class="mk-announcement-inner">
+    <span class="mk-announcement-tag">New</span>
+    <p id="ann-1">Acme 4.0 is here - offline sync for every workspace.</p>
+    <a href="#">Read the release notes <i data-lucide="arrow-right"></i></a>
+    <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss announcement"><i data-lucide="x"></i></button></form>
+  </div>
+</dialog>
+    </section>
+    <!-- Primary -->
+    <section class="fx">
+<dialog class="mk-announcement" data-variant="primary" open aria-labelledby="ann-2">
+  <div class="mk-announcement-inner">
+    <i data-lucide="calendar"></i>
+    <p id="ann-2">Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</p>
+    <a href="#">Get tickets <i data-lucide="arrow-right"></i></a>
+    <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss summit announcement"><i data-lucide="x"></i></button></form>
+  </div>
+</dialog>
+    </section>
+    <!-- Inline -->
+    <section class="fx">
+<dialog class="mk-announcement" data-variant="inline" open aria-labelledby="ann-3">
+  <div class="mk-announcement-inner">
+    <i data-lucide="info"></i>
+    <p id="ann-3"><strong>Scheduled maintenance</strong> on Sunday 5 Oct, 02:00–03:00 UTC. Sync pauses for up to ten minutes.</p>
+    <a href="#">Status page</a>
+    <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss maintenance notice"><i data-lucide="x"></i></button></form>
+  </div>
+</dialog>
+    </section>
+    <!-- Floating -->
+    <section class="fx">
+<div style="position:relative;height:12rem;width:100%;overflow:hidden;border:1px dashed var(--border);border-radius:var(--radius-lg);transform:translateZ(0)">
+  <p style="margin:1rem;color:var(--muted-foreground)">Page content…</p>
+  <dialog class="mk-announcement" data-variant="floating" open aria-labelledby="ann-4">
+    <div class="mk-announcement-inner">
+      <i data-lucide="sparkles"></i>
+      <p id="ann-4">You can now share spaces with guests.</p>
+      <a href="#">Try it</a>
+      <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss tip"><i data-lucide="x"></i></button></form>
+    </div>
+  </dialog>
+</div>
+    </section>
+  </body>
+</html>

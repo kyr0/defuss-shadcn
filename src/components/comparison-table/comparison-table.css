@@ -1,0 +1,51 @@
+/* -- Comparison Table (website · Company) ---------------------------------
+   Compares alternatives across a shared set of criteria - a real table with a highlighted column and a sticky first column, or a two-sided versus card. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-comparison-table, .mk-comparison-table *, .mk-comparison-table ::before, .mk-comparison-table ::after) { box-sizing: border-box; }
+
+  .mk-comparison-table {
+    container: mk-comparison-table / inline-size;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    & table { min-width: 36rem; margin: 0; }
+    & caption { padding: 1rem 1.25rem 0; color: var(--muted-foreground); font-size: 0.8125rem; text-align: start; caption-side: top; }
+    & :is(th, td) { padding: 0.875rem 1.25rem; text-align: center; }
+    & th[scope="row"], & thead th:first-child { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--background); text-align: start; font-weight: 500; }
+    & thead th { font-size: 0.9375rem; font-weight: 600; }
+    & [data-highlight] { background: color-mix(in oklab, var(--chart-1) 8%, var(--background)); }
+    & thead [data-highlight] { box-shadow: inset 0 3px 0 var(--chart-1); }
+  }
+  .mk-comparison-yes { color: #16a34a; vertical-align: middle; }
+  .mk-comparison-no { color: var(--muted-foreground); opacity: 0.6; vertical-align: middle; }
+  .mk-comparison-partial { color: #b45309; font-size: 0.8125rem; font-weight: 500; }
+
+  /* versus: two sides of a card */
+  .mk-comparison-versus {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+
+    & section { display: grid; align-content: start; gap: 1rem; padding: 1.75rem; }
+    & section + section { border-inline-start: 1px solid var(--border); }
+    & section[data-highlight] { background: color-mix(in oklab, var(--chart-1) 7%, var(--card)); }
+    & h3 { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 1.125rem; font-weight: 600; }
+    & ul { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+    & li { display: flex; gap: 0.625rem; align-items: flex-start; font-size: 0.9375rem; }
+    & li svg { flex: none; margin-block-start: 0.125rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-comparison-table thead [data-highlight] { box-shadow: inset 0 3px 0 Highlight; }
+    .mk-comparison-yes, .mk-comparison-no { color: CanvasText; }
+  }
+}

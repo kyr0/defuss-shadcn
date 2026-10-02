@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>page-not-found e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/page-not-found/page-not-found.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-page-not-found" aria-labelledby="nf-1">
+  <p class="mk-page-not-found-code" aria-hidden="true">404</p>
+  <h1 class="mk-page-not-found-title" id="nf-1">Page not found</h1>
+  <p class="mk-page-not-found-text">The page may have moved, or the link has a typo. Search, or start from one of these:</p>
+  <search><form class="mk-page-not-found-search" action="#" method="get"><label class="sr-only" for="nf-q">Search the site</label><input class="input" id="nf-q" type="search" name="q" placeholder="Search Acme" enterkeyhint="search"><button class="btn" type="submit">Search</button></form></search>
+  <ul class="mk-page-not-found-links">
+    <li><a href="#"><strong><i data-lucide="book-open"></i>Docs</strong><span>Guides and reference</span></a></li>
+    <li><a href="#"><strong><i data-lucide="tag"></i>Pricing</strong><span>Plans for every team</span></a></li>
+    <li><a href="#"><strong><i data-lucide="life-buoy"></i>Help center</strong><span>Answers in minutes</span></a></li>
+  </ul>
+  <a class="btn" data-variant="ghost" href="#"><i data-lucide="arrow-left"></i> Back to home</a>
+</section>
+    </section>
+    <!-- Illustrated -->
+    <section class="fx">
+<section class="mk-page-not-found" data-variant="illustrated" aria-labelledby="nf-2">
+  <p class="mk-page-not-found-code" aria-hidden="true">404</p>
+  <h1 class="mk-page-not-found-title" id="nf-2">This page took a day off</h1>
+  <p class="mk-page-not-found-text">We couldn't find what you were looking for.</p>
+  <a class="btn" href="#">Take me home</a>
+</section>
+    </section>
+    <!-- Minimal -->
+    <section class="fx">
+<section class="mk-page-not-found" data-variant="minimal" aria-labelledby="nf-3">
+  <p class="mk-page-not-found-code" aria-hidden="true">404</p>
+  <h1 class="mk-page-not-found-title" id="nf-3">Nothing here</h1>
+  <a class="btn" data-variant="outline" data-size="sm" href="#">Go to dashboard</a>
+</section>
+    </section>
+  </body>
+</html>

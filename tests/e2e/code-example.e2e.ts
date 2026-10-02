@@ -184,6 +184,28 @@ try {
     await z.blur();
     assert.equal(await zval(), '', 'untouched seed reverts to Auto');
   });
+
+  await check('H: links never leave the example - "#" stays, a fragment jumps in-document (:target), other URLs are cancelled', async () => {
+    // srcdoc resolves URLs against the PARENT page: unguarded, href="#" would
+    // load comment-item.html#… inside the frame
+    await page.goto(`${url}/dist/documentation/comment-item.html`, { waitUntil: 'load', timeout: 30000 });
+    const thread = page.locator('.code-example').first();
+    await thread.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2500);
+    const frame = (await (await thread.locator('.code-example-frame').elementHandle())!.contentFrame())!;
+    const stillThere = () => frame.evaluate(() => location.href.startsWith('about:srcdoc') && !!document.querySelector('.mk-comment-item'));
+    await frame.click('#c-1 .mk-comment-item-author'); // href="#"
+    await page.waitForTimeout(300);
+    assert.ok(await stillThere(), 'href="#" kept the example document');
+    await frame.click('#c-3 .mk-comment-item-time'); // href="#c-3"
+    await page.waitForTimeout(300);
+    assert.ok(await stillThere(), 'fragment link kept the example document');
+    assert.equal(await frame.evaluate(() => document.querySelector(':target')?.id), 'c-3', 'the fragment target is :target');
+    await frame.evaluate(() => document.body.insertAdjacentHTML('beforeend', '<a id="ce-away" href="news-item.html">away</a>'));
+    await frame.click('#ce-away');
+    await page.waitForTimeout(300);
+    assert.ok(await stillThere(), 'a page URL is cancelled');
+  });
 } finally {
   await browser.close();
   stop();

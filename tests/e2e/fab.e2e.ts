@@ -163,4 +163,21 @@ await cssSmoke('fab', [
       assert.equal(Math.round(w1), 56, 'a circle after scrolling');
     },
   },
+  {
+    label: 'back to top: hidden (and unfocusable) at the start, shown after scrolling; the link targets the start',
+    run: async (page) => {
+      const scroller = '#f-top';
+      const read = () => page.$eval('#f-top .fab-trigger', (t) => ({ o: parseFloat(getComputedStyle(t).opacity), v: getComputedStyle(t).visibility }));
+      await page.$eval(scroller, (f) => { (f.previousElementSibling as HTMLElement).scrollTop = 0; });
+      await page.waitForTimeout(200);
+      const top = await read();
+      await page.$eval(scroller, (f) => { (f.previousElementSibling as HTMLElement).scrollTop = 600; });
+      await page.waitForTimeout(200);
+      const down = await read();
+      const href = await page.$eval('#f-top .fab-trigger', (a) => a.getAttribute('href'));
+      assert.ok(top.o < 0.05 && top.v === 'hidden', `hidden at the top ${JSON.stringify(top)}`);
+      assert.ok(down.o > 0.95 && down.v === 'visible', `shown after scrolling ${JSON.stringify(down)}`);
+      assert.equal(href, '#top-top');
+    },
+  },
 ]);

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>docs-content e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/breadcrumb/breadcrumb.css" />
+    <link rel="stylesheet" href="/dist/components/docs-content/docs-content.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<article class="mk-docs-content" aria-labelledby="dc-title">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol class="breadcrumb-list"><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Docs</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Guides</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Offline sync</span></li></ol></nav>
+  <h1 class="mk-docs-content-title" id="dc-title">Offline sync</h1>
+  <p class="mk-docs-content-lead">How Acme keeps working without a connection, and what happens when two people edit the same thing.</p>
+  <div class="mk-docs-content-meta"><span>Updated <time datetime="2026-09-28">28 Sep 2026</time></span><span>6 min read</span><a href="#"><i data-lucide="pencil"></i> Edit this page</a></div>
+  <div class="mk-docs-content-prose">
+    <p>Every change you make is written to your device first. When you are back online, Acme sends the changes in the order you made them - nothing waits for the network.</p>
+    <h2 id="dc-enable">Turn it on</h2>
+    <p>Offline sync is on by default for new workspaces. For older ones, enable it in <code>Settings → Sync</code> or with the CLI:</p>
+    <pre><code>acme workspace sync --offline on</code></pre>
+    <aside class="mk-docs-content-callout" role="note"><i data-lucide="info"></i><p><strong>Note:</strong> the first sync downloads the whole workspace - on a slow connection this can take a few minutes.</p></aside>
+    <h2 id="dc-conflicts">Conflicts</h2>
+    <p>When two people change the same field offline, the later change wins and the earlier one is kept in the history:</p>
+    <ul><li>Text merges character by character.</li><li>Fields like status keep the last value.</li><li>Deletions always win over edits.</li></ul>
+    <table><thead><tr><th>Change</th><th>Resolution</th></tr></thead><tbody><tr><td>Both edit a paragraph</td><td>Merged</td></tr><tr><td>Both set a status</td><td>Latest wins</td></tr><tr><td>One deletes, one edits</td><td>Deleted</td></tr></tbody></table>
+    <aside class="mk-docs-content-callout" data-tone="warning" role="note"><i data-lucide="triangle-alert"></i><p><strong>Warning:</strong> clearing your browser data before syncing deletes unsynced changes.</p></aside>
+    <aside class="mk-docs-content-callout" data-tone="tip" role="note"><i data-lucide="lightbulb"></i><p><strong>Tip:</strong> the cloud icon in the header shows how many changes are waiting.</p></aside>
+  </div>
+  <nav class="mk-docs-content-pager" aria-label="Pagination"><a href="#" rel="prev"><small>Previous</small><strong>← Workspaces</strong></a><a href="#" rel="next"><small>Next</small><strong>Permissions →</strong></a></nav>
+</article>
+    </section>
+  </body>
+</html>

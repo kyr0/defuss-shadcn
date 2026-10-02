@@ -1,0 +1,57 @@
+/* -- Discount Form (website · Shop) ---------------------------------------
+   Accepts a promotional code and displays its application result - the field, the error when it fails, and the applied code with its saving. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-discount-form, .mk-discount-form *, .mk-discount-form ::before, .mk-discount-form ::after) { box-sizing: border-box; }
+
+  .mk-discount-form { display: grid; gap: 0.5rem; max-width: 26rem; margin: 0; }
+  .mk-discount-form-row { display: flex; gap: 0.5rem;
+    & .input { flex: 1; min-width: 0; font-family: var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+    & .input::placeholder { text-transform: none; letter-spacing: 0; font-family: var(--font-sans); }
+  }
+  .mk-discount-form-error { display: none; align-items: center; gap: 0.375rem; margin: 0; color: var(--destructive); font-size: 0.8125rem; font-weight: 500;
+    & svg { flex: none; width: 0.875rem; height: 0.875rem; }
+  }
+  .mk-discount-form:has(.input:user-invalid, .input[aria-invalid="true"]) .mk-discount-form-error { display: flex; }
+  .mk-discount-form .input[aria-invalid="true"] { border-color: var(--destructive); }
+
+  .mk-discount-form-applied {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 26rem;
+    padding: 0.625rem 0.5rem 0.625rem 0.875rem;
+    border: 1px dashed color-mix(in oklab, #16a34a 50%, var(--border));
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, #16a34a 7%, transparent);
+    font-size: 0.875rem;
+
+    & > svg { flex: none; width: 1rem; height: 1rem; color: #15803d; }
+    & code { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.06em; }
+    & span { flex: 1; color: var(--muted-foreground); }
+    & strong { color: #15803d; font-variant-numeric: tabular-nums; }
+    & button { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+    & button:hover { background: var(--accent); color: var(--foreground); }
+    & button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    & button svg { width: 0.875rem; height: 0.875rem; }
+  }
+
+  .mk-discount-form[data-variant="collapsed"] {
+    & summary { display: inline-flex; align-items: center; gap: 0.375rem; color: var(--primary); font-size: 0.875rem; font-weight: 600; cursor: pointer; list-style: none; }
+    & summary::-webkit-details-marker { display: none; }
+    & summary svg { width: 0.875rem; height: 0.875rem; transition: rotate 150ms ease; }
+    &[open] summary svg { rotate: 45deg; }
+    & summary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+    & .mk-discount-form { margin-block-start: 0.75rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-discount-form[data-variant="collapsed"] summary svg { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-discount-form-applied { border-color: CanvasText; }
+  }
+}

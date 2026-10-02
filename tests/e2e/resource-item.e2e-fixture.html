@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>resource-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/resource-item/resource-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Library -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem;width:100%">
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+      <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+      <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+      <p class="mk-resource-item-meta">12 min read</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="layout-template"></i>Template</span>
+      <h3 class="mk-resource-item-title"><a href="#">Weekly async update</a></h3>
+      <p class="mk-resource-item-desc">Replace your status meeting with one doc.</p>
+      <p class="mk-resource-item-meta">Acme template · 2.1k uses</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Use template <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="file-text"></i>Whitepaper</span>
+      <h3 class="mk-resource-item-title"><a href="#">Security & data handling</a></h3>
+      <p class="mk-resource-item-desc">Encryption, hosting and compliance in detail.</p>
+      <p class="mk-resource-item-meta">PDF · 24 pages</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Download <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="video"></i>Webinar</span>
+      <h3 class="mk-resource-item-title"><a href="#">Async teams at 400 people</a></h3>
+      <p class="mk-resource-item-desc">Recording of the October session with Q&A.</p>
+      <p class="mk-resource-item-meta">48 min · recording</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Watch <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div style="display:grid;gap:0.5rem;max-width:40rem;width:100%">
+  <article class="mk-resource-item" data-variant="compact">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+      <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+      <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+      <p class="mk-resource-item-meta">12 min read</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item" data-variant="compact">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="layout-template"></i>Template</span>
+      <h3 class="mk-resource-item-title"><a href="#">Weekly async update</a></h3>
+      <p class="mk-resource-item-desc">Replace your status meeting with one doc.</p>
+      <p class="mk-resource-item-meta">Acme template · 2.1k uses</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Use template <i data-lucide="arrow-right"></i></span>
+  </article>
+  <article class="mk-resource-item" data-variant="compact">
+    <div class="mk-resource-item-body">
+      <span class="mk-resource-item-type"><i data-lucide="file-text"></i>Whitepaper</span>
+      <h3 class="mk-resource-item-title"><a href="#">Security & data handling</a></h3>
+      <p class="mk-resource-item-desc">Encryption, hosting and compliance in detail.</p>
+      <p class="mk-resource-item-meta">PDF · 24 pages</p>
+    </div>
+    <span class="mk-resource-item-cta" aria-hidden="true">Download <i data-lucide="arrow-right"></i></span>
+  </article>
+</div>
+    </section>
+    <!-- Featured -->
+    <section class="fx">
+<article class="mk-resource-item" data-variant="featured">
+  <img class="mk-resource-item-media" src="https://picsum.photos/seed/res-featured/1000/625" alt="">
+  <div class="mk-resource-item-body">
+    <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+    <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+    <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+    <p class="mk-resource-item-meta">12 min read</p>
+  </div>
+  <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+</article>
+    </section>
+  </body>
+</html>

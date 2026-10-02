@@ -1,0 +1,103 @@
+/* -- Media Gallery (website · Media) --------------------------------------
+   Coordinates a collection of images with shared viewing controls - switch between grid, masonry and filmstrip, and open a slideshow of every picture. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-media-gallery, .mk-media-gallery *, .mk-media-gallery ::before, .mk-media-gallery ::after) { box-sizing: border-box; }
+
+  .mk-media-gallery { container: mk-media-gallery / inline-size; display: grid; gap: 1.25rem; width: 100%; }
+  .mk-media-gallery-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem;
+    & h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+    & > span { color: var(--muted-foreground); font-size: 0.875rem; }
+  }
+  .mk-media-gallery-tools { display: flex; gap: 0.5rem; margin-inline-start: auto; }
+  .mk-media-gallery-views {
+    display: inline-flex;
+    padding: 0.1875rem;
+    border-radius: var(--radius-md);
+    background: var(--muted);
+
+    & label { position: relative; display: grid; place-items: center; width: 2rem; height: 1.75rem; border-radius: calc(var(--radius-md) - 2px); color: var(--muted-foreground); cursor: pointer; }
+    & input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    & svg { width: 1rem; height: 1rem; }
+    & label:has(:checked) { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-xs); }
+    & label:has(:focus-visible) { outline: 2px solid var(--ring); outline-offset: 1px; }
+  }
+
+  .mk-media-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & figure { margin: 0; overflow: hidden; border-radius: var(--radius-md); background: var(--muted); }
+    & img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+  }
+  .mk-media-gallery:has(input[value="masonry"]:checked) .mk-media-gallery-grid {
+    display: block;
+    columns: 11rem;
+    column-gap: 0.625rem;
+
+    & li { margin-block-end: 0.625rem; break-inside: avoid; }
+    & img { aspect-ratio: auto; height: auto; }
+  }
+  .mk-media-gallery:has(input[value="strip"]:checked) .mk-media-gallery-grid {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-block-end: 0.5rem;
+
+    & li { flex: 0 0 min(70%, 18rem); scroll-snap-align: start; }
+    & img { aspect-ratio: 4 / 3; }
+  }
+
+  /* the slideshow */
+  .mk-media-gallery-viewer {
+    width: min(94vw, 64rem);
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    overflow: visible;
+
+    &::backdrop { background: oklch(0.08 0.01 260 / 0.92); }
+  }
+  .mk-media-gallery-viewer-inner { position: relative; display: grid; gap: 1rem;
+    & form { position: absolute; top: -3rem; right: 0; }
+  }
+  .mk-media-gallery-track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+    border-radius: var(--radius-lg);
+
+    & li { flex: 0 0 100%; scroll-snap-align: center; display: grid; gap: 0.75rem; }
+    & img { display: block; width: 100%; max-height: 75vh; object-fit: contain; }
+    & p { margin: 0; text-align: center; color: oklch(1 0 0 / 0.75); font-size: 0.875rem; }
+    &:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+  }
+  .mk-media-gallery-close { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; border: 0; border-radius: 999px; background: oklch(1 0 0 / 0.15); color: #fff; cursor: pointer;
+    & svg { width: 1.125rem; height: 1.125rem; }
+    &:hover { background: oklch(1 0 0 / 0.25); }
+    &:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  }
+  .mk-media-gallery-hint { margin: 0; text-align: center; color: oklch(1 0 0 / 0.55); font-size: 0.75rem; }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-media-gallery-track, .mk-media-gallery-grid { scroll-behavior: auto; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-media-gallery-views label:has(:checked) { outline: 2px solid Highlight; }
+  }
+}

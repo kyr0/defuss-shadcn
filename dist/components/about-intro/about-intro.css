@@ -1,0 +1,78 @@
+/* -- About Intro (website · Company) --------------------------------------
+   Introduces an organization's identity, purpose, and background - a split intro with photos and key facts, a centered mission statement, or the values behind it. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-about-intro, .mk-about-intro *, .mk-about-intro ::before, .mk-about-intro ::after) { box-sizing: border-box; }
+
+  .mk-about-intro { container: mk-about-intro / inline-size; width: 100%; }
+  .mk-about-intro-layout { display: grid; gap: 2.5rem; align-items: center; }
+  .mk-about-intro-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+  .mk-about-intro-eyebrow { color: var(--primary); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mk-about-intro-title { margin: 0; font-size: clamp(1.875rem, 4.5cqi, 3rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; text-wrap: balance; }
+  .mk-about-intro-lead { margin: 0; max-width: 40rem; color: var(--muted-foreground); font-size: 1.125rem; line-height: 1.6; text-wrap: pretty; }
+
+  .mk-about-intro-media {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    align-items: start;
+    gap: 0.75rem;
+    margin: 0;
+
+    & img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--radius-xl); background: var(--muted); }
+    & img:last-child { margin-block-start: 3rem; }
+  }
+
+  .mk-about-intro-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    margin: 0.5rem 0 0;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--border);
+
+    & div { display: flex; flex-direction: column-reverse; gap: 0.125rem; }
+    & dt { color: var(--muted-foreground); font-size: 0.875rem; }
+    & dd { margin: 0; font-size: 1.875rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  }
+
+  /* statement: one centered sentence in the serif face */
+  .mk-about-intro[data-variant="statement"] {
+    & .mk-about-intro-copy { align-items: center; max-width: 56rem; margin-inline: auto; text-align: center; }
+    & .mk-about-intro-title { font-family: var(--font-serif); font-size: clamp(1.75rem, 4cqi, 2.75rem); font-weight: 400; line-height: 1.3; letter-spacing: -0.01em; }
+    & .mk-about-intro-title em { color: var(--primary); }
+  }
+  .mk-about-intro-signature { display: flex; align-items: center; gap: 0.75rem; text-align: start; font-size: 0.875rem;
+    & strong { display: block; font-weight: 600; }
+    & span { color: var(--muted-foreground); }
+  }
+
+  /* values: icon cards */
+  .mk-about-intro-values {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
+    gap: 1rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li { display: grid; gap: 0.5rem; align-content: start; padding: 1.25rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); }
+    & svg { width: 1.5rem; height: 1.5rem; color: var(--primary); }
+    & h3 { margin: 0.25rem 0 0; font-size: 1.0625rem; font-weight: 600; }
+    & p { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; text-wrap: pretty; }
+  }
+
+  @container mk-about-intro (min-width: 48rem) {
+    .mk-about-intro-layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 4rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-about-intro-values li { border-color: CanvasText; }
+  }
+}

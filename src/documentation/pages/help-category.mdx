@@ -1,0 +1,124 @@
+---
+title: "Help Category"
+description: "Links to a support topic with a description and article count - an icon, the topic, what it covers, how many articles and the most read ones."
+slug: "help-category"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="help-category" title="Help Category" component="help-category">
+  Links to a support topic with a description and article count - an icon, the topic, what it covers, how many articles and the most read ones. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="help-category">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: an icon tile, the topic as a link stretched over the card, a description, the article count, and optionally the top articles as links above the stretched link.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-help-category</code>
+    <code>.mk-help-category-title</code>
+    <code>.mk-help-category-icon</code>
+    <code>.mk-help-category-body</code>
+    <code>.mk-help-category-desc</code>
+    <code>.mk-help-category-count</code>
+    <code>.mk-help-category-top</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Grid" hint="Default cards: an icon tile, the topic link covering the card, what it covers, the article count - and the most-read articles as links raised above the stretched one." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+  <article class="mk-help-category">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
+      <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
+      <p class="mk-help-category-count">18 articles</p>
+      <ul class="mk-help-category-top"><li><a href="#">Create a workspace</a></li><li><a href="#">Invite teammates</a></li><li><a href="#">Import from Notion</a></li></ul>
+    </div>
+  </article>
+  <article class="mk-help-category">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Billing & plans</a></h3>
+      <p class="mk-help-category-desc">Invoices, seats, upgrades and refunds.</p>
+      <p class="mk-help-category-count">24 articles</p>
+      <ul class="mk-help-category-top"><li><a href="#">Change your plan</a></li><li><a href="#">Download an invoice</a></li></ul>
+    </div>
+  </article>
+  <article class="mk-help-category">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="refresh-cw"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Sync & offline</a></h3>
+      <p class="mk-help-category-desc">How your work stays in sync everywhere.</p>
+      <p class="mk-help-category-count">12 articles</p>
+      <ul class="mk-help-category-top"><li><a href="#">Sync is stuck</a></li><li><a href="#">Work offline</a></li></ul>
+    </div>
+  </article>
+  <article class="mk-help-category">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="shield"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Security</a></h3>
+      <p class="mk-help-category-desc">Two-factor, SSO, data handling.</p>
+      <p class="mk-help-category-count">15 articles</p>
+      <ul class="mk-help-category-top"><li><a href="#">Turn on two-factor</a></li><li><a href="#">Set up SSO</a></li></ul>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': icon, topic and count on one row." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.5rem;max-width:30rem;width:100%">
+  <article class="mk-help-category" data-variant="compact">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
+      <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
+      <p class="mk-help-category-count">18 articles</p>
+    </div>
+  </article>
+  <article class="mk-help-category" data-variant="compact">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Billing & plans</a></h3>
+      <p class="mk-help-category-desc">Invoices, seats, upgrades and refunds.</p>
+      <p class="mk-help-category-count">24 articles</p>
+    </div>
+  </article>
+  <article class="mk-help-category" data-variant="compact">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="refresh-cw"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Sync & offline</a></h3>
+      <p class="mk-help-category-desc">How your work stays in sync everywhere.</p>
+      <p class="mk-help-category-count">12 articles</p>
+    </div>
+  </article>
+  <article class="mk-help-category" data-variant="compact">
+    <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="shield"></i></span>
+    <div class="mk-help-category-body">
+      <h3 class="mk-help-category-title"><a href="#">Security</a></h3>
+      <p class="mk-help-category-desc">Two-factor, SSO, data handling.</p>
+      <p class="mk-help-category-count">15 articles</p>
+    </div>
+  </article>
+</div>
+```
+
+<SourceFiles component="help-category" section="css" />
+
+</DocPage>

@@ -1,0 +1,106 @@
+---
+title: "Release Item"
+description: "Describes one change, improvement, or fix within a release - its kind, what changed and why it matters, with the pull request and author."
+slug: "release-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="release-item" title="Release Item" component="release-item">
+  Describes one change, improvement, or fix within a release - its kind, what changed and why it matters, with the pull request and author. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="release-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: the kind (<code>data-type="new|improved|fixed|breaking"</code>), a title, a short explanation, an optional screenshot and the PR link with the author.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-release-item</code>
+    <code>.mk-release-item-type</code>
+    <code>.mk-release-item-body</code>
+    <code>.mk-release-item-title</code>
+    <code>.mk-release-item-desc</code>
+    <code>.mk-release-item-media</code>
+    <code>.mk-release-item-meta</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-type</code>: <code>new</code>, <code>improved</code>, <code>fixed</code>, <code>breaking</code>; <code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The kind as a labelled chip (data-type - the word is always there), the title, why it matters, a screenshot, and the PR with its author." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:44rem">
+  <article class="mk-release-item">
+    <span class="mk-release-item-type" data-type="new">New</span>
+    <div class="mk-release-item-body">
+      <h3 class="mk-release-item-title">Tables in docs</h3>
+      <p class="mk-release-item-desc">Insert a table with /table - sort, filter and resize columns. Paste from a spreadsheet and the structure comes along.</p>
+      <img class="mk-release-item-media" src="https://picsum.photos/seed/rel-table/1000/500" alt="">
+      <p class="mk-release-item-meta"><a href="#">#4812</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span> by Hannah</p>
+    </div>
+  </article>
+  <article class="mk-release-item">
+    <span class="mk-release-item-type" data-type="improved">Improved</span>
+    <div class="mk-release-item-body">
+      <h3 class="mk-release-item-title">Search is three times faster</h3>
+      <p class="mk-release-item-desc">Results appear while you type, even in workspaces with 100,000 docs.</p>
+      <p class="mk-release-item-meta"><a href="#">#4790</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span> by Sophie</p>
+    </div>
+  </article>
+  <article class="mk-release-item">
+    <span class="mk-release-item-type" data-type="fixed">Fixed</span>
+    <div class="mk-release-item-body">
+      <h3 class="mk-release-item-title">Sync no longer stalls after waking a laptop</h3>
+      <p class="mk-release-item-meta"><a href="#">#4801</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span> by Sophie</p>
+    </div>
+  </article>
+  <article class="mk-release-item">
+    <span class="mk-release-item-type" data-type="breaking">Breaking</span>
+    <div class="mk-release-item-body">
+      <h3 class="mk-release-item-title">API v1 tokens stop working on 1 December</h3>
+      <p class="mk-release-item-desc">Create a v2 token in Settings → API; the old endpoints answer 410 after that date.</p>
+      <p class="mk-release-item-meta"><a href="#">#4777</a></p>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': kind, title and PR on one line - for a dense changelog." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:44rem">
+  <article class="mk-release-item" data-variant="compact">
+    <span class="mk-release-item-type" data-type="fixed">Fixed</span>
+    <div class="mk-release-item-body">
+      <h3 class="mk-release-item-title">Emoji picker opens above the cursor</h3>
+      <p class="mk-release-item-meta"><a href="#">#4822</a></p>
+    </div>
+  </article>
+  <article class="mk-release-item" data-variant="compact">
+    <span class="mk-release-item-type" data-type="improved">Improved</span>
+    <div class="mk-release-item-body">
+      <h3 class="mk-release-item-title">Faster export to PDF</h3>
+      <p class="mk-release-item-meta"><a href="#">#4819</a></p>
+    </div>
+  </article>
+</div>
+```
+
+<SourceFiles component="release-item" section="css" />
+
+</DocPage>

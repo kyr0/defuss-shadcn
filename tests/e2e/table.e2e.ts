@@ -42,6 +42,11 @@ await cssSmoke('table', [
       assert.equal(narrow, '8px 12px', 'narrow table gets compact padding');
     },
   },
+  {
+    label: 'a row header (th.table-cell scope=row) is start-aligned and padded like a cell',
+    selector: '#tb-rowhead',
+    css: { 'text-align': 'start', 'padding-left': '16px', 'font-weight': '500' },
+  },
   { label: 'table: density "compact" → padding-top 6px', selector: '#td-compact .table-cell', css: { 'padding-top': '6px' } },
   { label: 'table: density "compact" → padding-left 10px', selector: '#td-compact .table-cell', css: { 'padding-left': '10px' } },
   { label: 'table: density "comfortable" → padding-top 12px', selector: '#td-comfortable .table-cell', css: { 'padding-top': '12px' } },

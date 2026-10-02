@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>payment-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css" />
+    <link rel="stylesheet" href="/dist/components/radio/radio.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/payment-form/payment-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<form action="#" method="post">
+<fieldset class="mk-payment-form">
+  <legend>Payment</legend>
+  <div class="mk-payment-form-methods">
+    <label><input type="radio" name="method" value="card" checked><i data-lucide="credit-card"></i>Card</label>
+    <label><input type="radio" name="method" value="paypal"><i data-lucide="wallet"></i>PayPal</label>
+    <label><input type="radio" name="method" value="bank"><i data-lucide="landmark"></i>Bank transfer</label>
+  </div>
+  <div class="mk-payment-form-panel" data-method="card">
+    <div class="mk-payment-form-fields">
+      <div class="mk-payment-form-field mk-payment-form-number" data-span="full"><label class="label" for="pf-num">Card number</label><div class="mk-payment-form-number"><input class="input" id="pf-num" name="cc-number" autocomplete="cc-number" inputmode="numeric" pattern="[0-9 ]{13,23}" placeholder="1234 1234 1234 1234"><ul aria-hidden="true"><li>VISA</li><li>MC</li><li>AMEX</li></ul></div></div>
+      <div class="mk-payment-form-field"><label class="label" for="pf-exp">Expiry</label><input class="input" id="pf-exp" name="cc-exp" autocomplete="cc-exp" inputmode="numeric" placeholder="MM / YY"></div>
+      <div class="mk-payment-form-field"><label class="label" for="pf-cvc">Security code</label><input class="input" id="pf-cvc" name="cc-csc" autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="CVC"></div>
+      <div class="mk-payment-form-field" data-span="full"><label class="label" for="pf-name">Name on card</label><input class="input" id="pf-name" name="cc-name" autocomplete="cc-name"></div>
+    </div>
+    <div class="checkbox-item"><input class="checkbox" type="checkbox" id="pf-save" name="save"><label for="pf-save">Save this card for next time</label></div>
+  </div>
+  <div class="mk-payment-form-panel" data-method="paypal"><p>You will be sent to PayPal to approve the payment, then back here to confirm.</p></div>
+  <div class="mk-payment-form-panel" data-method="bank">
+    <p>Transfer the total within 7 days. Your order ships when the money arrives.</p>
+    <dl><div><dt>IBAN</dt><dd>PT50 0002 0123 1234 5678 9015 4</dd></div><div><dt>Reference</dt><dd>A-20481</dd></div></dl>
+  </div>
+  <button class="btn" data-size="lg" type="submit">Pay €88.90</button>
+  <p class="mk-payment-form-note"><i data-lucide="lock"></i> Payments are encrypted and processed by our payment provider.</p>
+</fieldset>
+</form>
+    </section>
+    <!-- Saved cards -->
+    <section class="fx">
+<fieldset class="mk-payment-form">
+  <legend>Pay with</legend>
+  <div class="mk-payment-form-saved">
+    <label><input class="radio" type="radio" name="card" value="visa" checked><span class="mk-payment-form-brand">VISA</span><span>•••• 4242</span><small>Expires 08/28</small></label>
+    <label><input class="radio" type="radio" name="card" value="mc"><span class="mk-payment-form-brand">MC</span><span>•••• 5100</span><small>Expires 01/27</small></label>
+    <label><input class="radio" type="radio" name="card" value="new"><span class="mk-payment-form-brand" aria-hidden="true">+</span><span>Use another card</span><small></small></label>
+  </div>
+</fieldset>
+    </section>
+  </body>
+</html>

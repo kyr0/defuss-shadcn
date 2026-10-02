@@ -1,0 +1,62 @@
+/* -- Playlist Item (website · Media) --------------------------------------
+   Represents one selectable track or episode within a playlist - number, cover, title, artist and length; the selected one shows "now playing" bars. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-playlist-item, .mk-playlist-item *, .mk-playlist-item ::before, .mk-playlist-item ::after) { box-sizing: border-box; }
+
+  .mk-playlist { display: grid; gap: 0.125rem; margin: 0; padding: 0; list-style: none; }
+  .mk-playlist-item label {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.75rem 2.75rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &:hover { background: var(--accent); }
+    & input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+  }
+  .mk-playlist-item:has(input:checked) label { background: color-mix(in oklch, var(--primary) 9%, transparent); }
+  .mk-playlist-item:has(input:focus-visible) label { outline: 2px solid var(--ring); outline-offset: -2px; }
+  .mk-playlist-item-index { display: grid; place-items: center; color: var(--muted-foreground); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  .mk-playlist-item-bars { display: none; align-items: flex-end; gap: 2px; height: 0.875rem; font-style: normal;
+    & b { width: 3px; height: 100%; border-radius: 1px; background: var(--primary); transform-origin: bottom; animation: mk-playlist-bars 900ms ease-in-out infinite alternate; }
+    & b:nth-child(2) { animation-delay: -300ms; }
+    & b:nth-child(3) { animation-delay: -600ms; }
+  }
+  @keyframes mk-playlist-bars { from { scale: 1 0.25; } to { scale: 1 1; } }
+  .mk-playlist-item:has(input:checked) {
+    & .mk-playlist-item-index > span { display: none; }
+    & .mk-playlist-item-bars { display: flex; }
+    & .mk-playlist-item-text strong { color: var(--primary); }
+  }
+  .mk-playlist-item-cover { display: block; width: 2.75rem; height: 2.75rem; object-fit: cover; border-radius: var(--radius-md); background: var(--muted); }
+  .mk-playlist-item-text { display: grid; min-width: 0;
+    & strong { overflow: hidden; font-size: 0.9375rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    & small { overflow: hidden; color: var(--muted-foreground); font-size: 0.8125rem; text-overflow: ellipsis; white-space: nowrap; }
+  }
+  .mk-playlist-item-desc { display: -webkit-box; margin-block-start: 0.25rem; overflow: hidden; color: var(--muted-foreground); font-size: 0.8125rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .mk-playlist-item-duration { color: var(--muted-foreground); font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
+
+  .mk-playlist-item[data-variant="episode"] label { grid-template-columns: 1.75rem 4.5rem minmax(0, 1fr) auto; align-items: start; padding-block: 0.75rem;
+    & .mk-playlist-item-cover { width: 4.5rem; height: 4.5rem; }
+    & .mk-playlist-item-index, & .mk-playlist-item-duration { padding-block-start: 0.25rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-playlist-item label { transition: none; }
+    .mk-playlist-item-bars b { animation: none; }
+    .mk-playlist-item-bars b:nth-child(1) { scale: 1 0.6; }
+    .mk-playlist-item-bars b:nth-child(3) { scale: 1 0.8; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-playlist-item:has(input:checked) label { outline: 2px solid Highlight; }
+    .mk-playlist-item-bars b { background: Highlight; }
+  }
+}

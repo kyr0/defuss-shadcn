@@ -1,0 +1,95 @@
+---
+title: "Use Case"
+description: "Explains how an offering addresses one specific situation - the situation, how it helps, the outcomes, and a result worth remembering."
+slug: "use-case"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="use-case" title="Use Case" component="use-case">
+  Explains how an offering addresses one specific situation - the situation, how it helps, the outcomes, and a result worth remembering. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="use-case">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code> with an eyebrow (who it is for), a title, the situation and the approach as paragraphs, outcomes as a check list, a highlighted metric and a picture.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="media with its caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced titles, pretty paragraphs"><code>text-wrap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-use-case</code>
+    <code>.mk-use-case-layout</code>
+    <code>.mk-use-case-copy</code>
+    <code>.mk-use-case-eyebrow</code>
+    <code>.mk-use-case-title</code>
+    <code>.mk-use-case-text</code>
+    <code>.mk-use-case-outcomes</code>
+    <code>.mk-use-case-metric</code>
+    <code>.mk-use-case-media</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="reverse"</code>, <code>data-variant="card"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Who it is for, the situation, how it helps, outcomes as a check list and one metric worth remembering - beside a picture from 48rem." previewStyle="align-items:stretch;"
+<article class="mk-use-case" aria-labelledby="uc-launch">
+  <div class="mk-use-case-layout">
+    <div class="mk-use-case-copy">
+      <span class="mk-use-case-eyebrow"><i data-lucide="rocket"></i> For product teams</span>
+      <h2 class="mk-use-case-title" id="uc-launch">Launch with five teams - without the war room</h2>
+      <p class="mk-use-case-text">Launches stall when marketing, support and engineering plan in different tools. Acme puts the launch plan, the docs and every open question on one board, so each team sees what the others need.</p>
+      <ul class="mk-use-case-outcomes">
+        <li><i data-lucide="check"></i>One launch board that every team updates</li>
+        <li><i data-lucide="check"></i>Release notes drafted from the shipped work</li>
+        <li><i data-lucide="check"></i>Support briefed before customers ask</li>
+      </ul>
+      <p class="mk-use-case-metric"><strong>−40%</strong> time from code freeze to launch</p>
+    </div>
+    <figure class="mk-use-case-media"><img src="https://picsum.photos/seed/usecase-launch/1000/750" alt=""></figure>
+  </div>
+</article>
+```
+
+```html example label="Reverse" hint="data-variant='reverse': the picture moves left from 48rem - alternate use cases down a page." previewStyle="align-items:stretch;"
+<article class="mk-use-case" data-variant="reverse" aria-labelledby="uc-onboard">
+  <div class="mk-use-case-layout">
+    <div class="mk-use-case-copy">
+      <span class="mk-use-case-eyebrow"><i data-lucide="users"></i> For people teams</span>
+      <h2 class="mk-use-case-title" id="uc-onboard">Onboard new hires in a week, not a quarter</h2>
+      <p class="mk-use-case-text">Templates turn your onboarding into a checklist every manager can run - with the right docs linked at the right day.</p>
+      <ul class="mk-use-case-outcomes">
+        <li><i data-lucide="check"></i>A first-week plan per role</li>
+        <li><i data-lucide="check"></i>Buddies and check-ins scheduled automatically</li>
+      </ul>
+      <p class="mk-use-case-metric"><strong>5 days</strong> to the first shipped task</p>
+    </div>
+    <figure class="mk-use-case-media"><img src="https://picsum.photos/seed/usecase-onboard/1000/750" alt=""></figure>
+  </div>
+</article>
+```
+
+```html example label="Cards" hint="data-variant='card': compact cards without the picture - for a grid of use cases." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1rem;width:100%">
+  <article class="mk-use-case" data-variant="card" aria-labelledby="uc-c1"><div class="mk-use-case-copy"><span class="mk-use-case-eyebrow"><i data-lucide="headphones"></i> Support</span><h3 class="mk-use-case-title" id="uc-c1">Answer tickets from one knowledge base</h3><p class="mk-use-case-text">Docs your agents and your customers both search.</p><p class="mk-use-case-metric"><strong>2×</strong> faster first replies</p></div></article>
+  <article class="mk-use-case" data-variant="card" aria-labelledby="uc-c2"><div class="mk-use-case-copy"><span class="mk-use-case-eyebrow"><i data-lucide="megaphone"></i> Marketing</span><h3 class="mk-use-case-title" id="uc-c2">Plan campaigns with the product team</h3><p class="mk-use-case-text">One calendar for launches, content and ads.</p><p class="mk-use-case-metric"><strong>+25%</strong> campaigns on time</p></div></article>
+  <article class="mk-use-case" data-variant="card" aria-labelledby="uc-c3"><div class="mk-use-case-copy"><span class="mk-use-case-eyebrow"><i data-lucide="graduation-cap"></i> Education</span><h3 class="mk-use-case-title" id="uc-c3">Run a semester of projects</h3><p class="mk-use-case-text">Students, teachers and deadlines in one space.</p><p class="mk-use-case-metric"><strong>300</strong> schools on Acme</p></div></article>
+</div>
+```
+
+<SourceFiles component="use-case" section="css" />
+
+</DocPage>

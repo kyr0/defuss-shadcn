@@ -307,10 +307,32 @@
     }
   }
 
+  /* -- Back to top --------------------------------------------------------
+     data-scroll-top: the trigger is a link to the start (href="#top" - the
+     browser scrolls the document to its top natively, even without an
+     element of that id; for a scrolling container, link to an element at
+     its start). A scroll-driven animation keeps it hidden at the top and
+     fades / grows it in between --fab-scroll-top-from and -to of scroll
+     (default 160px - 320px); visibility follows, so it is not focusable
+     while hidden. The timeline is a var() - minifiers leave it alone. */
+  @keyframes fab-appear {
+    from { opacity: 0; scale: 0.6; visibility: hidden; }
+  }
+  .fab[data-scroll-top] .fab-trigger {
+    animation: fab-appear linear both;
+    animation-timeline: var(--fab-timeline, scroll(root block));
+    animation-range: var(--fab-scroll-top-from, 160px) var(--fab-scroll-top-to, 320px);
+  }
+  /* the jump glides - for people who have not asked for less motion */
+  @media (prefers-reduced-motion: no-preference) {
+    html:has(.fab[data-scroll-top]) { scroll-behavior: smooth; }
+  }
+
   /* -- Accessibility -------------------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .fab-action, .fab-trigger .fab-icon, .fab-menu[popover] { transition: none; }
     .fab[data-shrink="scroll"] .fab-trigger .fab-text { animation: none; }
+    .fab[data-scroll-top] .fab-trigger { animation: none; }
   }
   @media (forced-colors: active) {
     .fab-action, .fab-label { border: 1px solid CanvasText; }

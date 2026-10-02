@@ -1,0 +1,116 @@
+---
+title: "Collection Item"
+description: "Links to one product collection with imagery and context - a picture with the name and count, text over the picture, or a wide banner."
+slug: "collection-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="collection-item" title="Collection Item" component="collection-item">
+  Links to one product collection with imagery and context - a picture with the name and count, text over the picture, or a wide banner. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="collection-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: a picture, the collection name as a link covering the card, the number of products and a decorative "Shop now" cue.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="stable media boxes, no layout shift"><code>aspect-ratio</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-collection-item</code>
+    <code>.mk-collection-item-title</code>
+    <code>.mk-collection-item-media</code>
+    <code>.mk-collection-item-body</code>
+    <code>.mk-collection-item-count</code>
+    <code>.mk-collection-item-more</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>overlay</code>, <code>banner</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Grid" hint="Default: a 4:5 picture, the collection name - a link covering the card - the count and a &quot;Shop now&quot; cue." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1.5rem 1rem;width:100%">
+  <article class="mk-collection-item">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-linen/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Linen basics</a></h3>
+      <p class="mk-collection-item-count">24 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-knit/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Autumn knitwear</a></h3>
+      <p class="mk-collection-item-count">18 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-home/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Home & table</a></h3>
+      <p class="mk-collection-item-count">42 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Overlay" hint="data-variant='overlay': the name over the picture with a scrim - the picture zooms a little on hover." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;width:100%">
+  <article class="mk-collection-item" data-variant="overlay">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o1/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">New in</a></h3>
+      <p class="mk-collection-item-count">This week</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item" data-variant="overlay">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o2/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Outdoor</a></h3>
+      <p class="mk-collection-item-count">31 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item" data-variant="overlay">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o3/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Last chance</a></h3>
+      <p class="mk-collection-item-count">Up to −50%</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Banner" hint="data-variant='banner': a wide 21:9 picture with the copy on the start side and a pill cue." previewStyle="align-items:stretch;"
+<article class="mk-collection-item" data-variant="banner">
+  <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-banner/1600/690" alt="">
+  <div class="mk-collection-item-body">
+    <h3 class="mk-collection-item-title"><a href="#">The autumn edit</a></h3>
+    <p class="mk-collection-item-count">Warm layers, soft colors - 56 pieces</p>
+    <span class="mk-collection-item-more" aria-hidden="true">Discover <i data-lucide="arrow-right"></i></span>
+  </div>
+</article>
+```
+
+<SourceFiles component="collection-item" section="css" />
+
+</DocPage>

@@ -124,11 +124,20 @@ function autoCollapseSidebar(sidebar) {
 // One shared observer; each init() observes the sidebar's row, so container
 // queries / layout resizes re-run the check without a window resize.
 if (typeof ResizeObserver !== 'undefined' && !document.__sidebarAutoRo) {
+  // the collapse changes layout - so it runs on the next frame, never inside
+  // the observer's delivery (that is the "ResizeObserver loop" error)
+  const pending = new Set();
+  let frame = 0;
   document.__sidebarAutoRo = new ResizeObserver((entries) => {
     for (const entry of entries) {
-      if (entry.target.classList?.contains('app-sidebar')) autoCollapseSidebar(entry.target);
-      entry.target.querySelectorAll?.('.app-sidebar').forEach(autoCollapseSidebar);
+      if (entry.target.classList?.contains('app-sidebar')) pending.add(entry.target);
+      entry.target.querySelectorAll?.('.app-sidebar').forEach((s) => pending.add(s));
     }
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      pending.forEach(autoCollapseSidebar);
+      pending.clear();
+    });
   });
 }
 

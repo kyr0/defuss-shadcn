@@ -28,6 +28,7 @@
   .mk-faq-eyebrow { color: var(--primary); font-size: 1rem; font-weight: 500; }
 
   .mk-faq-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -63,6 +64,7 @@
   .mk-faq-text { display: flex; flex-direction: column; gap: 0.25rem; }
 
   .mk-faq-question {
+    line-height: 1.3;
     margin: 0;
     font-size: 1.25rem;
     font-weight: 500;
@@ -71,6 +73,23 @@
   }
 
   .mk-faq-answer { margin: 0; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
+
+  /* a link to the full answer (a detail page or a help article) */
+  .mk-faq-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-block-start: 0.5rem;
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    & svg { width: 0.875rem; height: 0.875rem; transition: translate 150ms ease; }
+    &:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+    &:hover svg { translate: 0.125rem 0; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
 
   @container mk-faq (min-width: 30rem) {
     .mk-faq-title { font-size: 2.25rem; }
@@ -81,7 +100,98 @@
     .mk-faq-grid { grid-template-columns: repeat(3, 1fr); }
   }
 
+
+  /* -- variants ------------------------------------------------- */
+  /* accordion: the head centered above an Accordion */
+  .mk-faq[data-variant="accordion"] {
+    align-items: center;
+
+    & .mk-faq-head { align-items: center; text-align: center; }
+  }
+  .mk-faq-accordion { width: 100%; max-width: 48rem; margin-inline: auto; }
+  .mk-faq-accordion .accordion-trigger { padding-block: 1.125rem; font-size: 1.0625rem; }
+
+  .mk-faq-desc { margin: 0; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
+
+  /* split: the head (sticky) beside the questions */
+  .mk-faq-split { display: grid; gap: 2rem 4rem; }
+  .mk-faq-split > :first-child { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+
+  /* cards: each pair on a bordered card */
+  .mk-faq-grid[data-variant="cards"] { gap: 1.25rem; }
+  .mk-faq-grid[data-variant="cards"] .mk-faq-item {
+    max-width: none;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+
+    & .mk-faq-question { font-size: 1.0625rem; }
+  }
+
+  /* numbered: a mono counter instead of the icon, a rule on top */
+  .mk-faq-grid[data-variant="numbered"] {
+    counter-reset: mk-faq;
+
+    & .mk-faq-item { counter-increment: mk-faq; gap: 0.75rem; padding-block-start: 1.25rem; border-block-start: 1px solid var(--border); }
+    & .mk-faq-item::before { content: counter(mk-faq, decimal-leading-zero); color: var(--primary); font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; }
+  }
+
+  /* search + topics above the questions */
+  .mk-faq-search {
+    position: relative;
+    width: 100%;
+    max-width: 32rem;
+
+    & svg { position: absolute; inset-inline-start: 0.875rem; top: 50%; translate: 0 -50%; width: 1.125rem; height: 1.125rem; color: var(--muted-foreground); pointer-events: none; }
+    & .input { height: 2.75rem; padding-inline-start: 2.5rem; font-size: 1rem; }
+  }
+  .mk-faq-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    & a { padding: 0.375rem 0.875rem; border: 1px solid var(--border); border-radius: 999px; color: var(--muted-foreground); font-size: 0.875rem; font-weight: 500; text-decoration: none; }
+    & a:hover { color: var(--foreground); }
+    & a[aria-current] { border-color: var(--primary); background: color-mix(in oklch, var(--primary) 10%, transparent); color: var(--primary); }
+    & a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* contact: "still have questions" with the team and an action */
+  .mk-faq-contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+
+    & > div:nth-child(2) { flex: 1 1 14rem; }
+    & strong { font-weight: 600; }
+    & p { margin: 0.125rem 0 0; color: var(--muted-foreground); font-size: 0.875rem; }
+  }
+  .mk-faq-split .mk-faq-contact { margin: 0; }
+
+  @container mk-faq (min-width: 52rem) {
+    .mk-faq-split { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+    .mk-faq-split > :first-child { position: sticky; top: 1.5rem; align-self: start; }
+  }
+
   /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-faq-grid[data-variant="cards"] .mk-faq-item { border-color: CanvasText; }
+    .mk-faq-topics a[aria-current] { border-color: Highlight; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mk-faq-link svg { transition: none; }
+    .mk-faq-link:hover svg { translate: none; }
+  }
+
   @media (forced-colors: active) {
     .mk-faq-icon { border-color: CanvasText; }
   }

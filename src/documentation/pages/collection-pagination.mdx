@@ -1,0 +1,92 @@
+---
+title: "Collection Pagination"
+description: "Navigates between discrete pages of a collection - the range shown, the Pagination component and how many per page; or simply previous / next."
+slug: "collection-pagination"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="collection-pagination" title="Collection Pagination" component="collection-pagination">
+  Navigates between discrete pages of a collection - the range shown, the Pagination component and how many per page; or simply previous / next. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="collection-pagination">
+  <SkillField label="Native basis">
+<SkillText>A footer row: "Showing 13–24 of 248" (<code>&lt;output&gt;</code>), the Pagination component (links with <code>aria-current="page"</code>) and a per-page Select in a GET form.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="pagination.html">Pagination</DocLink>, <DocLink href="select.html">Select</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="a computed result"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-collection-pagination</code>
+    <code>.mk-collection-pagination-range</code>
+    <code>.mk-collection-pagination-size</code>
+    <code>.mk-collection-pagination-page</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>simple</code>, <code>centered</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The range in an <output>, the Pagination component (links - every page has a URL - with aria-current=&quot;page&quot;) and a per-page Select in a GET form." previewStyle="align-items:stretch;"
+<div class="mk-collection-pagination">
+  <output class="mk-collection-pagination-range">Showing <strong>13–24</strong> of <strong>248</strong></output>
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><i data-lucide="chevron-left"></i> Previous</a></li>
+      <li><a class="pagination-link" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+      <li><a class="pagination-link" href="#">3</a></li>
+      <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
+      <li><a class="pagination-link" href="#">21</a></li>
+      <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <i data-lucide="chevron-right"></i></a></li>
+    </ul>
+  </nav>
+  <form class="mk-collection-pagination-size" action="#" method="get"><label for="cp-size">Per page</label><select class="select" id="cp-size" name="per"><option>12</option><option>24</option><option>48</option></select></form>
+</div>
+```
+
+```html example label="Simple" hint="data-variant='simple': previous / next and where you are - for mobile or feeds." previewStyle="align-items:stretch;"
+<div class="mk-collection-pagination" data-variant="simple">
+  <a class="btn" data-variant="outline" data-size="sm" href="#" rel="prev"><i data-lucide="chevron-left"></i> Previous</a>
+  <span class="mk-collection-pagination-page">Page <strong>2</strong> of 21</span>
+  <a class="btn" data-variant="outline" data-size="sm" href="#" rel="next">Next <i data-lucide="chevron-right"></i></a>
+</div>
+```
+
+```html example label="Centered" hint="data-variant='centered': the pages centered with the range under them." previewStyle="align-items:stretch;"
+<div class="mk-collection-pagination" data-variant="centered">
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><i data-lucide="chevron-left"></i> Previous</a></li>
+      <li><a class="pagination-link" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+      <li><a class="pagination-link" href="#">3</a></li>
+      <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
+      <li><a class="pagination-link" href="#">21</a></li>
+      <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <i data-lucide="chevron-right"></i></a></li>
+    </ul>
+  </nav>
+  <output class="mk-collection-pagination-range">Showing <strong>13–24</strong> of <strong>248</strong> results</output>
+</div>
+```
+
+<SourceFiles component="collection-pagination" section="css" />
+
+</DocPage>

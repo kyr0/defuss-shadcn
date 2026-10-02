@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/dist/components/input/input.css" />
     <link rel="stylesheet" href="/dist/components/separator/separator.css" />
     <link rel="stylesheet" href="/dist/components/feature-details/feature-details.css" />
+    <link rel="stylesheet" href="/dist/components/tabs/tabs.css" />
     <style>
       /* docs-utility stand-in (fixtures carry no doc-site CSS) */
       .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
@@ -60,5 +61,58 @@
     </div>
   </div>
 </section>
-  </body>
+  <!-- Bento grid -->
+<section class="mk-features" style="width:100%">
+  <div class="mk-features-bento">
+    <article class="mk-bento-tile" data-span="wide"><i data-lucide="sparkles"></i><h3>AI that writes the first draft</h3><p>Start from a summary of your notes, never from a blank page.</p><img src="/dist/documentation/images/mk-wide.png" alt=""></article>
+    <article class="mk-bento-tile" data-span="tall" data-tone="primary"><i data-lucide="zap"></i><h3>Instant everywhere</h3><p>Offline-first sync - every device, every keystroke.</p></article>
+    <article class="mk-bento-tile"><i data-lucide="shield-check"></i><h3>Private by default</h3><p>End-to-end encryption for every workspace.</p></article>
+    <article class="mk-bento-tile"><i data-lucide="plug"></i><h3>200+ integrations</h3><p>GitHub, Figma, Slack and the rest - two clicks.</p></article>
+    <article class="mk-bento-tile" data-span="wide"><i data-lucide="chart-column"></i><h3>Insights that matter</h3><p>See where time goes and what moves the needle.</p></article>
+  </div>
+</section>
+<!-- Alternating rows -->
+<section class="mk-features" style="width:100%">
+  <div class="mk-feature-rows">
+    <article class="mk-feature-row">
+      <figure class="mk-feature-media"><img src="/dist/documentation/images/mk-wide2.png" alt=""></figure>
+      <div class="mk-feature-copy">
+        <h3 class="mk-feature-title">Plan in one place</h3>
+        <p class="mk-feature-desc">Roadmaps, docs and tasks share one calm surface.</p>
+        <ul class="mk-feature-checks"><li>Drag-and-drop roadmaps</li><li>Linked docs and tasks</li><li>One-click status updates</li></ul>
+      </div>
+    </article>
+    <article class="mk-feature-row">
+      <figure class="mk-feature-media"><img src="/dist/documentation/images/mk-wide3.png" alt=""></figure>
+      <div class="mk-feature-copy">
+        <h3 class="mk-feature-title">Ship with confidence</h3>
+        <p class="mk-feature-desc">Reviews, approvals and releases without the chaos.</p>
+        <ul class="mk-feature-checks"><li>Inline review threads</li><li>Approval flows</li><li>Release notes, written for you</li></ul>
+      </div>
+    </article>
+  </div>
+</section>
+<!-- Feature tabs -->
+<section class="mk-features" style="width:100%">
+  <div class="tabs mk-features-tabs">
+    <div class="tab-list" role="tablist" aria-label="Features">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="ft-plan" id="ft-tab-plan"><strong>Plan</strong><small>Roadmaps that stay current</small></button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ft-write" id="ft-tab-write" tabindex="-1"><strong>Write</strong><small>Docs with AI drafts</small></button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ft-ship" id="ft-tab-ship" tabindex="-1"><strong>Ship</strong><small>Releases on autopilot</small></button>
+    </div>
+    <div class="tab-content" role="tabpanel" id="ft-plan" aria-labelledby="ft-tab-plan" tabindex="0"><img src="/dist/documentation/images/mk-wide.png" alt=""></div>
+    <div class="tab-content" role="tabpanel" id="ft-write" aria-labelledby="ft-tab-write" tabindex="0" hidden><img src="/dist/documentation/images/mk-wide2.png" alt=""></div>
+    <div class="tab-content" role="tabpanel" id="ft-ship" aria-labelledby="ft-tab-ship" tabindex="0" hidden><img src="/dist/documentation/images/mk-wide3.png" alt=""></div>
+  </div>
+</section>
+<!-- Boxed cards -->
+<section class="mk-features" style="width:100%">
+  <div class="mk-feature-cards" data-variant="boxed">
+    <article class="mk-feature-card"><h3 class="mk-feature-card-title"><i data-lucide="activity"></i>Smarter Analytics</h3><p class="mk-feature-card-desc">Turn data into clarity with AI-powered insights.</p></article>
+    <article class="mk-feature-card"><h3 class="mk-feature-card-title"><i data-lucide="workflow"></i>Seamless Workflow</h3><p class="mk-feature-card-desc">Stay in the zone without context switching.</p></article>
+    <article class="mk-feature-card"><h3 class="mk-feature-card-title"><i data-lucide="users"></i>Team Alignment</h3><p class="mk-feature-card-desc">A single source of truth for projects and decisions.</p></article>
+    <article class="mk-feature-card"><h3 class="mk-feature-card-title"><i data-lucide="database"></i>Clear Decisions</h3><p class="mk-feature-card-desc">AI-driven insights when projects stall.</p></article>
+  </div>
+</section>
+</body>
 </html>

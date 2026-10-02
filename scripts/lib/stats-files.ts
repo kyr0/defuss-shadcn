@@ -4,6 +4,31 @@ import { join } from 'node:path';
 import { skillEntries } from './skill-files.ts';
 import { aggregateStats, buildStatsText, STATS_FILE, type BundleStats, type StatsDoc } from './stats.ts';
 import type { ComponentType } from './taxonomy.ts';
+import { ALL_PAGES } from '../../src/documentation/lib/nav.ts';
+
+/** TOK: the distinct custom properties the token file defines (light + dark
+ *  share names - each token counts once). */
+export function countTokens(distDir: string): number {
+  const file = join(distDir, 'theme', 'utils', 'default-semantic-tokens.css');
+  if (!existsSync(file)) return 0;
+  return new Set([...readFileSync(file, 'utf8').matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1])).size;
+}
+
+/** EXL: the live examples on the documentation pages - every ```… example
+ *  fence in the MDX sources (each renders one CodeExample). */
+export function countExamples(): number {
+  const dir = join(import.meta.dirname, '..', '..', 'src', 'documentation', 'pages');
+  if (!existsSync(dir)) return 0;
+  return readdirSync(dir).filter((f) => f.endsWith('.mdx'))
+    .reduce((n, f) => n + (readFileSync(join(dir, f), 'utf8').match(/^```[a-z]+ example\b/gm)?.length ?? 0), 0);
+}
+
+/** Template pages: nav items typed TPL that are pages, not component folders
+ *  (the decks, the website templates). The nav is the one list of pages. */
+export function countTemplatePages(componentNames: readonly string[]): number {
+  const comps = new Set(componentNames);
+  return ALL_PAGES.filter((p) => p.type === 'TPL' && !comps.has(p.href.replace(/\.html$/, ''))).length;
+}
 
 /**
  * Why: the file-system half of dist/stats.json generation, split from the
@@ -101,11 +126,8 @@ export function measureCore(componentsDir: string): BundleStats {
 /** The full stats.json text for one dist/ tree - writer and gate share this. */
 export function buildStatsFileText(distDir: string): string {
   const componentsDir = join(distDir, 'components');
-  return buildStatsText(
-    measureComponents(componentsDir),
-    measureBundle(componentsDir),
-    measureCore(componentsDir),
-  );
+  const measures = measureComponents(componentsDir);
+  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples() });
 }
 
 /** Write dist/stats.json and return the document (for the CLI summary line). */
@@ -114,6 +136,8 @@ export function writeStatsFile(distDir: string): StatsDoc {
   const measures = measureComponents(componentsDir);
   const bundle = measureBundle(componentsDir);
   const core = measureCore(componentsDir);
-  writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle, core));
-  return aggregateStats(measures, bundle, core);
+  const pages = countTemplatePages(measures.map((m) => m.name));
+  const extra = { tokens: countTokens(distDir), examples: countExamples() };
+  writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle, core, pages, extra));
+  return aggregateStats(measures, bundle, core, pages, extra);
 }

@@ -1,0 +1,72 @@
+---
+title: "Notification Settings"
+description: "Controls notification topics and delivery channels - a matrix of topics by channel, or a list of switches with a digest frequency."
+slug: "notification-settings"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="notification-settings" title="Notification Settings" component="notification-settings">
+  Controls notification topics and delivery channels - a matrix of topics by channel, or a list of switches with a digest frequency. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="notification-settings">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;table&gt;</code>: topics as row headers (with a description), channels as column headers, a Checkbox per cell with an <code>aria-label</code> naming both. Or a list of Switches and a frequency Select.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="switch.html">Switch</DocLink>, <DocLink href="select.html">Select</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table" title="real tabular data"><code>&lt;table&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-notification-settings</code>
+    <code>.mk-notification-settings-digest</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="list"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Matrix" hint="A real <table>: topics as row headers, channels as column headers, and a Checkbox in every cell labelled with both (&quot;Mentions by Email&quot;)." previewStyle="align-items:stretch;"
+<div class="mk-notification-settings">
+  <table>
+    <caption class="sr-only">Notifications by topic and channel</caption>
+    <thead><tr><th scope="col">Topic</th><th scope="col">Email</th><th scope="col">Push</th><th scope="col">SMS</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Mentions<small>When someone @mentions you</small></th><td><input class="checkbox" type="checkbox" name="mentions" value="email" checked aria-label="Mentions by Email"></td><td><input class="checkbox" type="checkbox" name="mentions" value="push" checked aria-label="Mentions by Push"></td><td><input class="checkbox" type="checkbox" name="mentions" value="sms" aria-label="Mentions by SMS"></td></tr>
+      <tr><th scope="row">Comments<small>Replies on your docs and tasks</small></th><td><input class="checkbox" type="checkbox" name="comments" value="email" checked aria-label="Comments by Email"></td><td><input class="checkbox" type="checkbox" name="comments" value="push" aria-label="Comments by Push"></td><td><input class="checkbox" type="checkbox" name="comments" value="sms" aria-label="Comments by SMS"></td></tr>
+      <tr><th scope="row">Assignments<small>Tasks assigned to you</small></th><td><input class="checkbox" type="checkbox" name="assignments" value="email" checked aria-label="Assignments by Email"></td><td><input class="checkbox" type="checkbox" name="assignments" value="push" checked aria-label="Assignments by Push"></td><td><input class="checkbox" type="checkbox" name="assignments" value="sms" checked aria-label="Assignments by SMS"></td></tr>
+      <tr><th scope="row">Weekly digest<small>A summary every Monday</small></th><td><input class="checkbox" type="checkbox" name="weekly-digest" value="email" checked aria-label="Weekly digest by Email"></td><td><input class="checkbox" type="checkbox" name="weekly-digest" value="push" aria-label="Weekly digest by Push"></td><td><input class="checkbox" type="checkbox" name="weekly-digest" value="sms" aria-label="Weekly digest by SMS"></td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="List" hint="data-variant='list': a Switch per topic and how often digests come." previewStyle="align-items:stretch;"
+<div class="mk-notification-settings" data-variant="list">
+  <ul>
+    <li><label for="ns-0">Mentions<small>When someone @mentions you</small></label><input class="switch" type="checkbox" role="switch" id="ns-0" checked></li>
+    <li><label for="ns-1">Comments<small>Replies on your docs and tasks</small></label><input class="switch" type="checkbox" role="switch" id="ns-1"></li>
+    <li><label for="ns-2">Assignments<small>Tasks assigned to you</small></label><input class="switch" type="checkbox" role="switch" id="ns-2" checked></li>
+  </ul>
+  <div class="mk-notification-settings-digest"><label for="ns-freq">Send a digest</label><select class="select" id="ns-freq"><option>Daily</option><option selected>Weekly</option><option>Never</option></select></div>
+</div>
+```
+
+<SourceFiles component="notification-settings" section="css" />
+
+</DocPage>

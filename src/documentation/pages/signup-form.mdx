@@ -1,0 +1,93 @@
+---
+title: "Signup Form"
+description: "Collects the information needed to create an account - name, email, a new password with its rules, consent - on a card or beside the benefits."
+slug: "signup-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="signup-form" title="Signup Form" component="signup-form">
+  Collects the information needed to create an account - name, email, a new password with its rules, consent - on a card or beside the benefits. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="signup-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code>: name (<code>autocomplete="name"</code>), email, a password with <code>autocomplete="new-password"</code>, <code>minlength</code> and a <code>pattern</code>, its rules in a list (<code>aria-describedby</code>), a required terms Checkbox and submit.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="social-login.html">Social Login</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="the browser fills known fields"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" title="errors show only after the user tried"><code>:user-invalid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-signup-form</code>
+    <code>.mk-signup-form-head</code>
+    <code>.mk-auth-field</code>
+    <code>.mk-signup-form-row</code>
+    <code>.mk-signup-form-foot</code>
+    <code>.mk-signup-form-rules</code>
+    <code>.mk-signup-form-terms</code>
+    <code>.mk-signup-form-layout</code>
+    <code>.mk-signup-form-pitch</code>
+    <code>.mk-signup-form-panel</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="split"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Name, email and a new password (autocomplete=&quot;new-password&quot; lets the browser suggest one; minlength and pattern check it, the rules are its description). Correct fields turn green with :user-valid." previewStyle="align-items:stretch;"
+<section class="mk-signup-form" aria-labelledby="su-title">
+  <div class="mk-signup-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="su-title">Create your account</h1><p>Free for 14 days. No credit card.</p></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="su-name">Full name</label><input class="input" id="su-name" name="name" autocomplete="name" required></div>
+    <div class="mk-auth-field"><label class="label" for="su-email">Work email</label><input class="input" id="su-email" type="email" name="email" autocomplete="email" required></div>
+    <div class="mk-auth-field"><label class="label" for="su-pass">Password</label><input class="input" id="su-pass" type="password" name="password" autocomplete="new-password" minlength="12" pattern="(?=.*[0-9\W]).{12,}" required aria-describedby="su-pass-rules"><ul class="mk-signup-form-rules" id="su-pass-rules"><li>At least 12 characters</li><li>A number or a symbol</li><li>Not your email address</li></ul></div>
+    <label class="mk-signup-form-terms"><input class="checkbox" type="checkbox" name="terms" required>I agree to the <a href="#">Terms</a> and the <a href="#">Privacy Policy</a>.</label>
+    <button class="btn" type="submit">Create account</button>
+  </form>
+  <p class="mk-signup-form-foot">Already have an account? <a href="#">Sign in</a></p>
+</section>
+```
+
+```html example label="Split" hint="data-variant='split': what you get, beside the form - from 44rem." previewStyle="align-items:stretch;"
+<section class="mk-signup-form" data-variant="split" aria-labelledby="su2-title">
+  <div class="mk-signup-form-layout">
+    <div class="mk-signup-form-pitch">
+      <h2>Everything your team needs</h2>
+      <ul>
+        <li><i data-lucide="layout-dashboard"></i><strong>Plans, docs and tasks</strong><span>One calm surface for all of it.</span></li>
+        <li><i data-lucide="wifi-off"></i><strong>Works offline</strong><span>Sync catches up when you do.</span></li>
+        <li><i data-lucide="shield-check"></i><strong>Private by default</strong><span>Hosted in the EU, never used for training.</span></li>
+      </ul>
+    </div>
+    <div class="mk-signup-form-panel">
+      <div class="mk-signup-form-head"><h1 id="su2-title">Start free</h1></div>
+      <form action="#" method="post">
+        <div class="mk-auth-field"><label class="label" for="su2-email">Work email</label><input class="input" id="su2-email" type="email" name="email" autocomplete="email" required></div>
+        <div class="mk-auth-field"><label class="label" for="su2-pass">Password</label><input class="input" id="su2-pass" type="password" name="password" autocomplete="new-password" minlength="12" required aria-describedby="su2-pass-rules"><ul class="mk-signup-form-rules" id="su2-pass-rules"><li>At least 12 characters</li><li>A number or a symbol</li><li>Not your email address</li></ul></div>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+    </div>
+  </div>
+</section>
+```
+
+<SourceFiles component="signup-form" section="css" />
+
+</DocPage>

@@ -1,0 +1,92 @@
+---
+title: "Offer Banner"
+description: "Presents a promotion with its conditions and action - a gradient card, a slim ribbon or a coupon with a tear-off edge."
+slug: "offer-banner"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="offer-banner" title="Offer Banner" component="offer-banner">
+  Presents a promotion with its conditions and action - a gradient card, a slim ribbon or a coupon with a tear-off edge. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="offer-banner">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code> with the discount, a title, the conditions in <code>&lt;small&gt;</code>, the code in a <code>&lt;code&gt;</code>, the deadline as <code>&lt;time&gt;</code> and an action.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image" title="shaped edges without images"><code>mask-image</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tints derived from the theme tokens"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-offer-banner</code>
+    <code>.mk-offer-banner-inner</code>
+    <code>.mk-offer-banner-discount</code>
+    <code>.mk-offer-banner-copy</code>
+    <code>.mk-offer-banner-title</code>
+    <code>.mk-offer-banner-terms</code>
+    <code>.mk-offer-banner-action</code>
+    <code>.mk-offer-banner-code</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>ribbon</code>, <code>coupon</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A card on a gradient in the theme's chart colors: the discount, the title, the conditions in <small>, the code (a <code> - select it with one click) and the action; one row from 44rem." previewStyle="align-items:stretch;"
+<section class="mk-offer-banner" aria-labelledby="offer-1">
+  <div class="mk-offer-banner-inner">
+    <span class="mk-offer-banner-discount">−30%</span>
+    <div class="mk-offer-banner-copy">
+      <h2 class="mk-offer-banner-title" id="offer-1">Autumn sale: 30% off every yearly plan</h2>
+      <small class="mk-offer-banner-terms">New subscriptions only. Ends <time datetime="2026-10-31">31 October 2026</time>. Cannot be combined with other offers.</small>
+    </div>
+    <div class="mk-offer-banner-action">
+      <code class="mk-offer-banner-code">AUTUMN30</code>
+      <a class="btn" href="#">Claim offer</a>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Ribbon" hint="data-variant='ribbon': one gradient line with the code - above a header or a pricing table." previewStyle="align-items:stretch;"
+<section class="mk-offer-banner" data-variant="ribbon" aria-labelledby="offer-2">
+  <div class="mk-offer-banner-inner">
+    <strong class="mk-offer-banner-title" id="offer-2">Black Friday: 40% off yearly plans</strong>
+    <span>Use code <code class="mk-offer-banner-code">BF40</code></span>
+    <small class="mk-offer-banner-terms">until <time datetime="2026-11-30">30 Nov</time></small>
+  </div>
+</section>
+```
+
+```html example label="Coupon" hint="data-variant='coupon': a ticket with notched edges (a CSS mask) and a dashed tear line between the discount and the details." previewStyle="align-items:stretch;"
+<section class="mk-offer-banner" data-variant="coupon" aria-labelledby="offer-3" style="max-width:34rem">
+  <div class="mk-offer-banner-inner">
+    <span class="mk-offer-banner-discount">€20</span>
+    <div class="mk-offer-banner-copy">
+      <h2 class="mk-offer-banner-title" id="offer-3">Welcome gift</h2>
+      <small class="mk-offer-banner-terms">On your first order over €80 · valid until <time datetime="2026-12-31">31 Dec 2026</time></small>
+      <div class="mk-offer-banner-action"><code class="mk-offer-banner-code">HELLO20</code></div>
+    </div>
+  </div>
+</section>
+```
+
+<SourceFiles component="offer-banner" section="css" />
+
+</DocPage>

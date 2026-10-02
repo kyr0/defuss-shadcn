@@ -1,0 +1,282 @@
+---
+title: "Cookie Consent"
+description: "Service-specific privacy choices, consent-gated scripts and embeds, and EN/DE preferences."
+slug: "cookie-consent"
+---
+
+import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, StatesSection, SourceFiles, SourceNote, H2, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="cookie-consent" title="Cookie Consent" component="cookie-consent">
+  Explicit, service-level privacy choices - and the scripts and embeds they govern stay inert until a service is allowed. Built from the library: a <DocLink href="dialog.html">Dialog</DocLink> holding <DocLink href="button.html">Buttons</DocLink>, a <DocLink href="select.html">Select</DocLink>, <DocLink href="tabs.html">Tabs</DocLink>, <DocLink href="checkbox.html">Checkbox</DocLink> rows and <DocLink href="badge.html">Badges</DocLink>. Accept and reject weigh the same; edits stay a draft until saved; choices are versioned, expire and fail closed; English and German.
+</PageHeader>
+
+<SkillPanel component="cookie-consent">
+  <SkillField label="Native basis"><SkillText>A native modal dialog (focus, Escape, backdrop, inert page) composed of the library's components; choices are native checkboxes (checked, disabled, indeterminate). All DOM querying and writes use defuss-query.</SkillText></SkillField>
+  <SkillField label="Built from"><SkillRow>
+    <code>.dialog</code>
+    <code>.btn</code>
+    <code>.select</code>
+    <code>.tab-list</code>
+    <code>.checkbox</code>
+    <code>.badge</code>
+  </SkillRow></SkillField>
+  <SkillField label="Web Platform APIs"><SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog" title="modal element with browser focus handling"><code>dialog</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Storage" title="versioned consent persistence"><code>Storage</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="dynamic resource reconciliation"><code>MutationObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="change and error notifications"><code>CustomEvent</code></ApiPill>
+  </SkillRow></SkillField>
+  <SkillField label="Variants and sizes"><SkillGrid>
+    <Variant name="default" description="Centered modal" />
+    <Variant name="corner" description="Bottom-right modal" />
+    <Variant name="sm / md / lg" description="Maximum widths 28 / 40 / 48rem" />
+    <Variant name="compact / comfortable / spacious" description="Content padding 1 / 1.5 / 2rem" />
+  </SkillGrid></SkillField>
+  <SkillField label="Consent rules"><SkillText>Essential services are always active. Functional, marketing, and other services start off. Category/service edits stay in draft until Save. Close and Escape discard edits. Accept all and Reject optional commit immediately.</SkillText></SkillField>
+  <SkillField label="Persistence"><SkillText>Choices carry a schema version, purpose revision, and timestamp. Default expiry is 180 days. Corrupt, expired, future-dated, and revision-mismatched records grant only essentials. Storage failure keeps the choice in memory and emits an error.</SkillText></SkillField>
+</SkillPanel>
+
+```html example label="Service preferences" hint="Open settings. Edits do not enable services until Save. This sandbox keeps choices in memory." height="42"
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-demo" aria-haspopup="dialog">Privacy settings</button>
+<div id="privacy-demo" class="cookie-consent" data-state-demo>
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false, "storage": null, "showFloatingButton": false,
+      "defaultLanguage": "en", "revision": "example-v1",
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": { "en": "Required site functions.", "de": "Notwendige Website-Funktionen." } },
+        { "id": "measurement", "name": "Measurement", "category": "functional", "description": { "en": "Optional usage measurement.", "de": "Optionale Nutzungsmessung." } },
+        { "id": "video", "name": "Video player", "category": "functional", "description": "Optional embedded videos.", "dataCollected": { "en": ["IP address", "Player events"], "de": ["IP-Adresse", "Player-Ereignisse"] } },
+        { "id": "ads", "name": "Advertising", "category": "marketing", "description": "Optional advertising integration." },
+        { "id": "newsletter", "name": "Newsletter", "category": "other", "description": "Optional newsletter integration." }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="What consent gates" schema="none" sandbox="embed" height="44" hint="A YouTube video in the Product Showcase: the poster and play button are the placeholder (data-consent-placeholder='none'), the iframe has no source. Press play without consent and the dialog opens on Services; allow YouTube and the poster gives way to the playing video. Reject optional: the player unloads, the poster returns. The poster is local - a YouTube thumbnail would already be a request to Google. The measurement script stays inert until you allow it, then runs once."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="btn" data-variant="outline" data-cookie-consent-open="gate-demo" aria-haspopup="dialog">Privacy settings</button>
+    <output class="text-sm text-muted-foreground" id="gate-log">No choice yet - only essential services run.</output>
+  </div>
+  <figure class="mk-showcase" id="gate-video">
+    <img class="mk-showcase-poster" alt="Big Buck Bunny - an open movie by the Blender Foundation" src="images/mk-wide2.png">
+    <iframe title="Big Buck Bunny on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+            data-cookie-consent="youtube" data-consent-placeholder="none"
+            data-consent-src="https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ?rel=0"></iframe>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+  <output class="text-sm" id="gate-measure">Measurement has not run.</output>
+</div>
+<div id="gate-demo" class="cookie-consent">
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false, "storage": null, "showFloatingButton": false, "revision": "gate-v1",
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." },
+        { "id": "measurement", "name": "Measurement", "category": "functional", "description": "Counts page views - runs once, after you allow it." },
+        { "id": "youtube", "name": "YouTube", "category": "functional", "domain": "youtube.com",
+          "description": "Plays embedded videos. YouTube (Google) receives your IP address and may set cookies.",
+          "url": "https://policies.google.com/privacy", "dataCollected": { "en": ["IP address", "Device information", "Watch activity"] } }
+      ]
+    }
+  </script>
+</div>
+<script type="text/plain" data-cookie-consent="measurement">
+  df$('#gate-measure').text(`Measurement ran at ${new Date().toLocaleTimeString()} - once.`);
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const consent = df$('#gate-demo').get(0);
+    const video = df$('#gate-video').get(0);
+    const frame = df$(video).find('iframe').get(0);
+    const source = frame.dataset.consentSrc;
+    let wantsToPlay = false;
+
+    // allowed: autoplay from now on - the consent runtime (re)loads the source
+    const play = () => {
+      df$(frame).attr('data-consent-src', `${source}&autoplay=1`);
+      consent.api.updateTagsActivation();
+      video.api.setState('playing');
+    };
+
+    // the play button asks first - capture runs before the showcase's own handler
+    df$(video).on('click', (e) => {
+      if (!e.target.closest('.mk-showcase-play')) return;
+      e.stopPropagation();
+      if (consent.api.isServiceAccepted('youtube')) return play();
+      wantsToPlay = true;
+      consent.api.setState('services');
+    }, { capture: true });
+
+    df$(consent).on('cookie-consent:change', (e) => {
+      const { acceptedServices } = e.detail.state;
+      df$('#gate-log').text(`${e.detail.reason}: ${acceptedServices.join(', ')}`);
+      if (acceptedServices.includes('youtube')) {
+        if (wantsToPlay) { wantsToPlay = false; play(); }
+      } else {
+        // withdrawn: the runtime unloaded the player - the poster returns
+        wantsToPlay = false;
+        df$(frame).attr('data-consent-src', source);
+        video.api.setState('default');
+      }
+    });
+  });
+</script>
+```
+
+```html example label="Your texts, any language" schema="none" height="40" hint="translations overrides any text per language - here the title, intro and buttons in English and German - and adds languages: fr only lists what French needs; every key it leaves out falls back to English, and the picker names each language in its own words (Intl.DisplayNames). Per service, description, url and dataCollected take one value per language. Switch the language inside the dialog."
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="i18n-demo" aria-haspopup="dialog">Privacy settings</button>
+<div id="i18n-demo" class="cookie-consent">
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false, "storage": null, "showFloatingButton": false, "defaultLanguage": "en",
+      "translations": {
+        "en": {
+          "title": "Cookies at Studio",
+          "text": "Studio needs a few essential services to work. Everything else is up to you - and you can change it any time.",
+          "acceptAll": "Allow all", "denyAll": "Essential only"
+        },
+        "de": {
+          "title": "Cookies bei Studio",
+          "text": "Studio braucht einige notwendige Dienste. Alles andere entscheiden Sie - und können es jederzeit ändern.",
+          "acceptAll": "Alle erlauben", "denyAll": "Nur notwendige"
+        },
+        "fr": {
+          "title": "Les cookies chez Studio",
+          "text": "Studio a besoin de quelques services essentiels. Pour le reste, c'est vous qui décidez - et vous pouvez changer d'avis à tout moment.",
+          "settings": "Paramètres de confidentialité", "close": "Fermer sans enregistrer", "language": "Langue",
+          "preferences": "Préférences de confidentialité", "preferencesText": "Choisissez des catégories ou des services. Les changements s'appliquent à l'enregistrement.",
+          "categories": "Catégories", "services": "Services", "acceptAll": "Tout autoriser", "denyAll": "Essentiels uniquement",
+          "save": "Enregistrer", "required": "Requis", "moreInformation": "Plus d'informations",
+          "categoryNames": { "essential": "Essentiels", "functional": "Fonctionnels", "marketing": "Marketing", "other": "Autres" },
+          "categoryDescriptions": {
+            "essential": "Nécessaires au fonctionnement du site.",
+            "functional": "Fonctions optionnelles et mesure d'audience.",
+            "marketing": "Publicité et mesure des campagnes.",
+            "other": "Autres traitements optionnels."
+          }
+        }
+      },
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential",
+          "description": { "en": "Keeps you signed in.", "de": "Hält Sie angemeldet.", "fr": "Vous garde connecté." } },
+        { "id": "support", "name": "Support chat", "category": "functional",
+          "description": { "en": "Lets you chat with our team.", "de": "Damit Sie mit unserem Team chatten können.", "fr": "Pour discuter avec notre équipe." },
+          "dataCollected": { "en": ["Messages", "Browser language"], "de": ["Nachrichten", "Browsersprache"], "fr": ["Messages", "Langue du navigateur"] } }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Small / compact" hint="28rem maximum width; 1rem content padding." height="34"
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-small" aria-haspopup="dialog">Open small</button>
+<div id="privacy-small" class="cookie-consent" data-size="sm" data-density="compact">
+  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [{ "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." }, { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }] }</script>
+</div>
+```
+
+```html example label="Medium / comfortable" hint="40rem maximum width; 1.5rem padding matches the default." height="34"
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-medium" aria-haspopup="dialog">Open medium</button>
+<div id="privacy-medium" class="cookie-consent" data-size="md" data-density="comfortable">
+  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [{ "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." }, { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }] }</script>
+</div>
+```
+
+```html example label="Large / spacious" hint="48rem maximum width; 2rem content padding." height="34"
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-large" aria-haspopup="dialog">Open large</button>
+<div id="privacy-large" class="cookie-consent" data-size="lg" data-density="spacious">
+  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [{ "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." }, { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }] }</script>
+</div>
+```
+
+```html example label="Banner (first visit)" schema="none" height="26" hint="data-variant='banner' with autoShow: on a first visit the consent is a bar along the bottom of the page - NOT a modal, the page stays usable (show(), no inert background). Copy sits beside the buttons on wide screens. Settings switches it to the full modal dialog; any decision closes it. (storage: null here, so it comes back on every load - a real page persists the choice.)" previewStyle="align-items:stretch;"
+<div style="display:grid;gap:1rem;max-width:40rem;padding-block-end:12rem">
+  <h2 style="margin:0;font-size:1.5rem">Welcome to Acme</h2>
+  <p style="margin:0;color:var(--muted-foreground)">The page stays usable while the banner waits at the bottom - it is not a modal. Choose Settings and it becomes the full dialog.</p>
+  <button type="button" class="btn" data-variant="outline" style="justify-self:start" data-cookie-consent-open="banner-demo">Show the banner again</button>
+</div>
+<div id="banner-demo" class="cookie-consent" data-variant="banner">
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": true, "storage": null, "showFloatingButton": false,
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": "Keeps you signed in." },
+        { "id": "analytics", "name": "Analytics", "category": "functional", "description": "Counts visits so we know what to improve." },
+        { "id": "ads", "name": "Campaigns", "category": "marketing", "description": "Measures our advertising." }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Corner / German" hint="Bottom-right modal using the same consent contract and keyboard controls." height="34"
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-corner" aria-haspopup="dialog">Einstellungen</button>
+<div id="privacy-corner" class="cookie-consent" data-variant="corner">
+  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "defaultLanguage": "de", "cookieOrigins": [{ "id": "session", "name": "Sitzung", "category": "essential", "description": "Notwendige Website-Funktionen." }, { "id": "feature", "name": "Zusatzfunktion", "category": "functional", "description": "Optionale Zusatzfunktion." }] }</script>
+</div>
+```
+
+<H2 id="integration">Resource gating and API</H2>
+
+<p>Author scripts as inert placeholders and omit iframe source attributes. Only the accepted service receives its resource URL. Do not use an executable script type or a live iframe source before consent: initialization cannot undo earlier execution or network requests.</p>
+
+```html
+<script type="text/plain" data-cookie-consent="measurement"
+        data-consent-src="/measurement.js" nonce="csp-nonce"></script>
+<script type="text/plain" data-cookie-consent="feature"
+        data-consent-type="module" data-consent-src="/feature.mjs"></script>
+<iframe title="Optional video" data-cookie-consent="video"
+        data-consent-src="/video-player.html" loading="lazy"></iframe>
+```
+
+<p>Use programmatic configuration for revocation hooks or custom storage. The existing <code>cookieOrigins</code> field and category identifiers are preserved. The <code>other</code> category is optional; legacy optional <code>consent: true</code> values do not bypass choice.</p>
+
+```ts
+const root = df$('#privacy')[0];
+const consent = df$.shadcn.cookieConsent.create(root, {
+  revision: '2026-10',
+  storageKey: 'site:privacy',
+  cookieOrigins: [{
+    id: 'measurement', name: 'Measurement', category: 'functional',
+    description: 'Measures usage after your explicit permission.',
+    cookies: [{ name: 'measurement', path: '/' }],
+    onRevoke: () => measurementSdk.stop(),
+  }],
+});
+consent.open();
+consent.isServiceAccepted('measurement');
+consent.getConsent();
+df$(root).on('cookie-consent:change', event => {
+  console.log(event.detail.state, event.detail.reason);
+});
+```
+
+<p>Removing an executed script does not undo its effects. Supply service cleanup through <code>onRevoke</code> or handle withdrawal in your host application. Each script placeholder executes once; a regrant requires host SDK lifecycle handling or a reload. Iframe denial unloads the document. Cookie deletion needs the matching path and domain; third-party and HttpOnly cookies require browser/server handling.</p>
+
+<p>Instance methods: <code>open</code>, <code>close</code>, <code>acceptAll</code>, <code>denyAll</code>, <code>save</code>, <code>acceptService</code>, <code>revokeService</code>, <code>getConsent</code>, <code>getDraft</code>, <code>isServiceAccepted</code>, <code>setLanguage</code>, <code>reset</code>, <code>updateTagsActivation</code>, and <code>destroy</code>. Use <code>resourceRoot</code> to isolate independent instances. Preserve stable host/service IDs and increase <code>revision</code> when purposes change.</p>
+
+<StatesSection>
+  <p>Named states: <code>default</code> closes, <code>open</code> shows the introduction, <code>preferences</code> shows categories, and <code>services</code> shows individual services. Drive them through <code>root.api.setState(name)</code>. Named states change presentation only and never grant consent.</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | The introduction: the explanation and three equal-weight actions. |
+| `preferences` | `boolean` | `true`, `false` | `false` | The category choices (a draft until saved). |
+| `services` | `boolean` | `true`, `false` | `false` | The individual services with their details. |
+```
+
+</StatesSection>
+
+<SourceFiles component="cookie-consent" section="css" />
+<SourceFiles component="cookie-consent" section="js">
+  <SourceNote for="js">Load core before the component. Inert resources are reconciled after dynamic insertion. Storage and lifecycle errors are emitted as cookie-consent:error.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -319,7 +319,16 @@ export function mount(el, option = {}) {
     live.add(el);
     watchTheme();
     instance.setOption(option, true);
-    const ro = new ResizeObserver(() => instance.resize());
+    // resize on the next frame, not inside the observer: a synchronous resize
+    // changes layout mid-delivery and the browser reports "ResizeObserver loop
+    // completed with undelivered notifications" (a view switch, a sidebar
+    // collapsing beside the chart)
+    let frame = 0;
+    const ro = new ResizeObserver(() => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => { if (!instance.isDisposed?.())
+            instance.resize(); });
+    });
     ro.observe(el);
     observers.set(el, ro);
     replayOnSlide(el);
@@ -610,8 +619,6 @@ export const chartApi = {
         };
     },
 };
-// the registry's `*Api` index signature is typed for the BOUND per-element
-// api; components register the el-first registry form (AGENTS.md "State API")
 df$.chartApi = chartApi;
 df$.chartStates = chartStates;
 df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };

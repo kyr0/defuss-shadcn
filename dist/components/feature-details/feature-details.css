@@ -29,6 +29,7 @@
   .mk-features-eyebrow { color: var(--primary); font-size: 1rem; font-weight: 500; }
 
   .mk-features-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -62,6 +63,7 @@
   .mk-feature-copy { display: flex; flex: 1; flex-direction: column; gap: 0.375rem; }
 
   .mk-feature-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -96,6 +98,7 @@
   .mk-feature-card { display: flex; flex-direction: column; gap: 0.75rem; max-width: 36rem; }
 
   .mk-feature-card-title {
+    line-height: 1.3;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -118,11 +121,110 @@
     .mk-feature-cards { grid-template-columns: 1fr 1fr; }
   }
 
-  @container mk-features (min-width: 52rem) {
+  /* four across only once every title fits on one line next to its icon */
+  @container mk-features (min-width: 64rem) {
     .mk-feature-cards { grid-template-columns: repeat(4, 1fr); gap: 2.25rem; }
   }
 
+  /* bento: tiles of different sizes - data-span="wide" (2 columns) /
+     "tall" (2 rows); a tile holds an icon, copy and optional media */
+  .mk-features-bento {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    grid-auto-flow: dense;
+    gap: 1rem;
+  }
+  .mk-bento-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 11rem;
+    padding: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+
+    & svg:first-child { width: 1.5rem; height: 1.5rem; color: var(--primary); }
+    & h3 { margin: 0.5rem 0 0; font-size: 1.125rem; font-weight: 600; line-height: 1.3; }
+    & p { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; line-height: 1.55; }
+    & img { width: calc(100% + 3rem); margin: auto -1.5rem -1.5rem; aspect-ratio: 16 / 9; object-fit: cover; }
+
+    &[data-span="wide"] { grid-column: span 2; }
+    &[data-span="tall"] { grid-row: span 2; }
+    &[data-tone="primary"] { border-color: transparent; background: var(--primary); color: var(--primary-foreground); }
+    &[data-tone="primary"] :is(p, svg:first-child) { color: color-mix(in oklch, var(--primary-foreground) 80%, transparent); }
+  }
+  @container mk-features (max-width: 34rem) {
+    .mk-bento-tile[data-span="wide"] { grid-column: auto; }
+  }
+
+  /* alternating: zig-zag rows - media and copy swap sides every other row */
+  .mk-feature-rows { display: grid; gap: 4rem; }
+  .mk-feature-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    align-items: center;
+    gap: 2rem 3rem;
+
+    & .mk-feature-media { aspect-ratio: 4 / 3; border-radius: var(--radius-xl); }
+  }
+  @container mk-features (min-width: 44rem) {
+    .mk-feature-row:nth-child(even) .mk-feature-media { order: 2; }
+  }
+  .mk-feature-checks {
+    display: grid;
+    gap: 0.625rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+
+    & li { display: flex; gap: 0.625rem; align-items: flex-start; }
+    & li::before {
+      content: "";
+      flex: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-block-start: 0.125rem;
+      border-radius: 50%;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 0.75rem no-repeat,
+        var(--primary);
+    }
+  }
+
+  /* tabs: a Tabs component - the triggers as a feature list, the panel shows it */
+  .mk-features-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.5rem 2.5rem;
+    align-items: start;
+
+    & .tab-list { flex-direction: column; align-items: stretch; height: auto; gap: 0.25rem; padding: 0.375rem; }
+    & .tab-trigger { flex-direction: column; align-items: flex-start; gap: 0.125rem; height: auto; padding: 0.875rem 1rem; text-align: start; white-space: normal; }
+    & .tab-trigger small { color: var(--muted-foreground); font-weight: 400; font-size: 0.8125rem; }
+    & .tab-content img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-xl); }
+  }
+
+  /* boxed: the benefit cards on card surfaces with an icon tile */
+  .mk-feature-cards[data-variant="boxed"] .mk-feature-card {
+    max-width: none;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 25%, var(--border)); box-shadow: var(--shadow-md); }
+    & .mk-feature-card-title svg { padding: 0.5rem; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--primary) 10%, transparent); color: var(--primary); box-sizing: border-box; }
+  }
+
   /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-feature-cards[data-variant="boxed"] .mk-feature-card { transition: none; }
+  }
+
   @media (forced-colors: active) {
     .mk-features-grid { border-bottom-color: CanvasText; }
     .mk-feature-sep { background: CanvasText; }

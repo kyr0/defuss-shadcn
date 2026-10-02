@@ -48,6 +48,7 @@ The runtime appends the handles (`data-ce-chrome` marked - sandbox-safe):
 | `data-handles` | space list of `n e s w ne nw se sw`, or `all` | `se` | which handles get placed |
 | `data-resize-mode` | `px` \| `classes` \| `controlled` | `px` | inline px / w-N-h-N classes (sizing.css ladder, integer steps 16–96) / size owned by the consumer via `resizer-resize` events |
 | `data-axis` | `both` \| `w` \| `h` | `both` | which axes any handle resizes |
+| `data-variant` | `divider` | - | a split pane's edge: edge handles become full-length strips, invisible until hovered / focused / dragged (then a thin line), no dashed outline while resizing, and a double-click on a handle resets to the authored size. Corners keep their chip |
 | `data-keys` | `edge` | - | the arrows move the handle's edge (a divider - the window-splitter pattern): ArrowLeft grows a box from its `w` handle, ArrowDown from its `s` handle. Without it ArrowRight/Up grow |
 | `data-min` / `data-max` | px | `80` / `2000` | shared clamp; per-axis `data-min-w`/`data-max-w`/`data-min-h`/`data-max-h` override |
 | `data-step` | px | `1` | drag quantization (px mode) |
@@ -78,6 +79,8 @@ equivalent to `setState('default')`.
 | Drag feedback | wrapper gets `data-resizing` - dashed outline + active handle highlight |
 
 ## Notes
+
+- **A split pane:** `data-variant="divider" data-handles="e" data-axis="w" data-keys="edge"` on the wrapper of a sidebar or list column - drag or arrow keys move the edge, a double-click restores the authored width. Give the wrapper the column's height (`height: 100%` in a grid or a stretched flex item) so the strip runs the full length.
 
 - The wrapper must have exactly one element child - init skips empty wrappers.
   Inline `style="resize:none"` on the child neutralizes native CSS resize (the

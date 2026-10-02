@@ -1,0 +1,91 @@
+---
+title: "Code Example"
+description: "Displays code with optional language tabs and copying controls - tabs for each package manager, a file header, highlighted lines, or one command to copy."
+slug: "code-block"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="code-block" title="Code Example" component="code-block">
+  Displays code with optional language tabs and copying controls - tabs for each package manager, a file header, highlighted lines, or one command to copy. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="code-block">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;figure&gt;</code>: a header with radio "tabs" (or a file name) and a copy button, then one <code>&lt;pre&gt;&lt;code&gt;</code> per tab (<code>data-tab</code>, shown with <code>:has(:checked)</code>); lines as <code>&lt;span&gt;</code>s get counters and <code>data-highlight</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters" title="numbering without markup"><code>CSS counters</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API" title="copy on click"><code>Clipboard API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd" title="keyboard input"><code>&lt;kbd&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-code-block</code>
+    <code>.mk-code-block-head</code>
+    <code>.mk-code-block-file</code>
+    <code>.mk-code-block-tabs</code>
+    <code>.mk-code-block-copy</code>
+    <code>.mk-code-block-c</code>
+    <code>.mk-code-block-k</code>
+    <code>.mk-code-block-s</code>
+    <code>.mk-code-block-status</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>file</code>, <code>inline</code>; <code>data-tab</code> on panels; <code>data-highlight</code> on lines; <code>data-numbers</code> on <code>&lt;pre&gt;</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Radio &quot;tabs&quot; switch the install command - read by :has(), no script. The copy button uses the Clipboard API (one line of page script) and announces &quot;Copied&quot;." previewStyle="align-items:stretch;"
+<figure class="mk-code-block">
+  <div class="mk-code-block-head">
+  <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
+    <label><input type="radio" name="cb-pm" value="npm" checked>npm</label><label><input type="radio" name="cb-pm" value="pnpm">pnpm</label><label><input type="radio" name="cb-pm" value="bun">bun</label>
+  </div>
+    <button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button>
+  </div>
+  <pre data-tab="npm"><code><span>npm install defuss-shadcn</span></code></pre>
+  <pre data-tab="pnpm"><code><span>pnpm add defuss-shadcn</span></code></pre>
+  <pre data-tab="bun"><code><span>bun add defuss-shadcn</span></code></pre>
+  <span class="mk-code-block-status" role="status"></span>
+</figure>
+<script>
+  document.querySelectorAll('.mk-code-block-copy').forEach((b) => b.addEventListener('click', async () => {
+    const fig = b.closest('.mk-code-block');
+    const pre = [...fig.querySelectorAll('pre')].find((p) => p.checkVisibility());
+    try { await navigator.clipboard.writeText(pre.innerText.trim()); } catch { return; }
+    b.toggleAttribute('data-copied', true);
+    fig.querySelector('.mk-code-block-status').textContent = 'Copied';
+    setTimeout(() => { b.removeAttribute('data-copied'); fig.querySelector('.mk-code-block-status').textContent = ''; }, 1500);
+  }));
+</script>
+```
+
+```html example label="File" hint="data-variant='file': the file name in the header, line numbers from a CSS counter (data-numbers) and two highlighted lines (data-highlight)." previewStyle="align-items:stretch;"
+<figure class="mk-code-block" data-variant="file">
+  <div class="mk-code-block-head"><span class="mk-code-block-file"><i data-lucide="file-code"></i>app/layout.html</span><button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button></div>
+  <pre data-numbers><code><span><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"theme/utils/default-semantic-tokens.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"components/all.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;script</span> type=<span class="mk-code-block-s">"module"</span> src=<span class="mk-code-block-s">"components/all.js"</span><span class="mk-code-block-k">&gt;&lt;/script&gt;</span></span><span><span class="mk-code-block-c">&lt;!-- that's it: every component, styled and wired --&gt;</span></span></code></pre>
+  <span class="mk-code-block-status" role="status"></span>
+</figure>
+```
+
+```html example label="Inline" hint="data-variant='inline': one command on a line - the prompt ($) is drawn by CSS and never copied." previewStyle="align-items:stretch;"
+<figure class="mk-code-block" data-variant="inline">
+  <pre><code><span>npx skills add kyr0/defuss-shadcn</span></code></pre>
+  <button class="mk-code-block-copy" type="button" aria-label="Copy command"><i data-lucide="copy"></i></button>
+  <span class="mk-code-block-status" role="status"></span>
+</figure>
+```
+
+<SourceFiles component="code-block" section="css" />
+
+</DocPage>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>download-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/download-item/download-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- List -->
+    <section class="fx">
+<div style="display:grid;gap:0.75rem;max-width:44rem;width:100%">
+  <article class="mk-download-item">
+    <span class="mk-download-item-file" data-ext="DMG" aria-hidden="true">DMG</span>
+    <div class="mk-download-item-body">
+      <h3 class="mk-download-item-name">Acme for macOS</h3>
+      <p class="mk-download-item-desc">Universal build for Apple silicon and Intel.</p>
+      <p class="mk-download-item-meta"><span>v4.0.2</span><span>148 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p>
+      <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>9f2c…a41b 7e08 3d55 c1f0 66b2 e9a4 0c71</code></details>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Acme for macOS (DMG, 148 MB)"><i data-lucide="download"></i> Download</a>
+  </article>
+  <article class="mk-download-item">
+    <span class="mk-download-item-file" data-ext="EXE" aria-hidden="true">EXE</span>
+    <div class="mk-download-item-body">
+      <h3 class="mk-download-item-name">Acme for Windows</h3>
+      <p class="mk-download-item-desc">Windows 10 and 11, 64-bit.</p>
+      <p class="mk-download-item-meta"><span>v4.0.2</span><span>132 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p>
+      <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>41d0…77e2 9b13 0aa6 f2c8 15e4 b7d9 3c02</code></details>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Acme for Windows (EXE, 132 MB)"><i data-lucide="download"></i> Download</a>
+  </article>
+  <article class="mk-download-item">
+    <span class="mk-download-item-file" data-ext="PDF" aria-hidden="true">PDF</span>
+    <div class="mk-download-item-body">
+      <h3 class="mk-download-item-name">Security whitepaper</h3>
+      <p class="mk-download-item-desc">How Acme stores, encrypts and hosts your data.</p>
+      <p class="mk-download-item-meta"><span>Edition 2026</span><span>2.4 MB</span><span><time datetime="2026-08-01">1 Aug 2026</time></span></p>
+      <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>c8a1…0f3e 52d7 9e14 7ab0 c3f6 1d28 e5b9</code></details>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Security whitepaper (PDF, 2.4 MB)"><i data-lucide="download"></i> Download</a>
+  </article>
+</div>
+    </section>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem;width:100%">
+  <article class="mk-download-item" data-variant="card">
+    <span class="mk-download-item-file" data-ext="PDF" aria-hidden="true">PDF</span>
+    <div class="mk-download-item-body">
+      <h3 class="mk-download-item-name">Security whitepaper</h3>
+      <p class="mk-download-item-desc">How Acme stores, encrypts and hosts your data.</p>
+      <p class="mk-download-item-meta"><span>Edition 2026</span><span>2.4 MB</span><span><time datetime="2026-08-01">1 Aug 2026</time></span></p>
+      <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>c8a1…0f3e 52d7 9e14 7ab0 c3f6 1d28 e5b9</code></details>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Security whitepaper (PDF, 2.4 MB)"><i data-lucide="download"></i> Download</a>
+  </article>
+  <article class="mk-download-item" data-variant="card">
+    <span class="mk-download-item-file" data-ext="ZIP" aria-hidden="true">ZIP</span>
+    <div class="mk-download-item-body">
+      <h3 class="mk-download-item-name">Press kit</h3>
+      <p class="mk-download-item-desc">Logos, screenshots and photos.</p>
+      <p class="mk-download-item-meta"><span>October 2026</span><span>38 MB</span><span><time datetime="2026-08-01">1 Aug 2026</time></span></p>
+      <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>c8a1…0f3e 52d7 9e14 7ab0 c3f6 1d28 e5b9</code></details>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Press kit (ZIP, 38 MB)"><i data-lucide="download"></i> Download</a>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

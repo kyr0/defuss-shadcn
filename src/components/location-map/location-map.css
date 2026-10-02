@@ -1,0 +1,97 @@
+/* -- Location Map (website · Events & Promotions) -------------------------
+   Displays one or more locations on an interactive map - pins open a card anchored to them, a list beside the map names every place. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-location-map, .mk-location-map *, .mk-location-map ::before, .mk-location-map ::after) { box-sizing: border-box; }
+
+  .mk-location-map { container: mk-location-map / inline-size; display: grid; gap: 1rem; width: 100%; }
+  .mk-location-map-canvas {
+    position: relative;
+    overflow: hidden;
+    min-height: 20rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+  }
+  .mk-location-map-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mk-location-map-land { fill: color-mix(in oklch, var(--muted) 85%, var(--background)); }
+  .mk-location-map-water { fill: color-mix(in oklab, oklch(0.7 0.1 230) 35%, var(--muted)); }
+  .mk-location-map-park { fill: color-mix(in oklab, oklch(0.75 0.12 150) 30%, var(--muted)); }
+  .mk-location-map-roads path { fill: none; stroke: var(--background); stroke-width: 10; stroke-linecap: round; }
+  .mk-location-map-streets path { fill: none; stroke: color-mix(in oklch, var(--background) 70%, transparent); stroke-width: 4; }
+
+  .mk-location-map-pin {
+    position: absolute;
+    left: var(--x, 50%);
+    top: var(--y, 50%);
+    translate: -50% -100%;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    filter: drop-shadow(0 2px 3px oklch(0 0 0 / 0.35));
+    transition: scale 150ms ease;
+    transform-origin: 50% 100%;
+
+    & svg { width: 2.25rem; height: 2.25rem; fill: currentColor; stroke: var(--background); stroke-width: 1.5; }
+    &:hover, &:focus-visible { scale: 1.15; }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 50%; }
+  }
+  .mk-location-map-popup {
+    width: 15rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-lg);
+    font-size: 0.875rem;
+
+    & strong { display: block; font-size: 0.9375rem; }
+    & address { margin-block: 0.25rem 0.5rem; color: var(--muted-foreground); font-style: normal; }
+    & a { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--primary); font-weight: 600; text-decoration: none; }
+    & a svg { width: 0.875rem; height: 0.875rem; }
+  }
+  @supports (position-anchor: --a) {
+    /* anchored to its pin; without support the popover stays centered (its default) */
+    .mk-location-map-popup { inset: auto; margin: 0 0 0.5rem; position-area: top; position-try-fallbacks: flip-block, flip-inline; }
+  }
+
+  .mk-location-map-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    align-content: start;
+
+    & li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 0.75rem; padding: 0.75rem; border-radius: var(--radius-lg); }
+    & li:hover { background: var(--accent); }
+    & b { grid-row: span 2; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); font-size: 0.75rem; }
+    & strong { font-size: 0.9375rem; }
+    & span { color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+
+  .mk-location-map[data-variant="full"] .mk-location-map-canvas { min-height: 28rem; }
+
+  @container mk-location-map (min-width: 48rem) {
+    .mk-location-map:not([data-variant]) > * { min-width: 0; }
+    .mk-location-map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 16rem; gap: 1rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-location-map-pin { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-location-map-pin svg { fill: Highlight; stroke: Canvas; }
+    .mk-location-map-popup { border-color: CanvasText; }
+  }
+}

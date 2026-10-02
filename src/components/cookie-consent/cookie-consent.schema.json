@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "name": "cookie-consent",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".cookie-consent"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "preferences": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".cookie-consent"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "preferences"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "services": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".cookie-consent"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "services"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "close": {
+      "target": {
+        "kind": "selector",
+        "selector": ".cookie-consent-dialog"
+      },
+      "operation": {
+        "kind": "method",
+        "name": "close"
+      }
+    }
+  }
+}

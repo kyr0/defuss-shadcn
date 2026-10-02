@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>comment-header e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/toggle/toggle.css" />
+    <link rel="stylesheet" href="/dist/components/toggle-group/toggle-group.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/alert/alert.css" />
+    <link rel="stylesheet" href="/dist/components/comment-header/comment-header.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<header class="mk-comment-header">
+  <h2 class="mk-comment-header-title">Comments <span class="badge" data-variant="secondary">128</span></h2>
+  <div class="mk-comment-header-actions">
+    <label class="mk-comment-header-sort">Sort by
+      <select class="select" data-size="sm" name="sort">
+        <option>Top</option>
+        <option>Newest</option>
+        <option>Oldest</option>
+      </select>
+    </label>
+    <button type="button" class="btn" data-variant="outline" data-size="sm"><i data-lucide="bell"></i> Follow</button>
+  </div>
+</header>
+    </section>
+    <!-- Sort links -->
+    <section class="fx">
+<header class="mk-comment-header" data-variant="plain">
+  <h2 class="mk-comment-header-title">Discussion <span class="badge" data-variant="secondary">42</span></h2>
+  <nav class="mk-comment-header-tabs" aria-label="Sort comments">
+    <a href="#" aria-current="page">Top</a>
+    <a href="#">Newest</a>
+    <a href="#">Oldest</a>
+  </nav>
+</header>
+    </section>
+    <!-- Toggle sort and participants -->
+    <section class="fx">
+<header class="mk-comment-header">
+  <h2 class="mk-comment-header-title">Discussion <span class="badge" data-variant="secondary">86</span></h2>
+  <div class="toggle-group" role="group" aria-label="Sort comments" data-type="single" data-size="sm">
+    <button class="toggle" aria-pressed="true" value="top"><i data-lucide="flame"></i> Top</button>
+    <button class="toggle" aria-pressed="false" value="new"><i data-lucide="clock"></i> New</button>
+    <button class="toggle" aria-pressed="false" value="old">Oldest</button>
+  </div>
+  <div class="mk-comment-header-people">
+    <div class="avatar-group">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <span class="avatar-group-count">+12</span>
+    </div>
+    <span><strong>Hannah</strong>, <strong>Sophie</strong> and 12 others are talking</span>
+  </div>
+</header>
+    </section>
+    <!-- Closed -->
+    <section class="fx">
+<div style="display:grid;gap:1rem;width:100%">
+  <header class="mk-comment-header">
+    <h2 class="mk-comment-header-title">Comments <span class="badge" data-variant="secondary">214</span></h2>
+  </header>
+  <div class="alert" role="status">
+    <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <div class="alert-content">
+      <h5 class="alert-title">Comments are closed</h5>
+      <p class="alert-description">This discussion was archived 30 days after publication.</p>
+    </div>
+  </div>
+</div>
+    </section>
+  </body>
+</html>

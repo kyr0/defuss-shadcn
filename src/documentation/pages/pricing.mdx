@@ -60,7 +60,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <h2 class="mk-pricing-title">Simple Pricing, Smarter Work</h2>
     <p class="mk-pricing-desc">Acme has a plan designed to help you move faster.</p>
     <div class="mk-pricing-billing" role="radiogroup" aria-label="Billing period">
-      <label><input class="mk-bill-yearly" type="radio" name="mk-billing" checked ></input>Billed yearly</label>
+      <label><input class="mk-bill-yearly" type="radio" name="mk-billing" checked ></input>Billed yearly <span class="badge" data-variant="secondary" data-size="xs">Save 20%</span></label>
       <label><input class="mk-bill-monthly" type="radio" name="mk-billing" ></input>Billed monthly</label>
     </div>
   </div>
@@ -87,28 +87,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Community support</span></li>
       </ul>
     </article>
-    <article class="mk-plan" data-featured>
-      <header class="mk-plan-header"><span class="mk-plan-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span><span class="badge">Most Popular</span></header>
-      <div class="mk-plan-body">
-        <h3 class="mk-plan-title">Pro</h3>
-        <p class="mk-plan-desc">For fast-moving teams that want to collaborate in real time.</p>
-      </div>
-      <div class="mk-plan-price mk-price-yearly">
-        <span class="mk-plan-amount">$24</span>
-        <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div>
-      </div>
-      <div class="mk-plan-price mk-price-monthly">
-        <span class="mk-plan-amount">$29</span>
-        <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Plus local taxes</span></div>
-      </div>
-      <div class="mk-plan-cta"><button type="button" class="btn" data-size="lg">Get started</button></div>
-      <ul class="mk-plan-features">
-        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Everything in Starter</span></li>
-        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Real-time collaboration</span></li>
-        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Advanced reporting</span></li>
-        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Priority support</span></li>
-      </ul>
-    </article>
+    <div class="aura aura-gold aura-sm">
+      <article class="mk-plan" data-featured>
+        <header class="mk-plan-header"><span class="mk-plan-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span><span class="badge mk-plan-badge" data-variant="default"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Most popular</span></header>
+        <div class="mk-plan-body">
+          <h3 class="mk-plan-title">Pro</h3>
+          <p class="mk-plan-desc">For fast-moving teams that want to collaborate in real time.</p>
+        </div>
+        <div class="mk-plan-price mk-price-yearly">
+          <span class="mk-plan-amount">$24</span>
+          <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div>
+        </div>
+        <div class="mk-plan-price mk-price-monthly">
+          <span class="mk-plan-amount">$29</span>
+          <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Plus local taxes</span></div>
+        </div>
+        <div class="mk-plan-cta"><button type="button" class="btn" data-size="lg">Get started</button></div>
+        <ul class="mk-plan-features">
+          <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Everything in Starter</span></li>
+          <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Real-time collaboration</span></li>
+          <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Advanced reporting</span></li>
+          <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Priority support</span></li>
+        </ul>
+      </article>
+    </div>
     <article class="mk-plan">
       <header class="mk-plan-header"><span class="mk-plan-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg></span></header>
       <div class="mk-plan-body">
@@ -131,6 +133,104 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Custom integrations</span></li>
       </ul>
     </article>
+  </div>
+</section>
+```
+
+```html example label="Comparison table" hint=".mk-pricing-compare: the Table component compares the plans - checks and dashes are labelled icons, the featured column is tinted with a primary rule on top; the table scrolls sideways on narrow screens." previewStyle="align-items:stretch;"
+<section class="mk-pricing" style="width:100%">
+  <div class="mk-pricing-compare">
+    <table class="table">
+      <thead><tr class="table-row"><th class="table-head">Feature</th><th class="table-head">Starter</th><th class="table-head" data-featured>Pro</th><th class="table-head">Enterprise</th></tr></thead>
+      <tbody>
+        <tr class="table-row"><th class="table-cell" scope="row">Projects</th><td class="table-cell">Unlimited</td><td class="table-cell" data-featured>Unlimited</td><td class="table-cell">Unlimited</td></tr>
+        <tr class="table-row"><th class="table-cell" scope="row">AI drafts</th><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell" data-featured><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td></tr>
+        <tr class="table-row"><th class="table-cell" scope="row">Real-time collaboration</th><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-label="Not included" class="mk-pricing-no"><path d="M5 12h14"/></svg></td><td class="table-cell" data-featured><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td></tr>
+        <tr class="table-row"><th class="table-cell" scope="row">Advanced reporting</th><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-label="Not included" class="mk-pricing-no"><path d="M5 12h14"/></svg></td><td class="table-cell" data-featured><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td></tr>
+        <tr class="table-row"><th class="table-cell" scope="row">SSO &amp; audit logs</th><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-label="Not included" class="mk-pricing-no"><path d="M5 12h14"/></svg></td><td class="table-cell" data-featured><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-label="Not included" class="mk-pricing-no"><path d="M5 12h14"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Included" class="mk-pricing-yes"><path d="M20 6 9 17l-5-5"/></svg></td></tr>
+        <tr class="table-row"><th class="table-cell" scope="row">Support</th><td class="table-cell">Community</td><td class="table-cell" data-featured>Priority</td><td class="table-cell">Dedicated manager</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+```
+
+```html example label="Compact list" hint="data-variant='compact' on .mk-plans: the plans as rows of one list - name and description, price, CTA - the featured row tinted. Narrow, each row wraps." previewStyle="align-items:stretch;"
+<section class="mk-pricing" style="width:100%">
+  <div class="mk-plans" data-variant="compact">
+    <article class="mk-plan">
+      <div class="mk-plan-body"><h3 class="mk-plan-title">Starter</h3><p class="mk-plan-desc">For individuals.</p></div>
+      <div class="mk-plan-price"><span class="mk-plan-amount">$10</span><div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div></div>
+      <div class="mk-plan-cta"><button type="button" class="btn" data-variant="outline">Choose Starter</button></div>
+    </article>
+    <article class="mk-plan" data-featured>
+      <div class="mk-plan-body"><h3 class="mk-plan-title">Pro <span class="badge" data-variant="default" data-size="sm">Popular</span></h3><p class="mk-plan-desc">For fast-moving teams.</p></div>
+      <div class="mk-plan-price"><span class="mk-plan-amount">$24</span><div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div></div>
+      <div class="mk-plan-cta"><button type="button" class="btn">Choose Pro</button></div>
+    </article>
+    <article class="mk-plan">
+      <div class="mk-plan-body"><h3 class="mk-plan-title">Enterprise</h3><p class="mk-plan-desc">Security and control at scale.</p></div>
+      <div class="mk-plan-price"><span class="mk-plan-amount">$48</span><div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div></div>
+      <div class="mk-plan-cta"><button type="button" class="btn" data-variant="outline">Choose Enterprise</button></div>
+    </article>
+  </div>
+</section>
+```
+
+```html example label="One plan, in a holo aura" hint="data-variant='wide' on .mk-plan: a single plan, the features in two columns beside the price - wrapped in a holo aura (shapes.css)." previewStyle="align-items:stretch;"
+<section class="mk-pricing" style="width:100%">
+  <div class="aura aura-holo aura-sm" style="--shape-round:var(--radius-xl)">
+    <article class="mk-plan" data-variant="wide">
+      <div style="display:grid;gap:1rem;align-content:start">
+        <div class="mk-plan-body"><h3 class="mk-plan-title">Acme for Teams</h3><p class="mk-plan-desc">Everything, for everyone in your company. One price, no surprises.</p></div>
+        <div class="mk-plan-price"><span class="mk-plan-amount">$19</span><div class="mk-plan-unit"><span class="mk-plan-unit-label">Per seat / month</span><span class="mk-plan-unit-note">Billed yearly</span></div></div>
+        <div class="mk-plan-cta"><button type="button" class="btn" data-size="lg">Start a 30-day trial</button></div>
+      </div>
+      <ul class="mk-plan-features">
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Unlimited projects</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>AI drafts &amp; summaries</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Real-time collaboration</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Advanced reporting</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>SSO &amp; audit logs</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Priority support</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>99.9% uptime SLA</span></li>
+        <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Custom integrations</span></li>
+      </ul>
+    </article>
+  </div>
+</section>
+```
+
+```html example label="Usage slider" hint=".mk-pricing-usage: a Slider picks the seats and an <output> shows the monthly price - the page script multiplies (volume discount over 50 seats)." previewStyle="align-items:stretch;"
+<section class="mk-pricing" style="width:100%">
+  <div class="mk-pricing-usage">
+    <div class="mk-pricing-usage-row"><label class="label" for="seats">Seats: <strong id="seats-n">12</strong></label><output for="seats" id="seats-price">$228</output></div>
+    <input class="slider" type="range" id="seats" min="1" max="200" value="12" aria-describedby="seats-hint">
+    <p class="mk-plan-desc" id="seats-hint">$19 per seat and month - $15 from the 51st seat.</p>
+    <button type="button" class="btn">Start with 12 seats</button>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#seats').on('input', (e) => {
+      const n = Number(e.target.value);
+      const price = Math.min(n, 50) * 19 + Math.max(n - 50, 0) * 15;
+      df$('#seats-n').text(String(n));
+      df$('#seats-price').text(' component="pricing" section="css" />
+
+</DocPage>
+ + price.toLocaleString('en-US'));
+      df$('.mk-pricing-usage .btn').text('Start with ' + n + ' seat' + (n > 1 ? 's' : ''));
+    });
+  });
+</script>
+```
+
+```html example label="Talk to sales" hint=".mk-pricing-cta: a dark strip under the plans for the deals that need a conversation." previewStyle="align-items:stretch;"
+<section class="mk-pricing" style="width:100%">
+  <div class="mk-pricing-cta">
+    <div><strong>More than 500 seats?</strong><p>Volume pricing, custom contracts and a dedicated success manager.</p></div>
+    <a class="btn" data-variant="secondary" href="#">Talk to sales <i data-lucide="arrow-right"></i></a>
   </div>
 </section>
 ```

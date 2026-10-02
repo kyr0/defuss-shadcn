@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>address-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/address-form/address-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<fieldset class="mk-address-form">
+  <legend>Shipping address</legend>
+  <div class="mk-address-form-grid">
+    <div class="mk-address-form-field"><label class="label" for="ad-country">Country / region</label><select class="select" id="ad-country" name="country" autocomplete="country"><option value="PT">Portugal</option><option value="DE">Germany</option><option value="FR">France</option></select></div>
+    <div class="mk-address-form-field" data-span="4"><label class="label" for="ad-name">Full name</label><input class="input" id="ad-name" name="name" autocomplete="shipping name" required></div>
+    <div class="mk-address-form-field" data-span="2"><label class="label" for="ad-org">Company <small>(optional)</small></label><input class="input" id="ad-org" name="organization" autocomplete="shipping organization"></div>
+    <div class="mk-address-form-field"><label class="label" for="ad-l1">Street and number</label><input class="input" id="ad-l1" name="address1" autocomplete="shipping address-line1" required></div>
+    <div class="mk-address-form-field"><label class="label" for="ad-l2">Apartment, floor <small>(optional)</small></label><input class="input" id="ad-l2" name="address2" autocomplete="shipping address-line2"></div>
+    <div class="mk-address-form-field" data-span="2"><label class="label" for="ad-zip">Postal code</label><input class="input" id="ad-zip" name="postal" autocomplete="shipping postal-code" required></div>
+    <div class="mk-address-form-field" data-span="4"><label class="label" for="ad-city">City</label><input class="input" id="ad-city" name="city" autocomplete="shipping address-level2" required></div>
+    <div class="mk-address-form-field" data-span="3"><label class="label" for="ad-tel">Phone <small>(for the courier)</small></label><input class="input" id="ad-tel" type="tel" name="tel" autocomplete="shipping tel" inputmode="tel"></div>
+    <div class="mk-address-form-field" data-span="3"><label class="label" for="ad-mail">Email</label><input class="input" id="ad-mail" type="email" name="email" autocomplete="email" required></div>
+  </div>
+  <div class="mk-address-form-same"><input class="checkbox" type="checkbox" id="ad-same" name="billing-same" checked><label for="ad-same">Billing address is the same</label></div>
+</fieldset>
+    </section>
+    <!-- Saved addresses -->
+    <section class="fx">
+<fieldset class="mk-address-form" style="max-width:32rem">
+  <legend>Deliver to</legend>
+  <div class="mk-address-form-saved">
+    <label class="mk-address-form-option"><input class="radio" type="radio" name="addr" value="home" checked><strong>Home</strong><a href="#">Edit</a><address>Anna Silva<br>Rua da Prata 120, 2º<br>1100-420 Lisboa, Portugal</address></label>
+    <label class="mk-address-form-option"><input class="radio" type="radio" name="addr" value="office"><strong>Office</strong><a href="#">Edit</a><address>Anna Silva, Acme<br>Torstraße 45<br>10119 Berlin, Germany</address></label>
+  </div>
+  <a class="mk-address-form-add" href="#"><i data-lucide="plus"></i> Add a new address</a>
+</fieldset>
+    </section>
+  </body>
+</html>

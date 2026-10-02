@@ -16,16 +16,17 @@
     border-radius: var(--radius-lg);
     background: var(--muted);
 
-    /* poster, video and play button share the same cover layer */
+    /* poster, video (or an embed's <iframe> - YouTube, Vimeo) and play
+       button share the same cover layer */
     & .mk-showcase-poster,
-    & video,
+    & :is(video, iframe),
     & .mk-showcase-play {
       position: absolute;
       inset: 0;
     }
 
     & .mk-showcase-poster,
-    & video {
+    & :is(video, iframe) {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -33,12 +34,16 @@
       background: var(--muted);
     }
 
-    /* state layering: poster+button until 'playing', video after */
-    & video { opacity: 0; }
+    & iframe { border: 0; }
+
+    /* state layering: poster+button until 'playing', video after; a waiting
+       embed takes no clicks - only the play button acts */
+    & :is(video, iframe) { opacity: 0; }
+    & iframe { pointer-events: none; }
     &[data-state='playing'] {
       & .mk-showcase-poster { opacity: 0; }
       & .mk-showcase-play { opacity: 0; visibility: hidden; }
-      & video { opacity: 1; }
+      & :is(video, iframe) { opacity: 1; pointer-events: auto; }
     }
   }
 
@@ -68,7 +73,107 @@
     &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
   }
 
+
+  /* -- variants ------------------------------------------------- */
+  /* browser: a window bar with three dots on top; the layers sit below it */
+  .mk-showcase[data-variant="browser"] {
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow-xl);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 11;
+      height: 2.25rem;
+      border-block-end: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 1rem 50%, oklch(0.7 0.18 25) 0.3125rem, transparent 0.34rem),
+        radial-gradient(circle at 1.75rem 50%, oklch(0.8 0.15 85) 0.3125rem, transparent 0.34rem),
+        radial-gradient(circle at 2.5rem 50%, oklch(0.75 0.16 150) 0.3125rem, transparent 0.34rem),
+        var(--muted);
+    }
+    & :is(.mk-showcase-poster, video, iframe) { inset: 2.25rem 0 0; height: calc(100% - 2.25rem); }
+    & .mk-showcase-play { inset: 2.25rem 0 0; }
+  }
+
+  /* ratios: 16:9 for video, 1:1 for social / mobile */
+  .mk-showcase[data-ratio="wide"] { aspect-ratio: 16 / 9; }
+  .mk-showcase[data-ratio="square"] { aspect-ratio: 1; }
+
+  /* a stage around the showcase: room for callouts, perspective for the tilt */
+  .mk-showcase-stage {
+    position: relative;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: 1.5rem;
+    perspective: 1400px;
+  }
+
+  /* callouts: small cards floating over the frame's corners */
+  .mk-showcase-callout {
+    position: absolute;
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    max-width: 16rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, var(--popover) 88%, transparent);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(8px);
+    font-size: 0.8125rem;
+
+    & > svg { flex: none; padding: 0.375rem; width: 2rem; height: 2rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--primary) 12%, transparent); color: var(--primary); box-sizing: border-box; }
+    & div { display: grid; }
+    & span { color: var(--muted-foreground); }
+    &[data-pos="top-start"] { top: 0; left: 0; }
+    &[data-pos="top-end"] { top: 0; right: 0; }
+    &[data-pos="bottom-start"] { bottom: 0; left: 0; }
+    &[data-pos="bottom-end"] { bottom: 0; right: 0; }
+  }
+
+  /* tilt: leans back, straightens as it scrolls into view */
+  @keyframes mk-showcase-untilt {
+    from { rotate: x 22deg; scale: 0.9; opacity: 0.6; }
+    to { rotate: x 0deg; scale: 1; opacity: 1; }
+  }
+  .mk-showcase-stage[data-tilt] .mk-showcase { transform-origin: 50% 100%; animation: mk-showcase-untilt linear both; }
+  @supports (animation-timeline: view()) {
+    .mk-showcase-stage[data-tilt] .mk-showcase { animation-timeline: view(); animation-range: entry 0% cover 45%; }
+  }
+  @supports not (animation-timeline: view()) {
+    .mk-showcase-stage[data-tilt] .mk-showcase { animation: none; }
+  }
+
+  /* tour: Tabs above the frames - each panel shows one screen */
+  .mk-showcase-tour {
+    display: grid;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    justify-items: center;
+
+    & .tab-list { flex-wrap: wrap; height: auto; }
+    & .tab-content { width: 100%; }
+  }
+
   /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-showcase-stage[data-tilt] .mk-showcase { animation: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-showcase-callout { border-color: CanvasText; }
+    .mk-showcase[data-variant="browser"]::before { border-block-end-color: CanvasText; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .mk-showcase-play { transition: none; }
   }

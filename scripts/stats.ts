@@ -23,7 +23,7 @@ if (!existsSync(join(DIST, 'components'))) {
 const doc = writeStatsFile(DIST);
 const kb = (n: number) => `${(n / 1024).toFixed(1)} kB`;
 console.log(
-  `stats: ${doc.total} components (${Object.entries(doc.byType).map(([t, n]) => `${n} ${t}`).join(', ')}) · ` +
+  `stats: ${doc.total} components (${Object.entries(doc.byType).map(([t, n]) => `${n} ${t}`).join(', ')}) + ${doc.templatePages} template pages = ${doc.templates} templates · ${doc.tokens} TOK · ${doc.examples} EXL · ` +
     `${doc.withJs} with JS / ${doc.withoutJs} CSS-only · ` +
     `total ${kb(doc.totalSize)} (${kb(doc.totalSizeMinified)} min, ${kb(doc.totalSizeGz)} gz, ${kb(doc.totalSizeGzMinified)} gz-min) · ` +
     `bundle ${kb(doc.bundle.totalSizeGzMinified)} gz-min · ` +

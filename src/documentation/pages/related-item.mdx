@@ -1,0 +1,197 @@
+---
+title: "Related Item"
+description: "Links to one related article or resource with a preview - a compact row with a thumbnail, a card, or text with an arrow."
+slug: "related-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="related-item" title="Related Item" component="related-item">
+  Links to one related article or resource with a preview - a compact row with a thumbnail, a card, or text with an arrow. Part of the <DocLink href="website-article.html">Article</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="related-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: thumbnail, kind (Article, Guide, Video…), the title link stretched over the item, and meta.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp" title="two-line titles"><code>line-clamp</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="focus ring on the whole item"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/translate" title="the arrow nudges on hover"><code>translate</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-related-item</code>
+    <code>.mk-related-item-title</code>
+    <code>.mk-related-item-media</code>
+    <code>.mk-related-item-body</code>
+    <code>.mk-related-item-kind</code>
+    <code>.mk-related-item-meta</code>
+    <code>.mk-related-item-arrow</code>
+    <code>.mk-related-item-badge</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>card</code>, <code>text</code>); <code>data-variant</code> (<code>numbered</code> + <code>data-rank</code>, <code>overlay</code>); <code>.mk-related-item-badge</code> on the thumbnail.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A compact row: square thumbnail, kind, a two-line title and meta - the whole row is the title's link." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:1.25rem;width:100%;max-width:26rem">
+<article class="mk-related-item">
+  <figure class="mk-related-item-media"><img src="images/mk-wide2.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Article</span>
+    <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+  </div>
+</article>
+<article class="mk-related-item">
+  <figure class="mk-related-item-media"><img src="images/mk-square.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+  </div>
+</article>
+<article class="mk-related-item">
+  <figure class="mk-related-item-media"><img src="images/mk-wide3.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">4:12</p>
+  </div>
+</article>
+</div>
+```
+
+```html example label="Card" hint="data-variant='card': image above at 16:9 - a 'Read next' grid." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1.5rem;width:100%">
+<article class="mk-related-item" data-variant="card">
+  <figure class="mk-related-item-media"><img src="images/mk-wide2.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Article</span>
+    <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="card">
+  <figure class="mk-related-item-media"><img src="images/mk-square.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="card">
+  <figure class="mk-related-item-media"><img src="images/mk-wide3.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">4:12</p>
+  </div>
+</article>
+</div>
+```
+
+```html example label="Text" hint="data-variant='text': no image, rules between the items, an arrow that nudges on hover." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:30rem">
+<article class="mk-related-item" data-variant="text">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Article</span>
+    <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+    <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+  </div>
+  <i data-lucide="arrow-right" class="mk-related-item-arrow" aria-hidden="true"></i>
+</article>
+<article class="mk-related-item" data-variant="text">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+  </div>
+  <i data-lucide="arrow-right" class="mk-related-item-arrow" aria-hidden="true"></i>
+</article>
+<article class="mk-related-item" data-variant="text">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">4:12</p>
+  </div>
+  <i data-lucide="arrow-right" class="mk-related-item-arrow" aria-hidden="true"></i>
+</article>
+</div>
+```
+
+```html example label="Numbered" hint="data-variant='numbered' with data-rank: a reading order - the series continues here." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:1rem;width:100%;max-width:28rem">
+<article class="mk-related-item" data-variant="numbered" data-rank="1">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Sync, explained</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 1: Why CRDTs</a></h3>
+    <p class="mk-related-item-meta">6 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="numbered" data-rank="2">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">You are here</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 2: The write-ahead log</a></h3>
+    <p class="mk-related-item-meta">8 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="numbered" data-rank="3">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Sync, explained</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 3: Testing with a lossy network</a></h3>
+    <p class="mk-related-item-meta">10 min read</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="numbered" data-rank="4">
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Sync, explained</span>
+    <h3 class="mk-related-item-title"><a href="#">Part 4: Garbage collection</a></h3>
+    <p class="mk-related-item-meta">12 min read</p>
+  </div>
+</article>
+</div>
+```
+
+```html example label="Overlay with badges" hint="data-variant='overlay': the title over the image; .mk-related-item-badge labels a video's duration. Hover zooms the image (off under reduced motion)." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:1rem;width:100%">
+<article class="mk-related-item" data-variant="overlay">
+  <figure class="mk-related-item-media"><img src="images/mk-wide3.png" alt=""><span class="mk-related-item-badge">4:12</span></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Video</span>
+    <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+    <p class="mk-related-item-meta">1 Oct 2026</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="overlay">
+  <figure class="mk-related-item-media"><img src="images/mk-wide2.png" alt=""><span class="mk-related-item-badge">38 min</span></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Podcast</span>
+    <h3 class="mk-related-item-title"><a href="#">Sync without tears</a></h3>
+    <p class="mk-related-item-meta">Episode 42</p>
+  </div>
+</article>
+<article class="mk-related-item" data-variant="overlay">
+  <figure class="mk-related-item-media"><img src="images/mk-wide.png" alt=""></figure>
+  <div class="mk-related-item-body">
+    <span class="mk-related-item-kind">Guide</span>
+    <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+    <p class="mk-related-item-meta">11 min read</p>
+  </div>
+</article>
+</div>
+```
+
+<SourceFiles component="related-item" section="css" />
+
+</DocPage>

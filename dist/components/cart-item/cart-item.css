@@ -1,0 +1,71 @@
+/* -- Cart Item (website · Shop) -------------------------------------------
+   Displays one selected product with quantity and removal controls - picture, name, options, a quantity stepper, the line total and remove. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-cart-item, .mk-cart-item *, .mk-cart-item ::before, .mk-cart-item ::after) { box-sizing: border-box; }
+
+  .mk-cart-list { display: grid; margin: 0; padding: 0; list-style: none; border-block-start: 1px solid var(--border); }
+  .mk-cart-item {
+    container: mk-cart-item / inline-size;
+    position: relative;
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr) auto auto;
+    grid-template-areas: "img info qty total";
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    padding: 1.25rem 2.75rem 1.25rem 0;
+    border-block-end: 1px solid var(--border);
+  }
+  .mk-cart-item-image { grid-area: img; display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-md); background: var(--muted); }
+  .mk-cart-item-info { grid-area: info; display: grid; gap: 0.125rem; min-width: 0; }
+  .mk-cart-item-name { margin: 0; font-size: 0.9375rem; font-weight: 600;
+    & a { color: inherit; text-decoration: none; }
+    & a:hover { text-decoration: underline; }
+  }
+  .mk-cart-item-options, .mk-cart-item-unit { margin: 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  .mk-cart-item-qty { grid-area: qty;
+    & .number-input { width: 7rem; }
+  }
+  .mk-cart-item-total { grid-area: total; min-width: 4.5rem; font-weight: 700; text-align: end; font-variant-numeric: tabular-nums; }
+  .mk-cart-item-remove {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { background: var(--accent); color: var(--destructive); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+  }
+
+  .mk-cart-item[data-variant="compact"] {
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+    grid-template-areas: "img info total" "img qty total";
+    gap: 0 0.875rem;
+    padding-block: 0.875rem;
+
+    & .mk-cart-item-unit { display: none; }
+    & .mk-cart-item-qty { color: var(--muted-foreground); font-size: 0.8125rem; }
+    & .mk-cart-item-total { font-size: 0.9375rem; }
+  }
+
+  @container mk-cart-item (max-width: 30rem) {
+    .mk-cart-item-info, .mk-cart-item-qty, .mk-cart-item-total { justify-self: start; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-cart-item-remove { border: 1px solid ButtonText; }
+  }
+}

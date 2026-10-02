@@ -1,0 +1,94 @@
+---
+title: "Audio Player"
+description: "Plays one audio recording with playback controls and metadata - cover art, title, show and episode, the native player and a download link."
+slug: "audio-player"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="audio-player" title="Audio Player" component="audio-player">
+  Plays one audio recording with playback controls and metadata - cover art, title, show and episode, the native player and a download link. Part of the <DocLink href="website-media.html">Media</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="audio-player">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: cover art, the title, show or artist and a metadata line (<code>&lt;time&gt;</code>), an <code>&lt;audio controls preload="none"&gt;</code>, and a download link (<code>download</code>); show notes in <code>&lt;details&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio" title="native audio controls"><code>&lt;audio&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#download" title="the link saves the file"><code>download</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-audio-player</code>
+    <code>.mk-audio-player-cover</code>
+    <code>.mk-audio-player-body</code>
+    <code>.mk-audio-player-show</code>
+    <code>.mk-audio-player-title</code>
+    <code>.mk-audio-player-meta</code>
+    <code>.mk-audio-player-controls</code>
+    <code>.mk-audio-player-notes</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>compact</code>, <code>podcast</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Cover art beside the show, title and metadata, then the native <audio controls> (preload=&quot;none&quot;) and a download link." previewStyle="align-items:stretch;"
+<article class="mk-audio-player" aria-labelledby="ap-1">
+  <img class="mk-audio-player-cover" src="https://picsum.photos/seed/podcast-calm/400/400" alt="">
+  <div class="mk-audio-player-body">
+    <span class="mk-audio-player-show">The Calm Letter · Audio</span>
+    <h3 class="mk-audio-player-title" id="ap-1">Why we never ship on Fridays</h3>
+    <span class="mk-audio-player-meta">Episode 42 · 14 sec · <time datetime="2026-09-30">30 Sep 2026</time></span>
+  </div>
+  <div class="mk-audio-player-controls">
+    <audio controls preload="none" src="videos/demo-audio.mp3">Your browser does not support audio.</audio>
+    <a class="btn" data-variant="ghost" data-size="icon" href="videos/demo-audio.mp3" download aria-label="Download episode 42 (MP3, 85 KB)"><i data-lucide="download"></i></a>
+  </div>
+</article>
+```
+
+```html example label="Compact" hint="data-variant='compact': no cover - title and length on one line above the player. For lists of voice notes or tracks." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.5rem;max-width:30rem;width:100%">
+  <article class="mk-audio-player" data-variant="compact" aria-labelledby="ap-2">
+    <div class="mk-audio-player-body"><h3 class="mk-audio-player-title" id="ap-2">Voice note from Sophie</h3><span class="mk-audio-player-meta">0:14</span></div>
+    <div class="mk-audio-player-controls"><audio controls preload="none" src="videos/demo-audio.mp3"></audio></div>
+  </article>
+</div>
+```
+
+```html example label="Podcast" hint="data-variant='podcast': a large cover with a shadow, the episode, the player and the show notes in a <details>." previewStyle="align-items:stretch;"
+<article class="mk-audio-player" data-variant="podcast" aria-labelledby="ap-3">
+  <img class="mk-audio-player-cover" src="https://picsum.photos/seed/podcast-cover2/600/600" alt="Cover of The Calm Letter podcast">
+  <div class="mk-audio-player-body">
+    <span class="mk-audio-player-show">The Calm Letter · Episode 41</span>
+    <h3 class="mk-audio-player-title" id="ap-3">Writing decisions down</h3>
+    <span class="mk-audio-player-meta">With Hannah Lee · 14 sec · <time datetime="2026-09-23">23 Sep 2026</time></span>
+    <div class="mk-audio-player-controls">
+      <audio controls preload="none" src="videos/demo-audio.mp3"></audio>
+      <a class="btn" data-variant="outline" data-size="sm" href="videos/demo-audio.mp3" download><i data-lucide="download"></i> MP3</a>
+    </div>
+    <details class="mk-audio-player-notes">
+      <summary>Show notes</summary>
+      <p>Hannah explains how her team replaced status meetings with written decisions - and what they kept.</p>
+      <ul><li>0:00 Intro</li><li>0:05 The decision log</li><li>0:10 What we kept</li></ul>
+    </details>
+  </div>
+</article>
+```
+
+<SourceFiles component="audio-player" section="css" />
+
+</DocPage>

@@ -35,6 +35,7 @@ turn is on screen; files dropped on the session become an event.
 - [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) / [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - appended, prepended and growing messages
 - [`overflow-anchor: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor) - the runtime owns scroll anchoring (the browser's would correct twice)
 - [`content-visibility: auto`](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility) + `contain-intrinsic-size` - off-screen rows skip rendering; long threads stay cheap
+- [`overflow-clip-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-clip-margin) - widens the paint clip `content-visibility` implies, so bubble tails, reactions and focus rings draw outside a row
 - [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky) - the scroll buttons float on the edge of the transcript
 - [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - `data-animate` lets new rows rise in
 - [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) - `data-drop`: files dropped on the transcript

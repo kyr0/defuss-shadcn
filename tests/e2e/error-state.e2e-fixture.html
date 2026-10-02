@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>error-state e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/error-state/error-state.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-error-state" role="alert" aria-labelledby="er-1">
+  <span class="mk-error-state-icon" aria-hidden="true"><i data-lucide="triangle-alert"></i></span>
+  <h2 class="mk-error-state-title" id="er-1">We couldn't load your board</h2>
+  <p class="mk-error-state-text">Our servers took too long to answer. Your work is safe - nothing was lost.</p>
+  <div class="mk-error-state-actions"><a class="btn" href="#"><i data-lucide="rotate-cw"></i> Try again</a><a class="btn" data-variant="outline" href="#">Go to dashboard</a></div>
+  <details class="mk-error-state-details"><summary>Technical details</summary><pre><code>Error 504 · gateway timeout
+Request id: req_8f2c41a0 · 2026-10-01 14:32:08 UTC</code></pre></details>
+</section>
+    </section>
+    <!-- Inline -->
+    <section class="fx">
+<section class="mk-error-state" data-variant="inline" role="alert" aria-labelledby="er-2">
+  <span class="mk-error-state-icon" aria-hidden="true"><i data-lucide="wifi-off"></i></span>
+  <h2 class="mk-error-state-title" id="er-2">You're offline</h2>
+  <p class="mk-error-state-text">Changes are saved on this device and sync when you're back.</p>
+  <div class="mk-error-state-actions"><button class="btn" data-variant="outline" data-size="sm" type="button">Retry now</button></div>
+</section>
+    </section>
+    <!-- Page -->
+    <section class="fx">
+<section class="mk-error-state" data-variant="page" role="alert" aria-labelledby="er-3">
+  <p class="mk-error-state-code" aria-hidden="true">500</p>
+  <h1 class="mk-error-state-title" id="er-3">Something broke on our side</h1>
+  <p class="mk-error-state-text">We've been notified and are on it. Please try again in a few minutes.</p>
+  <div class="mk-error-state-actions"><a class="btn" href="#">Reload</a><a class="btn" data-variant="ghost" href="#">Status page</a></div>
+</section>
+    </section>
+  </body>
+</html>

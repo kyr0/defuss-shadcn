@@ -1,0 +1,186 @@
+---
+title: "News Ticker"
+description: "Displays a compact stream of linked news headlines - a seamless CSS marquee that pauses on hover and focus, and stops for reduced motion."
+slug: "news-ticker"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="news-ticker" title="News Ticker" component="news-ticker">
+  Displays a compact stream of linked news headlines - a seamless CSS marquee that pauses on hover and focus, and stops for reduced motion. Part of the <DocLink href="website-news.html">News</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="news-ticker">
+  <SkillField label="Native basis">
+<SkillText>A labelled <code>&lt;section&gt;</code> with one list of headline links - repeated once in the same track, <code>inert</code> and <code>aria-hidden</code>, so the loop is seamless while assistive tech and the tab order see each headline once. A CSS animation slides the track; hover and focus pause it.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation" title="the marquee"><code>CSS animations</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert" title="the loop copy leaves tab order and a11y tree"><code>inert</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within" title="keyboard focus pauses"><code>:focus-within</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image" title="soft edges"><code>mask-image</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="stops, scrolls by hand"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-news-ticker</code>
+    <code>.mk-news-ticker-label</code>
+    <code>.mk-news-ticker-viewport</code>
+    <code>.mk-news-ticker-track</code>
+    <code>.mk-news-ticker-items</code>
+    <code>.mk-news-ticker-trend</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code> (<code>breaking</code>, <code>static</code>), <code>data-size="sm"</code>; <code>--mk-news-ticker-duration</code> (default 40s); <code>data-variant</code> (<code>market</code>, <code>inverse</code>, <code>pill</code>); <code>.mk-news-ticker-trend[data-trend="up|down"]</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Hover or focus a headline and the strip pauses. The list runs twice in the track - the copy is inert and aria-hidden, so each headline is read and tabbed once." previewStyle="align-items:stretch;"
+<section class="mk-news-ticker" aria-label="Latest headlines">
+  <span class="mk-news-ticker-label">Latest</span>
+  <div class="mk-news-ticker-viewport">
+    <div class="mk-news-ticker-track">
+    <ul class="mk-news-ticker-items">
+      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
+      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
+    </ul>
+    <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
+      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
+    </ul>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Breaking" hint="data-variant='breaking': a red label with a pulsing dot. --mk-news-ticker-duration sets the speed (here 25s)." previewStyle="align-items:stretch;"
+<section class="mk-news-ticker" data-variant="breaking" style="--mk-news-ticker-duration:25s" aria-label="Breaking news">
+  <span class="mk-news-ticker-label">Breaking</span>
+  <div class="mk-news-ticker-viewport">
+    <div class="mk-news-ticker-track">
+    <ul class="mk-news-ticker-items">
+      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+    </ul>
+    <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+    </ul>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Static and small" hint="data-variant='static': no motion, the row scrolls by hand - what everyone gets under prefers-reduced-motion. data-size='sm' slims the strip." previewStyle="align-items:stretch;"
+<section class="mk-news-ticker" data-variant="static" data-size="sm" aria-label="Latest updates">
+  <span class="mk-news-ticker-label">Updates</span>
+  <div class="mk-news-ticker-viewport">
+    <div class="mk-news-ticker-track">
+    <ul class="mk-news-ticker-items">
+      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
+      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
+    </ul>
+    <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
+      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
+      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
+      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
+    </ul>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Market" hint="data-variant='market': symbols, prices and changes in mono - .mk-news-ticker-trend with data-trend='up' / 'down' draws the arrow and the colour." previewStyle="align-items:stretch;"
+<section class="mk-news-ticker" data-variant="market" aria-label="Market prices">
+  <span class="mk-news-ticker-label">Markets</span>
+  <div class="mk-news-ticker-viewport">
+    <div class="mk-news-ticker-track">
+      <ul class="mk-news-ticker-items">
+        <li><a href="#"><b>ACME</b> 182.40 <span class="mk-news-ticker-trend" data-trend="up">2.1%</span></a></li>
+        <li><a href="#"><b>GLBX</b> 91.05 <span class="mk-news-ticker-trend" data-trend="down">0.8%</span></a></li>
+        <li><a href="#"><b>INIT</b> 44.12 <span class="mk-news-ticker-trend" data-trend="up">5.4%</span></a></li>
+        <li><a href="#"><b>NOVA</b> 310.77 <span class="mk-news-ticker-trend" data-trend="down">1.2%</span></a></li>
+        <li><a href="#"><b>ORBT</b> 12.90 <span class="mk-news-ticker-trend" data-trend="up">0.3%</span></a></li>
+      </ul>
+      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+        <li><a href="#"><b>ACME</b> 182.40 <span class="mk-news-ticker-trend" data-trend="up">2.1%</span></a></li>
+        <li><a href="#"><b>GLBX</b> 91.05 <span class="mk-news-ticker-trend" data-trend="down">0.8%</span></a></li>
+        <li><a href="#"><b>INIT</b> 44.12 <span class="mk-news-ticker-trend" data-trend="up">5.4%</span></a></li>
+        <li><a href="#"><b>NOVA</b> 310.77 <span class="mk-news-ticker-trend" data-trend="down">1.2%</span></a></li>
+        <li><a href="#"><b>ORBT</b> 12.90 <span class="mk-news-ticker-trend" data-trend="up">0.3%</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Inverse with badges" hint="data-variant='inverse': a dark band. Each headline can lead with a Badge for its desk." previewStyle="align-items:stretch;"
+<section class="mk-news-ticker" data-variant="inverse" aria-label="Live updates">
+  <span class="mk-news-ticker-label">Live</span>
+  <div class="mk-news-ticker-viewport">
+    <div class="mk-news-ticker-track">
+      <ul class="mk-news-ticker-items">
+        <li><a href="#"><span class="badge" data-variant="secondary">Product</span> Offline sync reaches every workspace</a></li>
+        <li><a href="#"><span class="badge" data-variant="secondary">Security</span> Passkeys become the default</a></li>
+        <li><a href="#"><span class="badge" data-variant="secondary">Company</span> Lisbon office opens</a></li>
+      </ul>
+      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+        <li><a href="#"><span class="badge" data-variant="secondary">Product</span> Offline sync reaches every workspace</a></li>
+        <li><a href="#"><span class="badge" data-variant="secondary">Security</span> Passkeys become the default</a></li>
+        <li><a href="#"><span class="badge" data-variant="secondary">Company</span> Lisbon office opens</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Pill" hint="data-variant='pill': a rounded, floating strip - announcements above a landing page." previewStyle="align-items:stretch;"
+<div style="width:100%;max-width:40rem">
+<section class="mk-news-ticker" data-variant="pill" aria-label="Announcements">
+  <span class="mk-news-ticker-label">New</span>
+  <div class="mk-news-ticker-viewport">
+    <div class="mk-news-ticker-track">
+      <ul class="mk-news-ticker-items">
+        <li><a href="#">Acme 4.0 is here - see what is new</a></li>
+        <li><a href="#">Join the launch livestream on 1 October</a></li>
+        <li><a href="#">Students get Acme Pro free</a></li>
+      </ul>
+      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+        <li><a href="#">Acme 4.0 is here - see what is new</a></li>
+        <li><a href="#">Join the launch livestream on 1 October</a></li>
+        <li><a href="#">Students get Acme Pro free</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</div>
+```
+
+<SourceFiles component="news-ticker" section="css" />
+
+</DocPage>

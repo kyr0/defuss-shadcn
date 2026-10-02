@@ -1,0 +1,47 @@
+/* -- Coming Soon (website · Account & States) -----------------------------
+   Announces an upcoming launch and its expected availability - the date, a live rolling countdown, a notify-me form and where to follow along. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-coming-soon, .mk-coming-soon *, .mk-coming-soon ::before, .mk-coming-soon ::after) { box-sizing: border-box; }
+
+  .mk-coming-soon { container: mk-coming-soon / inline-size; width: 100%; overflow: hidden; border-radius: var(--radius-xl);
+    background: radial-gradient(60% 70% at 20% 0%, color-mix(in oklab, var(--chart-1) 22%, transparent), transparent 70%), radial-gradient(60% 70% at 90% 100%, color-mix(in oklab, var(--chart-2) 20%, transparent), transparent 70%), var(--muted);
+  }
+  .mk-coming-soon-layout { display: grid; }
+  .mk-coming-soon-copy { display: grid; justify-items: center; gap: 1.25rem; padding: 3.5rem 1.5rem; text-align: center;
+    & > svg { width: 2rem; height: 2rem; color: var(--primary); }
+  }
+  .mk-coming-soon-eyebrow { padding: 0.25rem 0.75rem; border-radius: 999px; background: var(--background); font-size: 0.8125rem; font-weight: 600; box-shadow: var(--shadow-xs); }
+  .mk-coming-soon-title { margin: 0; font-size: clamp(2.25rem, 7cqi, 4rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; text-wrap: balance; }
+  .mk-coming-soon-text { margin: 0; max-width: 32rem; color: var(--muted-foreground); font-size: 1.0625rem; text-wrap: pretty; }
+  .mk-coming-soon-form { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; width: 100%; max-width: 26rem;
+    & .input { flex: 1 1 12rem; background: var(--background); }
+  }
+  .mk-coming-soon-timer { gap: 0.625rem;
+    & .countdown-unit { min-width: 5rem; box-shadow: var(--shadow-lg); }
+  }
+  .mk-coming-soon-social { display: flex; gap: 0.25rem; margin: 0; padding: 0; list-style: none;
+    & a { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-md); color: var(--muted-foreground); }
+    & a:hover { background: var(--background); color: var(--foreground); }
+    & svg { width: 1.125rem; height: 1.125rem; }
+  }
+  .mk-coming-soon-media { display: none; margin: 0;
+    & img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  }
+  @container mk-coming-soon (min-width: 48rem) {
+    .mk-coming-soon[data-variant="image"] .mk-coming-soon-layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+    .mk-coming-soon[data-variant="image"] .mk-coming-soon-copy { justify-items: start; text-align: start; padding: 3.5rem; }
+    .mk-coming-soon[data-variant="image"] :is(.mk-coming-soon-form, .mk-coming-soon-timer) { justify-content: start; }
+    .mk-coming-soon[data-variant="image"] .mk-coming-soon-media { display: block; }
+    /* the copy column is narrow beside the picture: a compact timer stays on one row */
+    .mk-coming-soon[data-variant="image"] .mk-coming-soon-timer { gap: 0.5rem; }
+    .mk-coming-soon[data-variant="image"] .mk-coming-soon-timer .countdown-unit { min-width: 3.75rem; padding: 0.5rem 0.375rem; }
+    .mk-coming-soon[data-variant="image"] .mk-coming-soon-timer .countdown { font-size: 1.75rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-coming-soon { border: 1px solid CanvasText; }
+  }
+}

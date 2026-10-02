@@ -75,6 +75,22 @@ describe('CodeExample (input page)', () => {
     expect(card.getAttribute('data-component')).toBe('input');
     expect(JSON.parse(card.getAttribute('data-schema')!).name).toBe('input');
     expect(card.querySelector('.code-example-frame')?.getAttribute('sandbox')).toBe('allow-scripts allow-forms');
+    // the strict sandbox is the rule: only a sandbox="embed" fence widens it
+    expect(card.querySelector('.code-example-frame')?.getAttribute('allow')).toBe('clipboard-write');
+  });
+
+  it('sandbox="embed" widens exactly its own card (a third-party player); every other card stays strict', async () => {
+    const { doc } = await openDocPage('cookie-consent.html');
+    const frames = Array.from(doc.querySelectorAll('.code-example')).map((c) => ({
+      label: c.querySelector('p')?.textContent?.replace(/^§/, ''),
+      sandbox: c.querySelector('.code-example-frame')?.getAttribute('sandbox'),
+      allow: c.querySelector('.code-example-frame')?.getAttribute('allow'),
+    }));
+    const embed = frames.filter((f) => f.sandbox !== 'allow-scripts allow-forms');
+    expect(embed.map((f) => f.label)).toEqual(['What consent gates']);
+    expect(embed[0].sandbox).toBe('allow-scripts allow-forms allow-same-origin allow-presentation allow-popups');
+    expect(embed[0].allow).toContain('autoplay');
+    expect(frames.length).toBeGreaterThan(3);
   });
 
   it('displayed source === executed source (§4: one source, verbatim)', async () => {

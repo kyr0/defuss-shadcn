@@ -1,0 +1,61 @@
+/* -- Case Preview (website · Company) -------------------------------------
+   Summarizes one case study and links to its full account - the client, the headline result and a picture, as a card or a wide row. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-case-preview, .mk-case-preview *, .mk-case-preview ::before, .mk-case-preview ::after) { box-sizing: border-box; }
+
+  .mk-case-preview {
+    container: mk-case-preview / inline-size;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+  .mk-case-preview { position: relative; }
+  .mk-case-preview-title a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .mk-case-preview-title a:focus-visible { outline: none; }
+  .mk-case-preview:has(.mk-case-preview-title a:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  /* zero specificity: any block rule may still position its controls */
+  :where(.mk-case-preview :is(button, input, select, label, .btn):not(.mk-case-preview-title a)) { position: relative; z-index: 1; }
+  .mk-case-preview-media { margin: 0; overflow: hidden; background: var(--muted);
+    & img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: scale 400ms ease; }
+  }
+  .mk-case-preview:hover .mk-case-preview-media img { scale: 1.04; }
+  .mk-case-preview-body { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.25rem 1.5rem 1.5rem; flex: 1; }
+  .mk-case-preview-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+  .mk-case-preview-logo { font-size: 1rem; font-weight: 800; letter-spacing: -0.03em; }
+  .mk-case-preview-title { margin: 0; font-size: 1.1875rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; text-wrap: balance;
+    & a { color: inherit; text-decoration: none; }
+  }
+  .mk-case-preview-metric { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem;
+    & strong { color: var(--foreground); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-inline-end: 0.25rem; }
+  }
+  .mk-case-preview-more { display: inline-flex; align-items: center; gap: 0.25rem; margin-block-start: auto; padding-block-start: 0.5rem; color: var(--primary); font-size: 0.875rem; font-weight: 600;
+    & svg { width: 0.875rem; height: 0.875rem; }
+  }
+
+  @container mk-case-preview (min-width: 40rem) {
+    .mk-case-preview[data-variant="wide"] .mk-case-preview-body { padding: 2rem; }
+  }
+  .mk-case-preview[data-variant="wide"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+
+    & .mk-case-preview-media img { height: 100%; aspect-ratio: auto; min-height: 14rem; }
+    & .mk-case-preview-title { font-size: 1.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-case-preview-media img { transition: none; }
+    .mk-case-preview:hover .mk-case-preview-media img { scale: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-case-preview { border-color: CanvasText; }
+  }
+}

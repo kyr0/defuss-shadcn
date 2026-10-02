@@ -1,0 +1,83 @@
+/* -- Event Item (website · Events & Promotions) ---------------------------
+   Previews one event with its date, location, and attendance link - a calendar tile, the title, time and place, and a register action. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-event-item, .mk-event-item *, .mk-event-item ::before, .mk-event-item ::after) { box-sizing: border-box; }
+
+  .mk-event-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    padding: 1rem;
+    border-radius: var(--radius-xl);
+    transition: background-color 150ms ease;
+
+    &:hover { background: color-mix(in oklch, var(--accent) 60%, transparent); }
+  }
+  .mk-event-item { position: relative; }
+  .mk-event-item-title a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .mk-event-item-title a:focus-visible { outline: none; }
+  .mk-event-item:has(.mk-event-item-title a:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  /* zero specificity: any block rule may still position its controls */
+  :where(.mk-event-item :is(button, input, select, label, .btn):not(.mk-event-item-title a)) { position: relative; z-index: 1; }
+  .mk-event-item-date {
+    display: grid;
+    justify-items: center;
+    width: 3.75rem;
+    padding: 0.375rem 0 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    line-height: 1;
+
+    & span { color: var(--destructive); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    & b { margin-block-start: 0.25rem; font-size: 1.625rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  }
+  .mk-event-item-body { display: grid; gap: 0.375rem; }
+  .mk-event-item-title { margin: 0; font-size: 1.0625rem; font-weight: 600; text-wrap: balance;
+    & a { color: inherit; text-decoration: none; }
+  }
+  .mk-event-item-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; margin: 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: 0.875rem;
+    & li { display: inline-flex; align-items: center; gap: 0.375rem; }
+    & svg { width: 0.875rem; height: 0.875rem; }
+  }
+  .mk-event-item-tags { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+  .mk-event-item-media { display: none; }
+
+  .mk-event-item[data-variant="card"] {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    &:hover { background: var(--card); }
+    & .mk-event-item-media { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    & .mk-event-item-date { position: absolute; top: 0.75rem; left: 0.75rem; box-shadow: var(--shadow-md); }
+    & .mk-event-item-body { padding: 0 1.25rem; }
+    & > .btn { margin: 0 1.25rem 1.25rem; justify-self: start; }
+  }
+
+  .mk-event-item[data-variant="compact"] {
+    gap: 0.75rem;
+    padding: 0.5rem;
+
+    & .mk-event-item-date { width: 3rem; & b { font-size: 1.25rem; } }
+    & .mk-event-item-title { font-size: 0.9375rem; }
+    & > .btn { display: none; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-event-item { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-event-item-date { border-color: CanvasText; }
+  }
+}

@@ -1,0 +1,68 @@
+/* -- Roadmap Item (website · Docs & Help) ---------------------------------
+   Presents one planned initiative with its status and target timeframe - planned, in progress or shipped, how far along, and a vote. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-roadmap-item, .mk-roadmap-item *, .mk-roadmap-item ::before, .mk-roadmap-item ::after) { box-sizing: border-box; }
+
+  .mk-roadmap-item { display: grid; gap: 0.625rem; padding: 1.125rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    & progress { width: 100%; height: 0.375rem; }
+  }
+  .mk-roadmap-item-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .mk-roadmap-item-status {
+    --_c: var(--muted-foreground);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--_c);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    &::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
+    &[data-status="progress"] { --_c: #1d4ed8; }
+    &[data-status="shipped"] { --_c: #15803d; }
+  }
+  .mk-roadmap-item-when { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--muted-foreground); font-size: 0.75rem;
+    & svg { width: 0.75rem; height: 0.75rem; }
+  }
+  .mk-roadmap-item-title { margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.35; }
+  .mk-roadmap-item-desc { margin: 0; color: var(--muted-foreground); font-size: 0.875rem; line-height: 1.55; }
+  .mk-roadmap-item-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-block-start: 0.25rem; }
+  .mk-roadmap-item-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0; padding: 0; list-style: none;
+    & li { padding: 0.0625rem 0.5rem; border-radius: var(--radius-sm); background: var(--muted); font-size: 0.75rem; }
+  }
+  .mk-roadmap-item-vote {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 2.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    & input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    & svg { width: 1rem; height: 1rem; }
+    &:has(:checked) { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+    &:has(:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  .mk-roadmap-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; align-items: start;
+    & > section { display: grid; gap: 0.75rem; padding: 0.75rem; border-radius: var(--radius-xl); background: var(--muted); }
+    & h3 { margin: 0; padding: 0.25rem 0.375rem; font-size: 0.875rem; font-weight: 600; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-roadmap-item { border-color: CanvasText; }
+    .mk-roadmap-item-vote:has(:checked) { background: Highlight; color: HighlightText; }
+  }
+}

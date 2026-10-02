@@ -1,0 +1,99 @@
+---
+title: "About Intro"
+description: "Introduces an organization's identity, purpose, and background - a split intro with photos and key facts, a centered mission statement, or the values behind it."
+slug: "about-intro"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="about-intro" title="About Intro" component="about-intro">
+  Introduces an organization's identity, purpose, and background - a split intro with photos and key facts, a centered mission statement, or the values behind it. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="about-intro">
+  <SkillField label="Native basis">
+<SkillText>A heading with an eyebrow and a lead paragraph, two photos in a <code>&lt;figure&gt;</code> and the key facts as a <code>&lt;dl&gt;</code> (number in <code>&lt;dd&gt;</code>, label in <code>&lt;dt&gt;</code>). Values are a plain list.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="media with its caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced titles, pretty paragraphs"><code>text-wrap</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-about-intro</code>
+    <code>.mk-about-intro-layout</code>
+    <code>.mk-about-intro-copy</code>
+    <code>.mk-about-intro-eyebrow</code>
+    <code>.mk-about-intro-title</code>
+    <code>.mk-about-intro-lead</code>
+    <code>.mk-about-intro-media</code>
+    <code>.mk-about-intro-facts</code>
+    <code>.mk-about-intro-signature</code>
+    <code>.mk-about-intro-values</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="statement"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Eyebrow, title, lead and the key facts (a <dl>) beside two photos - two columns once the block is 48rem wide." previewStyle="align-items:stretch;"
+<section class="mk-about-intro" aria-labelledby="about-title">
+  <div class="mk-about-intro-layout">
+    <div class="mk-about-intro-copy">
+      <span class="mk-about-intro-eyebrow">About Acme</span>
+      <h2 class="mk-about-intro-title" id="about-title">We build calm software for teams that ship</h2>
+      <p class="mk-about-intro-lead">Acme started in a Lisbon flat in 2016 with one question: why does work software make people anxious? Ten years later, forty of us answer it every day.</p>
+      <dl class="mk-about-intro-facts">
+        <div><dt>Founded</dt><dd>2016</dd></div>
+        <div><dt>People</dt><dd>40</dd></div>
+        <div><dt>Offices</dt><dd>3</dd></div>
+        <div><dt>Teams using Acme</dt><dd>12k</dd></div>
+      </dl>
+    </div>
+    <figure class="mk-about-intro-media">
+      <img src="https://picsum.photos/seed/about-office/600/800" alt="">
+      <img src="https://picsum.photos/seed/about-team/600/800" alt="">
+    </figure>
+  </div>
+</section>
+```
+
+```html example label="Statement" hint="data-variant='statement': the mission in one centered sentence, set in the theme's serif face, signed by a person." previewStyle="align-items:stretch;"
+<section class="mk-about-intro" data-variant="statement" aria-label="Our mission">
+  <div class="mk-about-intro-copy">
+    <span class="mk-about-intro-eyebrow">Our mission</span>
+    <p class="mk-about-intro-title">We believe the best tools <em>disappear</em> - so the people using them can do the most meaningful work of their lives.</p>
+    <div class="mk-about-intro-signature"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><div><strong>Aron Homberg</strong><span>Co-founder &amp; CEO</span></div></div>
+  </div>
+</section>
+```
+
+```html example label="Values" hint=".mk-about-intro-values: the values behind the company as icon cards - one row once there is room for all of them." previewStyle="align-items:stretch;"
+<section class="mk-about-intro" aria-labelledby="values-title">
+  <div class="mk-about-intro-copy">
+    <span class="mk-about-intro-eyebrow">What we value</span>
+    <h2 class="mk-about-intro-title" id="values-title">Four promises we keep</h2>
+    <ul class="mk-about-intro-values">
+      <li><i data-lucide="feather"></i><h3>Calm by default</h3><p>No red badges, no dark patterns - attention is our users' to give.</p></li>
+      <li><i data-lucide="lock"></i><h3>Private first</h3><p>Your data is yours. We never sell it and never train on it.</p></li>
+      <li><i data-lucide="hand-heart"></i><h3>Kind and direct</h3><p>We say what we mean, and we mean well.</p></li>
+      <li><i data-lucide="leaf"></i><h3>Built to last</h3><p>Profitable, independent and here for the next decade.</p></li>
+    </ul>
+  </div>
+</section>
+```
+
+<SourceFiles component="about-intro" section="css" />
+
+</DocPage>

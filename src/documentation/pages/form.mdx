@@ -184,20 +184,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Switch rows (notifications)" hint="Notification-style rows with label, description, and switch." previewStyle="justify-content:start;padding:2rem;"
-<div class="form-field-row">
-  <div>
-    <label class="label" for="marketing">Marketing emails</label>
-    <p class="field-description" id="marketing-desc">Receive emails about new products, features, and more.</p>
+```html example label="Switch rows (notifications)" hint="Notification-style rows with label, description, and switch - stacked in a .form-group for the gap between them." previewStyle="justify-content:start;padding:2rem;"
+<div class="form-group">
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="marketing">Marketing emails</label>
+      <p class="field-description" id="marketing-desc">Receive emails about new products, features, and more.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="marketing" aria-describedby="marketing-desc">
   </div>
-  <input class="switch" type="checkbox" role="switch" id="marketing" aria-describedby="marketing-desc">
-</div>
-<div class="form-field-row">
-  <div>
-    <label class="label" for="security">Security emails</label>
-    <p class="field-description" id="security-desc">Receive emails about your account security.</p>
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="security">Security emails</label>
+      <p class="field-description" id="security-desc">Receive emails about your account security.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="security" checked disabled aria-describedby="security-desc">
   </div>
-  <input class="switch" type="checkbox" role="switch" id="security" checked disabled aria-describedby="security-desc">
 </div>
 ```
 

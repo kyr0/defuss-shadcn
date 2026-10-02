@@ -1,0 +1,62 @@
+/* -- CTA (website · Events & Promotions) ----------------------------------
+   Combines a focused message with a prominent action - centered, split, on a dark glow or over a picture. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-cta, .mk-cta *, .mk-cta ::before, .mk-cta ::after) { box-sizing: border-box; }
+
+  .mk-cta { container: mk-cta / inline-size; width: 100%; }
+  .mk-cta-inner {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 3.5rem 1.5rem;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    text-align: center;
+  }
+  .mk-cta-copy { display: grid; gap: 0.75rem; justify-items: inherit; max-width: 40rem; }
+  .mk-cta-title { margin: 0; font-size: clamp(1.75rem, 4.5cqi, 2.75rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; text-wrap: balance; }
+  .mk-cta-desc { margin: 0; color: var(--muted-foreground); font-size: 1.0625rem; text-wrap: pretty; }
+  .mk-cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .mk-cta-note { margin: 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  .mk-cta-form { display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; max-width: 26rem;
+    & .input { flex: 1 1 12rem; }
+  }
+
+  .mk-cta[data-variant="dark"] .mk-cta-inner {
+    background:
+      radial-gradient(50% 80% at 15% 0%, color-mix(in oklch, var(--chart-1) 45%, transparent), transparent 70%),
+      radial-gradient(45% 80% at 90% 100%, color-mix(in oklch, var(--chart-2) 40%, transparent), transparent 70%),
+      var(--foreground);
+    color: var(--background);
+
+    & :is(.mk-cta-desc, .mk-cta-note) { color: color-mix(in oklch, var(--background) 72%, transparent); }
+  }
+
+  .mk-cta[data-variant="image"] .mk-cta-inner {
+    padding-block: 5rem;
+    background: transparent;
+    color: #fff;
+
+    &::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(oklch(0.15 0.02 260 / 0.55), oklch(0.15 0.02 260 / 0.75)); }
+    & .mk-cta-desc { color: oklch(1 0 0 / 0.82); }
+    & .btn[data-variant="outline"] { border-color: oklch(1 0 0 / 0.45); background: transparent; color: inherit; }
+  }
+  .mk-cta-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+
+  @container mk-cta (min-width: 44rem) {
+    .mk-cta[data-variant="split"] .mk-cta-inner { flex-direction: row; justify-content: space-between; gap: 2rem; padding: 2.5rem 3rem; text-align: start; }
+    .mk-cta[data-variant="split"] .mk-cta-copy { justify-items: start; }
+    .mk-cta[data-variant="split"] .mk-cta-actions { flex: none; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-cta-inner { border: 1px solid CanvasText; }
+  }
+}

@@ -1,0 +1,88 @@
+---
+title: "Timeline Item"
+description: "Describes one dated milestone or historical event - a date, a dot on a line, a title and a short story, optionally with a picture."
+slug: "timeline-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="timeline-item" title="Timeline Item" component="timeline-item">
+  Describes one dated milestone or historical event - a date, a dot on a line, a title and a short story, optionally with a picture. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="timeline-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;li class="mk-timeline-item"&gt;</code> inside an <code>&lt;ol class="mk-timeline-list"&gt;</code>: a <code>&lt;time&gt;</code>, a dot on a vertical line, a title, a paragraph and an optional picture.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="an ordered sequence"><code>&lt;ol&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-timeline-list</code>
+    <code>.mk-timeline-item</code>
+    <code>.mk-timeline-item-date</code>
+    <code>.mk-timeline-item-body</code>
+    <code>.mk-timeline-item-title</code>
+    <code>.mk-timeline-item-text</code>
+    <code>.mk-timeline-item-media</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="milestone"</code> on an item.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Our story" hint="Default items on a line, dates in their own column from 40rem; data-variant=&quot;milestone&quot; turns a turning point into a filled dot and a highlighted card - with a picture." previewStyle="align-items:stretch;"
+<ol class="mk-timeline-list">
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2016">2016</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">A flat in Lisbon</h3>
+      <p class="mk-timeline-item-text">Alex and Sophie quit their jobs and build the first prototype on a kitchen table.</p>
+    </div>
+  </li>
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2018">2018</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">The first thousand teams</h3>
+      <p class="mk-timeline-item-text">Word of mouth only - we still have no marketing budget.</p>
+    </div>
+  </li>
+  <li class="mk-timeline-item" data-variant="milestone">
+    <time class="mk-timeline-item-date" datetime="2021-03">March 2021</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">Acme 2.0 and offline sync</h3>
+      <p class="mk-timeline-item-text">A two-year rewrite ships: Acme works on a plane, in a tunnel, anywhere.</p>
+      <img class="mk-timeline-item-media" src="https://picsum.photos/seed/tl-launch/900/506" alt="">
+    </div>
+  </li>
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2024">2024</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">Berlin and Montreal</h3>
+      <p class="mk-timeline-item-text">Two new offices, forty people, still profitable.</p>
+    </div>
+  </li>
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2026">2026</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">Twelve thousand teams</h3>
+      <p class="mk-timeline-item-text">And the calmest release we have ever shipped.</p>
+    </div>
+  </li>
+</ol>
+```
+
+<SourceFiles component="timeline-item" section="css" />
+
+</DocPage>

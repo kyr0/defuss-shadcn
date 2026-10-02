@@ -46,10 +46,14 @@
     margin-block-start: auto;
   }
 
-  /* rows off screen skip rendering; their size is remembered */
+  /* rows off screen skip rendering; their size is remembered. content-
+     visibility implies paint containment, which clips at the row's edge -
+     the clip margin lets bubble tails, reactions and focus rings draw
+     outside it */
   .session-item {
     content-visibility: auto;
     contain-intrinsic-size: auto 3.5rem;
+    overflow-clip-margin: 1rem;
 
     &[data-current] { scroll-margin-block-start: 1rem; }
   }

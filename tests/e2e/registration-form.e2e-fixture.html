@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>registration-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/radio/radio.css" />
+    <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/registration-form/registration-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-registration-form" aria-labelledby="reg-title">
+  <h2 id="reg-title" class="sr-only">Register for Acme Summit 2026</h2>
+  <form action="#" method="post">
+    <fieldset class="mk-registration-form-group">
+      <legend>Ticket</legend>
+      <div class="mk-registration-form-tickets">
+        <label class="mk-registration-form-ticket" for="rg-standard"><input class="radio" type="radio" name="ticket" id="rg-standard" value="rg-standard" checked required><span class="mk-registration-form-ticket-name">Standard</span><b>€290</b><small>Both days, lunch, recordings.</small></label>
+        <label class="mk-registration-form-ticket" for="rg-workshop"><input class="radio" type="radio" name="ticket" id="rg-workshop" value="rg-workshop" required><span class="mk-registration-form-ticket-name">Standard + Workshops <span class="badge" data-variant="secondary" data-size="sm">Few left</span></span><b>€440</b><small>Everything in Standard plus two hands-on workshops.</small></label>
+        <label class="mk-registration-form-ticket" for="rg-stream"><input class="radio" type="radio" name="ticket" id="rg-stream" value="rg-stream" required><span class="mk-registration-form-ticket-name">Online</span><b>€90</b><small>Live stream, Q&amp;A and recordings.</small></label>
+      </div>
+    </fieldset>
+    <fieldset class="mk-registration-form-group">
+      <legend>Attendee</legend>
+      <div class="mk-registration-form-fields">
+        <div class="mk-registration-form-field"><label class="label" for="rg-name">Full name</label><input class="input" id="rg-name" name="name" autocomplete="name" required></div>
+        <div class="mk-registration-form-field"><label class="label" for="rg-email">Email</label><input class="input" id="rg-email" type="email" name="email" autocomplete="email" required></div>
+        <div class="mk-registration-form-field"><label class="label" for="rg-org">Company</label><input class="input" id="rg-org" name="organization" autocomplete="organization"></div>
+        <div class="mk-registration-form-field"><label class="label" for="rg-role">Role</label><input class="input" id="rg-role" name="role" autocomplete="organization-title"></div>
+      </div>
+    </fieldset>
+    <fieldset class="mk-registration-form-group">
+      <legend>Workshops <small style="font-weight:400;color:var(--muted-foreground)">(with the workshop ticket)</small></legend>
+      <div class="mk-registration-form-choices">
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="rg-w1" name="workshops" value="sync"><label for="rg-w1">Offline-first sync, hands on</label><small>12 seats left</small></div>
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="rg-w2" name="workshops" value="a11y" checked><label for="rg-w2">Accessible components from scratch</label><small>4 seats left</small></div>
+      </div>
+    </fieldset>
+    <fieldset class="mk-registration-form-group">
+      <legend>Your needs</legend>
+      <div class="mk-registration-form-fields">
+        <div class="mk-registration-form-field"><label class="label" for="rg-diet">Dietary preference</label><select class="select" id="rg-diet" name="diet"><option>No preference</option><option>Vegetarian</option><option>Vegan</option><option>Gluten-free</option></select></div>
+        <div class="mk-registration-form-field" data-span="full"><label class="label" for="rg-a11y">Accessibility needs</label><textarea class="textarea" id="rg-a11y" name="access" rows="2" placeholder="Step-free access, captions, a quiet room…"></textarea></div>
+      </div>
+    </fieldset>
+    <div class="mk-registration-form-total">
+      <div><span>Total incl. VAT</span><output name="total" for="rg-standard rg-workshop rg-stream">€290</output></div>
+      <button class="btn" data-size="lg" type="submit">Register</button>
+    </div>
+  </form>
+</section>
+    </section>
+  </body>
+</html>

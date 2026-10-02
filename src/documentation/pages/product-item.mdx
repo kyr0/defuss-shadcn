@@ -1,0 +1,202 @@
+---
+title: "Product Item"
+description: "Displays one catalog entry with its image, name, price, and link - a second picture on hover, badges, rating, colors, a wishlist heart and add to cart."
+slug: "product-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="product-item" title="Product Item" component="product-item">
+  Displays one catalog entry with its image, name, price, and link - a second picture on hover, badges, rating, colors, a wishlist heart and add to cart. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="product-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: two pictures (the second fades in on hover), a Badge, a wishlist checkbox, the name link, a description, stars (<code>--mk-rating</code>), the price with <code>&lt;del&gt;</code> for the old one, color swatches and an add-to-cart Button.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del" title="the old price, announced as deleted"><code>&lt;del&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" title="pictures crop instead of stretching"><code>object-fit</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="stable media boxes, no layout shift"><code>aspect-ratio</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-product-item</code>
+    <code>.mk-product-item-name</code>
+    <code>.mk-product-item-media</code>
+    <code>.mk-product-item-image</code>
+    <code>.mk-product-item-badge</code>
+    <code>.mk-product-item-wish</code>
+    <code>.mk-product-item-body</code>
+    <code>.mk-product-item-desc</code>
+    <code>.mk-product-item-rating</code>
+    <code>.mk-product-item-stars</code>
+    <code>.mk-product-item-price</code>
+    <code>.mk-product-item-swatches</code>
+    <code>.mk-product-item-add</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>horizontal</code>, <code>minimal</code>; <code>data-sale</code> on the Badge; <code>--mk-rating</code> on the stars; <code>--mk-swatch</code> on swatches.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Grid" hint="Default cards: hover crossfades to a second picture, a Badge, a heart (a checkbox - :has(:checked) fills it), the name link covering the card, stars filled by --mk-rating, the price with <del>, swatches and Add to cart." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:2rem 1.25rem;width:100%">
+  <article class="mk-product-item">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-shirt/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-shirt-b/600/750" alt="">
+      <span class="badge mk-product-item-badge" data-variant="default" data-sale>−20%</span>
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p1"><i data-lucide="heart"></i><span class="sr-only">Save Linen shirt to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Linen shirt</a></h3>
+      <p class="mk-product-item-desc">Relaxed fit · Sand</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.5" role="img" aria-label="4.5 out of 5 stars">★★★★★</span>(128)</p>
+      <p class="mk-product-item-price"><strong>€64</strong> <del><span class="sr-only">was </span>€80</del></p>
+      <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#d8c9a9" aria-current="true"><span class="sr-only">Sand</span></li><li style="--mk-swatch:#2f3b4a"><span class="sr-only">Navy</span></li><li style="--mk-swatch:#f2efe8"><span class="sr-only">Off-white</span></li></ul>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen shirt to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-mug/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-mug-b/600/750" alt="">
+      <span class="badge mk-product-item-badge" data-variant="default">New</span>
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p2"><i data-lucide="heart"></i><span class="sr-only">Save Stoneware mug to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Stoneware mug</a></h3>
+      <p class="mk-product-item-desc">Handmade · 350 ml</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.9" role="img" aria-label="4.9 out of 5 stars">★★★★★</span>(412)</p>
+      <p class="mk-product-item-price"><strong>€22</strong></p>
+      <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#c9b49a" aria-current="true"><span class="sr-only">Oat</span></li><li style="--mk-swatch:#5a6b5d"><span class="sr-only">Moss</span></li></ul>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Stoneware mug to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-bag-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p3"><i data-lucide="heart"></i><span class="sr-only">Save Canvas tote to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Canvas tote</a></h3>
+      <p class="mk-product-item-desc">Organic cotton</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.2" role="img" aria-label="4.2 out of 5 stars">★★★★★</span>(57)</p>
+      <p class="mk-product-item-price"><strong>€38</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Canvas tote to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+</div>
+```
+
+```html example label="Horizontal" hint="data-variant='horizontal': the picture beside the details - for lists and search results." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:1.5rem;max-width:36rem;width:100%">
+  <article class="mk-product-item" data-variant="horizontal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-shirt/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-shirt-b/600/750" alt="">
+      <span class="badge mk-product-item-badge" data-variant="default" data-sale>−20%</span>
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p4"><i data-lucide="heart"></i><span class="sr-only">Save Linen shirt to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Linen shirt</a></h3>
+      <p class="mk-product-item-desc">Relaxed fit · Sand</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.5" role="img" aria-label="4.5 out of 5 stars">★★★★★</span>(128)</p>
+      <p class="mk-product-item-price"><strong>€64</strong> <del><span class="sr-only">was </span>€80</del></p>
+      <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#d8c9a9" aria-current="true"><span class="sr-only">Sand</span></li><li style="--mk-swatch:#2f3b4a"><span class="sr-only">Navy</span></li><li style="--mk-swatch:#f2efe8"><span class="sr-only">Off-white</span></li></ul>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen shirt to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="horizontal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-bag-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p5"><i data-lucide="heart"></i><span class="sr-only">Save Canvas tote to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Canvas tote</a></h3>
+      <p class="mk-product-item-desc">Organic cotton</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.2" role="img" aria-label="4.2 out of 5 stars">★★★★★</span>(57)</p>
+      <p class="mk-product-item-price"><strong>€38</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Canvas tote to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+</div>
+```
+
+```html example label="Minimal" hint="data-variant='minimal': centered name and price only - rating, swatches and the button step aside." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:1.5rem 1rem;width:100%">
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-vase/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-vase-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm0"><i data-lucide="heart"></i><span class="sr-only">Save Ceramic vase to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Ceramic vase</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€48</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Ceramic vase to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-throw/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-throw-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm1"><i data-lucide="heart"></i><span class="sr-only">Save Wool throw to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Wool throw</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€120</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Wool throw to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-tray/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-tray-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm2"><i data-lucide="heart"></i><span class="sr-only">Save Oak tray to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Oak tray</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€36</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Oak tray to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-napkin/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-napkin-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm3"><i data-lucide="heart"></i><span class="sr-only">Save Linen napkins to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Linen napkins</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€28</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen napkins to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+</div>
+```
+
+<SourceFiles component="product-item" section="css" />
+
+</DocPage>

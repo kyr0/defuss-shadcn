@@ -1,0 +1,220 @@
+---
+title: "Media"
+description: "Website blocks - Media: Blocks for pictures, video, audio and social content: single pictures with a large view, galleries with shared controls, text beside media, native video and audio players, playlists, before / after comparisons and locally rendered social posts."
+slug: "website-media"
+---
+
+import { DocPage, PageHeader, DocText } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-media" title="Media" introStyle="max-width:42rem;">
+  Blocks for pictures, video, audio and social content: single pictures with a large view, galleries with shared controls, text beside media, native video and audio players, playlists, before / after comparisons and locally rendered social posts. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Media blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A media page" schema="none" hint="Text Media, a Media Gallery, a Video Player with transcript, a podcast Audio Player over its Playlist, a Before After slider and Social Posts - only Media blocks." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:4rem;width:100%">
+  <section class="mk-text-media" aria-labelledby="tm-1">
+    <div class="mk-text-media-layout">
+      <div class="mk-text-media-copy">
+        <span class="mk-text-media-eyebrow">Offline first</span>
+        <h2 class="mk-text-media-title" id="tm-1">Your work travels with you</h2>
+        <p class="mk-text-media-text">Every change is saved on your device first and synced when you are back online - on a plane, in a tunnel, at the cabin.</p>
+        <ul class="mk-text-media-list"><li><i data-lucide="check"></i>Edits never wait for the network</li><li><i data-lucide="check"></i>Conflicts resolve themselves</li><li><i data-lucide="check"></i>Works on every device</li></ul>
+        <a class="mk-text-media-link" href="#">How sync works <i data-lucide="arrow-right"></i></a>
+      </div>
+      <figure class="mk-text-media-media"><img src="https://picsum.photos/seed/tm-cabin/1000/750" alt="A laptop on a table in a mountain cabin"></figure>
+    </div>
+  </section>
+  <section class="mk-media-gallery" aria-labelledby="mg-title">
+    <header class="mk-media-gallery-head">
+      <h2 id="mg-title">Lisbon, autumn 2026</h2>
+      <span>8 photos</span>
+      <div class="mk-media-gallery-tools">
+        <div class="mk-media-gallery-views" role="radiogroup" aria-label="Layout">
+          <label><input type="radio" name="mg-view" value="grid" checked><i data-lucide="layout-grid"></i><span class="sr-only">Grid</span></label>
+          <label><input type="radio" name="mg-view" value="masonry"><i data-lucide="layout-dashboard"></i><span class="sr-only">Masonry</span></label>
+          <label><input type="radio" name="mg-view" value="strip"><i data-lucide="gallery-horizontal"></i><span class="sr-only">Filmstrip</span></label>
+        </div>
+        <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="mg-viewer" command="show-modal"><i data-lucide="play"></i> Slideshow</button>
+      </div>
+    </header>
+    <ul class="mk-media-gallery-grid">
+      <li><figure><img src="https://picsum.photos/seed/mg-1/800/600" alt="Harbour at dawn"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-2/600/800" alt="Stairs in Alfama"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-3/800/500" alt="River light"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-4/600/600" alt="Tiles"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-5/800/600" alt="Market morning"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-6/600/900" alt="Old tram"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-7/800/600" alt="Coastline"></figure></li>
+      <li><figure><img src="https://picsum.photos/seed/mg-8/700/500" alt="Rooftops"></figure></li>
+    </ul>
+    <dialog class="mk-media-gallery-viewer" id="mg-viewer" aria-label="Slideshow: Lisbon, autumn 2026">
+      <div class="mk-media-gallery-viewer-inner">
+        <ul class="mk-media-gallery-track" tabindex="0" aria-label="Photos - scroll sideways">
+          <li><img src="https://picsum.photos/seed/mg-1/1600/1200" alt="Harbour at dawn"><p>1 / 8 · Harbour at dawn</p></li>
+          <li><img src="https://picsum.photos/seed/mg-2/1200/1600" alt="Stairs in Alfama"><p>2 / 8 · Stairs in Alfama</p></li>
+          <li><img src="https://picsum.photos/seed/mg-3/1600/1000" alt="River light"><p>3 / 8 · River light</p></li>
+          <li><img src="https://picsum.photos/seed/mg-4/1200/1200" alt="Tiles"><p>4 / 8 · Tiles</p></li>
+          <li><img src="https://picsum.photos/seed/mg-5/1600/1200" alt="Market morning"><p>5 / 8 · Market morning</p></li>
+          <li><img src="https://picsum.photos/seed/mg-6/1200/1800" alt="Old tram"><p>6 / 8 · Old tram</p></li>
+          <li><img src="https://picsum.photos/seed/mg-7/1600/1200" alt="Coastline"><p>7 / 8 · Coastline</p></li>
+          <li><img src="https://picsum.photos/seed/mg-8/1400/1000" alt="Rooftops"><p>8 / 8 · Rooftops</p></li>
+        </ul>
+        <p class="mk-media-gallery-hint">Swipe, scroll or use ← → · Esc closes</p>
+        <form method="dialog"><button class="mk-media-gallery-close" aria-label="Close slideshow"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </section>
+  <figure class="mk-video-player" data-variant="transcript">
+    <div class="mk-video-player-layout">
+      <div class="mk-video-player-frame">
+        <video id="vp-3" controls preload="metadata" playsinline poster="images/mk-wide3.png">
+        <source src="videos/demo.webm" type="video/webm">
+        <source src="videos/demo.mp4" type="video/mp4">
+        <track kind="captions" src="videos/demo.en.vtt" srclang="en" label="English" default>
+        Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+      </video>
+      </div>
+      <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
+        <h3 id="vp-tr">Transcript</h3>
+        <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
+        <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
+        <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
+      </section>
+    </div>
+    <figcaption class="mk-video-player-caption"><h3>Acme in 60 seconds</h3></figcaption>
+  </figure>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:2rem;align-items:start">
+    <article class="mk-audio-player" data-variant="podcast" aria-labelledby="ap-3">
+      <img class="mk-audio-player-cover" src="https://picsum.photos/seed/podcast-cover2/600/600" alt="Cover of The Calm Letter podcast">
+      <div class="mk-audio-player-body">
+        <span class="mk-audio-player-show">The Calm Letter · Episode 41</span>
+        <h3 class="mk-audio-player-title" id="ap-3">Writing decisions down</h3>
+        <span class="mk-audio-player-meta">With Hannah Lee · 14 sec · <time datetime="2026-09-23">23 Sep 2026</time></span>
+        <div class="mk-audio-player-controls">
+          <audio controls preload="none" src="videos/demo-audio.mp3"></audio>
+          <a class="btn" data-variant="outline" data-size="sm" href="videos/demo-audio.mp3" download><i data-lucide="download"></i> MP3</a>
+        </div>
+        <details class="mk-audio-player-notes">
+          <summary>Show notes</summary>
+          <p>Hannah explains how her team replaced status meetings with written decisions - and what they kept.</p>
+          <ul><li>0:00 Intro</li><li>0:05 The decision log</li><li>0:10 What we kept</li></ul>
+        </details>
+      </div>
+    </article>
+    <ol class="mk-playlist" role="radiogroup" aria-label="The Calm Letter - episodes" style="max-width:40rem">
+      <li class="mk-playlist-item" data-variant="episode">
+        <label>
+          <input type="radio" name="episode" value="42" checked>
+          <span class="mk-playlist-item-index" aria-hidden="true"><span>42</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+          <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/ep-42/160/160" alt="">
+          <span class="mk-playlist-item-text"><strong>Why we never ship on Fridays</strong><small>The Calm Letter · <time datetime="2026-09-30">2026-09-30</time></small><span class="mk-playlist-item-desc">Alex and Sophie on release rhythms, weekends and why boring deploys are the best deploys.</span></span>
+          <span class="mk-playlist-item-duration">32 min</span>
+        </label>
+      </li>
+      <li class="mk-playlist-item" data-variant="episode">
+        <label>
+          <input type="radio" name="episode" value="41">
+          <span class="mk-playlist-item-index" aria-hidden="true"><span>41</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+          <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/ep-41/160/160" alt="">
+          <span class="mk-playlist-item-text"><strong>Writing decisions down</strong><small>The Calm Letter · <time datetime="2026-09-23">2026-09-23</time></small><span class="mk-playlist-item-desc">Hannah explains how her team replaced status meetings with a written decision log.</span></span>
+          <span class="mk-playlist-item-duration">28 min</span>
+        </label>
+      </li>
+    </ol>
+  </div>
+  <figure class="mk-before-after" data-variant="toggle" style="max-width:40rem">
+    <div class="mk-before-after-stage">
+      <img class="mk-before-after-before" src="https://picsum.photos/seed/ba-room/1200/800?grayscale" alt="Before: the living room, grey and empty">
+      <img class="mk-before-after-after" src="https://picsum.photos/seed/ba-room/1200/800" alt="After: the living room, furnished and warm">
+    </div>
+    <div class="switch-item mk-before-after-toggle"><input class="switch" type="checkbox" role="switch" id="ba-toggle"><label for="ba-toggle">Show after</label></div>
+  </figure>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+    <article class="mk-social-post" data-variant="quote">
+      <header class="mk-social-post-head">
+        <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+        <div class="mk-social-post-who"><a class="mk-social-post-name" href="#">Hannah Lee<svg class="mk-social-post-verified" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Verified account"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="mk-social-post-handle">@hannahdesigns</span></div>
+        <span class="mk-social-post-network" role="img" aria-label="Posted on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></span>
+      </header>
+      <div class="mk-social-post-text"><p>Acme is the first tool my designers asked to keep after the trial. That never happens.</p></div>
+      <footer class="mk-social-post-foot">
+        <a class="mk-social-post-time" href="#"><time datetime="2026-09-12">Sep 12, 2026</time></a>
+        <ul class="mk-social-post-stats"><li><i data-lucide="heart"></i>320<span class="sr-only"> likes</span></li></ul>
+      </footer>
+    </article>
+    <article class="mk-social-post" data-variant="quote">
+      <header class="mk-social-post-head">
+        <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+        <div class="mk-social-post-who"><a class="mk-social-post-name" href="#">Marco Rossi<svg class="mk-social-post-verified" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Verified account"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="mk-social-post-handle">@marco</span></div>
+        <span class="mk-social-post-network" role="img" aria-label="Posted on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></span>
+      </header>
+      <div class="mk-social-post-text"><p>Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</p></div>
+      <footer class="mk-social-post-foot">
+        <a class="mk-social-post-time" href="#"><time datetime="2026-08-30">Aug 30, 2026</time></a>
+        <ul class="mk-social-post-stats"><li><i data-lucide="heart"></i>188<span class="sr-only"> likes</span></li></ul>
+      </footer>
+    </article>
+  </div>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="gallery-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Gallery Item</h3>
+      <p class="card-description">Presents one image with a caption and enlarged-view action - the picture opens a large view in a native modal dialog.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="media-gallery.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Media Gallery</h3>
+      <p class="card-description">Coordinates a collection of images with shared viewing controls - switch between grid, masonry and filmstrip, and open a slideshow of every picture.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="text-media.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Text Media</h3>
+      <p class="card-description">Pairs explanatory text with an image, illustration, or video - side by side, reversed, or with the text card overlapping the picture.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="video-player.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Video Player</h3>
+      <p class="card-description">Plays one video with playback controls and captions - native controls, a WebVTT captions track, title and details, chapters or a transcript.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="audio-player.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Audio Player</h3>
+      <p class="card-description">Plays one audio recording with playback controls and metadata - cover art, title, show and episode, the native player and a download link.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="playlist-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Playlist Item</h3>
+      <p class="card-description">Represents one selectable track or episode within a playlist - number, cover, title, artist and length; the selected one shows "now playing" bars.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="before-after.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Before After</h3>
+      <p class="card-description">Compares two images through aligned views or a slider - drag a divider, toggle between them, or set them side by side.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="social-post.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Social Post</h3>
+      <p class="card-description">Displays one embedded or locally rendered social post - author, text with links, media, time and engagement, as a post, a photo post or a quote.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

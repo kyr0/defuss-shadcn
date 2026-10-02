@@ -1,0 +1,88 @@
+---
+title: "Comparison Table"
+description: "Compares alternatives across a shared set of criteria - a real table with a highlighted column and a sticky first column, or a two-sided versus card."
+slug: "comparison-table"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="comparison-table" title="Comparison Table" component="comparison-table">
+  Compares alternatives across a shared set of criteria - a real table with a highlighted column and a sticky first column, or a two-sided versus card. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="comparison-table">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;table&gt;</code> (the Table component) with <code>&lt;th scope="col"&gt;</code> per alternative and <code>&lt;th scope="row"&gt;</code> per criterion; checks and crosses are labelled SVGs; <code>data-highlight</code> marks your column.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="table.html">Table</DocLink>, <DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table" title="real tabular data"><code>&lt;table&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tints derived from the theme tokens"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-comparison-table</code>
+    <code>.mk-comparison-yes</code>
+    <code>.mk-comparison-no</code>
+    <code>.mk-comparison-partial</code>
+    <code>.mk-comparison-versus</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-highlight</code> on cells of one column; <code>.mk-comparison-versus</code> for the two-sided card.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A Table with column and row headers; the first column sticks while the table scrolls sideways on narrow screens, and data-highlight tints your column with a rule on top. Checks and crosses are labelled images." previewStyle="align-items:stretch;"
+<div class="mk-comparison-table">
+  <table class="table">
+    <caption>Acme compared with typical alternatives, October 2026</caption>
+    <thead>
+      <tr class="table-row"><th class="table-head" scope="col">Criteria</th><th class="table-head" scope="col" data-highlight>Acme</th><th class="table-head" scope="col">Spreadsheets</th><th class="table-head" scope="col">Classic PM tools</th></tr>
+    </thead>
+    <tbody>
+      <tr class="table-row"><th class="table-cell" scope="row">Docs and tasks in one place</th><td class="table-cell" data-highlight><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" role="img" aria-label="No" class="mk-comparison-no"><path d="M18 6 6 18M6 6l12 12"/></svg></td><td class="table-cell"><span class="mk-comparison-partial">Partly</span></td></tr>
+      <tr class="table-row"><th class="table-cell" scope="row">Works offline</th><td class="table-cell" data-highlight><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" role="img" aria-label="No" class="mk-comparison-no"><path d="M18 6 6 18M6 6l12 12"/></svg></td></tr>
+      <tr class="table-row"><th class="table-cell" scope="row">Real-time collaboration</th><td class="table-cell" data-highlight><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg></td><td class="table-cell"><span class="mk-comparison-partial">Partly</span></td><td class="table-cell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg></td></tr>
+      <tr class="table-row"><th class="table-cell" scope="row">Setup time</th><td class="table-cell" data-highlight>Minutes</td><td class="table-cell">Minutes</td><td class="table-cell">Weeks</td></tr>
+      <tr class="table-row"><th class="table-cell" scope="row">Price per seat</th><td class="table-cell" data-highlight>€8</td><td class="table-cell">€0 – €12</td><td class="table-cell">€15 – €30</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+```html example label="Versus" hint=".mk-comparison-versus: two sides of one card - your side tinted (data-highlight) - each a list of labelled checks or crosses." previewStyle="align-items:stretch;"
+<div class="mk-comparison-versus">
+  <section aria-labelledby="vs-before">
+    <h3 id="vs-before">Without Acme</h3>
+    <ul>
+      <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" role="img" aria-label="No" class="mk-comparison-no"><path d="M18 6 6 18M6 6l12 12"/></svg>Plans in five tools nobody keeps in sync</li>
+      <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" role="img" aria-label="No" class="mk-comparison-no"><path d="M18 6 6 18M6 6l12 12"/></svg>Two-hour status meetings</li>
+      <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" role="img" aria-label="No" class="mk-comparison-no"><path d="M18 6 6 18M6 6l12 12"/></svg>Decisions lost in chat</li>
+    </ul>
+  </section>
+  <section aria-labelledby="vs-after" data-highlight>
+    <h3 id="vs-after">With Acme <span class="badge" data-variant="default" data-size="sm">Recommended</span></h3>
+    <ul>
+      <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg>One board every team updates</li>
+      <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg>Async updates in fifteen minutes</li>
+      <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Yes" class="mk-comparison-yes"><path d="M20 6 9 17l-5-5"/></svg>Every decision written down and searchable</li>
+    </ul>
+  </section>
+</div>
+```
+
+<SourceFiles component="comparison-table" section="css" />
+
+</DocPage>

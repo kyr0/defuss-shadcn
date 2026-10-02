@@ -1,0 +1,47 @@
+/* -- Event Countdown (website · Events & Promotions) ----------------------
+   Displays the remaining time until a specified event - days, hours, minutes and seconds ticking down beside the date and the action. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-event-countdown, .mk-event-countdown *, .mk-event-countdown ::before, .mk-event-countdown ::after) { box-sizing: border-box; }
+
+  .mk-event-countdown { container: mk-event-countdown / inline-size; width: 100%; }
+  .mk-event-countdown-inner { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 2.5rem 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); text-align: center; }
+  .mk-event-countdown-eyebrow { color: var(--primary); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mk-event-countdown-title { margin: 0; font-size: clamp(1.5rem, 4cqi, 2.25rem); font-weight: 700; letter-spacing: -0.025em; text-wrap: balance; }
+  .mk-event-countdown-date { display: inline-flex; align-items: center; gap: 0.375rem; color: var(--muted-foreground); font-size: 0.9375rem;
+    & svg { width: 1rem; height: 1rem; }
+  }
+  .mk-event-countdown-timer { justify-content: center; }
+
+  .mk-event-countdown[data-variant="dark"] .mk-event-countdown-inner {
+    border: 0;
+    background: radial-gradient(70% 90% at 50% 0%, color-mix(in oklch, var(--chart-1) 40%, transparent), transparent 70%), var(--foreground);
+    color: var(--background);
+
+    & .mk-event-countdown-eyebrow { color: color-mix(in oklab, var(--background) 80%, var(--chart-1)); }
+    & .mk-event-countdown-date { color: color-mix(in oklch, var(--background) 70%, transparent); }
+    & .countdown-unit { background: color-mix(in oklch, var(--background) 10%, transparent); color: inherit; }
+    & .countdown-label { color: color-mix(in oklch, var(--background) 65%, transparent); }
+  }
+
+  .mk-event-countdown[data-variant="inline"] .mk-event-countdown-inner {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem 1.25rem;
+
+    & .mk-event-countdown-title { font-size: 1rem; }
+    & .countdown-unit { padding: 0.25rem 0.5rem; }
+    & .countdown { font-size: 1.125rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-event-countdown-inner { border: 1px solid CanvasText; }
+  }
+}

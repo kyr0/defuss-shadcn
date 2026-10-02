@@ -1,0 +1,91 @@
+---
+title: "Announcement"
+description: "Highlights an important update with an optional link or dismissal - a bar, a filled strip, an inline card or a floating notice."
+slug: "announcement"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="announcement" title="Announcement" component="announcement">
+  Highlights an important update with an optional link or dismissal - a bar, a filled strip, an inline card or a floating notice. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="announcement">
+  <SkillField label="Native basis">
+<SkillText>A non-modal <code>&lt;dialog open&gt;</code> labelled by its message, an inner wrapper with an icon, the message and a link, and a <code>&lt;form method="dialog"&gt;</code> close button that dismisses it without script.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="native dialog; method=&quot;dialog&quot; forms close it"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-announcement</code>
+    <code>.mk-announcement-inner</code>
+    <code>.mk-announcement-close</code>
+    <code>.mk-announcement-tag</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>primary</code>, <code>inline</code>, <code>floating</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Bar" hint="Default: a muted bar - a non-modal <dialog open>; the close button sits in a <form method=&quot;dialog&quot;> and dismisses it without script. Try it." previewStyle="align-items:stretch;"
+<dialog class="mk-announcement" open aria-labelledby="ann-1">
+  <div class="mk-announcement-inner">
+    <span class="mk-announcement-tag">New</span>
+    <p id="ann-1">Acme 4.0 is here - offline sync for every workspace.</p>
+    <a href="#">Read the release notes <i data-lucide="arrow-right"></i></a>
+    <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss announcement"><i data-lucide="x"></i></button></form>
+  </div>
+</dialog>
+```
+
+```html example label="Primary" hint="data-variant='primary': a strip in the primary color - for the one thing everyone must see." previewStyle="align-items:stretch;"
+<dialog class="mk-announcement" data-variant="primary" open aria-labelledby="ann-2">
+  <div class="mk-announcement-inner">
+    <i data-lucide="calendar"></i>
+    <p id="ann-2">Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</p>
+    <a href="#">Get tickets <i data-lucide="arrow-right"></i></a>
+    <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss summit announcement"><i data-lucide="x"></i></button></form>
+  </div>
+</dialog>
+```
+
+```html example label="Inline" hint="data-variant='inline': a rounded card inside the content - an icon in the chart color, the message, a link." previewStyle="align-items:stretch;"
+<dialog class="mk-announcement" data-variant="inline" open aria-labelledby="ann-3">
+  <div class="mk-announcement-inner">
+    <i data-lucide="info"></i>
+    <p id="ann-3"><strong>Scheduled maintenance</strong> on Sunday 5 Oct, 02:00–03:00 UTC. Sync pauses for up to ten minutes.</p>
+    <a href="#">Status page</a>
+    <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss maintenance notice"><i data-lucide="x"></i></button></form>
+  </div>
+</dialog>
+```
+
+```html example label="Floating" height="14" hint="data-variant='floating': fixed to the bottom of the viewport and sliding in (@starting-style) - here inside a positioned frame. Dismiss it to see the page behind." previewStyle="align-items:stretch;"
+<div style="position:relative;height:12rem;width:100%;overflow:hidden;border:1px dashed var(--border);border-radius:var(--radius-lg);transform:translateZ(0)">
+  <p style="margin:1rem;color:var(--muted-foreground)">Page content…</p>
+  <dialog class="mk-announcement" data-variant="floating" open aria-labelledby="ann-4">
+    <div class="mk-announcement-inner">
+      <i data-lucide="sparkles"></i>
+      <p id="ann-4">You can now share spaces with guests.</p>
+      <a href="#">Try it</a>
+      <form method="dialog"><button class="mk-announcement-close" aria-label="Dismiss tip"><i data-lucide="x"></i></button></form>
+    </div>
+  </dialog>
+</div>
+```
+
+<SourceFiles component="announcement" section="css" />
+
+</DocPage>

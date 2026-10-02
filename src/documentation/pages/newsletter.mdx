@@ -50,11 +50,72 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <div class="mk-newsletter-form-col">
     <form class="mk-newsletter-form" action="#" method="post">
       <label class="sr-only" for="mk-nl-email">Email address</label>
-      <input class="input" id="mk-nl-email" type="email" name="email" placeholder="email@example.com" required autocomplete="email" enterkeyhint="send" ></input>
+      <input class="input" id="mk-nl-email" type="email" name="email" placeholder="email@example.com" aria-describedby="mk-nl-note" required autocomplete="email" enterkeyhint="send" ></input>
       <button class="btn" type="submit" aria-label="Subscribe to newsletter"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>Subscribe</button>
     </form>
-    <span class="mk-newsletter-note" role="note">We respect your privacy.</span>
+    <span class="mk-newsletter-note" id="mk-nl-note">We respect your privacy - unsubscribe any time.</span>
+    <span class="mk-newsletter-error" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>Please enter a valid email address.</span>
   </div>
+  </div>
+</section>
+```
+
+```html example label="Card with social proof" hint="data-variant='card': centered on a surface with a primary glow - an icon, the form, and social proof from an Avatar group." previewStyle="align-items:stretch;"
+<section class="mk-newsletter" data-variant="card" style="width:100%">
+  <div class="mk-newsletter-layout">
+    <span class="mk-newsletter-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg></span>
+    <div class="mk-newsletter-copy">
+      <h2 class="mk-newsletter-title">The Calm Letter</h2>
+      <p class="mk-newsletter-desc">One essay a week on building software people enjoy. No noise.</p>
+    </div>
+    <div class="mk-newsletter-form-col">
+      <form class="mk-newsletter-form" action="#" method="post">
+        <label class="sr-only" for="nl-card">Email address</label>
+        <input class="input" id="nl-card" type="email" name="email" placeholder="email@example.com" required autocomplete="email" enterkeyhint="send" aria-describedby="nl-card-note">
+        <button class="btn" type="submit">Join</button>
+      </form>
+      <span class="mk-newsletter-note" id="nl-card-note">One email a week. Unsubscribe any time.</span>
+    </div>
+    <div class="mk-newsletter-proof"><div class="avatar-group"><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span></div><span>Join <strong>12,000</strong> readers</span></div>
+  </div>
+</section>
+```
+
+```html example label="Gradient banner" hint="data-variant='banner': a primary gradient strip - copy left, form right; the input and button invert onto it." previewStyle="align-items:stretch;"
+<section class="mk-newsletter" data-variant="banner" style="width:100%">
+  <div class="mk-newsletter-layout">
+    <div class="mk-newsletter-copy">
+      <h2 class="mk-newsletter-title">Get the release notes first</h2>
+      <p class="mk-newsletter-desc">A short email on every release - what changed and why.</p>
+    </div>
+    <div class="mk-newsletter-form-col">
+      <form class="mk-newsletter-form" action="#" method="post">
+        <label class="sr-only" for="nl-banner">Email address</label>
+        <input class="input" id="nl-banner" type="email" name="email" placeholder="email@example.com" required autocomplete="email" enterkeyhint="send" aria-describedby="nl-banner-note">
+        <button class="btn" type="submit">Subscribe</button>
+      </form>
+      <span class="mk-newsletter-note" id="nl-banner-note">One email a week. Unsubscribe any time.</span>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Split with topics" hint=".mk-newsletter-split: an image beside the form; Checkboxes in a fieldset (.mk-newsletter-topics) pick the lists - native form fields, the browser validates the email." previewStyle="align-items:stretch;"
+<section class="mk-newsletter" style="width:100%">
+  <div class="mk-newsletter-split">
+    <img src="images/mk-portrait2.png" alt="">
+    <form action="#" method="post">
+      <div class="mk-newsletter-copy"><h2 class="mk-newsletter-title">Pick what you read</h2><p class="mk-newsletter-desc">Choose your lists - change them in every email.</p></div>
+      <fieldset class="mk-newsletter-topics">
+        <legend>Lists</legend>
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="nl-product" name="lists" value="product" checked><label for="nl-product">Product updates</label></div>
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="nl-eng" name="lists" value="eng" checked><label for="nl-eng">Engineering essays</label></div>
+        <div class="checkbox-item"><input class="checkbox" type="checkbox" id="nl-events" name="lists" value="events"><label for="nl-events">Events &amp; webinars</label></div>
+      </fieldset>
+      <label class="label" for="nl-split">Email</label>
+      <input class="input" id="nl-split" type="email" name="email" placeholder="email@example.com" required autocomplete="email">
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
   </div>
 </section>
 ```

@@ -1,0 +1,112 @@
+---
+title: "Process Step"
+description: "Explains one numbered stage of a workflow - steps joined by a line, vertical or across, with the current one highlighted."
+slug: "process-step"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="process-step" title="Process Step" component="process-step">
+  Explains one numbered stage of a workflow - steps joined by a line, vertical or across, with the current one highlighted. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="process-step">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;li class="mk-process-step"&gt;</code> inside an <code>&lt;ol class="mk-process-steps"&gt;</code>: a number badge, a title and a description; a line joins each step to the next.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="an ordered sequence"><code>&lt;ol&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-process-steps</code>
+    <code>.mk-process-step</code>
+    <code>.mk-process-step-number</code>
+    <code>.mk-process-step-body</code>
+    <code>.mk-process-step-title</code>
+    <code>.mk-process-step-desc</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="horizontal"</code> (on <code>.mk-process-steps</code>), <code>aria-current="step"</code> on one step.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Vertical" hint="Default: numbers on a line down the side; aria-current=&quot;step&quot; fills the current one." previewStyle="align-items:stretch;"
+<ol class="mk-process-steps" style="max-width:34rem">
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">01</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Discover</h3>
+      <p class="mk-process-step-desc">Two workshops to map goals, users and constraints.</p>
+    </div>
+  </li>
+  <li class="mk-process-step" aria-current="step">
+    <span class="mk-process-step-number" aria-hidden="true">02</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Design</h3>
+      <p class="mk-process-step-desc">Prototypes tested with real customers every week.</p>
+    </div>
+  </li>
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">03</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Build</h3>
+      <p class="mk-process-step-desc">Small releases behind flags - nothing big-bang.</p>
+    </div>
+  </li>
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">04</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Grow</h3>
+      <p class="mk-process-step-desc">We measure, learn and hand over a team that can run it.</p>
+    </div>
+  </li>
+</ol>
+```
+
+```html example label="Horizontal" hint="data-variant='horizontal' on the list: the steps run across with the line along the top once there are 40rem; narrower, they stack like the default." previewStyle="align-items:stretch;"
+<ol class="mk-process-steps" data-variant="horizontal">
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">01</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Discover</h3>
+      <p class="mk-process-step-desc">Two workshops to map goals, users and constraints.</p>
+    </div>
+  </li>
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">02</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Design</h3>
+      <p class="mk-process-step-desc">Prototypes tested with real customers every week.</p>
+    </div>
+  </li>
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">03</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Build</h3>
+      <p class="mk-process-step-desc">Small releases behind flags - nothing big-bang.</p>
+    </div>
+  </li>
+  <li class="mk-process-step">
+    <span class="mk-process-step-number" aria-hidden="true">04</span>
+    <div class="mk-process-step-body">
+      <h3 class="mk-process-step-title">Grow</h3>
+      <p class="mk-process-step-desc">We measure, learn and hand over a team that can run it.</p>
+    </div>
+  </li>
+</ol>
+```
+
+<SourceFiles component="process-step" section="css" />
+
+</DocPage>

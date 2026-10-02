@@ -174,3 +174,18 @@ describe('buildStatsText', () => {
     expect(STATS_FILE).toBe('stats.json');
   });
 });
+
+describe('templates, TOK and EXL', () => {
+  it('templates = TPL components + template pages; byType stays per component folder', () => {
+    const doc = aggregateStats([comp({ name: 'deck', type: 'TPL' }), comp({ name: 'badge', type: 'ATM' })], undefined, undefined, 38);
+    expect(doc.byType.TPL).toBe(1);
+    expect(doc.templatePages).toBe(38);
+    expect(doc.templates).toBe(39);
+    expect(doc.total).toBe(2);
+  });
+
+  it('passes the token and example counts through (zero when not measured)', () => {
+    expect(aggregateStats([], undefined, undefined, 0, { tokens: 50, examples: 1023 })).toMatchObject({ tokens: 50, examples: 1023 });
+    expect(aggregateStats([])).toMatchObject({ templatePages: 0, templates: 0, tokens: 0, examples: 0 });
+  });
+});

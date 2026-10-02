@@ -1,0 +1,102 @@
+---
+title: "Roadmap Item"
+description: "Presents one planned initiative with its status and target timeframe - planned, in progress or shipped, how far along, and a vote."
+slug: "roadmap-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="roadmap-item" title="Roadmap Item" component="roadmap-item">
+  Presents one planned initiative with its status and target timeframe - planned, in progress or shipped, how far along, and a vote. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="roadmap-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: status (<code>data-status="planned|progress|shipped"</code>) and target timeframe, title, description, a <code>&lt;progress&gt;</code> when in progress, tags and a vote checkbox with its count.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="progress.html">Progress</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native completion bar"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-roadmap-item</code>
+    <code>.mk-roadmap-item-top</code>
+    <code>.mk-roadmap-item-status</code>
+    <code>.mk-roadmap-item-when</code>
+    <code>.mk-roadmap-item-title</code>
+    <code>.mk-roadmap-item-desc</code>
+    <code>.mk-roadmap-item-foot</code>
+    <code>.mk-roadmap-item-tags</code>
+    <code>.mk-roadmap-item-vote</code>
+    <code>.mk-roadmap-board</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-status</code> on the status label.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Board" hint="Cards in three columns (.mk-roadmap-board): status by data-status, the target timeframe, a native <progress> when in progress, tags and a vote - a checkbox that fills when checked. Vote on one." previewStyle="align-items:stretch;"
+<div class="mk-roadmap-board">
+  <section aria-labelledby="rb-planned"><h3 id="rb-planned">Planned</h3>
+    <article class="mk-roadmap-item" aria-labelledby="rm-1">
+      <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="planned">Planned</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q1 2027</span></div>
+      <h3 class="mk-roadmap-item-title" id="rm-1">Calendar view for tasks</h3>
+      <p class="mk-roadmap-item-desc">See deadlines across projects in one month view.</p>
+      <div class="mk-roadmap-item-foot">
+        <ul class="mk-roadmap-item-tags"><li>Tasks</li></ul>
+        <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-1"><i data-lucide="chevron-up"></i><span>214</span><span class="sr-only"> votes - vote for Calendar view for tasks</span></label>
+      </div>
+    </article>
+    <article class="mk-roadmap-item" aria-labelledby="rm-2">
+      <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="planned">Planned</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q2 2027</span></div>
+      <h3 class="mk-roadmap-item-title" id="rm-2">Public pages</h3>
+      <p class="mk-roadmap-item-desc">Publish a doc as a website with your domain.</p>
+      <div class="mk-roadmap-item-foot">
+        <ul class="mk-roadmap-item-tags"><li>Docs</li><li>Web</li></ul>
+        <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-2"><i data-lucide="chevron-up"></i><span>98</span><span class="sr-only"> votes - vote for Public pages</span></label>
+      </div>
+    </article>
+  </section>
+  <section aria-labelledby="rb-progress"><h3 id="rb-progress">In progress</h3>
+    <article class="mk-roadmap-item" aria-labelledby="rm-3">
+      <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="progress">In progress</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Nov 2026</span></div>
+      <h3 class="mk-roadmap-item-title" id="rm-3">Acme mobile app</h3>
+      <p class="mk-roadmap-item-desc">Everything on the desk, in your pocket - offline included.</p>
+      <progress class="progress" value="60" max="100" aria-label="60% done">60%</progress>
+      <div class="mk-roadmap-item-foot">
+        <ul class="mk-roadmap-item-tags"><li>iOS</li><li>Android</li></ul>
+        <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-3" checked><i data-lucide="chevron-up"></i><span>512</span><span class="sr-only"> votes - vote for Acme mobile app</span></label>
+      </div>
+    </article>
+  </section>
+  <section aria-labelledby="rb-shipped"><h3 id="rb-shipped">Shipped</h3>
+    <article class="mk-roadmap-item" aria-labelledby="rm-4">
+      <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Sep 2026</span></div>
+      <h3 class="mk-roadmap-item-title" id="rm-4">Offline sync</h3>
+      <p class="mk-roadmap-item-desc">Shipped in 4.0 for every workspace.</p>
+      <div class="mk-roadmap-item-foot">
+        <ul class="mk-roadmap-item-tags"><li>Sync</li></ul>
+        <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-4"><i data-lucide="chevron-up"></i><span>1204</span><span class="sr-only"> votes - vote for Offline sync</span></label>
+      </div>
+    </article>
+  </section>
+</div>
+```
+
+<SourceFiles component="roadmap-item" section="css" />
+
+</DocPage>

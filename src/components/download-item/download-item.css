@@ -1,0 +1,52 @@
+/* -- Download Item (website · Docs & Help) --------------------------------
+   Presents one downloadable file with its format and size - a file badge, what it is, version, size and date, its checksum, and the download. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-download-item, .mk-download-item *, .mk-download-item ::before, .mk-download-item ::after) { box-sizing: border-box; }
+
+  .mk-download-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 1rem; padding: 1.25rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); }
+  .mk-download-item-file {
+    display: grid;
+    place-items: end center;
+    width: 2.75rem;
+    height: 3.25rem;
+    padding-block-end: 0.375rem;
+    border-radius: 0.375rem 1rem 0.375rem 0.375rem;
+    background: var(--muted-foreground);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+
+    &[data-ext="PDF"] { background: #dc2626; }
+    &[data-ext="ZIP"] { background: #ca8a04; }
+    &[data-ext="DMG"] { background: #1f2937; }
+    &[data-ext="EXE"] { background: #2563eb; }
+  }
+  .mk-download-item-body { display: grid; gap: 0.25rem; min-width: 0; }
+  .mk-download-item-name { margin: 0; font-size: 1rem; font-weight: 600; }
+  .mk-download-item-desc { margin: 0; color: var(--muted-foreground); font-size: 0.875rem; }
+  .mk-download-item-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; font-variant-numeric: tabular-nums;
+    & span + span::before { content: "·"; margin-inline-end: 0.75rem; }
+  }
+  .mk-download-item-checksum { margin-block-start: 0.375rem; font-size: 0.75rem;
+    & summary { width: fit-content; color: var(--muted-foreground); cursor: pointer; }
+    & code { display: block; margin-block-start: 0.375rem; padding: 0.5rem; overflow-wrap: anywhere; border-radius: var(--radius-sm); background: var(--muted); font-family: var(--font-mono); user-select: all; }
+  }
+
+  .mk-download-item[data-variant="card"] {
+    grid-template-columns: auto minmax(0, 1fr);
+
+    & > .btn { grid-column: 1 / -1; justify-self: start; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-download-item-file { forced-color-adjust: none; }
+    .mk-download-item { border-color: CanvasText; }
+  }
+}

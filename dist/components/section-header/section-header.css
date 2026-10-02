@@ -1,0 +1,161 @@
+/* -- Section Header (website) ---------------------------------------
+   Introduces a page section: eyebrow, title, description and optional
+   actions. Start-aligned by default; centered, or split (copy left, actions
+   right - wrapping under the copy when the row gets narrow). */
+
+@layer components {
+  .mk-section-header {
+    container: mk-section-header / inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .mk-section-header-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 48rem;
+  }
+
+  .mk-section-header-eyebrow {
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .mk-section-header-title {
+    margin: 0;
+    font-size: 1.875rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .mk-section-header-desc {
+    margin: 0;
+    max-width: 42rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .mk-section-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* centered: everything on the axis */
+  .mk-section-header[data-align="center"] {
+    align-items: center;
+    text-align: center;
+
+    & .mk-section-header-copy { align-items: center; }
+    & .mk-section-header-actions { justify-content: center; }
+  }
+
+  /* split: copy and actions share a row, the actions sit on the baseline */
+  .mk-section-header[data-variant="split"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    & .mk-section-header-copy { flex: 1 1 28rem; }
+    & .mk-section-header-actions { flex: none; }
+  }
+
+  /* numbered: a large index ("01") in front - data-index on the header */
+  .mk-section-header[data-variant="numbered"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    column-gap: 1.5rem;
+
+    &::before {
+      content: attr(data-index);
+      flex: none;
+      color: transparent;
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      -webkit-text-stroke: 1.5px color-mix(in oklch, var(--foreground) 35%, transparent);
+      font-variant-numeric: tabular-nums;
+    }
+    & .mk-section-header-copy { flex: 1 1 24rem; }
+    & .mk-section-header-actions { flex-basis: 100%; }
+  }
+
+  /* divider: a rule runs from the title to the edge */
+  .mk-section-header[data-variant="divider"] .mk-section-header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+
+    &::after {
+      content: "";
+      flex: 1;
+      min-width: 2rem;
+      height: 1px;
+      background: var(--border);
+    }
+  }
+  .mk-section-header[data-variant="divider"] .mk-section-header-copy { max-width: none; }
+
+  /* banner: on a surface with a dotted field */
+  .mk-section-header[data-variant="banner"] {
+    padding: 2.5rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 14%, transparent) 1px, transparent 0) 0 0 / 1.25rem 1.25rem,
+      linear-gradient(to bottom, var(--muted), var(--background));
+  }
+
+  /* a proof line under the copy: an avatar group + a sentence */
+  .mk-section-header-proof {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+
+    & strong { color: var(--foreground); font-weight: 600; }
+  }
+  .mk-section-header[data-align="center"] .mk-section-header-proof { justify-content: center; }
+
+  /* sizes: the title scale */
+  .mk-section-header[data-size="sm"] .mk-section-header-title { font-size: 1.5rem; }
+  .mk-section-header[data-size="lg"] .mk-section-header-title { font-size: 2.25rem; }
+
+  @container mk-section-header (min-width: 48rem) {
+    .mk-section-header-title { font-size: 2.25rem; }
+    .mk-section-header[data-size="sm"] .mk-section-header-title { font-size: 1.75rem; }
+    .mk-section-header[data-size="lg"] .mk-section-header-title { font-size: 3rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-section-header-desc { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-section-header-eyebrow { color: CanvasText; }
+  }
+}

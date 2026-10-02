@@ -45,8 +45,10 @@ await cssSmoke('site-footer', [
     label: 'icon-only social links are labeled; column headings are h3',
     run: async (page) => {
       const r = await page.evaluate(() => {
-        const social = [...document.querySelectorAll('.mk-footer-social a')];
-        const headings = document.querySelectorAll('.mk-footer-heading').length;
+        // the default example (the first footer); variants below carry their own
+        const first = document.querySelector('.mk-footer')!;
+        const social = [...first.querySelectorAll('.mk-footer-social a')];
+        const headings = first.querySelectorAll('.mk-footer-heading').length;
         return {
           unlabeled: social.filter((a) => !a.getAttribute('aria-label')).length,
           social: social.length,
@@ -57,4 +59,17 @@ await cssSmoke('site-footer', [
       if (r.headings !== 4) throw new Error(`expected 4 column headings, got ${r.headings}`);
     },
   },
+  { label: 'simple: one wrapping row', selector: '.mk-footer[data-variant="simple"] .mk-footer-inner', css: { 'flex-direction': 'row', 'flex-wrap': 'wrap' } },
+  { label: 'top: the about column beside the link columns', run: async (page) => {
+    const r = await page.evaluate(() => { const t = document.querySelector('.mk-footer-top')!; const a = t.querySelector('.mk-footer-about')!.getBoundingClientRect(); const n = t.querySelector('.mk-footer-nav')!.getBoundingClientRect(); return { beside: n.left > a.right, cols: getComputedStyle(t.querySelector('.mk-footer-nav')!).gridTemplateColumns.split(' ').filter((v) => v !== '0px').length, locale: !!document.querySelector('.mk-footer-locale .select') }; });
+    if (!r.beside || r.cols !== 3 || !r.locale) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'dark: inverted colors; the CTA band on top', run: async (page) => {
+    const r = await page.evaluate(() => { const f = document.querySelector('.mk-footer[data-variant="dark"]')!; const cs = getComputedStyle(f); return { inverted: cs.backgroundColor !== getComputedStyle(document.body).backgroundColor, cta: getComputedStyle(f.querySelector('.mk-footer-cta')!).backgroundImage.includes('radial-gradient') }; });
+    if (!r.inverted || !r.cta) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'wordmark: huge, one line, scaled to the footer', run: async (page) => {
+    const r = await page.evaluate(() => { const w = document.querySelector('.mk-footer-wordmark')!; const fs = parseFloat(getComputedStyle(w).fontSize); const width = w.closest('.mk-footer')!.getBoundingClientRect().width; return { ratio: Math.round((fs / width) * 100), ws: getComputedStyle(w).whiteSpace }; });
+    if (r.ratio !== 26 || r.ws !== 'nowrap') throw new Error(JSON.stringify(r));
+  } },
 ]);

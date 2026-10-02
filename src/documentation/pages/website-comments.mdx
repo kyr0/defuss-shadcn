@@ -1,0 +1,143 @@
+---
+title: "Comments"
+description: "Website blocks - Comments: Blocks for a discussion under an article or a product: the header with the count and sort order, the form for a new comment, and the comments with their nested replies."
+slug: "website-comments"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-comments" title="Comments" introStyle="max-width:42rem;">
+  Blocks for a discussion under an article or a product: the header with the count and sort order, the form for a new comment, and the comments with their nested replies. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Comments blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A discussion" schema="none" hint="Comment Header, Comment Form and a thread of Comment Items with nested replies and a reply form - the Comments blocks composed. Click a timestamp: :target highlights that comment." previewStyle="align-items:stretch;"
+<section aria-labelledby="discussion-title" style="display:flex;flex-direction:column;gap:1.25rem;width:100%;max-width:44rem">
+  <header class="mk-comment-header">
+    <h2 class="mk-comment-header-title" id="discussion-title">Comments <span class="badge" data-variant="secondary">3</span></h2>
+    <div class="mk-comment-header-actions">
+      <label class="mk-comment-header-sort">Sort by
+      <select class="select" data-size="sm" name="sort">
+        <option>Top</option>
+        <option>Newest</option>
+        <option>Oldest</option>
+      </select>
+    </label>
+    </div>
+  </header>
+  <form class="mk-comment-form" aria-label="Add a comment">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+    <div class="mk-comment-form-main">
+      <textarea class="textarea" name="comment" rows="2" required minlength="2" placeholder="Join the discussion…" aria-label="Comment"></textarea>
+      <div class="mk-comment-form-footer">
+        <p class="mk-comment-form-hint">Markdown works. Be kind.</p>
+        <button type="submit" class="btn">Post comment</button>
+      </div>
+    </div>
+  </form>
+  <div>
+    <article class="mk-comment-item" id="d-1">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-comment-item-main">
+        <header class="mk-comment-item-head">
+          <a class="mk-comment-item-author" href="#">Hannah Lee</a>
+          <a class="mk-comment-item-time" href="#d-1"><time datetime="2026-10-01T08:12">2 hours ago</time></a>
+        </header>
+        <div class="mk-comment-item-body"><p>The write-ahead log section finally made CRDTs click for me. Would love a follow-up on how you garbage-collect old operations.</p></div>
+        <footer class="mk-comment-item-actions">
+          <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (24)"><i data-lucide="thumbs-up"></i> 24</button>
+          <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+        </footer>
+      </div>
+      <ol class="mk-comment-item-replies">
+        <li>
+          <article class="mk-comment-item" id="d-2">
+            <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+            <div class="mk-comment-item-main">
+              <header class="mk-comment-item-head">
+                <a class="mk-comment-item-author" href="#">Sophie Tan</a><span class="badge" data-variant="outline">Author</span>
+                <a class="mk-comment-item-time" href="#d-2"><time datetime="2026-10-01T09:03">1 hour ago</time></a>
+              </header>
+              <div class="mk-comment-item-body"><p>That is next on the list! Short version: we compact once every replica has acknowledged an operation.</p></div>
+              <footer class="mk-comment-item-actions">
+                <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (11)"><i data-lucide="thumbs-up"></i> 11</button>
+                <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+              </footer>
+            </div>
+          </article>
+        </li>
+        <li>
+          <article class="mk-comment-item" id="d-3">
+            <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+            <div class="mk-comment-item-main">
+              <header class="mk-comment-item-head">
+                <a class="mk-comment-item-author" href="#">Aron Homberg</a>
+                <a class="mk-comment-item-time" href="#d-3"><time datetime="2026-10-01T09:30">40 minutes ago</time></a>
+              </header>
+              <div class="mk-comment-item-body"><p>Seconded - and how it plays with the 30-day branch rule.</p></div>
+              <footer class="mk-comment-item-actions">
+                <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (3)"><i data-lucide="thumbs-up"></i> 3</button>
+                <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+              </footer>
+            </div>
+          </article>
+        </li>
+      </ol>
+    </article>
+    <article class="mk-comment-item" id="d-4">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <div class="mk-comment-item-main">
+        <header class="mk-comment-item-head">
+          <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+          <a class="mk-comment-item-time" href="#d-4"><time datetime="2026-10-01T07:02">3 hours ago</time></a>
+        </header>
+        <div class="mk-comment-item-body"><p>Is the 30-day branch rule configurable per workspace?</p></div>
+        <footer class="mk-comment-item-actions">
+          <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (5)"><i data-lucide="thumbs-up"></i> 5</button>
+          <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+        </footer>
+      </div>
+    </article>
+    <form class="mk-comment-form" data-variant="reply" aria-label="Reply to Priya Natarajan" style="padding-inline-start:3.25rem">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-comment-form-main">
+        <textarea class="textarea" name="reply" rows="1" required placeholder="Reply to Priya…" aria-label="Reply to Priya Natarajan"></textarea>
+        <div class="mk-comment-form-footer">
+          <button type="reset" class="btn" data-variant="ghost" data-size="sm">Cancel</button>
+          <button type="submit" class="btn" data-size="sm">Reply</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="comment-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Comment Header</h3>
+      <p class="card-description">Introduces a discussion with its comment count and sorting options - a native Select, or sort links in a segmented row.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="comment-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Comment Item</h3>
+      <p class="card-description">Displays one comment with its author, timestamp, and reply action - nested replies on a thread line, permalinks that highlight, compact and deleted states.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="comment-form.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Comment Form</h3>
+      <p class="card-description">Collects a new comment or reply - a growing Textarea beside the avatar, guest name and email fields, native validation, a compact reply form.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

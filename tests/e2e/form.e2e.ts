@@ -56,4 +56,11 @@ await cssSmoke('form', [
     selector: '#fm-fieldset',
     css: { border: /^0px none/, padding: '0px', 'flex-direction': 'column', gap: '16px' },
   },
+  {
+    label: 'switch rows: bordered rows, 12px apart in a .form-group',
+    run: async (page) => {
+      const r = await page.evaluate(() => { const rows = document.querySelectorAll('#fm-rows .form-field-row'); return { gap: Math.round(rows[1].getBoundingClientRect().top - rows[0].getBoundingClientRect().bottom), border: getComputedStyle(rows[0]).borderTopWidth }; });
+      assert.deepEqual(r, { gap: 12, border: '1px' });
+    },
+  },
 ]);

@@ -70,6 +70,18 @@ and restores the poster.
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="browser"` | A browser window: a bar with three dots on top, the poster / video below it |
+| `data-ratio="wide"` / `"square"` | 16:9 or 1:1 instead of the default 5:3 |
+| `.mk-showcase-stage` | A stage around the frame - room for `.mk-showcase-callout` cards (`data-pos="top-start|top-end|bottom-start|bottom-end"`) |
+| `.mk-showcase-stage[data-tilt]` | The frame leans back and straightens as it scrolls into view (scroll-driven; static under reduced motion) |
+| `.mk-showcase-tour` | A product tour: Tabs switch between framed screens |
+
+---
+
 ## ARIA
 
 | Attribute      | Element  | Purpose                                        |
@@ -88,3 +100,4 @@ and restores the poster.
 - The video's `opacity: 0` keeps it in the layout so swapping is a pure visibility flip - no reflow, no poster flash.
 - Posters via `<img>` (not `video poster`) because the poster is shown before the video element even preloads; the browser only fetches `preload="metadata"` content once it's revealed.
 - The play button lives at `inset: auto; margin: auto` inside the full-inset layer - a native centering trick that survives any icon size.
+- An embed (YouTube, Vimeo) takes the video's place: an `<iframe>` in the same layer, hidden and click-through until `playing`. A third-party player sets cookies - load it through cookie-consent (`data-cookie-consent` + `data-consent-src` + `data-consent-placeholder="none"`, so the poster and play button stay the placeholder) and keep the poster local: a thumbnail from the video host is already a request to it.

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>event-description e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/event-description/event-description.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-event-description" aria-label="About the event">
+  <div class="mk-event-description-layout">
+    <div class="mk-event-description-body">
+      <section aria-labelledby="ed-about"><h2 id="ed-about">About</h2><p>Acme Summit brings together the people who build the tools teams use every day. Two days, one track, no sponsor pitches - just honest talks on making software calmer, and workshops where you leave with something built.</p></section>
+      <section aria-labelledby="ed-who"><h2 id="ed-who">Who it is for</h2>
+        <ul class="mk-event-description-audience"><li><i data-lucide="lightbulb"></i>Product managers</li><li><i data-lucide="pen-tool"></i>Designers</li><li><i data-lucide="code"></i>Engineers</li><li><i data-lucide="users"></i>Team leads</li></ul>
+      </section>
+      <section aria-labelledby="ed-take"><h2 id="ed-take">What you will take away</h2>
+        <ul class="mk-event-description-takeaways"><li><i data-lucide="check"></i>A playbook for async planning</li><li><i data-lucide="check"></i>Patterns for quiet, accessible UI</li><li><i data-lucide="check"></i>How offline-first sync really works</li><li><i data-lucide="check"></i>Fifty new colleagues to ask</li></ul>
+      </section>
+    </div>
+    <aside class="mk-event-description-facts" aria-label="Event facts">
+      <dl>
+        <div><dt>Date</dt><dd>12–13 Nov 2026</dd></div>
+        <div><dt>Format</dt><dd>In person + stream</dd></div>
+        <div><dt>Language</dt><dd>English</dd></div>
+        <div><dt>Price</dt><dd>From €290</dd></div>
+        <div><dt>Recordings</dt><dd>For all attendees</dd></div>
+      </dl>
+      <div class="mk-event-description-capacity"><label for="ed-seats"><strong>320 of 400</strong> seats taken</label><meter id="ed-seats" min="0" max="400" low="300" high="380" optimum="0" value="320">320 of 400</meter></div>
+      <a class="btn" href="#">Register</a>
+    </aside>
+  </div>
+</section>
+    </section>
+  </body>
+</html>

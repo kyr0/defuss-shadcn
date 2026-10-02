@@ -1,0 +1,96 @@
+---
+title: "Case Study"
+description: "Describes a project's problem, approach, and documented outcome - a header with the client, results as figures, the story in sections and a pull quote."
+slug: "case-study"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="case-study" title="Case Study" component="case-study">
+  Describes a project's problem, approach, and documented outcome - a header with the client, results as figures, the story in sections and a pull quote. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="case-study">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: a header (client, industry, title, a cover picture), a results band (<code>&lt;dl&gt;</code>), then <em>Challenge</em> / <em>Approach</em> / <em>Results</em> sections - the approach as an <code>&lt;ol&gt;</code> - and a <code>&lt;blockquote&gt;</code> with its source.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>, <DocLink href="avatar.html">Avatar</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="term / value pairs"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote" title="a quoted post with its source"><code>&lt;blockquote&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters" title="numbering without markup"><code>CSS counters</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-case-study</code>
+    <code>.mk-case-study-head</code>
+    <code>.mk-case-study-client</code>
+    <code>.mk-case-study-title</code>
+    <code>.mk-case-study-cover</code>
+    <code>.mk-case-study-results</code>
+    <code>.mk-case-study-layout</code>
+    <code>.mk-case-study-body</code>
+    <code>.mk-case-study-steps</code>
+    <code>.mk-case-study-quote</code>
+    <code>.mk-case-study-facts</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>None.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Client and title over a 21:9 cover, a results band (<dl>), then Challenge / Approach (an <ol> with counters) / Results with a pull quote - and a facts column that sticks from 52rem." previewStyle="align-items:stretch;"
+<article class="mk-case-study" aria-labelledby="cs-title">
+  <header class="mk-case-study-head">
+    <div class="mk-case-study-client"><strong>Northwind</strong><span class="badge" data-variant="outline">Logistics</span><span>· 1,200 employees</span></div>
+    <h1 class="mk-case-study-title" id="cs-title">How Northwind cut planning meetings in half</h1>
+    <figure class="mk-case-study-cover"><img src="https://picsum.photos/seed/case-study-cover/1600/700" alt="Northwind's operations floor"></figure>
+  </header>
+  <dl class="mk-case-study-results">
+    <div><dt>less time in planning meetings</dt><dd>−52%</dd></div>
+    <div><dt>teams onboarded in 6 weeks</dt><dd>38</dd></div>
+    <div><dt>tools replaced</dt><dd>4</dd></div>
+  </dl>
+  <div class="mk-case-study-layout">
+    <div class="mk-case-study-body">
+      <section aria-labelledby="cs-challenge"><h2 id="cs-challenge">The challenge</h2><p>Northwind's 38 regional teams planned routes in spreadsheets, discussed them in email and decided in a weekly two-hour call. Nobody trusted the latest version.</p></section>
+      <section aria-labelledby="cs-approach"><h2 id="cs-approach">The approach</h2>
+        <ol class="mk-case-study-steps">
+          <li><strong>One planning board per region</strong><span>Imported from the spreadsheets in a day.</span></li>
+          <li><strong>Decisions written down</strong><span>Every change has an owner and a reason.</span></li>
+          <li><strong>The weekly call became async</strong><span>A 15-minute review of open questions only.</span></li>
+        </ol>
+      </section>
+      <section aria-labelledby="cs-results"><h2 id="cs-results">The results</h2><p>Six weeks later every region planned on Acme. Meetings shrank by half, and route changes reached drivers a day earlier.</p>
+        <figure class="mk-case-study-quote">
+          <blockquote><p>We stopped arguing about which spreadsheet was right. Now we argue about routes - which is the job.</p></blockquote>
+          <figcaption><span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span><div><strong>Hannah Lee</strong><br><span>Head of Operations, Northwind</span></div></figcaption>
+        </figure>
+      </section>
+    </div>
+    <dl class="mk-case-study-facts">
+      <div><dt>Client</dt><dd>Northwind Logistics</dd></div>
+      <div><dt>Industry</dt><dd>Transport &amp; logistics</dd></div>
+      <div><dt>Plan</dt><dd>Enterprise</dd></div>
+      <div><dt>Timeline</dt><dd>6 weeks</dd></div>
+    </dl>
+  </div>
+</article>
+```
+
+<SourceFiles component="case-study" section="css" />
+
+</DocPage>

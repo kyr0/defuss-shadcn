@@ -1,0 +1,57 @@
+/* -- Integration Item (website · Company) ---------------------------------
+   Presents one compatible tool with its purpose and connection link - logo, name, category, what it does, and connect or manage. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-integration-item, .mk-integration-item *, .mk-integration-item ::before, .mk-integration-item ::after) { box-sizing: border-box; }
+
+  .mk-integration-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & > .btn { margin-block-start: auto; }
+  }
+  .mk-integration-item-logo {
+    --mk-integration-color: var(--foreground);
+
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-lg);
+    background: var(--mk-integration-color);
+    color: #fff;
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.12);
+  }
+  .mk-integration-item-body { display: grid; gap: 0.125rem; flex: 1; }
+  .mk-integration-item-name { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0; font-size: 1rem; font-weight: 600; }
+  .mk-integration-item-category { color: var(--muted-foreground); font-size: 0.8125rem; }
+  .mk-integration-item-desc { margin: 0.5rem 0 0; color: var(--muted-foreground); font-size: 0.875rem; line-height: 1.55; text-wrap: pretty; }
+
+  .mk-integration-item[data-variant="compact"] {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.875rem 1rem;
+
+    & .mk-integration-item-logo { width: 2.25rem; height: 2.25rem; font-size: 0.8125rem; }
+    & .mk-integration-item-desc { display: none; }
+    & > .btn { margin: 0; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-integration-item { border-color: CanvasText; }
+    .mk-integration-item-logo { forced-color-adjust: none; }
+  }
+}

@@ -1,0 +1,97 @@
+---
+title: "Search Result"
+description: "Displays one matching entry with relevant context - where it lives, the title and a snippet with the matches highlighted, as text, with a thumbnail or as a product."
+slug: "search-result"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="search-result" title="Search Result" component="search-result">
+  Displays one matching entry with relevant context - where it lives, the title and a snippet with the matches highlighted, as text, with a thumbnail or as a product. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="search-result">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: the path (section › page), the title link (stretched), a snippet with <code>&lt;mark&gt;</code> matches, meta (type, date) and optionally a thumbnail or a price.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark" title="highlighted matches"><code>&lt;mark&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/line-clamp" title="excerpts cut after N lines"><code>line-clamp</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-search-result</code>
+    <code>.mk-search-result-title</code>
+    <code>.mk-search-result-body</code>
+    <code>.mk-search-result-path</code>
+    <code>.mk-search-result-snippet</code>
+    <code>.mk-search-result-meta</code>
+    <code>.mk-search-result-media</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>media</code>, <code>product</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Results" hint="Path, the title link (it covers the row), a two-line snippet with the matches as <mark>, and the meta." previewStyle="align-items:stretch;"
+<div style="display:grid;max-width:44rem;width:100%">
+  <article class="mk-search-result">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Docs <span aria-hidden="true">›</span> Guides</p>
+      <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
+      <p class="mk-search-result-snippet">Every change is written to your device first. When you are back online, Acme sends the changes - <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p>
+      <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
+    </div>
+  </article>
+  <article class="mk-search-result">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Help <span aria-hidden="true">›</span> Sync &amp; offline</p>
+      <h3 class="mk-search-result-title"><a href="#"><mark>Sync</mark> is stuck on one device</a></h3>
+      <p class="mk-search-result-snippet">If one device stops syncing, sign out and back in. Your unsynced changes are kept on the device until the <mark>sync</mark> completes.</p>
+      <p class="mk-search-result-meta">Help article · 3 min read</p>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="With thumbnails" hint="data-variant='media': a 16:10 thumbnail beside the text - for posts and videos." previewStyle="align-items:stretch;"
+<div style="display:grid;max-width:44rem;width:100%">
+  <article class="mk-search-result" data-variant="media">
+    <img class="mk-search-result-media" src="https://picsum.photos/seed/sr-post/400/250" alt="">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Blog</p>
+      <h3 class="mk-search-result-title"><a href="#">How offline <mark>sync</mark> works in Acme 4.0</a></h3>
+      <p class="mk-search-result-snippet">CRDTs, a write-ahead log and a lot of patience - the story of our <mark>sync</mark> engine.</p>
+      <p class="mk-search-result-meta">Post · Sophie Tan · 8 min</p>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Products" hint="data-variant='product': a square picture and the price in the meta line." previewStyle="align-items:stretch;"
+<div style="display:grid;max-width:36rem;width:100%">
+  <article class="mk-search-result" data-variant="product">
+    <img class="mk-search-result-media" src="https://picsum.photos/seed/prod-shirt/300/300" alt="">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Shop <span aria-hidden="true">›</span> Shirts</p>
+      <h3 class="mk-search-result-title"><a href="#"><mark>Linen</mark> shirt</a></h3>
+      <p class="mk-search-result-snippet">Relaxed fit in washed <mark>linen</mark>. Sand, navy or off-white.</p>
+      <p class="mk-search-result-meta">In stock · <strong>€64</strong></p>
+    </div>
+  </article>
+</div>
+```
+
+<SourceFiles component="search-result" section="css" />
+
+</DocPage>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>security-settings e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/switch/switch.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/security-settings/security-settings.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-security-settings">
+  <section class="mk-security-settings-section" aria-labelledby="sec-sign">
+    <h2 id="sec-sign">Signing in</h2>
+    <div class="mk-security-settings-row"><i data-lucide="key-round"></i><div><strong>Password</strong><p>Last changed <time datetime="2026-07-02">3 months ago</time></p></div><a class="btn" data-variant="outline" data-size="sm" href="#">Change</a></div>
+    <div class="mk-security-settings-row"><i data-lucide="smartphone"></i><div><strong>Two-factor authentication <span class="mk-security-settings-status" data-status="on">On</span></strong><p>Authenticator app · backup codes saved</p></div><div class="switch-item"><input class="switch" type="checkbox" role="switch" id="sec-2fa" checked><label for="sec-2fa" class="sr-only">Two-factor authentication</label></div></div>
+    <div class="mk-security-settings-row"><i data-lucide="fingerprint"></i><div><strong>Passkeys <span class="mk-security-settings-status" data-status="off">None yet</span></strong><p>Sign in with your fingerprint or face - no password.</p></div><a class="btn" data-variant="outline" data-size="sm" href="#">Add a passkey</a></div>
+  </section>
+  <section class="mk-security-settings-section" aria-labelledby="sec-sess">
+    <h2 id="sec-sess">Where you're signed in</h2>
+    <ul class="mk-security-settings-list">
+      <li><span class="mk-security-settings-device"><i data-lucide="laptop"></i></span><div><strong>Chrome on macOS <span class="badge" data-variant="secondary" data-size="sm">This device</span></strong><span>Lisbon · active now</span></div></li>
+      <li><span class="mk-security-settings-device"><i data-lucide="smartphone"></i></span><div><strong>Safari on iPhone</strong><span>Lisbon · 2 hours ago</span></div><button class="btn" data-variant="ghost" data-size="sm" type="button" aria-label="Sign out Safari on iPhone">Sign out</button></li>
+      <li><span class="mk-security-settings-device"><i data-lucide="monitor"></i></span><div><strong>Firefox on Windows</strong><span>Berlin · 3 days ago</span></div><button class="btn" data-variant="ghost" data-size="sm" type="button" aria-label="Sign out Firefox on Windows">Sign out</button></li>
+    </ul>
+    <div class="mk-security-settings-foot"><button class="btn" data-variant="outline" data-size="sm" type="button">Sign out of all other sessions</button></div>
+  </section>
+</div>
+    </section>
+  </body>
+</html>

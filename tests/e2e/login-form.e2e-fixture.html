@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>login-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/checkbox/checkbox.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/login-form/login-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-login-form" aria-labelledby="lf-title">
+  <div class="mk-login-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="lf-title">Welcome back</h1><p>Sign in to your Acme workspace.</p></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="lf-email">Email</label><input class="input" id="lf-email" type="email" name="email" autocomplete="username" required></div>
+    <div class="mk-auth-field"><div class="mk-login-form-label-row"><label class="label" for="lf-pass">Password</label><a href="#">Forgot password?</a></div><input class="input" id="lf-pass" type="password" name="password" autocomplete="current-password" required></div>
+    <div class="checkbox-item"><input class="checkbox" type="checkbox" id="lf-remember" name="remember"><label for="lf-remember">Keep me signed in</label></div>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+  <p class="mk-login-form-foot">No account yet? <a href="#">Create one</a></p>
+</section>
+    </section>
+    <!-- Split -->
+    <section class="fx">
+<section class="mk-login-form" data-variant="split" aria-labelledby="lf2-title">
+  <div class="mk-login-form-split">
+    <div class="mk-login-form-panel">
+      <div class="mk-login-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="lf2-title">Sign in to Acme</h1></div>
+      <form action="#" method="post">
+        <div class="mk-auth-field"><label class="label" for="lf2-email">Email</label><input class="input" id="lf2-email" type="email" name="email" autocomplete="username" required></div>
+        <div class="mk-auth-field"><label class="label" for="lf2-pass">Password</label><input class="input" id="lf2-pass" type="password" name="password" autocomplete="current-password" required></div>
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+      <p class="mk-login-form-foot"><a href="#">Forgot your password?</a></p>
+    </div>
+    <figure class="mk-login-form-aside" style="margin:0">
+      <img src="https://picsum.photos/seed/login-aside/800/1000" alt="">
+      <blockquote>"Acme gave our team its afternoons back."</blockquote>
+      <figcaption>Marco Rossi, COO at Globex</figcaption>
+    </figure>
+  </div>
+</section>
+    </section>
+    <!-- Minimal -->
+    <section class="fx">
+<section class="mk-login-form" data-variant="minimal" aria-labelledby="lf3-title">
+  <div class="mk-login-form-head"><h2 id="lf3-title">Sign in</h2></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="lf3-email">Email</label><input class="input" id="lf3-email" type="email" name="email" autocomplete="username" required></div>
+    <div class="mk-auth-field"><label class="label" for="lf3-pass">Password</label><input class="input" id="lf3-pass" type="password" name="password" autocomplete="current-password" required></div>
+    <button class="btn" type="submit">Continue</button>
+  </form>
+</section>
+    </section>
+  </body>
+</html>

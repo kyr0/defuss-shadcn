@@ -1,0 +1,75 @@
+---
+title: "Help Article"
+description: "Presents instructions for resolving one problem or completing one task - the steps with pictures, a tip, whether it helped and related articles."
+slug: "help-article"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="help-article" title="Help Article" component="help-article">
+  Presents instructions for resolving one problem or completing one task - the steps with pictures, a tip, whether it helped and related articles. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="help-article">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: breadcrumbs, the title, updated <code>&lt;time&gt;</code> and reading time, a lead, numbered steps (<code>&lt;ol&gt;</code>) with screenshots, a tip, a "still stuck?" <code>&lt;details&gt;</code>, a helpful-or-not question and related articles.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="breadcrumb.html">Breadcrumb</DocLink>, <DocLink href="feedback-form.html">Feedback Form</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="an ordered sequence"><code>&lt;ol&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters" title="numbering without markup"><code>CSS counters</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-help-article</code>
+    <code>.mk-help-article-title</code>
+    <code>.mk-help-article-meta</code>
+    <code>.mk-help-article-lead</code>
+    <code>.mk-help-article-steps</code>
+    <code>.mk-help-article-tip</code>
+    <code>.mk-help-article-stuck</code>
+    <code>.mk-help-article-related</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>None.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Breadcrumbs, title and meta, a lead, numbered steps (CSS counters) with a screenshot and a <kbd>, a tip, &quot;still stuck?&quot; in a <details>, a CSS-only &quot;was this helpful?&quot; (Feedback Form, inline) and related articles." previewStyle="align-items:stretch;"
+<article class="mk-help-article" aria-labelledby="ha-title">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol class="breadcrumb-list"><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Help</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Billing</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Change your billing email</span></li></ol></nav>
+  <h1 class="mk-help-article-title" id="ha-title">Change your billing email</h1>
+  <p class="mk-help-article-meta">Updated <time datetime="2026-09-12">12 Sep 2026</time> · 2 min read</p>
+  <p class="mk-help-article-lead">Invoices and payment reminders go to the billing email. Only workspace owners can change it.</p>
+  <ol class="mk-help-article-steps">
+    <li><div><strong>Open Settings</strong><p>Press <kbd>⌘</kbd> <kbd>,</kbd> or choose Settings from your avatar menu.</p></div></li>
+    <li><div><strong>Go to Billing → Details</strong><p>You'll see the current billing email under "Invoices".</p><img src="images/mk-wide.png" alt="The Billing details screen with the billing email field highlighted"></div></li>
+    <li><div><strong>Enter the new address and save</strong><p>We send a confirmation link to the new address. The change applies once it is confirmed.</p></div></li>
+  </ol>
+  <div class="mk-help-article-tip"><i data-lucide="lightbulb"></i><p>Use a shared address like billing@yourcompany.com so invoices don't depend on one person.</p></div>
+  <details class="mk-help-article-stuck"><summary>Still stuck?</summary><p>If you can't see Billing, you're not an owner of this workspace. Ask an owner, or <a href="#">contact support</a>.</p></details>
+  <form class="mk-feedback-form" data-variant="inline" action="#" method="post">
+    <fieldset><legend>Was this article helpful?</legend><div class="mk-feedback-form-yesno"><label><input type="radio" name="ha-helpful" value="yes"><i data-lucide="thumbs-up"></i> Yes</label><label><input type="radio" name="ha-helpful" value="no"><i data-lucide="thumbs-down"></i> No</label></div></fieldset>
+    <p class="mk-feedback-form-thanks" role="status">Thanks for letting us know.</p>
+  </form>
+  <ul class="mk-help-article-related"><li><h2>Related articles</h2></li><li><a href="#"><i data-lucide="file-text"></i>Download an invoice</a></li><li><a href="#"><i data-lucide="file-text"></i>Add a VAT number</a></li></ul>
+</article>
+```
+
+<SourceFiles component="help-article" section="css" />
+
+</DocPage>

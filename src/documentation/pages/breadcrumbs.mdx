@@ -1,0 +1,87 @@
+---
+title: "Breadcrumbs"
+description: "Shows the current position within a content hierarchy - the trail above the page title, collapsing to a back link on small screens, or hiding the middle levels in a menu."
+slug: "breadcrumbs"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="breadcrumbs" title="Breadcrumbs" component="breadcrumbs">
+  Shows the current position within a content hierarchy - the trail above the page title, collapsing to a back link on small screens, or hiding the middle levels in a menu. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="breadcrumbs">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div&gt;</code>: the Breadcrumb component (with a home icon), a back link to the parent shown only below 30rem (container query), and the page title. The collapsed variant puts the middle levels in a <code>popover</code> behind a "…" button.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="breadcrumb.html">Breadcrumb</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="light-dismiss panels without script"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="popovers placed next to their trigger"><code>CSS anchor positioning</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-breadcrumbs</code>
+    <code>.mk-breadcrumbs-back</code>
+    <code>.mk-breadcrumbs-title</code>
+    <code>.mk-breadcrumbs-more</code>
+    <code>.mk-breadcrumbs-menu</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="collapsed"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The Breadcrumb component (the home icon is named) above the title. Below 30rem of width - resize the preview to Mobile - a container query swaps the trail for &quot;← Billing&quot;." previewStyle="align-items:stretch;"
+<div class="mk-breadcrumbs">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#" aria-label="Home"><i data-lucide="house"></i></a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Help</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Billing</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Invoices</span></li>
+    </ol>
+  </nav>
+  <a class="mk-breadcrumbs-back" href="#"><i data-lucide="chevron-left"></i> Billing</a>
+  <h1 class="mk-breadcrumbs-title">Invoices</h1>
+</div>
+```
+
+```html example label="Collapsed" hint="data-variant='collapsed': deep trails keep the first and last levels; the middle ones open from &quot;…&quot; in a popover anchored to it." previewStyle="align-items:stretch;"
+<div class="mk-breadcrumbs" data-variant="collapsed">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Shop</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><button class="mk-breadcrumbs-more" type="button" popovertarget="bc-more" style="anchor-name:--bc-more" aria-label="Show 2 more levels"><i data-lucide="ellipsis"></i></button>
+        <div class="mk-breadcrumbs-menu" id="bc-more" popover style="position-anchor:--bc-more"><ul><li><a href="#">Women</a></li><li><a href="#">Clothing</a></li></ul></div>
+      </li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Shirts</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Linen shirt</span></li>
+    </ol>
+  </nav>
+</div>
+```
+
+<SourceFiles component="breadcrumbs" section="css" />
+
+</DocPage>

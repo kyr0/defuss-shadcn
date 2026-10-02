@@ -131,9 +131,16 @@ function init() {
           case 'ArrowUp': {
             e.preventDefault();
             const menu = menuOf(ts[i]);
-            openMenu(bar, ts[i]);
-            // up opens with the LAST item highlighted (after the open toggle)
-            if (menu) setTimeout(() => focusItem(menu, true), 20);
+            // up opens with the LAST item highlighted - in the open toggle,
+            // after the dropdown's own handler highlighted the first one (the
+            // toggle event is a queued task; a timer raced it under load)
+            if (menu && !menu.matches(':popover-open')) {
+              menu.addEventListener('toggle', (ev) => { if ((ev as ToggleEvent).newState === 'open') focusItem(menu, true); }, { once: true });
+              openMenu(bar, ts[i]);
+            } else {
+              openMenu(bar, ts[i]);
+              if (menu) focusItem(menu, true);
+            }
             break;
           }
         }

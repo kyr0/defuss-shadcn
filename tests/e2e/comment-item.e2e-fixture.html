@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>comment-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/dropdown/dropdown.css" />
+    <link rel="stylesheet" href="/dist/components/mockup-code/mockup-code.css" />
+    <link rel="stylesheet" href="/dist/components/comment-item/comment-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Thread -->
+    <section class="fx">
+<div style="width:100%;max-width:42rem">
+<article class="mk-comment-item" id="c-1">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Hannah Lee</a>
+      <a class="mk-comment-item-time" href="#c-1"><time datetime="2026-10-01T08:12">2 hours ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>The write-ahead log section finally made CRDTs click for me. Would love a follow-up on how you garbage-collect old operations.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (24)"><i data-lucide="thumbs-up"></i> 24</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+  <ol class="mk-comment-item-replies">
+    <li>
+      <article class="mk-comment-item" id="c-2">
+        <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+        <div class="mk-comment-item-main">
+          <header class="mk-comment-item-head">
+            <a class="mk-comment-item-author" href="#">Sophie Tan</a><span class="badge" data-variant="outline">Author</span>
+            <a class="mk-comment-item-time" href="#c-2"><time datetime="2026-10-01T09:03">1 hour ago</time></a>
+          </header>
+          <div class="mk-comment-item-body"><p>That is next on the list! Short version: we compact once every replica has acknowledged an operation.</p></div>
+          <footer class="mk-comment-item-actions">
+            <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (11)"><i data-lucide="thumbs-up"></i> 11</button>
+            <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+          </footer>
+        </div>
+      </article>
+    </li>
+    <li>
+      <article class="mk-comment-item" id="c-3">
+        <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+        <div class="mk-comment-item-main">
+          <header class="mk-comment-item-head">
+            <a class="mk-comment-item-author" href="#">Aron Homberg</a>
+            <a class="mk-comment-item-time" href="#c-3"><time datetime="2026-10-01T09:30">40 minutes ago</time></a>
+          </header>
+          <div class="mk-comment-item-body"><p>Seconded - and how it plays with the 30-day branch rule.</p></div>
+          <footer class="mk-comment-item-actions">
+            <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (3)"><i data-lucide="thumbs-up"></i> 3</button>
+            <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+          </footer>
+        </div>
+      </article>
+    </li>
+  </ol>
+</article>
+</div>
+    </section>
+    <!-- Highlighted -->
+    <section class="fx">
+<div style="width:100%;max-width:42rem">
+<article class="mk-comment-item" id="c-4" data-highlighted>
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Sophie Tan</a><span class="badge" data-variant="outline">Author</span>
+      <a class="mk-comment-item-time" href="#c-4"><time datetime="2026-10-01T09:03">1 hour ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>That is next on the list! Short version: we compact once every replica has acknowledged an operation.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (11)"><i data-lucide="thumbs-up"></i> 11</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Compact and deleted -->
+    <section class="fx">
+<div style="width:100%;max-width:42rem">
+<article class="mk-comment-item" id="c-5" data-variant="compact">
+  <span class="avatar" data-size="sm"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+      <a class="mk-comment-item-time" href="#c-5"><time datetime="2026-09-28">3 days ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>Great write-up - bookmarked.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (2)"><i data-lucide="thumbs-up"></i> 2</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+<article class="mk-comment-item" id="c-6" data-variant="deleted">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Deleted user</a>
+      <a class="mk-comment-item-time" href="#c-6"><time datetime="2026-09-28">3 days ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>This comment was removed by a moderator.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"><i data-lucide="thumbs-up"></i> 0</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Reactions, menu and pinned -->
+    <section class="fx">
+<div style="width:100%;max-width:42rem">
+<article class="mk-comment-item" id="r-1">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Hannah Lee</a><span class="badge" data-variant="outline">Pinned</span>
+      <a class="mk-comment-item-time" href="#r-1"><time datetime="2026-10-01T08:12">2 hours ago</time></a>
+      <button class="btn mk-comment-item-menu" data-variant="ghost" data-size="icon-xs" type="button" aria-label="More actions" aria-haspopup="menu" aria-expanded="false" aria-controls="r-1-menu" data-dropdown-trigger="r-1-menu"><i data-lucide="ellipsis"></i></button>
+      <div id="r-1-menu" role="menu" popover class="dropdown-content" aria-label="Comment actions">
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="link"></i> Copy link</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="pencil"></i> Edit</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="flag"></i> Report</button>
+      </div>
+    </header>
+    <div class="mk-comment-item-body"><p>The write-ahead log section made CRDTs click for me. Would love a follow-up on garbage collection.</p></div>
+    <div class="mk-comment-item-reactions" role="group" aria-label="Reactions">
+      <button type="button" aria-pressed="true" aria-label="Thumbs up, 12">👍 <span>12</span></button>
+      <button type="button" aria-pressed="false" aria-label="Party, 3">🎉 <span>3</span></button>
+      <button type="button" aria-pressed="false" aria-label="Heart, 5">❤️ <span>5</span></button>
+      <button type="button" aria-label="Add reaction"><i data-lucide="smile-plus"></i></button>
+    </div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (24)"><i data-lucide="thumbs-up"></i> 24</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Q&A: votes and the accepted answer -->
+    <section class="fx">
+<div style="width:100%;max-width:44rem;display:grid;gap:.5rem">
+<article class="mk-comment-item" id="q-1" data-variant="voted">
+  <div class="mk-comment-item-votes">
+    <button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Upvote" aria-pressed="false"><i data-lucide="chevron-up"></i></button>
+    <output aria-label="Score">7</output>
+    <button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Downvote" aria-pressed="false"><i data-lucide="chevron-down"></i></button>
+  </div>
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+      <a class="mk-comment-item-time" href="#q-1"><time datetime="2026-09-30">yesterday</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>How do I force a full resync on one device? Mine shows an old version of a doc.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"><i data-lucide="thumbs-up"></i> 0</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+<article class="mk-comment-item" id="q-2" data-variant="accepted">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Sophie Tan</a><span class="badge" data-variant="default"><i data-lucide="check"></i> Accepted answer</span>
+      <a class="mk-comment-item-time" href="#q-2"><time datetime="2026-09-30T13:00">20 hours ago</time></a>
+    </header>
+    <div class="mk-comment-item-body">
+      <p>Settings → Storage → Rebuild local cache. Or from the console:</p>
+      <div class="mockup-code" data-chrome="none"><pre data-prefix="$"><code>acme sync --rebuild --device laptop</code></pre><pre data-prefix=">" data-tone="success"><code>Rebuilt 1,204 operations</code></pre></div>
+    </div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"><i data-lucide="thumbs-up"></i> 0</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Collapsed replies -->
+    <section class="fx">
+<div style="width:100%;max-width:42rem">
+<article class="mk-comment-item" id="t-1">
+  <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Hannah Lee</a>
+      <a class="mk-comment-item-time" href="#t-1"><time datetime="2026-10-01T08:12">2 hours ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>The write-ahead log section finally made CRDTs click for me. Would love a follow-up on how you garbage-collect old operations.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (24)"><i data-lucide="thumbs-up"></i> 24</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+  <details class="mk-comment-item-thread">
+    <summary>Show 2 replies</summary>
+    <ol class="mk-comment-item-replies">
+      <li>
+        <article class="mk-comment-item" id="t-2">
+          <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+          <div class="mk-comment-item-main">
+            <header class="mk-comment-item-head">
+              <a class="mk-comment-item-author" href="#">Sophie Tan</a><span class="badge" data-variant="outline">Author</span>
+              <a class="mk-comment-item-time" href="#t-2"><time datetime="2026-10-01T09:03">1 hour ago</time></a>
+            </header>
+            <div class="mk-comment-item-body"><p>That is next on the list! Short version: we compact once every replica has acknowledged an operation.</p></div>
+            <footer class="mk-comment-item-actions">
+              <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (11)"><i data-lucide="thumbs-up"></i> 11</button>
+              <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+            </footer>
+          </div>
+        </article>
+      </li>
+      <li>
+        <article class="mk-comment-item" id="t-3">
+          <span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+          <div class="mk-comment-item-main">
+            <header class="mk-comment-item-head">
+              <a class="mk-comment-item-author" href="#">Aron Homberg</a>
+              <a class="mk-comment-item-time" href="#t-3"><time datetime="2026-10-01T09:30">40 minutes ago</time></a>
+            </header>
+            <div class="mk-comment-item-body"><p>Seconded - and how it plays with the 30-day branch rule.</p></div>
+            <footer class="mk-comment-item-actions">
+              <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (3)"><i data-lucide="thumbs-up"></i> 3</button>
+              <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+            </footer>
+          </div>
+        </article>
+      </li>
+    </ol>
+  </details>
+</article>
+</div>
+    </section>
+  </body>
+</html>

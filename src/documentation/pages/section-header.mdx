@@ -1,0 +1,151 @@
+---
+title: "Section Header"
+description: "Introduces a section with a title, description, and optional action - start-aligned, centered or split, in three title sizes."
+slug: "section-header"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="section-header" title="Section Header" component="section-header">
+  Introduces a section with a title, description, and optional action - start-aligned, centered or split, in three title sizes. Part of the <DocLink href="website-landing-page.html">Landing Page</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="section-header">
+  <SkillField label="Native basis">
+<SkillText>A heading (<code>h2</code>) with an eyebrow, a description and optional actions (Buttons). <code>flex-wrap</code> lets the split layout fall back to a stack when the row gets narrow; a container query scales the title.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>, <DocLink href="badge.html">Badge</DocLink>, <DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="kbd.html">Kbd</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the title scales with the section"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced title, pretty description"><code>text-wrap</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap" title="split falls back to a stack"><code>flex-wrap</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-section-header</code>
+    <code>.mk-section-header-copy</code>
+    <code>.mk-section-header-eyebrow</code>
+    <code>.mk-section-header-title</code>
+    <code>.mk-section-header-desc</code>
+    <code>.mk-section-header-actions</code>
+    <code>.mk-section-header-proof</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-align="center"</code>, <code>data-variant="split"</code>, <code>data-size</code> (<code>sm</code>, <code>lg</code>); <code>data-variant</code> (<code>numbered</code> + <code>data-index</code>, <code>divider</code>, <code>banner</code>); <code>.mk-section-header-proof</code> (an Avatar group + a sentence).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Eyebrow, title, description and an action, start-aligned. The title scales up once the section is 48rem wide." previewStyle="align-items:stretch;"
+<header class="mk-section-header">
+  <div class="mk-section-header-copy">
+    <span class="mk-section-header-eyebrow">Features</span>
+    <h2 class="mk-section-header-title">Everything your team needs to ship calmly</h2>
+    <p class="mk-section-header-desc">Plan, write and review in one place - with the tools you already use, and none of the noise.</p>
+  </div>
+  <div class="mk-section-header-actions">
+    <a class="btn" href="#">Get started</a>
+    <a class="btn" data-variant="ghost" href="#">See all features <i data-lucide="arrow-right"></i></a>
+  </div>
+</header>
+```
+
+```html example label="Centered" hint="data-align='center' - for symmetric sections like pricing or testimonials." previewStyle="align-items:stretch;"
+<header class="mk-section-header" data-align="center">
+  <div class="mk-section-header-copy">
+    <span class="mk-section-header-eyebrow">Pricing</span>
+    <h2 class="mk-section-header-title">Simple plans for every stage</h2>
+    <p class="mk-section-header-desc">Start free, upgrade when your team grows. No seat minimums, cancel any time.</p>
+  </div>
+</header>
+```
+
+```html example label="Split" hint="data-variant='split': copy on the left, the action on the right of the baseline - narrow, it wraps under the copy." previewStyle="align-items:stretch;"
+<header class="mk-section-header" data-variant="split">
+  <div class="mk-section-header-copy">
+    <span class="mk-section-header-eyebrow">From the blog</span>
+    <h2 class="mk-section-header-title">Latest writing</h2>
+    <p class="mk-section-header-desc">Notes on product, engineering and the craft of calm software.</p>
+  </div>
+  <div class="mk-section-header-actions">
+    <a class="btn" data-variant="outline" href="#">All posts</a>
+  </div>
+</header>
+```
+
+```html example label="Sizes" hint="data-size='sm' for sub-sections, 'lg' for the first section on a page." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:2.5rem;width:100%">
+  <header class="mk-section-header" data-size="sm">
+    <div class="mk-section-header-copy">
+      <h2 class="mk-section-header-title">Small - a sub-section</h2>
+      <p class="mk-section-header-desc">For groups inside a longer section.</p>
+    </div>
+  </header>
+  <header class="mk-section-header" data-size="lg">
+    <div class="mk-section-header-copy">
+      <span class="mk-section-header-eyebrow">Large</span>
+      <h2 class="mk-section-header-title">The first section on a page</h2>
+    </div>
+  </header>
+</div>
+```
+
+```html example label="Numbered" hint="data-variant='numbered' with data-index='01': a large outlined index leads - for chaptered pages (how it works, step by step)." previewStyle="align-items:stretch;"
+<header class="mk-section-header" data-variant="numbered" data-index="01">
+  <div class="mk-section-header-copy">
+    <span class="mk-section-header-eyebrow">How it works</span>
+    <h2 class="mk-section-header-title">Write it once, everywhere</h2>
+    <p class="mk-section-header-desc">Drafts sync to every device the moment you type - online or off. Nothing to save, nothing to merge.</p>
+  </div>
+  <div class="mk-section-header-actions">
+    <a class="btn" data-variant="outline" href="#">Read the sync deep-dive <i data-lucide="arrow-right"></i></a>
+  </div>
+</header>
+```
+
+```html example label="Divider" hint="data-variant='divider': the title draws a rule to the edge - quiet separation between long sections." previewStyle="align-items:stretch;"
+<header class="mk-section-header" data-variant="divider" data-size="sm">
+  <div class="mk-section-header-copy">
+    <span class="mk-section-header-eyebrow">Chapter two</span>
+    <h2 class="mk-section-header-title">Integrations</h2>
+  </div>
+</header>
+```
+
+```html example label="Banner with social proof" hint="data-variant='banner' + data-align='center': a dotted surface. The eyebrow is a Badge, the actions are Buttons (one with a Kbd shortcut) and the proof line composes an Avatar group." previewStyle="align-items:stretch;"
+<header class="mk-section-header" data-variant="banner" data-align="center" data-size="lg">
+  <div class="mk-section-header-copy">
+    <span class="badge" data-variant="outline"><i data-lucide="sparkles"></i> New in Acme 4.0</span>
+    <h2 class="mk-section-header-title">Your team's calm place to write</h2>
+    <p class="mk-section-header-desc">Docs, decisions and tasks in one quiet tool - fast enough to keep up, simple enough to forget.</p>
+  </div>
+  <div class="mk-section-header-actions">
+    <a class="btn" data-size="lg" href="#">Start free</a>
+    <a class="btn" data-variant="outline" data-size="lg" href="#">Open the app <kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd></a>
+  </div>
+  <div class="mk-section-header-proof">
+    <div class="avatar-group">
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+      <span class="avatar-group-count">+2k</span>
+    </div>
+    <span>Loved by <strong>12,000</strong> teams</span>
+  </div>
+</header>
+```
+
+<SourceFiles component="section-header" section="css" />
+
+</DocPage>

@@ -1,0 +1,78 @@
+---
+title: "Search Suggestions"
+description: "Displays suggested queries or matches while typing - recent searches, matching pages and people grouped in a panel with the match highlighted, or native suggestions."
+slug: "search-suggestions"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="search-suggestions" title="Search Suggestions" component="search-suggestions">
+  Displays suggested queries or matches while typing - recent searches, matching pages and people grouped in a panel with the match highlighted, or native suggestions. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="search-suggestions">
+  <SkillField label="Native basis">
+<SkillText>An input with <code>role="combobox"</code>, <code>aria-expanded</code> and <code>aria-controls</code>, and a <code>role="listbox"</code> panel with groups (<code>role="group"</code> + label) of <code>role="option"</code> rows; the matched text is a <code>&lt;mark&gt;</code>. Your script filters and moves <code>aria-activedescendant</code>; the <code>datalist</code> variant needs none.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="kbd.html">Kbd</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark" title="highlighted matches"><code>&lt;mark&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist" title="native suggestions for an input"><code>&lt;datalist&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-search-suggestions</code>
+    <code>.mk-search-suggestions-field</code>
+    <code>.mk-search-suggestions-panel</code>
+    <code>.mk-search-suggestions-group</code>
+    <code>.mk-search-suggestions-option</code>
+    <code>.mk-search-suggestions-foot</code>
+    <code>.mk-search-suggestions-hint</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>aria-selected="true"</code> on the active option; <code>data-variant="native"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The ARIA combobox pattern, shown open: the input has role=&quot;combobox&quot; with aria-expanded / aria-controls / aria-activedescendant, the panel is a listbox of grouped options, the typed part of each match is a <mark>. Your script filters and moves the active option." previewStyle="align-items:stretch;"
+<div class="mk-search-suggestions">
+  <div class="mk-search-suggestions-field"><i data-lucide="search"></i><label class="sr-only" for="ss-q">Search</label><input class="input" id="ss-q" type="search" value="sync" role="combobox" aria-expanded="true" aria-controls="ss-list" aria-activedescendant="ss-o2" aria-autocomplete="list" autocomplete="off"></div>
+  <div class="mk-search-suggestions-panel" id="ss-list" role="listbox" aria-label="Suggestions">
+    <div class="mk-search-suggestions-group" role="group" aria-labelledby="ss-g1"><span id="ss-g1">Recent</span>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o1"><i data-lucide="history"></i><span><mark>sync</mark> stuck on phone</span><small></small></div>
+    </div>
+    <div class="mk-search-suggestions-group" role="group" aria-labelledby="ss-g2"><span id="ss-g2">Pages</span>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o2" aria-selected="true"><i data-lucide="file-text"></i><span>Offline <mark>sync</mark></span><small>Docs · Guides</small></div>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o3"><i data-lucide="file-text"></i><span><mark>Sync</mark> conflicts explained</span><small>Help</small></div>
+    </div>
+    <div class="mk-search-suggestions-group" role="group" aria-labelledby="ss-g3"><span id="ss-g3">Tasks</span>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o4"><i data-lucide="square-check"></i><span><mark>Sync</mark> engine v2 rollout</span><small>Engineering</small></div>
+    </div>
+    <div class="mk-search-suggestions-foot" aria-hidden="true"><span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd> move</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">esc</kbd> close</span></div>
+  </div>
+</div>
+```
+
+```html example label="Native" hint="data-variant='native': a <datalist> - the browser shows the suggestions as you type, no script at all. Click the field." previewStyle="align-items:stretch;"
+<div class="mk-search-suggestions" data-variant="native">
+  <div class="mk-search-suggestions-field"><i data-lucide="search"></i><label class="sr-only" for="ss-n">Search help</label><input class="input" id="ss-n" type="search" name="q" list="ss-topics" placeholder="Try: invoice, sync, password"></div>
+  <datalist id="ss-topics"><option value="Change your billing email"><option value="Download an invoice"><option value="Sync is stuck"><option value="Reset your password"><option value="Turn on two-factor"></datalist>
+  <p class="mk-search-suggestions-hint">Suggestions come from the browser's own list.</p>
+</div>
+```
+
+<SourceFiles component="search-suggestions" section="css" />
+
+</DocPage>

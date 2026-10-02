@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>blog-header e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/toggle/toggle.css" />
+    <link rel="stylesheet" href="/dist/components/toggle-group/toggle-group.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/blog-header/blog-header.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<header class="mk-blog-header">
+  <div class="mk-blog-header-copy">
+    <span class="mk-blog-header-eyebrow">The Acme Blog</span>
+    <h1 class="mk-blog-header-title">Notes on building calm software</h1>
+    <p class="mk-blog-header-desc">Essays on product, engineering and design from the team behind Acme - one post a week, no hot takes.</p>
+  </div>
+  <div class="mk-blog-header-actions">
+    <a class="btn" data-size="sm" href="#"><i data-lucide="mail"></i> Subscribe</a>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" type="application/rss+xml"><i data-lucide="rss"></i> RSS</a>
+  </div>
+  <nav class="mk-blog-header-categories" aria-label="Categories">
+    <a href="#" aria-current="page">All posts</a>
+    <a href="#">Engineering</a>
+    <a href="#">Design</a>
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+  </nav>
+</header>
+    </section>
+    <!-- Centered banner -->
+    <section class="fx">
+<header class="mk-blog-header" data-variant="banner" data-align="center">
+  <div class="mk-blog-header-copy">
+    <span class="mk-blog-header-eyebrow">Engineering</span>
+    <h1 class="mk-blog-header-title">How we build Acme</h1>
+    <p class="mk-blog-header-desc">Architecture notes, post-mortems and the tools we wrote along the way.</p>
+  </div>
+  <nav class="mk-blog-header-categories" aria-label="Categories">
+    <a href="#">All posts</a>
+    <a href="#" aria-current="page">Engineering</a>
+    <a href="#">Design</a>
+    <a href="#">Product</a>
+  </nav>
+</header>
+    </section>
+    <!-- Split with subscribe -->
+    <section class="fx">
+<header class="mk-blog-header" data-variant="split">
+  <div class="mk-blog-header-copy">
+    <span class="mk-blog-header-eyebrow">The Acme Blog</span>
+    <h1 class="mk-blog-header-title">Notes on building calm software</h1>
+    <p class="mk-blog-header-desc">One essay a week on product, engineering and design. No hot takes, no growth hacks.</p>
+    <form class="mk-blog-header-subscribe" aria-label="Subscribe">
+      <input class="input" type="email" name="email" placeholder="you@company.com" autocomplete="email" required aria-label="Email">
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
+  </div>
+  <figure class="mk-blog-header-media"><img src="/dist/documentation/images/mk-wide3.png" alt="The Acme team writing together"></figure>
+</header>
+    </section>
+    <!-- Search, view and sort -->
+    <section class="fx">
+<header class="mk-blog-header">
+  <div class="mk-blog-header-copy">
+    <h1 class="mk-blog-header-title">All posts</h1>
+  </div>
+  <nav class="mk-blog-header-categories" aria-label="Categories">
+    <a href="#" aria-current="page">All <span class="mk-blog-header-count">128</span></a>
+    <a href="#">Engineering <span class="mk-blog-header-count">54</span></a>
+    <a href="#">Design <span class="mk-blog-header-count">31</span></a>
+    <a href="#">Product <span class="mk-blog-header-count">28</span></a>
+    <a href="#">Company <span class="mk-blog-header-count">15</span></a>
+  </nav>
+  <div class="mk-blog-header-toolbar">
+    <input class="input" type="search" placeholder="Search posts…" aria-label="Search posts" style="max-width:18rem">
+    <div class="flex items-center gap-2">
+      <div class="toggle-group" role="group" aria-label="View" data-type="single" data-size="sm">
+        <button class="toggle" aria-pressed="true" value="grid" aria-label="Grid"><i data-lucide="layout-grid"></i></button>
+        <button class="toggle" aria-pressed="false" value="list" aria-label="List"><i data-lucide="list"></i></button>
+      </div>
+      <select class="select" data-size="sm" aria-label="Sort posts"><option>Newest</option><option>Most read</option><option>Oldest</option></select>
+    </div>
+  </div>
+</header>
+    </section>
+    <!-- Editorial -->
+    <section class="fx">
+<header class="mk-blog-header" data-variant="editorial">
+  <div class="mk-blog-header-copy">
+    <span class="mk-blog-header-eyebrow">Est. 2016</span>
+    <h1 class="mk-blog-header-title">The Quiet Quarterly</h1>
+    <p class="mk-blog-header-desc">Long reads on work, tools and attention.</p>
+  </div>
+  <nav class="mk-blog-header-categories" aria-label="Sections">
+    <a href="#" aria-current="page">Essays</a>
+    <a href="#">Interviews</a>
+    <a href="#">Field notes</a>
+    <a href="#">Letters</a>
+  </nav>
+</header>
+    </section>
+  </body>
+</html>

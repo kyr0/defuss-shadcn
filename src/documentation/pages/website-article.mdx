@@ -1,0 +1,177 @@
+---
+title: "Article"
+description: "Website blocks - Article: Blocks for a single article or post, top to bottom: its header, the formatted body, share links, the author's bio and the contributors, related reading and the previous / next articles."
+slug: "website-article"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-article" title="Article" introStyle="max-width:42rem;">
+  Blocks for a single article or post, top to bottom: its header, the formatted body, share links, the author's bio and the contributors, related reading and the previous / next articles. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Article blocks composed into one page - the source is the page.</DocText>
+
+```html example label="An article page" schema="none" hint="Article Header, Share Links, Article Body, Author Bio, Article Navigation, Related Items and an Author List (stack) - the Article blocks composed into one page." previewStyle="align-items:stretch;"
+<article style="display:flex;flex-direction:column;gap:2rem;width:100%">
+  <header class="mk-article-header">
+    <a class="mk-article-header-category" href="#">Engineering</a>
+    <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
+    <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience.</p>
+    <div class="mk-article-header-byline">
+      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div>
+        <a class="mk-article-header-author" href="#">Sophie Tan</a>
+        <div class="mk-article-header-meta"><time datetime="2026-10-01">1 October 2026</time><span>8 min read</span></div>
+      </div>
+    </div>
+    <figure class="mk-article-header-media">
+      <img src="images/mk-wide.png" alt="A whiteboard sketch of the sync pipeline">
+      <figcaption>The first sketch of the sync pipeline, March 2026.</figcaption>
+    </figure>
+  </header>
+  <div style="width:100%;max-width:42rem;margin-inline:auto;padding-inline:1.25rem;box-sizing:border-box">
+    <div class="mk-share-links" role="group" aria-label="Share this article">
+      <span class="mk-share-links-label">Share</span>
+      <ul class="mk-share-links-list">
+        <li><a class="btn" data-variant="outline" data-size="icon-sm" href="https://x.com/intent/post?url=https%3A%2F%2Fexample.com%2Fcalm-software&amp;text=Calm%20software" target="_blank" rel="noopener" aria-label="Share on X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg></a></li>
+        <li><a class="btn" data-variant="outline" data-size="icon-sm" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fexample.com%2Fcalm-software" target="_blank" rel="noopener" aria-label="Share on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
+        <li><a class="btn" data-variant="outline" data-size="icon-sm" href="mailto:?subject=Calm%20software&amp;body=https%3A%2F%2Fexample.com%2Fcalm-software" aria-label="Share by email"><i data-lucide="mail"></i></a></li>
+        <li><button type="button" class="btn" data-variant="outline" data-size="icon-sm" data-share="copy" aria-label="Copy link"><i data-lucide="link"></i></button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mk-article-body">
+    <p>Sync is the feature nobody notices until it fails. Our goal for 4.0 was simple to state and hard to build: <strong>never lose a keystroke</strong>, online or off.</p>
+    <h2>Why CRDTs</h2>
+    <p>A conflict-free replicated data type lets two devices edit the same document without a server deciding who wins. Every operation <a href="#">commutes</a> - merging becomes a set union.</p>
+    <blockquote><p>The best sync is the one you forget is there.</p><cite>Hannah Lee, Design</cite></blockquote>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:2rem;width:100%;max-width:42rem;margin-inline:auto;padding-inline:1.25rem;box-sizing:border-box">
+    <section class="mk-author-bio" aria-labelledby="article-bio">
+      <span class="avatar" data-size="lg"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+      <div class="mk-author-bio-body">
+        <span class="mk-author-bio-label">Written by</span>
+        <h2 class="mk-author-bio-name" id="article-bio"><a href="#">Sophie Tan</a></h2>
+        <p class="mk-author-bio-role">Staff engineer, Sync team</p>
+        <p class="mk-author-bio-text">Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of. She writes about distributed systems, testing, and calm engineering.</p>
+        <ul class="mk-author-bio-links">
+          <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Website"><i data-lucide="globe"></i></a></li>
+          <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" rel="me" aria-label="Email Sophie"><i data-lucide="mail"></i></a></li>
+          <li><a class="btn" data-variant="ghost" data-size="icon-sm" href="#" aria-label="RSS feed of Sophie's posts"><i data-lucide="rss"></i></a></li>
+        </ul>
+      </div>
+    </section>
+    <nav class="mk-article-nav" aria-label="More articles">
+      <a class="mk-article-nav-link" href="#" rel="prev">
+        <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> Previous</span>
+        <span class="mk-article-nav-title">Designing for calm</span>
+      </a>
+      <a class="mk-article-nav-link" href="#" rel="next">
+        <span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+        <span class="mk-article-nav-title">Testing sync with a lossy network</span>
+      </a>
+    </nav>
+    <section aria-labelledby="read-next" style="display:flex;flex-direction:column;gap:1rem">
+      <h2 id="read-next" style="margin:0;font-size:1.125rem">Read next</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:1.5rem">
+        <article class="mk-related-item" data-variant="card">
+          <figure class="mk-related-item-media"><img src="images/mk-wide2.png" alt=""></figure>
+          <div class="mk-related-item-body">
+            <span class="mk-related-item-kind">Article</span>
+            <h3 class="mk-related-item-title"><a href="#">Designing for calm</a></h3>
+            <p class="mk-related-item-meta">24 Sep 2026 · 5 min read</p>
+          </div>
+        </article>
+        <article class="mk-related-item" data-variant="card">
+          <figure class="mk-related-item-media"><img src="images/mk-square.png" alt=""></figure>
+          <div class="mk-related-item-body">
+            <span class="mk-related-item-kind">Guide</span>
+            <h3 class="mk-related-item-title"><a href="#">Testing sync with a lossy network</a></h3>
+            <p class="mk-related-item-meta">12 Sep 2026 · 11 min read</p>
+          </div>
+        </article>
+        <article class="mk-related-item" data-variant="card">
+          <figure class="mk-related-item-media"><img src="images/mk-wide3.png" alt=""></figure>
+          <div class="mk-related-item-body">
+            <span class="mk-related-item-kind">Video</span>
+            <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
+            <p class="mk-related-item-meta">4:12</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="mk-author-list" data-variant="stack" aria-labelledby="contributors">
+      <h2 class="mk-author-list-title" id="contributors">Contributors</h2>
+      <ul class="mk-author-list-items">
+        <li class="mk-author-list-item">
+          <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+          <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Sophie Tan</a><span class="mk-author-list-role">Staff engineer</span></div>
+        </li>
+        <li class="mk-author-list-item">
+          <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+          <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Hannah Lee</a><span class="mk-author-list-role">Design lead</span></div>
+        </li>
+        <li class="mk-author-list-item">
+          <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+          <div class="mk-author-list-who"><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div>
+        </li>
+      </ul>
+      <p class="mk-author-list-summary">With help from Hannah Lee and Aron Homberg</p>
+    </section>
+  </div>
+</article>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="article-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Article Header</h3>
+      <p class="card-description">Presents an article's title, subtitle, author, and publication date - with a lead image and caption, centered, or as a cover.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="article-body.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Article Body</h3>
+      <p class="card-description">Renders an article's formatted text and embedded media - headings, lists, quotes, code, tables, figures, video and iframes, from plain HTML.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="author-bio.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Author Bio</h3>
+      <p class="card-description">Introduces one author with a portrait, biography, and links - between rules under an article, on a card, or as a centered profile.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="author-list.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Author List</h3>
+      <p class="card-description">Lists contributors associated with a publication or article - rows with roles and counts, a card grid, or a stack of overlapping avatars.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="related-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Related Item</h3>
+      <p class="card-description">Links to one related article or resource with a preview - a compact row with a thumbnail, a card, or text with an arrow.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="share-links.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Share Links</h3>
+      <p class="card-description">Provides sharing actions for the current content - share-intent links, email, copy link and the native share sheet, as a row, labeled, or a vertical rail.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="article-navigation.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Article Navigation</h3>
+      <p class="card-description">Links to the previous and next articles - rel=&quot;prev&quot; / rel=&quot;next&quot; cards with direction and title, or a minimal text row.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

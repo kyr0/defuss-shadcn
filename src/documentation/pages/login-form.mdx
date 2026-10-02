@@ -1,0 +1,99 @@
+---
+title: "Login Form"
+description: "Authenticates a user with account credentials - email, password, &quot;remember me&quot; and a reset link, on a card, beside a picture, or plain."
+slug: "login-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="login-form" title="Login Form" component="login-form">
+  Authenticates a user with account credentials - email, password, "remember me" and a reset link, on a card, beside a picture, or plain. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="login-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form method="post"&gt;</code>: an email Input (<code>autocomplete="username"</code>), a password Input (<code>autocomplete="current-password"</code>) with a "Forgot password?" link in its label row, a "Remember me" Checkbox and a full-width submit Button.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="the browser fills known fields"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" title="errors show only after the user tried"><code>:user-invalid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-login-form</code>
+    <code>.mk-login-form-head</code>
+    <code>.mk-auth-field</code>
+    <code>.mk-login-form-row</code>
+    <code>.mk-login-form-foot</code>
+    <code>.mk-login-form-label-row</code>
+    <code>.mk-login-form-panel</code>
+    <code>.mk-login-form-aside</code>
+    <code>.mk-login-form-split</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>split</code>, <code>minimal</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A centered card: email (autocomplete=&quot;username&quot;), password (current-password) with the reset link in its label row, remember me and submit - password managers fill and save it." previewStyle="align-items:stretch;"
+<section class="mk-login-form" aria-labelledby="lf-title">
+  <div class="mk-login-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="lf-title">Welcome back</h1><p>Sign in to your Acme workspace.</p></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="lf-email">Email</label><input class="input" id="lf-email" type="email" name="email" autocomplete="username" required></div>
+    <div class="mk-auth-field"><div class="mk-login-form-label-row"><label class="label" for="lf-pass">Password</label><a href="#">Forgot password?</a></div><input class="input" id="lf-pass" type="password" name="password" autocomplete="current-password" required></div>
+    <div class="checkbox-item"><input class="checkbox" type="checkbox" id="lf-remember" name="remember"><label for="lf-remember">Keep me signed in</label></div>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+  <p class="mk-login-form-foot">No account yet? <a href="#">Create one</a></p>
+</section>
+```
+
+```html example label="Split" hint="data-variant='split': the form beside a picture with a customer quote, from 44rem; the picture steps aside on small screens." previewStyle="align-items:stretch;"
+<section class="mk-login-form" data-variant="split" aria-labelledby="lf2-title">
+  <div class="mk-login-form-split">
+    <div class="mk-login-form-panel">
+      <div class="mk-login-form-head"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h1 id="lf2-title">Sign in to Acme</h1></div>
+      <form action="#" method="post">
+        <div class="mk-auth-field"><label class="label" for="lf2-email">Email</label><input class="input" id="lf2-email" type="email" name="email" autocomplete="username" required></div>
+        <div class="mk-auth-field"><label class="label" for="lf2-pass">Password</label><input class="input" id="lf2-pass" type="password" name="password" autocomplete="current-password" required></div>
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+      <p class="mk-login-form-foot"><a href="#">Forgot your password?</a></p>
+    </div>
+    <figure class="mk-login-form-aside" style="margin:0">
+      <img src="https://picsum.photos/seed/login-aside/800/1000" alt="">
+      <blockquote>"Acme gave our team its afternoons back."</blockquote>
+      <figcaption>Marco Rossi, COO at Globex</figcaption>
+    </figure>
+  </div>
+</section>
+```
+
+```html example label="Minimal" hint="data-variant='minimal': no card - for a page whose whole purpose is signing in." previewStyle="align-items:stretch;"
+<section class="mk-login-form" data-variant="minimal" aria-labelledby="lf3-title">
+  <div class="mk-login-form-head"><h2 id="lf3-title">Sign in</h2></div>
+  <form action="#" method="post">
+    <div class="mk-auth-field"><label class="label" for="lf3-email">Email</label><input class="input" id="lf3-email" type="email" name="email" autocomplete="username" required></div>
+    <div class="mk-auth-field"><label class="label" for="lf3-pass">Password</label><input class="input" id="lf3-pass" type="password" name="password" autocomplete="current-password" required></div>
+    <button class="btn" type="submit">Continue</button>
+  </form>
+</section>
+```
+
+<SourceFiles component="login-form" section="css" />
+
+</DocPage>

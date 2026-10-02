@@ -36,6 +36,8 @@
     align-items: center;
     gap: 0.25rem;
     flex-shrink: 0;
+    /* the glyph follows the name - never the browser's link blue */
+    color: var(--primary);
     text-decoration: none;
 
     & svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
@@ -56,12 +58,188 @@
 
   .mk-header-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
-  @container mk-header (min-width: 30rem) {
+  /* narrow: the nav moves into a Sheet behind a menu button; secondary
+     actions (.mk-header-wide) step aside */
+  .mk-header-menu { display: inline-flex; }
+  .mk-header-actions .mk-header-wide { display: none; }
+
+  /* the navigation inside the sheet: big tap targets, groups with a label */
+  .mk-header-sheet-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      min-height: 2.75rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-md);
+      color: var(--foreground);
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &[aria-current] { background: var(--accent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+      & small { color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 400; }
+    }
+  }
+  .mk-header-sheet-label {
+    margin: 0.75rem 0 0.25rem;
+    padding-inline: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .mk-header-sheet-actions { display: grid; gap: 0.5rem; }
+  .mk-header-sheet-actions .btn { width: 100%; }
+
+  @container mk-header (min-width: 40rem) {
     .mk-header-inner { padding-inline: 2rem; }
     .mk-header-nav { display: flex; }
+    .mk-header-menu { display: none; }
+    .mk-header-actions .mk-header-wide { display: inline-flex; }
+  }
+
+
+  /* -- variants ------------------------------------------------- */
+  /* floating: a blurred pill that hovers over the page (sticky) */
+  .mk-header[data-variant="floating"] {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 0.75rem;
+    background: transparent;
+
+    & .mk-header-inner {
+      max-width: 64rem;
+      min-height: 3.25rem;
+      padding: 0.375rem 0.5rem 0.375rem 1rem;
+      border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--background) 78%, transparent);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(12px) saturate(1.4);
+    }
+    & .btn { border-radius: 999px; }
+  }
+
+  /* an announcement bar above the header row */
+  .mk-header-announcement {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem 0.75rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.8125rem;
+    text-align: center;
+
+    & p { margin: 0; }
+    & a { display: inline-flex; align-items: center; gap: 0.25rem; color: inherit; font-weight: 600; text-underline-offset: 3px; }
+    & svg { width: 0.875rem; height: 0.875rem; }
+    & a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
+
+  /* overlay: transparent over a hero picture, white text */
+  .mk-header[data-variant="overlay"] {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 5;
+    background: transparent;
+    color: #fff;
+
+    & .mk-header-brand,
+    & .mk-header-name,
+    & .nav-menu-link,
+    & .btn[data-variant="ghost"] { color: inherit; }
+    & .nav-menu-link:hover { background: oklch(1 0 0 / 0.12); color: inherit; }
+    & .nav-menu-link[aria-current] { background: oklch(1 0 0 / 0.16); }
+  }
+
+  /* centered: the brand in the middle, the nav left, the actions right */
+  .mk-header[data-variant="centered"] .mk-header-inner {
+    display: grid;
+    /* minmax(0, …): a wide actions column must not push the brand off-center */
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+
+    & .mk-header-brand { grid-column: 2; grid-row: 1; }
+    & .mk-header-nav { grid-column: 1; grid-row: 1; justify-self: start; }
+    & .mk-header-actions { grid-column: 3; grid-row: 1; justify-self: end; }
+    & .mk-header-name { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+  }
+
+  /* search: an inline search field (wide only - the sheet carries it when narrow) */
+  .mk-header-search {
+    position: relative;
+    display: none;
+    width: 100%;
+    max-width: 20rem;
+
+    & svg { position: absolute; inset-inline-start: 0.75rem; top: 50%; translate: 0 -50%; width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
+    & .input { padding-inline-start: 2.25rem; }
+  }
+
+  /* an icon button with a count (cart, inbox) */
+  .mk-header-icon { position: relative; }
+  .mk-header-count {
+    position: absolute;
+    top: -0.125rem;
+    inset-inline-end: -0.125rem;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding-inline: 0.25rem;
+    border: 2px solid var(--background);
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 0.875rem;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* elevate: a sticky header gains a rule and a shadow once the page scrolls */
+  @keyframes mk-header-elevate {
+    to { border-block-end-color: var(--border); box-shadow: var(--shadow-md); }
+  }
+  .mk-header[data-elevate] {
+    border-block-end: 1px solid transparent;
+    animation: mk-header-elevate linear both;
+  }
+  @supports (animation-timeline: scroll()) {
+    .mk-header[data-elevate] { animation-timeline: scroll(nearest block); animation-range: 0 64px; }
+  }
+  @supports not (animation-timeline: scroll()) {
+    .mk-header[data-elevate] { animation: none; border-block-end-color: var(--border); }
+  }
+
+  @container mk-header (min-width: 48rem) {
+    .mk-header-search { display: block; }
   }
 
   /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-header[data-elevate] { animation: none; border-block-end-color: var(--border); }
+  }
+
+  @media (forced-colors: active) {
+    .mk-header[data-variant="floating"] .mk-header-inner { border-color: CanvasText; }
+    .mk-header-count { border-color: Canvas; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     /* navigation-menu suppresses its own transitions; nothing header-side
        animates, so no overrides needed here */

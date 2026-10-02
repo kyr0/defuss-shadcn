@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>article-body e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/mockup-code/mockup-code.css" />
+    <link rel="stylesheet" href="/dist/components/alert/alert.css" />
+    <link rel="stylesheet" href="/dist/components/table/table.css" />
+    <link rel="stylesheet" href="/dist/components/image/image.css" />
+    <link rel="stylesheet" href="/dist/components/kbd/kbd.css" />
+    <link rel="stylesheet" href="/dist/components/heading-anchor/heading-anchor.css" />
+    <link rel="stylesheet" href="/dist/components/toc/toc.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/article-body/article-body.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-article-body">
+  <p class="mk-article-body-lead">Sync is the feature nobody notices until it fails. For Acme 4.0 we set one rule: <strong>never lose a keystroke</strong> - online, offline, or somewhere in between.</p>
+  <h2 id="why-crdts"><a class="heading-anchor" href="#why-crdts" aria-label="Link to section: Why CRDTs">§</a>Why CRDTs</h2>
+  <p>A <abbr title="conflict-free replicated data type">CRDT</abbr> lets two devices edit the same document without a server deciding who wins.<span class="mk-article-body-ref"><a href="#fn-1" id="ref-1" aria-label="Footnote 1">1</a></span> Every change is an operation; every operation <a href="#">commutes</a>. We <del>resolve conflicts</del> <ins>never create them</ins>.</p>
+  <blockquote class="mk-article-body-pullquote">The best sync is the one you forget is there.</blockquote>
+  <h2 id="the-log"><a class="heading-anchor" href="#the-log" aria-label="Link to section: The log">§</a>The write-ahead log</h2>
+  <p>Every operation lands in a local log before it touches the document. Press <kbd class="kbd">⌘</kbd> <kbd class="kbd">S</kbd>? You never have to. The flush is three lines:</p>
+  <div class="mockup-code" data-title="sync/flush.ts" data-numbers>
+    <pre><code>const ops = log.since(cursor);</code></pre>
+    <pre data-diff="remove"><code>await server.push(ops);</code></pre>
+    <pre data-diff="add"><code>await server.push(ops, { idempotent: true });</code></pre>
+    <pre><code>cursor = ops.at(-1).id;</code></pre>
+  </div>
+  <div class="alert" role="note">
+    <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <div class="alert-content">
+      <h5 class="alert-title">Offline for a month?</h5>
+      <p class="alert-description">Edits older than 30 days merge as a branch - never silently.</p>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="table">
+      <thead><tr class="table-row"><th class="table-head">Scenario</th><th class="table-head">Before</th><th class="table-head">4.0</th></tr></thead>
+      <tbody>
+        <tr class="table-row"><td class="table-cell">Edit offline, reconnect</td><td class="table-cell">Last write wins</td><td class="table-cell"><span class="badge" data-variant="secondary">Merged</span></td></tr>
+        <tr class="table-row"><td class="table-cell">Two people, one paragraph</td><td class="table-cell">Conflict dialog</td><td class="table-cell"><span class="badge" data-variant="secondary">Merged</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="image" data-ratio="16/9">
+    <img src="/dist/documentation/images/mk-wide2.png" alt="Two laptops editing the same document">
+    <figcaption class="image-caption">Two replicas, one document - merged without a server round trip.</figcaption>
+  </figure>
+  <h3>Glossary</h3>
+  <dl>
+    <dt>Replica</dt><dd>One device's copy of the document.</dd>
+    <dt>Operation</dt><dd>One change - an insert, a delete, a format.</dd>
+    <dt>Cursor</dt><dd>The last operation the server has acknowledged.</dd>
+  </dl>
+  <aside class="mk-article-body-footnotes" aria-label="Footnotes">
+    <ol>
+      <li id="fn-1">Shapiro et al., "Conflict-free replicated data types", 2011. <a href="#ref-1" aria-label="Back to the text">↩</a></li>
+    </ol>
+  </aside>
+</div>
+    </section>
+    <!-- Plain HTML (CMS output) -->
+    <section class="fx">
+<div class="mk-article-body">
+  <p>Sync is the feature nobody notices until it fails. When we started on Acme 4.0, our goal was simple to state and hard to build: <strong>never lose a keystroke</strong>, online or off.</p>
+  <h2>Why CRDTs</h2>
+  <p>A conflict-free replicated data type lets two devices edit the same document without a server deciding who wins. Every change is an operation; every operation <a href="#">commutes</a>. Merging becomes a set union.</p>
+  <ul>
+    <li>Edits apply instantly, on any device</li>
+    <li>The server stores operations, not documents</li>
+    <li>Any two replicas converge - in any order</li>
+  </ul>
+  <blockquote>
+    <p>The best sync is the one you forget is there.</p>
+    <cite>Hannah Lee, Design</cite>
+  </blockquote>
+  <h3>The write-ahead log</h3>
+  <p>Every operation lands in a local log before it touches the document. Call <code>flush()</code> and the log ships in batches:</p>
+  <div class="mockup-code" data-title="sync/flush.ts" data-numbers>
+    <pre><code>const ops = log.since(cursor);</code></pre>
+    <pre><code>await server.push(ops);</code></pre>
+    <pre><code>cursor = ops.at(-1).id;</code></pre>
+  </div>
+  <figure>
+    <img src="/dist/documentation/images/mk-wide2.png" alt="Two laptops editing the same document">
+    <figcaption>Two replicas, one document - merged without a server round trip.</figcaption>
+  </figure>
+  <aside class="mk-article-body-note"><p><strong>Note:</strong> offline edits older than 30 days are merged as a branch, never silently.</p></aside>
+  <table>
+    <thead><tr><th scope="col">Scenario</th><th scope="col">Before</th><th scope="col">4.0</th></tr></thead>
+    <tbody>
+      <tr><td>Edit offline, reconnect</td><td>Last write wins</td><td>Merged</td></tr>
+      <tr><td>Two people, one paragraph</td><td>Conflict dialog</td><td>Merged</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <video src="/dist/documentation/videos/demo.mp4" controls muted playsinline preload="metadata" aria-label="Sync demo"></video>
+    <figcaption>Press <kbd>⌘</kbd> <kbd>S</kbd>? You never have to.</figcaption>
+  </figure>
+  <hr>
+  <p>Next week: how we test sync with a <mark>simulated network</mark> that loses one packet in ten.</p>
+</div>
+    </section>
+    <!-- Serif with a drop cap -->
+    <section class="fx">
+<div class="mk-article-body" data-variant="serif" data-dropcap>
+  <p>Ten years ago, three of us rented a room above a bakery and promised each other one thing: we would build software that let people go home on time. Everything else - the product, the company, this blog - grew from that promise.</p>
+  <p>Most of what we got right was saying no. No notifications by default. No streaks. No dashboards nobody asked for.</p>
+  <h2>What we would do differently</h2>
+  <p>We waited too long to build offline support - and far too long to write things down.</p>
+</div>
+    </section>
+    <!-- Sizes -->
+    <section class="fx">
+<div style="display:grid;gap:2rem;width:100%">
+  <div class="mk-article-body" data-size="sm"><p><strong>Small.</strong> Fifteen pixels with a 1.7 line height - for documentation and changelogs where density beats atmosphere.</p></div>
+  <div class="mk-article-body" data-size="lg"><p><strong>Large.</strong> Nineteen pixels and a 46rem measure - for essays meant to be read slowly.</p></div>
+</div>
+    </section>
+    <!-- Beside a table of contents, with reading progress -->
+    <section class="fx">
+<div class="mk-article-body-layout">
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-title">On this page</p>
+    <a class="toc-link" href="#tc-intro" aria-current="location">Introduction</a>
+    <a class="toc-link" href="#tc-model">The model</a>
+    <a class="toc-link" href="#tc-tests">Testing it</a>
+    <a class="toc-link" href="#tc-next">What is next</a>
+  </nav>
+  <div style="height:26rem;overflow:auto;overscroll-behavior:contain">
+    <div class="mk-article-body-progress" aria-hidden="true"></div>
+    <div class="mk-article-body" data-size="sm">
+      <h2 id="tc-intro">Introduction</h2>
+      <p>Scroll this box: the bar at its top fills as you read (a scroll-driven animation - no script). The table of contents links jump inside the example.</p>
+      <p>Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch. The company crossed a million weekly users this summer - and kept its team at forty people.</p>
+      <h2 id="tc-model">The model</h2>
+      <p>A post-mortem of Tuesday's 42-minute outage and the three changes it led to. Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch.</p>
+      <p>The company crossed a million weekly users this summer - and kept its team at forty people. A post-mortem of Tuesday's 42-minute outage and the three changes it led to.</p>
+      <h2 id="tc-tests">Testing it</h2>
+      <p>We replay a million random edit sequences against two replicas and assert they converge. Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch.</p>
+      <p>The company crossed a million weekly users this summer - and kept its team at forty people. A post-mortem of Tuesday's 42-minute outage and the three changes it led to.</p>
+      <h2 id="tc-next">What is next</h2>
+      <p>Garbage-collecting acknowledged operations - next week. The company crossed a million weekly users this summer - and kept its team at forty people.</p>
+    </div>
+  </div>
+</div>
+    </section>
+  </body>
+</html>

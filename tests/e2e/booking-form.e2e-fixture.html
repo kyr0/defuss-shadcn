@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>booking-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/radio/radio.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/booking-form/booking-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-booking-form" aria-labelledby="bk-title">
+  <h2 id="bk-title" class="sr-only">Book an appointment</h2>
+  <form action="#" method="post">
+    <div class="mk-booking-form-layout">
+      <div style="display:grid;gap:2rem">
+        <fieldset class="mk-booking-form-group">
+          <legend>1. Choose a service</legend>
+          <div class="mk-booking-form-options">
+            <label class="mk-booking-form-option" for="bk-intro"><input class="radio" type="radio" name="service" id="bk-intro" value="bk-intro" checked required><span><strong>Intro call</strong><small>20 min · video</small></span><b>Free</b></label>
+            <label class="mk-booking-form-option" for="bk-workshop"><input class="radio" type="radio" name="service" id="bk-workshop" value="bk-workshop" required><span><strong>Team workshop</strong><small>90 min · on site or video</small></span><b>€240</b></label>
+            <label class="mk-booking-form-option" for="bk-review"><input class="radio" type="radio" name="service" id="bk-review" value="bk-review" required><span><strong>Workspace review</strong><small>45 min · video</small></span><b>€90</b></label>
+          </div>
+        </fieldset>
+        <fieldset class="mk-booking-form-group">
+          <legend>2. Pick a date and time</legend>
+          <div class="mk-booking-form-field"><label class="label" for="bk-date">Date</label><input class="input" type="date" id="bk-date" name="date" min="2026-10-02" value="2026-10-06" required></div>
+          <div class="mk-booking-form-slots" role="group" aria-label="Available times">
+            <label class="mk-booking-form-slot"><input type="radio" name="slot" value="09:00" required><span>09:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="09:30" disabled required><span>09:30</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="10:00" checked required><span>10:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="11:30" required><span>11:30</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="13:00" disabled required><span>13:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="14:30" required><span>14:30</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="16:00" required><span>16:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="16:30" disabled required><span>16:30</span></label>
+          </div>
+          <span class="mk-booking-form-tz">Times in Lisbon time (WEST, UTC+1)</span>
+        </fieldset>
+      </div>
+      <div style="display:grid;gap:2rem;align-content:start">
+        <fieldset class="mk-booking-form-group">
+          <legend>3. Your details</legend>
+          <div class="mk-booking-form-fields">
+            <div class="mk-booking-form-field"><label class="label" for="bk-name">Name</label><input class="input" id="bk-name" name="name" autocomplete="name" required></div>
+            <div class="mk-booking-form-field"><label class="label" for="bk-email">Email</label><input class="input" id="bk-email" type="email" name="email" autocomplete="email" required></div>
+            <div class="mk-booking-form-field" data-span="full"><label class="label" for="bk-notes">Anything we should know?</label><textarea class="textarea" id="bk-notes" name="notes" rows="3"></textarea></div>
+          </div>
+        </fieldset>
+        <div class="mk-booking-form-summary">
+          <p>You can change or cancel up to 24 hours before. We send a calendar invite right away.</p>
+          <button class="btn" type="submit">Confirm booking</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<section class="mk-booking-form" data-variant="compact" aria-labelledby="bk2-title">
+  <form action="#" method="post">
+    <fieldset class="mk-booking-form-group">
+      <legend id="bk2-title">Book a table · Tomorrow</legend>
+      <div class="mk-booking-form-slots" role="group" aria-label="Available times">
+        <label class="mk-booking-form-slot"><input type="radio" name="slot" value="18:00" required><span>18:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="18:30" disabled required><span>18:30</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="19:00" checked required><span>19:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="19:30" required><span>19:30</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="20:00" disabled required><span>20:00</span></label><label class="mk-booking-form-slot"><input type="radio" name="slot" value="21:00" required><span>21:00</span></label>
+      </div>
+    </fieldset>
+    <div class="mk-booking-form-fields">
+      <div class="mk-booking-form-field"><label class="label" for="bk2-guests">Guests</label><input class="input" type="number" id="bk2-guests" name="guests" min="1" max="8" value="2" inputmode="numeric"></div>
+      <div class="mk-booking-form-field"><label class="label" for="bk2-phone">Phone</label><input class="input" type="tel" id="bk2-phone" name="phone" autocomplete="tel" required></div>
+    </div>
+    <button class="btn" type="submit">Reserve</button>
+  </form>
+</section>
+    </section>
+  </body>
+</html>

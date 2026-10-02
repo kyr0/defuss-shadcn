@@ -1,0 +1,42 @@
+/* -- Search Result (website · Search & Navigation) ------------------------
+   Displays one matching entry with relevant context - where it lives, the title and a snippet with the matches highlighted, as text, with a thumbnail or as a product. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-search-result, .mk-search-result *, .mk-search-result ::before, .mk-search-result ::after) { box-sizing: border-box; }
+
+  .mk-search-result { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; padding: 1rem 0.75rem; border-radius: var(--radius-lg);
+    &:hover { background: color-mix(in oklch, var(--accent) 60%, transparent); }
+  }
+  .mk-search-result { position: relative; }
+  .mk-search-result-title a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .mk-search-result-title a:focus-visible { outline: none; }
+  .mk-search-result:has(.mk-search-result-title a:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  /* zero specificity: any block rule may still position its controls */
+  :where(.mk-search-result :is(button, input, select, label, .btn):not(.mk-search-result-title a)) { position: relative; z-index: 1; }
+  .mk-search-result-body { display: grid; gap: 0.25rem; min-width: 0; }
+  .mk-search-result-path { margin: 0; color: var(--muted-foreground); font-size: 0.75rem; }
+  .mk-search-result-title { margin: 0; font-size: 1.0625rem; font-weight: 600;
+    & a { color: var(--primary); text-decoration: none; }
+    & mark { padding-inline: 0.125rem; border-radius: 2px; background: color-mix(in oklch, oklch(0.88 0.16 95) 70%, transparent); color: inherit; }
+    & a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .mk-search-result-snippet { display: -webkit-box; margin: 0; overflow: hidden; color: color-mix(in oklch, var(--foreground) 80%, var(--muted-foreground)); font-size: 0.9375rem; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    & mark { padding-inline: 0.125rem; border-radius: 2px; background: color-mix(in oklch, oklch(0.88 0.16 95) 70%, transparent); color: inherit; }
+  }
+  .mk-search-result-meta { margin: 0; color: var(--muted-foreground); font-size: 0.8125rem;
+    & strong { color: var(--foreground); }
+  }
+  .mk-search-result-media { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md); background: var(--muted); }
+  .mk-search-result[data-variant="media"] { grid-template-columns: 8rem minmax(0, 1fr);
+    & .mk-search-result-media { aspect-ratio: 16 / 10; height: auto; }
+  }
+  .mk-search-result[data-variant="product"] { grid-template-columns: 5rem minmax(0, 1fr); align-items: center;
+    & .mk-search-result-media { aspect-ratio: 1; height: auto; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-search-result-snippet mark { background: Mark; color: MarkText; }
+  }
+}

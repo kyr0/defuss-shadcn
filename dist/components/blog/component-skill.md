@@ -70,6 +70,19 @@ The author avatar is decorative next to the visible name → `alt=""` on the aut
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="featured"` (on `.mk-blog-grid`) | The first post spans two columns and two rows (from 44rem) |
+| `data-variant="list"` | Rows: the picture beside the text, separated by rules |
+| `data-variant="minimal"` | Text only - a strong rule on top of each post (leave out the figure) |
+| `data-variant="overlay"` | The text on the picture with a scrim; the picture zooms on hover |
+| `data-variant="carousel"` | One row that scrolls sideways and snaps per post |
+| `.mk-blog-filters` | Category links above the grid; `aria-current` fills the active one |
+
+---
+
 ## ARIA
 
 | Attribute   | Element          | Purpose                                |
@@ -84,3 +97,4 @@ The author avatar is decorative next to the visible name → `alt=""` on the aut
 - Card links need distinct accessible names - the `<h3>` title provides it; don't duplicate the title in `alt` AND `aria-label`.
 - "See all" sits `margin-inline-start: auto` and only shows ≥ 48rem container width (source's `hidden lg:flex`).
 - Hover only dims the image (`opacity .9`) - never transform-lift whole cards; motion-sensitive users get none of it under reduced-motion.
+- The read time (`.mk-blog-read`) is a muted pill with a clock glyph.

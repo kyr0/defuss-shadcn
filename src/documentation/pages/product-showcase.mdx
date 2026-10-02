@@ -49,6 +49,88 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </figure>
 ```
 
+<p class="text-sm text-muted-foreground mb-3" style="max-width:44rem;">An embed - YouTube, Vimeo - takes the video's place: an <code>&lt;iframe&gt;</code> in the same layer, hidden and click-through until <code>playing</code>. A third-party player sets cookies, so load it through <a href="cookie-consent.html#toc-what-consent-gates" style="text-decoration:underline;">Cookie Consent</a> - its live example plays a YouTube video only after you allow it - and keep the poster local.</p>
+
+```html title="a consent-gated YouTube embed"
+<figure class="mk-showcase">
+  <img class="mk-showcase-poster" src="poster.jpg" alt="Big Buck Bunny">
+  <iframe title="Big Buck Bunny" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen
+          data-cookie-consent="youtube" data-consent-placeholder="none"
+          data-consent-src="https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ"></iframe>
+  <button type="button" class="mk-showcase-play" aria-label="Play video">…</button>
+</figure>
+```
+
+```html example label="Browser frame" hint="data-variant='browser': a window bar with three dots on top, the poster and the video below it - same play button, same State API." previewStyle="align-items:stretch;"
+<figure class="mk-showcase" data-variant="browser" style="width:100%">
+  <img class="mk-showcase-poster" alt="The Acme planning board" src="images/mk-wide.png">
+  <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"><source src="videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+  <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+</figure>
+```
+
+```html example label="Ratios" hint="data-ratio='wide' (16:9) for a film, data-ratio='square' (1:1) for a social clip; the default frame is 5:3." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1.5rem;width:100%;align-items:start">
+  <figure class="mk-showcase" data-ratio="wide">
+    <img class="mk-showcase-poster" alt="A product film" src="images/mk-wide3.png">
+    <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"><source src="videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+  <figure class="mk-showcase" data-ratio="square">
+    <img class="mk-showcase-poster" alt="A square social clip" src="images/mk-square.png">
+    <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"><source src="videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+</div>
+```
+
+```html example label="Callouts" hint=".mk-showcase-stage gives the frame room; .mk-showcase-callout cards float over its corners (data-pos) - a blurred popover surface with an icon tile." previewStyle="align-items:stretch;"
+<div class="mk-showcase-stage">
+  <figure class="mk-showcase" data-variant="browser">
+    <img class="mk-showcase-poster" alt="The Acme dashboard" src="images/mk-wide2.png">
+    <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"><source src="videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+  </figure>
+  <div class="mk-showcase-callout" data-pos="top-end"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><div><strong>+38% velocity</strong><span>in the first quarter</span></div></div>
+  <div class="mk-showcase-callout" data-pos="bottom-start"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div><strong>Review approved</strong><span>Hannah signed off 2 min ago</span></div></div>
+</div>
+```
+
+```html example label="Product tour" hint=".mk-showcase-tour: Tabs above browser frames - each tab panel shows one screen of the product (posters only, no video)." previewStyle="align-items:stretch;"
+<div class="mk-showcase-tour">
+  <div class="tabs">
+    <div class="tab-list" role="tablist" aria-label="Product tour">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tour-plan" id="tour-tab-plan">Plan</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tour-write" id="tour-tab-write" tabindex="-1">Write</button>
+      <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tour-ship" id="tour-tab-ship" tabindex="-1">Ship</button>
+    </div>
+    <div class="tab-content" role="tabpanel" id="tour-plan" aria-labelledby="tour-tab-plan" tabindex="0">
+      <figure class="mk-showcase" data-variant="browser"><img class="mk-showcase-poster" alt="Roadmap view" src="images/mk-wide.png"></figure>
+    </div>
+    <div class="tab-content" role="tabpanel" id="tour-write" aria-labelledby="tour-tab-write" tabindex="0" hidden>
+      <figure class="mk-showcase" data-variant="browser"><img class="mk-showcase-poster" alt="Docs editor" src="images/mk-wide2.png"></figure>
+    </div>
+    <div class="tab-content" role="tabpanel" id="tour-ship" aria-labelledby="tour-tab-ship" tabindex="0" hidden>
+      <figure class="mk-showcase" data-variant="browser"><img class="mk-showcase-poster" alt="Release notes" src="images/mk-wide3.png"></figure>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Tilt on scroll" hint=".mk-showcase-stage[data-tilt]: the frame leans back and straightens as it scrolls into view - a scroll-driven animation (view timeline), no script. Scroll this example; reduced motion keeps it flat." previewStyle="align-items:stretch;"
+<div style="width:100%">
+  <div style="height:520px;display:grid;place-items:center;color:var(--muted-foreground)">Scroll down ↓</div>
+  <div class="mk-showcase-stage" data-tilt>
+    <figure class="mk-showcase" data-variant="browser">
+      <img class="mk-showcase-poster" alt="The Acme planning board" src="images/mk-wide.png">
+      <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"><source src="videos/demo.mp4" type="video/mp4"> Your browser does not support embedded video.</video>
+      <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+    </figure>
+  </div>
+  <div style="height:240px"></div>
+</div>
+```
+
 <SourceFiles component="product-showcase" section="css" />
 
 <StatesSection>

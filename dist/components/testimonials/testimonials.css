@@ -59,6 +59,8 @@
   .mk-testimonial-date { color: var(--muted-foreground); font-size: 1.125rem; }
 
   .mk-testimonial-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  /* quote cards flow: one column on phones, as many 16rem columns as fit above (four cards: 2 × 2, then a row) */
+  .mk-testimonial-cards:has(> [data-variant="quote"]) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
 
   .mk-testimonial-card {
     position: relative;
@@ -104,8 +106,47 @@
 
   .mk-stars svg { width: 0.75rem; height: 0.75rem; fill: currentColor; flex-shrink: 0; }
 
-  .mk-testimonial-card-name { font-size: 0.875rem; font-weight: 500; }
+  .mk-testimonial-card-name { font-size: 0.875rem; font-weight: 500; line-height: 1.3; }
   .mk-testimonial-card-role { color: var(--muted-foreground); font-size: 0.75rem; }
+
+  /* the review itself - in a quote card, or under the stars of a photo card */
+  .mk-testimonial-card-text {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+
+    & p { margin: 0; }
+  }
+  .mk-testimonial-card-body .mk-testimonial-card-text { margin-block: 0.375rem 0.25rem; font-size: 0.8125rem; }
+
+  /* the author line: an Avatar + name / role */
+  .mk-testimonial-card-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block-start: auto;
+
+    & .mk-testimonial-card-info { gap: 0; }
+  }
+
+  /* quote: a card surface - stars, the review, the author at the bottom */
+  .mk-testimonial-card[data-variant="quote"] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    aspect-ratio: auto;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-xs);
+
+    & .mk-stars { color: oklch(0.78 0.16 75); }
+    & .mk-testimonial-card-text { font-size: 1rem; }
+    & .mk-testimonial-card-text::before { content: "“"; display: block; height: 1.75rem; margin-block-end: 0.25rem; color: var(--primary); font-family: Georgia, var(--font-serif), serif; font-size: 3.25rem; line-height: 1; opacity: 0.85; }
+  }
 
   @container mk-testimonials (min-width: 30rem) {
     .mk-testimonial-layout { flex-direction: row; }
@@ -119,7 +160,88 @@
     .mk-testimonial-card-role { font-size: 0.875rem; }
   }
 
+  /* wall: a masonry wall of quote cards (CSS columns) - "wall of love" */
+  .mk-testimonial-cards[data-variant="wall"] {
+    display: block;
+    columns: 16rem;
+    column-gap: 1rem;
+
+    & > .mk-testimonial-card { break-inside: avoid; margin-block-end: 1rem; }
+  }
+
+  /* marquee: rows of quote cards gliding sideways (the second row reverses);
+     the row runs twice in its track (the copy is inert) for a seamless loop */
+  .mk-testimonial-marquee {
+    display: grid;
+    gap: 1rem;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+  }
+  .mk-testimonial-marquee-track {
+    display: flex;
+    gap: 1rem;
+    width: max-content;
+    animation: mk-testimonial-marquee var(--mk-testimonial-duration, 45s) linear infinite;
+
+    &[data-direction="reverse"] { animation-direction: reverse; }
+    & > .mk-testimonial-card { width: 20rem; flex: none; }
+  }
+  .mk-testimonial-marquee:is(:hover, :focus-within) .mk-testimonial-marquee-track { animation-play-state: paused; }
+  @keyframes mk-testimonial-marquee {
+    to { translate: calc(-50% - 0.5rem) 0; }
+  }
+
+  /* spotlight: one big quote, the author with a large avatar and the logo */
+  .mk-testimonial-spotlight {
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+
+    & .mk-stars { color: oklch(0.78 0.16 75); }
+    & .mk-stars svg { width: 1.25rem; height: 1.25rem; }
+  }
+  .mk-testimonial-spotlight-quote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 4cqi, 2.25rem);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .mk-testimonial-spotlight-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-align: start;
+
+    & .mk-testimonial-card-name { font-size: 1rem; }
+    & .mk-testimonial-spotlight-logo { padding-inline-start: 1rem; border-inline-start: 1px solid var(--border); font-weight: 700; letter-spacing: -0.02em; }
+  }
+
+  /* a result line inside a quote card: "+42% faster releases" */
+  .mk-testimonial-card-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--muted);
+
+    & strong { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: var(--primary); }
+    & span { color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+
   /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-testimonial-marquee { overflow-x: auto; mask-image: none; }
+    .mk-testimonial-marquee-track { animation: none; }
+    .mk-testimonial-marquee-track > [aria-hidden="true"] { display: none; }
+  }
+
   @media (prefers-reduced-transparency: reduce) {
     .mk-testimonial-card-body {
       background: var(--background);

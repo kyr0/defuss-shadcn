@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>support-form e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/support-form/support-form.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-support-form" aria-labelledby="sp-title">
+  <div class="mk-support-form-layout">
+    <form action="#" method="post">
+      <h2 id="sp-title" style="margin:0;font-size:1.25rem">Contact support</h2>
+      <div class="mk-support-form-field"><label class="label" for="sp-topic">Topic</label><select class="select" id="sp-topic" name="topic" required><option value="">Choose a topic</option><option>Billing</option><option>Sync &amp; offline</option><option>Account access</option><option>Something else</option></select></div>
+      <div class="mk-support-form-field"><label class="label" for="sp-subj">Subject</label><input class="input" id="sp-subj" name="subject" required></div>
+      <div class="mk-support-form-field"><label class="label" for="sp-desc">What happened?</label><textarea class="textarea" id="sp-desc" name="description" rows="5" required placeholder="Steps, what you expected, what you saw…"></textarea></div>
+      <fieldset class="mk-support-form-priority"><legend>Priority</legend><div><label><input type="radio" name="priority" value="low">Low</label><label><input type="radio" name="priority" value="normal" checked>Normal</label><label><input type="radio" name="priority" value="urgent">Urgent</label></div></fieldset>
+      <label class="mk-support-form-drop" for="sp-files"><i data-lucide="paperclip"></i><strong>Attach screenshots or logs</strong><span>Up to 5 files, 20 MB each</span><input id="sp-files" type="file" name="files" multiple></label>
+      <div class="mk-support-form-field"><label class="label" for="sp-mail">Reply to</label><input class="input" id="sp-mail" type="email" name="email" autocomplete="email" required></div>
+      <button class="btn" type="submit">Send request</button>
+    </form>
+    <aside class="mk-support-form-aside" aria-label="Before you write">
+      <div class="mk-support-form-sla"><i data-lucide="clock"></i><span><strong>Usually within 4 hours</strong><br>Mon–Fri, 8:00–20:00 CET</span></div>
+      <h2>These might help</h2>
+      <ul><li><a href="#"><i data-lucide="file-text"></i>Sync is stuck on one device</a></li><li><a href="#"><i data-lucide="file-text"></i>Change your billing email</a></li><li><a href="#"><i data-lucide="file-text"></i>Recover a deleted doc</a></li></ul>
+      <p>Status: all systems normal.</p>
+    </aside>
+  </div>
+</section>
+    </section>
+  </body>
+</html>

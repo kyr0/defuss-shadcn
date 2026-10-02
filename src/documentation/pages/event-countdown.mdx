@@ -1,0 +1,98 @@
+---
+title: "Event Countdown"
+description: "Displays the remaining time until a specified event - days, hours, minutes and seconds ticking down beside the date and the action."
+slug: "event-countdown"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="event-countdown" title="Event Countdown" component="event-countdown">
+  Displays the remaining time until a specified event - days, hours, minutes and seconds ticking down beside the date and the action. Part of the <DocLink href="website-events-promotions.html">Events & Promotions</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="event-countdown">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code> with a title, the date as <code>&lt;time&gt;</code>, a Countdown group (<code>.countdown-group[data-until]</code>) and an action. Without script the numbers stay at the authored values.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="countdown.html">Countdown</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tints derived from the theme tokens"><code>color-mix()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-event-countdown</code>
+    <code>.mk-event-countdown-inner</code>
+    <code>.mk-event-countdown-eyebrow</code>
+    <code>.mk-event-countdown-title</code>
+    <code>.mk-event-countdown-date</code>
+    <code>.mk-event-countdown-timer</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>dark</code>, <code>inline</code>; <code>data-until</code> on the countdown group.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Centered: eyebrow, title, the absolute date (<time>), a ticking Countdown group (data-until) and the action." previewStyle="align-items:stretch;"
+<section class="mk-event-countdown" aria-labelledby="ec-1">
+  <div class="mk-event-countdown-inner">
+    <span class="mk-event-countdown-eyebrow">Acme Summit 2026</span>
+    <h2 class="mk-event-countdown-title" id="ec-1">Doors open in</h2>
+    <div class="countdown-group mk-event-countdown-timer" data-until="2026-11-12T09:00:00Z">
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl"><span data-unit="days" style="--value:41">41</span></span><span class="countdown-label">days</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:9">09</span></span><span class="countdown-label">hours</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:30">30</span></span><span class="countdown-label">min</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:0">00</span></span><span class="countdown-label">sec</span></div>
+    </div>
+    <span class="mk-event-countdown-date"><i data-lucide="calendar"></i><time datetime="2026-11-12T09:00Z">12 November 2026, 09:00 UTC</time> · Lisbon</span>
+    <a class="btn" data-size="lg" href="#">Get your ticket</a>
+  </div>
+</section>
+```
+
+```html example label="Dark" hint="data-variant='dark': on a dark band with a glow - the units become translucent tiles." previewStyle="align-items:stretch;"
+<section class="mk-event-countdown" data-variant="dark" aria-labelledby="ec-2">
+  <div class="mk-event-countdown-inner">
+    <span class="mk-event-countdown-eyebrow">Launch</span>
+    <h2 class="mk-event-countdown-title" id="ec-2">Acme Spaces goes live</h2>
+    <div class="countdown-group mk-event-countdown-timer" data-until="2026-11-12T16:00:00Z">
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl"><span data-unit="days" style="--value:41">41</span></span><span class="countdown-label">days</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:9">09</span></span><span class="countdown-label">hours</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:30">30</span></span><span class="countdown-label">min</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:0">00</span></span><span class="countdown-label">sec</span></div>
+    </div>
+    <span class="mk-event-countdown-date"><time datetime="2026-11-12T16:00Z">12 Nov, 16:00 UTC</time></span>
+  </div>
+</section>
+```
+
+```html example label="Inline" hint="data-variant='inline': title, units and action on one row - a bar above a page." previewStyle="align-items:stretch;"
+<section class="mk-event-countdown" data-variant="inline" aria-labelledby="ec-3">
+  <div class="mk-event-countdown-inner">
+    <h2 class="mk-event-countdown-title" id="ec-3">Early-bird ends in</h2>
+    <div class="countdown-group mk-event-countdown-timer" data-until="2026-10-31T23:59:59Z">
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl"><span data-unit="days" style="--value:41">41</span></span><span class="countdown-label">days</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:9">09</span></span><span class="countdown-label">hours</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:30">30</span></span><span class="countdown-label">min</span></div>
+      <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:0">00</span></span><span class="countdown-label">sec</span></div>
+    </div>
+    <a class="btn" data-size="sm" href="#">Save 30%</a>
+  </div>
+</section>
+```
+
+<SourceFiles component="event-countdown" section="css" />
+
+</DocPage>

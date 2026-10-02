@@ -1,0 +1,92 @@
+---
+title: "Discount Form"
+description: "Accepts a promotional code and displays its application result - the field, the error when it fails, and the applied code with its saving."
+slug: "discount-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="discount-form" title="Discount Form" component="discount-form">
+  Accepts a promotional code and displays its application result - the field, the error when it fails, and the applied code with its saving. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="discount-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code>: a labelled Input (<code>pattern</code>, <code>required</code>, <code>aria-describedby</code> → the error) and an Apply Button. A failed check from the server sets <code>aria-invalid="true"</code>; success renders <code>.mk-discount-form-applied</code> (<code>role="status"</code>) with the code, the saving and a remove button.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid" title="errors show only after the user tried"><code>:user-invalid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-discount-form</code>
+    <code>.mk-discount-form-row</code>
+    <code>.mk-discount-form-error</code>
+    <code>.mk-discount-form-applied</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>aria-invalid="true"</code> on the input for a server error; <code>data-variant="collapsed"</code> for the disclosure.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Label, field and Apply. The field checks its own format (pattern, required): submit it empty or with &quot;A!&quot; to see :user-invalid show the message." previewStyle="align-items:stretch;"
+<form class="mk-discount-form" action="#" method="post">
+  <label class="label" for="dc-1">Discount code</label>
+  <div class="mk-discount-form-row">
+    <input class="input" id="dc-1" name="code" placeholder="e.g. AUTUMN30" pattern="[A-Za-z0-9]{4,12}" required autocomplete="off" spellcheck="false" aria-describedby="dc-1-err">
+    <button class="btn" data-variant="outline" type="submit">Apply</button>
+  </div>
+  <p class="mk-discount-form-error" id="dc-1-err"><i data-lucide="circle-alert"></i><span>This code is not valid or has expired.</span></p>
+</form>
+```
+
+```html example label="Rejected" hint="The server rejected the code: it sets aria-invalid=&quot;true&quot; - the field turns red and the message reads with it. The typed code stays so people can fix it." previewStyle="align-items:stretch;"
+<form class="mk-discount-form" action="#" method="post">
+  <label class="label" for="dc-2">Discount code</label>
+  <div class="mk-discount-form-row">
+    <input class="input" id="dc-2" name="code" placeholder="e.g. AUTUMN30" pattern="[A-Za-z0-9]{4,12}" required autocomplete="off" spellcheck="false" aria-describedby="dc-2-err" value="SUMMER24" aria-invalid="true">
+    <button class="btn" data-variant="outline" type="submit">Apply</button>
+  </div>
+  <p class="mk-discount-form-error" id="dc-2-err"><i data-lucide="circle-alert"></i><span>This code is not valid or has expired.</span></p>
+</form>
+```
+
+```html example label="Applied" hint=".mk-discount-form-applied: the code as a dashed green chip with the saving, announced via role=&quot;status&quot;, and a labelled remove button." previewStyle="align-items:stretch;"
+<div class="mk-discount-form-applied" role="status">
+  <i data-lucide="tag"></i><code>AUTUMN30</code><span>30% off yearly plans</span><strong>−€24.00</strong>
+  <button type="button" aria-label="Remove code AUTUMN30"><i data-lucide="x"></i></button>
+</div>
+```
+
+```html example label="Collapsed" hint="data-variant='collapsed': the form behind a &quot;Have a discount code?&quot; <details> - out of the way until wanted." previewStyle="align-items:stretch;"
+<details class="mk-discount-form" data-variant="collapsed">
+  <summary><i data-lucide="plus"></i> Have a discount code?</summary>
+  <form class="mk-discount-form" action="#" method="post">
+    <label class="label" for="dc-3">Discount code</label>
+    <div class="mk-discount-form-row">
+      <input class="input" id="dc-3" name="code" placeholder="e.g. AUTUMN30" pattern="[A-Za-z0-9]{4,12}" required autocomplete="off" spellcheck="false" aria-describedby="dc-3-err">
+      <button class="btn" data-variant="outline" type="submit">Apply</button>
+    </div>
+    <p class="mk-discount-form-error" id="dc-3-err"><i data-lucide="circle-alert"></i><span>This code is not valid or has expired.</span></p>
+  </form>
+</details>
+```
+
+<SourceFiles component="discount-form" section="css" />
+
+</DocPage>

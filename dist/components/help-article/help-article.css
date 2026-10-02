@@ -1,0 +1,40 @@
+/* -- Help Article (website · Docs & Help) ---------------------------------
+   Presents instructions for resolving one problem or completing one task - the steps with pictures, a tip, whether it helped and related articles. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-help-article, .mk-help-article *, .mk-help-article ::before, .mk-help-article ::after) { box-sizing: border-box; }
+
+  .mk-help-article { display: grid; gap: 1.25rem; width: 100%; max-width: 42rem; }
+  .mk-help-article-title { margin: 0; font-size: 2rem; font-weight: 700; letter-spacing: -0.025em; text-wrap: balance; }
+  .mk-help-article-meta { margin: 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  .mk-help-article-lead { margin: 0; font-size: 1.0625rem; line-height: 1.65; color: color-mix(in oklch, var(--foreground) 85%, var(--muted-foreground)); }
+  .mk-help-article-steps { display: grid; gap: 1.5rem; margin: 0.5rem 0 0; padding: 0; list-style: none; counter-reset: mk-help;
+    & li { counter-increment: mk-help; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 0.5rem 1rem; }
+    & li::before { content: counter(mk-help); display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); font-size: 0.875rem; font-weight: 700; }
+    & li > div { display: grid; gap: 0.5rem; padding-block-start: 0.25rem; }
+    & strong { font-weight: 600; }
+    & p { margin: 0; color: var(--muted-foreground); line-height: 1.6; }
+    & img { display: block; width: 100%; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    & kbd { padding: 0.0625rem 0.375rem; border: 1px solid var(--border); border-block-end-width: 2px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.8125rem; }
+  }
+  .mk-help-article-tip { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.75rem; padding: 1rem 1.125rem; border-radius: var(--radius-lg); background: color-mix(in oklab, oklch(0.75 0.14 150) 12%, var(--background)); font-size: 0.9375rem;
+    & svg { width: 1.125rem; height: 1.125rem; margin-block-start: 0.15rem; color: #15803d; }
+    & p { margin: 0; }
+  }
+  .mk-help-article-stuck { padding: 1rem 1.125rem; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    & summary { cursor: pointer; font-weight: 600; }
+    & p { margin: 0.5rem 0 0; color: var(--muted-foreground); font-size: 0.9375rem; }
+  }
+  .mk-help-article-related { display: grid; gap: 0.5rem; margin: 0; padding: 1.25rem 0 0; border-block-start: 1px solid var(--border); list-style: none;
+    & h2 { margin: 0 0 0.25rem; font-size: 0.875rem; font-weight: 600; }
+    & a { display: inline-flex; align-items: center; gap: 0.375rem; color: var(--primary); text-decoration: none; }
+    & a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-help-article-steps li::before { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  }
+}

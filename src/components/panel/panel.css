@@ -1,0 +1,196 @@
+/* -- Panel component ----------------------------------------------
+   A title bar inside a card - icon, title and tools (minimize / maximize are
+   Swaps) above a scrolling body. Minimized it is the title bar only; as the
+   pane of a border-layout region it takes the region with it: north / south
+   shrink to the bar, west / east turn the bar into a vertical tab (after the
+   ExtJS 4 border layout). Maximized it fills its border layout, a
+   [data-panel-host] or the viewport. Builds on .card (surface, border,
+   radius) and .swap (the tool faces). */
+
+@layer components {
+  .panel {
+    /* the card's padding scale, a notch tighter for tool-like bodies */
+    --_base: 1rem;
+    --_bar: 2.5rem;
+    --_bar-bg: color-mix(in oklch, var(--muted) 60%, var(--card));
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+
+    /* -- Title bar -------------------------------------------------- */
+    & > .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      min-block-size: var(--_bar);
+      box-sizing: border-box;
+      padding-block: 0.25rem;
+      padding-inline: 0.75rem 0.375rem;
+      border-block-end: 1px solid var(--border);
+      background: var(--_bar-bg);
+      color: var(--foreground);
+      user-select: none;
+    }
+
+    & .panel-icon {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+    }
+
+    & .panel-title {
+      flex: 1;
+      min-inline-size: 0;
+      margin: 0;
+      overflow: hidden;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      line-height: 1.25;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* tools: the swaps (and any .btn) at the end of the bar */
+    & .panel-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.125rem;
+      flex: none;
+      margin-inline-start: auto;
+    }
+
+    /* small tool buttons - the swap at icon-button size */
+    & > .panel-header .panel-tools .swap {
+      min-width: 1.75rem;
+      min-height: 1.75rem;
+      color: var(--muted-foreground);
+
+      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+      &:hover:not(:has(> input:disabled)) { color: var(--accent-foreground); }
+    }
+
+    /* -- Body ----------------------------------------------------------- */
+    & > .panel-body {
+      flex: 1;
+      min-block-size: 0;
+      overflow: auto;
+      padding: var(--_pad, 1rem);
+    }
+    /* a body that brings its own layout (a list, a table, a code view) */
+    & > .panel-body[data-flush] { padding: 0; }
+
+    & > .panel-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      padding: 0.5rem 0.75rem;
+      border-block-start: 1px solid var(--border);
+      background: var(--_bar-bg);
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    /* -- Minimized: the title bar only ------------------------------------- */
+    &[data-minimized] {
+      & > :not(.panel-header) { display: none; }
+      & > .panel-header { border-block-end-color: transparent; }
+    }
+    /* the authored height (inline, or the resizer's px) gives way to the bar */
+    &[data-minimized]:not([data-region="west"], [data-region="east"]) {
+      height: auto !important;
+      min-height: 0;
+    }
+
+    /* west / east: the bar turns into a vertical tab, the width to the bar's */
+    &[data-minimized]:is([data-region="west"], [data-region="east"]) {
+      width: auto !important;
+      min-width: 0;
+      /* the card's inline-size containment would size the tab to zero */
+      container-type: normal;
+
+      & > .panel-header {
+        flex: 1;
+        writing-mode: vertical-rl;
+        padding-block: 0.25rem;
+        padding-inline: 0.375rem 0.75rem;
+        border-block-end: 0;
+      }
+      /* the restore tool leads, like ExtJS's collapsed placeholder */
+      & .panel-tools { order: -1; margin-inline: 0 0.25rem; }
+      & .panel-maximize { display: none; }
+    }
+
+    /* the minimize chevron points where the panel folds to */
+    &[data-region="south"] .panel-minimize { rotate: 180deg; }
+    &[data-region="west"] .panel-minimize { rotate: -90deg; }
+    &[data-region="east"] .panel-minimize { rotate: 90deg; }
+
+    /* -- Maximized: fills the viewport ... -------------------------------- */
+    &[data-maximized] {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      width: auto !important;
+      height: auto !important;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: var(--shadow-xl);
+    }
+  }
+
+  /* ... or its border layout / [data-panel-host] */
+  :is(.border-layout, [data-panel-host])[data-panel-maximized] {
+    position: relative;
+
+    & .panel[data-maximized] {
+      position: absolute;
+      z-index: 20;
+      border-radius: inherit;
+    }
+  }
+  /* the regions step back so the layout is the containing block; their
+     dividers rest under the maximized panel */
+  .border-layout[data-panel-maximized] > .resizer {
+    position: static;
+
+    & > .resizer-handle { visibility: hidden; }
+  }
+  /* the region holding it rises too: a region may be a stacking context of
+     its own (a <main> with a view-transition-name) that would trap the
+     panel's z-index - grid items take z-index without being positioned, so
+     the layout stays the containing block */
+  .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) { z-index: 20; }
+
+  /* -- In a border layout: the region frames the panel ---------------------- */
+  :where(.border-layout > .resizer, .border-layout > .border-layout-center, .border-layout) > .panel {
+    border: 0;
+    border-radius: 0;
+  }
+  /* the region shrinks with the panel: its pane is the panel */
+  .border-layout > .resizer[data-panel-minimized] > .panel { overflow: hidden; }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .panel .panel-minimize { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .panel > .panel-header { border-block-end-color: var(--foreground); }
+    .panel .panel-title { font-weight: 700; }
+  }
+
+  @media (forced-colors: active) {
+    .panel { border: 1px solid CanvasText; }
+    .panel > .panel-header { border-block-end: 1px solid CanvasText; background: Canvas; color: CanvasText; }
+    .panel .panel-icon { color: CanvasText; }
+  }
+}

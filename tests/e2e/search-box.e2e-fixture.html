@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>search-box e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/kbd/kbd.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/search-box/search-box.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<search class="mk-search-box">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-1">Search</label>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-1" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+    <button class="btn" type="submit">Search</button>
+  </form>
+</search>
+    </section>
+    <!-- Large -->
+    <section class="fx">
+<search class="mk-search-box" data-variant="large">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-2">Search</label>
+    <select class="select" name="scope" aria-label="Search in"><option>Everything</option><option>Docs</option><option>Tasks</option><option>People</option></select>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-2" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+    <button class="btn" type="submit">Search</button>
+  </form>
+</search>
+    </section>
+    <!-- Pill -->
+    <section class="fx">
+<search class="mk-search-box" data-variant="pill">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-3">Search</label>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-3" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+    
+  </form>
+</search>
+    </section>
+    <!-- Expand on focus -->
+    <section class="fx">
+<search class="mk-search-box" data-variant="expand">
+  <form action="#" method="get" role="search">
+    <label class="sr-only" for="sb-4">Search</label>
+    <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-4" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"></span>
+    
+  </form>
+</search>
+    </section>
+  </body>
+</html>

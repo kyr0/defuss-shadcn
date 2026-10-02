@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>order-summary e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/order-summary/order-summary.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<aside class="mk-order-summary" aria-labelledby="os-title">
+  <h2 class="mk-order-summary-title" id="os-title">Your order</h2>
+  <ul class="mk-order-summary-items">
+    <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-shirt/160/200" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
+    <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-mug/160/200" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
+  </ul>
+  <dl class="mk-order-summary-totals">
+    <div><dt>Subtotal</dt><dd>€108.00</dd></div>
+    <div data-discount><dt>Discount (AUTUMN30)</dt><dd>−€24.00</dd></div>
+    <div><dt>Shipping · Standard</dt><dd>€4.90</dd></div>
+    <div data-total><dt>Total <small>incl. €16.62 VAT</small></dt><dd>€88.90</dd></div>
+  </dl>
+</aside>
+    </section>
+    <!-- Collapsible -->
+    <section class="fx">
+<details class="mk-order-summary" data-variant="collapsible">
+  <summary><span><i data-lucide="shopping-bag"></i> Show order summary <i data-lucide="chevron-down"></i></span><b>€88.90</b></summary>
+  <div>
+    <ul class="mk-order-summary-items">
+      <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-shirt/160/200" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
+      <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-mug/160/200" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
+    </ul>
+    <dl class="mk-order-summary-totals">
+      <div><dt>Subtotal</dt><dd>€108.00</dd></div>
+      <div data-discount><dt>Discount (AUTUMN30)</dt><dd>−€24.00</dd></div>
+      <div><dt>Shipping · Standard</dt><dd>€4.90</dd></div>
+      <div data-total><dt>Total <small>incl. €16.62 VAT</small></dt><dd>€88.90</dd></div>
+    </dl>
+  </div>
+</details>
+    </section>
+  </body>
+</html>

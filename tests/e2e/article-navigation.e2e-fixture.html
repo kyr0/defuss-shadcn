@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>article-navigation e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/progress/progress.css" />
+    <link rel="stylesheet" href="/dist/components/article-navigation/article-navigation.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<nav class="mk-article-nav" aria-label="More articles">
+  <a class="mk-article-nav-link" href="#" rel="prev">
+    <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> Previous</span>
+    <span class="mk-article-nav-title">Designing for calm</span>
+  </a>
+  <a class="mk-article-nav-link" href="#" rel="next">
+    <span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+    <span class="mk-article-nav-title">Testing sync with a lossy network</span>
+  </a>
+</nav>
+    </section>
+    <!-- Only a next link -->
+    <section class="fx">
+<nav class="mk-article-nav" aria-label="More articles">
+  <a class="mk-article-nav-link" href="#" rel="next">
+    <span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+    <span class="mk-article-nav-title">Part 2: the write-ahead log</span>
+  </a>
+</nav>
+    </section>
+    <!-- Minimal -->
+    <section class="fx">
+<nav class="mk-article-nav" data-variant="minimal" aria-label="More articles">
+  <a class="mk-article-nav-link" href="#" rel="prev">
+    <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> Previous</span>
+    <span class="mk-article-nav-title">Designing for calm</span>
+  </a>
+  <a class="mk-article-nav-link" href="#" rel="next">
+    <span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+    <span class="mk-article-nav-title">Testing sync with a lossy network</span>
+  </a>
+</nav>
+    </section>
+    <!-- With thumbnails -->
+    <section class="fx">
+<nav class="mk-article-nav" data-variant="media" aria-label="More articles">
+  <a class="mk-article-nav-link" href="#" rel="prev">
+    <img src="/dist/documentation/images/mk-wide2.png" alt="">
+    <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> Previous</span>
+    <span class="mk-article-nav-title">Designing for calm</span>
+  </a>
+  <a class="mk-article-nav-link" href="#" rel="next">
+    <img src="/dist/documentation/images/mk-wide.png" alt="">
+    <span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+    <span class="mk-article-nav-title">Testing sync with a lossy network</span>
+  </a>
+</nav>
+    </section>
+    <!-- Series -->
+    <section class="fx">
+<div style="display:grid;gap:.75rem;width:100%">
+  <div style="display:flex;align-items:center;gap:.75rem;font-size:.8125rem;color:var(--muted-foreground)"><span>Sync, explained - part 2 of 4</span><progress class="progress" value="2" max="4" aria-label="Part 2 of 4" style="flex:1;max-width:12rem"></progress></div>
+  <nav class="mk-article-nav" data-variant="compact" aria-label="Series">
+  <a class="mk-article-nav-link" href="#" rel="prev">
+    <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> <span>Previous</span></span>
+    <span class="mk-article-nav-title">Part 1: Why CRDTs</span>
+  </a>
+  <a class="mk-article-nav-link" href="#" rel="next">
+    <span class="mk-article-nav-dir"><span>Next</span> <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+    <span class="mk-article-nav-title">Part 3: Testing with a lossy network</span>
+  </a>
+  </nav>
+</div>
+    </section>
+  </body>
+</html>

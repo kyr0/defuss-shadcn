@@ -94,4 +94,50 @@ await cssSmoke('site-header', [
       if (!(r.gap >= 0 && r.gap < 24)) throw new Error(`sticky panel ${r.gap}px from trigger bottom - not anchored`);
     },
   },
+  {
+    label: 'narrow: the nav hides, the menu button opens a Sheet with the navigation; Login steps aside',
+    run: async (page) => {
+      await page.setViewportSize({ width: 420, height: 800 });
+      const r = await page.evaluate(() => ({
+        nav: getComputedStyle(document.querySelector('.mk-header-nav')!).display,
+        menu: getComputedStyle(document.querySelector('.mk-header-menu')!).display,
+        login: getComputedStyle(document.querySelector('.mk-header-wide')!).display,
+        sheet: !!document.getElementById(document.querySelector('.mk-header-menu')!.getAttribute('data-sheet-trigger')!)?.querySelector('.mk-header-sheet-nav a'),
+      }));
+      await page.setViewportSize({ width: 1280, height: 720 });
+      const wide = await page.evaluate(() => getComputedStyle(document.querySelector('.mk-header-menu')!).display);
+      if (r.nav !== 'none' || !r.menu.endsWith('flex') || r.login !== 'none' || !r.sheet || wide !== 'none') throw new Error(JSON.stringify({ ...r, wide }));
+    },
+  },
+  { label: 'floating: a sticky, blurred pill', run: async (page) => {
+    const r = await page.evaluate(() => { const h = document.querySelector('.mk-header[data-variant="floating"]')!; const i = getComputedStyle(h.querySelector('.mk-header-inner')!); return { pos: getComputedStyle(h).position, radius: i.borderTopLeftRadius, blur: i.backdropFilter.includes('blur') }; });
+    if (r.pos !== 'sticky' || r.radius !== '999px' || !r.blur) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'announcement: a primary bar above the row', run: async (page) => {
+    const r = await page.evaluate(() => { const a = document.querySelector('.mk-header-announcement')!; return { first: a === a.parentElement!.firstElementChild, bg: getComputedStyle(a).backgroundColor !== getComputedStyle(a.parentElement!).backgroundColor }; });
+    if (!r.first || !r.bg) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'overlay: absolute, transparent, white', run: async (page) => {
+    const r = await page.evaluate(() => { const h = getComputedStyle(document.querySelector('.mk-header[data-variant="overlay"]')!); return { pos: h.position, bg: h.backgroundColor, color: h.color }; });
+    if (r.pos !== 'absolute' || r.bg !== 'rgba(0, 0, 0, 0)' || r.color !== 'rgb(255, 255, 255)') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'centered: the brand sits in the middle column', run: async (page) => {
+    const r = await page.evaluate(() => { const i = document.querySelector('.mk-header[data-variant="centered"] .mk-header-inner')!; const b = i.querySelector('.mk-header-brand')!.getBoundingClientRect(); const box = i.getBoundingClientRect(); return Math.abs((b.left + b.width / 2) - (box.left + box.width / 2)); });
+    if (r > 2) throw new Error(String(r));
+  } },
+  { label: 'store: search shown wide, a count bubble on the cart', run: async (page) => {
+    const r = await page.evaluate(() => ({ search: getComputedStyle(document.querySelector('.mk-header-search')!).display, count: getComputedStyle(document.querySelector('.mk-header-count')!).position }));
+    if (r.search !== 'block' || r.count !== 'absolute') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'elevate: a scroll-driven animation; reduced motion shows the rule statically', run: async (page) => {
+    const name = await page.$eval('.mk-header[data-elevate]', (e) => getComputedStyle(e).animationName);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const still = await page.$eval('.mk-header[data-elevate]', (e) => getComputedStyle(e).animationName);
+    await page.emulateMedia({ reducedMotion: null });
+    if (name !== 'mk-header-elevate' || still !== 'none') throw new Error(JSON.stringify({ name, still }));
+  } },
+  { label: 'the brand glyph takes the name color, never the link blue', run: async (page) => {
+    const r = await page.evaluate(() => { const b = document.querySelector('.mk-header-brand')!; return [getComputedStyle(b).color, getComputedStyle(b.querySelector('.mk-header-name')!).color]; });
+    if (r[0] !== r[1] || r[0] === 'rgb(0, 0, 238)') throw new Error(r.join(' vs '));
+  } },
 ]);

@@ -1,0 +1,313 @@
+---
+title: "Docs & Help"
+description: "Website blocks - Docs & Help: Blocks for documentation, help centers and release communication: resources and downloads, the docs navigation and page body, code examples with tabs and copy, release headers and items, roadmap cards, help categories and how-to articles."
+slug: "website-docs-help"
+---
+
+import { DocPage, PageHeader, DocText } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-docs-help" title="Docs & Help" introStyle="max-width:42rem;">
+  Blocks for documentation, help centers and release communication: resources and downloads, the docs navigation and page body, code examples with tabs and copy, release headers and items, roadmap cards, help categories and how-to articles. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Docs & Help blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A docs page" schema="none" hint="Docs Navigation beside the Docs Content and a Code Example, then the release notes (Release Header + Release Items), the roadmap, help categories and downloads - only Docs & Help blocks." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:4rem;width:100%">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:2.5rem;align-items:start">
+    <div style="max-width:16rem">
+      <nav class="mk-docs-navigation" aria-label="Documentation">
+        <div class="mk-docs-navigation-top">
+          <label class="sr-only" for="dn-ver">Version</label>
+          <select class="select" id="dn-ver"><option>v4.0 (latest)</option><option>v3.9</option></select>
+        </div>
+        <p class="mk-docs-navigation-heading">Getting started</p>
+        <ul>
+          <li><a href="#">Introduction</a></li>
+          <li><a href="#">Installation</a></li>
+          <li><a href="#" aria-current="page">Quick start</a></li>
+        </ul>
+        <details open>
+          <summary class="mk-docs-navigation-heading">Guides</summary>
+          <ul>
+            <li><a href="#">Workspaces</a></li>
+            <li><a href="#">Offline sync <span class="badge" data-variant="secondary" data-size="sm">New</span></a></li>
+            <li><a href="#">Permissions</a>
+              <ul><li><a href="#">Roles</a></li><li><a href="#">Guests</a></li></ul>
+            </li>
+          </ul>
+        </details>
+        <details>
+          <summary class="mk-docs-navigation-heading">API reference</summary>
+          <ul><li><a href="#">Authentication</a></li><li><a href="#">Docs</a></li><li><a href="#">Tasks</a></li></ul>
+        </details>
+      </nav>
+    </div>
+    <div style="grid-column:span 2;display:grid;gap:1.5rem;min-width:0">
+      <article class="mk-docs-content" aria-labelledby="dc-title">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><ol class="breadcrumb-list"><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Docs</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Guides</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Offline sync</span></li></ol></nav>
+        <h1 class="mk-docs-content-title" id="dc-title">Offline sync</h1>
+        <p class="mk-docs-content-lead">How Acme keeps working without a connection, and what happens when two people edit the same thing.</p>
+        <div class="mk-docs-content-meta"><span>Updated <time datetime="2026-09-28">28 Sep 2026</time></span><span>6 min read</span><a href="#"><i data-lucide="pencil"></i> Edit this page</a></div>
+        <div class="mk-docs-content-prose">
+          <p>Every change you make is written to your device first. When you are back online, Acme sends the changes in the order you made them - nothing waits for the network.</p>
+          <h2 id="dc-enable">Turn it on</h2>
+          <p>Offline sync is on by default for new workspaces. For older ones, enable it in <code>Settings → Sync</code> or with the CLI:</p>
+          <pre><code>acme workspace sync --offline on</code></pre>
+          <aside class="mk-docs-content-callout" role="note"><i data-lucide="info"></i><p><strong>Note:</strong> the first sync downloads the whole workspace - on a slow connection this can take a few minutes.</p></aside>
+          <h2 id="dc-conflicts">Conflicts</h2>
+          <p>When two people change the same field offline, the later change wins and the earlier one is kept in the history:</p>
+          <ul><li>Text merges character by character.</li><li>Fields like status keep the last value.</li><li>Deletions always win over edits.</li></ul>
+          <table><thead><tr><th>Change</th><th>Resolution</th></tr></thead><tbody><tr><td>Both edit a paragraph</td><td>Merged</td></tr><tr><td>Both set a status</td><td>Latest wins</td></tr><tr><td>One deletes, one edits</td><td>Deleted</td></tr></tbody></table>
+          <aside class="mk-docs-content-callout" data-tone="warning" role="note"><i data-lucide="triangle-alert"></i><p><strong>Warning:</strong> clearing your browser data before syncing deletes unsynced changes.</p></aside>
+          <aside class="mk-docs-content-callout" data-tone="tip" role="note"><i data-lucide="lightbulb"></i><p><strong>Tip:</strong> the cloud icon in the header shows how many changes are waiting.</p></aside>
+        </div>
+        <nav class="mk-docs-content-pager" aria-label="Pagination"><a href="#" rel="prev"><small>Previous</small><strong>← Workspaces</strong></a><a href="#" rel="next"><small>Next</small><strong>Permissions →</strong></a></nav>
+      </article>
+      <figure class="mk-code-block">
+        <div class="mk-code-block-head">
+        <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
+          <label><input type="radio" name="cb-pm" value="npm" checked>npm</label><label><input type="radio" name="cb-pm" value="pnpm">pnpm</label><label><input type="radio" name="cb-pm" value="bun">bun</label>
+        </div>
+          <button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button>
+        </div>
+        <pre data-tab="npm"><code><span>npm install defuss-shadcn</span></code></pre>
+        <pre data-tab="pnpm"><code><span>pnpm add defuss-shadcn</span></code></pre>
+        <pre data-tab="bun"><code><span>bun add defuss-shadcn</span></code></pre>
+        <span class="mk-code-block-status" role="status"></span>
+      </figure>
+    </div>
+  </div>
+  <header class="mk-release-header">
+    <div class="mk-release-header-tags"><code class="mk-release-header-version">v4.0.0</code><span class="badge" data-variant="default" data-size="sm">Major</span><span class="badge" data-variant="outline" data-size="sm">2 breaking changes</span><time datetime="2026-09-28">28 September 2026</time></div>
+    <h1 class="mk-release-header-title">Acme 4.0: offline sync for everyone</h1>
+    <p class="mk-release-header-summary">The biggest release in two years: every workspace now works offline, search got three times faster, and the editor learned tables.</p>
+    <ul class="mk-release-header-highlights">
+      <li><i data-lucide="wifi-off"></i><strong>Offline everywhere</strong><span>Sync catches up on its own.</span></li>
+      <li><i data-lucide="zap"></i><strong>3× faster search</strong><span>Results while you type.</span></li>
+      <li><i data-lucide="table"></i><strong>Tables in docs</strong><span>Sort, filter, resize.</span></li>
+    </ul>
+    <div class="mk-release-header-links"><a class="btn" href="#"><i data-lucide="download"></i> Download</a><a class="btn" data-variant="outline" href="#">Full changelog</a><a class="btn" data-variant="ghost" href="#"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg> Source</a></div>
+  </header>
+  <div style="width:100%;max-width:44rem">
+    <article class="mk-release-item">
+      <span class="mk-release-item-type" data-type="new">New</span>
+      <div class="mk-release-item-body">
+        <h3 class="mk-release-item-title">Tables in docs</h3>
+        <p class="mk-release-item-desc">Insert a table with /table - sort, filter and resize columns. Paste from a spreadsheet and the structure comes along.</p>
+        <img class="mk-release-item-media" src="https://picsum.photos/seed/rel-table/1000/500" alt="">
+        <p class="mk-release-item-meta"><a href="#">#4812</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span> by Hannah</p>
+      </div>
+    </article>
+    <article class="mk-release-item">
+      <span class="mk-release-item-type" data-type="improved">Improved</span>
+      <div class="mk-release-item-body">
+        <h3 class="mk-release-item-title">Search is three times faster</h3>
+        <p class="mk-release-item-desc">Results appear while you type, even in workspaces with 100,000 docs.</p>
+        <p class="mk-release-item-meta"><a href="#">#4790</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span> by Sophie</p>
+      </div>
+    </article>
+    <article class="mk-release-item">
+      <span class="mk-release-item-type" data-type="fixed">Fixed</span>
+      <div class="mk-release-item-body">
+        <h3 class="mk-release-item-title">Sync no longer stalls after waking a laptop</h3>
+        <p class="mk-release-item-meta"><a href="#">#4801</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span> by Sophie</p>
+      </div>
+    </article>
+    <article class="mk-release-item">
+      <span class="mk-release-item-type" data-type="breaking">Breaking</span>
+      <div class="mk-release-item-body">
+        <h3 class="mk-release-item-title">API v1 tokens stop working on 1 December</h3>
+        <p class="mk-release-item-desc">Create a v2 token in Settings → API; the old endpoints answer 410 after that date.</p>
+        <p class="mk-release-item-meta"><a href="#">#4777</a></p>
+      </div>
+    </article>
+  </div>
+  <div class="mk-roadmap-board">
+    <section aria-labelledby="rb-planned"><h3 id="rb-planned">Planned</h3>
+      <article class="mk-roadmap-item" aria-labelledby="rm-1">
+        <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="planned">Planned</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q1 2027</span></div>
+        <h3 class="mk-roadmap-item-title" id="rm-1">Calendar view for tasks</h3>
+        <p class="mk-roadmap-item-desc">See deadlines across projects in one month view.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"><li>Tasks</li></ul>
+          <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-1"><i data-lucide="chevron-up"></i><span>214</span><span class="sr-only"> votes - vote for Calendar view for tasks</span></label>
+        </div>
+      </article>
+      <article class="mk-roadmap-item" aria-labelledby="rm-2">
+        <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="planned">Planned</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q2 2027</span></div>
+        <h3 class="mk-roadmap-item-title" id="rm-2">Public pages</h3>
+        <p class="mk-roadmap-item-desc">Publish a doc as a website with your domain.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"><li>Docs</li><li>Web</li></ul>
+          <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-2"><i data-lucide="chevron-up"></i><span>98</span><span class="sr-only"> votes - vote for Public pages</span></label>
+        </div>
+      </article>
+    </section>
+    <section aria-labelledby="rb-progress"><h3 id="rb-progress">In progress</h3>
+      <article class="mk-roadmap-item" aria-labelledby="rm-3">
+        <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="progress">In progress</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Nov 2026</span></div>
+        <h3 class="mk-roadmap-item-title" id="rm-3">Acme mobile app</h3>
+        <p class="mk-roadmap-item-desc">Everything on the desk, in your pocket - offline included.</p>
+        <progress class="progress" value="60" max="100" aria-label="60% done">60%</progress>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"><li>iOS</li><li>Android</li></ul>
+          <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-3" checked><i data-lucide="chevron-up"></i><span>512</span><span class="sr-only"> votes - vote for Acme mobile app</span></label>
+        </div>
+      </article>
+    </section>
+    <section aria-labelledby="rb-shipped"><h3 id="rb-shipped">Shipped</h3>
+      <article class="mk-roadmap-item" aria-labelledby="rm-4">
+        <div class="mk-roadmap-item-top"><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Sep 2026</span></div>
+        <h3 class="mk-roadmap-item-title" id="rm-4">Offline sync</h3>
+        <p class="mk-roadmap-item-desc">Shipped in 4.0 for every workspace.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"><li>Sync</li></ul>
+          <label class="mk-roadmap-item-vote"><input type="checkbox" name="vote" value="rm-4"><i data-lucide="chevron-up"></i><span>1204</span><span class="sr-only"> votes - vote for Offline sync</span></label>
+        </div>
+      </article>
+    </section>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+    <article class="mk-help-category">
+      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+      <div class="mk-help-category-body">
+        <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
+        <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
+        <p class="mk-help-category-count">18 articles</p>
+        <ul class="mk-help-category-top"><li><a href="#">Create a workspace</a></li><li><a href="#">Invite teammates</a></li><li><a href="#">Import from Notion</a></li></ul>
+      </div>
+    </article>
+    <article class="mk-help-category">
+      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span>
+      <div class="mk-help-category-body">
+        <h3 class="mk-help-category-title"><a href="#">Billing & plans</a></h3>
+        <p class="mk-help-category-desc">Invoices, seats, upgrades and refunds.</p>
+        <p class="mk-help-category-count">24 articles</p>
+        <ul class="mk-help-category-top"><li><a href="#">Change your plan</a></li><li><a href="#">Download an invoice</a></li></ul>
+      </div>
+    </article>
+    <article class="mk-help-category">
+      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="refresh-cw"></i></span>
+      <div class="mk-help-category-body">
+        <h3 class="mk-help-category-title"><a href="#">Sync & offline</a></h3>
+        <p class="mk-help-category-desc">How your work stays in sync everywhere.</p>
+        <p class="mk-help-category-count">12 articles</p>
+        <ul class="mk-help-category-top"><li><a href="#">Sync is stuck</a></li><li><a href="#">Work offline</a></li></ul>
+      </div>
+    </article>
+    <article class="mk-help-category">
+      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="shield"></i></span>
+      <div class="mk-help-category-body">
+        <h3 class="mk-help-category-title"><a href="#">Security</a></h3>
+        <p class="mk-help-category-desc">Two-factor, SSO, data handling.</p>
+        <p class="mk-help-category-count">15 articles</p>
+        <ul class="mk-help-category-top"><li><a href="#">Turn on two-factor</a></li><li><a href="#">Set up SSO</a></li></ul>
+      </div>
+    </article>
+  </div>
+  <div style="display:grid;gap:0.75rem;max-width:44rem;width:100%">
+    <article class="mk-download-item">
+      <span class="mk-download-item-file" data-ext="DMG" aria-hidden="true">DMG</span>
+      <div class="mk-download-item-body">
+        <h3 class="mk-download-item-name">Acme for macOS</h3>
+        <p class="mk-download-item-desc">Universal build for Apple silicon and Intel.</p>
+        <p class="mk-download-item-meta"><span>v4.0.2</span><span>148 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p>
+        <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>9f2c…a41b 7e08 3d55 c1f0 66b2 e9a4 0c71</code></details>
+      </div>
+      <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Acme for macOS (DMG, 148 MB)"><i data-lucide="download"></i> Download</a>
+    </article>
+    <article class="mk-download-item">
+      <span class="mk-download-item-file" data-ext="EXE" aria-hidden="true">EXE</span>
+      <div class="mk-download-item-body">
+        <h3 class="mk-download-item-name">Acme for Windows</h3>
+        <p class="mk-download-item-desc">Windows 10 and 11, 64-bit.</p>
+        <p class="mk-download-item-meta"><span>v4.0.2</span><span>132 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p>
+        <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>41d0…77e2 9b13 0aa6 f2c8 15e4 b7d9 3c02</code></details>
+      </div>
+      <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Acme for Windows (EXE, 132 MB)"><i data-lucide="download"></i> Download</a>
+    </article>
+    <article class="mk-download-item">
+      <span class="mk-download-item-file" data-ext="PDF" aria-hidden="true">PDF</span>
+      <div class="mk-download-item-body">
+        <h3 class="mk-download-item-name">Security whitepaper</h3>
+        <p class="mk-download-item-desc">How Acme stores, encrypts and hosts your data.</p>
+        <p class="mk-download-item-meta"><span>Edition 2026</span><span>2.4 MB</span><span><time datetime="2026-08-01">1 Aug 2026</time></span></p>
+        <details class="mk-download-item-checksum"><summary>SHA-256</summary><code>c8a1…0f3e 52d7 9e14 7ab0 c3f6 1d28 e5b9</code></details>
+      </div>
+      <a class="btn" data-variant="outline" data-size="sm" href="#" download aria-label="Download Security whitepaper (PDF, 2.4 MB)"><i data-lucide="download"></i> Download</a>
+    </article>
+  </div>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="resource-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Resource Item</h3>
+      <p class="card-description">Previews one guide, document, template, or other resource - its type, title, a line on what is inside, the format and the action.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="download-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Download Item</h3>
+      <p class="card-description">Presents one downloadable file with its format and size - a file badge, what it is, version, size and date, its checksum, and the download.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="docs-navigation.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Docs Navigation</h3>
+      <p class="card-description">Organizes documentation links into a navigable hierarchy - a version switch, sections, collapsible groups, nested pages and the current page marked.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="docs-content.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Docs Content</h3>
+      <p class="card-description">Presents one documentation topic with explanations and examples - the trail, title, lead, prose with code, callouts and tables, and the next page.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="code-block.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Code Example</h3>
+      <p class="card-description">Displays code with optional language tabs and copying controls - tabs for each package manager, a file header, highlighted lines, or one command to copy.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="release-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Release Header</h3>
+      <p class="card-description">Introduces a release with its version, date, and summary - the version tag, kind of release, a headline, what it brings and where to get it.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="release-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Release Item</h3>
+      <p class="card-description">Describes one change, improvement, or fix within a release - its kind, what changed and why it matters, with the pull request and author.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="roadmap-item.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Roadmap Item</h3>
+      <p class="card-description">Presents one planned initiative with its status and target timeframe - planned, in progress or shipped, how far along, and a vote.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="help-category.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Help Category</h3>
+      <p class="card-description">Links to a support topic with a description and article count - an icon, the topic, what it covers, how many articles and the most read ones.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="help-article.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Help Article</h3>
+      <p class="card-description">Presents instructions for resolving one problem or completing one task - the steps with pictures, a tip, whether it helped and related articles.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

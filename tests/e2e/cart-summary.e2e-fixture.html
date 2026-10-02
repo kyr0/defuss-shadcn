@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>cart-summary e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/progress/progress.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/cart-summary/cart-summary.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<aside class="mk-cart-summary" aria-labelledby="cs-title" style="max-width:24rem">
+  <h2 class="mk-cart-summary-title" id="cs-title">Order summary</h2>
+  <div class="mk-cart-summary-shipping"><label for="cs-free">Add <strong>€16.00</strong> more for free shipping</label><progress class="progress" id="cs-free" value="84" max="100">84%</progress></div>
+  <dl class="mk-cart-summary-lines">
+    <div><dt>Subtotal (3 items)</dt><dd>€108.00</dd></div>
+    <div data-discount><dt>Discount · AUTUMN30</dt><dd>−€24.00</dd></div>
+    <div><dt>Shipping</dt><dd>€4.90</dd></div>
+    <div><dt>VAT (included)</dt><dd>€16.62</dd></div>
+  </dl>
+  <div class="mk-cart-summary-total"><span>Total<small>incl. VAT</small></span><output aria-live="polite">€88.90</output></div>
+  <a class="btn mk-cart-summary-checkout" data-size="lg" href="#">Checkout <i data-lucide="arrow-right"></i></a>
+  <ul class="mk-cart-summary-pay" aria-label="We accept"><li>VISA</li><li>MASTERCARD</li><li>PAYPAL</li><li>APPLE PAY</li><li>KLARNA</li></ul>
+  <p class="mk-cart-summary-note"><i data-lucide="lock"></i> Secure checkout · 30-day returns</p>
+</aside>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<aside class="mk-cart-summary" data-variant="compact" aria-label="Cart total" style="max-width:22rem">
+  <div class="mk-cart-summary-total"><span>Subtotal<small>Shipping at checkout</small></span><output aria-live="polite">€108.00</output></div>
+  <a class="btn mk-cart-summary-checkout" href="#">Checkout</a>
+</aside>
+    </section>
+  </body>
+</html>

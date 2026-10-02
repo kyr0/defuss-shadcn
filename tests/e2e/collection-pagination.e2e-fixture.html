@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>collection-pagination e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/pagination/pagination.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/collection-pagination/collection-pagination.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-collection-pagination">
+  <output class="mk-collection-pagination-range">Showing <strong>13–24</strong> of <strong>248</strong></output>
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><i data-lucide="chevron-left"></i> Previous</a></li>
+      <li><a class="pagination-link" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+      <li><a class="pagination-link" href="#">3</a></li>
+      <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
+      <li><a class="pagination-link" href="#">21</a></li>
+      <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <i data-lucide="chevron-right"></i></a></li>
+    </ul>
+  </nav>
+  <form class="mk-collection-pagination-size" action="#" method="get"><label for="cp-size">Per page</label><select class="select" id="cp-size" name="per"><option>12</option><option>24</option><option>48</option></select></form>
+</div>
+    </section>
+    <!-- Simple -->
+    <section class="fx">
+<div class="mk-collection-pagination" data-variant="simple">
+  <a class="btn" data-variant="outline" data-size="sm" href="#" rel="prev"><i data-lucide="chevron-left"></i> Previous</a>
+  <span class="mk-collection-pagination-page">Page <strong>2</strong> of 21</span>
+  <a class="btn" data-variant="outline" data-size="sm" href="#" rel="next">Next <i data-lucide="chevron-right"></i></a>
+</div>
+    </section>
+    <!-- Centered -->
+    <section class="fx">
+<div class="mk-collection-pagination" data-variant="centered">
+  <nav class="pagination" aria-label="Pagination">
+    <ul class="pagination-list">
+      <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><i data-lucide="chevron-left"></i> Previous</a></li>
+      <li><a class="pagination-link" href="#">1</a></li>
+      <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+      <li><a class="pagination-link" href="#">3</a></li>
+      <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
+      <li><a class="pagination-link" href="#">21</a></li>
+      <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <i data-lucide="chevron-right"></i></a></li>
+    </ul>
+  </nav>
+  <output class="mk-collection-pagination-range">Showing <strong>13–24</strong> of <strong>248</strong> results</output>
+</div>
+    </section>
+  </body>
+</html>

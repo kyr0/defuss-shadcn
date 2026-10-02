@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>news-header e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/breadcrumb/breadcrumb.css" />
+    <link rel="stylesheet" href="/dist/components/indicator/indicator.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/toggle/toggle.css" />
+    <link rel="stylesheet" href="/dist/components/toggle-group/toggle-group.css" />
+    <link rel="stylesheet" href="/dist/components/news-header/news-header.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<header class="mk-news-header">
+  <div class="mk-news-header-top">
+    <span class="mk-news-header-kicker">Newsroom</span>
+    <time class="mk-news-header-date" datetime="2026-10-01">Thursday, 1 October 2026</time>
+  </div>
+  <h1 class="mk-news-header-title">Acme News</h1>
+  <p class="mk-news-header-desc">Product updates, company announcements and the stories behind them - written by the people who build Acme.</p>
+  <nav class="mk-news-header-topics" aria-label="Topics">
+    <a href="#" aria-current="page">All news</a>
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Engineering</a>
+    <a href="#">Security</a>
+    <a href="#">Press</a>
+  </nav>
+</header>
+    </section>
+    <!-- Masthead -->
+    <section class="fx">
+<header class="mk-news-header" data-variant="masthead">
+  <div class="mk-news-header-top">
+    <span class="mk-news-header-kicker">Vol. 12 · No. 274</span>
+    <time class="mk-news-header-date" datetime="2026-10-01">Thursday, 1 October 2026</time>
+  </div>
+  <h1 class="mk-news-header-title">The Acme Times</h1>
+  <p class="mk-news-header-desc">All the news that fits the product.</p>
+  <nav class="mk-news-header-topics" aria-label="Sections">
+    <a href="#" aria-current="page">Front page</a>
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Opinion</a>
+    <a href="#">Archive</a>
+  </nav>
+</header>
+    </section>
+    <!-- Many topics: scroll or wrap -->
+    <section class="fx">
+<div style="display:grid;gap:2rem;width:100%;max-width:22rem">
+<header class="mk-news-header" data-topics-demo>
+  <h1 class="mk-news-header-title">Scrolling</h1>
+  <nav class="mk-news-header-topics" aria-label="Topics">
+    <a href="#" aria-current="page">All</a>
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Engineering</a>
+    <a href="#">Security</a>
+    <a href="#">Design</a>
+    <a href="#">Press</a>
+    <a href="#">Events</a>
+  </nav>
+</header>
+<header class="mk-news-header" data-topics-demo>
+  <h1 class="mk-news-header-title">Wrapped</h1>
+  <nav class="mk-news-header-topics" data-wrap aria-label="Topics">
+    <a href="#" aria-current="page">All</a>
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Engineering</a>
+    <a href="#">Security</a>
+    <a href="#">Design</a>
+    <a href="#">Press</a>
+    <a href="#">Events</a>
+  </nav>
+</header>
+</div>
+    </section>
+    <!-- Category page, live -->
+    <section class="fx">
+<header class="mk-news-header">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Newsroom</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Product</span></li>
+    </ol>
+  </nav>
+  <h1 class="mk-news-header-title">Product news</h1>
+  <p class="mk-news-header-desc">Every release, every fix, every experiment - as it happens.</p>
+  <span class="mk-news-header-live"><span class="indicator-dot" data-variant="destructive" data-animate="ping" role="img" aria-label="Live"></span><strong>Live</strong> Updated <time datetime="2026-10-01T09:41">2 minutes ago</time></span>
+  <nav class="mk-news-header-topics" aria-label="Product topics">
+    <a href="#" aria-current="page">Releases</a>
+    <a href="#">Roadmap</a>
+    <a href="#">Experiments</a>
+    <a href="#">Status</a>
+  </nav>
+</header>
+    </section>
+    <!-- Bar -->
+    <section class="fx">
+<header class="mk-news-header" data-variant="bar">
+  <h1 class="mk-news-header-title">Acme News</h1>
+  <nav class="mk-news-header-topics" aria-label="Topics">
+    <a href="#" aria-current="page">All</a>
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Security</a>
+  </nav>
+  <div class="mk-news-header-tools">
+    <input class="input" type="search" data-size="sm" placeholder="Search news…" aria-label="Search news" style="width:10rem">
+    <div class="toggle-group" role="group" aria-label="View" data-type="single" data-size="sm">
+      <button class="toggle" aria-pressed="true" value="list" aria-label="List view"><i data-lucide="list"></i></button>
+      <button class="toggle" aria-pressed="false" value="grid" aria-label="Grid view"><i data-lucide="layout-grid"></i></button>
+    </div>
+    <a class="btn" data-size="sm" href="#"><i data-lucide="bell"></i> Subscribe</a>
+  </div>
+</header>
+    </section>
+  </body>
+</html>

@@ -28,6 +28,7 @@
   }
 
   .mk-stats-title {
+    line-height: 1.15;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 500;
@@ -39,16 +40,43 @@
 
   .mk-stats-grid { display: grid; gap: 1.25rem; }
 
+  /* each metric gets its own accent from the chart palette - the rule on
+     its edge and the trend readout (the theme's chart tokens, so every
+     preset recolors it) */
   .mk-stat {
+    --_tone: var(--chart-1);
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.125rem;
-    border-left: 1px solid var(--border);
-    padding-left: 1.5rem;
+    border-left: 3px solid var(--_tone);
+    padding-left: 1.25rem;
+
+    &:nth-child(4n + 2) { --_tone: var(--chart-2); }
+    &:nth-child(4n + 3) { --_tone: var(--chart-3); }
+    &:nth-child(4n + 4) { --_tone: var(--chart-4); }
   }
 
-  .mk-stat-value { font-size: 1.875rem; font-weight: 500; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  /* a trend chip beside the value - the Statistic component's colors */
+  .mk-stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin-inline-start: 0.5rem;
+    padding: 0.0625rem 0.4375rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    vertical-align: middle;
+
+    &[data-trend="up"] { background: color-mix(in oklch, #16a34a 14%, transparent); color: #16a34a; }
+    &[data-trend="down"] { background: color-mix(in oklch, #dc2626 14%, transparent); color: #dc2626; }
+    & svg { width: 0.75rem; height: 0.75rem; }
+  }
+
+  .mk-stat-value { font-size: 1.875rem; font-weight: 500; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; line-height: 1.1; }
 
   .mk-stat-label { color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
 
@@ -81,7 +109,60 @@
     .mk-stats-grid { gap: 2.25rem 2.25rem; }
   }
 
+  /* cards: each metric on a card with a sparkline */
+  .mk-stats-grid[data-variant="cards"] {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+
+    & .mk-stat {
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      border-inline-start: 3px solid var(--_tone);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+    }
+  }
+  .mk-stat-spark {
+    width: 100%;
+    height: 2.5rem;
+    margin-block-start: 0.5rem;
+    color: var(--_tone, var(--chart-1));
+  }
+
+  /* band: big numbers on a dark band, separated by rules */
+  .mk-stats-band {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    border-radius: var(--radius-xl);
+    background: var(--foreground);
+    color: var(--background);
+    overflow: hidden;
+
+    & .mk-stat {
+      align-items: center;
+      padding: 2rem 1rem;
+      border: 0;
+      border-inline-start: 1px solid color-mix(in oklch, var(--background) 15%, transparent);
+      text-align: center;
+
+      &:first-child { border-inline-start: 0; }
+    }
+    & .mk-stat-value { font-size: 2.5rem; font-weight: 700; }
+    & .mk-stat-label { color: color-mix(in oklch, var(--background) 70%, transparent); }
+  }
+
+  /* rings: percentages as Radial Progress */
+  .mk-stats-rings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: 1.5rem;
+    justify-items: center;
+    text-align: center;
+
+    & .mk-stat { align-items: center; border: 0; padding: 0; gap: 0.5rem; }
+  }
+
   /* -- Accessibility ------------------------------------------- */
+
   @media (forced-colors: active) {
     .mk-stat { border-left-color: CanvasText; }
   }

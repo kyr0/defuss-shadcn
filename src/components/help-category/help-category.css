@@ -1,0 +1,48 @@
+/* -- Help Category (website · Docs & Help) --------------------------------
+   Links to a support topic with a description and article count - an icon, the topic, what it covers, how many articles and the most read ones. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-help-category, .mk-help-category *, .mk-help-category ::before, .mk-help-category ::after) { box-sizing: border-box; }
+
+  .mk-help-category { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; padding: 1.5rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground); transition: border-color 150ms ease, box-shadow 150ms ease;
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 25%, var(--border)); box-shadow: var(--shadow-md); }
+  }
+  .mk-help-category { position: relative; }
+  .mk-help-category-title a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .mk-help-category-title a:focus-visible { outline: none; }
+  .mk-help-category:has(.mk-help-category-title a:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+  /* zero specificity: any block rule may still position its controls */
+  :where(.mk-help-category :is(button, input, select, label, .btn):not(.mk-help-category-title a)) { position: relative; z-index: 1; }
+  .mk-help-category-icon { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: var(--radius-lg); background: color-mix(in oklch, var(--primary) 10%, transparent); color: var(--primary);
+    & svg { width: 1.375rem; height: 1.375rem; }
+  }
+  .mk-help-category-body { display: grid; gap: 0.25rem; }
+  .mk-help-category-title { margin: 0; font-size: 1.0625rem; font-weight: 600;
+    & a { color: inherit; text-decoration: none; }
+  }
+  .mk-help-category-desc { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; }
+  .mk-help-category-count { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 500; }
+  .mk-help-category-top { display: grid; gap: 0.25rem; margin: 0.75rem 0 0; padding: 0.75rem 0 0; border-block-start: 1px solid var(--border); list-style: none;
+    & a { position: relative; z-index: 1; color: var(--primary); font-size: 0.875rem; text-decoration: none; }
+    & a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    & a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--radius-sm); }
+  }
+  .mk-help-category[data-variant="compact"] { align-items: center; padding: 1rem 1.25rem;
+    & .mk-help-category-body { grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; }
+    & .mk-help-category-desc { display: none; }
+    & .mk-help-category-count { margin: 0; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-help-category { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-help-category { border-color: CanvasText; }
+  }
+}

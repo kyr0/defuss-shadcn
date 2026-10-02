@@ -1,0 +1,218 @@
+/* -- Cookie Consent component -------------------------------------
+   Built from the library: the dialog is the Dialog component (backdrop,
+   animation, scroll lock), its controls are Button, Select, Tabs,
+   Checkbox and Badge. This sheet adds only what consent needs on top -
+   widths and the corner placement, a scrolling body between a fixed
+   header and footer, the choice rows, the floating settings button and
+   the placeholder that stands in for a blocked embed. */
+
+@layer components {
+  .cookie-consent {
+    color: var(--foreground);
+    font-family: var(--font-sans);
+
+    /* sizes: sm 28rem · md (default) 40rem · lg 48rem */
+    & .cookie-consent-dialog {
+      max-width: 40rem;
+      max-height: calc(100dvh - 2rem);
+      overflow: hidden;
+      overscroll-behavior: contain;
+      & [hidden] { display: none !important; }
+    }
+    &[data-size="sm"] .cookie-consent-dialog { max-width: 28rem; }
+    &[data-size="lg"] .cookie-consent-dialog { max-width: 48rem; }
+
+    /* corner: a bottom-right modal - the page behind stays inert */
+    &[data-variant="corner"] .cookie-consent-dialog {
+      inset: auto 1rem 1rem auto;
+      margin: 0;
+    }
+
+    /* banner: the first-visit view as a bar along the bottom of the page -
+       NON-modal (the runtime opens it with show()), the page stays usable.
+       Copy beside the buttons on wide screens, stacked on phones. The
+       settings views reopen as the modal dialog, so this only styles the bar. */
+    &[data-variant="banner"] .cookie-consent-dialog:not(:modal) {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 60;
+      container: cookie-banner / inline-size;
+      width: 100%;
+      max-width: none;
+      max-height: min(60dvh, 28rem);
+      margin: 0;
+      border: 0;
+      border-block-start: 1px solid var(--border);
+      border-radius: 0;
+      box-shadow: 0 -12px 32px -16px color-mix(in oklch, var(--foreground) 30%, transparent);
+      transition: translate 300ms ease, opacity 300ms ease;
+
+      @starting-style { translate: 0 100%; opacity: 0; }
+
+      & .cookie-consent-content {
+        grid-template-rows: none;
+        max-width: 80rem;
+        max-height: none;
+        margin-inline: auto;
+        padding: 1rem 1.25rem;
+        gap: 0.5rem 2rem;
+      }
+      /* title and tools stay on one line, even on phones */
+      & .cookie-consent-header { flex-direction: row; align-items: center; }
+      & .cookie-consent-tools { align-self: center; }
+      & .cookie-consent-title { font-size: 1rem; }
+      & .cookie-consent-eyebrow { display: none; }
+      & .cookie-consent-description { margin: 0; }
+      & .cookie-consent-footer { flex-wrap: wrap; justify-content: flex-start; padding-block-start: 0; border-block-start: 0; }
+    }
+    @container cookie-banner (min-width: 48rem) {
+      &[data-variant="banner"] .cookie-consent-dialog:not(:modal) .cookie-consent-content {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+
+        /* the header spans the bar - title left, language + close at the far
+           right; the text and the buttons share the row below */
+        & > .cookie-consent-header { grid-column: 1 / -1; grid-row: 1; align-items: center; }
+        & > .cookie-consent-body { grid-column: 1; grid-row: 2; }
+        & > .cookie-consent-footer { grid-column: 2; grid-row: 2; justify-content: flex-end; }
+        & > .cookie-consent-footer > .btn { flex: none; }
+      }
+    }
+
+    /* header / scrolling body / footer */
+    & .cookie-consent-content {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 1rem;
+      max-height: calc(100dvh - 2rem);
+      box-sizing: border-box;
+    }
+    &[data-density="compact"] .cookie-consent-content { padding: 1rem; gap: 0.75rem; }
+    &[data-density="spacious"] .cookie-consent-content { padding: 2rem; gap: 1.25rem; }
+
+    & .cookie-consent-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0;
+    }
+    & .cookie-consent-title {
+      font-size: 1.25rem;
+      line-height: 1.3;
+      text-wrap: balance;
+      &:focus { outline: none; }
+    }
+    & .cookie-consent-eyebrow { margin: 0 0 0.375rem; font-size: 0.75rem; color: var(--muted-foreground); }
+    & .cookie-consent-tools { display: flex; align-items: center; gap: 0.5rem; }
+    & .cookie-consent-tools > .select { width: auto; }
+
+    & .cookie-consent-body {
+      min-height: 0;
+      max-height: 55dvh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+    }
+    & .cookie-consent-description { margin: 0 0 1rem; text-wrap: pretty; }
+    & .cookie-consent-tabs > .tab-list { width: 100%; margin-bottom: 0.75rem; }
+    & .cookie-consent-tabs > .tab-list > .tab-trigger { flex: 1; }
+
+    /* one choice: a framed Checkbox row */
+    & .cookie-consent-row {
+      padding: 1rem;
+      margin-bottom: 0.625rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      & .field-description { margin-top: 0.375rem; }
+      & > .checkbox { margin-top: 0.125rem; }
+    }
+    & .cookie-consent-label {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    & .cookie-consent-data {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin: 0.625rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & a { color: var(--foreground); font-size: 0.8125rem; text-underline-offset: 0.2em; }
+    & .cookie-consent-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+    & .cookie-consent-links:empty { display: none; }
+
+    & .cookie-consent-footer {
+      flex-wrap: wrap;
+      margin: 0;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      & > .btn { flex: 1 1 auto; }
+    }
+
+    /* the floating way back to the settings */
+    & .cookie-consent-floating {
+      position: fixed;
+      inset-inline-start: 1rem;
+      inset-block-end: 1rem;
+      z-index: 20;
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  /* -- A blocked embed: placeholder until its service is allowed -- */
+  .cookie-consent-embed {
+    display: grid;
+    min-height: 12rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--muted);
+    & > iframe { width: 100%; min-height: 16rem; border: 0; }
+    & [hidden] { display: none !important; }
+  }
+  .cookie-consent-placeholder {
+    align-self: center;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+  }
+  .cookie-consent-embed-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-consent .cookie-consent-dialog { transition: none; }
+    .cookie-consent[data-variant="banner"] .cookie-consent-dialog:not(:modal) { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .cookie-consent .cookie-consent-row .field-description,
+    .cookie-consent-placeholder { color: var(--foreground); }
+    .cookie-consent .cookie-consent-row { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .cookie-consent .cookie-consent-row,
+    .cookie-consent-embed { border-color: CanvasText; }
+  }
+
+  @media (max-width: 36rem) {
+    .cookie-consent .cookie-consent-header { flex-direction: column; }
+    .cookie-consent .cookie-consent-tools { align-self: end; }
+    .cookie-consent .cookie-consent-footer { flex-direction: column; }
+  }
+}

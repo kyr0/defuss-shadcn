@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>gallery-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/dialog/dialog.css" />
+    <link rel="stylesheet" href="/dist/components/gallery-item/gallery-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1.25rem;width:100%">
+  <figure class="mk-gallery-item">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-1" command="show-modal" aria-label="Enlarge: Harbour at dawn">
+      <img src="https://picsum.photos/seed/gal-harbour/800/600" alt="Harbour at dawn">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Harbour at dawn <span>Lisbon, 2026</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-1" aria-label="Harbour at dawn">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-harbour/1600/1200" alt="Harbour at dawn">
+        <p>Harbour at dawn <span>Lisbon, 2026</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure>
+  <figure class="mk-gallery-item">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-2" command="show-modal" aria-label="Enlarge: Hills after rain">
+      <img src="https://picsum.photos/seed/gal-hills/800/600" alt="Hills after rain">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Hills after rain <span>Sintra, 2026</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-2" aria-label="Hills after rain">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-hills/1600/1200" alt="Hills after rain">
+        <p>Hills after rain <span>Sintra, 2026</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure>
+  <figure class="mk-gallery-item">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-3" command="show-modal" aria-label="Enlarge: Tram 28">
+      <img src="https://picsum.photos/seed/gal-street/800/600" alt="Tram 28">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Tram 28 <span>Alfama, 2025</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-3" aria-label="Tram 28">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-street/1600/1200" alt="Tram 28">
+        <p>Tram 28 <span>Alfama, 2025</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure>
+</div>
+    </section>
+    <!-- Overlay -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:0.75rem;width:100%">
+  <figure class="mk-gallery-item" data-variant="overlay">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-4" command="show-modal" aria-label="Enlarge: Morning market">
+      <img src="https://picsum.photos/seed/gal-o1/800/600" alt="Morning market">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Morning market <span>Porto</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-4" aria-label="Morning market">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-o1/1600/1200" alt="Morning market">
+        <p>Morning market <span>Porto</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure>
+  <figure class="mk-gallery-item" data-variant="overlay">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-5" command="show-modal" aria-label="Enlarge: Blue hour">
+      <img src="https://picsum.photos/seed/gal-o2/800/600" alt="Blue hour">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Blue hour <span>Cascais</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-5" aria-label="Blue hour">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-o2/1600/1200" alt="Blue hour">
+        <p>Blue hour <span>Cascais</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure>
+  <figure class="mk-gallery-item" data-variant="overlay">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-6" command="show-modal" aria-label="Enlarge: Lighthouse">
+      <img src="https://picsum.photos/seed/gal-o3/800/600" alt="Lighthouse">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Lighthouse <span>Cabo da Roca</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-6" aria-label="Lighthouse">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-o3/1600/1200" alt="Lighthouse">
+        <p>Lighthouse <span>Cabo da Roca</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure>
+</div>
+    </section>
+    <!-- Framed -->
+    <section class="fx">
+<div style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:center;padding:1rem;width:100%">
+  <div style="width:14rem"><figure class="mk-gallery-item" data-variant="framed">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-7" command="show-modal" aria-label="Enlarge: Summer, 1998">
+      <img src="https://picsum.photos/seed/gal-f1/800/600" alt="Summer, 1998">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">Summer, 1998 <span>Algarve</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-7" aria-label="Summer, 1998">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-f1/1600/1200" alt="Summer, 1998">
+        <p>Summer, 1998 <span>Algarve</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure></div>
+  <div style="width:14rem"><figure class="mk-gallery-item" data-variant="framed">
+    <button class="mk-gallery-item-open" type="button" commandfor="gi-8" command="show-modal" aria-label="Enlarge: The old house">
+      <img src="https://picsum.photos/seed/gal-f2/800/600" alt="The old house">
+      <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
+    </button>
+    <figcaption class="mk-gallery-item-caption">The old house <span>Évora</span></figcaption>
+    <dialog class="mk-gallery-item-viewer" id="gi-8" aria-label="The old house">
+      <div class="mk-gallery-item-viewer-inner">
+        <img src="https://picsum.photos/seed/gal-f2/1600/1200" alt="The old house">
+        <p>The old house <span>Évora</span></p>
+        <form method="dialog"><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button></form>
+      </div>
+    </dialog>
+  </figure></div>
+</div>
+    </section>
+  </body>
+</html>

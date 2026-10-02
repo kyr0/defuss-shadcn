@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>load-more e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/progress/progress.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/load-more/load-more.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-load-more">
+  <output>Showing <strong>24</strong> of <strong>248</strong> projects</output>
+  <progress class="progress" value="24" max="248" aria-label="24 of 248 shown"></progress>
+  <a class="btn mk-load-more-button" data-variant="outline" href="#">Load 24 more <i data-lucide="chevron-down"></i><span class="mk-load-more-spin" aria-hidden="true"></span></a>
+</div>
+    </section>
+    <!-- Loading -->
+    <section class="fx">
+<div class="mk-load-more">
+  <output>Showing <strong>48</strong> of <strong>248</strong> projects</output>
+  <progress class="progress" value="48" max="248" aria-label="48 of 248 shown"></progress>
+  <a class="btn mk-load-more-button" data-variant="outline" href="#" aria-busy="true">Loading… <i data-lucide="chevron-down"></i><span class="mk-load-more-spin" aria-hidden="true"></span></a>
+</div>
+    </section>
+  </body>
+</html>

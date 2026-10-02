@@ -263,6 +263,12 @@ function makeHandle(wrapper, h) {
     el.setAttribute('data-ce-chrome', '');
     el.addEventListener('pointerdown', (ev) => startDrag(wrapper, el, ev));
     el.addEventListener('keydown', (ev) => handleKeys(wrapper, el, ev));
+    // a divider resets on double-click, as split panes do (read at click time:
+    // the variant may be set or removed after init)
+    el.addEventListener('dblclick', () => {
+        if (wrapper.dataset.variant === 'divider')
+            resizerApi.setState(wrapper, 'default');
+    });
     return el;
 }
 /** Place/repair the handle set for the current config (also re-run on live

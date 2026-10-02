@@ -1,0 +1,55 @@
+---
+title: "Search Summary"
+description: "Shows the active query and number of matches - the count, the query, a &quot;did you mean&quot;, how long it took and how to clear it."
+slug: "search-summary"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="search-summary" title="Search Summary" component="search-summary">
+  Shows the active query and number of matches - the count, the query, a "did you mean", how long it took and how to clear it. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="search-summary">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div role="status"&gt;</code>: "<strong>248 results</strong> for “calm software”", the time, a "did you mean" link and a clear-search link.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-search-summary</code>
+    <code>.mk-search-summary-time</code>
+    <code>.mk-search-summary-suggest</code>
+    <code>.mk-search-summary-clear</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="role=&quot;status&quot;: the count, the query in <q>, how long it took, &quot;did you mean&quot; and clear - announced politely when it changes." previewStyle="align-items:stretch;"
+<div class="mk-search-summary" role="status">
+  <p><strong>248 results</strong> for <q>calm sofware</q></p>
+  <span class="mk-search-summary-time">0.04 s</span>
+  <a class="mk-search-summary-clear" href="#">Clear search</a>
+  <p class="mk-search-summary-suggest">Did you mean <a href="#">calm software</a>?</p>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': count and query only - above a filtered list." previewStyle="align-items:stretch;"
+<div class="mk-search-summary" data-variant="compact" role="status"><p><strong>36 products</strong> in Linen · sorted by newest</p></div>
+```
+
+<SourceFiles component="search-summary" section="css" />
+
+</DocPage>

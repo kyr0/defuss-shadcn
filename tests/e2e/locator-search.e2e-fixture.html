@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>locator-search e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/location-item/location-item.css" />
+    <link rel="stylesheet" href="/dist/components/locator-search/locator-search.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<section class="mk-locator-search" aria-labelledby="ls-title">
+  <h2 id="ls-title" class="sr-only">Find a store</h2>
+  <search>
+    <form class="mk-locator-search-form" action="#" method="get">
+      <div class="mk-locator-search-row">
+        <div class="mk-locator-search-field"><label class="label" for="ls-q">City, address or postcode</label><div class="mk-locator-search-query"><i data-lucide="search"></i><input class="input" id="ls-q" type="search" name="near" placeholder="e.g. Lisbon" autocomplete="address-level2" enterkeyhint="search"></div></div>
+        <div class="mk-locator-search-field"><label class="label" for="ls-r">Within</label><select class="select" id="ls-r" name="radius"><option>5 km</option><option selected>25 km</option><option>100 km</option></select></div>
+        <button class="btn" type="submit">Search</button>
+      </div>
+      <button class="mk-locator-search-geo" type="button" data-locate><i data-lucide="locate-fixed"></i> Use my location</button>
+    </form>
+  </search>
+  <output class="mk-locator-search-summary" aria-live="polite"><strong>2 stores</strong> within 25 km of Lisbon</output>
+  <div class="mk-locator-search-results">
+    <article class="mk-location-item" data-variant="compact">
+      <div class="mk-location-item-body">
+        <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div>
+        <address class="mk-location-item-address">Rua da Prata 120<br>1100-420 Lisboa, Portugal</address>
+        <p class="mk-location-item-status" data-status="open">Open now · until 18:00</p>
+        <div class="mk-location-item-actions">
+          <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Lisbon (opens maps)</span></a>
+          <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"><i data-lucide="phone"></i> +351 21 000 1200</a>
+        </div>
+      </div>
+    </article>
+    <article class="mk-location-item" data-variant="compact">
+      <div class="mk-location-item-body">
+        <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Belém</h3><span class="mk-location-item-distance">6.2 km</span></div>
+        <address class="mk-location-item-address">Rua de Belém 84<br>1300-085 Lisboa</address>
+        <p class="mk-location-item-status" data-status="open">Open now · until 19:00</p>
+        <div class="mk-location-item-actions">
+          <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Belém (opens maps)</span></a>
+          <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"><i data-lucide="phone"></i> +351 21 000 1200</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+    </section>
+    <!-- Inline -->
+    <section class="fx">
+<section class="mk-locator-search" data-variant="inline" aria-label="Find a store" style="max-width:40rem">
+  <search>
+    <form class="mk-locator-search-form" action="#" method="get">
+      <div class="mk-locator-search-row">
+        <div class="mk-locator-search-field"><label class="label" for="ls2-q">City or postcode</label><div class="mk-locator-search-query"><i data-lucide="map-pin"></i><input class="input" id="ls2-q" type="search" name="near" placeholder="City or postcode"></div></div>
+        <div class="mk-locator-search-field"><label class="label" for="ls2-r">Radius</label><select class="select" id="ls2-r" name="radius"><option>10 km</option><option>50 km</option></select></div>
+        <button class="btn" type="submit">Find stores</button>
+      </div>
+    </form>
+  </search>
+</section>
+    </section>
+  </body>
+</html>

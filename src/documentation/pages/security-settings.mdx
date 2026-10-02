@@ -1,0 +1,71 @@
+---
+title: "Security Settings"
+description: "Manages passwords, authentication methods, and active sessions - the password, two-factor methods, passkeys and every signed-in device."
+slug: "security-settings"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="security-settings" title="Security Settings" component="security-settings">
+  Manages passwords, authentication methods, and active sessions - the password, two-factor methods, passkeys and every signed-in device. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="security-settings">
+  <SkillField label="Native basis">
+<SkillText>A stack of <code>&lt;section&gt;</code> cards: rows (<code>.mk-security-settings-row</code>) with an icon, a title, a status line and an action; two-factor as a Switch; passkeys and sessions as lists with labelled sign-out / remove buttons.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="switch.html">Switch</DocLink>, <DocLink href="badge.html">Badge</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-security-settings</code>
+    <code>.mk-security-settings-section</code>
+    <code>.mk-security-settings-row</code>
+    <code>.mk-security-settings-status</code>
+    <code>.mk-security-settings-list</code>
+    <code>.mk-security-settings-device</code>
+    <code>.mk-security-settings-foot</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>None.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Section cards of rows: the password (with <time> of the last change), two-factor as a Switch and a status chip, passkeys, and every signed-in session with a labelled sign-out." previewStyle="align-items:stretch;"
+<div class="mk-security-settings">
+  <section class="mk-security-settings-section" aria-labelledby="sec-sign">
+    <h2 id="sec-sign">Signing in</h2>
+    <div class="mk-security-settings-row"><i data-lucide="key-round"></i><div><strong>Password</strong><p>Last changed <time datetime="2026-07-02">3 months ago</time></p></div><a class="btn" data-variant="outline" data-size="sm" href="#">Change</a></div>
+    <div class="mk-security-settings-row"><i data-lucide="smartphone"></i><div><strong>Two-factor authentication <span class="mk-security-settings-status" data-status="on">On</span></strong><p>Authenticator app · backup codes saved</p></div><div class="switch-item"><input class="switch" type="checkbox" role="switch" id="sec-2fa" checked><label for="sec-2fa" class="sr-only">Two-factor authentication</label></div></div>
+    <div class="mk-security-settings-row"><i data-lucide="fingerprint"></i><div><strong>Passkeys <span class="mk-security-settings-status" data-status="off">None yet</span></strong><p>Sign in with your fingerprint or face - no password.</p></div><a class="btn" data-variant="outline" data-size="sm" href="#">Add a passkey</a></div>
+  </section>
+  <section class="mk-security-settings-section" aria-labelledby="sec-sess">
+    <h2 id="sec-sess">Where you're signed in</h2>
+    <ul class="mk-security-settings-list">
+      <li><span class="mk-security-settings-device"><i data-lucide="laptop"></i></span><div><strong>Chrome on macOS <span class="badge" data-variant="secondary" data-size="sm">This device</span></strong><span>Lisbon · active now</span></div></li>
+      <li><span class="mk-security-settings-device"><i data-lucide="smartphone"></i></span><div><strong>Safari on iPhone</strong><span>Lisbon · 2 hours ago</span></div><button class="btn" data-variant="ghost" data-size="sm" type="button" aria-label="Sign out Safari on iPhone">Sign out</button></li>
+      <li><span class="mk-security-settings-device"><i data-lucide="monitor"></i></span><div><strong>Firefox on Windows</strong><span>Berlin · 3 days ago</span></div><button class="btn" data-variant="ghost" data-size="sm" type="button" aria-label="Sign out Firefox on Windows">Sign out</button></li>
+    </ul>
+    <div class="mk-security-settings-foot"><button class="btn" data-variant="outline" data-size="sm" type="button">Sign out of all other sessions</button></div>
+  </section>
+</div>
+```
+
+<SourceFiles component="security-settings" section="css" />
+
+</DocPage>

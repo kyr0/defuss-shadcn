@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>news-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/skeleton/skeleton.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/news-item/news-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div style="width:100%;max-width:44rem">
+<article class="mk-news-item">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Product</span>
+      <time datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Acme 4.0 ships with offline sync and shared spaces</a></h3>
+    <p class="mk-news-item-summary">Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch.</p>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide.png" alt="The Acme 4.0 editor on a laptop"></figure>
+</article>
+<article class="mk-news-item">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Company</span>
+      <time datetime="2026-09-28">28 Sep 2026</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">A million weekly users, still forty people</a></h3>
+    <p class="mk-news-item-summary">The company crossed a million weekly users this summer - and kept its team at forty people.</p>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt="The Acme team at their offsite"></figure>
+</article>
+<article class="mk-news-item">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Engineering</span>
+      <span class="mk-news-item-live">Live</span><time datetime="2026-10-01T09:41">09:41</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Status: sync delays in eu-west are resolved</a></h3>
+    <p class="mk-news-item-summary">A post-mortem of Tuesday's 42-minute outage and the three changes it led to.</p>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Lead story -->
+    <section class="fx">
+<div style="width:100%;max-width:44rem">
+<article class="mk-news-item" data-variant="lead">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Product</span>
+      <time datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Acme 4.0: the calmest release we have ever shipped</a></h3>
+    <p class="mk-news-item-summary">Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch. Here is everything that changed, and why.</p>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt="The new shared spaces view"></figure>
+</article>
+</div>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div style="width:100%;max-width:36rem">
+<article class="mk-news-item" data-variant="compact">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Product</span>
+      <time datetime="2026-10-01T09:41">09:41</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Offline sync rolls out to every workspace</a></h3>
+  </div>
+</article>
+<article class="mk-news-item" data-variant="compact">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Company</span>
+      <time datetime="2026-10-01T08:15">08:15</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Acme opens an office in Lisbon</a></h3>
+  </div>
+</article>
+<article class="mk-news-item" data-variant="compact">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Security</span>
+      <time datetime="2026-09-30">Yesterday</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Passkeys are now the default sign-in</a></h3>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Cards -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1.25rem;width:100%">
+<article class="mk-news-item" data-variant="card">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta"><span class="mk-news-item-category">Product</span><time datetime="2026-10-01">1 Oct</time></div>
+    <h3 class="mk-news-item-title"><a href="#">Offline sync, explained in four minutes</a></h3>
+    <p class="mk-news-item-summary">A short film about the release - and the bug that almost delayed it.</p>
+    <div class="mk-news-item-footer"><span class="avatar" data-size="xs"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span><span>Sophie Tan</span><a class="badge" data-variant="outline" href="#">Video</a></div>
+  </div>
+  <figure class="mk-news-item-media" data-video="4:12"><img src="/dist/documentation/images/mk-wide3.png" alt="A frame from the release film"></figure>
+</article>
+<article class="mk-news-item" data-variant="card">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta"><span class="mk-news-item-category">Company</span><time datetime="2026-09-28">28 Sep</time></div>
+    <h3 class="mk-news-item-title"><a href="#">A million weekly users, still forty people</a></h3>
+    <p class="mk-news-item-summary">The company crossed a million weekly users this summer - and kept its team at forty people.</p>
+    <div class="mk-news-item-footer"><span class="avatar" data-size="xs"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span><span>Aron Homberg</span><a class="badge" data-variant="outline" href="#">Culture</a></div>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt="The team at their offsite"></figure>
+</article>
+<article class="mk-news-item" data-variant="card">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta"><span class="mk-news-item-category">Security</span><time datetime="2026-09-27">27 Sep</time></div>
+    <h3 class="mk-news-item-title"><a href="#">Passkeys are now the default sign-in</a></h3>
+    <p class="mk-news-item-summary">Passwords stay possible - but you will not need one again.</p>
+    <div class="mk-news-item-footer"><span class="avatar" data-size="xs"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span><span>Priya Natarajan</span><a class="badge" data-variant="outline" href="#">Security</a><a class="badge" data-variant="outline" href="#">Accounts</a></div>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide.png" alt="A phone showing a passkey prompt"></figure>
+</article>
+</div>
+    </section>
+    <!-- Overlay -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(18rem,1fr));gap:1.25rem;width:100%">
+<article class="mk-news-item" data-variant="overlay">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Product</span>
+      <time datetime="2026-10-01">1 Oct 2026</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">The calmest release we have ever shipped</a></h3>
+    <p class="mk-news-item-summary">Offline sync, shared spaces and a faster editor.</p>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide3.png" alt="The new shared spaces view"></figure>
+</article>
+<article class="mk-news-item" data-variant="overlay">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta">
+      <span class="mk-news-item-category">Company</span>
+      <time datetime="2026-09-28">28 Sep 2026</time>
+    </div>
+    <h3 class="mk-news-item-title"><a href="#">Acme opens an office in Lisbon</a></h3>
+    <p class="mk-news-item-summary">Twelve desks, one espresso machine.</p>
+  </div>
+  <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide2.png" alt="The Lisbon office"></figure>
+</article>
+</div>
+    </section>
+    <!-- Most read -->
+    <section class="fx">
+<section aria-labelledby="most-read" style="width:100%;max-width:26rem">
+  <h2 id="most-read" style="margin:0 0 .25rem;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase">Most read</h2>
+  <ol style="list-style:none;margin:0;padding:0">
+    <li><article class="mk-news-item" data-variant="ranked" data-rank="1">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Product</span>
+          <time datetime="2026-10-01">3k reads</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">Offline sync rolls out to every workspace</a></h3>
+      </div>
+    </article></li>
+    <li><article class="mk-news-item" data-variant="ranked" data-rank="2">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Company</span>
+          <time datetime="2026-10-01">6k reads</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">A million weekly users, still forty people</a></h3>
+      </div>
+    </article></li>
+    <li><article class="mk-news-item" data-variant="ranked" data-rank="3">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Security</span>
+          <time datetime="2026-10-01">9k reads</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">Passkeys are now the default sign-in</a></h3>
+      </div>
+    </article></li>
+    <li><article class="mk-news-item" data-variant="ranked" data-rank="4">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category">Engineering</span>
+          <time datetime="2026-10-01">12k reads</time>
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">What Tuesday's outage taught us</a></h3>
+      </div>
+    </article></li>
+  </ol>
+</section>
+    </section>
+    <!-- Live blog -->
+    <section class="fx">
+<div style="width:100%;max-width:40rem">
+<article class="mk-news-item" data-variant="live" data-key>
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta"><time datetime="2026-10-01T09:41">09:41</time><span class="mk-news-item-category">Key</span></div>
+    <h3 class="mk-news-item-title"><a href="#">Offline sync is rolling out</a></h3>
+    <p class="mk-news-item-summary">The first 10% of workspaces have it. Watch the status page for your region.</p>
+  </div>
+</article>
+<article class="mk-news-item" data-variant="live">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta"><time datetime="2026-10-01T09:30">09:30</time></div>
+    <h3 class="mk-news-item-title"><a href="#">Keynote: "never lose a keystroke"</a></h3>
+    <p class="mk-news-item-summary">Sophie Tan walks through the sync design live on stage.</p>
+    <figure class="mk-news-item-media"><img src="/dist/documentation/images/mk-wide.png" alt="Sophie Tan on stage"></figure>
+  </div>
+</article>
+<article class="mk-news-item" data-variant="live">
+  <div class="mk-news-item-body">
+    <div class="mk-news-item-meta"><time datetime="2026-10-01T09:12">09:12</time></div>
+    <h3 class="mk-news-item-title"><a href="#">Doors open</a></h3>
+    <p class="mk-news-item-summary">The livestream starts in 15 minutes.</p>
+  </div>
+</article>
+</div>
+    </section>
+    <!-- Loading -->
+    <section class="fx">
+<div style="width:100%;max-width:44rem">
+  <article class="mk-news-item" aria-busy="true" aria-label="Loading story">
+    <div class="mk-news-item-body">
+      <div class="skeleton" style="height:.75rem;width:7rem"></div>
+      <div class="skeleton" style="height:1.125rem;width:85%"></div>
+      <div class="skeleton" style="height:.875rem;width:100%"></div>
+      <div class="skeleton" style="height:.875rem;width:60%"></div>
+    </div>
+    <div class="skeleton mk-news-item-media"></div>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

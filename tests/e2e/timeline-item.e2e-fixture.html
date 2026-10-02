@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>timeline-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/timeline-item/timeline-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Our story -->
+    <section class="fx">
+<ol class="mk-timeline-list">
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2016">2016</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">A flat in Lisbon</h3>
+      <p class="mk-timeline-item-text">Alex and Sophie quit their jobs and build the first prototype on a kitchen table.</p>
+    </div>
+  </li>
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2018">2018</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">The first thousand teams</h3>
+      <p class="mk-timeline-item-text">Word of mouth only - we still have no marketing budget.</p>
+    </div>
+  </li>
+  <li class="mk-timeline-item" data-variant="milestone">
+    <time class="mk-timeline-item-date" datetime="2021-03">March 2021</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">Acme 2.0 and offline sync</h3>
+      <p class="mk-timeline-item-text">A two-year rewrite ships: Acme works on a plane, in a tunnel, anywhere.</p>
+      <img class="mk-timeline-item-media" src="https://picsum.photos/seed/tl-launch/900/506" alt="">
+    </div>
+  </li>
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2024">2024</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">Berlin and Montreal</h3>
+      <p class="mk-timeline-item-text">Two new offices, forty people, still profitable.</p>
+    </div>
+  </li>
+  <li class="mk-timeline-item">
+    <time class="mk-timeline-item-date" datetime="2026">2026</time>
+    <div class="mk-timeline-item-body">
+      <h3 class="mk-timeline-item-title">Twelve thousand teams</h3>
+      <p class="mk-timeline-item-text">And the calmest release we have ever shipped.</p>
+    </div>
+  </li>
+</ol>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+---
+title: "Release Header"
+description: "Introduces a release with its version, date, and summary - the version tag, kind of release, a headline, what it brings and where to get it."
+slug: "release-header"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="release-header" title="Release Header" component="release-header">
+  Introduces a release with its version, date, and summary - the version tag, kind of release, a headline, what it brings and where to get it. Part of the <DocLink href="website-docs-help.html">Docs & Help</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="release-header">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;header&gt;</code>: the version in a mono tag, Badges for the kind (major, breaking), the date as <code>&lt;time&gt;</code>, a headline, a summary, highlights and links (download, full changelog, source).</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-release-header</code>
+    <code>.mk-release-header-tags</code>
+    <code>.mk-release-header-version</code>
+    <code>.mk-release-header-title</code>
+    <code>.mk-release-header-summary</code>
+    <code>.mk-release-header-highlights</code>
+    <code>.mk-release-header-links</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The version in a mono tag, Badges for the kind, the date (<time>), a headline, the summary, three highlights and the links." previewStyle="align-items:stretch;"
+<header class="mk-release-header">
+  <div class="mk-release-header-tags"><code class="mk-release-header-version">v4.0.0</code><span class="badge" data-variant="default" data-size="sm">Major</span><span class="badge" data-variant="outline" data-size="sm">2 breaking changes</span><time datetime="2026-09-28">28 September 2026</time></div>
+  <h1 class="mk-release-header-title">Acme 4.0: offline sync for everyone</h1>
+  <p class="mk-release-header-summary">The biggest release in two years: every workspace now works offline, search got three times faster, and the editor learned tables.</p>
+  <ul class="mk-release-header-highlights">
+    <li><i data-lucide="wifi-off"></i><strong>Offline everywhere</strong><span>Sync catches up on its own.</span></li>
+    <li><i data-lucide="zap"></i><strong>3× faster search</strong><span>Results while you type.</span></li>
+    <li><i data-lucide="table"></i><strong>Tables in docs</strong><span>Sort, filter, resize.</span></li>
+  </ul>
+  <div class="mk-release-header-links"><a class="btn" href="#"><i data-lucide="download"></i> Download</a><a class="btn" data-variant="outline" href="#">Full changelog</a><a class="btn" data-variant="ghost" href="#"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg> Source</a></div>
+</header>
+```
+
+```html example label="Compact" hint="data-variant='compact': version, date and title on one line - for a list of releases." previewStyle="align-items:stretch;"
+<div style="width:100%">
+  <header class="mk-release-header" data-variant="compact"><code class="mk-release-header-version">v4.0.2</code><time datetime="2026-10-01">1 Oct 2026</time><h2 class="mk-release-header-title">Fixes for sync on iOS 19</h2></header>
+  <header class="mk-release-header" data-variant="compact"><code class="mk-release-header-version">v4.0.1</code><time datetime="2026-09-30">30 Sep 2026</time><h2 class="mk-release-header-title">Faster first load on large workspaces</h2></header>
+</div>
+```
+
+<SourceFiles component="release-header" section="css" />
+
+</DocPage>

@@ -1,0 +1,68 @@
+/* -- Signup Form (website · Account & States) -----------------------------
+   Collects the information needed to create an account - name, email, a new password with its rules, consent - on a card or beside the benefits. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-signup-form, .mk-signup-form *, .mk-signup-form ::before, .mk-signup-form ::after) { box-sizing: border-box; }
+
+  .mk-signup-form {
+    container: mk-signup-form / inline-size;
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 24rem;
+    margin-inline: auto;
+    padding: 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-sm);
+  }
+  .mk-signup-form-head { display: grid; justify-items: center; gap: 0.5rem; text-align: center;
+    & > svg { width: 2rem; height: 2rem; color: var(--primary); }
+    & h1, & h2 { margin: 0.25rem 0 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    & p { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; text-wrap: pretty; }
+  }
+  .mk-signup-form form { display: grid; gap: 1rem; }
+  .mk-signup-form .mk-auth-field { display: grid; gap: 0.375rem; }
+  .mk-signup-form-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 0.875rem;
+    & a { color: var(--primary); font-weight: 500; text-decoration: none; }
+    & a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .mk-signup-form-foot { margin: 0; color: var(--muted-foreground); font-size: 0.875rem; text-align: center;
+    & a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    & a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .mk-signup-form .input:user-valid { border-color: #16a34a; }
+  .mk-signup-form .btn[type="submit"] { width: 100%; }
+  .mk-signup-form-rules { display: grid; gap: 0.25rem; margin: 0.25rem 0 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: 0.8125rem;
+    & li { display: flex; align-items: center; gap: 0.5rem; }
+    & li::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: currentColor; opacity: 0.6; }
+  }
+  .mk-auth-field:has(.input:user-valid) .mk-signup-form-rules { color: #15803d; }
+  .mk-signup-form-terms { display: flex; align-items: flex-start; gap: 0.5rem; color: var(--muted-foreground); font-size: 0.8125rem; line-height: 1.5;
+    & input { margin-block-start: 0.125rem; }
+    & a { color: var(--primary); }
+  }
+
+  .mk-signup-form[data-variant="split"] { max-width: 56rem; padding: 0; overflow: hidden; }
+  .mk-signup-form-layout { display: grid; }
+  .mk-signup-form-pitch { display: grid; align-content: center; gap: 1.25rem; padding: 2rem; background: var(--muted);
+    & h2 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    & ul { display: grid; gap: 0.875rem; margin: 0; padding: 0; list-style: none; }
+    & li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.125rem 0.75rem; }
+    & li svg { grid-row: span 2; width: 1.25rem; height: 1.25rem; color: var(--primary); }
+    & li span { color: var(--muted-foreground); font-size: 0.875rem; }
+  }
+  .mk-signup-form-panel { display: grid; gap: 1.25rem; padding: 2rem; }
+  @container mk-signup-form (min-width: 44rem) {
+    .mk-signup-form-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+    .mk-signup-form-pitch, .mk-signup-form-panel { padding: 2.5rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-signup-form { border-color: CanvasText; }
+  }
+}

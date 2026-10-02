@@ -1,0 +1,170 @@
+---
+title: "Article Header"
+description: "Presents an article's title, subtitle, author, and publication date - with a lead image and caption, centered, or as a cover."
+slug: "article-header"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="article-header" title="Article Header" component="article-header">
+  Presents an article's title, subtitle, author, and publication date - with a lead image and caption, centered, or as a cover. Part of the <DocLink href="website-article.html">Article</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="article-header">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;header&gt;</code> - category link, the title (<code>h1</code>), a subtitle, the byline (Avatar, author link, <code>&lt;time&gt;</code>, read time) and an optional <code>&lt;figure&gt;</code> lead image with its <code>&lt;figcaption&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="breadcrumb.html">Breadcrumb</DocLink>, <DocLink href="badge.html">Badge</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="swap.html">Swap</DocLink>, <DocLink href="progress.html">Progress</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="lead image + caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="publication date"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the title scales"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="even title lines"><code>text-wrap: balance</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-article-header</code>
+    <code>.mk-article-header-category</code>
+    <code>.mk-article-header-title</code>
+    <code>.mk-article-header-subtitle</code>
+    <code>.mk-article-header-byline</code>
+    <code>.mk-article-header-author</code>
+    <code>.mk-article-header-meta</code>
+    <code>.mk-article-header-media</code>
+    <code>.mk-article-header-tags</code>
+    <code>.mk-article-header-actions</code>
+    <code>.mk-article-header-series</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-align="center"</code>, <code>data-variant="cover"</code>; <code>data-variant</code> (<code>split</code>, <code>editorial</code>); <code>.mk-article-header-tags</code>, <code>.mk-article-header-actions</code>, <code>.mk-article-header-series</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Category, title, subtitle, the byline (Avatar, author, date, read time) and a 16:9 lead image with its caption." previewStyle="align-items:stretch;"
+<header class="mk-article-header">
+  <a class="mk-article-header-category" href="#">Engineering</a>
+  <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
+  <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience: the design behind sync that never loses a keystroke.</p>
+  <div class="mk-article-header-byline">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+    <div>
+      <a class="mk-article-header-author" href="#">Sophie Tan</a>
+      <div class="mk-article-header-meta"><time datetime="2026-10-01">1 October 2026</time><span>8 min read</span></div>
+    </div>
+  </div>
+  <figure class="mk-article-header-media">
+    <img src="images/mk-wide.png" alt="A whiteboard sketch of the sync pipeline">
+    <figcaption>The first sketch of the sync pipeline, March 2026.</figcaption>
+  </figure>
+</header>
+```
+
+```html example label="Centered" hint="data-align='center' - for essays and announcements." previewStyle="align-items:stretch;"
+<header class="mk-article-header" data-align="center">
+  <a class="mk-article-header-category" href="#">Engineering</a>
+  <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
+  <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience: the design behind sync that never loses a keystroke.</p>
+  <div class="mk-article-header-byline">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+    <div>
+      <a class="mk-article-header-author" href="#">Sophie Tan</a>
+      <div class="mk-article-header-meta"><time datetime="2026-10-01">1 October 2026</time><span>8 min read</span></div>
+    </div>
+  </div>
+</header>
+```
+
+```html example label="Cover" hint="data-variant='cover': the image fills the header and the copy sits on a dark gradient; the caption becomes a credit in the corner." previewStyle="align-items:stretch;"
+<header class="mk-article-header" data-variant="cover">
+  <a class="mk-article-header-category" href="#">Engineering</a>
+  <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
+  <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience: the design behind sync that never loses a keystroke.</p>
+  <div class="mk-article-header-byline">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+    <div>
+      <a class="mk-article-header-author" href="#">Sophie Tan</a>
+      <div class="mk-article-header-meta"><time datetime="2026-10-01">1 October 2026</time><span>8 min read</span></div>
+    </div>
+  </div>
+  <figure class="mk-article-header-media">
+    <img src="images/mk-wide3.png" alt="A whiteboard sketch of the sync pipeline">
+    <figcaption>Photo: Acme</figcaption>
+  </figure>
+</header>
+```
+
+```html example label="Breadcrumb, series and actions" hint="A Breadcrumb instead of the category, a series line (Part 2 of 4 + a Progress bar), tag Badges, two authors in an Avatar group and actions at the end of the byline: listen, a bookmark Swap, share." previewStyle="align-items:stretch;"
+<header class="mk-article-header">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Blog</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Engineering</a></li>
+      <li class="breadcrumb-separator" aria-hidden="true">/</li>
+      <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Sync, explained</span></li>
+    </ol>
+  </nav>
+  <div class="mk-article-header-series"><span>Series: <strong>Sync, explained</strong> · Part 2 of 4</span><progress class="progress" value="2" max="4" aria-label="Part 2 of 4"></progress></div>
+  <h1 class="mk-article-header-title">The write-ahead log</h1>
+  <p class="mk-article-header-subtitle">Why every keystroke lands in a local log before it touches the document.</p>
+  <div class="mk-article-header-tags"><span class="badge" data-variant="default">Engineering</span><span class="badge" data-variant="outline">#sync</span><span class="badge" data-variant="outline">#storage</span></div>
+  <div class="mk-article-header-byline">
+    <div class="avatar-group"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span></div>
+    <div>
+      <span><a class="mk-article-header-author" href="#">Sophie Tan</a> and <a class="mk-article-header-author" href="#">Hannah Lee</a></span>
+      <div class="mk-article-header-meta"><time datetime="2026-10-01">1 October 2026</time><span>11 min read</span><span>Updated <time datetime="2026-10-02">2 Oct</time></span></div>
+    </div>
+    <div class="mk-article-header-actions">
+      <button class="btn" data-variant="outline" data-size="sm" type="button"><i data-lucide="headphones"></i> Listen</button>
+      <label class="swap" data-variant="rotate"><input type="checkbox" aria-label="Save article"><span class="swap-on"><i data-lucide="bookmark-check"></i></span><span class="swap-off"><i data-lucide="bookmark"></i></span></label>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" aria-label="Share"><i data-lucide="share-2"></i></button>
+    </div>
+  </div>
+</header>
+```
+
+```html example label="Split" hint="data-variant='split': the copy beside a tall image - the image moves under the copy when the header is narrow (a container query)." previewStyle="align-items:stretch;"
+<header class="mk-article-header" data-variant="split">
+  <a class="mk-article-header-category" href="#">Interview</a>
+  <h1 class="mk-article-header-title">"We say no to almost everything"</h1>
+  <p class="mk-article-header-subtitle">Aron Homberg on ten years of Acme, staying small, and the feature that never shipped.</p>
+  <div class="mk-article-header-byline">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+    <div>
+      <a class="mk-article-header-author" href="#">Hannah Lee</a>
+      <div class="mk-article-header-meta"><time datetime="2026-09-30">30 September 2026</time><span>14 min read</span></div>
+    </div>
+  </div>
+  <figure class="mk-article-header-media">
+    <img src="images/mk-portrait.png" alt="Aron Homberg in the Acme office">
+    <figcaption>Aron Homberg, CEO. Photo: Acme</figcaption>
+  </figure>
+</header>
+```
+
+```html example label="Editorial" hint="data-variant='editorial': a serif title, an italic subtitle and ornament rules around the byline - long-form essays." previewStyle="align-items:stretch;"
+<header class="mk-article-header" data-variant="editorial">
+  <a class="mk-article-header-category" href="#">Essay</a>
+  <h1 class="mk-article-header-title">On the virtue of boring software</h1>
+  <p class="mk-article-header-subtitle">What a decade of saying no taught us about attention.</p>
+  <div class="mk-article-header-byline">
+    <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+    <div><a class="mk-article-header-author" href="#">Aron Homberg</a><div class="mk-article-header-meta"><time datetime="2026-09-24">24 September 2026</time></div></div>
+  </div>
+</header>
+```
+
+<SourceFiles component="article-header" section="css" />
+
+</DocPage>

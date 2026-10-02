@@ -1,0 +1,73 @@
+---
+title: "View Switcher"
+description: "Switches a collection between layouts such as grid and list - icon or labelled segments, and the collection beside them changes with no script."
+slug: "view-switcher"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="view-switcher" title="View Switcher" component="view-switcher">
+  Switches a collection between layouts such as grid and list - icon or labelled segments, and the collection beside them changes with no script. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="view-switcher">
+  <SkillField label="Native basis">
+<SkillText>A wrapper (<code>.mk-view-switcher</code>) holding a radio group (<code>.mk-view-switcher-options</code>, values <code>grid</code> / <code>list</code>) and the collection (<code>.mk-view-switcher-collection</code>); <code>:has(input[value="list"]:checked)</code> turns the grid into a list.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-view-switcher</code>
+    <code>.mk-view-switcher-options</code>
+    <code>.mk-view-switcher-collection</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="labels"</code>; radio values <code>grid</code> / <code>list</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Icon segments (radios named &quot;Grid&quot; / &quot;List&quot; for screen readers) beside the collection: :has(input[value=&quot;list&quot;]:checked) turns the grid into a list - no script. Switch it." previewStyle="align-items:stretch;"
+<div class="mk-view-switcher">
+  <div class="mk-view-switcher-options" role="radiogroup" aria-label="View">
+    <label><input type="radio" name="vs-1" value="grid" checked><i data-lucide="layout-grid"></i><span class="sr-only">Grid</span></label>
+    <label><input type="radio" name="vs-1" value="list"><i data-lucide="list"></i><span class="sr-only">List</span></label>
+  </div>
+  <ul class="mk-view-switcher-collection">
+    <li><img src="https://picsum.photos/seed/vs-0/400/300" alt=""><span><strong>Project 1</strong><small>Updated 1 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-1/400/300" alt=""><span><strong>Project 2</strong><small>Updated 2 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-2/400/300" alt=""><span><strong>Project 3</strong><small>Updated 3 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-3/400/300" alt=""><span><strong>Project 4</strong><small>Updated 4 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-4/400/300" alt=""><span><strong>Project 5</strong><small>Updated 5 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-5/400/300" alt=""><span><strong>Project 6</strong><small>Updated 6 days ago</small></span></li>
+  </ul>
+</div>
+```
+
+```html example label="Labels" hint="data-variant='labels': the segments carry visible text; it starts in the list layout." previewStyle="align-items:stretch;"
+<div class="mk-view-switcher" data-variant="labels">
+  <div class="mk-view-switcher-options" role="radiogroup" aria-label="View">
+    <label><input type="radio" name="vs-2" value="grid"><i data-lucide="layout-grid"></i>Grid</label>
+    <label><input type="radio" name="vs-2" value="list" checked><i data-lucide="list"></i>List</label>
+  </div>
+  <ul class="mk-view-switcher-collection">
+    <li><img src="https://picsum.photos/seed/vs-0/400/300" alt=""><span><strong>Project 1</strong><small>Updated 1 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-1/400/300" alt=""><span><strong>Project 2</strong><small>Updated 2 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-2/400/300" alt=""><span><strong>Project 3</strong><small>Updated 3 days ago</small></span></li>
+  </ul>
+</div>
+```
+
+<SourceFiles component="view-switcher" section="css" />
+
+</DocPage>

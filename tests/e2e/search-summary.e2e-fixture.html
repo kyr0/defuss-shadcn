@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>search-summary e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/search-summary/search-summary.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-search-summary" role="status">
+  <p><strong>248 results</strong> for <q>calm sofware</q></p>
+  <span class="mk-search-summary-time">0.04 s</span>
+  <a class="mk-search-summary-clear" href="#">Clear search</a>
+  <p class="mk-search-summary-suggest">Did you mean <a href="#">calm software</a>?</p>
+</div>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div class="mk-search-summary" data-variant="compact" role="status"><p><strong>36 products</strong> in Linen · sorted by newest</p></div>
+    </section>
+  </body>
+</html>

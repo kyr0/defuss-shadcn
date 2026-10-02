@@ -1,0 +1,39 @@
+/* -- Success State (website · Account & States) ---------------------------
+   Confirms a completed action and offers relevant next steps - a check with a ripple, what happened, and where to go from here. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-success-state, .mk-success-state *, .mk-success-state ::before, .mk-success-state ::after) { box-sizing: border-box; }
+
+  .mk-success-state { display: grid; justify-items: center; gap: 1rem; width: 100%; max-width: 32rem; margin-inline: auto; padding: 2.5rem 1.5rem; text-align: center; }
+  .mk-success-state-icon { position: relative; display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: color-mix(in oklch, #16a34a 14%, transparent); }
+  .mk-success-state-icon svg { width: 1.75rem; height: 1.75rem; }
+  .mk-success-state-title { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+  .mk-success-state-text { margin: 0; color: var(--muted-foreground); line-height: 1.6; text-wrap: pretty; }
+  .mk-success-state-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-block-start: 0.25rem; }
+  .mk-success-state-icon { color: #15803d;
+    &::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #16a34a; animation: mk-success-ripple 1.8s ease-out infinite; }
+  }
+  @keyframes mk-success-ripple { from { opacity: 0.6; scale: 1; } to { opacity: 0; scale: 1.8; } }
+  .mk-success-state-summary { display: grid; gap: 0.5rem; width: 100%; max-width: 22rem; margin: 0.25rem 0 0; padding: 1rem; border-radius: var(--radius-lg); background: var(--muted); font-size: 0.875rem; text-align: start;
+    & div { display: flex; justify-content: space-between; gap: 1rem; }
+    & dt { color: var(--muted-foreground); }
+    & dd { margin: 0; font-weight: 500; }
+  }
+  .mk-success-state[data-variant="compact"] { max-width: 22rem; padding: 1.5rem; border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    & .mk-success-state-icon { width: 3rem; height: 3rem; & svg { width: 1.375rem; height: 1.375rem; } }
+    & .mk-success-state-title { font-size: 1.0625rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-success-state-icon::after { animation: none; opacity: 0; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-success-state-icon { border: 1px solid CanvasText; }
+  }
+}

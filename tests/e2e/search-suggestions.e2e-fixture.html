@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>search-suggestions e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/kbd/kbd.css" />
+    <link rel="stylesheet" href="/dist/components/search-suggestions/search-suggestions.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-search-suggestions">
+  <div class="mk-search-suggestions-field"><i data-lucide="search"></i><label class="sr-only" for="ss-q">Search</label><input class="input" id="ss-q" type="search" value="sync" role="combobox" aria-expanded="true" aria-controls="ss-list" aria-activedescendant="ss-o2" aria-autocomplete="list" autocomplete="off"></div>
+  <div class="mk-search-suggestions-panel" id="ss-list" role="listbox" aria-label="Suggestions">
+    <div class="mk-search-suggestions-group" role="group" aria-labelledby="ss-g1"><span id="ss-g1">Recent</span>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o1"><i data-lucide="history"></i><span><mark>sync</mark> stuck on phone</span><small></small></div>
+    </div>
+    <div class="mk-search-suggestions-group" role="group" aria-labelledby="ss-g2"><span id="ss-g2">Pages</span>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o2" aria-selected="true"><i data-lucide="file-text"></i><span>Offline <mark>sync</mark></span><small>Docs · Guides</small></div>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o3"><i data-lucide="file-text"></i><span><mark>Sync</mark> conflicts explained</span><small>Help</small></div>
+    </div>
+    <div class="mk-search-suggestions-group" role="group" aria-labelledby="ss-g3"><span id="ss-g3">Tasks</span>
+      <div class="mk-search-suggestions-option" role="option" id="ss-o4"><i data-lucide="square-check"></i><span><mark>Sync</mark> engine v2 rollout</span><small>Engineering</small></div>
+    </div>
+    <div class="mk-search-suggestions-foot" aria-hidden="true"><span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd> move</span><span><kbd class="kbd">↵</kbd> open</span><span><kbd class="kbd">esc</kbd> close</span></div>
+  </div>
+</div>
+    </section>
+    <!-- Native -->
+    <section class="fx">
+<div class="mk-search-suggestions" data-variant="native">
+  <div class="mk-search-suggestions-field"><i data-lucide="search"></i><label class="sr-only" for="ss-n">Search help</label><input class="input" id="ss-n" type="search" name="q" list="ss-topics" placeholder="Try: invoice, sync, password"></div>
+  <datalist id="ss-topics"><option value="Change your billing email"><option value="Download an invoice"><option value="Sync is stuck"><option value="Reset your password"><option value="Turn on two-factor"></datalist>
+  <p class="mk-search-suggestions-hint">Suggestions come from the browser's own list.</p>
+</div>
+    </section>
+  </body>
+</html>

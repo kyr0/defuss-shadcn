@@ -47,6 +47,16 @@ The browser enforces the email format; `enterkeyhint="send"` and
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="card"` | Centered on a surface with an icon (`.mk-newsletter-icon`) and social proof (`.mk-newsletter-proof`, an Avatar group) |
+| `data-variant="banner"` | A gradient strip in the primary color, copy and form on one row |
+| `.mk-newsletter-split` + `.mk-newsletter-topics` | An image beside the form; Checkboxes pick the lists |
+
+---
+
 ## ARIA
 
 | Attribute       | Element   | Purpose                                       |
@@ -61,3 +71,4 @@ The browser enforces the email format; `enterkeyhint="send"` and
 - The visible `placeholder` never replaces the `<label>` - keep the `sr-only` label even when the design hides it.
 - Submit to your provider with `action`/`method`, or intercept with a `submit` listener; invalid states are already styled via `:user-invalid` in the Input component.
 - The inline row (input+button) is `flex-direction: row` only ≥ 33rem container width - it stacks gracefully in narrow footers.
+- The email input is `required` + `type="email"`: after a failed attempt `:user-invalid` swaps the note for `.mk-newsletter-error` - no script. The note and the error sit just inside the input's edge.

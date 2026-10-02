@@ -1,0 +1,51 @@
+/* -- Contents (website · Search & Navigation) -----------------------------
+   Links to headings within the current page - an "on this page" rail with the current section marked, a numbered box at the top, or a disclosure for small screens. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-contents, .mk-contents *, .mk-contents ::before, .mk-contents ::after) { box-sizing: border-box; }
+
+  .mk-contents { width: 100%; max-width: 15rem; font-size: 0.8125rem;
+    & ol { margin: 0; padding: 0; list-style: none; }
+    & > ol { border-inline-start: 1px solid var(--border); }
+    & ol ol { padding-inline-start: 0.75rem; }
+    & a { display: block; margin-inline-start: -1px; padding: 0.3125rem 0.75rem; border-inline-start: 2px solid transparent; color: var(--muted-foreground); text-decoration: none; line-height: 1.4; }
+    & a:hover { color: var(--foreground); }
+    & a[aria-current] { border-inline-start-color: var(--primary); color: var(--foreground); font-weight: 600; }
+    & a:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+  }
+  .mk-contents-title { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .mk-contents[data-variant="boxed"] {
+    max-width: 30rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    font-size: 0.9375rem;
+
+    & > ol { border: 0; counter-reset: mk-toc; }
+    & > ol > li { counter-increment: mk-toc; }
+    & > ol > li > a::before { content: counter(mk-toc) ". "; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+    & a { margin: 0; padding: 0.25rem 0; border: 0; color: var(--foreground); }
+    & a:hover { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+    & a[aria-current] { color: var(--primary); }
+  }
+
+  .mk-contents[data-variant="dropdown"] { max-width: 24rem; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    & summary { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; list-style: none; }
+    & summary::-webkit-details-marker { display: none; }
+    & summary::after { content: ""; width: 0.4375rem; height: 0.4375rem; border-block-end: 2px solid currentColor; border-inline-end: 2px solid currentColor; rotate: 45deg; transition: rotate 150ms ease; }
+    &[open] summary::after { rotate: 225deg; }
+    & summary:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: var(--radius-lg); }
+    & > ol { margin: 0 1rem 0.75rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-contents[data-variant="dropdown"] summary::after { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .mk-contents a[aria-current] { border-inline-start-color: Highlight; }
+  }
+}

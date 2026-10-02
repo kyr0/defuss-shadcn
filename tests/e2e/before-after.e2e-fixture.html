@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>before-after e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/switch/switch.css" />
+    <link rel="stylesheet" href="/dist/components/before-after/before-after.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Slider -->
+    <section class="fx">
+<figure class="mk-before-after">
+  <div class="mk-before-after-stage">
+    <img class="mk-before-after-before" src="https://picsum.photos/seed/ba-street/1200/800?grayscale&amp;blur=2" alt="Before: the photo, faded and blurred">
+    <img class="mk-before-after-after" src="https://picsum.photos/seed/ba-street/1200/800" alt="After: the same photo, restored in color">
+    <span class="mk-before-after-handle" aria-hidden="true"></span>
+    <span class="mk-before-after-label" data-side="before">Before</span>
+    <span class="mk-before-after-label" data-side="after">After</span>
+    <input class="mk-before-after-range" type="range" min="0" max="100" value="50" aria-label="Divider position: drag to compare before and after">
+  </div>
+  <figcaption class="mk-before-after-caption">Restoring a faded photo: color and detail back.</figcaption>
+</figure>
+    </section>
+    <!-- Toggle -->
+    <section class="fx">
+<figure class="mk-before-after" data-variant="toggle" style="max-width:40rem">
+  <div class="mk-before-after-stage">
+    <img class="mk-before-after-before" src="https://picsum.photos/seed/ba-room/1200/800?grayscale" alt="Before: the living room, grey and empty">
+    <img class="mk-before-after-after" src="https://picsum.photos/seed/ba-room/1200/800" alt="After: the living room, furnished and warm">
+  </div>
+  <div class="switch-item mk-before-after-toggle"><input class="switch" type="checkbox" role="switch" id="ba-toggle"><label for="ba-toggle">Show after</label></div>
+</figure>
+    </section>
+    <!-- Side by side -->
+    <section class="fx">
+<figure class="mk-before-after" data-variant="split">
+  <div class="mk-before-after-stage">
+    <div><img class="mk-before-after-before" src="https://picsum.photos/seed/ba-garden/900/600?grayscale" alt="Before: the garden in winter"><span class="mk-before-after-label" data-side="before">Before</span></div>
+    <div><img class="mk-before-after-after" src="https://picsum.photos/seed/ba-garden/900/600" alt="After: the garden in spring"><span class="mk-before-after-label" data-side="after">After</span></div>
+  </div>
+  <figcaption class="mk-before-after-caption">The same garden, five months apart.</figcaption>
+</figure>
+    </section>
+  </body>
+</html>

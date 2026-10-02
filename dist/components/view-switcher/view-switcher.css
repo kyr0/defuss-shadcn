@@ -1,0 +1,42 @@
+/* -- View Switcher (website · Search & Navigation) ------------------------
+   Switches a collection between layouts such as grid and list - icon or labelled segments, and the collection beside them changes with no script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-view-switcher, .mk-view-switcher *, .mk-view-switcher ::before, .mk-view-switcher ::after) { box-sizing: border-box; }
+
+  .mk-view-switcher { display: grid; gap: 1rem; width: 100%; }
+  .mk-view-switcher-options { display: inline-flex; justify-self: end; padding: 0.1875rem; border-radius: var(--radius-md); background: var(--muted);
+    & label { position: relative; display: inline-flex; align-items: center; gap: 0.375rem; height: 1.875rem; padding-inline: 0.5rem; border-radius: calc(var(--radius-md) - 2px); color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 500; cursor: pointer; }
+    & input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    & svg { width: 1rem; height: 1rem; }
+    & label:has(:checked) { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-xs); }
+    & label:has(:focus-visible) { outline: 2px solid var(--ring); outline-offset: 1px; }
+  }
+  .mk-view-switcher-collection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li { display: grid; gap: 0.5rem; }
+    & img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-lg); }
+    & span { display: grid; }
+    & strong { font-size: 0.9375rem; }
+    & small { color: var(--muted-foreground); font-size: 0.8125rem; }
+  }
+  .mk-view-switcher:has(.mk-view-switcher-options input[value="list"]:checked) .mk-view-switcher-collection {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+
+    & li { grid-template-columns: 4.5rem minmax(0, 1fr); align-items: center; gap: 1rem; padding-block: 0.625rem; border-block-end: 1px solid var(--border); }
+    & img { border-radius: var(--radius-md); }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (forced-colors: active) {
+    .mk-view-switcher-options label:has(:checked) { outline: 2px solid Highlight; }
+  }
+}

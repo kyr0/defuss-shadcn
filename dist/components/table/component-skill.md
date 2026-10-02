@@ -143,6 +143,6 @@ Set `data-density` on the `.table` root; head/cell/caption padding scales (typog
 
 ## Accessibility
 
-- Use `<th>` with appropriate `scope` for column/row headers
+- Use `<th>` with appropriate `scope` for column/row headers - a row header is `<th class="table-cell" scope="row">`: it keeps the cell padding and aligns to the start (the UA would center a `th`)
 - `<caption>` provides an accessible name for the table
 - Screen readers announce table structure (rows, columns, headers)

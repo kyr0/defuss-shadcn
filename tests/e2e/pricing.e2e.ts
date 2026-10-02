@@ -7,13 +7,13 @@ import { cssSmoke } from './lib/css-smoke.ts';
  */
 await cssSmoke('pricing', [
   {
-    label: 'plans resolve to three stretch columns at wide width',
+    label: 'plans resolve to three columns at wide width, centered so the featured one stands taller',
     run: async (page) => {
       const r = await page.evaluate(() => {
         const g = getComputedStyle(document.querySelector('.mk-plans')!);
         return { cols: g.gridTemplateColumns.trim().split(/\s+/).length, align: g.alignItems };
       });
-      if (r.cols !== 3 || r.align !== 'stretch') throw new Error(`got ${r.cols} cols / ${r.align}`);
+      if (r.cols !== 3 || r.align !== 'center') throw new Error(`got ${r.cols} cols / ${r.align}`);
     },
   },
   {
@@ -65,4 +65,27 @@ await cssSmoke('pricing', [
         throw new Error(`after toggle wrong: ${JSON.stringify(after)}`);
     },
   },
+  {
+    label: 'the featured plan sits in a gold aura (the light is its border); a saving badge on the yearly choice',
+    run: async (page) => {
+      const r = await page.evaluate(() => { const a = document.querySelector('.aura.aura-gold')!; return { plan: !!a.querySelector(':scope > .mk-plan[data-featured]'), anim: getComputedStyle(a).animationName, border: getComputedStyle(a.querySelector('.mk-plan')!).borderTopColor, badge: !!document.querySelector('.mk-pricing-billing .badge') }; });
+      if (!r.plan || r.anim !== 'shape-aura-spin' || r.border !== 'rgba(0, 0, 0, 0)' || !r.badge) throw new Error(JSON.stringify(r));
+    },
+  },
+  { label: 'compare: the Table with a tinted featured column; dashes and checks are labelled', run: async (page) => {
+    const r = await page.evaluate(() => { const c = document.querySelector('.mk-pricing-compare')!; const f = c.querySelector('td[data-featured]')!; const n = c.querySelector('td:not([data-featured])')!; return { tint: getComputedStyle(f).backgroundColor !== getComputedStyle(n).backgroundColor, labels: c.querySelectorAll('svg[aria-label]').length, scroll: getComputedStyle(c).overflowX }; });
+    if (!r.tint || r.labels < 10 || r.scroll !== 'auto') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'compact: one bordered list, rows separated by rules', run: async (page) => {
+    const r = await page.evaluate(() => { const l = document.querySelector('.mk-plans[data-variant="compact"]')!; const p = l.querySelector('.mk-plan')!; return { cols: getComputedStyle(l).gridTemplateColumns.split(' ').length, rule: getComputedStyle(p).borderBottomWidth, radius: getComputedStyle(p).borderTopLeftRadius }; });
+    if (r.cols !== 1 || r.rule !== '1px' || r.radius !== '0px') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'wide: the features in columns beside the price', run: async (page) => {
+    const r = await page.evaluate(() => getComputedStyle(document.querySelector('.mk-plan[data-variant="wide"] .mk-plan-features')!).columnWidth);
+    if (r !== '192px') throw new Error(r);
+  } },
+  { label: 'usage: a range input and an output; the CTA strip is dark', run: async (page) => {
+    const r = await page.evaluate(() => ({ range: (document.getElementById('seats') as HTMLInputElement).type, out: document.getElementById('seats-price')!.tagName, cta: getComputedStyle(document.querySelector('.mk-pricing-cta')!).backgroundColor !== getComputedStyle(document.body).backgroundColor }));
+    if (r.range !== 'range' || r.out !== 'OUTPUT' || !r.cta) throw new Error(JSON.stringify(r));
+  } },
 ]);

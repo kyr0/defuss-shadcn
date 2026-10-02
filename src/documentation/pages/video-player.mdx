@@ -1,0 +1,111 @@
+---
+title: "Video Player"
+description: "Plays one video with playback controls and captions - native controls, a WebVTT captions track, title and details, chapters or a transcript."
+slug: "video-player"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="video-player" title="Video Player" component="video-player">
+  Plays one video with playback controls and captions - native controls, a WebVTT captions track, title and details, chapters or a transcript. Part of the <DocLink href="website-media.html">Media</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="video-player">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;figure&gt;</code>: a <code>&lt;video controls preload="metadata" playsinline poster&gt;</code> with WebM and MP4 <code>&lt;source&gt;</code>s and a captions <code>&lt;track&gt;</code>, then a <code>&lt;figcaption&gt;</code> with the title, duration and date; optionally chapters or a transcript in <code>&lt;details&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video" title="native playback controls"><code>&lt;video&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track" title="captions in WebVTT"><code>&lt;track&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="media with its caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="native disclosure, no script"><code>&lt;details&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-video-player</code>
+    <code>.mk-video-player-frame</code>
+    <code>.mk-video-player-caption</code>
+    <code>.mk-video-player-meta</code>
+    <code>.mk-video-player-chapters</code>
+    <code>.mk-video-player-transcript</code>
+    <code>.mk-video-player-layout</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>theater</code>, <code>transcript</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Native <video controls> with WebM + MP4 sources, a poster and a captions <track> (on by default), then the title, details and chapters. Play it - the captions show." previewStyle="align-items:stretch;"
+<figure class="mk-video-player">
+  <div class="mk-video-player-frame">
+    <video id="vp-1" controls preload="metadata" playsinline poster="images/mk-wide3.png">
+      <source src="videos/demo.webm" type="video/webm">
+      <source src="videos/demo.mp4" type="video/mp4">
+      <track kind="captions" src="videos/demo.en.vtt" srclang="en" label="English" default>
+      Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+    </video>
+  </div>
+  <figcaption class="mk-video-player-caption">
+    <h3>Acme in 60 seconds</h3>
+    <div class="mk-video-player-meta"><span><i data-lucide="clock"></i>0:06</span><span><i data-lucide="calendar"></i><time datetime="2026-09-28">28 Sep 2026</time></span><span><i data-lucide="captions"></i>English captions</span></div>
+    <p>A feature from rough note to release notes - plan, write and ship on one board.</p>
+  </figcaption>
+  <ol class="mk-video-player-chapters" aria-label="Chapters">
+    <li><time datetime="PT0S">0:00</time>Plan the week</li>
+    <li><time datetime="PT2S">0:02</time>Write the docs</li>
+    <li><time datetime="PT4S">0:04</time>Ship and share</li>
+  </ol>
+</figure>
+```
+
+```html example label="Theater" hint="data-variant='theater': the video on a dark band, centered, with a deep shadow and white text." previewStyle="align-items:stretch;"
+<figure class="mk-video-player" data-variant="theater">
+  <div class="mk-video-player-frame">
+    <video id="vp-2" controls preload="metadata" playsinline poster="images/mk-wide3.png">
+      <source src="videos/demo.webm" type="video/webm">
+      <source src="videos/demo.mp4" type="video/mp4">
+      <track kind="captions" src="videos/demo.en.vtt" srclang="en" label="English" default>
+      Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+    </video>
+  </div>
+  <figcaption class="mk-video-player-caption">
+    <h3>Keynote: The quiet product</h3>
+    <div class="mk-video-player-meta"><span>Priya Natarajan · Acme Summit 2025</span><span><i data-lucide="captions"></i>Captions</span></div>
+  </figcaption>
+</figure>
+```
+
+```html example label="With transcript" hint="data-variant='transcript': a scrollable transcript beside the video from 52rem - the same words as the captions, readable and searchable." previewStyle="align-items:stretch;"
+<figure class="mk-video-player" data-variant="transcript">
+  <div class="mk-video-player-layout">
+    <div class="mk-video-player-frame">
+      <video id="vp-3" controls preload="metadata" playsinline poster="images/mk-wide3.png">
+      <source src="videos/demo.webm" type="video/webm">
+      <source src="videos/demo.mp4" type="video/mp4">
+      <track kind="captions" src="videos/demo.en.vtt" srclang="en" label="English" default>
+      Your browser does not support video. <a href="videos/demo.mp4">Download the video</a>.
+    </video>
+    </div>
+    <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
+      <h3 id="vp-tr">Transcript</h3>
+      <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
+      <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
+      <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
+    </section>
+  </div>
+  <figcaption class="mk-video-player-caption"><h3>Acme in 60 seconds</h3></figcaption>
+</figure>
+```
+
+<SourceFiles component="video-player" section="css" />
+
+</DocPage>

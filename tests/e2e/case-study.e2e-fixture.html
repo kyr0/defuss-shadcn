@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>case-study e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/case-study/case-study.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<article class="mk-case-study" aria-labelledby="cs-title">
+  <header class="mk-case-study-head">
+    <div class="mk-case-study-client"><strong>Northwind</strong><span class="badge" data-variant="outline">Logistics</span><span>· 1,200 employees</span></div>
+    <h1 class="mk-case-study-title" id="cs-title">How Northwind cut planning meetings in half</h1>
+    <figure class="mk-case-study-cover"><img src="https://picsum.photos/seed/case-study-cover/1600/700" alt="Northwind's operations floor"></figure>
+  </header>
+  <dl class="mk-case-study-results">
+    <div><dt>less time in planning meetings</dt><dd>−52%</dd></div>
+    <div><dt>teams onboarded in 6 weeks</dt><dd>38</dd></div>
+    <div><dt>tools replaced</dt><dd>4</dd></div>
+  </dl>
+  <div class="mk-case-study-layout">
+    <div class="mk-case-study-body">
+      <section aria-labelledby="cs-challenge"><h2 id="cs-challenge">The challenge</h2><p>Northwind's 38 regional teams planned routes in spreadsheets, discussed them in email and decided in a weekly two-hour call. Nobody trusted the latest version.</p></section>
+      <section aria-labelledby="cs-approach"><h2 id="cs-approach">The approach</h2>
+        <ol class="mk-case-study-steps">
+          <li><strong>One planning board per region</strong><span>Imported from the spreadsheets in a day.</span></li>
+          <li><strong>Decisions written down</strong><span>Every change has an owner and a reason.</span></li>
+          <li><strong>The weekly call became async</strong><span>A 15-minute review of open questions only.</span></li>
+        </ol>
+      </section>
+      <section aria-labelledby="cs-results"><h2 id="cs-results">The results</h2><p>Six weeks later every region planned on Acme. Meetings shrank by half, and route changes reached drivers a day earlier.</p>
+        <figure class="mk-case-study-quote">
+          <blockquote><p>We stopped arguing about which spreadsheet was right. Now we argue about routes - which is the job.</p></blockquote>
+          <figcaption><span class="avatar"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span><div><strong>Hannah Lee</strong><br><span>Head of Operations, Northwind</span></div></figcaption>
+        </figure>
+      </section>
+    </div>
+    <dl class="mk-case-study-facts">
+      <div><dt>Client</dt><dd>Northwind Logistics</dd></div>
+      <div><dt>Industry</dt><dd>Transport &amp; logistics</dd></div>
+      <div><dt>Plan</dt><dd>Enterprise</dd></div>
+      <div><dt>Timeline</dt><dd>6 weeks</dd></div>
+    </dl>
+  </div>
+</article>
+    </section>
+  </body>
+</html>

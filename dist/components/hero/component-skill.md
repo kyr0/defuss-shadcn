@@ -42,6 +42,21 @@ CTAs compose the [Button](../button/component-skill.md) component.
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="split"` | Copy beside a picture or video (`.mk-hero-media`) - two columns, stacked when narrow |
+| `data-variant="image"` | A full-bleed photo (`.mk-hero-bg`) behind the copy with a dark scrim, white text; a `data-variant="outline"` Button turns white on it |
+| `data-variant="glow"` | A soft brand-colored light over a fading grid; the title fades into the page |
+| `data-align="start"` | Start-aligned copy |
+| `.mk-hero-pill` | An announcement link above the title: a Badge chip, the news, an arrow |
+| `.mk-hero-form` + `.mk-hero-note` | An inline email signup (Input + Button) with a short note |
+| `.mk-hero-proof` | Social proof: an Avatar group, stars and a line |
+| `.mk-hero-stage` | The product under the copy: a framed screenshot with depth, fading into the page |
+
+---
+
 ## ARIA
 
 | Attribute | Element | Purpose                              |

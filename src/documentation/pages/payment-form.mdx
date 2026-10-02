@@ -1,0 +1,95 @@
+---
+title: "Payment Form"
+description: "Collects or selects a payment method - card, PayPal or bank transfer as tabs, the card fields with the right keyboards and autofill, or a saved card."
+slug: "payment-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="payment-form" title="Payment Form" component="payment-form">
+  Collects or selects a payment method - card, PayPal or bank transfer as tabs, the card fields with the right keyboards and autofill, or a saved card. Part of the <DocLink href="website-shop.html">Shop</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="payment-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;fieldset&gt;</code>: methods as radio "tabs" (<code>value="card|paypal|bank"</code>), one panel per method (<code>data-method</code>) shown with <code>:has()</code>; the card panel has number, expiry, security code and name with <code>autocomplete="cc-…"</code> and <code>inputmode="numeric"</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="radio.html">Radio</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="the browser fills known fields"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inputmode" title="the right on-screen keyboard"><code>inputmode</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="grouped controls with a legend"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-payment-form</code>
+    <code>.mk-payment-form-methods</code>
+    <code>.mk-payment-form-panel</code>
+    <code>.mk-payment-form-fields</code>
+    <code>.mk-payment-form-field</code>
+    <code>.mk-payment-form-number</code>
+    <code>.mk-payment-form-note</code>
+    <code>.mk-payment-form-saved</code>
+    <code>.mk-payment-form-brand</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-method</code> on panels; <code>.mk-payment-form-saved</code> for saved cards.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Card / PayPal / Bank transfer are radio inputs - :has(:checked) shows the matching panel, no script. The card fields use cc-number / cc-exp / cc-csc / cc-name autofill and the numeric keyboard." previewStyle="align-items:stretch;"
+<form action="#" method="post">
+<fieldset class="mk-payment-form">
+  <legend>Payment</legend>
+  <div class="mk-payment-form-methods">
+    <label><input type="radio" name="method" value="card" checked><i data-lucide="credit-card"></i>Card</label>
+    <label><input type="radio" name="method" value="paypal"><i data-lucide="wallet"></i>PayPal</label>
+    <label><input type="radio" name="method" value="bank"><i data-lucide="landmark"></i>Bank transfer</label>
+  </div>
+  <div class="mk-payment-form-panel" data-method="card">
+    <div class="mk-payment-form-fields">
+      <div class="mk-payment-form-field mk-payment-form-number" data-span="full"><label class="label" for="pf-num">Card number</label><div class="mk-payment-form-number"><input class="input" id="pf-num" name="cc-number" autocomplete="cc-number" inputmode="numeric" pattern="[0-9 ]{13,23}" placeholder="1234 1234 1234 1234"><ul aria-hidden="true"><li>VISA</li><li>MC</li><li>AMEX</li></ul></div></div>
+      <div class="mk-payment-form-field"><label class="label" for="pf-exp">Expiry</label><input class="input" id="pf-exp" name="cc-exp" autocomplete="cc-exp" inputmode="numeric" placeholder="MM / YY"></div>
+      <div class="mk-payment-form-field"><label class="label" for="pf-cvc">Security code</label><input class="input" id="pf-cvc" name="cc-csc" autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="CVC"></div>
+      <div class="mk-payment-form-field" data-span="full"><label class="label" for="pf-name">Name on card</label><input class="input" id="pf-name" name="cc-name" autocomplete="cc-name"></div>
+    </div>
+    <div class="checkbox-item"><input class="checkbox" type="checkbox" id="pf-save" name="save"><label for="pf-save">Save this card for next time</label></div>
+  </div>
+  <div class="mk-payment-form-panel" data-method="paypal"><p>You will be sent to PayPal to approve the payment, then back here to confirm.</p></div>
+  <div class="mk-payment-form-panel" data-method="bank">
+    <p>Transfer the total within 7 days. Your order ships when the money arrives.</p>
+    <dl><div><dt>IBAN</dt><dd>PT50 0002 0123 1234 5678 9015 4</dd></div><div><dt>Reference</dt><dd>A-20481</dd></div></dl>
+  </div>
+  <button class="btn" data-size="lg" type="submit">Pay €88.90</button>
+  <p class="mk-payment-form-note"><i data-lucide="lock"></i> Payments are encrypted and processed by our payment provider.</p>
+</fieldset>
+</form>
+```
+
+```html example label="Saved cards" hint=".mk-payment-form-saved: saved cards as radio rows - brand, last digits, expiry - and &quot;use another card&quot;." previewStyle="align-items:stretch;"
+<fieldset class="mk-payment-form">
+  <legend>Pay with</legend>
+  <div class="mk-payment-form-saved">
+    <label><input class="radio" type="radio" name="card" value="visa" checked><span class="mk-payment-form-brand">VISA</span><span>•••• 4242</span><small>Expires 08/28</small></label>
+    <label><input class="radio" type="radio" name="card" value="mc"><span class="mk-payment-form-brand">MC</span><span>•••• 5100</span><small>Expires 01/27</small></label>
+    <label><input class="radio" type="radio" name="card" value="new"><span class="mk-payment-form-brand" aria-hidden="true">+</span><span>Use another card</span><small></small></label>
+  </div>
+</fieldset>
+```
+
+<SourceFiles component="payment-form" section="css" />
+
+</DocPage>

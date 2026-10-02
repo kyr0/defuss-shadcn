@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>contents e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/contents/contents.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Rail -->
+    <section class="fx">
+<nav class="mk-contents" aria-labelledby="toc-1">
+  <p class="mk-contents-title" id="toc-1">On this page</p>
+  <ol>
+      <li><a href="#" aria-current="location">Turn it on</a></li>
+      <li><a href="#">How sync works</a>
+        <ol><li><a href="#">The write-ahead log</a></li><li><a href="#">Merging changes</a></li></ol>
+      </li>
+      <li><a href="#">Conflicts</a></li>
+      <li><a href="#">Troubleshooting</a></li>
+    </ol>
+</nav>
+    </section>
+    <!-- Boxed -->
+    <section class="fx">
+<nav class="mk-contents" data-variant="boxed" aria-labelledby="toc-2">
+  <p class="mk-contents-title" id="toc-2">In this guide</p>
+  <ol>
+      <li><a href="#" aria-current="location">Turn it on</a></li>
+      <li><a href="#">How sync works</a>
+        <ol><li><a href="#">The write-ahead log</a></li><li><a href="#">Merging changes</a></li></ol>
+      </li>
+      <li><a href="#">Conflicts</a></li>
+      <li><a href="#">Troubleshooting</a></li>
+    </ol>
+</nav>
+    </section>
+    <!-- Dropdown -->
+    <section class="fx">
+<details class="mk-contents" data-variant="dropdown">
+  <summary>On this page</summary>
+  <ol>
+      <li><a href="#" aria-current="location">Turn it on</a></li>
+      <li><a href="#">How sync works</a>
+        <ol><li><a href="#">The write-ahead log</a></li><li><a href="#">Merging changes</a></li></ol>
+      </li>
+      <li><a href="#">Conflicts</a></li>
+      <li><a href="#">Troubleshooting</a></li>
+    </ol>
+</details>
+    </section>
+  </body>
+</html>

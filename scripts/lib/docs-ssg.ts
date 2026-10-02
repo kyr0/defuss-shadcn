@@ -20,6 +20,13 @@
  */
 export const STANDALONE_DECKS = ['system-in-numbers'];
 
+/** Application scaffolds with a generated full-screen page (same idea as the
+ *  standalone decks: one example fence, two ways to view it). */
+export const STANDALONE_APPS = ['scaffold-admin-dashboard', 'scaffold-messenger', 'scaffold-issue-tracker', 'scaffold-notes', 'scaffold-status-page', 'scaffold-desktop'];
+
+/** The generated full-screen page name for a scaffold page slug. */
+export const standaloneAppFile = (slug: string): string => `app-${slug.replace(/^scaffold-/, '')}.html`;
+
 /** The generated standalone page name for a deck page slug. */
 export const standaloneDeckFile = (slug: string): string => `deck-${slug}.html`;
 
@@ -51,6 +58,9 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   // standalone decks: deck-{n}.html ← pages/{n}.mdx (its example fence)
   const deck = STANDALONE_DECKS.find((s) => r === standaloneDeckFile(s));
   if (deck) return `documentation/pages/${deck}.mdx`;
+  // full-screen scaffolds: app-{n}.html ← pages/scaffold-{n}.mdx (its example fence)
+  const app = STANDALONE_APPS.find((s) => r === standaloneAppFile(s));
+  if (app) return `documentation/pages/${app}.mdx`;
   // pages: {n}.html ← pages/{n}.mdx
   if (r.endsWith('.html')) return `documentation/pages/${r.replace(/\.html$/, '')}.mdx`;
   return null;

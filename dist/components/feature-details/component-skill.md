@@ -69,6 +69,17 @@ break, so the markup never swaps separators.
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `.mk-features-bento` + `.mk-bento-tile` | A bento grid - `data-span="wide"` / `"tall"` tiles, `data-tone="primary"` for an accent tile |
+| `.mk-feature-rows` + `.mk-feature-row` | Zig-zag rows: media and copy swap sides every other row; `.mk-feature-checks` lists the benefits |
+| `.mk-features-tabs` | A Tabs component: the triggers are the feature list, the panel shows the feature |
+| `data-variant="boxed"` (on `.mk-feature-cards`) | Benefit cards on surfaces with an icon tile, lifting on hover |
+
+---
+
 ## ARIA
 
 | Attribute     | Element          | Purpose                              |

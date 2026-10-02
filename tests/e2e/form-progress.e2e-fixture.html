@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>form-progress e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/progress/progress.css" />
+    <link rel="stylesheet" href="/dist/components/form-progress/form-progress.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<nav class="mk-form-progress" aria-label="Progress">
+  <div class="mk-form-progress-status"><strong>Step 2 of 4 · Company</strong><span>About 2 minutes left</span></div>
+  <progress class="progress" value="2" max="4" aria-label="Step 2 of 4">2 of 4</progress>
+  <ol class="mk-form-progress-steps">
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+    <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">2</span>Company</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+  </ol>
+</nav>
+    </section>
+    <!-- Numbered -->
+    <section class="fx">
+<nav class="mk-form-progress" data-variant="numbered" aria-label="Progress">
+  <ol class="mk-form-progress-steps">
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Company</li>
+    <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+  </ol>
+</nav>
+    </section>
+    <!-- Segments -->
+    <section class="fx">
+<nav class="mk-form-progress" data-variant="segments" aria-label="Progress">
+  <ol class="mk-form-progress-steps">
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+    <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">2</span>Company</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+  </ol>
+</nav>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<nav class="mk-form-progress" data-variant="compact" aria-label="Progress">
+  <div class="mk-form-progress-status"><strong>Step 3 of 4</strong><span>Plan</span></div>
+  <progress class="progress" value="3" max="4" aria-label="Step 3 of 4">3 of 4</progress>
+</nav>
+    </section>
+  </body>
+</html>

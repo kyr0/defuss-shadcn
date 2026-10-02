@@ -52,3 +52,9 @@ document.querySelector('#my-ctx').api.getState(); // { name: 'open', config: { x
 
 The registry global is `df$.shadcn.contextMenuApi` / `df$.shadcn.contextMenuStates` (camelCase).
 
+## Notes
+
+- The menu opens at the pointer (or the `setState('open', { x, y })`
+  point). Where there is no room to the right or below, it opens toward the
+  other side of the point - as a native menu does - and it never runs past
+  the viewport.

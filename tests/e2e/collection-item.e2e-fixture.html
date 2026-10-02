@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>collection-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/collection-item/collection-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Grid -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1.5rem 1rem;width:100%">
+  <article class="mk-collection-item">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-linen/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Linen basics</a></h3>
+      <p class="mk-collection-item-count">24 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-knit/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Autumn knitwear</a></h3>
+      <p class="mk-collection-item-count">18 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-home/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Home & table</a></h3>
+      <p class="mk-collection-item-count">42 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+</div>
+    </section>
+    <!-- Overlay -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;width:100%">
+  <article class="mk-collection-item" data-variant="overlay">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o1/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">New in</a></h3>
+      <p class="mk-collection-item-count">This week</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item" data-variant="overlay">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o2/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Outdoor</a></h3>
+      <p class="mk-collection-item-count">31 products</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+  <article class="mk-collection-item" data-variant="overlay">
+    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o3/800/1000" alt="">
+    <div class="mk-collection-item-body">
+      <h3 class="mk-collection-item-title"><a href="#">Last chance</a></h3>
+      <p class="mk-collection-item-count">Up to −50%</p>
+      <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+    </div>
+  </article>
+</div>
+    </section>
+    <!-- Banner -->
+    <section class="fx">
+<article class="mk-collection-item" data-variant="banner">
+  <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-banner/1600/690" alt="">
+  <div class="mk-collection-item-body">
+    <h3 class="mk-collection-item-title"><a href="#">The autumn edit</a></h3>
+    <p class="mk-collection-item-count">Warm layers, soft colors - 56 pieces</p>
+    <span class="mk-collection-item-more" aria-hidden="true">Discover <i data-lucide="arrow-right"></i></span>
+  </div>
+</article>
+    </section>
+  </body>
+</html>

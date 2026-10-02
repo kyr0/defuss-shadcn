@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>view-switcher e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/view-switcher/view-switcher.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<div class="mk-view-switcher">
+  <div class="mk-view-switcher-options" role="radiogroup" aria-label="View">
+    <label><input type="radio" name="vs-1" value="grid" checked><i data-lucide="layout-grid"></i><span class="sr-only">Grid</span></label>
+    <label><input type="radio" name="vs-1" value="list"><i data-lucide="list"></i><span class="sr-only">List</span></label>
+  </div>
+  <ul class="mk-view-switcher-collection">
+    <li><img src="https://picsum.photos/seed/vs-0/400/300" alt=""><span><strong>Project 1</strong><small>Updated 1 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-1/400/300" alt=""><span><strong>Project 2</strong><small>Updated 2 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-2/400/300" alt=""><span><strong>Project 3</strong><small>Updated 3 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-3/400/300" alt=""><span><strong>Project 4</strong><small>Updated 4 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-4/400/300" alt=""><span><strong>Project 5</strong><small>Updated 5 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-5/400/300" alt=""><span><strong>Project 6</strong><small>Updated 6 days ago</small></span></li>
+  </ul>
+</div>
+    </section>
+    <!-- Labels -->
+    <section class="fx">
+<div class="mk-view-switcher" data-variant="labels">
+  <div class="mk-view-switcher-options" role="radiogroup" aria-label="View">
+    <label><input type="radio" name="vs-2" value="grid"><i data-lucide="layout-grid"></i>Grid</label>
+    <label><input type="radio" name="vs-2" value="list" checked><i data-lucide="list"></i>List</label>
+  </div>
+  <ul class="mk-view-switcher-collection">
+    <li><img src="https://picsum.photos/seed/vs-0/400/300" alt=""><span><strong>Project 1</strong><small>Updated 1 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-1/400/300" alt=""><span><strong>Project 2</strong><small>Updated 2 days ago</small></span></li>
+    <li><img src="https://picsum.photos/seed/vs-2/400/300" alt=""><span><strong>Project 3</strong><small>Updated 3 days ago</small></span></li>
+  </ul>
+</div>
+    </section>
+  </body>
+</html>

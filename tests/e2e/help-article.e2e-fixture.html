@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>help-article e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/breadcrumb/breadcrumb.css" />
+    <link rel="stylesheet" href="/dist/components/feedback-form/feedback-form.css" />
+    <link rel="stylesheet" href="/dist/components/help-article/help-article.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<article class="mk-help-article" aria-labelledby="ha-title">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol class="breadcrumb-list"><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Help</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Billing</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Change your billing email</span></li></ol></nav>
+  <h1 class="mk-help-article-title" id="ha-title">Change your billing email</h1>
+  <p class="mk-help-article-meta">Updated <time datetime="2026-09-12">12 Sep 2026</time> · 2 min read</p>
+  <p class="mk-help-article-lead">Invoices and payment reminders go to the billing email. Only workspace owners can change it.</p>
+  <ol class="mk-help-article-steps">
+    <li><div><strong>Open Settings</strong><p>Press <kbd>⌘</kbd> <kbd>,</kbd> or choose Settings from your avatar menu.</p></div></li>
+    <li><div><strong>Go to Billing → Details</strong><p>You'll see the current billing email under "Invoices".</p><img src="/dist/documentation/images/mk-wide.png" alt="The Billing details screen with the billing email field highlighted"></div></li>
+    <li><div><strong>Enter the new address and save</strong><p>We send a confirmation link to the new address. The change applies once it is confirmed.</p></div></li>
+  </ol>
+  <div class="mk-help-article-tip"><i data-lucide="lightbulb"></i><p>Use a shared address like billing@yourcompany.com so invoices don't depend on one person.</p></div>
+  <details class="mk-help-article-stuck"><summary>Still stuck?</summary><p>If you can't see Billing, you're not an owner of this workspace. Ask an owner, or <a href="#">contact support</a>.</p></details>
+  <form class="mk-feedback-form" data-variant="inline" action="#" method="post">
+    <fieldset><legend>Was this article helpful?</legend><div class="mk-feedback-form-yesno"><label><input type="radio" name="ha-helpful" value="yes"><i data-lucide="thumbs-up"></i> Yes</label><label><input type="radio" name="ha-helpful" value="no"><i data-lucide="thumbs-down"></i> No</label></div></fieldset>
+    <p class="mk-feedback-form-thanks" role="status">Thanks for letting us know.</p>
+  </form>
+  <ul class="mk-help-article-related"><li><h2>Related articles</h2></li><li><a href="#"><i data-lucide="file-text"></i>Download an invoice</a></li><li><a href="#"><i data-lucide="file-text"></i>Add a VAT number</a></li></ul>
+</article>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,589 @@
+---
+title: "Landing Page"
+description: "Website blocks - Landing Page: The sections of a product or marketing page, top to bottom: the site header, a hero, product showcase and logos, section headers to introduce the parts, features, testimonials, stats, pricing, blog teasers, FAQ, contact, newsletter and the footer."
+slug: "website-landing-page"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-landing-page" title="Landing Page" introStyle="max-width:42rem;">
+  The sections of a product or marketing page, top to bottom: the site header, a hero, product showcase and logos, section headers to introduce the parts, features, testimonials, stats, pricing, blog teasers, FAQ, contact, newsletter and the footer. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Landing Page blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A landing page" schema="none" hint="Every landing block in page order with room to breathe. Scroll it: the hero is a Parallax scene (a faint grid far back, two soft color blobs in the middle, the copy in front), every section after it rises into view (.parallax-reveal - the product frame zooms in), the header sticks. shapes.css dresses the media: a window frame, leaf corners, a taped polaroid, speech-bubble quotes, the gold aura, squircles and blob icons. Scroll down and the back-to-top FAB appears; on a first visit the Cookie Consent waits as a banner along the bottom (not a modal - the page stays usable); afterwards the cookie button (bottom left) and the footer's Cookie Settings bring it back. The header links jump to the sections." previewStyle="align-items:stretch;"
+<div id="top" style="display:flex;flex-direction:column;gap:clamp(8rem, 15vw, 12rem);width:100%;padding-block-end:4rem">
+  <div>
+    <header class="mk-header" data-variant="sticky" style="width:100%">
+      <div class="mk-header-inner">
+        <a href="#" class="mk-header-brand"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg><span class="mk-header-name">Acme Inc.</span></a>
+        <nav class="mk-header-nav" aria-label="Main">
+          <ul class="nav-menu-list">
+        <li class="nav-menu-item">
+          <button class="nav-menu-trigger" popovertarget="mk-sh-products">Products <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <div class="nav-menu-content" id="mk-sh-products" popover>
+            <a class="nav-menu-content-link" href="#"><strong>Analytics</strong><p>View your dashboard and metrics</p></a>
+            <a class="nav-menu-content-link" href="#"><strong>Automation</strong><p>Build workflows and integrations</p></a>
+          </div>
+        </li>
+        <li class="nav-menu-item"><a class="nav-menu-link" href="#lp-features">Features</a></li>
+        <li class="nav-menu-item"><a class="nav-menu-link" href="#lp-pricing">Pricing</a></li>
+        <li class="nav-menu-item"><a class="nav-menu-link" href="#lp-faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <div class="mk-header-actions">
+          <button type="button" class="btn mk-header-wide" data-variant="ghost" data-size="sm">Login</button>
+          <button type="button" class="btn" data-size="sm">Get started</button>
+          <button type="button" class="btn mk-header-menu" data-variant="ghost" data-size="icon" data-sheet-trigger="mk-sh-menu" aria-haspopup="dialog" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button>
+        </div>
+      </div>
+    
+      <dialog id="mk-sh-menu" class="sheet" data-side="right" role="dialog" aria-modal="true" aria-labelledby="mk-sh-menu-title">
+        <div class="sheet-content">
+          <div class="sheet-header">
+            <h2 class="sheet-title" id="mk-sh-menu-title">Acme Inc.</h2>
+          </div>
+          <div class="sheet-body">
+            <p class="mk-header-sheet-label">Products</p>
+            <ul class="mk-header-sheet-nav">
+              <li><a href="#" data-sheet-close>Analytics <small>Dashboards</small></a></li>
+              <li><a href="#" data-sheet-close>Automation <small>Workflows</small></a></li>
+            </ul>
+            <p class="mk-header-sheet-label">Company</p>
+            <ul class="mk-header-sheet-nav">
+              <li><a href="#" data-sheet-close>Pricing</a></li>
+            </ul>
+          </div>
+          <div class="sheet-footer mk-header-sheet-actions">
+            <button type="button" class="btn" data-variant="outline">Login</button>
+            <button type="button" class="btn">Get started</button>
+          </div>
+        </div>
+      </dialog>
+    </header>
+    <section class="parallax" aria-label="Introduction" style="padding-block:clamp(4rem, 10vw, 8rem) 2rem">
+      <div class="parallax-layer" data-depth="far" aria-hidden="true">
+        <div class="pattern-grid" style="width:100%;height:100%;--shape-ink:color-mix(in oklch, var(--foreground) 7%, transparent);--shape-pattern:32px;mask-image:radial-gradient(55% 60% at 50% 45%, #000, transparent 75%)"></div>
+      </div>
+      <div class="parallax-layer" data-depth="mid" aria-hidden="true" style="--parallax-speed:22%;mask-image:linear-gradient(#000 55%, transparent 92%)">
+        <div class="corner-blob" style="position:absolute;inset-block-start:12%;inset-inline-start:8%;width:min(22rem, 45%);aspect-ratio:1;background:color-mix(in oklch, var(--chart-1) 35%, transparent);filter:blur(60px);opacity:.55"></div>
+        <div class="corner-blob-3" style="position:absolute;inset-block-start:30%;inset-inline-end:6%;width:min(18rem, 40%);aspect-ratio:1;background:color-mix(in oklch, var(--chart-2) 35%, transparent);filter:blur(60px);opacity:.5"></div>
+      </div>
+      <div class="parallax-content">
+        <section class="mk-hero" style="width:100%">
+        <div class="mk-hero-copy">
+          <span class="mk-hero-badge">New features released</span>
+          <h1 class="mk-hero-title">Make Better Decisions, With Ease</h1>
+          <p class="mk-hero-desc">Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching contexts.</p>
+          <div class="mk-hero-actions"><button type="button" class="btn" >Get Started</button></div>
+        </div>
+      </section>
+      </div>
+    </section>
+  </div>
+  <div class="parallax-reveal" data-reveal="zoom" style="padding-inline:1.25rem">
+    <figure class="mk-showcase frame-window drop-shadow-float" style="width:100%">
+      <img class="mk-showcase-poster" alt="Product showcase" src="images/mk-wide2.png"></img>
+      <video controls preload="metadata" playsinline><source src="videos/demo.webm" type="video/webm"></source><source src="videos/demo.mp4" type="video/mp4"></source> Your browser does not support embedded video. </video>
+      <button type="button" class="mk-showcase-play" aria-label="Play video">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="6 3 20 12 6 21 6 3"></polygon>
+        </svg>
+      </button>
+    </figure>
+  </div>
+  <div class="parallax-reveal">
+    <section class="mk-logos" style="width:100%">
+      <div class="mk-logos-row">
+        <a class="mk-logo" href="https://vercel.com" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true"><path d="m12 1.608 12 20.784H0Z"/></svg><!-- Vercel is a trademark of its owner; shown as a placeholder --><span class="mk-logo-name">Vercel</span></a>
+        <a class="mk-logo" href="https://stripe.com" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/></svg><!-- Stripe is a trademark of its owner; shown as a placeholder --><span class="mk-logo-name">Stripe</span></a>
+        <a class="mk-logo" href="https://figma.com" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true"><path d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"/></svg><!-- Figma is a trademark of its owner; shown as a placeholder --><span class="mk-logo-name">Figma</span></a>
+        <a class="mk-logo" href="https://supabase.com" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z"></path></svg><!-- Supabase is a trademark of its owner; shown as a placeholder --><span class="mk-logo-name">Supabase</span></a>
+      </div>
+      <p class="mk-logos-caption">Trusted by leading companies</p>
+    </section>
+  </div>
+  <div id="lp-features" class="parallax-reveal">
+    <section class="mk-features" style="width:100%">
+      <div class="mk-features-head">
+        <span class="mk-features-eyebrow">Benefits</span>
+        <h2 class="mk-features-title">AI That Works Your Way</h2>
+        <p class="mk-features-desc">Acme eliminates the work and gives you a clear picture of what matters.</p>
+      </div>
+      <div class="mk-features-grid">
+        <article class="mk-feature">
+          <div class="mk-feature-copy">
+            <h3 class="mk-feature-title">Intelligent Prioritization</h3>
+            <p class="mk-feature-desc">Know exactly what to work on next with AI that understands your goals.</p>
+          </div>
+          <figure class="mk-feature-media corner-leaf" style="--shape-round:3rem"><img alt="Intelligent Prioritization" src="images/mk-square.png" ></img></figure>
+        </article>
+        <div class="mk-feature-sep" aria-hidden="true"></div>
+        <article class="mk-feature">
+          <div class="mk-feature-copy">
+            <h3 class="mk-feature-title">Effortless Integration</h3>
+            <p class="mk-feature-desc">Connects with the tools your team already uses - no steep learning curve.</p>
+          </div>
+          <figure class="mk-feature-media corner-leaf-reverse" style="--shape-round:3rem"><img alt="Effortless Integration" src="images/mk-wide3.png" ></img></figure>
+        </article>
+      </div>
+      <div class="mk-feature-cards">
+        <div class="mk-feature-card">
+          <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>Smarter Analytics</h3>
+          <p class="mk-feature-card-desc">Turn data into clarity with AI-powered insights.</p>
+        </div>
+        <div class="mk-feature-card">
+          <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="8" x="3" y="3" rx="2"></rect><path d="M7 11v4a2 2 0 0 0 2 2h4"></path><rect width="8" height="8" x="13" y="13" rx="2"></rect></svg>Seamless Workflow</h3>
+          <p class="mk-feature-card-desc">Stay in the zone without context switching.</p>
+        </div>
+        <div class="mk-feature-card">
+          <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Team Alignment</h3>
+          <p class="mk-feature-card-desc">A single source of truth for projects and decisions.</p>
+        </div>
+        <div class="mk-feature-card">
+          <h3 class="mk-feature-card-title"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>Clear Decision Support</h3>
+          <p class="mk-feature-card-desc">AI-driven insights when projects stall.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="parallax-reveal" style="padding-block-end:2rem">
+    <section class="mk-stats" style="width:100%">
+      <div class="mk-stats-layout">
+      <div class="mk-stats-copy">
+        <div class="mk-stats-head">
+          <h2 class="mk-stats-title">Trusted by Teams Everywhere</h2>
+          <p class="mk-stats-desc">Acme is helping thousands of creators and companies move faster, work smarter, and deliver with confidence.</p>
+        </div>
+        <div class="mk-stats-grid">
+          <div class="mk-stat">
+            <span class="mk-stat-value">12,500+<span class="mk-stat-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>+18%</span></span>
+            <span class="mk-stat-label">Projects completed</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our clients</a>
+          </div>
+          <div class="mk-stat">
+            <span class="mk-stat-value">38% faster<span class="mk-stat-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>+12%</span></span>
+            <span class="mk-stat-label">Delivery across teams</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Learn more</a>
+          </div>
+          <div class="mk-stat">
+            <span class="mk-stat-value">94%<span class="mk-stat-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>+4%</span></span>
+            <span class="mk-stat-label">User satisfaction</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">See feedback</a>
+          </div>
+          <div class="mk-stat">
+            <span class="mk-stat-value">8 zones<span class="mk-stat-trend" data-trend="up"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>+2</span></span>
+            <span class="mk-stat-label">With active customers</span>
+            <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our users</a>
+          </div>
+        </div>
+      </div>
+      <figure class="mk-stats-media frame-polaroid frame-tape" style="rotate:-2deg;--shape-ink:oklch(0.86 0.05 85)"><img alt="Team at work" src="images/mk-wide.png" ></img></figure>
+      </div>
+    </section>
+  </div>
+  <div class="parallax-reveal">
+    <section class="mk-testimonials" style="width:100%">
+      <div class="mk-testimonial-quote-block">
+        <div class="mk-testimonial-context"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1h-1a1 1 0 0 0-1 1 1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1H9a1 1 0 0 0-1 1 1 1 0 0 1-1 1 1 1 0 0 0-1 1 1 1 0 0 1-1 1H4a2 2 0 0 1-2-2V7.5A4.5 4.5 0 0 1 6.5 3Z"></path><path d="M15 3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 1 1 0 0 0-1 1v1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h3a2 2 0 0 0 2-2V7.5A4.5 4.5 0 0 0 19.5 3Z"></path></svg><span>Loved by talented teams...</span></div>
+        <div class="mk-testimonial-layout">
+          <blockquote class="mk-testimonial-quote">Our team has seen a huge boost in productivity since adopting Acme. Designers, developers, and PMs work more seamlessly together.</blockquote>
+          <a class="mk-testimonial-brand" href="https://stripe.com" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="24" height="24" fill="#000000" aria-hidden="true"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"></path></svg><!-- Stripe is a trademark of its owner; shown as a placeholder --><span class="mk-testimonial-brand-name">Stripe</span></a>
+        </div>
+        <span class="mk-testimonial-date">June, 2025</span>
+      </div>
+      <div class="mk-testimonial-cards">
+        <figure class="mk-testimonial-card corner-bubble" data-variant="quote" style="--shape-round:1.25rem">
+          <div class="mk-stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+          <blockquote class="mk-testimonial-card-text"><p>Acme cut our planning meetings in half. The roadmap finally writes itself.</p></blockquote>
+          <figcaption class="mk-testimonial-card-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="mk-testimonial-card-info"><span class="mk-testimonial-card-name">Aron Homberg</span><span class="mk-testimonial-card-role">Product Manager</span></span></figcaption>
+        </figure>
+        <figure class="mk-testimonial-card corner-bubble-end" data-variant="quote" style="--shape-round:1.25rem">
+          <div class="mk-stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+          <blockquote class="mk-testimonial-card-text"><p>Every interview note, every insight, one search away. I stopped losing things.</p></blockquote>
+          <figcaption class="mk-testimonial-card-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span><span class="mk-testimonial-card-info"><span class="mk-testimonial-card-name">Sophie Tan</span><span class="mk-testimonial-card-role">UX Researcher</span></span></figcaption>
+        </figure>
+        <figure class="mk-testimonial-card corner-bubble" data-variant="quote" style="--shape-round:1.25rem">
+          <div class="mk-stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+          <blockquote class="mk-testimonial-card-text"><p>Onboarding took an afternoon. The team was productive the same day.</p></blockquote>
+          <figcaption class="mk-testimonial-card-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="mk-testimonial-card-info"><span class="mk-testimonial-card-name">Emily Carter</span><span class="mk-testimonial-card-role">Product Manager</span></span></figcaption>
+        </figure>
+        <figure class="mk-testimonial-card corner-bubble-end" data-variant="quote" style="--shape-round:1.25rem">
+          <div class="mk-stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+          <blockquote class="mk-testimonial-card-text"><p>Calm by default - no badges screaming at me. I actually enjoy opening it.</p></blockquote>
+          <figcaption class="mk-testimonial-card-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span><span class="mk-testimonial-card-info"><span class="mk-testimonial-card-name">Hannah Lee</span><span class="mk-testimonial-card-role">Software Engineer</span></span></figcaption>
+        </figure>
+      </div>
+    </section>
+  </div>
+  <section id="lp-pricing" class="parallax parallax-reveal" aria-label="Pricing" style="padding-block:3rem">
+    <div class="parallax-layer" data-depth="far" aria-hidden="true">
+      <div class="pattern-grid" style="width:100%;height:100%;--shape-ink:color-mix(in oklch, var(--foreground) 6%, transparent);--shape-pattern:32px;mask-image:radial-gradient(60% 60% at 50% 55%, #000, transparent 72%)"></div>
+    </div>
+    <div class="parallax-content">
+      <section class="mk-pricing" style="width:100%">
+        <div class="mk-pricing-head">
+          <span class="mk-pricing-eyebrow">Pricing</span>
+          <h2 class="mk-pricing-title">Simple Pricing, Smarter Work</h2>
+          <p class="mk-pricing-desc">Acme has a plan designed to help you move faster.</p>
+          <div class="mk-pricing-billing" role="radiogroup" aria-label="Billing period">
+            <label><input class="mk-bill-yearly" type="radio" name="mk-billing" checked ></input>Billed yearly <span class="badge" data-variant="secondary" data-size="xs">Save 20%</span></label>
+            <label><input class="mk-bill-monthly" type="radio" name="mk-billing" ></input>Billed monthly</label>
+          </div>
+        </div>
+        <div class="mk-plans">
+          <article class="mk-plan">
+            <header class="mk-plan-header"><span class="mk-plan-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span></header>
+            <div class="mk-plan-body">
+              <h3 class="mk-plan-title">Starter</h3>
+              <p class="mk-plan-desc">For individuals who want AI assistance in their daily workflow.</p>
+            </div>
+            <div class="mk-plan-price mk-price-yearly">
+              <span class="mk-plan-amount">$10</span>
+              <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div>
+            </div>
+            <div class="mk-plan-price mk-price-monthly">
+              <span class="mk-plan-amount">$12</span>
+              <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Plus local taxes</span></div>
+            </div>
+            <div class="mk-plan-cta"><button type="button" class="btn" data-variant="outline" data-size="lg">Get started</button></div>
+            <ul class="mk-plan-features">
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Unlimited projects</span></li>
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>AI-powered insights</span></li>
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Seamless integrations</span></li>
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Community support</span></li>
+            </ul>
+          </article>
+          <div class="aura aura-gold aura-sm">
+            <article class="mk-plan" data-featured>
+              <header class="mk-plan-header"><span class="mk-plan-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span><span class="badge mk-plan-badge" data-variant="default"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>Most popular</span></header>
+              <div class="mk-plan-body">
+                <h3 class="mk-plan-title">Pro</h3>
+                <p class="mk-plan-desc">For fast-moving teams that want to collaborate in real time.</p>
+              </div>
+              <div class="mk-plan-price mk-price-yearly">
+                <span class="mk-plan-amount">$24</span>
+                <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div>
+              </div>
+              <div class="mk-plan-price mk-price-monthly">
+                <span class="mk-plan-amount">$29</span>
+                <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Plus local taxes</span></div>
+              </div>
+              <div class="mk-plan-cta"><button type="button" class="btn" data-size="lg">Get started</button></div>
+              <ul class="mk-plan-features">
+                <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Everything in Starter</span></li>
+                <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Real-time collaboration</span></li>
+                <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Advanced reporting</span></li>
+                <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Priority support</span></li>
+              </ul>
+            </article>
+          </div>
+          <article class="mk-plan">
+            <header class="mk-plan-header"><span class="mk-plan-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg></span></header>
+            <div class="mk-plan-body">
+              <h3 class="mk-plan-title">Enterprise</h3>
+              <p class="mk-plan-desc">For organizations that need security, control, and support at scale.</p>
+            </div>
+            <div class="mk-plan-price mk-price-yearly">
+              <span class="mk-plan-amount">$48</span>
+              <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Billed yearly</span></div>
+            </div>
+            <div class="mk-plan-price mk-price-monthly">
+              <span class="mk-plan-amount">$59</span>
+              <div class="mk-plan-unit"><span class="mk-plan-unit-label">Per month</span><span class="mk-plan-unit-note">Plus local taxes</span></div>
+            </div>
+            <div class="mk-plan-cta"><button type="button" class="btn" data-variant="outline" data-size="lg">Get started</button></div>
+            <ul class="mk-plan-features">
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Everything in Pro</span></li>
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>SSO & audit logs</span></li>
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Dedicated success manager</span></li>
+              <li class="mk-plan-feature"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Custom integrations</span></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </div>
+  </section>
+  <div class="parallax-reveal">
+    <section class="mk-blog" style="width:100%">
+      <div class="mk-blog-head">
+        <div class="mk-blog-head-copy">
+          <span class="mk-blog-eyebrow">Blog</span>
+          <h2 class="mk-blog-title">Acme Insights</h2>
+          <p class="mk-blog-desc">Insights, tips, and stories to help you work smarter and finish faster.</p>
+        </div>
+        <a href="#" class="btn mk-blog-see-all" data-variant="secondary">See all</a>
+      </div>
+      <div class="mk-blog-grid">
+        <a href="#" class="mk-blog-card">
+          <figure class="mk-blog-media corner-squircle" style="--shape-round:1.75rem"><img alt="Team in flow at a whiteboard" src="images/mk-wide.png" ></img></figure>
+          <div class="mk-blog-body">
+            <div class="mk-blog-meta"><span class="mk-blog-category">Productivity</span><span class="mk-blog-read"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>8 min read</span></div>
+            <div class="mk-blog-copy">
+              <h3 class="mk-blog-card-title">5 Ways AI Helps Teams Stay in Flow</h3>
+              <p class="mk-blog-excerpt">Discover simple ways to cut distractions and keep your team focused on meaningful work.</p>
+            </div>
+            <div class="mk-blog-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" ></img></span><div class="flex flex-col"><span class="mk-blog-author-name">Sophie Tan</span><time class="mk-blog-author-date" datetime="2026-09-04">4 Sept, 2026</time></div></div>
+          </div>
+        </a>
+        <a href="#" class="mk-blog-card">
+          <figure class="mk-blog-media corner-squircle" style="--shape-round:1.75rem"><img alt="Focus and context switching illustration" src="images/mk-wide2.png" ></img></figure>
+          <div class="mk-blog-body">
+            <div class="mk-blog-meta"><span class="mk-blog-category">Workflow</span><span class="mk-blog-read"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>7 min read</span></div>
+            <div class="mk-blog-copy">
+              <h3 class="mk-blog-card-title">The End of Context Switching</h3>
+              <p class="mk-blog-excerpt">How AI keeps your focus where it matters and removes the friction between your tools.</p>
+            </div>
+            <div class="mk-blog-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" ></img></span><div class="flex flex-col"><span class="mk-blog-author-name">Hannah Lee</span><time class="mk-blog-author-date" datetime="2026-09-04">4 Sept, 2026</time></div></div>
+          </div>
+        </a>
+        <a href="#" class="mk-blog-card">
+          <figure class="mk-blog-media corner-squircle" style="--shape-round:1.75rem"><img alt="Small team winning with AI" src="images/mk-wide3.png" ></img></figure>
+          <div class="mk-blog-body">
+            <div class="mk-blog-meta"><span class="mk-blog-category">Startups</span><span class="mk-blog-read"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>3 min read</span></div>
+            <div class="mk-blog-copy">
+              <h3 class="mk-blog-card-title">Why Small Teams Win Big with AI</h3>
+              <p class="mk-blog-excerpt">Lean setups, smarter workflows, and faster delivery for teams that punch above their weight.</p>
+            </div>
+            <div class="mk-blog-author"><span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" ></img></span><div class="flex flex-col"><span class="mk-blog-author-name">Aron Homberg</span><time class="mk-blog-author-date" datetime="2026-09-04">4 Sept, 2026</time></div></div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
+  <div id="lp-faq" class="parallax-reveal">
+    <section class="mk-faq" style="width:100%">
+      <div class="mk-faq-head">
+        <span class="mk-faq-eyebrow">Support</span>
+        <h2 class="mk-faq-title">Frequently Asked Questions</h2>
+      </div>
+      <div class="mk-faq-grid">
+        <article class="mk-faq-item">
+          <span class="mk-faq-icon corner-blob"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg></span>
+          <div class="mk-faq-text"><h3 class="mk-faq-question">What is Acme AI?</h3><p class="mk-faq-answer">A personal AI workspace that helps teams cut context switching and finish faster.</p><a class="mk-faq-link" href="#faq-how-acme-ai-works">How Acme AI works<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+        </article>
+        <article class="mk-faq-item">
+          <span class="mk-faq-icon corner-blob-2"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+          <div class="mk-faq-text"><h3 class="mk-faq-question">Who is Acme AI for?</h3><p class="mk-faq-answer">Creators, teams, and businesses of all sizes.</p><a class="mk-faq-link" href="#faq-who-uses-acme">Who uses Acme<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+        </article>
+        <article class="mk-faq-item">
+          <span class="mk-faq-icon corner-blob-3"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
+          <div class="mk-faq-text"><h3 class="mk-faq-question">How much does it cost?</h3><p class="mk-faq-answer">Flexible plans starting at 199 USD - see the pricing section.</p><a class="mk-faq-link" href="#faq-compare-the-plans">Compare the plans<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+        </article>
+        <article class="mk-faq-item">
+          <span class="mk-faq-icon corner-blob-4"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></span>
+          <div class="mk-faq-text"><h3 class="mk-faq-question">Do I need technical skills?</h3><p class="mk-faq-answer">No. It works out of the box with minimal setup.</p><a class="mk-faq-link" href="#faq-the-setup-guide">The setup guide<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+        </article>
+        <article class="mk-faq-item">
+          <span class="mk-faq-icon corner-blob-5"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0v5"></path><path d="M14 10V4a2 2 0 0 0-4 0v2"></path><path d="M10 10.5V6a2 2 0 0 0-4 0v8"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg></span>
+          <div class="mk-faq-text"><h3 class="mk-faq-question">Can I try it before I buy?</h3><p class="mk-faq-answer">Yes - we offer a demo so you can see how it fits your workflow.</p><a class="mk-faq-link" href="#faq-book-a-demo">Book a demo<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+        </article>
+        <article class="mk-faq-item">
+          <span class="mk-faq-icon corner-egg"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+          <div class="mk-faq-text"><h3 class="mk-faq-question">How does Acme handle my data?</h3><p class="mk-faq-answer">All data is encrypted and never shared with third parties.</p><a class="mk-faq-link" href="#faq-security-privacy">Security & privacy<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>
+        </article>
+      </div>
+    </section>
+  </div>
+  <div class="parallax-reveal" data-reveal="zoom" style="padding-inline:1.25rem">
+    <section class="mk-contact" style="width:100%">
+      <div class="mk-contact-avatars"><span class="avatar"><span class="avatar-fallback">AM</span></span><span class="avatar"><span class="avatar-fallback">ST</span></span><span class="avatar"><span class="avatar-fallback">HL</span></span></div>
+      <div class="mk-contact-copy">
+        <h2 class="mk-contact-title">Want to know more?</h2>
+        <p class="mk-contact-desc">Our team is here to help you get the answers you need.</p>
+      </div>
+      <button type="button" class="btn mk-contact-cta">Get in touch</button>
+    </section>
+  </div>
+  <div class="parallax-reveal">
+    <section class="mk-newsletter" style="width:100%">
+      <div class="mk-newsletter-layout">
+      <div class="mk-newsletter-copy">
+        <h2 class="mk-newsletter-title">Stay in the loop</h2>
+        <p class="mk-newsletter-desc">Get insights, product updates, and productivity tips straight to your inbox.</p>
+      </div>
+      <div class="mk-newsletter-form-col">
+        <form class="mk-newsletter-form" action="#" method="post">
+          <label class="sr-only" for="mk-nl-email">Email address</label>
+          <input class="input" id="mk-nl-email" type="email" name="email" placeholder="email@example.com" aria-describedby="mk-nl-note" required autocomplete="email" enterkeyhint="send" ></input>
+          <button class="btn" type="submit" aria-label="Subscribe to newsletter"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>Subscribe</button>
+        </form>
+        <span class="mk-newsletter-note" id="mk-nl-note">We respect your privacy - unsubscribe any time.</span>
+        <span class="mk-newsletter-error" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>Please enter a valid email address.</span>
+      </div>
+      </div>
+    </section>
+  </div>
+  <footer class="mk-footer" style="width:100%">
+    <div class="mk-footer-inner">
+      <nav class="mk-footer-nav" aria-label="Footer">
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Product</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Integrations <span class="badge" data-variant="outline">New</span></a></li>
+            <li><a href="#">Demo</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Company</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Press</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Resources</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Community</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Legal</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#" data-cookie-consent-open="lp-consent">Cookie Settings</a></li>
+          </ul>
+        </div>
+      </nav>
+      <hr class="separator mk-footer-rule" >
+      <div class="mk-footer-bottom">
+        <a href="#" class="mk-footer-brand" aria-label="Go to home page"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg><span class="mk-footer-brand-name">Acme Inc.</span></a>
+        <div class="mk-footer-meta">
+          <div class="mk-footer-social">
+            <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+            <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg></a>
+          </div>
+          <p class="mk-footer-copy">© Copyright Acme Inc. 2026. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<div class="fab" data-scroll-top>
+  <a class="btn fab-trigger" href="#top" aria-label="Back to top"><span class="fab-icon" aria-hidden="true"><i data-lucide="arrow-up"></i></span></a>
+</div>
+<div id="lp-consent" class="cookie-consent" data-variant="banner">
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": true, "storage": null, "showFloatingButton": true,
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": "Keeps you signed in." },
+        { "id": "analytics", "name": "Analytics", "category": "functional", "description": "Counts visits so we know what to improve." },
+        { "id": "youtube", "name": "YouTube", "category": "functional", "domain": "youtube.com", "description": "Plays the product video." },
+        { "id": "ads", "name": "Campaigns", "category": "marketing", "description": "Measures our advertising." }
+      ]
+    }
+  </script>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="site-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Site Header</h3>
+      <p class="card-description">A marketing page header: brand, container-aware dropdown nav, and actions. The nav collapses below 30rem container width - pure CSS, popovers native.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="hero.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Hero</h3>
+      <p class="card-description">Badge, headline, description and CTAs - a centered copy block; pair it with the Product Showcase below when you want a video.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="product-showcase.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Product Showcase</h3>
+      <p class="card-description">A 5:3 poster frame with a circular play button; clicking it swaps to the native &lt;video&gt;, which then carries its own controls.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="brand-logos.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Brand Logos</h3>
+      <p class="card-description">A "trusted by" band of real linked brand marks. Each logo links to its site; the SVGs use currentColor so they recolor with the theme.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="section-header.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Section Header</h3>
+      <p class="card-description">Introduces a section with a title, description, and optional action - start-aligned, centered or split, in three title sizes.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="feature-details.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Feature Details</h3>
+      <p class="card-description">Benefits section: two image features split by a vertical rule, plus a row of icon-led cards.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="testimonials.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Testimonials</h3>
+      <p class="card-description">A pull quote with a linked brand lockup, plus review cards whose overlay floats over the photo with backdrop blur.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="stats.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Stats</h3>
+      <p class="card-description">A metric band: rule-led numbers with tabular digits beside a square photo.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="pricing.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Pricing</h3>
+      <p class="card-description">Three plan cards with a billing-period toggle - native radios plus :has() flip every plan price, zero JavaScript.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="blog.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Blog</h3>
+      <p class="card-description">Insights teasers: 3:2 media, category + read-time meta, clamped excerpt, author row from the Avatar component.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="faq.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">FAQ</h3>
+      <p class="card-description">Frequently asked questions as icon cards - every answer visible, indexable, and screen-reader friendly.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="get-in-touch.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Get In Touch</h3>
+      <p class="card-description">A bordered contact card: overlapping grayscale avatars, centered copy, one CTA.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="newsletter.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Newsletter</h3>
+      <p class="card-description">A sign-up band using a real form: native email validation, autofill, and enterkeyhint.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="cookie-consent.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Cookie Consent</h3>
+      <p class="card-description">Service-specific privacy choices, consent-gated scripts and embeds, and EN/DE preferences.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="site-footer.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Site Footer</h3>
+      <p class="card-description">Link columns, a semantic separator, and a brand/social/copyright row in a contentinfo landmark.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

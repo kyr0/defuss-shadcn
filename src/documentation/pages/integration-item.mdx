@@ -1,0 +1,123 @@
+---
+title: "Integration Item"
+description: "Presents one compatible tool with its purpose and connection link - logo, name, category, what it does, and connect or manage."
+slug: "integration-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="integration-item" title="Integration Item" component="integration-item">
+  Presents one compatible tool with its purpose and connection link - logo, name, category, what it does, and connect or manage. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="integration-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: a logo tile (an <code>&lt;img&gt;</code> or a text mark colored by <code>--mk-integration-color</code>), the name, a category, a sentence on what it does and a Button link.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="button.html">Button</DocLink>, <DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="tints derived from the theme tokens"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-integration-item</code>
+    <code>.mk-integration-item-logo</code>
+    <code>.mk-integration-item-body</code>
+    <code>.mk-integration-item-name</code>
+    <code>.mk-integration-item-category</code>
+    <code>.mk-integration-item-desc</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="compact"</code>; <code>--mk-integration-color</code> on the logo.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Directory" hint="Default cards: a text-mark logo tinted by --mk-integration-color, the name (with a Connected badge when set up), the category, what it does and a labelled action." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:1rem;width:100%">
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#24292f" aria-hidden="true">GH</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">GitHub <span class="badge" data-variant="secondary" data-size="sm">Connected</span></h3>
+      <span class="mk-integration-item-category">Engineering</span>
+      <p class="mk-integration-item-desc">Link pull requests to tasks; close them when the PR merges.</p>
+    </div>
+    <a class="btn" data-variant="ghost" data-size="sm" href="#" aria-label="Manage GitHub">Manage</a>
+  </article>
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#a259ff" aria-hidden="true">Fi</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Figma</h3>
+      <span class="mk-integration-item-category">Design</span>
+      <p class="mk-integration-item-desc">Live previews of frames inside any doc.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Figma">Connect</a>
+  </article>
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#4a154b" aria-hidden="true">Sl</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Slack</h3>
+      <span class="mk-integration-item-category">Communication</span>
+      <p class="mk-integration-item-desc">Get updates in channels; turn messages into tasks.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Slack">Connect</a>
+  </article>
+  <article class="mk-integration-item">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#1a73e8" aria-hidden="true">Dr</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Google Drive</h3>
+      <span class="mk-integration-item-category">Files</span>
+      <p class="mk-integration-item-desc">Attach and search Drive files from Acme.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Google Drive">Connect</a>
+  </article>
+</div>
+```
+
+```html example label="Compact" hint="data-variant='compact': one row per tool - for settings pages and sidebars." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:0.5rem;max-width:32rem;width:100%">
+  <article class="mk-integration-item" data-variant="compact">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#24292f" aria-hidden="true">GH</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">GitHub <span class="badge" data-variant="secondary" data-size="sm">Connected</span></h3>
+      <span class="mk-integration-item-category">Engineering</span>
+      <p class="mk-integration-item-desc">Link pull requests to tasks; close them when the PR merges.</p>
+    </div>
+    <a class="btn" data-variant="ghost" data-size="sm" href="#" aria-label="Manage GitHub">Manage</a>
+  </article>
+  <article class="mk-integration-item" data-variant="compact">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#a259ff" aria-hidden="true">Fi</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Figma</h3>
+      <span class="mk-integration-item-category">Design</span>
+      <p class="mk-integration-item-desc">Live previews of frames inside any doc.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Figma">Connect</a>
+  </article>
+  <article class="mk-integration-item" data-variant="compact">
+    <span class="mk-integration-item-logo" style="--mk-integration-color:#4a154b" aria-hidden="true">Sl</span>
+    <div class="mk-integration-item-body">
+      <h3 class="mk-integration-item-name">Slack</h3>
+      <span class="mk-integration-item-category">Communication</span>
+      <p class="mk-integration-item-desc">Get updates in channels; turn messages into tasks.</p>
+    </div>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" aria-label="Connect Slack">Connect</a>
+  </article>
+</div>
+```
+
+<SourceFiles component="integration-item" section="css" />
+
+</DocPage>

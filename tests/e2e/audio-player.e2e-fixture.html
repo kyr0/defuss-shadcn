@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>audio-player e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/audio-player/audio-player.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<article class="mk-audio-player" aria-labelledby="ap-1">
+  <img class="mk-audio-player-cover" src="https://picsum.photos/seed/podcast-calm/400/400" alt="">
+  <div class="mk-audio-player-body">
+    <span class="mk-audio-player-show">The Calm Letter · Audio</span>
+    <h3 class="mk-audio-player-title" id="ap-1">Why we never ship on Fridays</h3>
+    <span class="mk-audio-player-meta">Episode 42 · 14 sec · <time datetime="2026-09-30">30 Sep 2026</time></span>
+  </div>
+  <div class="mk-audio-player-controls">
+    <audio controls preload="none" src="/dist/documentation/videos/demo-audio.mp3">Your browser does not support audio.</audio>
+    <a class="btn" data-variant="ghost" data-size="icon" href="videos/demo-audio.mp3" download aria-label="Download episode 42 (MP3, 85 KB)"><i data-lucide="download"></i></a>
+  </div>
+</article>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div style="display:grid;gap:0.5rem;max-width:30rem;width:100%">
+  <article class="mk-audio-player" data-variant="compact" aria-labelledby="ap-2">
+    <div class="mk-audio-player-body"><h3 class="mk-audio-player-title" id="ap-2">Voice note from Sophie</h3><span class="mk-audio-player-meta">0:14</span></div>
+    <div class="mk-audio-player-controls"><audio controls preload="none" src="/dist/documentation/videos/demo-audio.mp3"></audio></div>
+  </article>
+</div>
+    </section>
+    <!-- Podcast -->
+    <section class="fx">
+<article class="mk-audio-player" data-variant="podcast" aria-labelledby="ap-3">
+  <img class="mk-audio-player-cover" src="https://picsum.photos/seed/podcast-cover2/600/600" alt="Cover of The Calm Letter podcast">
+  <div class="mk-audio-player-body">
+    <span class="mk-audio-player-show">The Calm Letter · Episode 41</span>
+    <h3 class="mk-audio-player-title" id="ap-3">Writing decisions down</h3>
+    <span class="mk-audio-player-meta">With Hannah Lee · 14 sec · <time datetime="2026-09-23">23 Sep 2026</time></span>
+    <div class="mk-audio-player-controls">
+      <audio controls preload="none" src="/dist/documentation/videos/demo-audio.mp3"></audio>
+      <a class="btn" data-variant="outline" data-size="sm" href="videos/demo-audio.mp3" download><i data-lucide="download"></i> MP3</a>
+    </div>
+    <details class="mk-audio-player-notes">
+      <summary>Show notes</summary>
+      <p>Hannah explains how her team replaced status meetings with written decisions - and what they kept.</p>
+      <ul><li>0:00 Intro</li><li>0:05 The decision log</li><li>0:10 What we kept</li></ul>
+    </details>
+  </div>
+</article>
+    </section>
+  </body>
+</html>

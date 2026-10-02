@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>product-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/product-item/product-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Grid -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:2rem 1.25rem;width:100%">
+  <article class="mk-product-item">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-shirt/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-shirt-b/600/750" alt="">
+      <span class="badge mk-product-item-badge" data-variant="default" data-sale>−20%</span>
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p1"><i data-lucide="heart"></i><span class="sr-only">Save Linen shirt to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Linen shirt</a></h3>
+      <p class="mk-product-item-desc">Relaxed fit · Sand</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.5" role="img" aria-label="4.5 out of 5 stars">★★★★★</span>(128)</p>
+      <p class="mk-product-item-price"><strong>€64</strong> <del><span class="sr-only">was </span>€80</del></p>
+      <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#d8c9a9" aria-current="true"><span class="sr-only">Sand</span></li><li style="--mk-swatch:#2f3b4a"><span class="sr-only">Navy</span></li><li style="--mk-swatch:#f2efe8"><span class="sr-only">Off-white</span></li></ul>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen shirt to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-mug/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-mug-b/600/750" alt="">
+      <span class="badge mk-product-item-badge" data-variant="default">New</span>
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p2"><i data-lucide="heart"></i><span class="sr-only">Save Stoneware mug to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Stoneware mug</a></h3>
+      <p class="mk-product-item-desc">Handmade · 350 ml</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.9" role="img" aria-label="4.9 out of 5 stars">★★★★★</span>(412)</p>
+      <p class="mk-product-item-price"><strong>€22</strong></p>
+      <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#c9b49a" aria-current="true"><span class="sr-only">Oat</span></li><li style="--mk-swatch:#5a6b5d"><span class="sr-only">Moss</span></li></ul>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Stoneware mug to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-bag-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p3"><i data-lucide="heart"></i><span class="sr-only">Save Canvas tote to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Canvas tote</a></h3>
+      <p class="mk-product-item-desc">Organic cotton</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.2" role="img" aria-label="4.2 out of 5 stars">★★★★★</span>(57)</p>
+      <p class="mk-product-item-price"><strong>€38</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Canvas tote to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+</div>
+    </section>
+    <!-- Horizontal -->
+    <section class="fx">
+<div style="display:grid;gap:1.5rem;max-width:36rem;width:100%">
+  <article class="mk-product-item" data-variant="horizontal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-shirt/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-shirt-b/600/750" alt="">
+      <span class="badge mk-product-item-badge" data-variant="default" data-sale>−20%</span>
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p4"><i data-lucide="heart"></i><span class="sr-only">Save Linen shirt to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Linen shirt</a></h3>
+      <p class="mk-product-item-desc">Relaxed fit · Sand</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.5" role="img" aria-label="4.5 out of 5 stars">★★★★★</span>(128)</p>
+      <p class="mk-product-item-price"><strong>€64</strong> <del><span class="sr-only">was </span>€80</del></p>
+      <ul class="mk-product-item-swatches" aria-label="Colors"><li style="--mk-swatch:#d8c9a9" aria-current="true"><span class="sr-only">Sand</span></li><li style="--mk-swatch:#2f3b4a"><span class="sr-only">Navy</span></li><li style="--mk-swatch:#f2efe8"><span class="sr-only">Off-white</span></li></ul>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen shirt to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="horizontal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-bag-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p5"><i data-lucide="heart"></i><span class="sr-only">Save Canvas tote to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Canvas tote</a></h3>
+      <p class="mk-product-item-desc">Organic cotton</p>
+      <p class="mk-product-item-rating"><span class="mk-product-item-stars" style="--mk-rating:4.2" role="img" aria-label="4.2 out of 5 stars">★★★★★</span>(57)</p>
+      <p class="mk-product-item-price"><strong>€38</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Canvas tote to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+</div>
+    </section>
+    <!-- Minimal -->
+    <section class="fx">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:1.5rem 1rem;width:100%">
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-vase/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-vase-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm0"><i data-lucide="heart"></i><span class="sr-only">Save Ceramic vase to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Ceramic vase</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€48</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Ceramic vase to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-throw/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-throw-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm1"><i data-lucide="heart"></i><span class="sr-only">Save Wool throw to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Wool throw</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€120</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Wool throw to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-tray/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-tray-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm2"><i data-lucide="heart"></i><span class="sr-only">Save Oak tray to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Oak tray</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€36</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Oak tray to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+  <article class="mk-product-item" data-variant="minimal">
+    <div class="mk-product-item-media">
+      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-napkin/600/750" alt="">
+      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-napkin-b/600/750" alt="">
+      <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="pm3"><i data-lucide="heart"></i><span class="sr-only">Save Linen napkins to your wishlist</span></label>
+    </div>
+    <div class="mk-product-item-body">
+      <h3 class="mk-product-item-name"><a href="#">Linen napkins</a></h3>
+      <p class="mk-product-item-desc">Home</p>
+      <p class="mk-product-item-price"><strong>€28</strong></p>
+    </div>
+    <button class="btn mk-product-item-add" type="button" data-size="sm" aria-label="Add Linen napkins to cart"><i data-lucide="shopping-bag"></i> Add to cart</button>
+  </article>
+</div>
+    </section>
+  </body>
+</html>

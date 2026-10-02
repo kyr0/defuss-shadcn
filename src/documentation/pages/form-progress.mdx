@@ -1,0 +1,91 @@
+---
+title: "Form Progress"
+description: "Shows the current stage and remaining steps of a form - a bar with the step names, numbered steps, segments or one compact line."
+slug: "form-progress"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="form-progress" title="Form Progress" component="form-progress">
+  Shows the current stage and remaining steps of a form - a bar with the step names, numbered steps, segments or one compact line. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="form-progress">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;nav aria-label="Progress"&gt;</code>: "Step 2 of 4 · Company", a <code>&lt;progress&gt;</code>, and an <code>&lt;ol&gt;</code> of steps - done ones with <code>data-done</code>, the current with <code>aria-current="step"</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="progress.html">Progress</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native completion bar"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol" title="an ordered sequence"><code>&lt;ol&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" title="the current page / step / item"><code>aria-current</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-form-progress</code>
+    <code>.mk-form-progress-status</code>
+    <code>.mk-form-progress-steps</code>
+    <code>.mk-form-progress-dot</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>numbered</code>, <code>segments</code>, <code>compact</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="The status line, a native <progress> and the step names - done ones in the foreground color, the current one bold with aria-current=&quot;step&quot;." previewStyle="align-items:stretch;"
+<nav class="mk-form-progress" aria-label="Progress">
+  <div class="mk-form-progress-status"><strong>Step 2 of 4 · Company</strong><span>About 2 minutes left</span></div>
+  <progress class="progress" value="2" max="4" aria-label="Step 2 of 4">2 of 4</progress>
+  <ol class="mk-form-progress-steps">
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+    <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">2</span>Company</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+  </ol>
+</nav>
+```
+
+```html example label="Numbered" hint="data-variant='numbered': numbered circles joined by lines - done steps get a check." previewStyle="align-items:stretch;"
+<nav class="mk-form-progress" data-variant="numbered" aria-label="Progress">
+  <ol class="mk-form-progress-steps">
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Company</li>
+    <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+  </ol>
+</nav>
+```
+
+```html example label="Segments" hint="data-variant='segments': one segment per step, filled up to the current one; the names sit under them." previewStyle="align-items:stretch;"
+<nav class="mk-form-progress" data-variant="segments" aria-label="Progress">
+  <ol class="mk-form-progress-steps">
+    <li data-done><span class="mk-form-progress-dot" aria-hidden="true"><i data-lucide="check"></i></span>Account</li>
+    <li aria-current="step"><span class="mk-form-progress-dot" aria-hidden="true">2</span>Company</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">3</span>Plan</li>
+    <li><span class="mk-form-progress-dot" aria-hidden="true">4</span>Invite</li>
+  </ol>
+</nav>
+```
+
+```html example label="Compact" hint="data-variant='compact': the status line and the bar only - for small screens." previewStyle="align-items:stretch;"
+<nav class="mk-form-progress" data-variant="compact" aria-label="Progress">
+  <div class="mk-form-progress-status"><strong>Step 3 of 4</strong><span>Plan</span></div>
+  <progress class="progress" value="3" max="4" aria-label="Step 3 of 4">3 of 4</progress>
+</nav>
+```
+
+<SourceFiles component="form-progress" section="css" />
+
+</DocPage>

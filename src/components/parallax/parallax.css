@@ -1,0 +1,148 @@
+/* -- Parallax --------------------------------------------------------
+   Depth on scroll, no script. A .parallax scene is a view timeline (its
+   passage through the scrollport); every .parallax-layer moves along it -
+   far layers lag, near ones lead - so the picture separates into planes.
+   A sticky scene (data-sticky + .parallax-stage) pins its stage while you
+   scroll through it: the layers play over that whole distance (zoom, fade,
+   spin). .parallax-drift moves in-flow elements at their own speed (columns
+   of a photo wall), .parallax-reveal fades and lifts elements into view.
+   Unsupported browsers and reduced motion get the still composition. */
+
+@layer components {
+  .parallax {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    view-timeline-name: --parallax;
+    view-timeline-axis: block;
+  }
+
+  /* a layer fills the scene (or the stage) and moves by --parallax-speed:
+     a percentage of its own height over the passage, or a length */
+  .parallax-layer {
+    --_speed: var(--parallax-speed, 0%);
+
+    position: absolute;
+    /* overscan by 1.5 x the absolute speed: the travel never shows an edge */
+    inset: calc(-1.5 * max(var(--_speed), -1 * var(--_speed))) 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+
+    & > img,
+    & > video,
+    & > svg { width: 100%; height: 100%; object-fit: cover; }
+
+    &[data-depth="far"] { --_speed: var(--parallax-speed, 50%); z-index: -4; }
+    &[data-depth="mid"] { --_speed: var(--parallax-speed, 25%); z-index: -3; }
+    &[data-depth="near"] { --_speed: var(--parallax-speed, -15%); z-index: -2; }
+    &[data-depth="front"] { --_speed: var(--parallax-speed, -35%); z-index: 2; }
+  }
+
+  /* the content plane: in flow, interactive */
+  .parallax-content { position: relative; z-index: 1; }
+
+  /* sticky scene: tall (data-sticky sets the scroll distance, default 300%
+     of the stage), the stage pins while the scene passes - the layers play
+     over the pinned stretch (the timeline's contain range) */
+  .parallax[data-sticky] {
+    overflow: visible;
+    height: calc(var(--parallax-stage, 100dvh) * var(--parallax-length, 3));
+  }
+  .parallax-stage {
+    position: sticky;
+    inset-block-start: 0;
+    height: var(--parallax-stage, 100dvh);
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  /* horizontal scenes (a sideways scroller) */
+  .parallax[data-axis="inline"] { view-timeline-axis: inline; }
+
+  /* in-flow elements at their own speed - a length (6rem) or a percentage */
+  .parallax-drift { --_speed: var(--parallax-speed, 4rem); }
+
+  @keyframes parallax-shift {
+    from { translate: 0 calc(var(--_speed) * -1); }
+    to { translate: 0 var(--_speed); }
+  }
+  @keyframes parallax-shift-inline {
+    from { translate: calc(var(--_speed) * -1) 0; }
+    to { translate: var(--_speed) 0; }
+  }
+  @keyframes parallax-zoom {
+    from { scale: 1; }
+    to { scale: var(--parallax-scale, 2.5); }
+  }
+  @keyframes parallax-fade {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes parallax-spin {
+    to { rotate: var(--parallax-turn, 90deg); }
+  }
+  /* pass: in from small and transparent, hold, out large - words flying by */
+  @keyframes parallax-pass {
+    0% { opacity: 0; scale: 0.5; }
+    35%, 65% { opacity: 1; scale: 1; }
+    100% { opacity: 0; scale: 1.8; }
+  }
+  @keyframes parallax-reveal {
+    from { opacity: 0; translate: 0 var(--parallax-rise, 3rem); scale: 0.98; }
+  }
+  @keyframes parallax-reveal-zoom {
+    from { opacity: 0; scale: 0.85; }
+  }
+  @keyframes parallax-reveal-fade {
+    from { opacity: 0; }
+  }
+
+  .parallax-layer,
+  .parallax-drift { animation: parallax-shift linear both; }
+  .parallax[data-axis="inline"] .parallax-layer { animation-name: parallax-shift-inline; }
+  /* layer motions - stacked on the shift */
+  .parallax-layer[data-motion="zoom"] { animation-name: parallax-shift, parallax-zoom; }
+  .parallax-layer[data-motion="fade"] { animation-name: parallax-shift, parallax-fade; }
+  .parallax-layer[data-motion="spin"] { animation-name: parallax-shift, parallax-spin; }
+  .parallax-layer[data-motion="zoom fade"] { animation-name: parallax-shift, parallax-zoom, parallax-fade; }
+  .parallax-layer[data-motion="pass"] { animation-name: parallax-shift, parallax-pass; }
+  .parallax-reveal { animation: parallax-reveal ease-out both; }
+  .parallax-reveal[data-reveal="zoom"] { animation-name: parallax-reveal-zoom; }
+  .parallax-reveal[data-reveal="fade"] { animation-name: parallax-reveal-fade; }
+
+  /* the timelines live in their own rules: a minifier must not fold them
+     into the animation shorthand (reset-only there - dropped) */
+  @supports (animation-timeline: view()) {
+    .parallax-layer {
+      animation-timeline: --parallax;
+      animation-range: cover;
+    }
+    .parallax[data-sticky] .parallax-layer { animation-range: contain; }
+    .parallax-drift {
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    .parallax-reveal {
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+  }
+  /* no scroll timelines: the still composition (no 0s jump to the end) */
+  @supports not (animation-timeline: view()) {
+    .parallax-layer,
+    .parallax-drift,
+    .parallax-reveal { animation: none; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-layer,
+    .parallax-drift,
+    .parallax-reveal { animation: none; }
+  }
+
+  @media (forced-colors: active) {
+    .parallax-layer { forced-color-adjust: none; }
+  }
+}

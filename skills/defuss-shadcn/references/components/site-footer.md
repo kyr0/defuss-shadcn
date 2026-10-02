@@ -66,6 +66,19 @@ The rule is the semantic [Separator](separator.md) (`<hr class="separator">`).
 
 ---
 
+## Variants
+
+| Attribute | Behavior |
+|-----------|----------|
+| `data-variant="simple"` | One row: brand, inline links (`.mk-footer-links`), copyright - wraps when narrow |
+| `data-variant="dark"` | The footer inverts - the page ends on a dark band |
+| `.mk-footer-top` + `.mk-footer-about` | An about column (brand, a line, a newsletter field `.mk-footer-newsletter`, social) beside the link columns |
+| `.mk-footer-locale` | A language Select in the bottom row |
+| `.mk-footer-cta` | A call to action on top of the footer |
+| `.mk-footer-wordmark` | The brand name, huge, closing the page (scales with the footer width) |
+
+---
+
 ## ARIA
 
 | Attribute       | Element       | Purpose                                    |

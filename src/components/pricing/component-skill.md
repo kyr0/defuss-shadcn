@@ -89,6 +89,11 @@ form semantics are browser-provided.
 | attribute       | Purpose                                              |
 |-----------------|------------------------------------------------------|
 | `data-featured` | 2px primary border + "Most Popular" badge on a plan  |
+| `.mk-pricing-compare` | A Table of features per plan - checks, dashes, the featured column tinted with a primary top rule |
+| `data-variant="compact"` (on `.mk-plans`) | Plans as rows of one list: name, price, CTA |
+| `data-variant="wide"` (on `.mk-plan`) | One plan, the features in two columns beside the price (a holo aura around it) |
+| `.mk-pricing-usage` | Usage pricing: a Slider picks the seats, an `<output>` shows the price (a few lines of page script) |
+| `.mk-pricing-cta` | A dark strip - talk to sales |
 
 ---
 
@@ -106,3 +111,6 @@ form semantics are browser-provided.
 - The featured plan swaps 1px→2px border with the same total box size (`border: 2px` on both axes) - no layout shift next to siblings.
 - `data-featured` is a boolean attribute: present = featured. No value needed.
 - Each plan ships two price rows (`.mk-price-yearly` / `.mk-price-monthly`); the checked radio anywhere in `.mk-pricing` flips all of them via `:has()` - both prices stay in the DOM for crawlers.
+- Feature the plan in a gold aura: wrap `<article class="mk-plan" data-featured>` in `<div class="aura aura-gold aura-sm">` (shapes.css) - the light is the border, the plan drops its own. Any aura style works (`aura-holo`, `aura-rainbow`, plain `aura` in the primary colour).
+- The featured plan is labelled with a filled Badge (`.mk-plan-badge`, `data-variant="default"` + a sparkle); a saving next to the yearly choice is a Badge (`data-variant="secondary" data-size="xs"`). The checks sit in tinted discs; `data-muted` on a `.mk-plan-feature` greys out a feature the plan lacks.
+- Three plans side by side from 44rem of section width; the featured one stands taller.

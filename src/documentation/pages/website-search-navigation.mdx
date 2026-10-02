@@ -1,0 +1,259 @@
+---
+title: "Search & Navigation"
+description: "Website blocks - Search & Navigation: Blocks for finding and moving around: the search box and its suggestions, the results summary and results, filter bars and sidebars, active filters, sort and view controls, pagination and load more, tags, category menus, breadcrumbs, on-page contents and quick links."
+slug: "website-search-navigation"
+---
+
+import { DocPage, PageHeader, DocText } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-search-navigation" title="Search & Navigation" introStyle="max-width:42rem;">
+  Blocks for finding and moving around: the search box and its suggestions, the results summary and results, filter bars and sidebars, active filters, sort and view controls, pagination and load more, tags, category menus, breadcrumbs, on-page contents and quick links. Every block is CSS-only and built from the library's components and tokens.
+</PageHeader>
+
+<h2 id="template" class="h2-display">The template</h2>
+
+<DocText>The Search & Navigation blocks composed into one page - the source is the page.</DocText>
+
+```html example label="A search results page" schema="none" hint="Breadcrumbs, a large Search Box, the Category Menu, a Filter Sidebar beside the summary, Active Filters, Sort and View controls, results and pagination - then tags and quick links. Only Search & Navigation blocks." previewStyle="align-items:stretch;"
+<div style="display:flex;flex-direction:column;gap:2.5rem;width:100%">
+  <div class="mk-breadcrumbs">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a class="breadcrumb-link" href="#" aria-label="Home"><i data-lucide="house"></i></a></li>
+        <li class="breadcrumb-separator" aria-hidden="true">/</li>
+        <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Help</a></li>
+        <li class="breadcrumb-separator" aria-hidden="true">/</li>
+        <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Billing</a></li>
+        <li class="breadcrumb-separator" aria-hidden="true">/</li>
+        <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Invoices</span></li>
+      </ol>
+    </nav>
+    <a class="mk-breadcrumbs-back" href="#"><i data-lucide="chevron-left"></i> Billing</a>
+    <h1 class="mk-breadcrumbs-title">Invoices</h1>
+  </div>
+  <search class="mk-search-box" data-variant="large">
+    <form action="#" method="get" role="search">
+      <label class="sr-only" for="sb-2">Search</label>
+      <select class="select" name="scope" aria-label="Search in"><option>Everything</option><option>Docs</option><option>Tasks</option><option>People</option></select>
+      <span class="mk-search-box-field"><i data-lucide="search"></i><input class="input" id="sb-2" type="search" name="q" placeholder="Search docs, tasks and people" autocomplete="off" enterkeyhint="search"><kbd class="kbd">⌘K</kbd></span>
+      <button class="btn" type="submit">Search</button>
+    </form>
+  </search>
+  <nav class="mk-category-menu" aria-label="Categories">
+    <ul>
+      <li><a href="#" aria-current="page"><i data-lucide="layout-grid"></i><span>All</span><small>248</small></a></li>
+      <li><a href="#"><i data-lucide="box"></i><span>Product</span><small>64</small></a></li>
+      <li><a href="#"><i data-lucide="code"></i><span>Engineering</span><small>81</small></a></li>
+      <li><a href="#"><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a></li>
+      <li><a href="#"><i data-lucide="building-2"></i><span>Company</span><small>31</small></a></li>
+      <li><a href="#"><i data-lucide="book-open"></i><span>Guides</span><small>25</small></a></li>
+    </ul>
+  </nav>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:2rem;align-items:start">
+    <aside class="mk-filter-sidebar" aria-labelledby="fs-title">
+      <form action="#" method="get">
+        <div class="mk-filter-sidebar-head"><h2 id="fs-title">Filters</h2><a href="#">Clear all</a></div>
+        <details class="mk-filter-sidebar-group" open><summary>Category</summary><div><fieldset><legend>Category</legend>
+          <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="shirts" checked>Shirts<small>24</small></label>
+          <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="knitwear">Knitwear<small>18</small></label>
+          <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="trousers">Trousers<small>12</small></label>
+          <label class="mk-filter-sidebar-option"><input class="checkbox" type="checkbox" name="cat" value="accessories">Accessories<small>9</small></label>
+        </fieldset></div></details>
+        <details class="mk-filter-sidebar-group" open><summary>Price</summary><div><div class="mk-filter-sidebar-range"><label class="sr-only" for="fs-min">Minimum price</label><input class="input" id="fs-min" name="min" inputmode="numeric" placeholder="€ min"><span>–</span><label class="sr-only" for="fs-max">Maximum price</label><input class="input" id="fs-max" name="max" inputmode="numeric" placeholder="€ max"></div></div></details>
+        <details class="mk-filter-sidebar-group" open><summary>Color</summary><div><fieldset><legend>Color</legend><div class="mk-filter-sidebar-swatches"><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#d8c9a9"><input type="checkbox" name="color" value="sand" checked><span class="sr-only">Sand</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#2f3b4a"><input type="checkbox" name="color" value="navy"><span class="sr-only">Navy</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#f2efe8"><input type="checkbox" name="color" value="off-white"><span class="sr-only">Off-white</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#5a6b5d"><input type="checkbox" name="color" value="moss"><span class="sr-only">Moss</span></label><label class="mk-filter-sidebar-swatch" style="--mk-swatch:#8c3b2f"><input type="checkbox" name="color" value="rust"><span class="sr-only">Rust</span></label></div></fieldset></div></details>
+        <details class="mk-filter-sidebar-group"><summary>Rating</summary><div><fieldset><legend>Minimum rating</legend>
+          <label class="mk-filter-sidebar-option"><input class="radio" type="radio" name="rating" value="4"><span class="mk-filter-sidebar-stars" aria-hidden="true">★★★★☆</span>4 & up</label>
+          <label class="mk-filter-sidebar-option"><input class="radio" type="radio" name="rating" value="3"><span class="mk-filter-sidebar-stars" aria-hidden="true">★★★☆☆</span>3 & up</label>
+        </fieldset></div></details>
+        <div class="mk-filter-sidebar-group"><label class="mk-filter-sidebar-option" for="fs-stock">In stock only<input class="switch" type="checkbox" role="switch" id="fs-stock" name="stock" style="margin-inline-start:auto" checked></label></div>
+        <button class="btn mk-filter-sidebar-apply" type="submit">Show 24 products</button>
+      </form>
+    </aside>
+    <div style="grid-column:span 2;display:grid;gap:1rem;min-width:0">
+      <div class="mk-search-summary" role="status">
+        <p><strong>248 results</strong> for <q>calm sofware</q></p>
+        <span class="mk-search-summary-time">0.04 s</span>
+        <a class="mk-search-summary-clear" href="#">Clear search</a>
+        <p class="mk-search-summary-suggest">Did you mean <a href="#">calm software</a>?</p>
+      </div>
+      <nav class="mk-active-filters" aria-label="Active filters">
+        <ul>
+          <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Category: Shirts"><span>Category:</span> Shirts <i data-lucide="x"></i></a></li>
+          <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Color: Sand"><span>Color:</span> Sand <i data-lucide="x"></i></a></li>
+          <li><a class="mk-active-filters-chip" href="#" aria-label="Remove filter Price: €50 – €100"><span>Price:</span> €50 – €100 <i data-lucide="x"></i></a></li>
+        </ul>
+        <a class="mk-active-filters-clear" href="#">Clear all</a>
+      </nav>
+      <div style="display:flex;justify-content:flex-end"><div class="mk-sort-control"><label for="so-1">Sort by</label><select class="select" id="so-1" name="sort"><option>Most relevant</option><option>Newest</option><option>Price: low to high</option><option>Price: high to low</option></select></div></div>
+      <div style="display:grid;max-width:44rem;width:100%">
+        <article class="mk-search-result">
+          <div class="mk-search-result-body">
+            <p class="mk-search-result-path">Docs <span aria-hidden="true">›</span> Guides</p>
+            <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
+            <p class="mk-search-result-snippet">Every change is written to your device first. When you are back online, Acme sends the changes - <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p>
+            <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
+          </div>
+        </article>
+        <article class="mk-search-result">
+          <div class="mk-search-result-body">
+            <p class="mk-search-result-path">Help <span aria-hidden="true">›</span> Sync &amp; offline</p>
+            <h3 class="mk-search-result-title"><a href="#"><mark>Sync</mark> is stuck on one device</a></h3>
+            <p class="mk-search-result-snippet">If one device stops syncing, sign out and back in. Your unsynced changes are kept on the device until the <mark>sync</mark> completes.</p>
+            <p class="mk-search-result-meta">Help article · 3 min read</p>
+          </div>
+        </article>
+      </div>
+      <div class="mk-collection-pagination">
+        <output class="mk-collection-pagination-range">Showing <strong>13–24</strong> of <strong>248</strong></output>
+        <nav class="pagination" aria-label="Pagination">
+          <ul class="pagination-list">
+            <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><i data-lucide="chevron-left"></i> Previous</a></li>
+            <li><a class="pagination-link" href="#">1</a></li>
+            <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
+            <li><a class="pagination-link" href="#">3</a></li>
+            <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
+            <li><a class="pagination-link" href="#">21</a></li>
+            <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <i data-lucide="chevron-right"></i></a></li>
+          </ul>
+        </nav>
+        <form class="mk-collection-pagination-size" action="#" method="get"><label for="cp-size">Per page</label><select class="select" id="cp-size" name="per"><option>12</option><option>24</option><option>48</option></select></form>
+      </div>
+    </div>
+  </div>
+  <ul class="mk-tag-cloud" aria-label="Topics">
+    <li><a href="#" data-weight="5">design<span class="sr-only"> (128 posts)</span></a></li>
+    <li><a href="#" data-weight="4">engineering<span class="sr-only"> (96 posts)</span></a></li>
+    <li><a href="#" data-weight="4">product<span class="sr-only"> (88 posts)</span></a></li>
+    <li><a href="#" data-weight="3">async<span class="sr-only"> (54 posts)</span></a></li>
+    <li><a href="#" data-weight="3">offline<span class="sr-only"> (47 posts)</span></a></li>
+    <li><a href="#" data-weight="2">accessibility<span class="sr-only"> (31 posts)</span></a></li>
+    <li><a href="#" data-weight="2">hiring<span class="sr-only"> (22 posts)</span></a></li>
+    <li><a href="#" data-weight="1">typography<span class="sr-only"> (12 posts)</span></a></li>
+    <li><a href="#" data-weight="2">culture<span class="sr-only"> (26 posts)</span></a></li>
+    <li><a href="#" data-weight="1">security<span class="sr-only"> (9 posts)</span></a></li>
+    <li><a href="#" data-weight="3">research<span class="sr-only"> (40 posts)</span></a></li>
+    <li><a href="#" data-weight="2">remote<span class="sr-only"> (19 posts)</span></a></li>
+  </ul>
+  <nav class="mk-quick-links" aria-label="Quick links">
+    <ul>
+      <li><a href="#"><i data-lucide="rocket"></i><span><strong>Get started</strong><small>Set up a workspace in five minutes</small></span><i data-lucide="arrow-right"></i></a></li>
+      <li><a href="#"><i data-lucide="credit-card"></i><span><strong>Billing</strong><small>Plans, invoices and seats</small></span><i data-lucide="arrow-right"></i></a></li>
+      <li><a href="#"><i data-lucide="shield-check"></i><span><strong>Security</strong><small>Two-factor, SSO and data</small></span><i data-lucide="arrow-right"></i></a></li>
+      <li><a href="#"><i data-lucide="plug"></i><span><strong>Integrations</strong><small>Connect the tools you use</small></span><i data-lucide="arrow-right"></i></a></li>
+      <li><a href="#"><i data-lucide="activity"></i><span><strong>Status</strong><small>All systems normal</small></span><i data-lucide="arrow-right"></i></a></li>
+      <li><a href="#"><i data-lucide="message-circle"></i><span><strong>Contact</strong><small>Talk to a human</small></span><i data-lucide="arrow-right"></i></a></li>
+    </ul>
+  </nav>
+</div>
+```
+
+<h2 id="blocks" class="h2-display">The blocks</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="search-box.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Search Box</h3>
+      <p class="card-description">Accepts a query and submits a search - with a shortcut hint, as a large hero search with a scope, a pill, or an icon that expands on focus.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="search-suggestions.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Search Suggestions</h3>
+      <p class="card-description">Displays suggested queries or matches while typing - recent searches, matching pages and people grouped in a panel with the match highlighted, or native suggestions.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="search-summary.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Search Summary</h3>
+      <p class="card-description">Shows the active query and number of matches - the count, the query, a "did you mean", how long it took and how to clear it.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="search-result.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Search Result</h3>
+      <p class="card-description">Displays one matching entry with relevant context - where it lives, the title and a snippet with the matches highlighted, as text, with a thumbnail or as a product.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="filter-bar.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Filter Bar</h3>
+      <p class="card-description">Presents compact controls for narrowing a collection - selects, toggle chips and a "more filters" action on one scrollable row, with the count.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="filter-sidebar.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Filter Sidebar</h3>
+      <p class="card-description">Groups detailed filtering controls beside a collection - categories with counts, a price range, colors, rating and availability, each group collapsible.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="active-filters.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Active Filters</h3>
+      <p class="card-description">Displays applied filters with individual and combined removal actions - one chip per filter that removes it, and "clear all".</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="sort-control.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Sort Control</h3>
+      <p class="card-description">Changes the ordering of a collection - a labelled select, a segmented choice, or a button that opens a menu of options.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="view-switcher.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">View Switcher</h3>
+      <p class="card-description">Switches a collection between layouts such as grid and list - icon or labelled segments, and the collection beside them changes with no script.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="collection-pagination.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Collection Pagination</h3>
+      <p class="card-description">Navigates between discrete pages of a collection - the range shown, the Pagination component and how many per page; or simply previous / next.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="load-more.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Load More</h3>
+      <p class="card-description">Loads another batch into the current collection - how many are shown, a progress bar and the button, with a busy state while loading.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="tag-cloud.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Tag Cloud</h3>
+      <p class="card-description">Displays linked tags with optional frequency-based emphasis - five weights from data-weight, or even pills with counts.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="tag-list.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Tag List</h3>
+      <p class="card-description">Displays the tags associated with a content item - outlined chips, plain hashtags, or colored labels.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="category-menu.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Category Menu</h3>
+      <p class="card-description">Navigates between content categories - underlined tabs that scroll sideways, pills, a vertical list with counts, or icon tiles.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="breadcrumbs.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Breadcrumbs</h3>
+      <p class="card-description">Shows the current position within a content hierarchy - the trail above the page title, collapsing to a back link on small screens, or hiding the middle levels in a menu.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="contents.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Contents</h3>
+      <p class="card-description">Links to headings within the current page - an "on this page" rail with the current section marked, a numbered box at the top, or a disclosure for small screens.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="quick-links.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Quick Links</h3>
+      <p class="card-description">Groups shortcuts to frequently needed destinations - icon tiles with a line each, a compact list, or chips.</p>
+    </div>
+  </a>
+</div>
+
+</DocPage>

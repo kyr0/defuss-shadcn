@@ -1,0 +1,63 @@
+---
+title: "Load More"
+description: "Loads another batch into the current collection - how many are shown, a progress bar and the button, with a busy state while loading."
+slug: "load-more"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="load-more" title="Load More" component="load-more">
+  Loads another batch into the current collection - how many are shown, a progress bar and the button, with a busy state while loading. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="load-more">
+  <SkillField label="Native basis">
+<SkillText>A centered block: "Showing 24 of 248", a <code>&lt;progress&gt;</code>, and a Button-styled <code>&lt;a href="?page=3"&gt;</code>; while loading, set <code>aria-busy="true"</code> on it - CSS shows the spinner and dims it.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="progress.html">Progress</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="spinner.html">Spinner</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress" title="native completion bar"><code>&lt;progress&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="a computed result"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="motion stands still on request"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-load-more</code>
+    <code>.mk-load-more-button</code>
+    <code>.mk-load-more-spin</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>aria-busy="true"</code> on the button while loading.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="How many are shown (<output>), a thin <progress>, and a link-button to the next page - it works without script; your script can fetch the batch instead." previewStyle="align-items:stretch;"
+<div class="mk-load-more">
+  <output>Showing <strong>24</strong> of <strong>248</strong> projects</output>
+  <progress class="progress" value="24" max="248" aria-label="24 of 248 shown"></progress>
+  <a class="btn mk-load-more-button" data-variant="outline" href="#">Load 24 more <i data-lucide="chevron-down"></i><span class="mk-load-more-spin" aria-hidden="true"></span></a>
+</div>
+```
+
+```html example label="Loading" hint="aria-busy=&quot;true&quot; on the button while the next batch loads: CSS swaps the arrow for a spinner (slower under reduced motion) and ignores clicks." previewStyle="align-items:stretch;"
+<div class="mk-load-more">
+  <output>Showing <strong>48</strong> of <strong>248</strong> projects</output>
+  <progress class="progress" value="48" max="248" aria-label="48 of 248 shown"></progress>
+  <a class="btn mk-load-more-button" data-variant="outline" href="#" aria-busy="true">Loading… <i data-lucide="chevron-down"></i><span class="mk-load-more-spin" aria-hidden="true"></span></a>
+</div>
+```
+
+<SourceFiles component="load-more" section="css" />
+
+</DocPage>

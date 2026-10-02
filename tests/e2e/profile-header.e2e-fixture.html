@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>profile-header e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/profile-header/profile-header.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<header class="mk-profile-header">
+  <img class="mk-profile-header-cover" src="https://picsum.photos/seed/profile-cover/1400/400" alt="">
+  <div class="mk-profile-header-body">
+    <div class="mk-profile-header-top">
+      <span class="avatar" data-size="xl"><img class="avatar-image" src="/dist/documentation/images/mk-portrait2.png" alt=""></span>
+      <div class="mk-profile-header-actions">
+        <a class="btn" href="#">Follow</a>
+        <a class="btn" data-variant="outline" href="#">Message</a>
+        <button class="btn" data-variant="outline" data-size="icon" type="button" aria-label="More actions"><i data-lucide="ellipsis"></i></button>
+      </div>
+    </div>
+    <div>
+      <h1 class="mk-profile-header-name">Hannah Lee <span class="badge" data-variant="secondary" data-size="sm">Design Lead</span></h1>
+      <p class="mk-profile-header-handle">@hannahdesigns</p>
+    </div>
+    <p class="mk-profile-header-bio">Making software quieter at Northwind. Writing about calm design, type and the space between things.</p>
+    <ul class="mk-profile-header-meta">
+      <li><i data-lucide="map-pin"></i>Lisbon, Portugal</li>
+      <li><i data-lucide="link"></i><a href="#">hannahlee.design</a></li>
+      <li><i data-lucide="calendar"></i>Joined <time datetime="2021-03">March 2021</time></li>
+    </ul>
+    <dl class="mk-profile-header-stats"><div><dt>followers</dt><dd>1.2k</dd></div><div><dt>following</dt><dd>318</dd></div><div><dt>posts</dt><dd>94</dd></div></dl>
+  </div>
+</header>
+    </section>
+    <!-- Compact -->
+    <section class="fx">
+<div style="display:grid;gap:0.75rem;max-width:34rem;width:100%">
+  <header class="mk-profile-header" data-variant="compact">
+    <div class="mk-profile-header-body">
+      <span class="avatar" data-size="lg"><img class="avatar-image" src="/dist/documentation/images/mk-portrait.png" alt=""></span>
+      <h2 class="mk-profile-header-name">Sophie Tan</h2>
+      <p class="mk-profile-header-handle">@sophie_builds · Lisbon</p>
+      <div class="mk-profile-header-actions"><a class="btn" data-variant="outline" data-size="sm" href="#">Follow</a></div>
+    </div>
+  </header>
+</div>
+    </section>
+  </body>
+</html>

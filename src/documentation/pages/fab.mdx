@@ -42,7 +42,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-position</code> (<code>bottom-end</code>, <code>bottom-start</code>, <code>top-end</code>, <code>top-start</code>, <code>bottom-center</code>), <code>data-direction</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>), <code>data-layout="flower"</code>, <code>data-size</code> (<code>sm</code>, <code>md</code>, <code>lg</code>), <code>data-attach="container"</code>, <code>data-backdrop</code>, <code>data-shrink="scroll"</code>.</SkillText>
+<SkillText><code>data-position</code> (<code>bottom-end</code>, <code>bottom-start</code>, <code>top-end</code>, <code>top-start</code>, <code>bottom-center</code>), <code>data-direction</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>), <code>data-layout="flower"</code>, <code>data-size</code> (<code>sm</code>, <code>md</code>, <code>lg</code>), <code>data-attach="container"</code>, <code>data-backdrop</code>, <code>data-shrink="scroll"</code>. <code>data-scroll-top</code> (a back-to-top link that fades in after scrolling; <code>--fab-scroll-top-from</code> / <code>-to</code>).</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -226,6 +226,29 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </div>
   <div class="fab" data-attach="container" data-shrink="scroll" style="--fab-timeline: --inbox;">
     <button class="btn fab-trigger" aria-label="Compose"><span class="fab-icon" aria-hidden="true"><i data-lucide="pencil"></i></span><span class="fab-text">Compose</span></button>
+  </div>
+</div>
+```
+
+```html example label="Back to top" hint="data-scroll-top: the trigger is a link to the start - href='#top' scrolls a page to its top natively (no element needed); in a scrolling box it links to an element at the box's start. A scroll-driven animation keeps it hidden (and unfocusable) near the top and fades it in after 160px; the jump glides unless reduced motion is asked for. No script." previewStyle="align-items:stretch;"
+<div style="position:relative;height:18rem;timeline-scope:--feed;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+  <div style="display:grid;grid-auto-rows:max-content;gap:0.75rem;height:100%;overflow-y:auto;padding:1rem;scroll-timeline:--feed;scroll-behavior:smooth;">
+    <p class="text-sm text-muted-foreground m-0" id="feed-top">Scroll down - the arrow appears; click it and the list glides back here.</p>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 1</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 2</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 3</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 4</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 5</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 6</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 7</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 8</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 9</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 10</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 11</p></div></div>
+    <div class="card" data-size="sm"><div class="card-content"><p class="m-0">Story 12</p></div></div>
+  </div>
+  <div class="fab" data-attach="container" data-scroll-top style="--fab-timeline: --feed;">
+    <a class="btn fab-trigger" href="#feed-top" aria-label="Back to top"><span class="fab-icon" aria-hidden="true"><i data-lucide="arrow-up"></i></span></a>
   </div>
 </div>
 ```

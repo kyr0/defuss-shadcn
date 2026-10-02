@@ -47,6 +47,84 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </section>
 ```
 
+```html example label="Split with media" hint="data-variant='split': copy beside a picture - two columns once the hero is 40rem wide, stacked below that. An announcement pill (.mk-hero-pill) sits above the title." previewStyle="align-items:stretch;"
+<section class="mk-hero" data-variant="split" style="width:100%">
+  <div class="mk-hero-copy">
+    <a class="mk-hero-pill" href="#"><span class="badge" data-variant="default" data-size="sm">New</span>Acme 4.0 is here - offline sync for every team <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    <h1 class="mk-hero-title">Plan, write and ship - in one calm place</h1>
+    <p class="mk-hero-desc">Roadmaps, docs and tasks share one surface, so your team stops switching tabs and starts finishing.</p>
+    <div class="mk-hero-actions">
+      <a class="btn" data-size="lg" href="#">Start for free</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">Book a demo</a>
+    </div>
+  </div>
+  <figure class="mk-hero-media"><img src="https://picsum.photos/seed/hero-team/1200/900" alt="A team planning at a table"></figure>
+</section>
+```
+
+```html example label="Background image" hint="data-variant='image': a full-bleed photo (.mk-hero-bg) behind the copy; a dark scrim keeps the white text readable on any picture." previewStyle="align-items:stretch;"
+<section class="mk-hero" data-variant="image" style="width:100%">
+  <img class="mk-hero-bg" src="https://picsum.photos/seed/hero-mountains/1600/900" alt="">
+  <div class="mk-hero-copy">
+    <span class="mk-hero-badge">Annual retreat 2026</span>
+    <h1 class="mk-hero-title">Work from anywhere. Stay in sync.</h1>
+    <p class="mk-hero-desc">Offline-first sync means your notes, plans and decisions travel with you - from the office to the mountains.</p>
+    <div class="mk-hero-actions">
+      <a class="btn" data-variant="secondary" data-size="lg" href="#">Get the app</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">How sync works</a>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Glow" hint="data-variant='glow': a soft light in the theme's primary and chart colors over a grid that fades out; the title fades into the page. With social proof (.mk-hero-proof) below the actions." previewStyle="align-items:stretch;"
+<section class="mk-hero" data-variant="glow" style="width:100%">
+  <div class="mk-hero-copy">
+    <a class="mk-hero-pill" href="#"><span class="badge" data-variant="default" data-size="sm">New</span>Acme 4.0 is here - offline sync for every team <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    <h1 class="mk-hero-title">The workspace that thinks with you</h1>
+    <p class="mk-hero-desc">Acme drafts, summarizes and connects your team's knowledge - so every decision starts informed.</p>
+    <div class="mk-hero-actions">
+      <a class="btn" data-size="lg" href="#">Try it free</a>
+      <a class="btn" data-variant="ghost" data-size="lg" href="#">Watch the demo <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </div>
+    <div class="mk-hero-proof">
+      <div class="avatar-group"><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span></div>
+      <div><span class="mk-hero-stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span><span>Loved by <strong>12,000+</strong> teams</span></div>
+    </div>
+  </div>
+</section>
+```
+
+```html example label="Signup" hint="data-align='start' with an inline email form (.mk-hero-form) - Input + Button on one row once there is room - and a note below it." previewStyle="align-items:stretch;"
+<section class="mk-hero" data-align="start" style="width:100%">
+  <div class="mk-hero-copy">
+    <span class="mk-hero-badge">Private beta</span>
+    <h1 class="mk-hero-title">Be first to try Acme Spaces</h1>
+    <p class="mk-hero-desc">Shared spaces for every project - join the waitlist and we'll send your invite this month.</p>
+    <form class="mk-hero-form" action="#" method="post">
+      <label class="sr-only" for="hero-email">Email address</label>
+      <input class="input" id="hero-email" type="email" name="email" placeholder="you@company.com" required autocomplete="email" enterkeyhint="send">
+      <button class="btn" type="submit">Join the waitlist</button>
+    </form>
+    <p class="mk-hero-note">2,400 people joined this week. No spam, ever.</p>
+  </div>
+</section>
+```
+
+```html example label="With the product" hint=".mk-hero-stage: the product under the copy - a framed screenshot with a deep shadow whose bottom edge fades into the page." previewStyle="align-items:stretch;"
+<section class="mk-hero" style="width:100%">
+  <div class="mk-hero-copy">
+    <h1 class="mk-hero-title">Your team's second brain</h1>
+    <p class="mk-hero-desc">Search everything your team ever wrote - and get an answer, not a list of links.</p>
+    <div class="mk-hero-actions">
+      <a class="btn" data-size="lg" href="#">Get started</a>
+      <a class="btn" data-variant="outline" data-size="lg" href="#">See pricing</a>
+    </div>
+  </div>
+  <figure class="mk-hero-stage"><img src="images/mk-wide3.png" alt="Acme search answering a question"></figure>
+</section>
+```
+
 <SourceFiles component="hero" section="css" />
 
 </DocPage>

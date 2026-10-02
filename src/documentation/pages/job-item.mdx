@@ -1,0 +1,177 @@
+---
+title: "Job Item"
+description: "Previews one vacancy with its role, location, and employment type - as a list row or a card, grouped by department."
+slug: "job-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="job-item" title="Job Item" component="job-item">
+  Previews one vacancy with its role, location, and employment type - as a list row or a card, grouped by department. Part of the <DocLink href="website-company.html">Company</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="job-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code> whose title link covers the whole item (a stretched <code>::after</code>), the facts as a <code>&lt;ul&gt;</code> with icons, the salary and a <code>&lt;time&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="a self-contained item"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="machine-readable dates"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent styles react to a checked input or a state inside"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-job-item</code>
+    <code>.mk-job-item-title</code>
+    <code>.mk-job-item-main</code>
+    <code>.mk-job-item-meta</code>
+    <code>.mk-job-item-side</code>
+    <code>.mk-job-item-salary</code>
+    <code>.mk-job-item-posted</code>
+    <code>.mk-job-group</code>
+    <code>.mk-job-group-title</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="card"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Grouped list" hint="Default rows grouped by department (.mk-job-group): the title link covers the row, the facts carry icons, salary and date sit right; the arrow slides on hover." previewStyle="align-items:stretch;"
+<div style="display:grid;gap:2rem;width:100%">
+  <section class="mk-job-group" aria-labelledby="jobs-eng">
+    <h2 class="mk-job-group-title" id="jobs-eng">Engineering · 3 roles</h2>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Senior Sync Engineer</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Engineering</li>
+          <li><i data-lucide="map-pin"></i>Lisbon or remote (EU)</li>
+          <li><i data-lucide="clock"></i>Full-time</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€95k – €120k</span>
+        <time class="mk-job-item-posted" datetime="2026-09-29">Posted 2 days ago</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Frontend Engineer, Editor</a></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Engineering</li>
+          <li><i data-lucide="map-pin"></i>Berlin</li>
+          <li><i data-lucide="clock"></i>Full-time</li>
+          <li><i data-lucide="wifi"></i>Hybrid</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€80k – €100k</span>
+        <time class="mk-job-item-posted" datetime="2026-09-24">Posted 1 week ago</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Site Reliability Engineer</a></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Engineering</li>
+          <li><i data-lucide="map-pin"></i>Remote (EU)</li>
+          <li><i data-lucide="clock"></i>Full-time</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€90k – €110k</span>
+        <time class="mk-job-item-posted" datetime="2026-09-10">Posted 3 weeks ago</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+  </section>
+  <section class="mk-job-group" aria-labelledby="jobs-design">
+    <h2 class="mk-job-group-title" id="jobs-design">Design · 1 role</h2>
+    <article class="mk-job-item">
+      <div class="mk-job-item-main">
+        <h3 class="mk-job-item-title"><a href="#">Product Designer, Mobile</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3>
+        <ul class="mk-job-item-meta">
+          <li><i data-lucide="briefcase"></i>Design</li>
+          <li><i data-lucide="map-pin"></i>Lisbon</li>
+          <li><i data-lucide="clock"></i>Part-time</li>
+          <li><i data-lucide="wifi"></i>Hybrid</li>
+        </ul>
+      </div>
+      <div class="mk-job-item-side">
+        <span class="mk-job-item-salary">€55k – €70k (80%)</span>
+        <time class="mk-job-item-posted" datetime="2026-10-01">Posted today</time>
+      </div>
+      <i data-lucide="arrow-right"></i>
+    </article>
+  </section>
+</div>
+```
+
+```html example label="Cards" hint="data-variant='card': bordered cards for a grid of featured roles - the arrow moves to the corner." previewStyle="align-items:stretch;"
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+  <article class="mk-job-item" data-variant="card">
+    <div class="mk-job-item-main">
+      <h3 class="mk-job-item-title"><a href="#">Head of Support</a></h3>
+      <ul class="mk-job-item-meta">
+        <li><i data-lucide="briefcase"></i>Customer</li>
+        <li><i data-lucide="map-pin"></i>Lisbon</li>
+        <li><i data-lucide="clock"></i>Full-time</li>
+      </ul>
+    </div>
+    <div class="mk-job-item-side">
+      <span class="mk-job-item-salary">€75k – €90k</span>
+      <time class="mk-job-item-posted" datetime="2026-09-29">2 days ago</time>
+    </div>
+    <i data-lucide="arrow-right"></i>
+  </article>
+  <article class="mk-job-item" data-variant="card">
+    <div class="mk-job-item-main">
+      <h3 class="mk-job-item-title"><a href="#">Data Engineer</a></h3>
+      <ul class="mk-job-item-meta">
+        <li><i data-lucide="briefcase"></i>Engineering</li>
+        <li><i data-lucide="map-pin"></i>Remote (EU)</li>
+        <li><i data-lucide="clock"></i>Contract</li>
+      </ul>
+    </div>
+    <div class="mk-job-item-side">
+      <span class="mk-job-item-salary">€600 / day</span>
+      <time class="mk-job-item-posted" datetime="2026-09-26">5 days ago</time>
+    </div>
+    <i data-lucide="arrow-right"></i>
+  </article>
+  <article class="mk-job-item" data-variant="card">
+    <div class="mk-job-item-main">
+      <h3 class="mk-job-item-title"><a href="#">Content Designer</a></h3>
+      <ul class="mk-job-item-meta">
+        <li><i data-lucide="briefcase"></i>Design</li>
+        <li><i data-lucide="map-pin"></i>Berlin</li>
+        <li><i data-lucide="clock"></i>Full-time</li>
+      </ul>
+    </div>
+    <div class="mk-job-item-side">
+      <span class="mk-job-item-salary">€60k – €75k</span>
+      <time class="mk-job-item-posted" datetime="2026-09-24">1 week ago</time>
+    </div>
+    <i data-lucide="arrow-right"></i>
+  </article>
+</div>
+```
+
+<SourceFiles component="job-item" section="css" />
+
+</DocPage>

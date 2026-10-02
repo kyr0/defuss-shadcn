@@ -1,0 +1,79 @@
+---
+title: "Quick Links"
+description: "Groups shortcuts to frequently needed destinations - icon tiles with a line each, a compact list, or chips."
+slug: "quick-links"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="quick-links" title="Quick Links" component="quick-links">
+  Groups shortcuts to frequently needed destinations - icon tiles with a line each, a compact list, or chips. Part of the <DocLink href="website-search-navigation.html">Search & Navigation</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="quick-links">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;nav aria-label="Quick links"&gt;</code> with a list of links: an icon, a title, a short description and an arrow that slides on hover.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav" title="a navigation landmark"><code>&lt;nav&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-quick-links</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant</code>: <code>list</code>, <code>chips</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Tiles" hint="Tiles in a grid: an icon, the destination, a line on it and an arrow that slides on hover." previewStyle="align-items:stretch;"
+<nav class="mk-quick-links" aria-label="Quick links">
+  <ul>
+    <li><a href="#"><i data-lucide="rocket"></i><span><strong>Get started</strong><small>Set up a workspace in five minutes</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="credit-card"></i><span><strong>Billing</strong><small>Plans, invoices and seats</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="shield-check"></i><span><strong>Security</strong><small>Two-factor, SSO and data</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="plug"></i><span><strong>Integrations</strong><small>Connect the tools you use</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="activity"></i><span><strong>Status</strong><small>All systems normal</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="message-circle"></i><span><strong>Contact</strong><small>Talk to a human</small></span><i data-lucide="arrow-right"></i></a></li>
+  </ul>
+</nav>
+```
+
+```html example label="List" hint="data-variant='list': rows separated by rules - for a sidebar." previewStyle="align-items:stretch;"
+<nav class="mk-quick-links" data-variant="list" aria-label="Quick links">
+  <ul>
+    <li><a href="#"><i data-lucide="rocket"></i><span><strong>Get started</strong><small>Set up a workspace in five minutes</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="credit-card"></i><span><strong>Billing</strong><small>Plans, invoices and seats</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="shield-check"></i><span><strong>Security</strong><small>Two-factor, SSO and data</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="plug"></i><span><strong>Integrations</strong><small>Connect the tools you use</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="activity"></i><span><strong>Status</strong><small>All systems normal</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="message-circle"></i><span><strong>Contact</strong><small>Talk to a human</small></span><i data-lucide="arrow-right"></i></a></li>
+  </ul>
+</nav>
+```
+
+```html example label="Chips" hint="data-variant='chips': icon and name only, as pills." previewStyle="align-items:stretch;"
+<nav class="mk-quick-links" data-variant="chips" aria-label="Quick links">
+  <ul>
+    <li><a href="#"><i data-lucide="rocket"></i><span><strong>Get started</strong><small>Set up a workspace in five minutes</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="credit-card"></i><span><strong>Billing</strong><small>Plans, invoices and seats</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="shield-check"></i><span><strong>Security</strong><small>Two-factor, SSO and data</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="plug"></i><span><strong>Integrations</strong><small>Connect the tools you use</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="activity"></i><span><strong>Status</strong><small>All systems normal</small></span><i data-lucide="arrow-right"></i></a></li>
+    <li><a href="#"><i data-lucide="message-circle"></i><span><strong>Contact</strong><small>Talk to a human</small></span><i data-lucide="arrow-right"></i></a></li>
+  </ul>
+</nav>
+```
+
+<SourceFiles component="quick-links" section="css" />
+
+</DocPage>

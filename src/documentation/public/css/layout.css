@@ -335,9 +335,11 @@ details[open] > summary svg:first-child:not(.sidebar-icon > svg) {
 }
 
 /* -- Code block --------------------------------------------
-   Terminal lines (.mockup-code > pre) are exempt: this sheet is unlayered
-   and would outrank the component's own layered styles. */
-pre:not(.mockup-code > pre) {
+   Terminal lines (.mockup-code > pre) and code inside website blocks
+   ([class*="mk-"] - Code Example, Docs Content, Article Body…) are exempt:
+   this sheet is unlayered and would outrank the components' own layered
+   styles. */
+pre:not(.mockup-code > pre, [class*="mk-"] pre) {
   background: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -348,7 +350,7 @@ pre:not(.mockup-code > pre) {
   font-size: 0.8125rem;
   line-height: 1.8;
 }
-code:not(.mockup-code code) {
+code:not(.mockup-code code, [class*="mk-"] code) {
   font-family: var(--font-mono);
   font-size: 0.8125em;
   background: var(--muted);

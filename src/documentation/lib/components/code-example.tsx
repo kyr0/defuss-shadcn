@@ -26,6 +26,22 @@ import { repoFile } from '../repo';
  * handheld; Rotate flips the box for landscape. Desktop / Full measure the
  * content instead and reset the height field (placeholder "Full").
  */
+/**
+ * The example frame's sandbox. Every example runs in an opaque origin
+ * (allow-scripts allow-forms) - isolated from the docs page and from each
+ * other. `sandbox="embed"` is the one opt-in, for an example that hosts a
+ * third-party player (YouTube): such players need their own origin's storage,
+ * which a nested frame only gets when this frame is same-origin - and the
+ * player's permissions must be delegated through this frame.
+ */
+export const EXAMPLE_SANDBOX = {
+  default: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write' },
+  embed: {
+    sandbox: 'allow-scripts allow-forms allow-same-origin allow-presentation allow-popups',
+    allow: 'clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture',
+  },
+} as const;
+
 export interface CodeExampleProps {
   /** the exact example fence body - displayed AND executed (§4 one source) */
   source: string;
@@ -35,6 +51,8 @@ export interface CodeExampleProps {
   label?: string;
   /** demo hint (rendered like <ExampleHint>) */
   hint?: string;
+  /** fence attr sandbox="embed": the opt-in for a third-party player (EXAMPLE_SANDBOX) */
+  sandbox?: string;
   /** min frame height in rem (fence attr height="N") - floors the sandbox while
    * the true content height arrives (mirrors the old previewStyle min-height) */
   height?: string;
@@ -88,9 +106,11 @@ function showsStateTab(schemaText: string | null): boolean {
 const H2_LABEL = 'text-sm font-medium mb-2';
 const H2_HINT = 'text-xs text-muted-foreground mb-3';
 
-export function CodeExample({ source, component, label, hint, height, mode, previewStyle, children, code, preview, previewSource }: CodeExampleProps) {
+export function CodeExample({ source, component, label, hint, height, mode, previewStyle, sandbox, children, code, preview, previewSource }: CodeExampleProps) {
   const problems = codeExampleProblems({ source, children, code, preview, previewSource });
   if (problems.length) throw new Error(`CodeExample: ${problems.join(' | ')}`);
+  if (sandbox !== undefined && sandbox !== 'embed') throw new Error(`CodeExample: sandbox="${sandbox}" - the only opt-in is sandbox="embed"`);
+  const frame = EXAMPLE_SANDBOX[sandbox === 'embed' ? 'embed' : 'default'];
   const schemaText = readSchema(component);
   const stateTab = showsStateTab(schemaText);
   const name = label ?? `${component ?? 'Example'} example`;
@@ -135,7 +155,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
               grip (240..1600 w, 240..1400 h). */}
           <div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">
             <div class="ce-device">
-              <iframe class="code-example-frame" sandbox="allow-scripts allow-forms" allow="clipboard-write" title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
+              <iframe class="code-example-frame" sandbox={frame.sandbox} allow={frame.allow} {...(sandbox === 'embed' ? { allowfullscreen: '' } : {})} title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
               <span class="ce-device-island" aria-hidden="true"></span>
               <span class="ce-device-home" aria-hidden="true"></span>
             </div>

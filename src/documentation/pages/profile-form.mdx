@@ -1,0 +1,87 @@
+---
+title: "Profile Form"
+description: "Edits a user's personal information - photo, name, username, bio, website and time zone - as settings rows with a description beside each group."
+slug: "profile-form"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="profile-form" title="Profile Form" component="profile-form">
+  Edits a user's personal information - photo, name, username, bio, website and time zone - as settings rows with a description beside each group. Part of the <DocLink href="website-account-states.html">Account & States</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="profile-form">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code> of sections - a heading and a description beside the fields (from 48rem): the photo (Avatar + file input), names with <code>autocomplete</code>, a username with a prefix addon, a bio Textarea with <code>maxlength</code>, a URL and a time-zone Select; a sticky action bar.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="avatar.html">Avatar</DocLink>, <DocLink href="input.html">Input</DocLink>, <DocLink href="textarea.html">Textarea</DocLink>, <DocLink href="select.html">Select</DocLink>, <DocLink href="label.html">Label</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="the browser fills known fields"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, type and pattern - the browser checks the form"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file" title="native file picking"><code>&lt;input type="file"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="the layout follows the block width, not the viewport"><code>Container queries</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-profile-form</code>
+    <code>.mk-profile-form-section</code>
+    <code>.mk-profile-form-fields</code>
+    <code>.mk-profile-form-field</code>
+    <code>.mk-profile-form-hint</code>
+    <code>.mk-profile-form-photo</code>
+    <code>.mk-profile-form-upload</code>
+    <code>.mk-profile-form-prefix</code>
+    <code>.mk-profile-form-actions</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>None.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Settings rows - a heading and description beside the fields from 48rem: the photo (a button-styled label around a file input), names with autocomplete, a username with a prefix addon, a bio with maxlength, website and time zone; actions stick to the bottom." previewStyle="align-items:stretch;"
+<section class="mk-profile-form" aria-labelledby="pf-title">
+  <h2 id="pf-title" class="sr-only">Profile settings</h2>
+  <form action="#" method="post">
+    <div class="mk-profile-form-section">
+      <div><h2>Photo</h2><p>Shown next to everything you write.</p></div>
+      <div class="mk-profile-form-photo">
+        <span class="avatar" data-size="xl"><img class="avatar-image" src="images/mk-portrait2.png" alt="Current photo"></span>
+        <label class="btn mk-profile-form-upload" data-variant="outline" data-size="sm"><i data-lucide="upload"></i> Upload new<input type="file" name="photo" accept="image/*"></label>
+        <button class="btn" data-variant="ghost" data-size="sm" type="button">Remove</button>
+      </div>
+    </div>
+    <div class="mk-profile-form-section">
+      <div><h2>Personal</h2><p>Your name as colleagues see it.</p></div>
+      <div class="mk-profile-form-fields">
+        <div class="mk-profile-form-field"><label class="label" for="pf-first">First name</label><input class="input" id="pf-first" name="given-name" autocomplete="given-name" value="Hannah"></div>
+        <div class="mk-profile-form-field"><label class="label" for="pf-last">Last name</label><input class="input" id="pf-last" name="family-name" autocomplete="family-name" value="Lee"></div>
+        <div class="mk-profile-form-field" data-span="full"><label class="label" for="pf-user">Username</label><div class="mk-profile-form-prefix"><span id="pf-user-prefix">acme.com/</span><input class="input" id="pf-user" name="username" autocomplete="username" value="hannahdesigns" pattern="[a-z0-9_]{3,20}" aria-describedby="pf-user-prefix pf-user-hint"></div><span class="mk-profile-form-hint" id="pf-user-hint">3–20 lowercase letters, numbers or _</span></div>
+        <div class="mk-profile-form-field" data-span="full"><label class="label" for="pf-bio">Bio</label><textarea class="textarea" id="pf-bio" name="bio" rows="3" maxlength="160" aria-describedby="pf-bio-hint">Making software quieter at Northwind.</textarea><span class="mk-profile-form-hint" id="pf-bio-hint">Up to 160 characters.</span></div>
+      </div>
+    </div>
+    <div class="mk-profile-form-section">
+      <div><h2>Details</h2><p>Optional.</p></div>
+      <div class="mk-profile-form-fields">
+        <div class="mk-profile-form-field"><label class="label" for="pf-url">Website</label><input class="input" id="pf-url" type="url" name="url" autocomplete="url" placeholder="https://"></div>
+        <div class="mk-profile-form-field"><label class="label" for="pf-tz">Time zone</label><select class="select" id="pf-tz" name="tz"><option>Europe/Lisbon (WEST)</option><option>Europe/Berlin (CEST)</option><option>America/Montreal (EDT)</option></select></div>
+      </div>
+    </div>
+    <div class="mk-profile-form-actions"><button class="btn" data-variant="ghost" type="reset">Cancel</button><button class="btn" type="submit">Save changes</button></div>
+  </form>
+</section>
+```
+
+<SourceFiles component="profile-form" section="css" />
+
+</DocPage>

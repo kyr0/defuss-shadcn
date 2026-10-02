@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>playlist-item e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+
+    <link rel="stylesheet" href="/dist/components/playlist-item/playlist-item.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Tracks -->
+    <section class="fx">
+<ol class="mk-playlist" role="radiogroup" aria-label="Album: Quiet Hours" style="max-width:34rem">
+  <li class="mk-playlist-item">
+    <label>
+      <input type="radio" name="track" value="1">
+      <span class="mk-playlist-item-index" aria-hidden="true"><span>1</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+      <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/pl-1/160/160" alt="">
+      <span class="mk-playlist-item-text"><strong>First Light</strong><small>Nordlicht</small></span>
+      <span class="mk-playlist-item-duration">3:42</span>
+    </label>
+  </li>
+  <li class="mk-playlist-item">
+    <label>
+      <input type="radio" name="track" value="2" checked>
+      <span class="mk-playlist-item-index" aria-hidden="true"><span>2</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+      <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/pl-2/160/160" alt="">
+      <span class="mk-playlist-item-text"><strong>Harbour Lines</strong><small>Nordlicht</small></span>
+      <span class="mk-playlist-item-duration">4:05</span>
+    </label>
+  </li>
+  <li class="mk-playlist-item">
+    <label>
+      <input type="radio" name="track" value="3">
+      <span class="mk-playlist-item-index" aria-hidden="true"><span>3</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+      <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/pl-3/160/160" alt="">
+      <span class="mk-playlist-item-text"><strong>Slow Tram</strong><small>Nordlicht feat. Mar</small></span>
+      <span class="mk-playlist-item-duration">2:58</span>
+    </label>
+  </li>
+  <li class="mk-playlist-item">
+    <label>
+      <input type="radio" name="track" value="4">
+      <span class="mk-playlist-item-index" aria-hidden="true"><span>4</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+      <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/pl-4/160/160" alt="">
+      <span class="mk-playlist-item-text"><strong>Tiles in the Rain</strong><small>Nordlicht</small></span>
+      <span class="mk-playlist-item-duration">5:11</span>
+    </label>
+  </li>
+</ol>
+    </section>
+    <!-- Episodes -->
+    <section class="fx">
+<ol class="mk-playlist" role="radiogroup" aria-label="The Calm Letter - episodes" style="max-width:40rem">
+  <li class="mk-playlist-item" data-variant="episode">
+    <label>
+      <input type="radio" name="episode" value="42" checked>
+      <span class="mk-playlist-item-index" aria-hidden="true"><span>42</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+      <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/ep-42/160/160" alt="">
+      <span class="mk-playlist-item-text"><strong>Why we never ship on Fridays</strong><small>The Calm Letter · <time datetime="2026-09-30">2026-09-30</time></small><span class="mk-playlist-item-desc">Alex and Sophie on release rhythms, weekends and why boring deploys are the best deploys.</span></span>
+      <span class="mk-playlist-item-duration">32 min</span>
+    </label>
+  </li>
+  <li class="mk-playlist-item" data-variant="episode">
+    <label>
+      <input type="radio" name="episode" value="41">
+      <span class="mk-playlist-item-index" aria-hidden="true"><span>41</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i></span>
+      <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/ep-41/160/160" alt="">
+      <span class="mk-playlist-item-text"><strong>Writing decisions down</strong><small>The Calm Letter · <time datetime="2026-09-23">2026-09-23</time></small><span class="mk-playlist-item-desc">Hannah explains how her team replaced status meetings with a written decision log.</span></span>
+      <span class="mk-playlist-item-duration">28 min</span>
+    </label>
+  </li>
+</ol>
+    </section>
+  </body>
+</html>
