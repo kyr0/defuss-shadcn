@@ -7,7 +7,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
      src/documentation/lib/nav.ts, each page's .mdx frontmatter and each component's
      component-skill.md frontmatter) - do not edit by hand; edit a source and rebuild. -->
 
-# defuss-shadcn 0.9.3 - Agent Skill
+# defuss-shadcn 0.9.4 - Agent Skill
 
 219 components (168 CSS-only, 51 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
@@ -31,7 +31,7 @@ Everything else in this file is lookup: §2 rules, §3 documentation map (guides
 
 - **Component skills** (markup, variants, sizes, ARIA, states - what every task needs): `references/components/<name>.md`, next to this file in every install. §4 links each one.
 - **Documentation pages** (guides + live examples, MDX) and the shipped **CSS/JS**: two levels up, `../../src/documentation/pages/<page>.mdx` and `../../dist/components/…` - present when the skill came with the package (Claude Code plugin, npm install).
-- **Not there?** (a skills-CLI install copies only this folder): fetch the same path from `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.3/` + the path without `../../` (this release's tag, raw text), e.g. `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.3/src/documentation/pages/button.mdx`.
+- **Not there?** (a skills-CLI install copies only this folder): fetch the same path from `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.4/` + the path without `../../` (this release's tag, raw text), e.g. `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.4/src/documentation/pages/button.mdx`.
 
 ## 1. Install
 
@@ -67,7 +67,7 @@ import 'defuss-shadcn/dist/components/dialog/dialog.js';  // only interactive co
 
 ### Path B - jsDelivr CDN (standalone HTML prototype, no package manager, no TypeScript)
 
-Copy this skeleton and put component markup inside `<body>`. Replace `@latest` with `@0.9.3` to pin the release.
+Copy this skeleton and put component markup inside `<body>`. Replace `@latest` with `@0.9.4` to pin the release.
 
 ```html
 <!doctype html>

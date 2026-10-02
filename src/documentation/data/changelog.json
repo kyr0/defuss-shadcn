@@ -20,7 +20,8 @@
         "fix(badge): a badge never wraps its label or shrinks in a flex row (as in shadcn/ui)",
         "fix(table): row headers (th.table-cell scope=&quot;row&quot;) align to the start like a cell",
         "fix(docs): code blocks inside Website blocks keep their own styling; the Form page's switch rows get their gap"
-      ]
+      ],
+      "hash": "d6ff358a"
     },
     {
       "version": "v0.9.3",

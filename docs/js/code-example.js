@@ -188,7 +188,14 @@
             var urls = styleUrls();
             if (!urls.length)
                 return Promise.resolve('');
-            stylesPromise = Promise.all(urls.map(fetchStripped)).then(function (texts) {
+            // the min twin may be missing (a dev tree built without the minify pass):
+            // fall back to the readable sheet, like the runtime does for all.min.js
+            var fetchSheet = function (url) {
+                return /all\.min\.css(\?.*)?$/.test(url)
+                    ? fetchStripped(url).catch(function () { return fetchStripped(url.replace(/all\.min\.css/, 'all.css')); })
+                    : fetchStripped(url);
+            };
+            stylesPromise = Promise.all(urls.map(fetchSheet)).then(function (texts) {
                 return '<style>' + texts.join('\n') + '</style>';
             });
             stylesPromise.catch(function () {

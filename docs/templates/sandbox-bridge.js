@@ -29,6 +29,26 @@
     e.preventDefault();
   });
 
+  // -- links ------------------------------------------------------------
+  // An about:srcdoc document resolves URLs against the PARENT page, so a
+  // plain href="#" means "docs-page.html#" - a different document: the frame
+  // would load the docs page inside itself. Links therefore never leave the
+  // example: a fragment link stays a same-document jump (location.hash on the
+  // srcdoc - :target and scrolling work), any other in-frame navigation is
+  // cancelled. Bubble phase, after the example's own handlers (a handled click
+  // is left alone); new-tab links and mailto:/tel: are not navigations here.
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0) return;
+    var a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+    if (!a || a.hasAttribute('download')) return;
+    var target = (a.getAttribute('target') || '').toLowerCase();
+    if (target && target !== '_self') return;
+    var href = a.getAttribute('href') || '';
+    if (/^(mailto|tel|sms):/i.test(href)) return;
+    e.preventDefault();
+    if (href.charAt(0) === '#' && href.length > 1) location.hash = href.slice(1);
+  });
+
   function post(kind, extra) {
     var msg = { type: 'ce', ch: ch, kind: kind };
     if (extra) for (var k in extra) msg[k] = extra[k];
@@ -134,7 +154,12 @@
       clone.querySelectorAll('[data-ce-chrome]').forEach(function (n) { n.remove(); });
       // querySelectorAll never matches SELF - a root-level <input> (the common
       // example shape) would lose its runtime value without the matches() leg
-      var live = el.matches('input, textarea') ? [el] : Array.prototype.slice.call(el.querySelectorAll('input, textarea'));
+      // runtime chrome was stripped from the clone - skip its live inputs too,
+      // or the index pairing below runs past the clone's (a component that
+      // generates a form, like the cookie consent dialog, would throw here)
+      var live = el.matches('input, textarea')
+        ? [el]
+        : Array.prototype.slice.call(el.querySelectorAll('input, textarea')).filter(function (n) { return !n.closest('[data-ce-chrome]'); });
       var mirror = el.matches('input, textarea')
         ? [clone]
         : Array.prototype.slice.call(clone.querySelectorAll('input, textarea'));
