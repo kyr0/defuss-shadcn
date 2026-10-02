@@ -547,7 +547,7 @@ Things to try:
   &lt;!-- lock, sleep, restart --&gt;
   &lt;div class="os-lock" data-os-lock hidden&gt;
     &lt;div class="os-lock-clock"&gt;&lt;p data-os-locktime&gt;00:00&lt;/p&gt;&lt;small data-os-lockdate&gt;&lt;/small&gt;&lt;/div&gt;
-    &lt;div class="os-lock-sign"&gt;&lt;span class="avatar" data-size="xl"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/240?img=12" alt=""&gt;&lt;/span&gt;&lt;strong&gt;Aron Homberg&lt;/strong&gt;&lt;button class="btn" type="button" data-os-unlock&gt;Sign in&lt;/button&gt;&lt;/div&gt;
+    &lt;div class="os-lock-sign"&gt;&lt;span class="avatar" data-size="xl"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt=""&gt;&lt;/span&gt;&lt;strong&gt;Aron Homberg&lt;/strong&gt;&lt;button class="btn" type="button" data-os-unlock&gt;Sign in&lt;/button&gt;&lt;/div&gt;
     &lt;p class="os-lock-hint"&gt;Click anywhere or press a key&lt;/p&gt;
   &lt;/div&gt;
   &lt;div class="os-power-screen" data-os-screen hidden&gt;&lt;div class="spinner" role="status" aria-label="Working"&gt;&lt;/div&gt;&lt;p data-os-screen-text&gt;Restarting&lt;/p&gt;&lt;/div&gt;
@@ -1299,7 +1299,7 @@ Things to try:
     const doLock = () =&gt; { closeFlyouts(); lock.hidden = false; lock.removeAttribute('data-sign'); lock.focus?.(); };
     lock.tabIndex = -1;
     const advance = () =&gt; { if (!lock.hasAttribute('data-sign')) { lock.setAttribute('data-sign', ''); requestAnimationFrame(() =&gt; lock.querySelector('[data-os-unlock]').focus()); } };
-    lock.addEventListener('click', (e) =&gt; { if (e.target.closest('[data-os-unlock]')) { lock.hidden = true; toast('Welcome back, Alex'); } else advance(); });
+    lock.addEventListener('click', (e) =&gt; { if (e.target.closest('[data-os-unlock]')) { lock.hidden = true; toast('Welcome back, Aron'); } else advance(); });
     lock.addEventListener('keydown', (e) =&gt; { if (!e.target.closest('[data-os-unlock]')) { e.preventDefault(); advance(); } });
     screen.addEventListener('click', () =&gt; { if (screen.hasAttribute('data-black')) { screen.removeAttribute('data-black'); app.querySelector('[data-os-screen-text]').textContent = 'Starting'; setTimeout(() =&gt; { screen.hidden = true; doLock(); }, 1200); } });
     app.addEventListener('click', (e) =&gt; {

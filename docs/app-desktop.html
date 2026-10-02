@@ -564,7 +564,7 @@ Things to try:
   <!-- lock, sleep, restart -->
   <div class="os-lock" data-os-lock hidden>
     <div class="os-lock-clock"><p data-os-locktime>00:00</p><small data-os-lockdate></small></div>
-    <div class="os-lock-sign"><span class="avatar" data-size="xl"><img class="avatar-image" src="https://i.pravatar.cc/240?img=12" alt=""></span><strong>Aron Homberg</strong><button class="btn" type="button" data-os-unlock>Sign in</button></div>
+    <div class="os-lock-sign"><span class="avatar" data-size="xl"><img class="avatar-image" src="https://github.com/kyr0.png" alt=""></span><strong>Aron Homberg</strong><button class="btn" type="button" data-os-unlock>Sign in</button></div>
     <p class="os-lock-hint">Click anywhere or press a key</p>
   </div>
   <div class="os-power-screen" data-os-screen hidden><div class="spinner" role="status" aria-label="Working"></div><p data-os-screen-text>Restarting</p></div>
@@ -1316,7 +1316,7 @@ Things to try:
     const doLock = () => { closeFlyouts(); lock.hidden = false; lock.removeAttribute('data-sign'); lock.focus?.(); };
     lock.tabIndex = -1;
     const advance = () => { if (!lock.hasAttribute('data-sign')) { lock.setAttribute('data-sign', ''); requestAnimationFrame(() => lock.querySelector('[data-os-unlock]').focus()); } };
-    lock.addEventListener('click', (e) => { if (e.target.closest('[data-os-unlock]')) { lock.hidden = true; toast('Welcome back, Alex'); } else advance(); });
+    lock.addEventListener('click', (e) => { if (e.target.closest('[data-os-unlock]')) { lock.hidden = true; toast('Welcome back, Aron'); } else advance(); });
     lock.addEventListener('keydown', (e) => { if (!e.target.closest('[data-os-unlock]')) { e.preventDefault(); advance(); } });
     screen.addEventListener('click', () => { if (screen.hasAttribute('data-black')) { screen.removeAttribute('data-black'); app.querySelector('[data-os-screen-text]').textContent = 'Starting'; setTimeout(() => { screen.hidden = true; doLock(); }, 1200); } });
     app.addEventListener('click', (e) => {

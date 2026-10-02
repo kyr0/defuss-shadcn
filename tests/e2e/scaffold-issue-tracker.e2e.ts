@@ -121,7 +121,7 @@ try {
     assert.equal(await page.$eval('#pm-create', (d) => (d as HTMLDialogElement).open), true);
     await page.fill('#pm-new-title', 'Changelog in dark mode');
     await page.selectOption('#pm-create select[name="status"]', 'progress');
-    await page.selectOption('#pm-create select[name="assignee"]', 'alex');
+    await page.selectOption('#pm-create select[name="assignee"]', 'aron');
     await page.selectOption('#pm-create select[name="label"]', 'design');
     await page.click('#pm-create button[type="submit"]');
     assert.equal(await page.$eval('#pm-create', (d) => (d as HTMLDialogElement).open), false);
