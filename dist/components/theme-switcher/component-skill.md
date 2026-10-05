@@ -102,6 +102,18 @@ document.querySelector('#ts-menu').api.setState('open');
 globalThis.df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts-menu'), 'claude');
 ```
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.themeSwitcherApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`, `select(menu, id)`; `df$.shadcn.themeSwitcherStates` = `default`, `open`.
+
+| `df$.shadcn.themeSwitcherApi` | Description |
+|---|---|
+| `select(menu, id)` | Apply a theme on the switcher owning `menu` (link swap, see above). |
+
 ## Notes
 
 - The **theme is a file**: every theme id needs a stylesheet in the token
@@ -114,7 +126,9 @@ globalThis.df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts-menu')
   also fires `df$.shadcn.loadTheme(id)` - no sidecar (404) simply means the
   theme needs no resources. Apply `'default'` again and every loaded link is
   removed (no font bleed).
-- The component **persists to `localStorage`** (`defuss-shadcn-color-theme`)
+- The component **persists through a `persisted()` store** (`defuss-shadcn-color-theme`
+  in `localStorage`; memory when storage is blocked, a raw id written by older
+  versions adopted, every other store for the key on the page follows)
   and dispatches `defuss-theme-change` (`event.detail.id`) on every change —
   listen to sync your own UI (favicons, previews); multiple switchers on one
   page stay in sync automatically through the same event.

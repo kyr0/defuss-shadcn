@@ -26,8 +26,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const chartStates = ['default'];
 /** The ONE vendor-load error text - same actionable message everywhere. */
 const ECHARTS_NOT_LOADED = 'chart: echarts is not loaded - add <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script> before chart.js';
@@ -509,6 +510,9 @@ export function chartStory(el, states, { loop = false } = {}) {
     };
     return { next: () => go(i + 1), prev: () => go(i - 1), go, index: () => i };
 }
+/** Deck tempo: entrances and morphs take the slides' 1.5s - slow and legible
+ * at presentation distance (a base or state may still override it). */
+const DECK_TEMPO = { animationDuration: 1500, animationEasing: 'cubicOut', animationDurationUpdate: 1500, animationEasingUpdate: 'cubicInOut' };
 /**
  * Why: the deck stage - ONE chart instance for a whole presentation, so
  * every chart slide MORPHS into the next (bars → dots → donut …) instead of
@@ -523,16 +527,13 @@ export function chartStory(el, states, { loop = false } = {}) {
  * universalTransition. The first appearance mounts the chart, so its
  * entrance animation plays on stage - never hidden at page load.
  */
-/** Deck tempo: entrances and morphs take the slides' 1.5s - slow and legible
- * at presentation distance (a base or state may still override it). */
-const DECK_TEMPO = { animationDuration: 1500, animationEasing: 'cubicOut', animationDurationUpdate: 1500, animationEasingUpdate: 'cubicInOut' };
 export function chartDeck(deck, { base = {}, states }) {
-    const stage = deck.querySelector(':scope > .presentation-stage');
+    const stage = (dfDollar(deck).find(':scope > .presentation-stage').get(0) ?? null);
     if (!stage)
         throw new Error('chart: chart.deck() needs a <div class="chart presentation-stage"> child of the .presentation');
     if (!isPlain(states) || Object.keys(states).length === 0)
         throw new Error('chart: chart.deck() needs at least one named state');
-    const slides = Array.from(deck.querySelectorAll(':scope > [data-slide]'));
+    const slides = Array.from(dfDollar(deck).find(':scope > [data-slide]').toArray());
     let current = null;
     let last = null;
     const show = (name) => {
@@ -587,6 +588,16 @@ export function chartDeck(deck, { base = {}, states }) {
 }
 // -- State API ------------------------------------------------------------
 /**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+    // one state, and it writes no markup: { option } feeds the ECharts
+    // instance, which draws INSIDE the host (runtime-owned, see the e2e)
+}
+/**
  * UI side of setState: 'default' re-applies the chart surface - config.option
  * replaces the option wholesale (notMerge), so a reset returns to exactly
  * the given surface; a bare setState('default') is a no-op on the DOM.
@@ -605,32 +616,27 @@ function triggerStateChange(el, stateName, config = {}) {
     }
 }
 /** Registry-level API; pass the mount explicitly. Unknown names throw. */
-export const chartApi = {
-    setState(el, stateName, config = {}) {
-        triggerStateChange(el, stateName, config);
-        // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-        el.dataset.stateName = stateName;
-        el._stateConfig = config;
-    },
-    getState(el) {
+export const chartApi = componentState({
+    component: 'chart',
+    states: chartStates,
+    apply: (el, state) => triggerStateChange(el, state.name, state.config),
+    read: (el, state) => {
         return {
             name: el.dataset.stateName || 'default',
-            config: { ...el._stateConfig },
+            config: { ...state.config },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.chartApi = chartApi;
 df$.chartStates = chartStates;
 df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
 df$.chartStory = chartStory;
 function init() {
-    document.querySelectorAll('.chart:not([data-init])').forEach((el) => {
+    dfDollar('.chart:not([data-init])').toArray().forEach((el) => {
         el.dataset.init = '';
-        // bind-scope the api per instance: `$('#c').api.setState('default', …)`
-        el.api = {
-            setState: (stateName, config) => chartApi.setState(el, stateName, config),
-            getState: () => chartApi.getState(el),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(el, chartApi);
         // declarative mount: data-chart JSON → echarts instance. Zero-size boxes
         // (display:none hosts, pre-layout SPA swaps) defer - the observer retries
         // once the box has real width+height; the instance guard makes it once-only.

@@ -4,7 +4,7 @@ description: "Border Layout component - north, south, west and east around a cen
 slug: "border-layout"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -23,7 +23,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" title="the drag (the Resizer's)"><code>setPointerCapture()</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role" title="each divider is a window splitter"><code>role="separator"</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the center keeps its minimum"><code>ResizeObserver</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" title="remembered sizes"><code>localStorage</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" title="remembered sizes, through a persisted() store"><code>localStorage</code></ApiPill>
   </SkillRow>
   </SkillField>
 
@@ -157,7 +157,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </div>
 ```
 
-```html example label="Collapsible and remembered" schema="none" hint="data-collapsible: double-click a divider (or focus it and press Enter) to fold its region away - the divider stays to bring it back, and dragging it unfolds. data-save='…' remembers sizes and folded regions across visits (localStorage) - resize, reload the page, it comes back as you left it. The buttons use df$.shadcn.borderLayout."
+```html example label="Collapsible and remembered" schema="none" hint="data-collapsible: double-click a divider (or focus it and press Enter) to fold its region away - the divider stays to bring it back, and dragging it unfolds. data-save='…' remembers sizes and folded regions across visits (a persisted store in localStorage) - resize, reload the page, it comes back as you left it. The buttons use df$.shadcn.borderLayout."
 <div class="flex flex-col gap-2">
   <div class="flex flex-wrap items-center gap-2">
     <button class="btn" data-variant="outline" data-size="sm" type="button" data-toggle="west">Toggle west</button>
@@ -263,6 +263,8 @@ Machine contract - verified against <a href="../schemas/border-layout.schema.jso
 ```
 
 </StatesSection>
+
+<ApiSection component="border-layout" />
 
 <SourceFiles component="border-layout" section="css" />
 

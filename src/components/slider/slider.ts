@@ -7,9 +7,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const sliderStates = ['default', 'disabled'];
 
@@ -45,7 +46,7 @@ const hasFormat = (el) => {
 /** <output for="id …"> elements that show this slider (a range pair: both ids). */
 function outputsOf(el) {
   if (!el.id) return [];
-  return [...document.querySelectorAll('output[for]')].filter((o) => o.htmlFor.contains(el.id));
+  return [...dfDollar('output[for]').toArray()].filter((o) => o.htmlFor.contains(el.id));
 }
 
 /** An emoji as an image (data-thumb-emoji: one, or a space-separated list
@@ -83,7 +84,7 @@ function updateSliderValue(el) {
 }
 
 /* -- Range: two sliders, low <= high ------------------------------- */
-const rangeInputs = (range) => [...range.querySelectorAll(':scope > .slider')].slice(0, 2);
+const rangeInputs = (range) => [...dfDollar(range).find(':scope > .slider').toArray()].slice(0, 2);
 
 function paintRange(range) {
   const [lo, hi] = rangeInputs(range);
@@ -115,6 +116,16 @@ function initRange(range) {
 }
 
 /**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  if (stateName === 'disabled') dfDollar(el).attr('disabled', '');
+}
+
+/**
  * UI side of setState: 'default' restores the authored enabled state and
  * optionally presets { value }; 'disabled' uses the native disabled
  * attribute (CSS :disabled styles it, keyboard/pointer go inert for free).
@@ -133,42 +144,34 @@ function triggerStateChange(el, stateName, config) {
 }
 
 /** Registry-level API; pass the input element explicitly. Unknown names throw. */
-export const sliderApi = {
-  setState(el, stateName, config = {}) {
-    if (!sliderStates.includes(stateName)) {
-      throw new Error(`slider: unknown state "${stateName}" (supported: ${sliderStates.join(', ')})`);
-    }
-    triggerStateChange(el, stateName, config);
-    // state lives on the ELEMENT, not the module (many sliders per page)
-    el.dataset.stateName = stateName;
-    el._stateConfig = config;
-  },
-  getState(el) {
+export const sliderApi = componentState({
+  component: 'slider',
+  states: sliderStates,
+  apply: (el, state) => triggerStateChange(el, state.name, state.config),
+  read: (el, state) => {
     // reflect reality: dragging/disabling changes the UI without setState()
     return {
       name: el.disabled ? 'disabled' : 'default',
-      config: { ...el._stateConfig, value: el.value },
+      config: { ...state.config, value: el.value },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.sliderApi = sliderApi;
 df$.sliderStates = sliderStates;
 
 function init() {
-  document.querySelectorAll('.slider-range:not([data-init])').forEach((range) => {
+  dfDollar('.slider-range:not([data-init])').toArray().forEach((range) => {
     range.dataset.init = '';
     initRange(range);
   });
-  document.querySelectorAll('.slider:not([data-init])').forEach((el) => {
+  dfDollar('.slider:not([data-init])').toArray().forEach((el) => {
     el.dataset.init = '';
     // remember the authored disabled state so setState('default') restores it
     el._defaultDisabled = el.disabled;
-    // bind-scope the api per instance: `$('#volume').api.setState('disabled')`
-    el.api = {
-      setState: (stateName, config) => sliderApi.setState(el, stateName, config),
-      getState: () => sliderApi.getState(el),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(el, sliderApi);
     if (el.dataset.thumbEmoji && !el.dataset.thumb) el.dataset.thumb = 'emoji';
     updateSliderValue(el);
     el.addEventListener('input', () => updateSliderValue(el));

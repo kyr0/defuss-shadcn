@@ -1,0 +1,410 @@
+---
+title: "Illustrative · Data Flow"
+description: "Data flow diagrams with the diagram component - phases as columns, platform roles as lanes, typed payloads on every arrow; step by step and as a delta."
+slug: "diagram-data-flow"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-data-flow" title="Illustrative · Data Flow" component="diagram">
+  How data moves across organizational roles: phases as column headers (<code>.diagram-cell data-role="head"</code>), roles as lanes, and every arrow labelled with the payload it carries - raw files, tables, estimates, dashboards.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Across four roles" component="diagram" hint="Header cells sit in row 1 above the lanes; payload chips say what each step holds."
+<figure class="diagram" id="dg-dataflow" data-type="data-flow" aria-label="Data flow across platform roles">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data flow</span>
+    <span class="diagram-title">Who touches the data, in which shape</span>
+    <span class="diagram-dek">Columns are phases, lanes are roles; every arrow carries a typed payload.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">Admins</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Engineers</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:5"><span class="diagram-group-label">Scientists</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Consumers</span></div>
+    <div class="diagram-cell" data-role="head" style="--col:2;--row:1">01 · Collect</div>
+    <div class="diagram-cell" data-role="head" style="--col:3;--row:1">02 · Store</div>
+    <div class="diagram-cell" data-role="head" style="--col:4;--row:1">03 · Analyze</div>
+    <div class="diagram-cell" data-role="head" style="--col:5;--row:1">04 · Publish</div>
+    <div class="diagram-node" data-node="grant" style="--col:2;--row:2">
+      <span class="diagram-node-name">Grant access</span>
+      <span class="diagram-node-meta">Keycloak groups</span>
+    </div>
+    <div class="diagram-node" data-node="ingest" style="--col:2;--row:3">
+      <span class="diagram-node-name">Ingest</span>
+      <span class="diagram-node-meta">NiFi</span>
+      <ul class="diagram-node-chips">
+        <li>raw files</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="model" style="--col:3;--row:3">
+      <span class="diagram-node-name">Model tables</span>
+      <span class="diagram-node-meta">dbt</span>
+      <ul class="diagram-node-chips">
+        <li>Iceberg tables</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="analyze" data-tone="accent" style="--col:4;--row:4">
+      <span class="diagram-node-name">Analyze</span>
+      <span class="diagram-node-meta">Jupyter</span>
+      <ul class="diagram-node-chips">
+        <li>features · estimates</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="report" style="--col:5;--row:5">
+      <span class="diagram-node-name">Read reports</span>
+      <span class="diagram-node-meta">Superset</span>
+      <ul class="diagram-node-chips">
+        <li>dashboards</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="grant" data-to="ingest" data-line="dashed">role</li>
+    <li class="diagram-edge" data-from="ingest" data-to="model">Parquet</li>
+    <li class="diagram-edge" data-from="model" data-to="analyze" data-tone="accent">SQL</li>
+    <li class="diagram-edge" data-from="analyze" data-to="report">publish</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Across four roles, step by step" component="diagram" hint="Lanes and headers are the frame (step 0); the data walks through the phases."
+<figure class="diagram" id="dg-dataflow-steps" data-type="data-flow" data-steps data-autoplay aria-label="Data flow across platform roles">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data flow</span>
+    <span class="diagram-title">Who touches the data, in which shape</span>
+    <span class="diagram-dek">Columns are phases, lanes are roles; every arrow carries a typed payload.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">Admins</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Engineers</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:4;--span:5"><span class="diagram-group-label">Scientists</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Consumers</span></div>
+    <div class="diagram-cell" data-role="head" data-step="0" style="--col:2;--row:1">01 · Collect</div>
+    <div class="diagram-cell" data-role="head" data-step="0" style="--col:3;--row:1">02 · Store</div>
+    <div class="diagram-cell" data-role="head" data-step="0" style="--col:4;--row:1">03 · Analyze</div>
+    <div class="diagram-cell" data-role="head" data-step="0" style="--col:5;--row:1">04 · Publish</div>
+    <div class="diagram-node" data-node="grant" data-step="1" style="--col:2;--row:2">
+      <span class="diagram-node-name">Grant access</span>
+      <span class="diagram-node-meta">Keycloak groups</span>
+    </div>
+    <div class="diagram-node" data-node="ingest" data-step="2" style="--col:2;--row:3">
+      <span class="diagram-node-name">Ingest</span>
+      <span class="diagram-node-meta">NiFi</span>
+      <ul class="diagram-node-chips">
+        <li>raw files</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="model" data-step="3" style="--col:3;--row:3">
+      <span class="diagram-node-name">Model tables</span>
+      <span class="diagram-node-meta">dbt</span>
+      <ul class="diagram-node-chips">
+        <li>Iceberg tables</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="analyze" data-tone="accent" data-step="4" style="--col:4;--row:4">
+      <span class="diagram-node-name">Analyze</span>
+      <span class="diagram-node-meta">Jupyter</span>
+      <ul class="diagram-node-chips">
+        <li>features · estimates</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="report" data-step="5" style="--col:5;--row:5">
+      <span class="diagram-node-name">Read reports</span>
+      <span class="diagram-node-meta">Superset</span>
+      <ul class="diagram-node-chips">
+        <li>dashboards</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="grant" data-to="ingest" data-line="dashed">role</li>
+    <li class="diagram-edge" data-from="ingest" data-to="model">Parquet</li>
+    <li class="diagram-edge" data-from="model" data-to="analyze" data-tone="accent">SQL</li>
+    <li class="diagram-edge" data-from="analyze" data-to="report">publish</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Data Flow, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-dataflow-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-dataflow-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-dataflow-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-dataflow-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-dataflow-live" data-interactive data-type="data-flow" aria-label="Data flow across platform roles">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data flow</span>
+    <span class="diagram-title">Who touches the data, in which shape</span>
+    <span class="diagram-dek">Columns are phases, lanes are roles; every arrow carries a typed payload.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">Admins</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Engineers</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:5"><span class="diagram-group-label">Scientists</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Consumers</span></div>
+    <div class="diagram-cell" data-role="head" style="--col:2;--row:1">01 · Collect</div>
+    <div class="diagram-cell" data-role="head" style="--col:3;--row:1">02 · Store</div>
+    <div class="diagram-cell" data-role="head" style="--col:4;--row:1">03 · Analyze</div>
+    <div class="diagram-cell" data-role="head" style="--col:5;--row:1">04 · Publish</div>
+    <div class="diagram-node" data-node="grant" style="--col:2;--row:2">
+      <span class="diagram-node-name">Grant access</span>
+      <span class="diagram-node-meta">Keycloak groups</span>
+    </div>
+    <div class="diagram-node" data-node="ingest" style="--col:2;--row:3">
+      <span class="diagram-node-name">Ingest</span>
+      <span class="diagram-node-meta">NiFi</span>
+      <ul class="diagram-node-chips">
+        <li>raw files</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="model" style="--col:3;--row:3">
+      <span class="diagram-node-name">Model tables</span>
+      <span class="diagram-node-meta">dbt</span>
+      <ul class="diagram-node-chips">
+        <li>Iceberg tables</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="analyze" data-tone="accent" style="--col:4;--row:4">
+      <span class="diagram-node-name">Analyze</span>
+      <span class="diagram-node-meta">Jupyter</span>
+      <ul class="diagram-node-chips">
+        <li>features · estimates</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="report" style="--col:5;--row:5">
+      <span class="diagram-node-name">Read reports</span>
+      <span class="diagram-node-meta">Superset</span>
+      <ul class="diagram-node-chips">
+        <li>dashboards</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="grant" data-to="ingest" data-line="dashed">role</li>
+    <li class="diagram-edge" data-from="ingest" data-to="model">Parquet</li>
+    <li class="diagram-edge" data-from="model" data-to="analyze" data-tone="accent">SQL</li>
+    <li class="diagram-edge" data-from="analyze" data-to="report">publish</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Data Flow, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-dataflow-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-dataflow-edit" data-interactive data-type="data-flow" aria-label="Data flow across platform roles">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Data flow</span>
+        <span class="diagram-title">Who touches the data, in which shape</span>
+        <span class="diagram-dek">Columns are phases, lanes are roles; every arrow carries a typed payload.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:9.5rem">
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">Admins</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Engineers</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:5"><span class="diagram-group-label">Scientists</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Consumers</span></div>
+        <div class="diagram-cell" data-role="head" style="--col:2;--row:1">01 · Collect</div>
+        <div class="diagram-cell" data-role="head" style="--col:3;--row:1">02 · Store</div>
+        <div class="diagram-cell" data-role="head" style="--col:4;--row:1">03 · Analyze</div>
+        <div class="diagram-cell" data-role="head" style="--col:5;--row:1">04 · Publish</div>
+        <div class="diagram-node" data-node="grant" style="--col:2;--row:2">
+          <span class="diagram-node-name">Grant access</span>
+          <span class="diagram-node-meta">Keycloak groups</span>
+        </div>
+        <div class="diagram-node" data-node="ingest" style="--col:2;--row:3">
+          <span class="diagram-node-name">Ingest</span>
+          <span class="diagram-node-meta">NiFi</span>
+          <ul class="diagram-node-chips">
+            <li>raw files</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="model" style="--col:3;--row:3">
+          <span class="diagram-node-name">Model tables</span>
+          <span class="diagram-node-meta">dbt</span>
+          <ul class="diagram-node-chips">
+            <li>Iceberg tables</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="analyze" data-tone="accent" style="--col:4;--row:4">
+          <span class="diagram-node-name">Analyze</span>
+          <span class="diagram-node-meta">Jupyter</span>
+          <ul class="diagram-node-chips">
+            <li>features · estimates</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="report" style="--col:5;--row:5">
+          <span class="diagram-node-name">Read reports</span>
+          <span class="diagram-node-meta">Superset</span>
+          <ul class="diagram-node-chips">
+            <li>dashboards</li>
+          </ul>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="grant" data-to="ingest" data-line="dashed">role</li>
+        <li class="diagram-edge" data-from="ingest" data-to="model">Parquet</li>
+        <li class="diagram-edge" data-from="model" data-to="analyze" data-tone="accent">SQL</li>
+        <li class="diagram-edge" data-from="analyze" data-to="report">publish</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-dataflow-edit-panel" aria-labelledby="dg-dataflow-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-dataflow-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-dataflow-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-dataflow-edit');
+    const grid = document.getElementById('dg-dataflow-edit-grid');
+    const title = document.getElementById('dg-dataflow-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="flow">Flow</H2>
+
+<DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
+
+```html example label="Data Flow, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-dataflow-flow" data-type="data-flow" aria-label="Data flow across platform roles">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data flow</span>
+    <span class="diagram-title">Who touches the data, in which shape</span>
+    <span class="diagram-dek">Columns are phases, lanes are roles; every arrow carries a typed payload.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">Admins</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Engineers</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:5"><span class="diagram-group-label">Scientists</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Consumers</span></div>
+    <div class="diagram-cell" data-role="head" style="--col:2;--row:1">01 · Collect</div>
+    <div class="diagram-cell" data-role="head" style="--col:3;--row:1">02 · Store</div>
+    <div class="diagram-cell" data-role="head" style="--col:4;--row:1">03 · Analyze</div>
+    <div class="diagram-cell" data-role="head" style="--col:5;--row:1">04 · Publish</div>
+    <div class="diagram-node" data-node="grant" style="--col:2;--row:2">
+      <span class="diagram-node-name">Grant access</span>
+      <span class="diagram-node-meta">Keycloak groups</span>
+    </div>
+    <div class="diagram-node" data-node="ingest" style="--col:2;--row:3">
+      <span class="diagram-node-name">Ingest</span>
+      <span class="diagram-node-meta">NiFi</span>
+      <ul class="diagram-node-chips">
+        <li>raw files</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="model" style="--col:3;--row:3">
+      <span class="diagram-node-name">Model tables</span>
+      <span class="diagram-node-meta">dbt</span>
+      <ul class="diagram-node-chips">
+        <li>Iceberg tables</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="analyze" data-tone="accent" style="--col:4;--row:4">
+      <span class="diagram-node-name">Analyze</span>
+      <span class="diagram-node-meta">Jupyter</span>
+      <ul class="diagram-node-chips">
+        <li>features · estimates</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="report" style="--col:5;--row:5">
+      <span class="diagram-node-name">Read reports</span>
+      <span class="diagram-node-meta">Superset</span>
+      <ul class="diagram-node-chips">
+        <li>dashboards</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="grant" data-to="ingest" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">role</li>
+    <li class="diagram-edge" data-from="ingest" data-to="model" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">Parquet</li>
+    <li class="diagram-edge" data-from="model" data-to="analyze" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">SQL</li>
+    <li class="diagram-edge" data-from="analyze" data-to="report" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100">publish</li>
+  </ol>
+</figure>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Consumers query directly" component="diagram" hint="The export-by-request path goes; governed self-service SQL comes."
+<figure class="diagram" id="dg-dataflow-delta" data-type="data-flow" data-delta aria-label="Data flow with self-service">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data flow change</span>
+    <span class="diagram-title">Consumers query directly</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(3,minmax(8rem,1fr));--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:4"><span class="diagram-group-label">Engineers</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:4"><span class="diagram-group-label">Scientists</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:4"><span class="diagram-group-label">Consumers</span></div>
+    <div class="diagram-node" data-node="model" style="--col:2;--row:1">
+      <span class="diagram-node-name">Model tables</span>
+      <ul class="diagram-node-chips">
+        <li>Iceberg tables</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="analyze" style="--col:3;--row:2"><span class="diagram-node-name">Analyze</span></div>
+    <div class="diagram-node" data-node="self" data-tone="accent" data-change="added" style="--col:4;--row:3">
+      <span class="diagram-node-name">Self-service SQL</span>
+      <span class="diagram-node-meta">governed views</span>
+    </div>
+    <div class="diagram-node" data-node="export" data-change="removed" style="--col:3;--row:3">
+      <span class="diagram-node-name">Excel export</span>
+      <span class="diagram-node-meta">by request</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="model" data-to="analyze">SQL</li>
+    <li class="diagram-edge" data-from="model" data-to="self" data-change="added">views</li>
+    <li class="diagram-edge" data-from="analyze" data-to="export" data-change="removed">XLSX</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

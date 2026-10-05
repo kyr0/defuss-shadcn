@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: pagination is CSS-only - verify the centered flex bar, the 36px
@@ -138,6 +139,12 @@ await cssSmoke('pagination', [
       assert.equal(await page.$eval('#pg-live', (el) => (el as any).api.getState().name), 'default', "declared state 'default'");
       await page.$eval('#pg-live', (el) => (el as any).api.setState('default', { page: 9 }));
       assert.equal(await page.$eval('#pg-live .pagination-link[aria-current="page"]', (e) => e.textContent), '9');
+    },
+  },
+  {
+    label: 'render(): reproduces the authored markup 1:1 and every state',
+    run: async (page) => {
+      await assertRenderContract(page, '.pagination[id]', ['default']);
     },
   },
 ]);

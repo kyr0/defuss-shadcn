@@ -20,10 +20,19 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const commandStates = ['default', 'open'];
+/**
+ * The markup of a state: 'open' carries `open`. render() applies it to a
+ * detached copy; on the live element showModal()/close() (the native
+ * protocol: top layer, focus, inert background) produce exactly this
+ * attribute - the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+    dfDollar(el).attr('open', stateName === 'open' ? '' : null);
+}
 /**
  * UI side of setState: 'default' closes, 'open' opens modally and focuses
  * the search input (same affordance as the trigger/keyboard shortcut).
@@ -38,7 +47,7 @@ function triggerStateChange(dialog, stateName, _config) {
             if (!dialog.open)
                 dialog.showModal();
             {
-                const input = dialog.querySelector('.command-input');
+                const input = dfDollar(dialog).find('.command-input').get(0);
                 if (input)
                     input.focus();
             }
@@ -46,20 +55,12 @@ function triggerStateChange(dialog, stateName, _config) {
     }
 }
 /** Registry-level API; pass the dialog element explicitly. Unknown names throw. */
-export const commandApi = {
-    setState(dialog, stateName, config = {}) {
-        if (!commandStates.includes(stateName)) {
-            throw new Error(`command: unknown state "${stateName}" (supported: ${commandStates.join(', ')})`);
-        }
-        triggerStateChange(dialog, stateName, config);
-        // state lives on the ELEMENT, not the module (multiple palettes per page)
-        dialog.dataset.stateName = stateName;
-        dialog._stateConfig = config;
-    },
-    getState(dialog) {
-        return { name: dialog.dataset.stateName || 'default', config: dialog._stateConfig ?? {} };
-    },
-};
+export const commandApi = componentState({
+    component: 'command',
+    states: commandStates,
+    apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.commandApi = commandApi;
 df$.commandStates = commandStates;
 /* Cmd/Ctrl+K handler - added once at module level */
@@ -68,7 +69,7 @@ if (!commandKeydownAdded) {
     commandKeydownAdded = true;
     document.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-            const dialog = document.querySelector('dialog.command');
+            const dialog = dfDollar('dialog.command').get(0);
             if (!dialog)
                 return;
             e.preventDefault();
@@ -77,7 +78,7 @@ if (!commandKeydownAdded) {
             }
             else {
                 dialog.showModal();
-                const input = dialog.querySelector('.command-input');
+                const input = dfDollar(dialog).find('.command-input').get(0);
                 if (input)
                     input.focus();
             }
@@ -98,16 +99,13 @@ function highlightItem(list, index) {
     return clamped;
 }
 function init() {
-    document.querySelectorAll('dialog.command:not([data-init])').forEach((dialog) => {
+    dfDollar('dialog.command:not([data-init])').toArray().forEach((dialog) => {
         dialog.dataset.init = '';
-        // bind-scope the api per instance: `$('#demo-cmd').api.setState('open')`
-        dialog.api = {
-            setState: (stateName, config) => commandApi.setState(dialog, stateName, config),
-            getState: () => commandApi.getState(dialog),
-        };
-        const input = dialog.querySelector('.command-input');
-        const list = dialog.querySelector('.command-list');
-        const empty = dialog.querySelector('.command-empty');
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(dialog, commandApi);
+        const input = dfDollar(dialog).find('.command-input').get(0);
+        const list = dfDollar(dialog).find('.command-list').get(0);
+        const empty = dfDollar(dialog).find('.command-empty').get(0);
         if (!input || !list)
             return;
         let highlightIndex = -1;
@@ -180,9 +178,9 @@ function init() {
             highlightIndex = -1;
         });
     });
-    document.querySelectorAll('[data-command-trigger]:not([data-init])').forEach((trigger) => {
+    dfDollar('[data-command-trigger]:not([data-init])').toArray().forEach((trigger) => {
         trigger.dataset.init = '';
-        const dialog = document.getElementById(trigger.dataset.commandTrigger);
+        const dialog = dfDollar('#' + CSS.escape(trigger.dataset.commandTrigger)).get(0);
         if (!dialog)
             return;
         trigger.addEventListener('click', () => {

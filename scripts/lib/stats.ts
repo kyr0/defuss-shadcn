@@ -52,6 +52,9 @@ export type BundleStats = {
   cssSizeMinified: number;
   totalSizeGz: number;
   totalSizeGzMinified: number;
+  /** all.min.js / all.min.css (or core, or an app) each gzipped on its own - one request each */
+  jsSizeGzMinified: number;
+  cssSizeGzMinified: number;
 };
 
 /** Zero bundle - the default when none was measured (keeps the doc shape stable). */
@@ -62,7 +65,23 @@ export const EMPTY_BUNDLE: BundleStats = {
   cssSizeMinified: 0,
   totalSizeGz: 0,
   totalSizeGzMinified: 0,
+  jsSizeGzMinified: 0,
+  cssSizeGzMinified: 0,
 };
+
+/** One Application Scaffold built on its own (dist/apps/{app}.*): core + the
+ *  components its markup uses - what a real app ships. */
+export type AppStats = BundleStats & {
+  /** the scaffold page it is generated from (pages/{page}.mdx) */
+  page: string;
+  /** the full-screen page that loads only this bundle */
+  href: string;
+  /** the components in the bundle, alphabetical */
+  components: string[];
+};
+
+/** Extra measurements the caller passes through (fs-bound, see stats-files.ts). */
+export type StatsExtra = { tokens?: number; examples?: number; apps?: Record<string, AppStats>; templateGroups?: Record<string, number>; bundles?: Record<string, BundleStats> };
 
 /** The whole dist/stats.json document. */
 export type StatsDoc = {
@@ -74,6 +93,9 @@ export type StatsDoc = {
   templatePages: number;
   /** every template: TPL components + template pages */
   templates: number;
+  /** the template pages per sidebar section (Application → the scaffolds,
+   *  Presentations → the decks, Website → the site templates) */
+  templateGroups: Record<string, number>;
   /** TOK - the design tokens (custom properties of the token file) */
   tokens: number;
   /** EXL - the live examples on the documentation pages */
@@ -87,7 +109,11 @@ export type StatsDoc = {
   bundle: BundleStats;
   /** core.js + core.min.js (morph + query + shared) - the modular path's fixed cost */
   core: BundleStats;
+  /** the extra bundles (scripts/lib/bundles.ts) - components kept out of all.*, e.g. wysiwyg */
+  bundles: Record<string, BundleStats>;
   components: Record<string, ComponentStats>;
+  /** the Application Scaffolds, each built on its own */
+  apps: Record<string, AppStats>;
 };
 
 /**
@@ -106,13 +132,14 @@ export function aggregateStats(
   bundle: BundleStats = EMPTY_BUNDLE,
   core: BundleStats = EMPTY_BUNDLE,
   templatePages = 0,
-  extra: { tokens?: number; examples?: number } = {},
+  extra: StatsExtra = {},
 ): StatsDoc {
   const doc: StatsDoc = {
     total: components.length,
     byType: Object.fromEntries(COMPONENT_TYPES.map((t) => [t, 0])) as Record<ComponentType, number>,
     templatePages,
     templates: templatePages,
+    templateGroups: extra.templateGroups ?? {},
     tokens: extra.tokens ?? 0,
     examples: extra.examples ?? 0,
     withJs: 0,
@@ -123,7 +150,9 @@ export function aggregateStats(
     totalSizeGzMinified: 0,
     bundle,
     core,
+    bundles: extra.bundles ?? {},
     components: {},
+    apps: extra.apps ?? {},
   };
   for (const c of components) {
     if (!(COMPONENT_TYPES as readonly string[]).includes(c.type))
@@ -157,7 +186,7 @@ export function buildStatsText(
   bundle: BundleStats = EMPTY_BUNDLE,
   core: BundleStats = EMPTY_BUNDLE,
   templatePages = 0,
-  extra: { tokens?: number; examples?: number } = {},
+  extra: StatsExtra = {},
 ): string {
   return `${JSON.stringify(aggregateStats(components, bundle, core, templatePages, extra), null, 2)}\n`;
 }

@@ -85,7 +85,11 @@ The ladder matches `.input` / `.btn` (md = 2.25rem).
 
 The component's observable state is the number itself. Declared states:
 `default` (enabled; `{ value }` presets it through the native input, events
-fire). `getState().config.value` reports the live value.
+fire). `getState().config.value` reports the live value. A currency field
+reports the display text as `value` and the machine number as `number` -
+`setState('default', { number: 1234.5 })` (or `{ value: 1234.5 }`) sets it, so
+`setState('default', getState().config)` changes nothing. `render()` returns
+the authored markup (the value is a property, not markup).
 
 ```js
 document.querySelector('#qty').api.setState('default', { value: 5 });
@@ -94,6 +98,14 @@ document.querySelector('#qty').api.getState(); // { name: 'default', config: { v
 
 The api is bound per wrapper; the registry global is
 `df$.shadcn.numberInputApi` / `df$.shadcn.numberInputStates` (camelCase).
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.numberInputApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.numberInputStates` = `default`.
 
 ## Notes
 

@@ -1,20 +1,20 @@
 ---
 title: "Virtual List"
-description: "Virtual List component - windowed rows for lists of any size: only the rows on screen exist and are recycled as you scroll, so ten rows and ten million cost the same. Lists and grids, jump to any row, loading and empty states, full ARIA set sizes."
+description: "Virtual List component - windowed rows for lists of any size: only the rows on screen exist and are recycled as you scroll, so ten rows and ten million cost the same. Records behind a defuss-dataview source filter and sort locally; lists and grids, jump to any row, loading and empty states, full ARIA set sizes."
 slug: "virtual-list"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
 <PageHeader slug="virtual-list" title="Virtual List" component="virtual-list">
-  A list too long to render. Only the rows on screen exist in the DOM, and their elements are recycled as you scroll - ten rows and ten million cost the same, the frame rate holds, and the last row is reachable even past the browser's element-height cap. One engine for lists and grids; screen readers still hear "row 5,000,099 of 10,000,000".
+  A list too long to render. Only the rows on screen exist in the DOM, and their elements are recycled as you scroll - ten rows and ten million cost the same, the frame rate holds, and the last row is reachable even past the browser's element-height cap. One engine for lists and grids; screen readers still hear "row 5,000,099 of 10,000,000". Hand it records instead of a count and a <a href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> source backs it: filters and sorting run locally over every record, and the query lives in the list's store.
 </PageHeader>
 
 <SkillPanel component="virtual-list">
   <SkillField label="Native basis">
-<SkillText>A focusable scroll container (<code>role="list"</code> or <code>"grid"</code>): a sizer gives the scrollbar its full length, a small pool of recycled rows rides inside it; <code>df$.shadcn.virtualList.setData(el, count, renderRow)</code> hands it the data.</SkillText>
+<SkillText>A focusable scroll container (<code>role="list"</code> or <code>"grid"</code>): a sizer gives the scrollbar its full length, a small pool of recycled rows rides inside it; <code>df$.shadcn.virtualList.setData(el, count, renderRow)</code> hands it an index range, <code>setSource(el, records, \{ render \})</code> hands it records behind a dataview source - the query (<code>filters</code>, <code>sorters</code>) is <code>el.store.value.config</code>.</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
@@ -38,7 +38,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-columns</code> (a grid), <code>data-count</code> (a count from markup), <code>data-empty-text</code>; <code>--virtual-list-row-height</code>.</SkillText>
+<SkillText><code>data-columns</code> (a grid), <code>data-count</code> (a count from markup), <code>data-empty-text</code>; <code>--virtual-list-row-height</code>. Query controls anywhere on the page: <code>data-virtual-list-filter="list-id"</code> (+ <code>data-field</code>, <code>data-kind="number"</code>) on an input, <code>data-virtual-list-sort="list-id"</code> on a select of <code>field:asc|desc</code> values.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -58,6 +58,55 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       row.append(label, meta);
     };
     virtualList.setData(document.getElementById('vl-main'), 10_000_000, renderRow);
+  });
+</script>
+```
+
+```html example label="Records: filter and sort locally" schema="none" hint="setSource hands the list 250,000 records behind a defuss-dataview source. The input and the select are bound by data-virtual-list-filter / data-virtual-list-sort - no listener code: every keystroke filters ALL records (case-insensitive; 'age' takes > 40, <= 30 …), sorting reorders them, and the window shows the result. The query is the list's store: the line below subscribes to it."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="flex flex-wrap gap-2">
+    <input class="input" style="flex:1;min-width:9rem;" placeholder="Filter by name…" aria-label="Filter by name" data-virtual-list-filter="vl-records" data-field="name">
+    <input class="input" style="width:7rem;" placeholder="Age > 40" aria-label="Filter by age" data-virtual-list-filter="vl-records" data-field="age" data-kind="number" inputmode="decimal">
+    <select class="select" aria-label="Sort" data-virtual-list-sort="vl-records">
+      <option value="">Source order</option>
+      <option value="name:asc">Name A–Z</option>
+      <option value="age:desc">Oldest first</option>
+      <option value="city:asc">City</option>
+    </select>
+  </div>
+  <div class="virtual-list" id="vl-records" data-empty-text="Nobody matches" aria-label="People" style="height:16rem;"></div>
+  <p class="text-sm text-muted-foreground m-0" id="vl-records-count" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    const first = ['Sofia', 'Jackson', 'Isabella', 'William', 'Olivia', 'Liam', 'Mia', 'Noah'];
+    const cities = ['Berlin', 'Lisbon', 'Osaka', 'Toronto', 'Nairobi', 'Lima'];
+    const people = Array.from({ length: 250_000 }, (_, i) => ({
+      id: i + 1,
+      name: first[i % 8] + ' ' + String.fromCharCode(65 + ((i * 7) % 26)) + '.',
+      age: 18 + ((i * 13) % 70),
+      city: cities[(i * 5) % 6],
+    }));
+    const list = document.getElementById('vl-records');
+    // rows are recycled: overwrite everything; the renderer gets the record
+    virtualList.setSource(list, people, {
+      render: (row, person) => {
+        row.textContent = '';
+        const label = document.createElement('span');
+        label.textContent = person.name + ' · ' + person.city;
+        const meta = document.createElement('span');
+        meta.className = 'virtual-list-row-meta';
+        meta.textContent = person.age;
+        row.append(label, meta);
+      },
+    });
+    const count = document.getElementById('vl-records-count');
+    const show = () => {
+      count.textContent = virtualList.rows(list).length.toLocaleString() + ' of 250,000 people';
+    };
+    list.store.subscribe(show);
+    show();
   });
 </script>
 ```
@@ -228,6 +277,8 @@ Machine contract - verified against <a href="../schemas/virtual-list.schema.json
 ```
 
 </StatesSection>
+
+<ApiSection component="virtual-list" />
 
 <SourceFiles component="virtual-list" section="css" />
 

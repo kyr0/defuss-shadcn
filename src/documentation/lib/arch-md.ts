@@ -67,6 +67,20 @@ export function archBodyHtml(md: string): string {
         out.push(`<figure class="mermaid-diagram"><pre class="mermaid">${esc(body.join('\n'))}</pre></figure>`);
         continue;
       }
+      // a diagram fence is a JSON spec for the shipped diagram component
+      // (illustrative diagrams): readable as JSON on GitHub, a playable,
+      // clickable diagram on the site
+      if (lang === 'diagram') {
+        const json = body.join('\n');
+        let label = 'Diagram';
+        try {
+          label = JSON.parse(json).title ?? label;
+        } catch {
+          // an invalid spec still renders its figure; diagram.js reports it
+        }
+        out.push(`<figure class="diagram" aria-label="${esc(label)}"><script type="application/json" class="diagram-spec">${json.replace(/<\/script/gi, '<\\/script')}</script></figure>`);
+        continue;
+      }
       out.push(`<pre><code class="language-${lang}">${esc(body.join('\n'))}</code></pre>`);
       continue;
     }

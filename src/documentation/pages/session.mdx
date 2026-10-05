@@ -4,7 +4,7 @@ description: "Session component - a whole chat session: a transcript that follow
 slug: "session"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, H2, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, H2, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -390,6 +390,8 @@ Machine contract - verified against <a href="../schemas/session.schema.json"><co
 ```
 
 </StatesSection>
+
+<ApiSection component="session" />
 
 <SourceFiles component="session" section="css" />
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped command (palette) component. Loads the
@@ -169,6 +170,11 @@ try {
     const val = await page.$eval('#cmd-spacious .command-item', (el) => getComputedStyle(el).paddingTop);
     assert.equal(val, '10px');
   });
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, 'dialog.command[id]', ['default','open']);
+  });
+
 } finally {
   await browser.close();
   server.stop();

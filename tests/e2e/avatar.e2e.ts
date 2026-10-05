@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped avatar component. Loads the fixture
@@ -231,6 +232,11 @@ try {
     assert.equal(r.ringsDiffer, true);
     assert.equal(r.plates, 3, 'primary / neutral / muted plates differ');
     assert.deepEqual([r.overlap, r.countOverlap], ['-16px', '-16px']);
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.avatar[id]', ['default','error'], { runtimeAttrs: ['style'] });
   });
 
 } finally {

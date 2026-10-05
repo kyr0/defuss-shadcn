@@ -16,9 +16,19 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const sheetStates = ['default', 'open'];
+/**
+ * The markup of a state: 'open' carries `open`. render() applies it to a
+ * detached copy; on the live element showModal()/close() (the native
+ * protocol: top layer, focus, inert background) produce exactly this
+ * attribute - the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+    dfDollar(el).attr('open', stateName === 'open' ? '' : null);
+}
 /**
  * UI side of setState: 'default' closes, 'open' opens modally. Native
  * <dialog> mechanics; close-focus-return is handled by the close listener.
@@ -36,26 +46,18 @@ function triggerStateChange(sheet, stateName, _config) {
     }
 }
 /** Registry-level API; pass the sheet element explicitly. Unknown names throw. */
-export const sheetApi = {
-    setState(sheet, stateName, config = {}) {
-        if (!sheetStates.includes(stateName)) {
-            throw new Error(`sheet: unknown state "${stateName}" (supported: ${sheetStates.join(', ')})`);
-        }
-        triggerStateChange(sheet, stateName, config);
-        // state lives on the ELEMENT, not the module (multiple sheets per page)
-        sheet.dataset.stateName = stateName;
-        sheet._stateConfig = config;
-    },
-    getState(sheet) {
-        return { name: sheet.dataset.stateName || 'default', config: sheet._stateConfig ?? {} };
-    },
-};
+export const sheetApi = componentState({
+    component: 'sheet',
+    states: sheetStates,
+    apply: (sheet, state) => triggerStateChange(sheet, state.name, state.config),
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.sheetApi = sheetApi;
 df$.sheetStates = sheetStates;
 function init() {
-    document.querySelectorAll('[data-sheet-trigger]:not([data-init])').forEach((trigger) => {
+    dfDollar('[data-sheet-trigger]:not([data-init])').toArray().forEach((trigger) => {
         trigger.dataset.init = '';
-        const sheet = document.getElementById(trigger.dataset.sheetTrigger);
+        const sheet = dfDollar('#' + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
         if (!sheet)
             return;
         trigger.addEventListener('click', () => {
@@ -63,18 +65,15 @@ function init() {
             sheet.showModal();
         });
     });
-    document.querySelectorAll('dialog.sheet:not([data-init])').forEach((sheet) => {
+    dfDollar('dialog.sheet:not([data-init])').toArray().forEach((sheet) => {
         sheet.dataset.init = '';
-        // bind-scope the api per instance: `$('#sheet-right').api.setState('open')`
-        sheet.api = {
-            setState: (stateName, config) => sheetApi.setState(sheet, stateName, config),
-            getState: () => sheetApi.getState(sheet),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(sheet, sheetApi);
         sheet.addEventListener('click', (e) => {
             if (e.target === sheet)
                 sheet.close();
         });
-        sheet.querySelectorAll('[data-sheet-close]').forEach((btn) => {
+        dfDollar(sheet).find('[data-sheet-close]').toArray().forEach((btn) => {
             btn.addEventListener('click', () => { sheet.close(); });
         });
         sheet.addEventListener('close', () => {

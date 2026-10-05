@@ -37,7 +37,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount } = __df$shared;
+const { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const animCanvasStates = ['default', 'overview'];
@@ -188,7 +188,7 @@ function applySlideState(root, ctx) {
             s.setAttribute('aria-hidden', 'true');
     }
     // authored directional controls follow the active slide's relation map
-    root.querySelectorAll('[data-anim-canvas-go]').forEach((el) => {
+    dfDollar(root).find('[data-anim-canvas-go]').toArray().forEach((el) => {
         const dir = el.getAttribute('data-anim-canvas-go');
         if (dir === 'overview' || !(el instanceof HTMLButtonElement))
             return;
@@ -236,13 +236,13 @@ function replayContent(slide, offset) {
             d.animCanvasBaseDelay = String(cssMs(getComputedStyle(el).animationDelay));
         return parseFloat(d.animCanvasBaseDelay) + offset;
     };
-    slide.querySelectorAll('[data-df-entrance]').forEach((el) => {
+    dfDollar(slide).find('[data-df-entrance]').toArray().forEach((el) => {
         entrance(el, undefined, { delay: withOffset(el) });
     });
-    slide.querySelectorAll('[data-df-draw]').forEach((el) => {
+    dfDollar(slide).find('[data-df-draw]').toArray().forEach((el) => {
         draw(el, { delay: withOffset(el) });
     });
-    slide.querySelectorAll('[data-count]').forEach((el) => {
+    dfDollar(slide).find('[data-count]').toArray().forEach((el) => {
         animateCount(el, { delay: offset });
     });
 }
@@ -359,6 +359,32 @@ function toggleOverview(root, ctx) {
  * slide, bare 'default' leaves overview / re-frames the active slide.
  * Unknown names throw.
  */
+/**
+ * The markup of a state, for render(), on a detached copy of the authored
+ * canvas - what activate() + applySlideState() write: the active slide
+ * ({ slide } by id, else the authored one), the overview flag ('overview'
+ * unless { value: false }), every slide's inert / aria-hidden, the
+ * directional buttons' disabled. The camera pans (transforms) and content
+ * replays are the animation engine's - runtime-owned.
+ */
+function applyMarkup(root, stateName, config = {}) {
+    const slides = dfDollar(root).find('.anim-canvas-slide').toArray();
+    if (slides.length === 0)
+        return;
+    const overview = stateName === 'overview' && config.value !== false;
+    const active = slides.find((sl) => sl.id === config.slide) ?? slides.find((sl) => sl.hasAttribute('data-active')) ?? slides[0];
+    dfDollar(root).attr('data-overview', overview ? '' : null).attr('data-current-slide', active.id);
+    for (const sl of slides) {
+        const on = overview || sl === active;
+        dfDollar(sl).attr('data-active', sl === active ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', on ? null : 'true');
+    }
+    dfDollar(root).find('[data-anim-canvas-go]').each((_i, el) => {
+        const dir = el.getAttribute('data-anim-canvas-go');
+        if (dir === 'overview' || !(el instanceof HTMLButtonElement))
+            return;
+        dfDollar(el).attr('disabled', active.dataset[dir] ? null : '');
+    });
+}
 function triggerStateChange(root, stateName, config = {}) {
     if (!animCanvasStates.includes(stateName)) {
         throw new Error(`anim-canvas: unknown state "${stateName}" (supported: ${animCanvasStates.join(', ')})`);
@@ -381,26 +407,24 @@ function triggerStateChange(root, stateName, config = {}) {
         void panTo(root, ctx, focusView(root, ctx, ctx.active));
 }
 /** Registry-level API; pass the root explicitly. Unknown names throw. */
-export const animCanvasApi = {
-    setState(root, stateName, config = {}) {
-        triggerStateChange(root, stateName, config);
-        // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-        root.dataset.stateName = stateName;
-        root._stateConfig = config;
-    },
-    getState(root) {
+export const animCanvasApi = componentState({
+    component: 'anim-canvas',
+    states: animCanvasStates,
+    apply: (root, state) => triggerStateChange(root, state.name, state.config),
+    read: (root, state) => {
         const ctx = root._animCanvas;
         // reflect reality: keyboard/clicks move the canvas without setState()
         return {
             name: root.dataset.stateName || 'default',
             config: {
-                ...root._stateConfig,
+                ...state.config,
                 slide: ctx?.active.id,
                 overview: root.hasAttribute('data-overview'),
             },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
 df$.animCanvasApi = animCanvasApi;
 df$.animCanvasStates = animCanvasStates;
 /**
@@ -414,7 +438,7 @@ function pickCanvas(target) {
     const focused = target instanceof HTMLElement ? target.closest('.anim-canvas') : null;
     if (focused)
         return focused;
-    const all = Array.from(document.querySelectorAll('.anim-canvas'));
+    const all = Array.from(dfDollar('.anim-canvas').toArray());
     return (all.find((r) => {
         const b = r.getBoundingClientRect();
         return b.bottom > 0 && b.top < globalThis.innerHeight && b.right > 0 && b.left < globalThis.innerWidth;
@@ -448,21 +472,18 @@ function bindKeys() {
     });
 }
 function init() {
-    document.querySelectorAll('.anim-canvas:not([data-init])').forEach((root) => {
+    dfDollar('.anim-canvas:not([data-init])').toArray().forEach((root) => {
         root.dataset.init = '';
-        // bind-scope the api per instance: `$('#board').api.setState('overview')`
-        root.api = {
-            setState: (stateName, config) => animCanvasApi.setState(root, stateName, config),
-            getState: () => animCanvasApi.getState(root),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(root, animCanvasApi);
         // the board: ONE transformed layer holding every slide. Reused when the
         // markup already carries one (the docs CodeExample round-trips serialized
         // live DOM back into the editor - init must stay idempotent for it).
-        let board = root.querySelector(':scope > .anim-canvas-board');
+        let board = (dfDollar(root).find(':scope > .anim-canvas-board').get(0) ?? null);
         if (!board) {
             board = document.createElement('div');
             board.className = 'anim-canvas-board';
-            for (const slide of Array.from(root.querySelectorAll(':scope > .anim-canvas-slide'))) {
+            for (const slide of Array.from(dfDollar(root).find(':scope > .anim-canvas-slide').toArray())) {
                 dfDollar(board).append(slide);
             }
             root.prepend(board);
@@ -596,7 +617,7 @@ function init() {
         frame();
         // the start slide's counters run once on load (its entrances already
         // play from CSS as the page renders)
-        start.querySelectorAll('[data-count]').forEach((el) => {
+        dfDollar(start).find('[data-count]').toArray().forEach((el) => {
             animateCount(el);
         });
     });

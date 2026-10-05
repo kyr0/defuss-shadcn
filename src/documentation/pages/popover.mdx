@@ -4,7 +4,7 @@ description: "Popover component - floating content panels using native popover A
 slug: "popover"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -193,6 +193,8 @@ Machine contract - verified against <a href="../schemas/popover.schema.json"><co
 ```
 
 </StatesSection>
+
+<ApiSection component="popover" />
 
 <SourceFiles component="popover" section="css">
   <SourceNote for="css">Uses <code>position-area</code> for anchor positioning, <code>@starting-style</code> for enter animations, and <code>position-try-fallbacks</code> for automatic viewport-overflow flipping. Supports <code>data-side</code> and <code>data-align</code> attributes.</SourceNote>

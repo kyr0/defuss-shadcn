@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped tabs component. Loads the fixture
@@ -358,6 +359,17 @@ try {
       return { name: a.name, label: a.config.label, icon: a.config.icon, sel, span, noIcon, kept, restored: t.api.getState().config.label, text: t.textContent, billing: (document.getElementById('tb-st-t1') as HTMLButtonElement).disabled };
     });
     assert.deepEqual(r, { name: 'default', label: 'People', icon: '👥', sel: 0, span: '👥', noIcon: true, kept: 'Crew', restored: 'Team', text: 'Team', billing: true });
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state - triggers', async () => {
+    // a trigger's selection hands over to a sibling: the siblings' markup is
+    // theirs, a trigger's own aria-selected / tabindex / disabled / content is checked
+    await assertRenderContract(page, '[role="tab"][id]', ['default', 'active', 'disabled'], { runtimeAttrs: ['aria-selected', 'tabindex'] });
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state - tablists', async () => {
+    await assertRenderContract(page, '[role="tablist"][id]', ['default', 'active', 'disabled']);
   });
 
 } finally {

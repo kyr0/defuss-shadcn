@@ -1,0 +1,431 @@
+---
+title: "Illustrative · Data Lake"
+description: "Data lake architecture diagrams with the diagram component - a phase banner over sources, ingest, lake zones, query engine and consumers; step by step and as a delta."
+slug: "diagram-data-lake"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-data-lake" title="Illustrative · Data Lake" component="diagram">
+  An end-to-end lake: a chevron phase banner (<code>.diagram-phases</code>, a subgrid on the canvas columns) over the stages, raw and curated zones as stores inside the lake group, one query engine serving every consumer.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Open data lake" component="diagram" hint="The banner is grid row 1; its chevrons align with the columns through subgrid."
+<figure class="diagram" id="dg-lake" data-type="data-lake" aria-label="Open data lake, end to end">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data lake</span>
+    <span class="diagram-title">Open data lake · end to end</span>
+    <span class="diagram-dek">Sources land raw; one query engine serves every consumer.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+      <li>Sources</li>
+      <li>Ingest</li>
+      <li data-tone="accent">Lake</li>
+      <li>Query</li>
+      <li>Consume</li>
+    </ol>
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-name">App databases</span>
+      <span class="diagram-node-meta">Postgres · MySQL</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:3">
+      <span class="diagram-node-name">Partner files</span>
+      <span class="diagram-node-meta">SFTP · CSV</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2;--rspan:2">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">flows · schedules</span>
+    </div>
+    <div class="diagram-group" data-node="lakezone" data-tone="accent" style="--col:3;--row:2;--rspan:2"><span class="diagram-group-label">MinIO · S3</span></div>
+    <div class="diagram-node" data-node="raw" data-shape="store" style="--col:3;--row:2">
+      <span class="diagram-node-name">raw</span>
+      <span class="diagram-node-meta">as delivered</span>
+    </div>
+    <div class="diagram-node" data-node="curated" data-shape="store" style="--col:3;--row:3">
+      <span class="diagram-node-name">curated</span>
+      <span class="diagram-node-meta">Iceberg tables</span>
+    </div>
+    <div class="diagram-node" data-node="trino" style="--col:4;--row:2;--rspan:2">
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">SQL · federation</span>
+    </div>
+    <div class="diagram-node" data-node="bi" style="--col:5;--row:2">
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" style="--col:5;--row:3">
+      <span class="diagram-node-name">JupyterLab</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="pg" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+    <li class="diagram-edge" data-from="nifi" data-to="raw">write</li>
+    <li class="diagram-edge" data-from="raw" data-to="curated" data-line="dashed">clean</li>
+    <li class="diagram-edge" data-from="curated" data-to="trino" data-tone="accent">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="The lake, stage by stage" component="diagram" hint="One phase a step - data-step on every node of a stage."
+<figure class="diagram" id="dg-lake-steps" data-type="data-lake" data-steps data-autoplay aria-label="Open data lake, end to end">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data lake</span>
+    <span class="diagram-title">Open data lake · end to end</span>
+    <span class="diagram-dek">Sources land raw; one query engine serves every consumer.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+      <li>Sources</li>
+      <li>Ingest</li>
+      <li data-tone="accent">Lake</li>
+      <li>Query</li>
+      <li>Consume</li>
+    </ol>
+    <div class="diagram-node" data-node="pg" data-tone="external" data-step="1" style="--col:1;--row:2">
+      <span class="diagram-node-name">App databases</span>
+      <span class="diagram-node-meta">Postgres · MySQL</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" data-step="1" style="--col:1;--row:3">
+      <span class="diagram-node-name">Partner files</span>
+      <span class="diagram-node-meta">SFTP · CSV</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" data-step="2" style="--col:2;--row:2;--rspan:2">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">flows · schedules</span>
+    </div>
+    <div class="diagram-group" data-node="lakezone" data-tone="accent" data-step="3" style="--col:3;--row:2;--rspan:2"><span class="diagram-group-label">MinIO · S3</span></div>
+    <div class="diagram-node" data-node="raw" data-shape="store" data-step="3" style="--col:3;--row:2">
+      <span class="diagram-node-name">raw</span>
+      <span class="diagram-node-meta">as delivered</span>
+    </div>
+    <div class="diagram-node" data-node="curated" data-shape="store" data-step="3" style="--col:3;--row:3">
+      <span class="diagram-node-name">curated</span>
+      <span class="diagram-node-meta">Iceberg tables</span>
+    </div>
+    <div class="diagram-node" data-node="trino" data-step="4" style="--col:4;--row:2;--rspan:2">
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">SQL · federation</span>
+    </div>
+    <div class="diagram-node" data-node="bi" data-step="5" style="--col:5;--row:2">
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" data-step="5" style="--col:5;--row:3">
+      <span class="diagram-node-name">JupyterLab</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="pg" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+    <li class="diagram-edge" data-from="nifi" data-to="raw">write</li>
+    <li class="diagram-edge" data-from="raw" data-to="curated" data-line="dashed">clean</li>
+    <li class="diagram-edge" data-from="curated" data-to="trino" data-tone="accent">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Data Lake, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-lake-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-lake-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-lake-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-lake-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-lake-live" data-interactive data-type="data-lake" aria-label="Open data lake, end to end">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data lake</span>
+    <span class="diagram-title">Open data lake · end to end</span>
+    <span class="diagram-dek">Sources land raw; one query engine serves every consumer.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+      <li>Sources</li>
+      <li>Ingest</li>
+      <li data-tone="accent">Lake</li>
+      <li>Query</li>
+      <li>Consume</li>
+    </ol>
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-name">App databases</span>
+      <span class="diagram-node-meta">Postgres · MySQL</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:3">
+      <span class="diagram-node-name">Partner files</span>
+      <span class="diagram-node-meta">SFTP · CSV</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2;--rspan:2">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">flows · schedules</span>
+    </div>
+    <div class="diagram-group" data-node="lakezone" data-tone="accent" style="--col:3;--row:2;--rspan:2"><span class="diagram-group-label">MinIO · S3</span></div>
+    <div class="diagram-node" data-node="raw" data-shape="store" style="--col:3;--row:2">
+      <span class="diagram-node-name">raw</span>
+      <span class="diagram-node-meta">as delivered</span>
+    </div>
+    <div class="diagram-node" data-node="curated" data-shape="store" style="--col:3;--row:3">
+      <span class="diagram-node-name">curated</span>
+      <span class="diagram-node-meta">Iceberg tables</span>
+    </div>
+    <div class="diagram-node" data-node="trino" style="--col:4;--row:2;--rspan:2">
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">SQL · federation</span>
+    </div>
+    <div class="diagram-node" data-node="bi" style="--col:5;--row:2">
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" style="--col:5;--row:3">
+      <span class="diagram-node-name">JupyterLab</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="pg" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+    <li class="diagram-edge" data-from="nifi" data-to="raw">write</li>
+    <li class="diagram-edge" data-from="raw" data-to="curated" data-line="dashed">clean</li>
+    <li class="diagram-edge" data-from="curated" data-to="trino" data-tone="accent">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Data Lake, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-lake-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-lake-edit" data-interactive data-type="data-lake" aria-label="Open data lake, end to end">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Data lake</span>
+        <span class="diagram-title">Open data lake · end to end</span>
+        <span class="diagram-dek">Sources land raw; one query engine serves every consumer.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+        <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+          <li>Sources</li>
+          <li>Ingest</li>
+          <li data-tone="accent">Lake</li>
+          <li>Query</li>
+          <li>Consume</li>
+        </ol>
+        <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+          <span class="diagram-node-name">App databases</span>
+          <span class="diagram-node-meta">Postgres · MySQL</span>
+        </div>
+        <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:3">
+          <span class="diagram-node-name">Partner files</span>
+          <span class="diagram-node-meta">SFTP · CSV</span>
+        </div>
+        <div class="diagram-node" data-node="nifi" style="--col:2;--row:2;--rspan:2">
+          <span class="diagram-node-name">NiFi</span>
+          <span class="diagram-node-meta">flows · schedules</span>
+        </div>
+        <div class="diagram-group" data-node="lakezone" data-tone="accent" style="--col:3;--row:2;--rspan:2"><span class="diagram-group-label">MinIO · S3</span></div>
+        <div class="diagram-node" data-node="raw" data-shape="store" style="--col:3;--row:2">
+          <span class="diagram-node-name">raw</span>
+          <span class="diagram-node-meta">as delivered</span>
+        </div>
+        <div class="diagram-node" data-node="curated" data-shape="store" style="--col:3;--row:3">
+          <span class="diagram-node-name">curated</span>
+          <span class="diagram-node-meta">Iceberg tables</span>
+        </div>
+        <div class="diagram-node" data-node="trino" style="--col:4;--row:2;--rspan:2">
+          <span class="diagram-node-name">Trino</span>
+          <span class="diagram-node-meta">SQL · federation</span>
+        </div>
+        <div class="diagram-node" data-node="bi" style="--col:5;--row:2">
+          <span class="diagram-node-name">Superset</span>
+          <span class="diagram-node-meta">dashboards</span>
+        </div>
+        <div class="diagram-node" data-node="nb" style="--col:5;--row:3">
+          <span class="diagram-node-name">JupyterLab</span>
+          <span class="diagram-node-meta">notebooks</span>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="pg" data-to="nifi">JDBC</li>
+        <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+        <li class="diagram-edge" data-from="nifi" data-to="raw">write</li>
+        <li class="diagram-edge" data-from="raw" data-to="curated" data-line="dashed">clean</li>
+        <li class="diagram-edge" data-from="curated" data-to="trino" data-tone="accent">Iceberg</li>
+        <li class="diagram-edge" data-from="trino" data-to="bi">SQL</li>
+        <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-lake-edit-panel" aria-labelledby="dg-lake-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-lake-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-lake-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-lake-edit');
+    const grid = document.getElementById('dg-lake-edit-grid');
+    const title = document.getElementById('dg-lake-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="flow">Flow</H2>
+
+<DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
+
+```html example label="Data Lake, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-lake-flow" data-type="data-lake" aria-label="Open data lake, end to end">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Data lake</span>
+    <span class="diagram-title">Open data lake · end to end</span>
+    <span class="diagram-dek">Sources land raw; one query engine serves every consumer.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+      <li>Sources</li>
+      <li>Ingest</li>
+      <li data-tone="accent">Lake</li>
+      <li>Query</li>
+      <li>Consume</li>
+    </ol>
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-name">App databases</span>
+      <span class="diagram-node-meta">Postgres · MySQL</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:3">
+      <span class="diagram-node-name">Partner files</span>
+      <span class="diagram-node-meta">SFTP · CSV</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2;--rspan:2">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">flows · schedules</span>
+    </div>
+    <div class="diagram-group" data-node="lakezone" data-tone="accent" style="--col:3;--row:2;--rspan:2"><span class="diagram-group-label">MinIO · S3</span></div>
+    <div class="diagram-node" data-node="raw" data-shape="store" style="--col:3;--row:2">
+      <span class="diagram-node-name">raw</span>
+      <span class="diagram-node-meta">as delivered</span>
+    </div>
+    <div class="diagram-node" data-node="curated" data-shape="store" style="--col:3;--row:3">
+      <span class="diagram-node-name">curated</span>
+      <span class="diagram-node-meta">Iceberg tables</span>
+    </div>
+    <div class="diagram-node" data-node="trino" style="--col:4;--row:2;--rspan:2">
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">SQL · federation</span>
+    </div>
+    <div class="diagram-node" data-node="bi" style="--col:5;--row:2">
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" style="--col:5;--row:3">
+      <span class="diagram-node-name">JupyterLab</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="pg" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">SFTP</li>
+    <li class="diagram-edge" data-from="nifi" data-to="raw" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">write</li>
+    <li class="diagram-edge" data-from="raw" data-to="curated" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100">clean</li>
+    <li class="diagram-edge" data-from="curated" data-to="trino" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi" data-flow="2600" data-flow-tokens="2" data-flow-delay="3500">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb" data-flow="2600" data-flow-tokens="2" data-flow-delay="4200">SQL</li>
+  </ol>
+</figure>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Streaming beside the batch path" component="diagram" hint="A replaced tool keeps its seat as a changed node (old name in data-before)."
+<figure class="diagram" id="dg-lake-delta" data-type="data-lake" data-delta aria-label="The lake gets streaming">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Platform change</span>
+    <span class="diagram-title">Streaming beside the batch path</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+      <li>Sources</li>
+      <li>Ingest</li>
+      <li>Lake</li>
+      <li>Query</li>
+    </ol>
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2"><span class="diagram-node-name">App databases</span></div>
+    <div class="diagram-node" data-node="nifi" data-change="changed" style="--col:2;--row:2">
+      <span class="diagram-node-name" data-before="NiFi">Airbyte</span>
+      <span class="diagram-node-meta" data-before="flows · schedules">ELT · CDC</span>
+    </div>
+    <div class="diagram-node" data-node="kafka" data-tone="accent" data-change="added" style="--col:2;--row:3">
+      <span class="diagram-node-name">Kafka</span>
+      <span class="diagram-node-meta">events</span>
+    </div>
+    <div class="diagram-node" data-node="raw" data-shape="store" style="--col:3;--row:2"><span class="diagram-node-name">Lake</span></div>
+    <div class="diagram-node" data-node="trino" style="--col:4;--row:2"><span class="diagram-node-name">Trino</span></div>
+    <div class="diagram-node" data-node="flink" data-change="added" style="--col:3;--row:3">
+      <span class="diagram-node-name">Flink</span>
+      <span class="diagram-node-meta">stream jobs</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="pg" data-to="nifi">CDC</li>
+    <li class="diagram-edge" data-from="nifi" data-to="raw">write</li>
+    <li class="diagram-edge" data-from="pg" data-to="kafka" data-line="dashed" data-change="added">outbox</li>
+    <li class="diagram-edge" data-from="kafka" data-to="flink" data-change="added"></li>
+    <li class="diagram-edge" data-from="flink" data-to="raw" data-change="added">upsert</li>
+    <li class="diagram-edge" data-from="raw" data-to="trino"></li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

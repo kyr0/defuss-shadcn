@@ -1,0 +1,473 @@
+---
+title: "Illustrative · Architecture"
+description: "Architecture diagrams with the diagram component - services, stores and external systems on a grid, zones behind them, labelled rounded-elbow connectors; step by step and as a before/changes/after delta."
+slug: "diagram-architecture"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-architecture" title="Illustrative · Architecture" component="diagram">
+  What talks to what: services, stores and external systems on a grid, a zone (<code>.diagram-group</code>) drawn behind the nodes on the same cells, and the connections as an edge list - drawn as rounded orthogonal elbows with masked labels. One accent marks the thing to notice; dashed means async.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Checkout platform" component="diagram" hint="Zones are groups placed on grid cells behind the nodes. Ports on one side fan out (the gateway takes two calls), parallel connectors never share a channel."
+<figure class="diagram" id="dg-arch" data-type="architecture" aria-label="Checkout platform architecture">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Architecture</span>
+    <span class="diagram-title">Checkout platform</span>
+    <span class="diagram-dek">Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-node="vpc" style="--col:2;--row:1;--span:3;--rspan:3"><span class="diagram-group-label">VPC · eu-west-1</span></div>
+    <div class="diagram-node" data-node="web" data-step-label="Clients" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Web app</span>
+      <span class="diagram-node-meta">Next.js · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="mobile" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Mobile app</span>
+      <span class="diagram-node-meta">iOS · Android</span>
+    </div>
+    <div class="diagram-node" data-node="gw" data-tone="accent" data-step-label="The gateway" style="--col:2;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+      <span class="diagram-node-meta">auth · rate limits</span>
+    </div>
+    <div class="diagram-node" data-node="orders" data-step-label="Services" style="--col:3;--row:1">
+      <span class="diagram-node-name">Orders</span>
+      <span class="diagram-node-meta">Go · 3 pods</span>
+    </div>
+    <div class="diagram-node" data-node="pay" style="--col:3;--row:3">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">Kotlin · 2 pods</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" data-step-label="Data" style="--col:4;--row:1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">primary + replica</span>
+    </div>
+    <div class="diagram-node" data-node="bus" data-step-label="Async" style="--col:3;--row:2">
+      <span class="diagram-node-name">Event bus</span>
+      <span class="diagram-node-meta">Kafka · 12 topics</span>
+    </div>
+    <div class="diagram-node" data-node="psp" data-tone="external" style="--col:4;--row:3">
+      <span class="diagram-node-name">Card processor</span>
+      <span class="diagram-node-meta">external · PCI</span>
+    </div>
+    <div class="diagram-node" data-node="mail" style="--col:4;--row:2">
+      <span class="diagram-node-name">Notifications</span>
+      <span class="diagram-node-meta">email · push</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="web" data-to="gw">HTTPS</li>
+    <li class="diagram-edge" data-from="mobile" data-to="gw">HTTPS</li>
+    <li class="diagram-edge" data-from="gw" data-to="orders" data-tone="accent">gRPC</li>
+    <li class="diagram-edge" data-from="gw" data-to="pay">gRPC</li>
+    <li class="diagram-edge" data-from="orders" data-to="db">SQL</li>
+    <li class="diagram-edge" data-from="pay" data-to="psp" data-tone="link">TLS</li>
+    <li class="diagram-edge" data-from="orders" data-to="bus" data-line="dashed">publish</li>
+    <li class="diagram-edge" data-from="bus" data-to="mail" data-line="dashed">consume</li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Focal: the gateway</li>
+    <li data-swatch="external">External</li>
+    <li data-swatch="line">Sync call</li>
+    <li data-swatch="dashed">Async event</li>
+  </ul>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+<DocText>The same figure with <code>data-steps data-autoplay</code>: explicit <code>data-step</code> numbers group clients, the gateway, services, data and async work into five steps; each edge enters with its later endpoint.</DocText>
+
+```html example label="Checkout platform, step by step" component="diagram" hint="Plays once when scrolled into view; the toolbar steps, pauses and replays. Keyboard: arrows, Space, Home, End, R."
+<figure class="diagram" id="dg-arch-steps" data-type="architecture" data-steps data-autoplay aria-label="Checkout platform architecture">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Architecture</span>
+    <span class="diagram-title">Checkout platform</span>
+    <span class="diagram-dek">Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-node="vpc" data-step="2" style="--col:2;--row:1;--span:3;--rspan:3"><span class="diagram-group-label">VPC · eu-west-1</span></div>
+    <div class="diagram-node" data-node="web" data-step="1" data-step-label="Clients" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Web app</span>
+      <span class="diagram-node-meta">Next.js · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="mobile" data-step="1" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Mobile app</span>
+      <span class="diagram-node-meta">iOS · Android</span>
+    </div>
+    <div class="diagram-node" data-node="gw" data-tone="accent" data-step="2" data-step-label="The gateway" style="--col:2;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+      <span class="diagram-node-meta">auth · rate limits</span>
+    </div>
+    <div class="diagram-node" data-node="orders" data-step="3" data-step-label="Services" style="--col:3;--row:1">
+      <span class="diagram-node-name">Orders</span>
+      <span class="diagram-node-meta">Go · 3 pods</span>
+    </div>
+    <div class="diagram-node" data-node="pay" data-step="3" style="--col:3;--row:3">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">Kotlin · 2 pods</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" data-step="4" data-step-label="Data" style="--col:4;--row:1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">primary + replica</span>
+    </div>
+    <div class="diagram-node" data-node="bus" data-step="5" data-step-label="Async" style="--col:3;--row:2">
+      <span class="diagram-node-name">Event bus</span>
+      <span class="diagram-node-meta">Kafka · 12 topics</span>
+    </div>
+    <div class="diagram-node" data-node="psp" data-tone="external" data-step="4" style="--col:4;--row:3">
+      <span class="diagram-node-name">Card processor</span>
+      <span class="diagram-node-meta">external · PCI</span>
+    </div>
+    <div class="diagram-node" data-node="mail" data-step="5" style="--col:4;--row:2">
+      <span class="diagram-node-name">Notifications</span>
+      <span class="diagram-node-meta">email · push</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="web" data-to="gw">HTTPS</li>
+    <li class="diagram-edge" data-from="mobile" data-to="gw">HTTPS</li>
+    <li class="diagram-edge" data-from="gw" data-to="orders" data-tone="accent">gRPC</li>
+    <li class="diagram-edge" data-from="gw" data-to="pay">gRPC</li>
+    <li class="diagram-edge" data-from="orders" data-to="db">SQL</li>
+    <li class="diagram-edge" data-from="pay" data-to="psp" data-tone="link">TLS</li>
+    <li class="diagram-edge" data-from="orders" data-to="bus" data-line="dashed">publish</li>
+    <li class="diagram-edge" data-from="bus" data-to="mail" data-line="dashed">consume</li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Focal: the gateway</li>
+    <li data-swatch="external">External</li>
+    <li data-swatch="line">Sync call</li>
+    <li data-swatch="dashed">Async event</li>
+  </ul>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Architecture, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-arch-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-arch-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-arch-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-arch-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-arch-live" data-interactive data-type="architecture" aria-label="Checkout platform architecture">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Architecture</span>
+    <span class="diagram-title">Checkout platform</span>
+    <span class="diagram-dek">Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-node="vpc" style="--col:2;--row:1;--span:3;--rspan:3"><span class="diagram-group-label">VPC · eu-west-1</span></div>
+    <div class="diagram-node" data-node="web" data-step-label="Clients" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Web app</span>
+      <span class="diagram-node-meta">Next.js · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="mobile" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Mobile app</span>
+      <span class="diagram-node-meta">iOS · Android</span>
+    </div>
+    <div class="diagram-node" data-node="gw" data-tone="accent" data-step-label="The gateway" style="--col:2;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+      <span class="diagram-node-meta">auth · rate limits</span>
+    </div>
+    <div class="diagram-node" data-node="orders" data-step-label="Services" style="--col:3;--row:1">
+      <span class="diagram-node-name">Orders</span>
+      <span class="diagram-node-meta">Go · 3 pods</span>
+    </div>
+    <div class="diagram-node" data-node="pay" style="--col:3;--row:3">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">Kotlin · 2 pods</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" data-step-label="Data" style="--col:4;--row:1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">primary + replica</span>
+    </div>
+    <div class="diagram-node" data-node="bus" data-step-label="Async" style="--col:3;--row:2">
+      <span class="diagram-node-name">Event bus</span>
+      <span class="diagram-node-meta">Kafka · 12 topics</span>
+    </div>
+    <div class="diagram-node" data-node="psp" data-tone="external" style="--col:4;--row:3">
+      <span class="diagram-node-name">Card processor</span>
+      <span class="diagram-node-meta">external · PCI</span>
+    </div>
+    <div class="diagram-node" data-node="mail" style="--col:4;--row:2">
+      <span class="diagram-node-name">Notifications</span>
+      <span class="diagram-node-meta">email · push</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="web" data-to="gw">HTTPS</li>
+    <li class="diagram-edge" data-from="mobile" data-to="gw">HTTPS</li>
+    <li class="diagram-edge" data-from="gw" data-to="orders" data-tone="accent">gRPC</li>
+    <li class="diagram-edge" data-from="gw" data-to="pay">gRPC</li>
+    <li class="diagram-edge" data-from="orders" data-to="db">SQL</li>
+    <li class="diagram-edge" data-from="pay" data-to="psp" data-tone="link">TLS</li>
+    <li class="diagram-edge" data-from="orders" data-to="bus" data-line="dashed">publish</li>
+    <li class="diagram-edge" data-from="bus" data-to="mail" data-line="dashed">consume</li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Focal: the gateway</li>
+    <li data-swatch="external">External</li>
+    <li data-swatch="line">Sync call</li>
+    <li data-swatch="dashed">Async event</li>
+  </ul>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Architecture, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-arch-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-arch-edit" data-interactive data-type="architecture" aria-label="Checkout platform architecture">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Architecture</span>
+        <span class="diagram-title">Checkout platform</span>
+        <span class="diagram-dek">Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:4">
+        <div class="diagram-group" data-node="vpc" style="--col:2;--row:1;--span:3;--rspan:3"><span class="diagram-group-label">VPC · eu-west-1</span></div>
+        <div class="diagram-node" data-node="web" data-step-label="Clients" style="--col:1;--row:1">
+          <span class="diagram-node-eyebrow">Client</span>
+          <span class="diagram-node-name">Web app</span>
+          <span class="diagram-node-meta">Next.js · SSR</span>
+        </div>
+        <div class="diagram-node" data-node="mobile" style="--col:1;--row:3">
+          <span class="diagram-node-eyebrow">Client</span>
+          <span class="diagram-node-name">Mobile app</span>
+          <span class="diagram-node-meta">iOS · Android</span>
+        </div>
+        <div class="diagram-node" data-node="gw" data-tone="accent" data-step-label="The gateway" style="--col:2;--row:1;--rspan:3">
+          <span class="diagram-node-eyebrow">Edge</span>
+          <span class="diagram-node-name">API gateway</span>
+          <span class="diagram-node-meta">auth · rate limits</span>
+        </div>
+        <div class="diagram-node" data-node="orders" data-step-label="Services" style="--col:3;--row:1">
+          <span class="diagram-node-name">Orders</span>
+          <span class="diagram-node-meta">Go · 3 pods</span>
+        </div>
+        <div class="diagram-node" data-node="pay" style="--col:3;--row:3">
+          <span class="diagram-node-name">Payments</span>
+          <span class="diagram-node-meta">Kotlin · 2 pods</span>
+        </div>
+        <div class="diagram-node" data-node="db" data-shape="store" data-step-label="Data" style="--col:4;--row:1">
+          <span class="diagram-node-name">Postgres</span>
+          <span class="diagram-node-meta">primary + replica</span>
+        </div>
+        <div class="diagram-node" data-node="bus" data-step-label="Async" style="--col:3;--row:2">
+          <span class="diagram-node-name">Event bus</span>
+          <span class="diagram-node-meta">Kafka · 12 topics</span>
+        </div>
+        <div class="diagram-node" data-node="psp" data-tone="external" style="--col:4;--row:3">
+          <span class="diagram-node-name">Card processor</span>
+          <span class="diagram-node-meta">external · PCI</span>
+        </div>
+        <div class="diagram-node" data-node="mail" style="--col:4;--row:2">
+          <span class="diagram-node-name">Notifications</span>
+          <span class="diagram-node-meta">email · push</span>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="web" data-to="gw">HTTPS</li>
+        <li class="diagram-edge" data-from="mobile" data-to="gw">HTTPS</li>
+        <li class="diagram-edge" data-from="gw" data-to="orders" data-tone="accent">gRPC</li>
+        <li class="diagram-edge" data-from="gw" data-to="pay">gRPC</li>
+        <li class="diagram-edge" data-from="orders" data-to="db">SQL</li>
+        <li class="diagram-edge" data-from="pay" data-to="psp" data-tone="link">TLS</li>
+        <li class="diagram-edge" data-from="orders" data-to="bus" data-line="dashed">publish</li>
+        <li class="diagram-edge" data-from="bus" data-to="mail" data-line="dashed">consume</li>
+      </ol>
+      <ul class="diagram-legend">
+        <li data-swatch="accent">Focal: the gateway</li>
+        <li data-swatch="external">External</li>
+        <li data-swatch="line">Sync call</li>
+        <li data-swatch="dashed">Async event</li>
+      </ul>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-arch-edit-panel" aria-labelledby="dg-arch-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-arch-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-arch-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-arch-edit');
+    const grid = document.getElementById('dg-arch-edit-grid');
+    const title = document.getElementById('dg-arch-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="flow">Flow</H2>
+
+<DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
+
+```html example label="Architecture, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-arch-flow" data-type="architecture" aria-label="Checkout platform architecture">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Architecture</span>
+    <span class="diagram-title">Checkout platform</span>
+    <span class="diagram-dek">Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-node="vpc" style="--col:2;--row:1;--span:3;--rspan:3"><span class="diagram-group-label">VPC · eu-west-1</span></div>
+    <div class="diagram-node" data-node="web" data-step-label="Clients" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Web app</span>
+      <span class="diagram-node-meta">Next.js · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="mobile" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Mobile app</span>
+      <span class="diagram-node-meta">iOS · Android</span>
+    </div>
+    <div class="diagram-node" data-node="gw" data-tone="accent" data-step-label="The gateway" style="--col:2;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+      <span class="diagram-node-meta">auth · rate limits</span>
+    </div>
+    <div class="diagram-node" data-node="orders" data-step-label="Services" style="--col:3;--row:1">
+      <span class="diagram-node-name">Orders</span>
+      <span class="diagram-node-meta">Go · 3 pods</span>
+    </div>
+    <div class="diagram-node" data-node="pay" style="--col:3;--row:3">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">Kotlin · 2 pods</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" data-step-label="Data" style="--col:4;--row:1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">primary + replica</span>
+    </div>
+    <div class="diagram-node" data-node="bus" data-step-label="Async" style="--col:3;--row:2">
+      <span class="diagram-node-name">Event bus</span>
+      <span class="diagram-node-meta">Kafka · 12 topics</span>
+    </div>
+    <div class="diagram-node" data-node="psp" data-tone="external" style="--col:4;--row:3">
+      <span class="diagram-node-name">Card processor</span>
+      <span class="diagram-node-meta">external · PCI</span>
+    </div>
+    <div class="diagram-node" data-node="mail" style="--col:4;--row:2">
+      <span class="diagram-node-name">Notifications</span>
+      <span class="diagram-node-meta">email · push</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="web" data-to="gw" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">HTTPS</li>
+    <li class="diagram-edge" data-from="mobile" data-to="gw" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">HTTPS</li>
+    <li class="diagram-edge" data-from="gw" data-to="orders" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">gRPC</li>
+    <li class="diagram-edge" data-from="gw" data-to="pay" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100">gRPC</li>
+    <li class="diagram-edge" data-from="orders" data-to="db" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800">SQL</li>
+    <li class="diagram-edge" data-from="pay" data-to="psp" data-tone="link" data-flow="2600" data-flow-tokens="2" data-flow-delay="3500">TLS</li>
+    <li class="diagram-edge" data-from="orders" data-to="bus" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="4200">publish</li>
+    <li class="diagram-edge" data-from="bus" data-to="mail" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="4900">consume</li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Focal: the gateway</li>
+    <li data-swatch="external">External</li>
+    <li data-swatch="line">Sync call</li>
+    <li data-swatch="dashed">Async event</li>
+  </ul>
+</figure>
+```
+
+<H2 id="delta">Delta</H2>
+
+<DocText>Before · changes · after from one source: <code>data-change</code> on what was added, removed or changed, <code>data-before</code> on text that changed. The middle panel marks every change and lists it in the ledger.</DocText>
+
+```html example label="Payments leaves the monolith" component="diagram" hint="Below 96rem of width the panels stack (top, center, bottom); data-delta=columns forces them side by side."
+<figure class="diagram" id="dg-arch-delta" data-type="architecture" data-delta aria-label="Extracting the payments service">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Migration</span>
+    <span class="diagram-title">Payments leaves the monolith</span>
+    <span class="diagram-dek">One annotated source: the panels, the badges and the ledger are derived from data-change.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-node" data-node="gw" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+    </div>
+    <div class="diagram-node" data-node="mono" data-change="changed" style="--col:2;--row:1">
+      <span class="diagram-node-name">Monolith</span>
+      <span class="diagram-node-meta" data-before="orders · payments · cron">orders</span>
+    </div>
+    <div class="diagram-node" data-node="pay" data-tone="accent" data-change="added" style="--col:2;--row:2">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">new service</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" style="--col:3;--row:1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">shared</span>
+    </div>
+    <div class="diagram-node" data-node="paydb" data-shape="store" data-change="added" style="--col:3;--row:2">
+      <span class="diagram-node-name">Payments DB</span>
+      <span class="diagram-node-meta">owned</span>
+    </div>
+    <div class="diagram-node" data-node="cron" data-change="removed" style="--col:1;--row:2">
+      <span class="diagram-node-name">Nightly cron</span>
+      <span class="diagram-node-meta">settlement batch</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="gw" data-to="mono">REST</li>
+    <li class="diagram-edge" data-from="gw" data-to="pay" data-change="added">charge</li>
+    <li class="diagram-edge" data-from="mono" data-to="db">SQL</li>
+    <li class="diagram-edge" data-from="pay" data-to="paydb" data-change="added">SQL</li>
+    <li class="diagram-edge" data-from="cron" data-to="mono" data-change="removed">batch</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

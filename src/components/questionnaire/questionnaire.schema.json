@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "questionnaire",
+  "states": {
+    "answering": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".questionnaire"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "answering"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "review": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".questionnaire"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "review"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "submitted": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".questionnaire"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "submitted"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

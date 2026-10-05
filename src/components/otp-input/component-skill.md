@@ -130,6 +130,22 @@ The registry globals are `_defussShadcn.otpInputApi` and
 
 ---
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.otpInputApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.otpInputStates` = `default`, `filled`, `invalid`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `otp-complete` | `value` | Fires when every cell is filled - the whole code. |
+
+---
+
 ## ARIA
 
 | Attribute | Element | When |

@@ -31,6 +31,33 @@ import {
   revealAttr,
   safeShowPopover,
   defussQuery,
+  captureAuthored,
+  componentState,
+  bindComponent,
+  unbindComponent,
+  computed,
+  createStore,
+  persisted,
+  reload,
+  forget,
+  persistOk,
+  viewPersistence,
+  dataSource,
+  parseFilter,
+  filterText,
+  cycleSort,
+  createDataview,
+  evaluateDataview,
+  addRows,
+  removeRows,
+  updateRows,
+  setParent,
+  virtualWindow,
+  sizerHeight,
+  scrollTopFor,
+  scrollIntoViewTop,
+  elementModel,
+  renderModel,
   SHARED_ABI,
 } from '../shared/index.js';
 
@@ -53,6 +80,26 @@ type ShadcnNamespace = {
     bindGlobalKeys: typeof bindGlobalKeys;
     isEditableTarget: typeof isEditableTarget;
     loadTheme: typeof loadTheme;
+    elementModel: typeof elementModel;
+    renderModel: typeof renderModel;
+    componentState: typeof componentState;
+    bindComponent: typeof bindComponent;
+    unbindComponent: typeof unbindComponent;
+    createStore: typeof createStore;
+    computed: typeof computed;
+    persisted: typeof persisted;
+    reload: typeof reload;
+    forget: typeof forget;
+    persistOk: typeof persistOk;
+    viewPersistence: typeof viewPersistence;
+    dataSource: typeof dataSource;
+    parseFilter: typeof parseFilter;
+    filterText: typeof filterText;
+    cycleSort: typeof cycleSort;
+    virtualWindow: typeof virtualWindow;
+    sizerHeight: typeof sizerHeight;
+    scrollTopFor: typeof scrollTopFor;
+    scrollIntoViewTop: typeof scrollIntoViewTop;
   };
   docs?: Record<string, unknown>;
   [key: string]: unknown;
@@ -108,12 +155,72 @@ shadcn.shared = {
   isEditableTarget,
   // theme resource loader (theme/<id>.json sidecars, built from themes.ts)
   loadTheme,
+  // render() machinery (src/shared/render.ts): markup model + state render
+  elementModel,
+  renderModel,
+  // the State API on a store per element (src/shared/component-state.ts)
+  componentState,
+  bindComponent,
+  unbindComponent,
+  // stores + Web Storage persistence (src/shared/store.ts) - also df$.store
+  createStore,
+  computed,
+  persisted,
+  reload,
+  forget,
+  persistOk,
+  viewPersistence,
+  // the big-data layer (src/shared/dataview.ts + virtual.ts) - also df$.dataview
+  dataSource,
+  parseFilter,
+  filterText,
+  cycleSort,
+  virtualWindow,
+  sizerHeight,
+  scrollTopFor,
+  scrollIntoViewTop,
 };
+
+// -- df$.store: the one store primitive for pages and apps - observable
+// values (defuss-store), and values kept in local / session storage
+// (validated, memory fallback) - core is the only legal installer (§2.1)
+Reflect.set(df, 'store', { create: createStore, computed, persisted });
+
+// -- df$.dataview: query plain row arrays - filter, multisort, page, walk a
+// tree (defuss-dataview) - through a cached source, the same engine the
+// virtual list, data tree and data grid run on
+Reflect.set(df, 'dataview', {
+  source: dataSource,
+  parseFilter,
+  cycleSort,
+  create: createDataview,
+  evaluate: evaluateDataview,
+  addRows,
+  removeRows,
+  updateRows,
+  setParent,
+});
 
 // -- the imperative animation registry on the callable itself: df$.anim.* is
 // the public surface agents and decks drive (df$.anim.fadeIn.play(el)); core
 // is the only legal installer, components never extend df$ (§2.1).
 Reflect.set(df, 'anim', anim);
+
+// -- the authored markup render() starts from (src/shared/render.ts): the
+// page as parsed, captured before any component runs, and every subtree
+// added later - this observer is created before any component's, and
+// MutationObserver callbacks run in creation order, so it sees new nodes
+// first. Components read it through elementModel().
+if (typeof document !== 'undefined') {
+  const captureAll = (): void => {
+    if (document.body) captureAuthored(document.body);
+    new MutationObserver((records) => {
+      for (const r of records) for (const n of r.addedNodes) if (n.nodeType === Node.ELEMENT_NODE) captureAuthored(n as Element);
+    }).observe(document, { childList: true, subtree: true });
+  };
+  if (document.body) captureAll();
+  else document.addEventListener('DOMContentLoaded', captureAll, { once: true });
+}
 shadcn.anim = anim;
 
 // -- the shared library's public alias: `ddf$` (guarded, installed once by the

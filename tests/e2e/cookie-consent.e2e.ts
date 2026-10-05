@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: a consent banner is only worth its promise - nothing optional runs or
@@ -118,7 +119,11 @@ try {
     await api('updateTagsActivation');
     await api('updateTagsActivation');
     assert.equal(await page.evaluate(() => (globalThis as any).analyticsRuns), 1);
-    const stored = JSON.parse((await page.evaluate(() => localStorage.getItem('consent:test')))!);
+    // a defuss-store envelope (persisted(), AGENTS.md "State through stores")
+    // around the minimal record
+    const envelope = JSON.parse((await page.evaluate(() => localStorage.getItem('consent:test')))!);
+    assert.equal(envelope.format, 'defuss-store');
+    const stored = envelope.value;
     assert.equal(stored.schemaVersion, 1);
     assert.equal(stored.language, 'de');
     assert.equal('modalOpen' in stored, false);
@@ -355,6 +360,10 @@ try {
     assert.deepEqual(r.bar, { open: true, modal: false, pos: 'fixed', bottom: 0, full: true });
     assert.deepEqual(r.settings, { open: true, modal: true, view: 'preferences' });
     assert.equal(r.closed, true);
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.cookie-consent[id]', ['default','open','preferences','services'], { runtimeAttrs: ['data-cookie-consent-ready'], runtimeOwned: '.cookie-consent-dialog' });
   });
 
 } finally {

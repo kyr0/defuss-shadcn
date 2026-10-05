@@ -65,3 +65,13 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   if (r.endsWith('.html')) return `documentation/pages/${r.replace(/\.html$/, '')}.mdx`;
   return null;
 }
+
+/** The first ```html example fence of a page - the markup a standalone deck /
+ *  full-screen scaffold page is generated from (null when the page has none). */
+export function exampleFence(mdx: string): string | null {
+  return mdx.match(/^```html example[^\n]*\n([\s\S]*?)^```$/m)?.[1] ?? null;
+}
+
+/** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) -
+ *  its bundle is dist/apps/{name}.css + .js. */
+export const appName = (slug: string): string => slug.replace(/^scaffold-/, '');

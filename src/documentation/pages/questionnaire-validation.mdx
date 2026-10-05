@@ -1,0 +1,144 @@
+---
+title: "Questionnaire: Validation"
+description: "Validating a questionnaire step by step - native constraints (required, min, pattern, type=email), choice counts (data-min / data-max), cross-field assertions over earlier answers, and validator functions in code; the reason shown in role=alert, the field focused."
+slug: "questionnaire-validation"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="questionnaire-validation" title="Validation" component="questionnaire">
+  A step is validated before it is left - never the whole form at the end. Four layers, in order: the browser's own constraints on each control, how many choices a group needs, assertions that compare answers (also with answers from earlier steps), and functions you pass in code. The first problem stops the step: its message appears under the question (<code>role="alert"</code>), the step and the field get <code>aria-invalid</code>, and the field gets the focus.
+</PageHeader>
+
+<H2 id="native">Native constraints and choice counts</H2>
+
+<DocText>Everything the browser already checks works per step: <code>required</code>, <code>min</code> / <code>max</code>, <code>minlength</code>, <code>pattern</code>, <code>type="email"</code>, <code>type="url"</code>. The form gets <code>novalidate</code> so the controller can speak one step at a time with the browser's own messages. A checkbox group has no native "required" - <code>data-min</code> / <code>data-max</code> on the step counts its checks.</DocText>
+
+```html example label="Sign-up" schema="none" hint="Try Continue with nothing, with a short username (pattern), with a bad email, with four interests (data-max='3')."
+<form class="questionnaire" id="q-signup" aria-label="Sign up" data-persist="none" style="max-width:32rem;">
+  <div class="questionnaire-progress"></div>
+  <fieldset class="questionnaire-step" data-step="user">
+    <legend class="questionnaire-title">Pick a username</legend>
+    <p class="questionnaire-description">3–16 letters, digits or dashes.</p>
+    <input class="input" name="username" required pattern="[a-z0-9-]{3,16}" aria-label="Username" autocomplete="username">
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="email">
+    <legend class="questionnaire-title">Your email</legend>
+    <input class="input" name="email" type="email" required aria-label="Email" autocomplete="email">
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="interests" data-min="1" data-max="3">
+    <legend class="questionnaire-title">What are you into?</legend>
+    <p class="questionnaire-description">One to three.</p>
+    <div class="questionnaire-choices" data-columns="2">
+      <label class="questionnaire-choice"><input type="checkbox" name="interests" value="design"><span class="questionnaire-choice-label">Design</span></label>
+      <label class="questionnaire-choice"><input type="checkbox" name="interests" value="code"><span class="questionnaire-choice-label">Code</span></label>
+      <label class="questionnaire-choice"><input type="checkbox" name="interests" value="data"><span class="questionnaire-choice-label">Data</span></label>
+      <label class="questionnaire-choice"><input type="checkbox" name="interests" value="writing"><span class="questionnaire-choice-label">Writing</span></label>
+    </div>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="done" data-end>
+    <legend class="questionnaire-title">All set?</legend>
+    <div class="questionnaire-summary"></div>
+  </fieldset>
+  <div class="questionnaire-actions">
+    <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+    <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+    <button class="btn" type="submit" data-questionnaire="submit">Create account</button>
+  </div>
+  <div class="questionnaire-complete"><p>Welcome aboard.</p></div>
+</form>
+```
+
+<H2 id="cross-field">Assertions across answers</H2>
+
+<DocText>Some answers are only valid together: an end after a start, a maximum above a minimum, a guest count within the room size chosen two steps earlier. <code>validate[step]</code> in the rules is a list of <code>\{ assert, message, field \}</code>: <code>assert</code> holds conditions (the same as a branch's <code>when</code>) that must all hold - a <code>value</code> of <code>\{ "field": "x" \}</code> reads another answer, from this step or any earlier one. <code>field</code> names the control that gets the focus.</DocText>
+
+```html example label="Event booking" schema="none" hint="The end date may not be before the start; the guests may not exceed the venue's capacity - chosen one step earlier (a field reference across steps). The rules are in the form's JSON script."
+<form class="questionnaire" id="q-event" aria-label="Book an event" data-persist="none" style="max-width:32rem;">
+  <div class="questionnaire-progress"></div>
+  <fieldset class="questionnaire-step" data-step="dates">
+    <legend class="questionnaire-title">When?</legend>
+    <div class="questionnaire-field"><label class="label" for="q-from">From</label><input class="input" id="q-from" name="from" type="date" required></div>
+    <div class="questionnaire-field"><label class="label" for="q-to">To</label><input class="input" id="q-to" name="to" type="date" required></div>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="venue">
+    <legend class="questionnaire-title">Which room?</legend>
+    <select class="select" name="capacity" required aria-label="Room">
+      <option value="">Choose…</option>
+      <option value="12">Library (12 people)</option>
+      <option value="40">Studio (40 people)</option>
+      <option value="120">Hall (120 people)</option>
+    </select>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="guests">
+    <legend class="questionnaire-title">How many guests?</legend>
+    <input class="input" name="guests" type="number" min="1" required aria-label="Guests" style="max-width:8rem;">
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="ok" data-end>
+    <legend class="questionnaire-title">Book it?</legend>
+    <div class="questionnaire-summary"></div>
+  </fieldset>
+  <div class="questionnaire-actions">
+    <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+    <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+    <button class="btn" type="submit" data-questionnaire="submit">Book</button>
+  </div>
+  <div class="questionnaire-complete"><p>Booked.</p></div>
+  <script type="application/json" class="questionnaire-rules">
+    {
+      "validate": {
+        "dates": [{ "assert": [{ "field": "to", "op": "gte", "value": { "field": "from" } }], "message": "The end can't be before the start.", "field": "to" }],
+        "guests": [{ "assert": [{ "field": "guests", "op": "lte", "value": { "field": "capacity" } }], "message": "That's more than the room holds - go back and pick a bigger one.", "field": "guests" }]
+      }
+    }
+  </script>
+</form>
+```
+
+<H2 id="functions">Validators in code</H2>
+
+<DocText>Anything the rules cannot say goes into a function: <code>configure(form, \{ validate: \{ step: (answers, stepAnswers) =&gt; message | null \} \})</code>. It sees every answer so far and returns the message to show, or nothing.</DocText>
+
+```html example label="Password" schema="none" hint="Two functions: the password needs a digit and a capital letter; the confirmation has to match. Both read the answers object."
+<form class="questionnaire" id="q-password" aria-label="Choose a password" data-persist="none" style="max-width:30rem;">
+  <fieldset class="questionnaire-step" data-step="password">
+    <legend class="questionnaire-title">Choose a password</legend>
+    <input class="input" name="password" type="password" required minlength="8" aria-label="Password" autocomplete="new-password">
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="confirm">
+    <legend class="questionnaire-title">Once more</legend>
+    <input class="input" name="confirm" type="password" required aria-label="Repeat the password" autocomplete="new-password">
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="done" data-end>
+    <legend class="questionnaire-title">Save it?</legend>
+  </fieldset>
+  <div class="questionnaire-actions">
+    <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+    <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+    <button class="btn" type="submit" data-questionnaire="submit">Save</button>
+  </div>
+  <div class="questionnaire-complete"><p>Password saved.</p></div>
+</form>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.questionnaire.configure(document.getElementById('q-password'), {
+      validate: {
+        password: (answers) => (/[0-9]/.test(answers.password) && /[A-Z]/.test(answers.password) ? null : 'Use at least one digit and one capital letter.'),
+        confirm: (answers) => (answers.confirm === answers.password ? null : "The passwords don't match."),
+      },
+    });
+  });
+</script>
+```
+
+<DocText>Whatever fails, <code>questionnaire-invalid</code> fires on the form with <code>\{ step, message \}</code> - for analytics, or a toast. Fixing the field clears the message as soon as it changes.</DocText>
+
+<SourceFiles component="questionnaire" section="css">
+  <SourceNote for="css">The error styles are the questionnaire's: <code>.questionnaire-error</code> and the <code>aria-invalid</code> choice borders.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="questionnaire" section="js" jsTitle="JS" />
+
+</DocPage>

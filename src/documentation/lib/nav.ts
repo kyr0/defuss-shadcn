@@ -48,7 +48,13 @@ export const NAV: NavSection[] = [
     { label: 'Changelog', href: 'changelog.html' },
   ]},
   { heading: 'Guides', icon: 'compass', items: [
-    { label: 'Theming', href: 'theming.html' },
+    {
+      label: 'Theming',
+      href: 'theming.html',
+      children: [
+        { label: 'Theme Designer', href: 'theme-designer.html', isNew: true },
+      ],
+    },
     { label: 'Dark Mode', href: 'dark-mode.html' },
     { label: 'Data Attribute API', href: 'data-attribute-api.html' },
     { label: 'State API', href: 'state-api.html' },
@@ -139,6 +145,19 @@ export const NAV: NavSection[] = [
     { label: 'Search & Filter', href: 'search-filter.html', isNew: true },
     { label: 'Form', href: 'form.html' },
   ]},
+  // one question at a time: a branching step-flow over one native form - the
+  // component page, then its topics (sub-pages carry their badge here)
+  { heading: 'WYSIWYG Editors', icon: 'square-pen', items: [
+    { label: 'HTML Preview Editor', href: 'code-example.html', isNew: true },
+  ]},
+  { heading: 'Questionnaire', icon: 'list-checks', items: [
+    { label: 'Questionnaire', href: 'questionnaire.html', isNew: true },
+    { label: 'Branching', href: 'questionnaire-branching.html', type: 'MOL', isNew: true },
+    { label: 'Validation', href: 'questionnaire-validation.html', type: 'MOL', isNew: true },
+    { label: 'Drafts & History', href: 'questionnaire-drafts.html', type: 'MOL', isNew: true },
+    { label: 'Dependent Answers', href: 'questionnaire-dependencies.html', type: 'MOL', isNew: true },
+    { label: 'Flow Graph', href: 'questionnaire-graph.html', type: 'MOL', isNew: true },
+  ]},
   { heading: 'Data Display', icon: 'layout-grid', items: [
     { label: 'Badge', href: 'badge.html' },
     { label: 'Type Badge', href: 'type-badge.html' },
@@ -154,7 +173,6 @@ export const NAV: NavSection[] = [
     },
     { label: 'Statistic', href: 'statistic.html' },
     { label: 'Table', href: 'table.html' },
-    { label: 'Virtual List', href: 'virtual-list.html', isNew: true },
     { label: 'Collapsible', href: 'collapsible.html' },
     { label: 'Timeline', href: 'timeline.html' },
     { label: 'Tree View', href: 'tree-view.html' },
@@ -162,6 +180,15 @@ export const NAV: NavSection[] = [
     { label: 'Carousel', href: 'carousel.html' },
     { label: 'Scroll Area', href: 'scroll-area.html' },
     { label: 'Sortable', href: 'sortable.html' },
+  ]},
+  // records by the hundred thousand: windowed DOM, every query local over all
+  // rows (defuss-dataview) - Tree Grid is the Data Grid with parents
+  { heading: 'Big Data', icon: 'database', items: [
+    { label: 'Virtual List', href: 'virtual-list.html', isNew: true },
+    { label: 'Data Tree', href: 'data-tree.html', isNew: true },
+    { label: 'Data Grid', href: 'data-grid.html', isNew: true },
+    { label: 'Tree Grid', href: 'tree-grid.html', type: 'ATM', isNew: true },
+    { label: 'Autocomplete', href: 'autocomplete.html', isNew: true },
   ]},
   { heading: 'Charts', icon: 'chart-column', items: [
     { label: 'Chart', href: 'chart.html' },
@@ -173,6 +200,43 @@ export const NAV: NavSection[] = [
     { label: 'Narrative', href: 'charts-narrative.html', type: 'MOL' },
   ]},
   { heading: 'Diagrams', icon: 'workflow', items: [
+    {
+      label: 'Illustrative Diagrams',
+      href: 'diagram.html',
+      isNew: true,
+      children: [
+        { label: 'Architecture', href: 'diagram-architecture.html', type: 'ATM' },
+        { label: 'Flow', href: 'diagram-flow.html', type: 'ATM' },
+        { label: 'State', href: 'diagram-state.html', type: 'ATM' },
+        { label: 'State Lifecycle', href: 'diagram-state-lifecycle.html', type: 'ATM' },
+        { label: 'ER', href: 'diagram-er.html', type: 'ATM' },
+        { label: 'Timeline', href: 'diagram-timeline.html', type: 'ATM' },
+        { label: 'Swimlane', href: 'diagram-swimlane.html', type: 'ATM' },
+        { label: 'Nested', href: 'diagram-nested.html', type: 'ATM' },
+        { label: 'Organigram', href: 'diagram-organigram.html', type: 'ATM' },
+        { label: 'Layers', href: 'diagram-layers.html', type: 'ATM' },
+        { label: 'Loop', href: 'diagram-loop.html', type: 'ATM' },
+        { label: 'Data Lake', href: 'diagram-data-lake.html', type: 'ATM' },
+        { label: 'Medallion', href: 'diagram-medallion.html', type: 'ATM' },
+        { label: 'High-level', href: 'diagram-high-level.html', type: 'ATM' },
+        { label: 'High-level Parametric', href: 'diagram-high-level-parametric.html', type: 'ATM' },
+        { label: 'Process', href: 'diagram-process.html', type: 'ATM' },
+        { label: 'Data Flow', href: 'diagram-data-flow.html', type: 'ATM' },
+        { label: 'Topology', href: 'diagram-topology.html', type: 'ATM' },
+        { label: 'Matrix', href: 'diagram-matrix.html', type: 'ATM' },
+        { label: 'Fishbone', href: 'diagram-fishbone.html', type: 'ATM' },
+        { label: 'Wardley Map', href: 'diagram-wardley.html', type: 'ATM' },
+        { label: 'Kanban', href: 'diagram-kanban.html', type: 'ATM' },
+        { label: 'User Journey', href: 'diagram-journey.html', type: 'ATM' },
+        { label: 'Deployment', href: 'diagram-deployment.html', type: 'ATM' },
+        { label: 'Dependency Graph', href: 'diagram-dependency.html', type: 'ATM' },
+        { label: 'UML Class', href: 'diagram-uml-class.html', type: 'ATM' },
+        { label: 'Story Map', href: 'diagram-story-map.html', type: 'ATM' },
+        { label: 'Sequence', href: 'diagram-sequence.html', type: 'ATM' },
+        { label: 'Quadrant', href: 'diagram-quadrant.html', type: 'ATM' },
+        { label: 'Policy Trace', href: 'diagram-policy-trace.html', type: 'ATM' },
+      ],
+    },
     { label: 'Mermaid', href: 'mermaid.html', isNew: true },
   ]},
   { heading: 'Feedback & Status', icon: 'bell-ring', items: [
@@ -211,6 +275,7 @@ export const NAV: NavSection[] = [
     { label: 'Resizer', href: 'resizer.html' },
     { label: 'Border Layout', href: 'border-layout.html', isNew: true },
     { label: 'Panel', href: 'panel.html', isNew: true },
+    { label: 'Property Grid', href: 'property-grid.html', isNew: true },
     { label: 'Window', href: 'window.html', isNew: true },
     {
       label: 'Scaffolds',
@@ -273,6 +338,10 @@ export const NAV: NavSection[] = [
       { label: 'Custom Wind Vectors', href: 'custom-wind-vectors.html', type: 'TPL' },
       { label: 'Story State Machine', href: 'story-state-machine.html', type: 'TPL' },
     ]},
+  ]},
+  { heading: 'Papers', icon: 'file-text', items: [
+    { label: 'Modern Paper', href: 'paper.html', isNew: true },
+    { label: 'BibTeX', href: 'bibtex.html', isNew: true },
   ]},
   { heading: 'Website', icon: 'globe', items: [
     {

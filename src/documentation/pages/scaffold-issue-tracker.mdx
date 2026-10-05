@@ -150,6 +150,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
     & .pm-board { display: grid; }
     & .pm-list { display: none; }
   }
+  /* table: a data grid of every issue - its filters, sort and locked columns
+     are kept for the session (the grid's default persistence) */
+  .pm-table { display: none; height: 100%; padding: 0.75rem; box-sizing: border-box; }
+  .pm-table .data-grid { height: 100%; }
+  .pm-cell { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 0; }
+  .pm:has(.pm-layout .toggle[value="table"][aria-pressed="true"]) {
+    & .pm-table { display: block; }
+    & .pm-list { display: none; }
+  }
   .pm-col { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; padding: 0.5rem; border-radius: var(--radius-lg); background: color-mix(in oklch, var(--muted) 55%, transparent); transition: background-color 150ms ease, box-shadow 150ms ease;
     &[data-over] { background: color-mix(in oklch, var(--pm-accent) 10%, var(--muted)); box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--pm-accent) 60%, transparent); }
   }
@@ -463,6 +472,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
           <div class="toggle-group pm-layout" role="group" aria-label="Layout" data-type="single" data-variant="outline">
             <button class="toggle" type="button" aria-pressed="true" value="list" aria-label="List"><i data-lucide="list"></i></button>
             <button class="toggle" type="button" aria-pressed="false" value="board" aria-label="Board"><i data-lucide="square-kanban"></i></button>
+            <button class="toggle" type="button" aria-pressed="false" value="table" aria-label="Table"><i data-lucide="table-2"></i></button>
           </div>
         </div>
         <div class="pm-scroll">
@@ -672,6 +682,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
               </li>
               </ul>
             </details>
+          </div>
+          <div class="pm-table" role="region" aria-label="Issue table">
+            <div class="data-grid" id="pm-grid" aria-label="Issues" data-empty-text="No issue matches these filters.">
+              <div class="data-grid-viewport">
+                <div class="data-grid-head">
+                  <div class="data-grid-row">
+                    <div class="data-grid-header" data-field="id" data-width="6.5rem" data-filter="text" data-locked>ID</div>
+                    <div class="data-grid-header" data-field="title" data-width="minmax(16rem, 2fr)" data-filter="text">Title</div>
+                    <div class="data-grid-header" data-field="status" data-sort-field="statusRank" data-width="8.5rem" data-filter="select" data-options="Backlog,Todo,In Progress,In Review,Done">Status</div>
+                    <div class="data-grid-header" data-field="priority" data-sort-field="prioRank" data-width="8.5rem" data-filter="select" data-options="Urgent,High,Medium,Low,No priority" data-sort="asc">Priority</div>
+                    <div class="data-grid-header" data-field="assignee" data-width="10rem" data-filter="select">Assignee</div>
+                    <div class="data-grid-header" data-field="labels" data-width="minmax(9rem, 1fr)" data-filter="text">Labels</div>
+                    <div class="data-grid-header" data-field="due" data-sort-field="dueAt" data-width="6rem">Due</div>
+                  </div>
+                </div>
+                <div class="data-grid-body"></div>
+              </div>
+            </div>
           </div>
           <div class="pm-board" role="region" aria-label="Board">
             <section class="pm-col" data-status="backlog" aria-label="Backlog">
@@ -1874,6 +1902,53 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
     const VIEWS = ['issues', 'my-issues', 'inbox', 'cycles', 'projects'];
     const toast = (title, description) => df$.shadcn.toast.show(description ? { title, description } : { title });
     const els = (id) => app.querySelectorAll('[data-issue="' + id + '"]');
+
+    // the table: one record per issue row (the list is the source), handed to
+    // the data grid - rebuilt on every change (counts() calls it), so status,
+    // priority and assignee edits made anywhere show up; df$ is up after all.js
+    const RANK = { status: ['backlog', 'todo', 'progress', 'review', 'done'], prio: ['urgent', 'high', 'medium', 'low', 'none'] };
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const records = () => [...app.querySelectorAll('.pm-list [data-issue]')].map((r) => {
+      const due = r.querySelector('[data-f="due"]')?.textContent.trim() || '';
+      const [mon, day] = due.split(' ');
+      return {
+        id: r.dataset.issue,
+        title: r.querySelector('[data-f="title"]')?.textContent.trim() || '',
+        status: ST[r.dataset.status], statusRank: RANK.status.indexOf(r.dataset.status),
+        priority: PR[r.dataset.priority], prioRank: RANK.prio.indexOf(r.dataset.priority),
+        assignee: PEOPLE[r.dataset.assignee]?.name || 'Unassigned', who: r.dataset.assignee || '',
+        labels: [...r.querySelectorAll('[data-f="labels"] .pm-label')].map((l) => l.textContent.trim()).join(', '),
+        due, dueAt: MONTHS.includes(mon) ? Date.UTC(2026, MONTHS.indexOf(mon), Number(day) || 1) : Number.MAX_SAFE_INTEGER,
+      };
+    });
+    const cells = {
+      id: (el, r) => { el.classList.add('pm-id'); el.textContent = r.id; },
+      status: (el, r) => { df$(el).html('<span class="pm-cell" data-status="' + RANK.status[r.statusRank] + '"><span class="pm-status" aria-hidden="true"></span><span></span></span>'); df$(el).find('.pm-cell > span:last-child').text(r.status); },
+      priority: (el, r) => { df$(el).html('<span class="pm-cell" data-priority="' + RANK.prio[r.prioRank] + '"><span class="pm-prio" aria-hidden="true"></span><span></span></span>'); df$(el).find('.pm-cell > span:last-child').text(r.priority); },
+      assignee: (el, r) => {
+        const p = PEOPLE[r.who];
+        const face = p ? '<span class="avatar pm-assignee" data-size="sm"><img class="avatar-image" src="' + (p.src || 'https://i.pravatar.cc/96?img=' + p.face) + '" alt=""></span>' : '<span class="avatar pm-assignee" data-size="sm" data-none></span>';
+        df$(el).html('<span class="pm-cell">' + face + '<span></span></span>');
+        df$(el).find('.pm-cell > span:last-child').text(r.assignee);
+      },
+    };
+    let tableReady = false;
+    const table = () => {
+      const grid = app.querySelector('#pm-grid');
+      const dg = globalThis.df$?.shadcn?.dataGrid;
+      if (!grid?.store || !dg) return;
+      dg.setSource(grid, records(), { cells });
+      if (tableReady) return;
+      tableReady = true;
+      // a row opens its issue, like the list
+      grid.addEventListener('click', (e) => {
+        const row = e.target.closest('.data-grid-rows > .data-grid-row');
+        const r = row && dg.rows(grid)[Number(row.dataset.index)];
+        if (r) location.hash = r.id;
+      });
+      grid.addEventListener('data-grid-activate', (e) => { location.hash = e.detail.record.id; });
+    };
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', () => table()); else setTimeout(() => table());
     const first = (id) => app.querySelector('[data-issue="' + id + '"]');
     const view = () => { const h = location.hash.slice(1); return app.querySelector('.pm-view[id="' + h + '"]') ? h : 'issues'; };
 
@@ -1904,6 +1979,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
       feed.append(li);
     };
     const counts = () => {
+      table();
       app.querySelectorAll('.pm-group, .pm-col').forEach((g) => { g.querySelector('.pm-count').textContent = g.querySelectorAll('[data-issue]').length; });
       // the cycle: scope, started, completed - from the rows themselves
       const rows = [...app.querySelectorAll('.pm-list [data-issue]')];
@@ -2134,6 +2210,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
       }
       if (e.key === 'Escape' && app.querySelector('.pm-issue:target')) location.hash = 'issues';
     });
+
+    // the layout (list / board) is remembered: a persisted store (df$.store -
+    // memory when storage is blocked), fed by the toggles' aria-pressed
+    const keepLayout = () => {
+      const layout = globalThis.df$?.store?.persisted('vector:layout', 'list');
+      const group = app.querySelector('.pm-layout');
+      if (!layout || !group) return;
+      const pressed = () => group.querySelector('.toggle[aria-pressed="true"]')?.value || 'list';
+      if (layout.value !== pressed()) group.querySelector('.toggle[value="' + layout.value + '"]')?.click();
+      new MutationObserver(() => layout.set(pressed())).observe(group, { attributes: true, subtree: true, attributeFilter: ['aria-pressed'] });
+    };
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', keepLayout); else setTimeout(keepLayout);
 
     sync();
     counts();

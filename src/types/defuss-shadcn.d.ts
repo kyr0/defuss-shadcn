@@ -7,6 +7,9 @@
 interface DefussShadcnComponentApi {
   setState(stateName: string, config?: Record<string, unknown>): void;
   getState(): DefussShadcnComponentState;
+  /** The markup of a state (default: the current one) - AGENTS.md "State
+   *  API" → render; required of every JS component (RENDER_LEGACY shrinks). */
+  render?(state?: DefussShadcnComponentState): string;
 }
 
 /** Registry-level State API (`df$.shadcn.{name}Api`): the element comes first
@@ -14,6 +17,8 @@ interface DefussShadcnComponentApi {
 interface DefussShadcnRegistryApi {
   setState(el: HTMLElement, stateName: string, config?: Record<string, unknown>): void;
   getState(el: HTMLElement): DefussShadcnComponentState;
+  /** Pure state → markup: render(getState(el)) reproduces el 1:1. */
+  render?(state: DefussShadcnComponentState): string;
 }
 
 interface DefussShadcnComponentState {
@@ -21,6 +26,8 @@ interface DefussShadcnComponentState {
   name: string;
   /** Free-form config passed to setState(); components may ignore it. */
   config: Record<string, unknown>;
+  /** The authored markup (snapshotted at init) render() starts from. */
+  model?: import('../shared/render.js').ElementModel;
 }
 
 /** Options accepted by the toast imperative API (see src/components/toast/toast.ts). */
@@ -95,6 +102,9 @@ interface DefussShadcnShared {
   isEditableTarget: typeof import('../shared/keys.js').isEditableTarget;
   /** theme resource loader (src/shared/theme-links.ts; theme/<id>.json sidecars) */
   loadTheme: typeof import('../shared/theme-links.js').loadTheme;
+  /** render() machinery (src/shared/render.ts): authored-markup snapshot + state render */
+  elementModel: typeof import('../shared/render.js').elementModel;
+  renderModel: typeof import('../shared/render.js').renderModel;
 }
 
 /**
@@ -189,6 +199,8 @@ interface HTMLElement {
   api?: DefussShadcnComponentApi;
   /** Config from the last setState() call (state name lives in dataset.stateName). */
   _stateConfig?: Record<string, unknown>;
+  /** The authored markup render() starts from (snapshotted at init via elementModel). */
+  _model?: import('../shared/render.js').ElementModel;
   /** Resizer-only: authored [width, height] px snapshot at init, for 'default'. */
   _defaultSize?: [number, number];
   /** Accordion-only: authored open flags snapshotted at init, for the 'default' state. */

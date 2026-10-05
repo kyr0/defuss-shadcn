@@ -1,0 +1,338 @@
+/* -- BibTeX ------------------------------------------------------------------
+   A citation block: the BibTeX itself (aligned, highlighted) or a formatted
+   reference - APA, MLA, Chicago, Harvard, IEEE - with format tabs and a copy
+   button that copies exactly what is shown. Without JS the authored source
+   (.bibtex-source) is what shows. Every color, radius and font is the theme's. */
+
+@layer components {
+  :where(.bibtex, .bibtex *, .bibtex *::before, .bibtex *::after) {
+    box-sizing: border-box;
+  }
+
+  .bibtex {
+    --bibtex-pad: 1rem 1.25rem;
+    --bibtex-code: 0.8125rem;
+    --bibtex-text: 0.9375rem;
+
+    position: relative;
+    display: grid;
+    margin: 0;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & > figcaption {
+      padding: 0.75rem 1.25rem 0;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    &[data-size="sm"] {
+      --bibtex-pad: 0.75rem 0.875rem;
+      --bibtex-code: 0.75rem;
+      --bibtex-text: 0.8125rem;
+    }
+  }
+
+  /* the authored source: shown without JS, replaced by the view with it */
+  .bibtex > pre:has(> .bibtex-source) {
+    margin: 0;
+    padding: var(--bibtex-pad);
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  .bibtex-source {
+    font-family: var(--font-mono);
+    font-size: var(--bibtex-code);
+  }
+  .bibtex[data-init] > .bibtex-source,
+  .bibtex[data-init] > pre:has(> .bibtex-source) {
+    display: none;
+  }
+
+  /* -- the bar: format tabs + copy ------------------------------------------ */
+  .bibtex-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+    border-block-end: 1px solid var(--border);
+    background: color-mix(in oklab, var(--muted) 55%, var(--card));
+  }
+  .bibtex-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-inline-end: auto;
+  }
+  .bibtex-tab,
+  .bibtex-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    block-size: 1.875rem;
+    padding: 0 0.625rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted-foreground);
+    font: 500 0.75rem/1 var(--font-mono);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+
+    &:hover {
+      color: var(--foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+  .bibtex-tab[aria-selected="true"] {
+    border-color: var(--border);
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-2xs);
+  }
+  .bibtex-copy {
+    margin-inline-start: auto;
+    border-color: var(--border);
+    background: var(--background);
+
+    & svg {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    & .bibtex-icon-done {
+      display: none;
+    }
+  }
+  .bibtex[data-copied] .bibtex-copy {
+    color: var(--foreground);
+
+    & .bibtex-icon-copy { display: none; }
+    & .bibtex-icon-done { display: block; color: var(--chart-2); }
+  }
+  .bibtex-status {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* -- the view ---------------------------------------------------------------- */
+  .bibtex-view {
+    min-inline-size: 0;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+  }
+  .bibtex-code {
+    margin: 0;
+    padding: var(--bibtex-pad);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--bibtex-code);
+    line-height: 1.6;
+    tab-size: 2;
+  }
+  /* the view owns its code typography - a host page's pre / code / span
+     styles (chips, borders, backgrounds) never leak in */
+  .bibtex-code,
+  .bibtex-code :is(code, span) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    font-family: var(--font-mono);
+    letter-spacing: normal;
+  }
+  .bibtex-code {
+    background: var(--card);
+  }
+  .bibtex-code :is(code, span) {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .bibtex-type { color: var(--chart-4); font-weight: 600; }
+  .bibtex-key { color: var(--foreground); font-weight: 600; }
+  .bibtex-field { color: var(--chart-2); }
+  .bibtex-value { color: var(--foreground); }
+  .bibtex[data-highlight="none"] .bibtex-code {
+    color: var(--foreground);
+  }
+
+  /* DOIs and URLs are links in the view - the copy stays plain text */
+  .bibtex-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  /* formatted references: hanging indent, the academic way */
+  .bibtex-ref {
+    margin: 0;
+    font-size: var(--bibtex-text);
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .bibtex-view > .bibtex-ref {
+    padding: var(--bibtex-pad);
+  }
+  .bibtex-list {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: var(--bibtex-pad);
+    list-style: none;
+
+    & > .bibtex-ref {
+      padding-inline-start: 2em;
+      text-indent: -2em;
+    }
+  }
+  .bibtex[data-format="ieee"] .bibtex-list > .bibtex-ref {
+    padding-inline-start: 2.25em;
+    text-indent: -2.25em;
+  }
+  .bibtex-num {
+    display: inline-block;
+    min-inline-size: 2.25em;
+    text-indent: 0;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- minimal: no bar, the copy button floats in the corner ---------------- */
+  .bibtex[data-variant="minimal"] {
+    & > .bibtex-bar {
+      position: absolute;
+      inset-block-start: 0.5rem;
+      inset-inline-end: 0.5rem;
+      z-index: 1;
+      padding: 0;
+      border: 0;
+      background: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    &:is(:hover, :focus-within, [data-copied]) > .bibtex-bar {
+      opacity: 1;
+    }
+    & .bibtex-copy-label {
+      display: none;
+    }
+    & .bibtex-copy {
+      padding: 0;
+      inline-size: 1.875rem;
+      justify-content: center;
+    }
+  }
+  @media (hover: none) {
+    .bibtex[data-variant="minimal"] > .bibtex-bar {
+      opacity: 1;
+    }
+  }
+
+  /* -- inline: one reference inside running text --------------------------- */
+  .bibtex[data-variant="inline"] {
+    display: inline;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+
+    & > .bibtex-source {
+      font-family: inherit;
+      font-size: inherit;
+    }
+    & > .bibtex-bar {
+      display: inline-flex;
+      vertical-align: -0.2em;
+      padding: 0;
+      margin-inline-start: 0.25rem;
+      border: 0;
+      background: none;
+    }
+    & .bibtex-view,
+    & .bibtex-ref {
+      display: inline;
+      padding: 0;
+      font-size: inherit;
+      line-height: inherit;
+    }
+    & .bibtex-copy {
+      block-size: 1.375rem;
+      inline-size: 1.375rem;
+      padding: 0;
+      justify-content: center;
+    }
+    & .bibtex-copy-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bibtex-tab,
+    .bibtex-copy,
+    .bibtex[data-variant="minimal"] > .bibtex-bar {
+      transition: none;
+    }
+  }
+  @media (prefers-contrast: more) {
+    .bibtex,
+    .bibtex-bar,
+    .bibtex-copy,
+    .bibtex-tab[aria-selected="true"] {
+      border-color: var(--foreground);
+    }
+    .bibtex-tab,
+    .bibtex-num {
+      color: var(--foreground);
+    }
+  }
+  @media (forced-colors: active) {
+    .bibtex,
+    .bibtex-bar,
+    .bibtex-copy {
+      border-color: CanvasText;
+    }
+    .bibtex-tab[aria-selected="true"] {
+      border-color: Highlight;
+      color: Highlight;
+    }
+    .bibtex[data-variant="minimal"] > .bibtex-bar {
+      opacity: 1;
+    }
+  }
+}

@@ -1,0 +1,295 @@
+---
+title: "Illustrative · Nested"
+description: "Nested containment diagrams with the diagram component - trust zones, scopes and blast radius as groups inside groups; step by step and as a delta."
+slug: "diagram-nested"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-nested" title="Illustrative · Nested" component="diagram">
+  Hierarchy through containment: groups nested in the DOM, outer broader, inner more specific. The innermost focal level carries the accent; edges still connect nodes across levels - wires are measured, not nested.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Trust zones" component="diagram" hint="Each .diagram-group holds its node and the next group; the labels sit on the boundary, masked by the paper."
+<figure class="diagram" id="dg-nested" data-type="nested" aria-label="Trust zones from the internet to the database">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Nested containment</span>
+    <span class="diagram-title">Where a request is trusted</span>
+    <span class="diagram-dek">Outer is broader, inner is more specific: each boundary drops a class of caller.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-group" data-node="internet">
+      <span class="diagram-group-label">Internet · untrusted</span>
+      <div class="diagram-node" data-node="user">
+        <span class="diagram-node-name">Browser</span>
+        <span class="diagram-node-meta">anyone</span>
+      </div>
+      <div class="diagram-group" data-node="edge">
+        <span class="diagram-group-label">Edge · CDN + WAF</span>
+        <div class="diagram-node" data-node="waf">
+          <span class="diagram-node-name">WAF rules</span>
+          <span class="diagram-node-meta">OWASP set · bot score</span>
+        </div>
+        <div class="diagram-group" data-node="vpc">
+          <span class="diagram-group-label">VPC · private network</span>
+          <div class="diagram-node" data-node="app">
+            <span class="diagram-node-name">App servers</span>
+            <span class="diagram-node-meta">mTLS between services</span>
+          </div>
+          <div class="diagram-group" data-node="data" data-tone="accent">
+            <span class="diagram-group-label">Data subnet · no egress</span>
+            <div class="diagram-node" data-node="db" data-shape="store">
+              <span class="diagram-node-name">Customer database</span>
+              <span class="diagram-node-meta">encrypted · audited</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="user" data-to="waf">HTTPS</li>
+    <li class="diagram-edge" data-from="waf" data-to="app">allowed</li>
+    <li class="diagram-edge" data-from="app" data-to="db" data-tone="accent">SQL · TLS</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Trust zones, step by step" component="diagram" hint="Outside in: each step adds one boundary and what lives in it."
+<figure class="diagram" id="dg-nested-steps" data-type="nested" data-steps data-autoplay aria-label="Trust zones from the internet to the database">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Nested containment</span>
+    <span class="diagram-title">Where a request is trusted</span>
+    <span class="diagram-dek">Outer is broader, inner is more specific: each boundary drops a class of caller.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-group" data-node="internet" data-step="1">
+      <span class="diagram-group-label">Internet · untrusted</span>
+      <div class="diagram-node" data-node="user" data-step="1">
+        <span class="diagram-node-name">Browser</span>
+        <span class="diagram-node-meta">anyone</span>
+      </div>
+      <div class="diagram-group" data-node="edge" data-step="2">
+        <span class="diagram-group-label">Edge · CDN + WAF</span>
+        <div class="diagram-node" data-node="waf" data-step="2">
+          <span class="diagram-node-name">WAF rules</span>
+          <span class="diagram-node-meta">OWASP set · bot score</span>
+        </div>
+        <div class="diagram-group" data-node="vpc" data-step="3">
+          <span class="diagram-group-label">VPC · private network</span>
+          <div class="diagram-node" data-node="app" data-step="3">
+            <span class="diagram-node-name">App servers</span>
+            <span class="diagram-node-meta">mTLS between services</span>
+          </div>
+          <div class="diagram-group" data-node="data" data-tone="accent" data-step="4">
+            <span class="diagram-group-label">Data subnet · no egress</span>
+            <div class="diagram-node" data-node="db" data-shape="store" data-step="4">
+              <span class="diagram-node-name">Customer database</span>
+              <span class="diagram-node-meta">encrypted · audited</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="user" data-to="waf">HTTPS</li>
+    <li class="diagram-edge" data-from="waf" data-to="app">allowed</li>
+    <li class="diagram-edge" data-from="app" data-to="db" data-tone="accent">SQL · TLS</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Nested, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-nested-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-nested-live" data-interactive data-type="nested" aria-label="Trust zones from the internet to the database">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Nested containment</span>
+    <span class="diagram-title">Where a request is trusted</span>
+    <span class="diagram-dek">Outer is broader, inner is more specific: each boundary drops a class of caller.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-group" data-node="internet">
+      <span class="diagram-group-label">Internet · untrusted</span>
+      <div class="diagram-node" data-node="user">
+        <span class="diagram-node-name">Browser</span>
+        <span class="diagram-node-meta">anyone</span>
+      </div>
+      <div class="diagram-group" data-node="edge">
+        <span class="diagram-group-label">Edge · CDN + WAF</span>
+        <div class="diagram-node" data-node="waf">
+          <span class="diagram-node-name">WAF rules</span>
+          <span class="diagram-node-meta">OWASP set · bot score</span>
+        </div>
+        <div class="diagram-group" data-node="vpc">
+          <span class="diagram-group-label">VPC · private network</span>
+          <div class="diagram-node" data-node="app">
+            <span class="diagram-node-name">App servers</span>
+            <span class="diagram-node-meta">mTLS between services</span>
+          </div>
+          <div class="diagram-group" data-node="data" data-tone="accent">
+            <span class="diagram-group-label">Data subnet · no egress</span>
+            <div class="diagram-node" data-node="db" data-shape="store">
+              <span class="diagram-node-name">Customer database</span>
+              <span class="diagram-node-meta">encrypted · audited</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="user" data-to="waf">HTTPS</li>
+    <li class="diagram-edge" data-from="waf" data-to="app">allowed</li>
+    <li class="diagram-edge" data-from="app" data-to="db" data-tone="accent">SQL · TLS</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Nested, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-nested-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-nested-edit" data-interactive data-type="nested" aria-label="Trust zones from the internet to the database">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Nested containment</span>
+        <span class="diagram-title">Where a request is trusted</span>
+        <span class="diagram-dek">Outer is broader, inner is more specific: each boundary drops a class of caller.</span>
+      </figcaption>
+      <div class="diagram-canvas">
+        <div class="diagram-group" data-node="internet">
+          <span class="diagram-group-label">Internet · untrusted</span>
+          <div class="diagram-node" data-node="user">
+            <span class="diagram-node-name">Browser</span>
+            <span class="diagram-node-meta">anyone</span>
+          </div>
+          <div class="diagram-group" data-node="edge">
+            <span class="diagram-group-label">Edge · CDN + WAF</span>
+            <div class="diagram-node" data-node="waf">
+              <span class="diagram-node-name">WAF rules</span>
+              <span class="diagram-node-meta">OWASP set · bot score</span>
+            </div>
+            <div class="diagram-group" data-node="vpc">
+              <span class="diagram-group-label">VPC · private network</span>
+              <div class="diagram-node" data-node="app">
+                <span class="diagram-node-name">App servers</span>
+                <span class="diagram-node-meta">mTLS between services</span>
+              </div>
+              <div class="diagram-group" data-node="data" data-tone="accent">
+                <span class="diagram-group-label">Data subnet · no egress</span>
+                <div class="diagram-node" data-node="db" data-shape="store">
+                  <span class="diagram-node-name">Customer database</span>
+                  <span class="diagram-node-meta">encrypted · audited</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="user" data-to="waf">HTTPS</li>
+        <li class="diagram-edge" data-from="waf" data-to="app">allowed</li>
+        <li class="diagram-edge" data-from="app" data-to="db" data-tone="accent">SQL · TLS</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-nested-edit-panel" aria-labelledby="dg-nested-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-nested-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-nested-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-nested-edit');
+    const grid = document.getElementById('dg-nested-edit-grid');
+    const title = document.getElementById('dg-nested-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="The mesh becomes a boundary" component="diagram" hint="An added level wraps an existing node - the node keeps its identity and reports what changed."
+<figure class="diagram" id="dg-nested-delta" data-type="nested" data-delta aria-label="A service mesh boundary appears">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Zero trust</span>
+    <span class="diagram-title">The mesh becomes its own boundary</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-group" data-node="vpc">
+      <span class="diagram-group-label">VPC · private network</span>
+      <div class="diagram-node" data-node="lb">
+        <span class="diagram-node-name">Load balancer</span>
+        <span class="diagram-node-meta">internal</span>
+      </div>
+      <div class="diagram-group" data-node="mesh" data-tone="accent" data-change="added">
+        <span class="diagram-group-label">Service mesh · mTLS</span>
+        <div class="diagram-node" data-node="app" data-change="changed">
+          <span class="diagram-node-name">App servers</span>
+          <span class="diagram-node-meta" data-before="shared credentials">identity per pod</span>
+        </div>
+      </div>
+      <div class="diagram-node" data-node="bastion" data-change="removed">
+        <span class="diagram-node-name">Bastion host</span>
+        <span class="diagram-node-meta">SSH</span>
+      </div>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="lb" data-to="app">HTTP</li>
+    <li class="diagram-edge" data-from="bastion" data-to="app" data-line="dashed" data-change="removed">SSH</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

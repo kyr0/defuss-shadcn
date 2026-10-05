@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 import { assertLegibleDisabled } from './lib/disabled.ts';
 
 /**
@@ -177,6 +178,12 @@ await cssSmoke('file-input', [
       assert.equal(r.def.name, 'default'); assert.equal(r.def.config.count, 0);
       assert.ok(r.thrown.includes('unknown state'));
       assert.deepEqual(r.states, ['default', 'dragover', 'selected', 'error']); assert.ok(r.api);
+    },
+  },
+  {
+    label: 'render(): reproduces the authored markup 1:1 and every state',
+    run: async (page) => {
+      await assertRenderContract(page, '.file-drop[id]', ['default','dragover','selected','error'], { runtimeOwned: '.file-drop-list > *' });
     },
   },
 ]);

@@ -40,10 +40,11 @@ export const RELEASE_STAMP = 'release.json';
  * escaped samples never contain a literal `<tag`.
  */
 const LIVE_REF =
-  /(<(?:a|link|script|img|iframe|source|span)\b[^>]*?(?:href|src|data-spec-href)=")\.\.\/(components|theme)\//g;
+  /(<(?:a|link|script|img|iframe|source|span)\b[^>]*?(?:href|src|data-spec-href)=")\.\.\/(components|theme|apps)\//g;
 
 /**
- * Mirror rewrite for one text file: live `../components/…` + `../theme/…`
+ * Mirror rewrite for one text file: live `../components/…`, `../theme/…` and
+ * `../apps/…` (the full-screen scaffolds' own bundles)
  * attributes → CDN (the docs tree no longer carries those siblings), and the
  * published page URLs drop the `/documentation/` path segment (docs/ IS the
  * site root now). Escaped code samples keep their dist-relative paths.

@@ -23,10 +23,19 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const imageStates = ['default', 'error'];
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+    dfDollar(el).find('img').first().attr('data-error', stateName === 'error' ? '' : null);
+}
 /**
  * UI side of setState (per figure): 'error' marks the img like a failed load
  * would (CSS then reveals .image-fallback); 'default' clears the mark.
@@ -46,25 +55,20 @@ function triggerStateChange(figure, stateName, _config) {
     }
 }
 /** Registry-level API; pass the figure explicitly. Unknown names throw. */
-export const imageApi = {
-    setState(figure, stateName, config = {}) {
-        if (!imageStates.includes(stateName)) {
-            throw new Error(`image: unknown state "${stateName}" (supported: ${imageStates.join(', ')})`);
-        }
-        triggerStateChange(figure, stateName, config);
-        // state lives on the ELEMENT, not the module (many images per page)
-        figure.dataset.stateName = stateName;
-        figure._stateConfig = config;
-    },
-    getState(figure) {
+export const imageApi = componentState({
+    component: 'image',
+    states: imageStates,
+    apply: (figure, state) => triggerStateChange(figure, state.name, state.config),
+    read: (figure, state) => {
         // reflect reality: load/error events flip it without setState()
         const img = dfDollar(figure).find('img')[0];
         return {
             name: img && dfDollar(img).data('error') !== undefined ? 'error' : 'default',
-            config: figure._stateConfig ?? {},
+            config: state.config,
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.imageApi = imageApi;
 df$.imageStates = imageStates;
 /* -- Hover gallery: preload + decode before switching -------------------
@@ -84,15 +88,15 @@ const galleryIO = typeof IntersectionObserver === 'function'
     }, { rootMargin: '300px' })
     : null;
 function readyGallery(gallery) {
-    const imgs = [...gallery.querySelectorAll(':scope > img, :scope > picture img')];
+    const imgs = [...dfDollar(gallery).find(':scope > img, :scope > picture img').toArray()];
     Promise.all(imgs.map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => undefined))).then(() => {
         gallery.dataset.ready = '';
     });
 }
 function initHoverGalleries() {
-    document.querySelectorAll('.hover-gallery:not([data-init])').forEach((gallery) => {
+    dfDollar('.hover-gallery:not([data-init])').toArray().forEach((gallery) => {
         gallery.dataset.init = '';
-        gallery.querySelectorAll(':scope > img, :scope > picture img').forEach((img, i) => {
+        dfDollar(gallery).find(':scope > img, :scope > picture img').toArray().forEach((img, i) => {
             if (img.loading === 'lazy')
                 img.loading = 'eager';
             if (i > 0 && !img.hasAttribute('fetchpriority'))
@@ -107,13 +111,10 @@ function initHoverGalleries() {
 function init() {
     initHoverGalleries();
     /* -- Fallback: mark images that fail to load ----------------- */
-    document.querySelectorAll('.image:not([data-init])').forEach((figure) => {
+    dfDollar('.image:not([data-init])').toArray().forEach((figure) => {
         figure.dataset.init = '';
-        // bind-scope the api per figure: `$('#hero').api.setState('error')`
-        figure.api = {
-            setState: (stateName, config) => imageApi.setState(figure, stateName, config),
-            getState: () => imageApi.getState(figure),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(figure, imageApi);
         const img = dfDollar(figure).find('img')[0];
         if (!img)
             return;

@@ -6,15 +6,16 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const numberInputStates = ['default'];
 
 // the editable field: <input type="number">, or the text field of a
 // currency-masked wrapper (hidden outputs are never the field)
-const getInput = (wrapper) => wrapper.querySelector('input:not([type="hidden"])');
+const getInput = (wrapper) => dfDollar(wrapper).find('input:not([type="hidden"])').get(0);
 
 // -- Currency mask (data-currency on the wrapper) -----------------------------
 // A native number input cannot show grouping, a locale's decimal comma or a
@@ -116,7 +117,7 @@ function commitMoney(wrapper, input, cfg, number = null, remember = true) {
 /** Mirror the machine value into input[data-number-output] (+ change) and the wrapper. */
 function writeMoneyOutput(wrapper, value) {
   wrapper.dataset.value = value;
-  wrapper.querySelectorAll('input[data-number-output]').forEach((out) => {
+  dfDollar(wrapper).find('input[data-number-output]').toArray().forEach((out) => {
     if (out.value === value) return;
     out.value = value;
     out.dispatchEvent(new Event('change', { bubbles: true }));
@@ -125,7 +126,7 @@ function writeMoneyOutput(wrapper, value) {
 
 /** Show the locale's symbol on the locale's side (a unit label is created if missing). */
 function placeCurrencySymbol(wrapper, input, cfg) {
-  let unit = wrapper.querySelector('.number-input-unit');
+  let unit = dfDollar(wrapper).find('.number-input-unit').get(0);
   if (!unit) {
     unit = document.createElement('label');
     unit.className = 'number-input-unit';
@@ -171,19 +172,35 @@ function formatDecimals(wrapper, input) {
 }
 
 /**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state, and it writes no markup: { value } sets the field's value (a
+  // property) - every state renders the authored markup
+}
+
+/**
  * UI side of setState: 'default' optionally presets { value } through the
  * native input (events dispatched so listeners see the change).
  */
 function triggerStateChange(wrapper, config) {
   const input = getInput(wrapper);
-  if (!input || config?.value === undefined) return;
+  if (!input) return;
   if (wrapper._money) {
-    // currency: { value } is the machine number (1234.5), rendered per locale
-    commitMoney(wrapper, input, wrapper._money, config.value === '' ? '' : String(config.value));
+    // currency: the machine number (1234.5), rendered per locale - { number }
+    // (what getState() reports, so setState(getState()) changes nothing)
+    // or { value }; getState's `value` is the DISPLAY text, never re-parsed
+    const machine = config?.number !== undefined ? config.number : config?.value;
+    if (machine === undefined) return;
+    commitMoney(wrapper, input, wrapper._money, machine === '' ? '' : String(machine));
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
     return;
   }
+  if (config?.value === undefined) return;
   input.value = String(config.value);
   formatDecimals(wrapper, input);
   input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -191,17 +208,11 @@ function triggerStateChange(wrapper, config) {
 }
 
 /** Registry-level API; pass the wrapper explicitly. Unknown names throw. */
-export const numberInputApi = {
-  setState(wrapper, stateName, config = {}) {
-    if (!numberInputStates.includes(stateName)) {
-      throw new Error(`number-input: unknown state "${stateName}" (supported: ${numberInputStates.join(', ')})`);
-    }
-    triggerStateChange(wrapper, config);
-    // state lives on the ELEMENT, not the module (many inputs per page)
-    wrapper.dataset.stateName = stateName;
-    wrapper._stateConfig = config;
-  },
-  getState(wrapper) {
+export const numberInputApi = componentState({
+  component: 'number-input',
+  states: numberInputStates,
+  apply: (wrapper, state) => triggerStateChange(wrapper, state.config),
+  read: (wrapper, state) => {
     const input = getInput(wrapper);
     return {
       name: wrapper.dataset.stateName || 'default',
@@ -209,28 +220,26 @@ export const numberInputApi = {
       // currency fields add the machine value + currency/locale; value stays
       // what the field shows
       config: {
-        ...wrapper._stateConfig,
+        ...state.config,
         value: input ? input.value : '',
         ...(wrapper._money ? { number: wrapper.dataset.value ?? '', currency: wrapper._money.currency, locale: wrapper._money.locale } : {}),
       },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.numberInputApi = numberInputApi;
 df$.numberInputStates = numberInputStates;
 
 function init() {
-  document.querySelectorAll('.number-input:not([data-init])').forEach((wrapper) => {
+  dfDollar('.number-input:not([data-init])').toArray().forEach((wrapper) => {
   wrapper.dataset.init = '';
-  // bind-scope the api per instance: `$('#qty').api.setState('default', { value: 5 })`
-  wrapper.api = {
-    setState: (stateName, config) => numberInputApi.setState(wrapper, stateName, config),
-    getState: () => numberInputApi.getState(wrapper),
-  };
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(wrapper, numberInputApi);
   const input = getInput(wrapper);
-  const decBtn = wrapper.querySelector('[data-action="decrement"]');
-  const incBtn = wrapper.querySelector('[data-action="increment"]');
+  const decBtn = dfDollar(wrapper).find('[data-action="decrement"]').get(0);
+  const incBtn = dfDollar(wrapper).find('[data-action="increment"]').get(0);
   if (!input) return;
 
   if (wrapper.hasAttribute('data-currency')) {

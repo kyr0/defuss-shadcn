@@ -7,9 +7,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const typewriterStates = ['default', 'paused', 'done'];
 
@@ -91,6 +92,7 @@ function step(tw) {
 /** Stops on the current string, complete - the natural end of a run. */
 function finish(tw) {
   typewriterApi.setState(tw, 'done', { index: tw._index });
+  // Fires when a run ends on its last string - that string's index.
   tw.dispatchEvent(new CustomEvent('typewriter-done', { bubbles: true, detail: { index: tw._index } }));
 }
 
@@ -112,6 +114,18 @@ function run(tw, delay = 0) {
   const go = () => (reducedMotion() ? stepInstant(tw) : step(tw));
   if (delay) tw._timer = setTimeout(go, delay);
   else go();
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // typing is time, not state: the typed line, the string index and the
+  // phase are written by the clock (runtime-owned, see the e2e) - every
+  // state renders the authored strings
 }
 
 /**
@@ -152,28 +166,21 @@ function triggerStateChange(tw, stateName, config, previous) {
 }
 
 /** Registry-level API; pass the .typewriter element explicitly. Unknown names throw. */
-export const typewriterApi = {
-  setState(tw, stateName, config = {}) {
-    if (!typewriterStates.includes(stateName)) {
-      throw new Error(
-        `typewriter: unknown state "${stateName}" (supported: ${typewriterStates.join(', ')})`,
-      );
-    }
-    const previous = tw.dataset.stateName;
-    tw.dataset.stateName = stateName;
-    tw._stateConfig = config;
-    triggerStateChange(tw, stateName, config, previous);
+export const typewriterApi = componentState({
+  component: 'typewriter',
+  states: typewriterStates,
+  apply: (tw, state, previous) => {
+    tw.dataset.stateName = state.name;
+    triggerStateChange(tw, state.name, state.config, previous.name);
   },
-  getState(tw) {
-    return { name: tw.dataset.stateName || 'default', config: tw._stateConfig ?? {} };
-  },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.typewriterApi = typewriterApi;
 df$.typewriterStates = typewriterStates;
 
 function init() {
-  document.querySelectorAll('.typewriter:not([data-init])').forEach((tw) => {
+  dfDollar('.typewriter:not([data-init])').toArray().forEach((tw) => {
     tw.dataset.init = '';
 
     const children = Array.from(tw.children);
@@ -208,15 +215,14 @@ function init() {
       tw._sources.forEach((s) => {
         const g = document.createElement('span');
         g.textContent = s.text;
-        ghost.appendChild(g);
+        dfDollar(ghost).append(g);
       });
       tw.append(ghost);
     }
 
-    tw.api = {
-      setState: (stateName, config) => typewriterApi.setState(tw, stateName, config),
-      getState: () => typewriterApi.getState(tw),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(tw, typewriterApi);
 
     paint(tw, 0, 0);
     phase(tw, 'idle');

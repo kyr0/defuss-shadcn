@@ -22,10 +22,7 @@ const MORPH_METHODS = [
   'renderMarkup',
   'domNodeToVNode',
   'registerDelegatedEvent',
-  'removeDelegatedEvent',
-  'getRegisteredEventTypes',
   'clearDelegatedEventsDeep',
-  'clearDelegatedEvents',
   'handleLifecycleEventsForOnMount',
 ] as const satisfies readonly (keyof MorphApi)[];
 

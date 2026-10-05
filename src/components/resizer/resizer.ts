@@ -33,9 +33,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const resizerStates = ['default'];
 
@@ -190,6 +191,7 @@ function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
     const value = String(Math.round(resolved));
     if (wrapper.dataset[key] !== value) wrapper.dataset[key] = value;
   }
+  // Fires while the divider moves (pointer or keys) - the axis and the new width / height.
   wrapper.dispatchEvent(
     new CustomEvent('resizer-resize', {
       bubbles: true,
@@ -200,6 +202,17 @@ function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
       },
     }),
   );
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state, and its markup is a measured size (inline style / data-width,
+  // data-height - pixels from layout): runtime-owned, see the e2e
 }
 
 /**
@@ -214,29 +227,24 @@ function triggerStateChange(wrapper: HTMLElement, stateName: string, config: Rec
 }
 
 /** Registry-level API; pass the .resizer wrapper explicitly. Unknown names throw. */
-export const resizerApi = {
-  setState(wrapper: HTMLElement, stateName: string, config: Record<string, unknown> = {}) {
-    if (!resizerStates.includes(stateName)) {
-      throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(', ')})`);
-    }
-    triggerStateChange(wrapper, stateName, config);
-    // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-    wrapper.dataset.stateName = stateName;
-    wrapper._stateConfig = config;
-  },
-  getState(wrapper: HTMLElement) {
+export const resizerApi = componentState({
+  component: 'resizer',
+  states: resizerStates,
+  apply: (wrapper, state) => triggerStateChange(wrapper, state.name, state.config),
+  read: (wrapper, state) => {
     // reflect reality: drags move the size without setState()
     return {
       name: wrapper.dataset.stateName || 'default',
       config: {
-        ...wrapper._stateConfig,
+        ...state.config,
         width: currentPx(wrapper, 'w'),
         height: currentPx(wrapper, 'h'),
         mode: wrapper.dataset.resizeMode || 'px',
       },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.resizerApi = resizerApi;
 df$.resizerStates = resizerStates;
@@ -272,11 +280,11 @@ function makeHandle(wrapper: HTMLElement, h: Handle): HTMLElement {
  *  data-handles / data-axis changes - the CodeExample toolbar flips modes). */
 function syncHandles(wrapper: HTMLElement): void {
   const want = handleSet(wrapper);
-  for (const el of Array.from(wrapper.querySelectorAll(':scope > .resizer-handle'))) {
+  for (const el of Array.from(dfDollar(wrapper).find(':scope > .resizer-handle').toArray())) {
     if (!want.includes((el as HTMLElement).dataset.handle as Handle)) el.remove();
   }
   for (const h of want) {
-    if (!wrapper.querySelector(`:scope > .resizer-handle[data-handle="${h}"]`)) wrapper.appendChild(makeHandle(wrapper, h));
+    if (!dfDollar(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0)) dfDollar(wrapper).append(makeHandle(wrapper, h));
   }
 }
 
@@ -361,16 +369,14 @@ function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent):
 }
 
 function init(): void {
-  document.querySelectorAll<HTMLElement>('.resizer:not([data-init])').forEach((wrapper) => {
+  dfDollar('.resizer:not([data-init])').toArray().forEach((wrapper: HTMLElement) => {
     wrapper.dataset.init = '';
     if (!targetOf(wrapper)) return; // a resizer wraps exactly ONE element
     // authored snapshot for the 'default' state (computed - works for px and
     // classes authored alike)
     wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
-    wrapper.api = {
-      setState: (stateName: string, config?: Record<string, unknown>) => resizerApi.setState(wrapper, stateName, config),
-      getState: () => resizerApi.getState(wrapper),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(wrapper, resizerApi);
     syncHandles(wrapper);
     // native CSS `resize` (e.g. a resizable textarea) would double the
     // affordances - this component owns the interaction

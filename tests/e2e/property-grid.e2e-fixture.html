@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Property Grid e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/theme/utils/sizing.css">
+  <link rel="stylesheet" href="/dist/theme/utils/layout.css">
+  <!-- the grid's editors and the inspector's panel, layout and diagram come from the bundle -->
+  <link rel="stylesheet" href="/dist/components/all.css">
+  <style>body { margin: 16px; font-family: sans-serif; } .example { margin-bottom: 2rem; }</style>
+</head>
+<body>
+  <!-- the doc page's examples, verbatim: settings, render functions, custom editors, the inspector in a closable panel, variants -->
+  <div class="example">
+    <div class="property-grid" id="pg-service" aria-label="Service settings" style="max-width:28rem" data-state-demo>
+      <script type="application/json" class="property-grid-source">
+        {
+          "name": "checkout-api",
+          "replicas": 3,
+          "public": true,
+          "region": "eu-west-1",
+          "accent": "#3b82f6",
+          "launched": "2025-03-14",
+          "description": "Takes orders\nfrom web and mobile.",
+          "limits": { "rps": 1200, "burst": 300 },
+          "tags": ["payments", "tier-1"]
+        }
+      </script>
+      <script type="application/json" class="property-grid-config">
+        {
+          "name": { "displayName": "Service", "readOnly": true },
+          "replicas": { "min": 1, "max": 12, "description": "Pods behind the service" },
+          "region": { "options": ["eu-west-1", "us-east-1", "ap-south-1"] },
+          "accent": { "displayName": "Accent color" },
+          "limits.rps": { "displayName": "Requests / s" }
+        }
+      </script>
+    </div>
+  </div>
+  <div class="example">
+    <div class="property-grid" id="pg-render" aria-label="Endpoint health" style="max-width:28rem"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const grid = document.getElementById('pg-render');
+        const GLYPH = { string: 'Aa', number: '#', boolean: '◐', date: '◷', object: '{}' };
+        df$.shadcn.propertyGrid.configure(grid, {
+          source: { endpoint: '/v2/orders', healthy: true, p95: 182, errors: 0.4, checked: '2026-10-01', owner: { team: 'Payments', oncall: '@mia' } },
+          keyRenderFn: (key, value, ctx) => {
+            const span = document.createElement('span');
+            const glyph = document.createElement('code');
+            glyph.className = 'text-muted-foreground';
+            glyph.style.cssText = 'font-size:0.7rem;margin-inline-end:0.375rem';
+            glyph.textContent = GLYPH[ctx.type] || '·';
+            span.append(glyph, key);
+            return span;
+          },
+          valueRenderFn: (value, key) => {
+            if (typeof value === 'boolean') {
+              const badge = document.createElement('span');
+              badge.className = 'badge';
+              badge.dataset.variant = value ? 'default' : 'destructive';
+              badge.textContent = value ? 'healthy' : 'down';
+              return badge;
+            }
+            if (key === 'p95') return value + ' ms';
+            if (key === 'errors') return value + ' %';
+            if (key === 'checked') return value + ' · ' + new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(Math.round((Date.parse(value) - Date.now()) / 864e5), 'day');
+            return null; // the default rendering
+          },
+        });
+      });
+    </script>
+  </div>
+  <div class="example">
+    <div class="property-grid" id="pg-editors" aria-label="Widget" style="max-width:30rem"></div>
+    <template id="pg-tags-editor">
+      <div class="combobox" data-multiple data-tags data-creatable style="width:100%">
+        <div class="combobox-field">
+          <input class="combobox-field-input" id="pg-tags-input" type="text" role="combobox" autocomplete="off" aria-label="Tags" aria-expanded="false" aria-controls="pg-tags-list" aria-autocomplete="list" placeholder="Add a tag…">
+        </div>
+        <div id="pg-tags-pop" class="combobox-content" popover="manual">
+          <div id="pg-tags-list" role="listbox" class="combobox-listbox" aria-label="Tags">
+            <div class="combobox-empty" hidden>No tag like that.</div>
+            <div role="option" id="pg-tag-finance" class="combobox-item" data-value="finance" aria-selected="false">finance</div>
+            <div role="option" id="pg-tag-weekly" class="combobox-item" data-value="weekly" aria-selected="false">weekly</div>
+            <div role="option" id="pg-tag-board" class="combobox-item" data-value="board" aria-selected="false">board</div>
+            <div role="option" id="pg-tag-public" class="combobox-item" data-value="public" aria-selected="false">public</div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <p class="text-sm text-muted-foreground mt-2" id="pg-editors-log">No change yet.</p>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const grid = document.getElementById('pg-editors');
+        df$.shadcn.propertyGrid.configure(grid, {
+          source: { title: 'Revenue', opacity: 0.8, tags: ['finance', 'weekly'], budget: 1200, id: 'w-42' },
+          sourceConfig: { id: { readOnly: true }, tags: { type: 'json' } },
+          getEditorFn: (key, value) => {
+            if (key === 'opacity') {
+              const wrap = document.createElement('div');
+              wrap.className = 'flex items-center gap-2 w-full';
+              const range = document.createElement('input');
+              range.type = 'range';
+              range.className = 'slider';
+              range.min = '0'; range.max = '1'; range.step = '0.05';
+              range.value = String(value);
+              const out = document.createElement('output');
+              out.className = 'text-xs';
+              out.textContent = String(value);
+              range.addEventListener('input', () => (out.textContent = range.value));
+              wrap.append(range, out);
+              return { el: wrap, getValue: () => range.valueAsNumber, focus: () => range.focus() };
+            }
+            if (key === 'tags') {
+              // the Combobox tag input from the template; the current tags are selected
+              const el = document.getElementById('pg-tags-editor').content.firstElementChild.cloneNode(true);
+              const list = el.querySelector('.combobox-listbox');
+              for (const tag of value) {
+                let option = list.querySelector('[data-value="' + CSS.escape(tag) + '"]');
+                if (!option) {
+                  option = list.querySelector('.combobox-item').cloneNode(true);
+                  option.id = 'pg-tag-' + tag.replace(/[^a-z0-9]+/gi, '-');
+                  option.dataset.value = tag;
+                  option.textContent = tag;
+                  list.append(option);
+                }
+                option.setAttribute('aria-selected', 'true');
+              }
+              return {
+                el,
+                ownsEnter: true, // Enter adds a tag; Ctrl / Cmd + Enter or leaving the cell commits
+                focus: () => el.querySelector('.combobox-field-input').focus(),
+                getValue: () => [...el.querySelectorAll('.combobox-item[aria-selected="true"]')].map((o) => o.dataset.value),
+              };
+            }
+            return null;
+          },
+        });
+        grid.addEventListener('property-grid-beforechange', (e) => {
+          if (e.detail.key === 'budget' && e.detail.value > 5000) e.preventDefault();
+        });
+        grid.addEventListener('property-grid-change', (e) => {
+          document.getElementById('pg-editors-log').textContent = e.detail.path + ': ' + JSON.stringify(e.detail.oldValue) + ' → ' + JSON.stringify(e.detail.value);
+        });
+      });
+    </script>
+  </div>
+  <div class="example">
+    <div class="property-grid" id="pg-valid" aria-label="Deployment" style="max-width:30rem">
+      <script type="application/json" class="property-grid-source">
+        { "name": "billing", "port": 8443, "replicas": 3, "owner": "ops@acme.dev", "limit": 2000, "budget": 1500 }
+      </script>
+      <script type="application/json" class="property-grid-config">
+        {
+          "name": { "required": true, "minLength": 3, "maxLength": 24, "pattern": "[a-z][a-z0-9-]*", "message": "3-24 lowercase letters, digits or -" },
+          "port": { "min": 1024, "max": 65535, "integer": true },
+          "replicas": { "min": 1, "max": 12, "integer": true },
+          "owner": { "pattern": "[^@\\s]+@[^@\\s]+\\.[a-z]{2,}", "message": "An e-mail address" }
+        }
+      </script>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        df$.shadcn.propertyGrid.configure('#pg-valid', {
+          // a rule across keys: the budget never exceeds the limit
+          validateFn: (key, value, ctx) => (key === 'budget' && value > ctx.source.limit ? 'Over the limit of ' + ctx.source.limit : ''),
+        });
+      });
+    </script>
+  </div>
+  <div class="example">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="pg-data-read">Read replicas</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="pg-data-scale">Set replicas = 6</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="pg-data-flip">Toggle public</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="sm" id="pg-data-reset">Reset</button>
+      <output class="text-sm text-muted-foreground self-center" id="pg-data-out">Nothing read yet.</output>
+    </div>
+    <div class="grid gap-3" style="grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))">
+      <div class="property-grid" id="pg-data" aria-label="Service">
+        <script type="application/json" class="property-grid-source">
+          { "name": "search", "replicas": 2, "public": false, "region": "eu-west-1", "limits": { "rps": 400 } }
+        </script>
+      </div>
+      <div class="mockup-code" data-numbers data-title="source.json" id="pg-data-json" aria-live="polite"></div>
+    </div>
+    <div class="flex flex-col gap-2 mt-3">
+      <label class="label" for="pg-data-text">Set the whole object from JSON</label>
+      <textarea class="textarea" id="pg-data-text" rows="4" style="font-family:var(--font-mono);font-size:0.8125rem">{ "name": "search", "replicas": 4, "public": true, "region": "us-east-1", "limits": { "rps": 900, "burst": 120 } }</textarea>
+      <div class="flex items-center gap-2">
+        <button type="button" class="btn" data-size="sm" id="pg-data-apply">Apply JSON</button>
+        <output class="text-sm" id="pg-data-error" style="color:var(--destructive)"></output>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const pg = df$.shadcn.propertyGrid;
+        const grid = document.getElementById('pg-data');
+        const json = document.getElementById('pg-data-json');
+        const initial = pg.getSource(grid);
+        let before = [];
+        // the JSON view follows the store; lines that differ from the last view are marked
+        const show = (source) => {
+          const lines = JSON.stringify(source, null, 2).split('\n');
+          json.replaceChildren(...lines.map((line, i) => {
+            const pre = document.createElement('pre');
+            if (before.length && before[i] !== line) pre.dataset.diff = 'add';
+            const code = document.createElement('code');
+            code.textContent = line;
+            pre.append(code);
+            return pre;
+          }));
+          before = lines;
+        };
+        show(pg.getSource(grid));
+        grid.store.subscribe(({ config }) => show(config.source));
+        const out = document.getElementById('pg-data-out');
+        document.getElementById('pg-data-read').addEventListener('click', () => (out.textContent = 'replicas = ' + pg.getProperty(grid, 'replicas')));
+        document.getElementById('pg-data-scale').addEventListener('click', () => pg.setProperty(grid, 'replicas', 6));
+        document.getElementById('pg-data-flip').addEventListener('click', () => pg.setProperty(grid, 'public', !pg.getProperty(grid, 'public')));
+        document.getElementById('pg-data-reset').addEventListener('click', () => pg.setSource(grid, initial));
+        document.getElementById('pg-data-apply').addEventListener('click', () => {
+          const error = document.getElementById('pg-data-error');
+          try {
+            pg.setSource(grid, JSON.parse(document.getElementById('pg-data-text').value));
+            error.textContent = '';
+          } catch (e) {
+            error.textContent = e.message;
+          }
+        });
+      });
+    </script>
+  </div>
+  <div class="example">
+    <div class="flex items-center gap-2 mb-3">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="pg-inspector"><i data-lucide="panel-right"></i> Inspector</button>
+      <span class="text-sm text-muted-foreground">Click a box or an arrow.</span>
+    </div>
+    <div class="border-layout" style="height:24rem">
+      <main class="border-layout-center" style="overflow:auto;padding:0.75rem">
+        <figure class="diagram" id="pg-diagram" data-type="architecture" data-interactive data-frame="none" aria-label="Checkout service">
+          <div class="diagram-canvas" style="--cols:3;--diagram-col-min:6.5rem;--diagram-node-w:8.5rem">
+            <div class="diagram-node" data-node="web" style="--col:1;--row:1"><span class="diagram-node-name">Web app</span><span class="diagram-node-meta">Next.js</span></div>
+            <div class="diagram-node" data-node="api" data-tone="accent" style="--col:2;--row:1"><span class="diagram-node-name">API</span><span class="diagram-node-meta">gateway</span></div>
+            <div class="diagram-node" data-node="db" data-shape="store" style="--col:3;--row:1"><span class="diagram-node-name">Orders</span><span class="diagram-node-meta">Postgres</span></div>
+            <div class="diagram-node" data-node="mail" data-tone="external" style="--col:2;--row:2"><span class="diagram-node-name">Mailer</span><span class="diagram-node-meta">external</span></div>
+          </div>
+          <ol class="diagram-edges">
+            <li class="diagram-edge" data-from="web" data-to="api">HTTPS</li>
+            <li class="diagram-edge" data-from="api" data-to="db">SQL</li>
+            <li class="diagram-edge" data-from="api" data-to="mail" data-line="dashed">notify</li>
+          </ol>
+        </figure>
+      </main>
+      <div class="resizer border-layout-east">
+        <section class="card panel" id="pg-inspector" style="width:17rem" aria-labelledby="pg-inspector-title">
+          <header class="panel-header">
+            <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+            <h3 class="panel-title" id="pg-inspector-title">Inspector</h3>
+            <div class="panel-tools">
+              <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+            </div>
+          </header>
+          <div class="panel-body" data-flush>
+            <div class="property-grid" id="pg-selection" data-frame="none" data-empty-text="Select a box or an arrow." aria-label="Selection properties"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const fig = document.getElementById('pg-diagram');
+        const grid = document.getElementById('pg-selection');
+        const title = document.getElementById('pg-inspector-title');
+        const TONES = ['none', 'accent', 'muted', 'external', 'warn', 'ok', 'danger'];
+        let selected = null; // { kind, element }
+        const text = (el, sel) => (el.querySelector(sel) ? el.querySelector(sel).textContent : '');
+        df$.shadcn.propertyGrid.configure(grid, {
+          sourceConfig: {
+            tone: { options: TONES },
+            shape: { options: ['box', 'pill', 'store', 'diamond'] },
+            line: { options: ['solid', 'dashed', 'dotted'] },
+            id: { readOnly: true }, from: { readOnly: true }, to: { readOnly: true },
+          },
+        });
+        fig.addEventListener('diagram-activate', (e) => {
+          selected = e.detail.element ? { kind: e.detail.kind, element: e.detail.element } : null;
+          const el = e.detail.element;
+          if (!el) {
+            title.textContent = 'Inspector';
+            df$.shadcn.propertyGrid.setSource(grid, {});
+          } else if (e.detail.kind === 'node') {
+            title.textContent = 'Inspector · ' + text(el, '.diagram-node-name');
+            df$.shadcn.propertyGrid.setSource(grid, { id: el.dataset.node, name: text(el, '.diagram-node-name'), meta: text(el, '.diagram-node-meta'), tone: el.dataset.tone || 'none', shape: el.dataset.shape || 'box' });
+          } else {
+            title.textContent = 'Inspector · ' + e.detail.label;
+            df$.shadcn.propertyGrid.setSource(grid, { from: el.dataset.from, to: el.dataset.to, label: el.textContent, line: el.dataset.line || 'solid' });
+          }
+        });
+        grid.addEventListener('property-grid-change', (e) => {
+          if (!selected) return;
+          const el = selected.element;
+          const { key, value } = e.detail;
+          if (selected.kind === 'node') {
+            if (key === 'name') el.querySelector('.diagram-node-name').textContent = value;
+            if (key === 'meta') el.querySelector('.diagram-node-meta').textContent = value;
+            if (key === 'tone') value === 'none' ? el.removeAttribute('data-tone') : el.setAttribute('data-tone', value);
+            if (key === 'shape') value === 'box' ? el.removeAttribute('data-shape') : el.setAttribute('data-shape', value);
+            if (key === 'name') title.textContent = 'Inspector · ' + value;
+          } else {
+            if (key === 'label') el.textContent = value;
+            if (key === 'line') value === 'solid' ? el.removeAttribute('data-line') : el.setAttribute('data-line', value);
+          }
+          df$.shadcn.diagram.redraw(fig);
+        });
+      });
+    </script>
+  </div>
+  <div class="example">
+    <div class="flex flex-wrap gap-4">
+      <div class="property-grid" id="pg-comfortable" data-variant="comfortable" data-sort="asc" aria-label="Sorted, comfortable" style="flex:1 1 16rem">
+        <script type="application/json" class="property-grid-source">{ "zone": "b", "author": "Ana", "monitor": true, "max": 40 }</script>
+      </div>
+      <div class="property-grid" id="pg-readonly" data-readonly data-key-label="Field" data-value-label="Reading" aria-label="Read-only" style="flex:1 1 16rem">
+        <script type="application/json" class="property-grid-source">{ "uptime": "99.98%", "build": 1842, "healthy": true }</script>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/dist/components/all.js"></script>
+  <script type="module">globalThis.__fixtureReady = true;</script>
+</body>
+</html>

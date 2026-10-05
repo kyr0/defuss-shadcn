@@ -26,6 +26,16 @@
   <!-- grid: three items per row, tail row deliberately short (1_000_000 % 3 = 1) -->
   <div class="virtual-list" id="vl-grid" data-columns="3" style="--virtual-list-row-height:72px;" aria-label="Icon grid"></div>
 
+  <!-- records behind a dataview source: bound filter + sort controls -->
+  <input id="vl-q" data-virtual-list-filter="vl-people" data-field="name" aria-label="Filter people">
+  <input id="vl-age" data-virtual-list-filter="vl-people" data-field="age" data-kind="number" aria-label="Filter by age">
+  <select id="vl-sort" data-virtual-list-sort="vl-people" aria-label="Sort people">
+    <option value="">Source order</option>
+    <option value="name:asc">Name A–Z</option>
+    <option value="age:desc">Oldest first</option>
+  </select>
+  <div class="virtual-list" id="vl-people" data-empty-text="Nobody matches" aria-label="People"></div>
+
   <!-- empty, via markup rather than a later setData call -->
   <div class="virtual-list" id="vl-empty" data-empty-text="No results found" aria-label="Empty list"></div>
 
@@ -55,6 +65,20 @@
       const label = document.createElement('span');
       label.textContent = 'Icon ' + (i + 1);
       cell.append(glyph, label);
+    });
+    // 200,000 records (deterministic); the renderer gets the record
+    const first = ['Ada', 'Grace', 'Linus', 'Barbara', 'Ken', 'Margaret', 'Dennis', 'Frances'];
+    const people = Array.from({ length: 200_000 }, (_, i) => ({ id: i + 1, name: `${first[i % 8]} ${i + 1}`, age: 18 + ((i * 7) % 70) }));
+    api.setSource(document.getElementById('vl-people'), people, {
+      render: (row, person) => {
+        row.textContent = '';
+        const label = document.createElement('span');
+        label.textContent = person.name;
+        const meta = document.createElement('span');
+        meta.className = 'virtual-list-row-meta';
+        meta.textContent = String(person.age);
+        row.append(label, meta);
+      },
     });
     globalThis.__fixtureReady = true;
   </script>

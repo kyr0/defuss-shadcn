@@ -5,11 +5,22 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const alertDialogStates = ['default', 'open'];
+
+/**
+ * The markup of a state: 'open' carries `open`. render() applies it to a
+ * detached copy; on the live element showModal()/close() (the native
+ * protocol: top layer, focus, inert background) produce exactly this
+ * attribute - the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  dfDollar(el).attr('open', stateName === 'open' ? '' : null);
+}
 
 /**
  * UI side of setState: 'default' closes, 'open' opens modally. Escape and
@@ -28,29 +39,21 @@ function triggerStateChange(dialog, stateName, _config) {
 }
 
 /** Registry-level API; pass the dialog element explicitly. Unknown names throw. */
-export const alertDialogApi = {
-  setState(dialog, stateName, config = {}) {
-    if (!alertDialogStates.includes(stateName)) {
-      throw new Error(`alert-dialog: unknown state "${stateName}" (supported: ${alertDialogStates.join(', ')})`);
-    }
-    triggerStateChange(dialog, stateName, config);
-    // state lives on the ELEMENT, not the module (multiple dialogs per page)
-    dialog.dataset.stateName = stateName;
-    dialog._stateConfig = config;
-  },
-  getState(dialog) {
-    return { name: dialog.dataset.stateName || 'default', config: dialog._stateConfig ?? {} };
-  },
-};
+export const alertDialogApi = componentState({
+  component: 'alert-dialog',
+  states: alertDialogStates,
+  apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.alertDialogApi = alertDialogApi;
 df$.alertDialogStates = alertDialogStates;
 
 function init() {
 /* Wire triggers */
-document.querySelectorAll('[data-alert-dialog-trigger]:not([data-init])').forEach((trigger) => {
+dfDollar('[data-alert-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
   trigger.dataset.init = '';
-  const dialog = document.getElementById(trigger.dataset.alertDialogTrigger);
+  const dialog = dfDollar('#' + CSS.escape(trigger.dataset.alertDialogTrigger)).get(0);
   if (!dialog) return;
   trigger.addEventListener('click', () => {
     dialog._trigger = trigger;
@@ -59,20 +62,17 @@ document.querySelectorAll('[data-alert-dialog-trigger]:not([data-init])').forEac
 });
 
 /* Wire close buttons and block Escape */
-document.querySelectorAll('dialog.alert-dialog:not([data-init])').forEach((dialog) => {
+dfDollar('dialog.alert-dialog:not([data-init])').toArray().forEach((dialog) => {
   dialog.dataset.init = '';
-  // bind-scope the api per instance: `$('#confirm').api.setState('open')`
-  dialog.api = {
-    setState: (stateName, config) => alertDialogApi.setState(dialog, stateName, config),
-    getState: () => alertDialogApi.getState(dialog),
-  };
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(dialog, alertDialogApi);
   /* Block Escape key */
   dialog.addEventListener('cancel', (e) => {
     e.preventDefault();
   });
 
   /* Wire close buttons */
-  dialog.querySelectorAll('[data-alert-dialog-close]').forEach((btn) => {
+  dfDollar(dialog).find('[data-alert-dialog-close]').toArray().forEach((btn) => {
     btn.addEventListener('click', () => {
       dialog.close();
     });

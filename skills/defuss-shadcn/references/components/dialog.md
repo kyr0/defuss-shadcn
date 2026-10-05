@@ -20,6 +20,14 @@ document.querySelector('#my-dialog').api.getState(); // { name: 'open', config: 
 
 Unknown state names throw. `globalThis.df$.shadcn.dialogStates` lists them.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.dialogApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.dialogStates` = `default`, `open`.
+
 ## Native basis
 `<dialog>` element + `showModal()`. The browser provides:
 - Focus trap (automatically)

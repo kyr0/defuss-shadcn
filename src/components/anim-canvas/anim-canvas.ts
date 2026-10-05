@@ -26,7 +26,7 @@
 // emitted binding can only destructure names that exist there. Name
 // validation below goes through anim.names, keeping the same fail-loud
 // contract animChannel has.
-import { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount, componentState, bindComponent } from '../../shared/state-api.js';
 import type { AnimChannel, AnimDirection, AnimOptions } from '../../shared/anim.js';
 
 const df$ = defussGlobals();
@@ -209,7 +209,7 @@ function applySlideState(root: CanvasRoot, ctx: CanvasCtx): void {
     else s.setAttribute('aria-hidden', 'true');
   }
   // authored directional controls follow the active slide's relation map
-  root.querySelectorAll('[data-anim-canvas-go]').forEach((el) => {
+  dfDollar(root).find('[data-anim-canvas-go]').toArray().forEach((el) => {
     const dir = el.getAttribute('data-anim-canvas-go');
     if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
     el.disabled = !ctx.active.dataset[dir as AnimDirection];
@@ -258,13 +258,13 @@ function replayContent(slide: HTMLElement, offset: number): void {
     if (d.animCanvasBaseDelay === undefined) d.animCanvasBaseDelay = String(cssMs(getComputedStyle(el).animationDelay));
     return parseFloat(d.animCanvasBaseDelay) + offset;
   };
-  slide.querySelectorAll<HTMLElement>('[data-df-entrance]').forEach((el) => {
+  (dfDollar(slide).find('[data-df-entrance]').toArray() as HTMLElement[]).forEach((el) => {
     entrance(el, undefined, { delay: withOffset(el) });
   });
-  slide.querySelectorAll<SVGElement>('[data-df-draw]').forEach((el) => {
+  (dfDollar(slide).find('[data-df-draw]').toArray() as SVGElement[]).forEach((el) => {
     draw(el, { delay: withOffset(el) });
   });
-  slide.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+  (dfDollar(slide).find('[data-count]').toArray() as HTMLElement[]).forEach((el) => {
     animateCount(el, { delay: offset });
   });
 }
@@ -377,6 +377,31 @@ function toggleOverview(root: CanvasRoot, ctx: CanvasCtx): void {
  * slide, bare 'default' leaves overview / re-frames the active slide.
  * Unknown names throw.
  */
+/**
+ * The markup of a state, for render(), on a detached copy of the authored
+ * canvas - what activate() + applySlideState() write: the active slide
+ * ({ slide } by id, else the authored one), the overview flag ('overview'
+ * unless { value: false }), every slide's inert / aria-hidden, the
+ * directional buttons' disabled. The camera pans (transforms) and content
+ * replays are the animation engine's - runtime-owned.
+ */
+function applyMarkup(root: Element, stateName: string, config: Record<string, unknown> = {}): void {
+  const slides = dfDollar(root).find('.anim-canvas-slide').toArray() as HTMLElement[];
+  if (slides.length === 0) return;
+  const overview = stateName === 'overview' && config.value !== false;
+  const active = slides.find((sl) => sl.id === config.slide) ?? slides.find((sl) => sl.hasAttribute('data-active')) ?? slides[0];
+  dfDollar(root).attr('data-overview', overview ? '' : null).attr('data-current-slide', active.id);
+  for (const sl of slides) {
+    const on = overview || sl === active;
+    dfDollar(sl).attr('data-active', sl === active ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', on ? null : 'true');
+  }
+  dfDollar(root).find('[data-anim-canvas-go]').each((_i, el) => {
+    const dir = el.getAttribute('data-anim-canvas-go');
+    if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
+    dfDollar(el).attr('disabled', active.dataset[dir as AnimDirection] ? null : '');
+  });
+}
+
 function triggerStateChange(root: CanvasRoot, stateName: string, config: Record<string, unknown> = {}): void {
   if (!animCanvasStates.includes(stateName)) {
     throw new Error(`anim-canvas: unknown state "${stateName}" (supported: ${animCanvasStates.join(', ')})`);
@@ -394,26 +419,24 @@ function triggerStateChange(root: CanvasRoot, stateName: string, config: Record<
 }
 
 /** Registry-level API; pass the root explicitly. Unknown names throw. */
-export const animCanvasApi = {
-  setState(root: HTMLElement, stateName: string, config: Record<string, unknown> = {}) {
-    triggerStateChange(root as CanvasRoot, stateName, config);
-    // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-    root.dataset.stateName = stateName;
-    root._stateConfig = config;
-  },
-  getState(root: HTMLElement) {
+export const animCanvasApi = componentState({
+  component: 'anim-canvas',
+  states: animCanvasStates,
+  apply: (root, state) => triggerStateChange(root as CanvasRoot, state.name, state.config),
+  read: (root, state) => {
     const ctx = (root as CanvasRoot)._animCanvas;
     // reflect reality: keyboard/clicks move the canvas without setState()
     return {
       name: root.dataset.stateName || 'default',
       config: {
-        ...root._stateConfig,
+        ...state.config,
         slide: ctx?.active.id,
         overview: root.hasAttribute('data-overview'),
       },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
 
 df$.animCanvasApi = animCanvasApi;
 df$.animCanvasStates = animCanvasStates;
@@ -428,7 +451,7 @@ df$.animCanvasStates = animCanvasStates;
 function pickCanvas(target: EventTarget | null): CanvasRoot | null {
   const focused = target instanceof HTMLElement ? (target.closest('.anim-canvas') as CanvasRoot | null) : null;
   if (focused) return focused;
-  const all = Array.from(document.querySelectorAll<CanvasRoot>('.anim-canvas'));
+  const all = Array.from((dfDollar('.anim-canvas').toArray() as CanvasRoot[]));
   return (
     all.find((r) => {
       const b = r.getBoundingClientRect();
@@ -461,24 +484,20 @@ function bindKeys(): void {
 }
 
 function init(): void {
-  document.querySelectorAll<CanvasRoot>('.anim-canvas:not([data-init])').forEach((root) => {
+  (dfDollar('.anim-canvas:not([data-init])').toArray() as CanvasRoot[]).forEach((root) => {
     root.dataset.init = '';
 
-    // bind-scope the api per instance: `$('#board').api.setState('overview')`
-    root.api = {
-      setState: (stateName: string, config?: Record<string, unknown>) =>
-        animCanvasApi.setState(root, stateName, config),
-      getState: () => animCanvasApi.getState(root),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(root, animCanvasApi);
 
     // the board: ONE transformed layer holding every slide. Reused when the
     // markup already carries one (the docs CodeExample round-trips serialized
     // live DOM back into the editor - init must stay idempotent for it).
-    let board = root.querySelector<HTMLElement>(':scope > .anim-canvas-board');
+    let board = ((dfDollar(root).find(':scope > .anim-canvas-board').get(0) ?? null) as HTMLElement | null);
     if (!board) {
       board = document.createElement('div');
       board.className = 'anim-canvas-board';
-      for (const slide of Array.from(root.querySelectorAll<HTMLElement>(':scope > .anim-canvas-slide'))) {
+      for (const slide of Array.from((dfDollar(root).find(':scope > .anim-canvas-slide').toArray() as HTMLElement[]))) {
         dfDollar(board).append(slide);
       }
       root.prepend(board);
@@ -616,7 +635,7 @@ function init(): void {
     frame();
     // the start slide's counters run once on load (its entrances already
     // play from CSS as the page renders)
-    start.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+    (dfDollar(start).find('[data-count]').toArray() as HTMLElement[]).forEach((el) => {
       animateCount(el);
     });
   });

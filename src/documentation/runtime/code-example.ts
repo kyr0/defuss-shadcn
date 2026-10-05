@@ -1,270 +1,150 @@
 // -- code-example.js -------------------------------------------------
-// Host runtime for the docs CodeExample widget (docs-site-only, not shipped).
-// Renders each `.code-example` card (emitted statically by the docs build from
-// the canonical `example` fence) as a live sandboxed preview: the exact source
-// in the textarea becomes the iframe srcdoc verbatim (plan §4 - one source;
-// editor and execution share the same bytes), and the state panel is generated
-// EXCLUSIVELY from the schema JSON the SSR component embedded in `data-schema`
-// (§10 - never component-name branching).
+// Docs glue for the live examples (docs-site-only, not shipped). Every
+// `.code-example` card IS the shipped HTML Preview Editor component
+// (src/components/code-example, loaded from the wysiwyg bundle); this script
+// only tells it what the docs' previews are built from:
 //
-// Protocol (plan §9): host → sandbox {type:'ce-host', ch, kind:'set-state'|
-// 'action'|'read-state'|'set-dark'}; sandbox → host {type:'ce', ch, kind:
-// 'ready'|'state'|'error'|'height'}. `ch` is a per-example channel id, so
-// examples on one page cannot cross-talk. The iframe is sandbox="allow-scripts
-// allow-forms" (§9): no allow-same-origin - edited examples cannot touch the
-// page. allow-forms only lets a form example's submit/invalid handlers run
-// (without it the browser aborts submission before either event fires); the
-// bridge cancels the navigation itself, so a submit never replaces the example.
-// Its permissions policy delegates just `clipboard-write` (allow=), so copy
-// buttons in examples really copy (write-only, still gated on a user click).
+// - styles: the docs sheets the page loaded (tokens, utility modules, docs
+//   theme + utilities, all.css → its .min twin, wysiwyg.css when a source nests
+//   a card), fetched ONCE and inlined - a srcdoc with N <link>s meant N
+//   render-blocking requests per preview. @font-face is stripped: an opaque-
+//   origin sandbox fetches fonts in CORS mode and static hosts send no ACAO
+//   header (a console error storm; font-display: swap renders the fallback).
+// - scripts: all.min.js (+ wysiwyg.min.js for nested cards) as text - the
+//   component inlines them as classic scripts in their own function scope.
+// - tail: lucide (icon examples) and the theme-switcher demo's base URL.
+// - theme: the current tweakcn sheet; a theme switch pushes it into every
+//   running preview (refreshTheme), no rebuild.
 //
-// One document-level `message` listener routes by channel through a registry
-// (per-example listeners would leak across SPA navigations). Every observed
-// sandbox state is mirrored onto the host element as `data-state-values` - the
-// §11 contract ("the DOM is authoritative") made assertable from the outside
-// (tests + e2e read it without reaching into the opaque-origin iframe).
+// ?raw: under the Vite dev/preview server (bun run dev, Vitest) a plain
+// .js/.css fetch gets Vite's module transform; ?raw returns the bytes (wrapped
+// as `export default "…"`, unwrapped below). Static hosts ignore the query.
 //
-// No ES module (matches the other docs runtime scripts). No globals beyond the
-// staged docs namespace (AGENTS.md "No window globals"): all state is inside
-// this IIFE.
+// No ES module (matches the other docs runtime scripts); runs on
+// DOMContentLoaded, when all.js + wysiwyg.js have installed df$ - before the
+// component builds its first preview.
 
 (function () {
   'use strict';
 
-  var RERUN_DEBOUNCE_MS = 400;
-  var MIN_FRAME_HEIGHT = 64;
-  var MAX_FRAME_HEIGHT = 900;
-  var REM_PX = 16; // data-height is authored in rem (fence height="N")
-  // placeholder the theme-switcher fence uses; swapped for the ABSOLUTE theme
-  // folder in the sandbox (about:srcdoc can't resolve relative URLs)
-  var THEME_BASE_PLACEHOLDER = '../theme';
-  // boot cards lazily (viewport + margin) so a page full of sandboxes never
-  // blocks first paint; everything else boots once the page has been idle
-  var IO_ROOT_MARGIN = '600px 0px';
-  var IDLE_BOOT_MS = 1500;
-  /** shipped docs stylesheets mirrored into the sandbox (path fragments) */
+  /** docs stylesheets mirrored into every preview (path fragments, host order) */
   var STYLE_FRAGMENTS = [
     'default-semantic-tokens.css',
     'sizing.css',
     'layout.css',
-    // .sr-only lives here - without it, visually-hidden demo text would
-    // render visibly inside the sandbox (icon examples looked broken)
+    // .sr-only lives here - visually-hidden demo text would render otherwise
     'accessibility.css',
-    // shape utilities (corners, clips, edges, shadows, frames, patterns)
     'shapes.css',
     'docs-theme.css',
     'docs-utilities.css',
     'components/all.css',
   ];
-  /** @font-face rules are stripped from every inlined sheet: an opaque-origin
-   * (about:srcdoc) sandbox fetches fonts in CORS mode and static hosts send no
-   * ACAO header - each blocked font is a console error storm (and stalls the
-   * first paint of every iframe). font-display: swap already means the demo
-   * text renders with the fallback stack; only the glyphs change. */
+  var NESTED_SHEET = 'components/wysiwyg.css';
   var FONT_FACE = /@font-face\s*\{[^}]*\}\s*/g;
-  // ?raw: under the Vite dev/preview server (bun run dev, Vitest) a plain .js
-  // fetch gets Vite's module transform (HMR boilerplate breaks the bridge);
-  // ?raw returns the bytes verbatim. Static hosts (build, Pages, jsDelivr)
-  // ignore query strings, so production serves the identical file either way.
-  var RAW = '?raw';
-  var BRIDGE_URL = 'templates/sandbox-bridge.js' + RAW;
-  var TEMPLATE_URL = 'templates/sandbox-doc.html' + RAW;
-  // Vite's dev/preview server injects its HMR client into served HTML (it
-  // even survives ?raw in the Vitest browser server). The sandbox must not
-  // load it: it needs import.meta + a WebSocket the sandbox can't provide,
-  // and its load error would red-flag a perfectly good preview.
-  var VITE_CLIENT = /<script[^>]*\/@vite\/client[^>]*><\/script>\s*/g;
+  // the theme-switcher fence's placeholder, swapped for the ABSOLUTE theme
+  // folder in the preview (about:srcdoc cannot resolve relative URLs)
+  var THEME_BASE_PLACEHOLDER = '../theme';
+  var LUCIDE = 'https://unpkg.com/lucide@1.8.0';
 
-  /**
-   * Vite dev/preview servers answer ?raw with a JS module wrapper
-   * (`export default "<file>"`, JSON-escaped); static hosts ignore the query
-   * and return the bytes. Unwrap when the wrapper is present so every host
-   * gets the identical raw text.
-   */
+  /** Vite answers ?raw with `export default "<json-escaped file>"` - unwrap it */
   function unwrapRaw(t) {
     if (t.indexOf('export default') !== 0) return t;
-    // Vite dev wraps raw imports as `export default "…json-escaped…"` possibly
-    // followed by `;` / a sourcemap comment - parse ONLY the string literal
     var m = /^export default ("(?:[^"\\]|\\.)*")/.exec(t);
     if (m) {
       try {
         return JSON.parse(m[1]);
       } catch {
-        /* not the wrapper - return as-is */
+        /* not the wrapper - as-is */
       }
     }
     return t;
   }
-  function cleanTemplate(t) {
-    return unwrapRaw(t).replace(VITE_CLIENT, '');
-  }
-  function cachedFetch(url) {
-    var promise = null;
-    return function () {
-      if (!promise)
-        promise = fetch(url)
-          .then(function (r) {
-            if (!r.ok) throw new Error(url + ' → HTTP ' + r.status);
-            return r.text();
-          })
-          .then(unwrapRaw)
-          .catch(function (e) {
-            promise = null;
-            throw e;
-          });
-      return promise;
-    };
-  }
-  var sandboxTemplate = (function () {
-    var promise = null;
-    return function () {
-      if (!promise)
-        promise = fetch(TEMPLATE_URL)
-          .then(function (r) {
-            if (!r.ok) throw new Error(TEMPLATE_URL + ' → HTTP ' + r.status);
-            return r.text();
-          })
-          .then(cleanTemplate)
-          .catch(function (e) {
-            promise = null;
-            throw e;
-          });
-      return promise;
-    };
-  })();
-  var bridgeSource = cachedFetch(BRIDGE_URL);
-
-  /** absolute URLs of the docs stylesheets the preview renders against —
-   * taken from the live <link> tags, so the jsDelivr CDN mirror just works.
-   * all.css swaps to its .min twin when the host page ships it (the twin is
-   * gate-verified); the docs sheets have no twins and stay verbatim. */
-  function styleUrls() {
-    var out = [];
-    document.querySelectorAll('link[rel="stylesheet"]').forEach(function (l) {
-      var href = l.getAttribute('href') || '';
-      for (var i = 0; i < STYLE_FRAGMENTS.length; i++)
-        if (href.indexOf(STYLE_FRAGMENTS[i]) >= 0) {
-          var url = l.href;
-          if (STYLE_FRAGMENTS[i] === 'components/all.css' && /all\.css/.test(href))
-            url = url.replace(/all\.css(\?.*)?$/, 'all.min.css');
-          out.push(url);
-          break;
-        }
-    });
-    return out;
-  }
-
-  // one fetch per stylesheet, cached, @font-face stripped (see FONT_FACE):
-  // the sandbox is a srcdoc - every mirror as <link> meant N render-blocking
-  // requests per iframe; inlined once per page they are free after first read.
-  var cssCache = {};
-  function fetchStripped(url) {
-    if (!cssCache[url]) {
-      // ?raw + unwrapRaw: Vite dev/preview answers plain .css fetches with its
-      // module wrapper; static hosts ignore the query (see unwrapRaw above)
-      var raw = url + (url.includes('?') ? '&' : '?') + 'raw';
-      cssCache[url] = fetch(raw)
+  var cache = {};
+  /** one fetch per URL per page (a failure is retried next time) */
+  function fetchRaw(url) {
+    if (!cache[url]) {
+      cache[url] = fetch(url + (url.includes('?') ? '&' : '?') + 'raw')
         .then(function (r) {
           if (!r.ok) throw new Error(url + ' → HTTP ' + r.status);
           return r.text();
         })
         .then(unwrapRaw)
-        .then(function (t) {
-          return t.replace(FONT_FACE, '');
-        })
         .catch(function (e) {
-          cssCache[url] = null;
+          delete cache[url];
           throw e;
         });
     }
-    return cssCache[url];
+    return cache[url];
   }
-  // all mirrored sheets concatenated in host order (tokens first - cascade
-  // order must match the host page) - resolved once, reused by every sandbox
+  /** a bundle's .min twin, the readable file when a dev tree lacks it */
+  function fetchMin(url, ext) {
+    return fetchRaw(url.replace(new RegExp('\\.' + ext + '(\\?.*)?$'), '.min.' + ext)).catch(function () {
+      return fetchRaw(url);
+    });
+  }
+
+  var $ = function (sel) {
+    return globalThis.df$(sel);
+  };
+  /** absolute URLs of the page's sheets matching the fragments, in host order */
+  function sheetUrls(fragments) {
+    var out = [];
+    $('link[rel="stylesheet"]').each(function (_i, l) {
+      var href = l.getAttribute('href') || '';
+      for (var i = 0; i < fragments.length; i++)
+        if (href.indexOf(fragments[i]) >= 0) {
+          out.push(l.href);
+          break;
+        }
+    });
+    return out;
+  }
+  var nests = function (source) {
+    return /\bcode-example\b/.test(source || '');
+  };
+
   var stylesPromise = null;
-  function inlinedStyles() {
+  /** the docs sheets, inlined once per page (bundles as their .min twins) */
+  function docsStyles(source) {
     if (!stylesPromise) {
-      var urls = styleUrls();
-      if (!urls.length) return Promise.resolve('');
-      // the min twin may be missing (a dev tree built without the minify pass):
-      // fall back to the readable sheet, like the runtime does for all.min.js
-      var fetchSheet = function (url) {
-        return /all\.min\.css(\?.*)?$/.test(url)
-          ? fetchStripped(url).catch(function () { return fetchStripped(url.replace(/all\.min\.css/, 'all.css')); })
-          : fetchStripped(url);
-      };
-      stylesPromise = Promise.all(urls.map(fetchSheet)).then(function (texts) {
-        return '<style>' + texts.join('\n') + '</style>';
+      stylesPromise = Promise.all(
+        sheetUrls(STYLE_FRAGMENTS).map(function (url) {
+          return (/components\/all\.css/.test(url) ? fetchMin(url, 'css') : fetchRaw(url)).then(function (t) {
+            return t.replace(FONT_FACE, '');
+          });
+        }),
+      ).then(function (texts) {
+        return texts.join('\n');
       });
       stylesPromise.catch(function () {
         stylesPromise = null;
       });
     }
-    return stylesPromise;
-  }
-  // current tweakcn theme sheet text (theme-switcher applies it as #theme-css)
-  function themeText() {
-    var theme = document.getElementById('theme-css');
-    if (!theme || !theme.getAttribute('href')) return Promise.resolve('');
-    return fetchStripped(theme.href).catch(function () {
-      return '';
+    var nested = nests(source)
+      ? Promise.all(sheetUrls([NESTED_SHEET]).map(function (url) { return fetchMin(url, 'css'); }))
+      : Promise.resolve([]);
+    return Promise.all([stylesPromise, nested]).then(function (parts) {
+      return [{ css: [parts[0]].concat(parts[1]).join('\n') }];
     });
   }
 
-  /** the shipped runtime bundle (df$) as TEXT, inlined into each srcdoc: a
-   * module <script src> from the sandbox's opaque origin would need CORS that
-   * static hosts (Bun.serve screenshot server!) don't send; inlining removes
-   * the dependency. URL derived like the mirror rewrites it (local + CDN);
-   * the .min twin is preferred (half the bytes - it is embedded in EVERY
-   * sandbox), falling back to the readable bundle if a deploy lacks it. */
-  var runtimeTextPromise = null;
-  function runtimeText() {
-    if (!runtimeTextPromise) {
-      var link = Array.prototype.find.call(
-        document.querySelectorAll('link[rel="stylesheet"]'),
-        function (l) {
-          return (l.href || '').indexOf('components/all') >= 0;
-        },
-      );
-      var base = link ? link.getAttribute('href').replace(/\.css(\?.*)?$/, '') : '../components/all';
-      runtimeTextPromise = fetchRuntime(base + '.min.js')
-        .catch(function () {
-          return fetchRuntime(base + '.js'); // readable fallback (dev trees without min pass)
-        })
-        .catch(function (e) {
-          runtimeTextPromise = null;
-          throw e;
-        });
-    }
-    return runtimeTextPromise;
-  }
-  function fetchRuntime(url) {
-    return fetch(url + (url.includes('?') ? '&' : '?') + 'raw').then(function (r) {
-      if (!r.ok) throw new Error('components bundle → HTTP ' + r.status);
-      return r.text();
-    })
-      .then(function (t) {
-        return unwrapRaw(t).replace(/<\/script/gi, '<\\/script'); // srcdoc-safe (all.js is import-free, plan §2.3)
-      });
+  /** the runtime bundles as text: all (+ wysiwyg for a nested card) */
+  function docsScripts(source) {
+    var urls = sheetUrls(['components/all.css']).map(function (u) {
+      return u.replace(/\.css(\?.*)?$/, '.js');
+    });
+    if (nests(source))
+      urls = urls.concat(sheetUrls([NESTED_SHEET]).map(function (u) {
+        return u.replace(/\.css(\?.*)?$/, '.js');
+      }));
+    return Promise.all(urls.map(function (u) { return fetchMin(u, 'js'); })).then(function (texts) {
+      return texts.map(function (js) { return { js: js }; });
+    });
   }
 
-  // -- editor mapping: mirrors editorFor() in the shared contract (plan §3:
-  // schema hint when recognized, generic fallback by type - no branching) ----
-  function editorFor(spec) {
-    var byType =
-      // enum defaults to radio boxes: the value set is small and closed, and
-      // every option visible beats a dropdown (one glance, no click to reveal)
-      spec.type === 'boolean' ? 'checkbox' : spec.type === 'number' ? 'number' : spec.type === 'enum' ? 'radio' : 'text';
-    var hint = spec.editor && spec.editor.component;
-    var known = ['text', 'number', 'checkbox', 'radio', 'select'];
-    return { kind: known.indexOf(hint) >= 0 ? hint : byType, props: (spec.editor && spec.editor.props) || {} };
-  }
-
-  /** absolute URL of the theme folder, derived from the token stylesheet the
-   * host page loaded (works on local + jsDelivr mirrors alike) */
+  /** absolute URL of the theme folder, from the token sheet the page loaded */
   function themeBaseUrl() {
-    var tokens = (document.getElementById('tokens-css') ||
-      document.querySelector('link[href*="default-semantic-tokens.css"]')) as HTMLLinkElement | null;
+    var tokens = $('#tokens-css').get(0) || $('link[href*="default-semantic-tokens.css"]').get(0);
     if (!tokens) return '';
     try {
       return new URL('..', tokens.href).href.replace(/\/$/, '');
@@ -272,885 +152,38 @@
       return '';
     }
   }
-  /** chrome script: rewrites the fence placeholder ../theme to the absolute URL */
-  function themeInitScript() {
+  /** after the runtime: lucide for icon examples + the theme-switcher demo's base URL */
+  function docsTail() {
     return (
-      "(function(){var b=" + JSON.stringify(themeBaseUrl()) + ";if(!b)return;" +
-      "document.querySelectorAll('.theme-switcher[data-theme-base]').forEach(function(el){" +
-      "if(el.dataset.themeBase==='" + THEME_BASE_PLACEHOLDER + "')el.dataset.themeBase=b});})();"
+      '<scr' + 'ipt src="' + LUCIDE + '" data-ce-chrome></scr' + 'ipt>\n' +
+      '<scr' + 'ipt data-ce-chrome>globalThis.lucide && lucide.createIcons();' +
+      '(function(){var b=' + JSON.stringify(themeBaseUrl()) + ';if(!b||!globalThis.df$)return;' +
+      "df$('.theme-switcher[data-theme-base]').each(function(_i,el){" +
+      "if(el.dataset.themeBase==='" + THEME_BASE_PLACEHOLDER + "')el.dataset.themeBase=b});})();</scr" + 'ipt>'
     );
   }
 
-  /** ch → controller; the single global listener + dark observer route here. */
-  var registry = {};
-
-  // -- cross-document drag safety (the sandbox cannot see host releases) --
-  // Pointer capture is DOCUMENT-scoped: a drag started inside a sandbox
-  // (e.g. a resizer example) that is released over the host page produces
-  // no pointerup inside the iframe - the drag stays live and resizes on
-  // every re-entry until another click. The host DOES see those releases,
-  // so it forwards them on every channel (kind `pointer-release`); the
-  // bridge answers with a document-level synthetic pointercancel, which
-  // every drag owner (resizer) ends on. No-op when nothing is dragging.
-  if (!document.__cePointerRelay) {
-    document.__cePointerRelay = true;
-    var relayRelease = function () {
-      for (var rc in registry) registry[rc].send('pointer-release', {});
-    };
-    addEventListener('pointerup', relayRelease);
-    addEventListener('pointercancel', relayRelease);
-    addEventListener('blur', relayRelease); // released while the window was unfocused
+  /** the current tweakcn theme: an inline <style> (Theme Designer) or the preset sheet */
+  function docsTheme() {
+    var theme = $('#theme-css').get(0);
+    if (theme && theme.tagName === 'STYLE') return Promise.resolve(theme.textContent || '');
+    if (!theme || !theme.getAttribute('href')) return Promise.resolve('');
+    return fetchRaw(theme.href)
+      .then(function (t) {
+        return t.replace(FONT_FACE, '');
+      })
+      .catch(function () {
+        return '';
+      });
   }
 
-  addEventListener('message', function (e) {
-    var d = e.data;
-    if (!d || d.type !== 'ce' || !d.ch) return; // per-example channel (§9): foreign postMessages ignored
-    var c = registry[d.ch];
-    if (c) c.onMessage(d);
-  });
-
-  // dark-mode toggle → every sandbox (layout.js flips <html class="dark">; the
-  // sandboxes follow via postMessage - a rebuild would discard example state)
-  new MutationObserver(function () {
-    var dark = document.documentElement.classList.contains('dark');
-    for (var ch in registry) registry[ch].send('set-dark', { value: dark });
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-
-  // tweakcn theme switch → every booted sandbox re-fetches the token sheet and
-  // swaps its tail <style> (theme-switcher dispatches this on every applyTheme;
-  // no iframe rebuild, so running examples keep their state)
-  document.addEventListener('defuss-theme-change', function () {
-    themeText().then(function (css) {
-      for (var ch in registry) registry[ch].send('set-theme', { css: css });
-    });
-  });
-
-  function init() {
-    // NOTE: registry is intentionally NEVER cleared - init() re-runs after
-    // every SPA navigation (onPageReady), and wiping it would orphan the
-    // sandboxes of cards already booted on this page (their bridge messages
-    // would silently drop). Stale channels of detached iframes are inert:
-    // their documents are gone and send() no-ops once contentWindow is dead.
-    // Lazy boot: a page of a dozen sandboxes must not block first paint —
-    // cards near the viewport boot via IntersectionObserver, the rest once
-    // the page goes idle (IDLE_BOOT_MS), so every sandbox is eventually live
-    // (screenshots/tests driving below-fold cards just wait on .api as before).
-    document.querySelectorAll('.code-example:not([data-io])').forEach(function (el) {
-      el.dataset.io = '';
-      if (io) io.observe(el);
-      else initExample(el); // no IO support: boot eagerly
-    });
-    if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = setTimeout(bootRemaining, IDLE_BOOT_MS);
-  }
-  function bootRemaining() {
-    document.querySelectorAll('.code-example[data-io]:not([data-init])').forEach(function (el) {
-      if (io) io.unobserve(el);
-      initExample(el);
-    });
-  }
-  var io =
-    'IntersectionObserver' in window
-      ? new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (en) {
-              if (!en.isIntersecting) return;
-              io.unobserve(en.target);
-              initExample(en.target);
-            });
-          },
-          { rootMargin: IO_ROOT_MARGIN },
-        )
-      : null;
-  var idleTimer = null;
-
-  function initExample(root) {
-    root.dataset.init = '';
-    var frame = root.querySelector('.code-example-frame');
-    var errBox = root.querySelector('.code-example-error');
-    var src = root.querySelector('.code-example-src');
-    var statePanel = root.querySelector('[data-panel="state"]');
-    var codePanel = root.querySelector('[data-panel="code"]');
-    // fence height="N" is rem - a px floor would be inert; overlay demos
-    // (dialog/sheet/combobox/command…) need the floor to hold their open
-    // panel: fixed-position overlays don't grow the body flow, so the
-    // bridge's content height stays at the closed-state size
-    var minHeight = Math.max(MIN_FRAME_HEIGHT, (Number(root.dataset.height) || 0) * REM_PX);
-    // stage chrome from the fence (previewStyle="…"): body-level layout for the
-    // demo area (flex centering, padding…) - chrome, never part of the source
-    var previewStyle = root.dataset.previewStyle || '';
-    var original = src.value;
-    // Syntax colouring: the docs' Shiki engine paints an aria-hidden layer
-    // UNDER the textarea, whose own glyphs turn transparent (caret stays) only
-    // once a paint is in place - so without the CDN it is a plain editor. The
-    // textarea stays the one editable source: undo, selection, the state
-    // bridge and the tests all keep working on it.
-    var hl = document.createElement('div');
-    hl.className = 'code-example-hl';
-    hl.setAttribute('aria-hidden', 'true');
-    src.parentNode.insertBefore(hl, src);
-    var painted = null; // the source the layer currently shows
-    var hlBusy = false;
-    var hlDirty = false;
-    var hlStale = null;
-    function syncHlScroll() {
-      hl.scrollTop = src.scrollTop;
-      hl.scrollLeft = src.scrollLeft;
-    }
-    function paint(html, code) {
-      hl.innerHTML = html;
-      hl.appendChild(document.createTextNode('\n')); // keep a trailing empty line's height
-      painted = code;
-      syncHlScroll();
-    }
-    function highlight() {
-      var docs = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.docs;
-      var toHtml = docs && docs.__shikiCodeToHtml;
-      if (!toHtml) return; // not loaded (yet, or CDN down): the plain editor stays
-      // cards boot collapsed: paint lazily, when the Code panel is open (the
-      // panel observer below repaints on open) - never a page-load burst
-      if (!codePanel || codePanel.hidden) return;
-      if (hlBusy) {
-        hlDirty = true; // one request in flight; the next one takes the latest text
-        return;
-      }
-      hlBusy = true;
-      var code = src.value;
-      toHtml(code, 'html')
-        .then(
-          function (html) {
-            if (code !== src.value) return;
-            var tmp = document.createElement('div');
-            tmp.innerHTML = html;
-            var lines = tmp.querySelector('pre > code');
-            if (!lines) return;
-            paint(lines.innerHTML, code);
-            root.classList.add('ce-hl');
-          },
-          function () {},
-        )
-        .then(function () {
-          hlBusy = false;
-          if (hlDirty) {
-            hlDirty = false;
-            highlight();
-          }
-        });
-    }
-    function refreshHighlight() {
-      highlight();
-      if (!root.classList.contains('ce-hl')) return;
-      // a slow paint (large deck sources) must never leave typed text invisible
-      clearTimeout(hlStale);
-      hlStale = setTimeout(function () {
-        if (painted !== src.value) {
-          hl.textContent = src.value + '\n';
-          painted = src.value;
-          syncHlScroll();
-        }
-      }, 90);
-    }
-    src.addEventListener('scroll', syncHlScroll);
-    document.addEventListener('docs:shiki-ready', highlight);
-    // the Code tab, Expand-all and fullscreen all toggle the panel's hidden
-    // attribute - opening it paints (or repaints a source changed while hidden)
-    if (codePanel) {
-      new MutationObserver(function () {
-        if (!codePanel.hidden && painted !== src.value) refreshHighlight();
-      }).observe(codePanel, { attributes: true, attributeFilter: ['hidden'] });
-    }
-    highlight();
-    var schema = null;
-    try {
-      if (root.dataset.schema) schema = JSON.parse(root.dataset.schema);
-    } catch {
-      /* malformed schema: State tab stays empty; verify's `component schemas`
-         gate fails the build on the file itself, so this stays silent here */
-    }
-    // §9 per-example channel id: nothing on the page can cross-talk without it
-    var ch = 'ce' + Math.random().toString(36).slice(2, 10);
-    var rows = {}; // state name → control element
-    var observed = {}; // last sandbox-observed values (§11: DOM wins)
-    // No state overlay on purpose: the SOURCE is the single truth. Panel edits
-    // serialize into the editor (§4 inverted), so a rebuild re-materializes
-    // them from the code itself - replaying stored panel values would stomp
-    // code edits (the exact desync users report).
-
-    // -- srcdoc assembly (environment infra only - plan §6) -----------------
-    var CE_SCRIPT_OPEN = '<scr' + 'ipt data-ce-chrome>';
-    var CE_SCRIPT_CLOSE = '</scr' + 'ipt>';
-    function buildSrcdoc(source) {
-      return Promise.all([sandboxTemplate(), bridgeSource(), runtimeText(), inlinedStyles(), themeText()]).then(function (parts) {
-        var dark = document.documentElement.classList.contains('dark');
-        // theme gets its OWN tail <style id="ce-theme">: a theme switch swaps
-        // just that block via postMessage (no iframe rebuild, examples survive)
-        var styles = parts[3] + '<style id="ce-theme">' + (parts[4] || '') + '</style>';
-        // previewStyle (the old <Example previewStyle>) rides INSIDE the chrome
-        // body rule (marker below) - same rule, later declarations win, so
-        // display:flex overrides the chrome's flow-root. The old .preview div
-        // was the demo stage; the sandbox body IS the stage.
-        // all.js ships import-free (plan §2.3); it runs as a CLASSIC inline
-        // script at END OF BODY in the opaque-origin sandbox - a module src=
-        // would need CORS headers static hosts don't send, and in <head> the
-        // component MutationObservers would run before <body> exists. Wrapped
-        // in a function scope: on the host all.js loads as a module so its
-        // top-level `var df$` is module-local; unwrapped in a classic script
-        // that var would clobber the callable globalThis.df$ core Reflect.sets.
-        // lucide mirrors the host page so icon examples render.
-        var scripts =
-          CE_SCRIPT_OPEN + '(function(){\n' + parts[2] + '\n})();' + CE_SCRIPT_CLOSE +
-          '\n<scr' + 'ipt src="https://unpkg.com/lucide@1.8.0" data-ce-chrome></scr' + 'ipt>' +
-          '\n' + CE_SCRIPT_OPEN + 'globalThis.lucide && lucide.createIcons();' + CE_SCRIPT_CLOSE +
-          // the theme-switcher demo: swap the ../theme placeholder for the
-          // absolute folder (from the token sheet the host fetched), so the
-          // sandbox can load theme files despite its opaque base URL
-          '\n' + CE_SCRIPT_OPEN + themeInitScript() + CE_SCRIPT_CLOSE + '\n';
-        // function replacements: injected bytes contain `$` sequences (df$ in
-        // all.js, `$&` in sources) that String.replace would expand as patterns
-        return parts[0]
-          .replace('<html lang="en">', () =>
-            dark ? '<html lang="en" class="dark" style="color-scheme:dark">' : '<html lang="en">',
-          )
-          .replace('<!--CE_STYLES-->', () => styles)
-          .replace('/*CE_BODY_STYLE*/', () => previewStyle.replace(/\s*[{}]\s*/g, ''))
-          .replace('<!--CE_SOURCE-->', () => source)
-          .replace('<!--CE_CH-->', () => JSON.stringify(ch))
-          .replace('<!--CE_SCHEMA-->', () => (schema ? JSON.stringify(schema).replace(/</g, '\\u003c') : '{}'))
-          .replace('<!--CE_BRIDGE-->', () => '\n' + scripts + CE_SCRIPT_OPEN.replace('data-ce-chrome', 'id="ce-bridge" data-ce-chrome') + parts[1] + CE_SCRIPT_CLOSE + '\n');
-      });
-    }
-
-    var lastRun = ''; // the source bytes the running sandbox was built from
-    function run(source) {
-      lastRun = source;
-      errBox.hidden = true;
-      errBox.textContent = '';
-      buildSrcdoc(source).then(
-        function (doc) {
-          frame.srcdoc = doc;
-        },
-        function (e) {
-          showError('sandbox load failed: ' + (e && e.message ? e.message : String(e)));
-        },
-      );
-    }
-    function showError(message, stack) {
-      errBox.hidden = false;
-      errBox.textContent = message + (stack ? '\n' + stack : '');
-    }
-
-    // -- state controls (generated from schema ONLY - plan §10) -------------
-    function buildControls() {
-      // no State tab for this card (no schema / no states / stateTab:false) —
-      // the SSR shell simply omits the panel
-      if (!statePanel) return;
-      statePanel.textContent = '';
-      if (!schema || !Object.keys(schema.states).length) {
-        var p = document.createElement('p');
-        p.className = 'code-example-note';
-        p.textContent = schema
-          ? 'This component schema declares no states.'
-          : 'No schema - this example renders without generated state controls.';
-        statePanel.appendChild(p);
-        return;
-      }
-      var grid = document.createElement('div');
-      grid.className = 'code-example-states';
-      Object.keys(schema.states).forEach(function (name) {
-        var spec = schema.states[name];
-        var ed = editorFor(spec);
-        var row = document.createElement('div');
-        row.className = 'code-example-row';
-        row.dataset.stateName = name;
-        var label = document.createElement('label');
-        label.textContent = name;
-        row.appendChild(label);
-        var control;
-        if (ed.kind === 'checkbox') {
-          control = document.createElement('input');
-          control.type = 'checkbox';
-        } else if (ed.kind === 'number') {
-          control = document.createElement('input');
-          control.type = 'number';
-          if (ed.props.min !== undefined) control.min = String(ed.props.min);
-          if (ed.props.max !== undefined) control.max = String(ed.props.max);
-          if (ed.props.step !== undefined) control.step = String(ed.props.step);
-        } else if (ed.kind === 'radio') {
-          control = document.createElement('div'); // radio group over the schema values
-          control.className = 'code-example-radio-group';
-          (spec.values || []).forEach(function (v) {
-            var wrap = document.createElement('label');
-            var r = document.createElement('input');
-            r.type = 'radio';
-            r.value = v;
-            r.name = ch + '-' + name;
-            r.addEventListener('change', function () {
-              if (r.checked) api.send('set-state', { state: name, value: v });
-            });
-            wrap.appendChild(r);
-            wrap.appendChild(document.createTextNode(' ' + v));
-            control.appendChild(wrap);
-          });
-        } else if (ed.kind === 'select') {
-          control = document.createElement('select');
-          if (!('default' in spec)) control.appendChild(new Option('—', '')); // unset is a legal DOM state
-          (spec.values || []).forEach(function (v) {
-            control.appendChild(new Option(v, v));
-          });
-        } else {
-          control = document.createElement('input');
-          control.type = 'text';
-        }
-        control.classList.add('code-example-control');
-        // one funnel: control → sandbox mutation → serialized back into code
-        function sendControl() {
-          api.send('set-state', {
-            state: name,
-            value:
-              ed.kind === 'checkbox'
-                ? control.checked
-                : ed.kind === 'number'
-                  ? control.value === ''
-                    ? null
-                    : Number(control.value)
-                  : control.value,
-          });
-        }
-        // the radio-group container has no `.value` (a DIV) - its inner inputs
-        // send on their own `change`; wiring the container too would double-send
-        // `undefined` right after the good value (the inner change bubbles), and
-        // the bridge's undefined leg REMOVES the attribute - the mutation the
-        // user just made would vanish. So: skip the generic listener for radios.
-        if (ed.kind !== 'radio') control.addEventListener('change', sendControl);
-        // text/number fields: `change` fires only on blur/Enter - typing must
-        // sync live, debounced so we don't spam the sandbox per keystroke
-        if (ed.kind === 'text' || ed.kind === 'number') {
-          var keyTimer = null;
-          control.addEventListener('keyup', function () {
-            if (keyTimer) clearTimeout(keyTimer);
-            keyTimer = setTimeout(sendControl, 250);
-          });
-        }
-        // editor hints ride as data-* (currency/locale formatting is display-level;
-        // the state VALUE stays a plain number - §3)
-        if (ed.props.format) control.setAttribute('data-format', String(ed.props.format));
-        if (ed.props.currency) control.setAttribute('data-currency', String(ed.props.currency));
-        if (ed.props.locale) control.setAttribute('data-locale', String(ed.props.locale));
-        row.appendChild(control);
-        grid.appendChild(row);
-        rows[name] = control;
-        if ('default' in spec) applyLocal(name, ed.kind, spec.default); // §11: DOM observation replaces this on ready
-      });
-      statePanel.appendChild(grid);
-      var actions = Object.keys(schema.actions || {});
-      if (actions.length) {
-        var bar = document.createElement('div');
-        bar.className = 'code-example-actions';
-        actions.forEach(function (name) {
-          var b = document.createElement('button');
-          b.type = 'button';
-          b.dataset.action = name;
-          b.textContent = name + '()';
-          b.addEventListener('click', function () {
-            api.send('action', { action: name });
-          });
-          bar.appendChild(b);
-        });
-        statePanel.appendChild(bar);
-      }
-    }
-    function applyLocal(name, kind, value) {
-      var control = rows[name];
-      if (!control) return;
-      if (document.activeElement && control.contains(document.activeElement)) return; // never fight typing
-      if (kind === 'checkbox') control.checked = !!value;
-      else if (control.classList.contains('code-example-radio-group'))
-        control.querySelectorAll('input').forEach(function (r) {
-          r.checked = r.value === String(value);
-        });
-      else control.value = value === null || value === undefined ? '' : String(value);
-    }
-
-    var api = {
-      send: function (kind, extra) {
-        var msg = { type: 'ce-host', ch: ch, kind: kind };
-        for (var k in extra) msg[k] = extra[k];
-        if (frame.contentWindow) frame.contentWindow.postMessage(msg, '*');
-      },
-      onMessage: function (d) {
-        if (d.kind === 'ready') {
-          // fresh DOM parsed from the (possibly edited) source → observe it;
-          // code is truth, so NOTHING is replayed over the new instance
-          api.send('read-state', {});
-          // State-API-style handle on the host element (AGENTS.md "State API"):
-          // create-screenshots.ts and tests drive [data-state-demo] via api.setState.
-          // Installed ONLY on ready: the bridge's message listener exists from
-          // this moment, so every setState round-trip is guaranteed to land (an
-          // earlier postMessage to a not-yet-listening iframe vanishes silently).
-          root.api = {
-            setState: function (name, config) {
-              var spec = schema && schema.states[name];
-              if (spec) {
-                // config arrives as either the raw editor value (boolean/number/
-                // string) or a { value } wrapper - both spellings resolve to the
-                // scalar the sandbox mutation applies; only a missing config
-                // falls back to the schema default
-                var value =
-                  config && typeof config === 'object' && 'value' in config
-                    ? config.value
-                    : typeof config === 'boolean' || typeof config === 'number' || typeof config === 'string'
-                      ? config
-                    : spec.type === 'boolean'
-                      ? true
-                      : 'default' in spec
-                        ? spec.default
-                        : null;
-                api.send('set-state', { state: name, value: value });
-                return;
-              }
-              if (name === 'default') {
-                Object.keys((schema && schema.states) || {}).forEach(function (k) {
-                  if ('default' in schema.states[k]) api.send('set-state', { state: k, value: schema.states[k].default });
-                });
-                return;
-              }
-              throw new Error(
-                'CodeExample: unknown state "' + name + '" (schema states: ' + Object.keys((schema && schema.states) || {}).join(', ') + ')',
-              );
-            },
-            getState: function () {
-              return { name: JSON.parse(root.dataset.stateValues || '{}'), config: {} };
-            },
-          };
-        } else if (d.kind === 'state') {
-          observed = d.values || {};
-          root.dataset.stateValues = JSON.stringify(observed); // §11 mirror, assertable
-          Object.keys(observed).forEach(function (name) {
-            var spec = schema && schema.states[name];
-            if (spec) applyLocal(name, editorFor(spec).kind, observed[name]);
-          });
-        } else if (d.kind === 'source') {
-          // bidirectional editor sync (§4, inverted): the sandbox serialized its
-          // live DOM (state attrs + reflected values), so panel edits and preview
-          // typing both show up in the code. Written back only while the editor
-          // still holds exactly the bytes the running sandbox was built from —
-          // never over an un-run edit, never mid-typing (the editor is truth).
-          if (d.source && !rerunTimer && document.activeElement !== src && src.value === lastRun) {
-            src.value = d.source; // programmatic write fires no input → no re-run loop
-            refreshHighlight();
-            lastRun = d.source; // the editor now mirrors the running DOM exactly
-          }
-        } else if (d.kind === 'error') {
-          showError(d.message || 'Sandbox error', d.stack);
-        } else if (d.kind === 'height') {
-          // device modes (phone/tablet) PIN the frame to the device box - the
-          // measured flow height doesn't apply (content scrolls inside);
-          // measured modes (full/desktop/custom) size from the sandbox
-          if (root.dataset.vpMode !== 'phone' && root.dataset.vpMode !== 'tablet')
-            frame.style.height = Math.min(MAX_FRAME_HEIGHT, Math.max(minHeight, (d.height || 0) + 2)) + 'px';
-        }
-      },
-    };
-    registry[ch] = api;
-
-    // (root.api is installed inside onMessage on the bridge's 'ready' - see above)
-
-    // -- viewport toolbar ----------------------------------------------------
-    // Device emulation for every example: full (source default, measured
-    // height) · desktop (width-constrained, measured height) · phone 390×844
-    // · tablet 834×1112 (device presets; the CSS bezel marks them as devices).
-    // Rotate swaps W/H (landscape "holding"). The number fields edit the size
-    // directly; the height field only exists for device modes.
-    var refitViewport = function () {}; // bound by the viewport toolbar below
-    var vpScreen = root.querySelector('.ce-screen');
-    var vpDevice = root.querySelector('.ce-device');
-    if (vpScreen && vpDevice) {
-      var VP_DEVICE_DEFAULTS = { phone: [390, 844], tablet: [834, 1112] };
-      var vpW = root.querySelector('.code-example-vp-w');
-      var vpH = root.querySelector('.code-example-vp-h');
-      var vpZ = root.querySelector('.code-example-vp-z');
-      var vpBtns = root.querySelectorAll('.code-example-vp[data-vp]:not([data-vp="rotate"])');
-      var vpRotate = root.querySelector('.code-example-vp[data-vp="rotate"]');
-      var vpResize = null; // resizer wrapper (handles on every side; bound below)
-      var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
-      // trailing debounce: the SHARED implementation (src/shared/debounce.ts,
-      // installed at df$.shadcn.shared by core/all - doc pages always ship it;
-      // the local fallback keeps the toolbar working without the runtime).
-      // Bursty events (drag pointermove, window resize) settle before work runs.
-      var sharedNs = (globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.shared) || null;
-      var debounce =
-        sharedNs && typeof sharedNs.debounce === 'function'
-          ? sharedNs.debounce
-          : function (fn, wait) {
-              // fallback keeps the SAME shape (call / flush / cancel) so call
-              // sites never branch on which implementation answered
-              var t = 0;
-              return Object.assign(
-                function () {
-                  clearTimeout(t);
-                  t = setTimeout(function () {
-                    t = 0;
-                    fn();
-                  }, wait);
-                },
-                {
-                  flush: function () {
-                    if (!t) return;
-                    clearTimeout(t);
-                    t = 0;
-                    fn();
-                  },
-                  cancel: function () {
-                    clearTimeout(t);
-                    t = 0;
-                  },
-                },
-              );
-            };
-      // a fence may boot the toolbar in a specific mode (mode="desktop" on
-      // media-query components: the sandbox viewport must be ≥ their thresholds)
-      var bootMode = ['phone', 'tablet', 'desktop', 'full'].indexOf(root.dataset.vpMode) >= 0 ? root.dataset.vpMode : 'full';
-      var vpMode = bootMode;
-      // Auto-fit (shrink-to-stage zoom) is a convenience for untouched cards.
-      // Once the USER sized the canvas - drag or W/H field - its width is
-      // deliberate: refitting it smaller under the user is exactly what reads
-      // as "the handle lags / the box shrinks back on its own" (measured: a
-      // +100 px drag rubber-banded to a smaller box on the 120 ms settle).
-      // Auto-fit resumes on the next mode switch.
-      var vpFitFrozen = false;
-      function vpApply() {
-        var dev = vpMode === 'phone' || vpMode === 'tablet';
-        // empty field = unset (full mode stays fluid); clamp only real values
-        // (0 would otherwise land on the 240 floor and shrink the canvas)
-        var rawW = Number(vpW.value);
-        var w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
-        var rawH = Number(vpH.value);
-        var h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
-        // the resizer wrapper is the canvas box (the toolbar writes its size;
-        // .ce-device fills it) - clear first, device modes pin, measured pin
-        // width only (the height message lands via measure)
-        if (vpResize) vpResize.style.cssText = '';
-        vpDevice.style.cssText = '';
-        frame.style.width = '100%';
-        if (dev) {
-          if (vpResize && w) vpResize.style.width = w + 'px';
-          if (vpResize && h) vpResize.style.height = h + 'px';
-          frame.style.height = '100%'; // fills the bezel's content box
-        } else {
-          if (vpResize && w) vpResize.style.width = w + 'px';
-          // device→measured: release the pinned 100% height. An already
-          // measured inline height STAYS while the re-measure lands - clearing
-          // it would flash the frame to its CSS min-height for one postMessage
-          // round-trip (the drag flicker; the height message replaces it anyway)
-          if (frame.style.height === '100%') frame.style.height = '';
-          api.send('measure', {});
-        }
-        vpZoomApply(); // may shrink the canvas → the stage checks below read the fresh zoom
-        // device box exceeds the stage vertically → overflow visible (before:
-        // the phone frame grew past the closed stage); measured canvas wider
-        // than the stage → scroll it (desktop/tablet boxes), and stop centering
-        // then - a centered wider-than-box flex child has its start cut off by
-        // the scroll origin and can never be scrolled into view.
-        var stage = root.querySelector('.preview');
-        if (stage) {
-          var canvas = vpResize || vpDevice;
-          stage.style.overflow = dev ? 'visible' : 'auto';
-          stage.style.justifyContent =
-            !dev && canvas.getBoundingClientRect().width * ((Number(root.dataset.vpZoom) || 100) / 100) >
-            stage.clientWidth - 24
-              ? 'flex-start'
-              : '';
-        }
-        root.dataset.vpMode = vpMode;
-        vpScreen.dataset.mode = vpMode;
-        // measured modes resize width only → tell the resizer so the
-        // height-only handles are dropped (corner handles keep the width drag)
-        if (vpResize) {
-          var rzAxis = dev ? 'both' : 'w';
-          if (vpResize.dataset.axis !== rzAxis) vpResize.dataset.axis = rzAxis;
-        }
-      }
-      function vpSetMode(mode) {
-        vpMode = mode;
-        vpFitFrozen = false; // a mode switch is a fresh start for auto-fit
-        var dev = !!VP_DEVICE_DEFAULTS[mode];
-        vpRotate.disabled = !dev; // orientation only meaningful for devices
-        vpRotate.setAttribute('aria-disabled', String(!dev));
-        delete vpScreen.dataset.landscape;
-        vpH.disabled = !dev;
-        if (dev) {
-          vpW.value = String(VP_DEVICE_DEFAULTS[mode][0]);
-          vpH.placeholder = 'Height';
-          vpH.value = String(VP_DEVICE_DEFAULTS[mode][1]);
-        } else {
-          vpW.value = mode === 'desktop' ? '1024' : '';
-          vpH.value = '';
-          vpH.placeholder = 'Full'; // height follows the content again
-        }
-        vpBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.vp === mode)); });
-        vpApply();
-      }
-      vpBtns.forEach(function (b) {
-        b.addEventListener('click', function () { vpSetMode(b.dataset.vp); });
-      });
-      // boot in the fence's declared mode (fills fields, aria-pressed, chrome)
-      if (bootMode !== 'full') vpSetMode(bootMode);
-      // -- zoom ----------------------------------------------------
-      // CSS `zoom` on the device (not transform): the iframe viewport stays at
-      // its declared width so media queries inside stay honest; only rendering
-      // shrinks. Empty field = auto-fit: shrink-to-card in 5% steps (never
-      // above 100, floored at 25); a manual value (25–100) is honored as-is.
-      function vpZoomApply() {
-        if (!vpZ) return; // card rendered without the field (stale HTML)
-        var canvas = vpResize || vpDevice; // zoom rides the box that owns the size
-        var manual = clamp(Math.round(Number(vpZ.value) || 0), 0, 100);
-        var z;
-        if (manual >= 25) {
-          z = Math.min(manual, 100);
-        } else if (vpFitFrozen) {
-          return; // user-sized canvas: track 1:1, let the stage scroll instead
-        } else {
-          // natural width = unzoomed box (CSS zoom feeds back into layout, so
-          // measure with it cleared, then restore)
-          var prev = canvas.style.zoom;
-          canvas.style.zoom = '';
-          var stage = root.querySelector('.preview');
-          var box = canvas.getBoundingClientRect();
-          var natural = box.width || 1;
-          var avail = Math.max(stage.clientWidth - 24, 120); // inline padding
-          var fit = avail / natural;
-          // in fullscreen the stage has a definite height: device boxes fit
-          // it too, so a tablet never hangs below the docked toolbar
-          var fs = document.fullscreenElement === root || root.classList.contains('ce-fs');
-          if (fs && (vpMode === 'phone' || vpMode === 'tablet') && box.height) {
-            fit = Math.min(fit, Math.max(stage.clientHeight - 24, 120) / box.height);
-          }
-          canvas.style.zoom = prev;
-          z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
-        }
-        canvas.style.zoom = z < 100 ? String(z / 100) : '';
-        root.dataset.vpZoom = String(z);
-      }
-      addEventListener(
-        'resize',
-        debounce(function () {
-          if (!vpZ || vpZ.value) return; // manual zoom is a deliberate choice
-          vpZoomApply();
-        }, 120),
-      );
-      if (vpZ) {
-        // an empty (Auto) field steps from min=25 - seed 100 on the first
-        // spinner click / arrow key / wheel tick so zooming starts from full
-        // size; a seed nobody changed reverts to Auto on blur
-        var vpZSeeded = false;
-        vpZ.addEventListener('input', function () {
-          vpZSeeded = false;
-          vpZoomApply();
-        });
-        var vpZSeed = function (e) {
-          if (vpZ.value) return;
-          if (e.type === 'keydown' && !/^(ArrowUp|ArrowDown|PageUp|PageDown)$/.test(e.key)) return;
-          vpZ.value = '100';
-          vpZSeeded = true;
-        };
-        vpZ.addEventListener('pointerdown', vpZSeed);
-        vpZ.addEventListener('keydown', vpZSeed);
-        vpZ.addEventListener('wheel', vpZSeed, { passive: true });
-        // clicking in to type: the seed is selected, so typing replaces it
-        vpZ.addEventListener('click', function () {
-          if (vpZSeeded) vpZ.select();
-        });
-        vpZ.addEventListener('blur', function () {
-          if (vpZSeeded) vpZ.value = '';
-          vpZSeeded = false;
-        });
-      }
-      vpRotate.addEventListener('click', function () {
-        if (vpRotate.disabled) return;
-        var w = vpW.value;
-        vpW.value = vpH.value;
-        vpH.value = w; // landscape holding: the fields carry the swapped box
-        // toggle: a second rotate returns to portrait (chrome follows the flag)
-        if (vpScreen.dataset.landscape) delete vpScreen.dataset.landscape;
-        else vpScreen.dataset.landscape = '1';
-        vpApply();
-      });
-      [vpW, vpH].forEach(function (inp) {
-        inp.addEventListener('change', function () {
-          // a custom size is still phone/tablet chrome if a device mode is on;
-          // in measured modes only the width matters (height field is disabled)
-          if (inp === vpH && vpH.disabled) return;
-          vpFitFrozen = true; // a typed size is deliberate, same as a drag
-          vpApply();
-        });
-      });
-
-      // resize handles (dogfooded `resizer` component, controlled mode): the
-      // wrapper around .ce-screen carries handles on EVERY side and corner —
-      // the old SE-only grip is retired. The component owns the gesture,
-      // clamping and keyboard parity; this toolbar stays the size OWNER (the
-      // W/H fields drive vpApply). Measured modes are width-only (height
-      // follows the content), so 'h' events only land in device modes.
-      vpResize = root.querySelector('.ce-resizer');
-      // fullscreen enter/exit changes the stage size: re-fit + re-measure
-      refitViewport = vpApply;
-      if (vpResize) {
-        // sync the wrapper once now (full mode = width axis, no n/s handles)
-        vpApply();
-        var vpApplySoon = debounce(vpApply, 120);
-        vpResize.addEventListener('resizer-resize', function (ev) {
-          var d = ev.detail;
-          if (!d) return;
-          var dev = vpMode === 'phone' || vpMode === 'tablet';
-          if (d.axis === 'h' && !dev) return;
-          // Live path is ONLY the cheap synchronous writes: the field readout
-          // and the wrapper width (the wrapper IS the canvas box). The full
-          // vpApply would clear the measured frame height and wait a
-          // postMessage round-trip to restore it - per pointermove that is one
-          // collapse flash per event (the visible flicker). It runs on quiet.
-          vpFitFrozen = true; // a drag IS a deliberate size - stop auto-fitting
-          var w = Math.round(clamp(d.width, 240, 1600));
-          vpW.value = String(w);
-          vpResize.style.width = w + 'px';
-          if (dev && vpH) {
-            var h = Math.round(clamp(d.height, 240, 1400));
-            vpH.value = String(h);
-            vpResize.style.height = h + 'px';
-          }
-          vpApplySoon(); // height re-measure + auto-zoom settle once per burst
-        });
-      }
-    }
-
-    // -- toolbar -------------------------------------------------------------
-    // tabs are TOGGLES (both start off - SSR ships both panels hidden): clicking
-    // a tab shows its panel and hides the other; clicking the ACTIVE tab
-    // collapses everything - the rendered demo is the hero, the lower area is
-    // opt-in. read-state is requested whenever the state panel opens.
-    function setTab(which) {
-      root.querySelectorAll('.code-example-tab').forEach(function (t) {
-        t.setAttribute('aria-pressed', String(t.dataset.tab === which));
-      });
-      codePanel.hidden = which !== 'code';
-      if (statePanel) statePanel.hidden = which !== 'state';
-      if (which === 'state') api.send('read-state', {});
-    }
-    root.querySelectorAll('.code-example-tab').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        var active = tab.getAttribute('aria-pressed') === 'true';
-        if (active) setTab(null); // second click on the same tab → collapse
-        else setTab(tab.dataset.tab);
-      });
-    });
-    var rerunTimer = null;
-    src.addEventListener('input', function () {
-      refreshHighlight();
-      if (rerunTimer) clearTimeout(rerunTimer);
-      rerunTimer = setTimeout(function () {
-        rerunTimer = null;
-        run(src.value);
-      }, RERUN_DEBOUNCE_MS);
-    });
-    root.querySelector('.code-example-reset').addEventListener('click', function () {
-      src.value = original;
-      refreshHighlight();
-      run(src.value);
-    });
-    root.querySelector('.code-example-copy').addEventListener('click', function (ev) {
-      var btn = ev.currentTarget;
-      navigator.clipboard
-        .writeText(src.value)
-        .then(function () {
-          setToolBtn(btn, 'check', 'Copied');
-          setTimeout(function () {
-            setToolBtn(btn, 'copy', 'Copy');
-          }, 1200);
-        })
-        .catch(function () {
-          setToolBtn(btn, 'copy', 'Copy failed');
-        });
-    });
-    // -- fullscreen ------------------------------------------------------------
-    // Native fullscreen on the WHOLE card (.code-example): the stage fills the
-    // screen and the complete toolbar docks at the bottom, so device modes,
-    // W×H, zoom, the resize handles and the Code/State panels all keep
-    // working in fullscreen. Esc exits natively. A rejected request (the docs
-    // page itself sits in an iframe without allow="fullscreen", e.g. the UI
-    // tests) falls back to the .ce-fs fixed overlay - same layout, Esc + X
-    // handled here. Every enter/exit re-fits the canvas to the new stage.
-    var fsStage = root;
-    var fsBtn = root.querySelector('.code-example-full');
-    function fsIsOn() {
-      return document.fullscreenElement === fsStage || fsStage.classList.contains('ce-fs');
-    }
-    var fsWasOn = false;
-    function fsSync() {
-      var on = fsIsOn();
-      fsWasOn = on;
-      setToolBtn(fsBtn, on ? 'minimize' : 'maximize', on ? 'Exit fullscreen' : 'Fullscreen');
-      // after layout settles into the new box
-      setTimeout(refitViewport, 50);
-    }
-    function fsOff() {
-      var wasFallback = fsStage.classList.contains('ce-fs');
-      fsStage.classList.remove('ce-fs');
-      if (document.fullscreenElement === fsStage) document.exitFullscreen();
-      else if (wasFallback) fsSync();
-    }
-    fsBtn.addEventListener('click', function () {
-      if (fsIsOn()) {
-        fsOff();
-        return;
-      }
-      var fallback = function () {
-        fsStage.classList.add('ce-fs');
-        fsSync();
-      };
-      var req = fsStage.requestFullscreen ? fsStage.requestFullscreen() : null;
-      if (req && req.catch) req.catch(fallback);
-      else if (!req) fallback();
-    });
-    root.querySelector('.code-example-full-exit').addEventListener('click', fsOff);
-    // in fullscreen the stage size follows the screen AND the panels between
-    // stage and toolbar (Code/State opening, the editor growing) - re-fit
-    // whenever it changes, once per burst
-    var fsStageEl = root.querySelector('.preview');
-    var fsRefitTimer = 0;
-    if (fsStageEl && typeof ResizeObserver === 'function') {
-      new ResizeObserver(function () {
-        if (!fsIsOn()) return;
-        clearTimeout(fsRefitTimer);
-        fsRefitTimer = setTimeout(refitViewport, 60);
-      }).observe(fsStageEl);
-    }
-    document.addEventListener('fullscreenchange', function () {
-      if (!document.fullscreenElement) fsStage.classList.remove('ce-fs');
-      // only the card whose mode actually changed re-syncs (every card hears the event)
-      if (fsIsOn() !== fsWasOn) fsSync();
-    });
-    document.addEventListener('keydown', function (ev) {
-      if (ev.key !== 'Escape') return;
-      // native Esc already exits real-browser fullscreen (the page never sees
-      // it) - this covers the fallback overlay AND environments where the
-      // browser UI gesture is absent (embedded docs, headless)
-      if (fsStage.classList.contains('ce-fs') || document.fullscreenElement === fsStage) fsOff();
-    });
-    // toolbar label + icon swap: the <i> placeholder becomes an <svg> in place
-    // when lucide re-runs, so the button keeps its icon after a text change
-    function setToolBtn(btn, icon, label) {
-      btn.innerHTML = '<i data-lucide="' + icon + '"></i><span>' + label + '</span>';
-      if (globalThis.lucide) globalThis.lucide.createIcons();
-    }
-
-    buildControls();
-    run(src.value);
-  }
-
-  // first load + every SPA navigation (docs.onPageReady - the same hook site.js
-  // and shiki use; layout.js installs df$.shadcn.docs before this fires)
   document.addEventListener('DOMContentLoaded', function () {
-    init();
-    var docs = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.docs;
-    if (docs && docs.onPageReady) docs.onPageReady(init);
+    var api = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.codeExample;
+    if (!api) return; // wysiwyg.js missing - the cards stay static
+    api.configure({ styles: docsStyles, scripts: docsScripts, tail: docsTail, theme: docsTheme });
+    // theme-switcher dispatches this on every applyTheme
+    document.addEventListener('defuss-theme-change', function () {
+      api.refreshTheme();
+    });
   });
 })();

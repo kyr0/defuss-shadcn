@@ -1,0 +1,383 @@
+---
+title: "Illustrative · Matrix"
+description: "Matrix diagrams with the diagram component - access/security matrices, Bayesian update and base-rate tables, RACI, risk, weighted decision and traceability matrices; a Bayesian update step by step and an access-review delta."
+slug: "diagram-matrix"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-matrix" title="Illustrative · Matrix" component="diagram">
+  A matrix is a real <code>&lt;table class="diagram-matrix"&gt;</code> inside the figure - row and column headers stay table semantics. Cells carry permission chips (<code>data-perm="full|write|read|none"</code>), heat (<code>--v</code> from 0 to 1, mixed from the accent) or plain values; the finding gets <code>data-tone="accent"</code>. Rows play as steps; any cell can carry its own <code>data-step</code>.
+</PageHeader>
+
+<H2 id="security-matrix">Security matrix</H2>
+
+```html example label="Platform access matrix" component="diagram" hint="Permissions are text plus a chip style - never color alone. The accent marks the one grant that should not exist."
+<figure class="diagram" id="dg-matrix-sec" data-type="matrix" aria-label="Platform access matrix">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Security matrix</span>
+    <span class="diagram-title">Who can do what on the platform</span>
+    <span class="diagram-dek">Four AD groups × platform components. The one write grant consumers hold is the finding.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Component</th><th scope="col">Admins<small>DL-Admins</small></th><th scope="col">Engineers<small>DL-Engineers</small></th><th scope="col">Scientists<small>DL-Scientists</small></th><th scope="col">Consumers<small>DL-Consumers</small></th></tr>
+      </thead>
+      <tbody>
+        <tr data-node="keycloak"><th scope="row">Keycloak<small>SSO realm</small></th><td data-perm="full"><span>ADMIN</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="minio-raw-bucket"><th scope="row">MinIO · raw bucket<small>PII</small></th><td data-perm="full"><span>RW</span></td><td data-perm="write"><span>W</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="minio-staging"><th scope="row">MinIO · staging</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="trino-raw-catalog"><th scope="row">Trino · raw catalog</th><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="trino-aggregated"><th scope="row">Trino · aggregated</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td></tr>
+        <tr data-node="jupyterhub"><th scope="row">JupyterHub</th><td data-perm="full"><span>ADMIN</span></td><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="superset"><th scope="row">Superset<small>dashboards</small></th><td data-perm="full"><span>ADMIN</span></td><td data-perm="read"><span>R</span></td><td data-perm="full"><span>RW</span></td><td data-perm="write" data-tone="accent"><span>W</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="muted">RW / ADMIN · full</li>
+    <li data-swatch="line">W · write</li>
+    <li data-swatch="external">— · none</li>
+    <li data-swatch="accent">Finding</li>
+  </ul>
+</figure>
+```
+
+<H2 id="bayesian-matrix">Bayesian matrix</H2>
+
+<DocText>Belief before and after evidence: each hypothesis row carries its prior, the likelihood of the data, their product and the normalized posterior.</DocText>
+
+```html example label="Which coin is it?" component="diagram" hint="Heat is relative to the column maximum (--v). The posterior column sums to 1."
+<figure class="diagram" id="dg-matrix-bayes" data-type="matrix" aria-label="Bayesian update over three coin hypotheses">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Bayesian matrix</span>
+    <span class="diagram-title">8 heads in 10 flips - which coin is it?</span>
+    <span class="diagram-dek">Prior × likelihood, normalized: the evidence moves most of the belief to the 0.7 coin. Heat is the share of the column maximum.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Hypothesis</th><th scope="col">Prior<small>P(H)</small></th><th scope="col">Likelihood<small>P(8 of 10 | H)</small></th><th scope="col">Prior × likelihood</th><th scope="col">Posterior<small>P(H | data)</small></th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Fair coin<small>p = 0.5</small></th><td style="--v:0.6">0.60</td><td style="--v:0.19">0.0439</td><td style="--v:0.23">0.0264</td><td style="--v:0.23">0.228</td></tr>
+        <tr><th scope="row">Biased<small>p = 0.7</small></th><td style="--v:0.3">0.30</td><td style="--v:1">0.2335</td><td style="--v:0.6">0.0700</td><td style="--v:0.61" data-tone="accent">0.605</td></tr>
+        <tr><th scope="row">Very biased<small>p = 0.9</small></th><td style="--v:0.1">0.10</td><td style="--v:0.83">0.1937</td><td style="--v:0.17">0.0194</td><td style="--v:0.17">0.167</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Sum</th><td>1.00</td><td>-</td><td>0.1158</td><td>1.000</td></tr>
+      </tfoot>
+    </table>
+  </div>
+</figure>
+```
+
+```html example label="Base rates and a positive test" component="diagram" hint="Joint probabilities per 1,000 - the posterior P(ill | +) is the accent: 8.8%, not 95%."
+<figure class="diagram" id="dg-matrix-test" data-type="matrix" aria-label="Diagnostic test joint probability matrix">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Bayesian matrix · base rates</span>
+    <span class="diagram-title">A 95% sensitive test, a 1% base rate</span>
+    <span class="diagram-dek">Joint probabilities per 1,000 people. Of everyone who tests positive, only 9.5 / 108.5 = 8.8% are ill.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Per 1,000</th><th scope="col">Test positive</th><th scope="col">Test negative</th><th scope="col">Total</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Ill<small>prior 1%</small></th><td style="--v:0.3">9.5<small> true +</small></td><td style="--v:0.05">0.5<small> false −</small></td><td>10</td></tr>
+        <tr><th scope="row">Healthy<small>99%</small></th><td style="--v:0.55">99<small> false +</small></td><td style="--v:1">891<small> true −</small></td><td>990</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Total</th><td>108.5</td><td>891.5</td><td>1,000</td></tr>
+        <tr><th scope="row">P(ill | +)</th><td data-tone="accent">8.8%</td><td>P(ill | −) 0.06%</td><td></td></tr>
+      </tfoot>
+    </table>
+  </div>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+<DocText>The Bayesian update computed column by column: <code>data-step</code> on the header and the cells of each column - prior, likelihood, their product, the posterior.</DocText>
+
+```html example label="A Bayesian update, column by column" component="diagram" hint="Explicit steps on cells: a table can play by column as well as by row."
+<figure class="diagram" id="dg-matrix-bayes-steps" data-type="matrix" data-steps data-autoplay aria-label="Bayesian update over three coin hypotheses">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Bayesian matrix</span>
+    <span class="diagram-title">8 heads in 10 flips - which coin is it?</span>
+    <span class="diagram-dek">Prior × likelihood, normalized: the evidence moves most of the belief to the 0.7 coin. Heat is the share of the column maximum.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Hypothesis</th><th scope="col" data-step="1">Prior<small>P(H)</small></th><th scope="col" data-step="2">Likelihood<small>P(8 of 10 | H)</small></th><th scope="col" data-step="3">Prior × likelihood</th><th scope="col" data-step="4">Posterior<small>P(H | data)</small></th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Fair coin<small>p = 0.5</small></th><td style="--v:0.6" data-step="1">0.60</td><td style="--v:0.19" data-step="2">0.0439</td><td style="--v:0.23" data-step="3">0.0264</td><td style="--v:0.23" data-step="4">0.228</td></tr>
+        <tr><th scope="row">Biased<small>p = 0.7</small></th><td style="--v:0.3" data-step="1">0.30</td><td style="--v:1" data-step="2">0.2335</td><td style="--v:0.6" data-step="3">0.0700</td><td style="--v:0.61" data-tone="accent" data-step="4">0.605</td></tr>
+        <tr><th scope="row">Very biased<small>p = 0.9</small></th><td style="--v:0.1" data-step="1">0.10</td><td style="--v:0.83" data-step="2">0.1937</td><td style="--v:0.17" data-step="3">0.0194</td><td style="--v:0.17" data-step="4">0.167</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Sum</th><td data-step="1">1.00</td><td data-step="2">-</td><td data-step="3">0.1158</td><td data-step="4">1.000</td></tr>
+      </tfoot>
+    </table>
+  </div>
+</figure>
+```
+
+<H2 id="more-matrices">More matrices</H2>
+
+```html example label="RACI" component="diagram" hint="One accountable per row - the accent marks it."
+<figure class="diagram" id="dg-matrix-raci" data-type="matrix" aria-label="RACI matrix for a release">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">RACI</span>
+    <span class="diagram-title">Who does what in a release</span>
+    <span class="diagram-dek">Responsible, Accountable, Consulted, Informed - exactly one A per row.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Activity</th><th scope="col">Product</th><th scope="col">Engineering</th><th scope="col">QA</th><th scope="col">Support</th><th scope="col">Security</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Scope the release</th><td data-tone="accent">A</td><td>R</td><td>C</td><td>I</td><td>C</td></tr>
+        <tr><th scope="row">Build and test</th><td>I</td><td data-tone="accent">A</td><td>R</td><td>I</td><td>C</td></tr>
+        <tr><th scope="row">Security review</th><td>I</td><td>C</td><td>I</td><td>—</td><td data-tone="accent">A</td></tr>
+        <tr><th scope="row">Release notes</th><td data-tone="accent">A</td><td>C</td><td>—</td><td>R</td><td>—</td></tr>
+        <tr><th scope="row">Roll back</th><td>I</td><td data-tone="accent">A</td><td>C</td><td>I</td><td>I</td></tr>
+      </tbody>
+    </table>
+  </div>
+</figure>
+```
+
+```html example label="Risk matrix" component="diagram" hint="--v = likelihood × impact / 25 on every cell; the risk IDs sit where they were assessed."
+<figure class="diagram" id="dg-matrix-risk" data-type="matrix" aria-label="Risk matrix, likelihood by impact">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Risk matrix</span>
+    <span class="diagram-title">Likelihood × impact</span>
+    <span class="diagram-dek">Each cell is shaded by likelihood × impact; risks sit where they were assessed.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Likelihood ↓ · Impact →</th><th scope="col">Negligible</th><th scope="col">Minor</th><th scope="col">Moderate</th><th scope="col">Major</th><th scope="col">Severe</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Almost certain</th><td style="--v:0.20"></td><td style="--v:0.40">R7</td><td style="--v:0.60"></td><td style="--v:0.80"></td><td style="--v:1.00"></td></tr>
+        <tr><th scope="row">Likely</th><td style="--v:0.16"></td><td style="--v:0.32"></td><td style="--v:0.48">R2 · R5</td><td style="--v:0.64" data-tone="accent">R1</td><td style="--v:0.80"></td></tr>
+        <tr><th scope="row">Possible</th><td style="--v:0.12">R9</td><td style="--v:0.24"></td><td style="--v:0.36"></td><td style="--v:0.48">R3</td><td style="--v:0.60"></td></tr>
+        <tr><th scope="row">Unlikely</th><td style="--v:0.08"></td><td style="--v:0.16">R6</td><td style="--v:0.24"></td><td style="--v:0.32"></td><td style="--v:0.40">R4</td></tr>
+        <tr><th scope="row">Rare</th><td style="--v:0.04"></td><td style="--v:0.08"></td><td style="--v:0.12">R8</td><td style="--v:0.16"></td><td style="--v:0.20"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</figure>
+```
+
+```html example label="Weighted decision matrix" component="diagram" hint="Scores as heat, the weighted total in the footer."
+<figure class="diagram" id="dg-matrix-decision" data-type="matrix" aria-label="Weighted decision matrix for a message queue">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Decision matrix</span>
+    <span class="diagram-title">Choosing a message queue</span>
+    <span class="diagram-dek">Scores 1-5, multiplied by the criterion weight; the row total decides.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Criterion</th><th scope="col">Weight</th><th scope="col">Kafka</th><th scope="col">RabbitMQ</th><th scope="col">SQS</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Throughput</th><td>30%</td><td style="--v:1">5</td><td style="--v:0.6">3</td><td style="--v:0.8">4</td></tr>
+        <tr><th scope="row">Operations effort</th><td>25%</td><td style="--v:0.4">2</td><td style="--v:0.6">3</td><td style="--v:1">5</td></tr>
+        <tr><th scope="row">Replay / retention</th><td>20%</td><td style="--v:1">5</td><td style="--v:0.4">2</td><td style="--v:0.4">2</td></tr>
+        <tr><th scope="row">Team experience</th><td>15%</td><td style="--v:0.6">3</td><td style="--v:1">5</td><td style="--v:0.8">4</td></tr>
+        <tr><th scope="row">Cost at our scale</th><td>10%</td><td style="--v:0.6">3</td><td style="--v:0.8">4</td><td style="--v:0.8">4</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Weighted total</th><td>100%</td><td data-tone="accent">3.95</td><td>3.25</td><td>3.75</td></tr>
+      </tfoot>
+    </table>
+  </div>
+</figure>
+```
+
+```html example label="Traceability matrix" component="diagram" hint="The row with no coverage is the finding."
+<figure class="diagram" id="dg-matrix-trace" data-type="matrix" aria-label="Requirements traceability matrix">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Traceability matrix</span>
+    <span class="diagram-title">Requirements × tests</span>
+    <span class="diagram-dek">Every requirement needs at least one test; the empty row is the gap.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Requirement</th><th scope="col">T-01 unit</th><th scope="col">T-02 API</th><th scope="col">T-03 e2e</th><th scope="col">T-04 load</th><th scope="col">Covered</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">REQ-1 login<small>SSO</small></th><td>●</td><td>●</td><td>●</td><td>—</td><td>3</td></tr>
+        <tr><th scope="row">REQ-2 checkout</th><td>●</td><td>●</td><td>●</td><td>●</td><td>4</td></tr>
+        <tr><th scope="row">REQ-3 refunds</th><td>●</td><td>—</td><td>—</td><td>—</td><td>1</td></tr>
+        <tr><th scope="row">REQ-4 GDPR export</th><td>—</td><td>—</td><td>—</td><td>—</td><td data-tone="accent">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Matrix, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-matrix-sec-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-matrix-sec-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-matrix-sec-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-matrix-sec-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-matrix-sec-live" data-interactive data-type="matrix" aria-label="Platform access matrix">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Security matrix</span>
+    <span class="diagram-title">Who can do what on the platform</span>
+    <span class="diagram-dek">Four AD groups × platform components. The one write grant consumers hold is the finding.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Component</th><th scope="col">Admins<small>DL-Admins</small></th><th scope="col">Engineers<small>DL-Engineers</small></th><th scope="col">Scientists<small>DL-Scientists</small></th><th scope="col">Consumers<small>DL-Consumers</small></th></tr>
+      </thead>
+      <tbody>
+        <tr data-node="keycloak"><th scope="row">Keycloak<small>SSO realm</small></th><td data-perm="full"><span>ADMIN</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="minio-raw-bucket"><th scope="row">MinIO · raw bucket<small>PII</small></th><td data-perm="full"><span>RW</span></td><td data-perm="write"><span>W</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="minio-staging"><th scope="row">MinIO · staging</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="trino-raw-catalog"><th scope="row">Trino · raw catalog</th><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="trino-aggregated"><th scope="row">Trino · aggregated</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td></tr>
+        <tr data-node="jupyterhub"><th scope="row">JupyterHub</th><td data-perm="full"><span>ADMIN</span></td><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr data-node="superset"><th scope="row">Superset<small>dashboards</small></th><td data-perm="full"><span>ADMIN</span></td><td data-perm="read"><span>R</span></td><td data-perm="full"><span>RW</span></td><td data-perm="write" data-tone="accent"><span>W</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="muted">RW / ADMIN · full</li>
+    <li data-swatch="line">W · write</li>
+    <li data-swatch="external">— · none</li>
+    <li data-swatch="accent">Finding</li>
+  </ul>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Matrix, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-matrix-sec-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-matrix-sec-edit" data-interactive data-type="matrix" aria-label="Platform access matrix">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Security matrix</span>
+        <span class="diagram-title">Who can do what on the platform</span>
+        <span class="diagram-dek">Four AD groups × platform components. The one write grant consumers hold is the finding.</span>
+      </figcaption>
+      <div class="diagram-canvas">
+        <table class="diagram-matrix">
+          <thead>
+            <tr><th scope="col">Component</th><th scope="col">Admins<small>DL-Admins</small></th><th scope="col">Engineers<small>DL-Engineers</small></th><th scope="col">Scientists<small>DL-Scientists</small></th><th scope="col">Consumers<small>DL-Consumers</small></th></tr>
+          </thead>
+          <tbody>
+            <tr data-node="keycloak"><th scope="row">Keycloak<small>SSO realm</small></th><td data-perm="full"><span>ADMIN</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+            <tr data-node="minio-raw-bucket"><th scope="row">MinIO · raw bucket<small>PII</small></th><td data-perm="full"><span>RW</span></td><td data-perm="write"><span>W</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+            <tr data-node="minio-staging"><th scope="row">MinIO · staging</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="none"><span>—</span></td></tr>
+            <tr data-node="trino-raw-catalog"><th scope="row">Trino · raw catalog</th><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+            <tr data-node="trino-aggregated"><th scope="row">Trino · aggregated</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td></tr>
+            <tr data-node="jupyterhub"><th scope="row">JupyterHub</th><td data-perm="full"><span>ADMIN</span></td><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="none"><span>—</span></td></tr>
+            <tr data-node="superset"><th scope="row">Superset<small>dashboards</small></th><td data-perm="full"><span>ADMIN</span></td><td data-perm="read"><span>R</span></td><td data-perm="full"><span>RW</span></td><td data-perm="write" data-tone="accent"><span>W</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="diagram-legend">
+        <li data-swatch="muted">RW / ADMIN · full</li>
+        <li data-swatch="line">W · write</li>
+        <li data-swatch="external">— · none</li>
+        <li data-swatch="accent">Finding</li>
+      </ul>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-matrix-sec-edit-panel" aria-labelledby="dg-matrix-sec-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-matrix-sec-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-matrix-sec-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-matrix-sec-edit');
+    const grid = document.getElementById('dg-matrix-sec-edit-grid');
+    const title = document.getElementById('dg-matrix-sec-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Q3 access review" component="diagram" hint="data-change on cells and rows; data-before on the cell text; data-change-label names the cell in the ledger."
+<figure class="diagram" id="dg-matrix-delta" data-type="matrix" data-delta="rows" aria-label="Access review, before and after">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Access review</span>
+    <span class="diagram-title">Q3 access review</span>
+    <span class="diagram-dek">Cells carry data-change and their old value in data-before; the ledger names row and column.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <table class="diagram-matrix">
+      <thead>
+        <tr><th scope="col">Component</th><th scope="col">Engineers</th><th scope="col">Scientists</th><th scope="col">Consumers</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">MinIO · raw bucket</th><td data-perm="read" data-change="changed" data-change-label="Engineers · raw bucket"><span data-before="W">R</span></td><td data-perm="none"><span>—</span></td><td data-perm="none"><span>—</span></td></tr>
+        <tr><th scope="row">Trino · aggregated</th><td data-perm="full"><span>RW</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td></tr>
+        <tr><th scope="row">Superset</th><td data-perm="read"><span>R</span></td><td data-perm="full"><span>RW</span></td><td data-perm="read" data-change="changed" data-change-label="Consumers · Superset"><span data-before="W">R</span></td></tr>
+        <tr data-change="added" data-change-label="Open data API"><th scope="row">Open data API</th><td data-perm="none"><span>—</span></td><td data-perm="read"><span>R</span></td><td data-perm="read"><span>R</span></td></tr>
+        <tr data-change="removed" data-change-label="FTP share"><th scope="row">FTP share</th><td data-perm="full"><span>RW</span></td><td data-perm="read"><span>R</span></td><td data-perm="read"><span>R</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

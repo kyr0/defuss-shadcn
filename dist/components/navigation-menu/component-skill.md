@@ -153,6 +153,14 @@ document.querySelector('#my-menu').api.getState(); // { name: 'open', config: {}
 The api is bound per `.nav-menu-content` element; the registry global is
 `df$.shadcn.navigationMenuApi` / `df$.shadcn.navigationMenuStates` (camelCase).
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.navigationMenuApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.navigationMenuStates` = `default`, `open`.
+
 ## Notes
 
 - The `popover` API handles open/close - no JS click handlers needed.

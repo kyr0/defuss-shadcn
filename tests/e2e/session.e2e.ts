@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: a session's whole job is where the scroll goes. These checks drive the
@@ -153,7 +154,7 @@ try {
     await page.evaluate(() => (document.getElementById('s1') as any).api.setState('detached', { to: 'start' }));
     await settle();
     assert.equal(await top('s1'), 0);
-    assert.deepEqual(await page.evaluate(() => (document.getElementById('s1') as any).api.getState()), { name: 'detached', config: { to: 'start' } });
+    assert.deepEqual(await page.evaluate(() => { const { name, config } = (document.getElementById('s1') as any).api.getState(); return { name, config }; }), { name: 'detached', config: { to: 'start' } });
     assert.equal(await page.evaluate(() => (globalThis as any).df$.shadcn.session.isAtEnd('s1')), false);
     const ok = await page.evaluate(() => (globalThis as any).df$.shadcn.session.scrollToMessage('s1', 'a10', { smooth: false }));
     await settle();
@@ -212,6 +213,10 @@ try {
     });
     assert.deepEqual(r, { below: true, status: '12px' });
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.session[id]', ['default','detached','streaming'], { runtimeAttrs: ['data-pending-scroll','data-autoscrolling','style','data-stick'] });
+  });
+
 } finally {
   await browser.close();
   server.stop?.();

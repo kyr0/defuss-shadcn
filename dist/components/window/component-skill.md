@@ -151,7 +151,7 @@ df$.shadcn.win.tile();
 | `default` | Open at its normal size (opens a closed window; `{ x, y }` moves it) |
 | `maximized` | Fills the desktop |
 | `minimized` | Rolled up to its title bar |
-| `closed` | The dialog is closed - also entered when the × or `close()` closes it |
+| `closed` | The dialog is closed - also entered when the × or `close()` closes it; the maximized / minimized flags go with it (a window reopens at its normal size) |
 
 ```js
 const w = document.querySelector('#notes');
@@ -159,6 +159,48 @@ w.api.setState('maximized');
 w.api.setState('default', { x: 24, y: 24 });
 w.api.getState(); // → { name: 'default', config: { x: 24, y: 24 } }
 ```
+
+The maximize / minimize buttons are labelled for the state the window is in -
+from init on (an authored `data-maximized` window's button says "Restore").
+`render(state)` returns the authored window with the state's `open` /
+`data-maximized` / `data-minimized` and button labels; position, size and
+stacking are runtime.
+
+---
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.windowApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.windowStates` = `default`, `maximized`, `minimized`, `closed`.
+
+### `df$.shadcn.win`
+
+| Member | Description |
+|---|---|
+| `create(options = {})` | Builds a window element from options - the shape the skill documents. |
+| `open(t, config = {})` | Open a window (closed, minimized or not shown yet) - config is the state's config. |
+| `close(t)` | Close it (the closed state). |
+| `focus(t)` | Bring it to the front (the active window). |
+| `move(t, x, y)` | Move it to x, y (px, inside its desktop). |
+| `resize(t, width, height)` | Size it: width (and height) as px numbers or CSS lengths. |
+| `maximize(t)` | Fill the desktop. |
+| `minimize(t)` | Minimize it to the taskbar. |
+| `restore(t)` | Back to its normal size and place. |
+| `toggleMaximize(t)` | Maximize it, or restore it when it is maximized. |
+| `active()` | The window in front, if any. |
+| `list(scope, all = false)` | Windows (open unless `all`) inside `scope` (default: the page). |
+| `cascade(scope, step = 28)` | Steps the open windows diagonally from the top-left, front-most last. |
+| `tile(scope)` | Lays the open windows side by side in a grid that fills their desktop. |
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `window-focus` | `title` | Fires when a window comes to the front - its title. |
+| `window-move` | `posOf(w)` | Fires after a window was dragged (or moved with the keyboard) - its position. |
 
 ---
 

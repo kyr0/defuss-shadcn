@@ -129,7 +129,28 @@ document.querySelector('#team').api.setState('sorted', { column: 2, direction: '
 document.querySelector('#team').api.getState(); // → { name: 'sorted', config: { sort: {…}, selected: [] } }
 ```
 
+`setState()` also takes `getState()`'s shape - `{ sort: { column, direction } | null,
+selected: [indices] }` - and applies all of it, so `setState(name, getState().config)`
+changes nothing. `render(state)` returns the authored table sorted / selected as the
+state says. Only rows with a select box carry `aria-selected`.
+
 The registry global is `df$.shadcn.tableApi` / `df$.shadcn.tableStates`.
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.tableApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.tableStates` = `default`, `sorted`, `selected`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `table-reorder` | `row`, `index` | Fires after a row is moved (drag or keyboard) - the row and its new index. |
+| `table-select` | `rows`, `count` | Fires when the selection changes - the selected rows and how many. |
+| `table-sort` | `column`, `direction` | Fires when a column is sorted - the column and the direction (ascending, descending, none). |
 
 ## Density
 

@@ -176,6 +176,14 @@ document.querySelector('#my-sidebar').api.getState(); // { name: 'collapsed', co
 Trigger clicks and Cmd/Ctrl+B keep `getState()` honest automatically.
 The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.sidebarApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sidebarStates` = `default`, `collapsed`.
+
 ## Notes
 
 - **Mobile**: Desktop sidebar hidden below 768px. Use `<dialog class="sidebar-mobile">` for slide-in sheet. While it is modal, `html:has(.sidebar-mobile:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and keeps its position (no JS scroll-lock).

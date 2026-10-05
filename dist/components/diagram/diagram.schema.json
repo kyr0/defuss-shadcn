@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "name": "diagram",
+  "states": {
+    "paused": {
+      "type": "number",
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "paused",
+        "args": {
+          "step": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-step-current"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "active": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "active",
+        "args": {
+          "ref": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-active"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "playing"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {
+    "activateNext": {
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram [data-diagram-action=\"next\"], [data-diagram-for][data-diagram-action=\"next\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "next": {
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram [data-action=\"next\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "previous": {
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram [data-action=\"prev\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    },
+    "showAll": {
+      "target": {
+        "kind": "selector",
+        "selector": ".diagram [data-action=\"all\"]"
+      },
+      "operation": {
+        "kind": "event",
+        "name": "click"
+      }
+    }
+  }
+}

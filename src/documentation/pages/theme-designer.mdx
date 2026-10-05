@@ -1,0 +1,312 @@
+---
+title: "Theme Designer"
+description: "Design your own theme, the tweakcn way, right in the docs: every colour token for light and dark, Google Fonts for sans, serif and mono, radius, letter spacing and shadows - with a live preview of each section's components. Save it by name: it stays in your browser and appears on top of the theme menu; export the CSS to use it anywhere."
+slug: "theme-designer"
+---
+
+import { DocPage, PageHeader, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="theme-designer" title="Theme Designer" introStyle="max-width:48rem;">
+  Design your own theme, the way <a href="https://tweakcn.com" target="_blank" rel="noopener">tweakcn</a> does - right here. Start from any theme, change colours for light and dark, pick Google Fonts, set the radius and the shadows: the whole site follows as you go. The preview on the right is part of the editor: click a colour to change it, and the Forms &amp; Inputs card holds the roundness, font, letter-spacing and shadow controls. Its tabs show every component at once, or one of the six example apps (Admin Dashboard, Messenger, Issue Tracker, Notes &amp; Docs, Status Page, Desktop) in your theme. Your unsaved draft stays on while you browse the other pages, so you can check every component in it before you save (the theme menu can pause or discard it). Save it by name - it stays in this browser and shows up on top of the theme menu - or export the CSS for your own project (<DocLink href="theming.html">Theming</DocLink> explains the tokens).
+</PageHeader>
+
+<div class="td" data-theme-designer>
+  <div class="td-bar" role="toolbar" aria-label="Theme designer">
+    <label class="td-from"><span class="sr-only">Start from</span><select class="select" data-td-from aria-label="Start from a theme"></select></label>
+    <div class="toggle-group td-mode" role="group" aria-label="Edit the light or the dark palette" data-type="single" data-variant="outline" data-td-mode>
+      <button class="toggle" type="button" aria-pressed="true" value="light"><i data-lucide="sun"></i> Light</button>
+      <button class="toggle" type="button" aria-pressed="false" value="dark"><i data-lucide="moon"></i> Dark</button>
+    </div>
+    <span class="td-bar-group">
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-undo aria-label="Undo" title="Undo (Ctrl+Z)" disabled><i data-lucide="undo-2"></i></button>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-redo aria-label="Redo" title="Redo (Ctrl+Shift+Z)" disabled><i data-lucide="redo-2"></i></button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-reset title="Back to the theme you started from"><i data-lucide="rotate-ccw"></i> Reset</button>
+    </span>
+    <span class="td-spacer"></span>
+    <span class="td-bar-group">
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-td-import><i data-lucide="file-up"></i> Import</button>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-td-export><i data-lucide="code"></i> Export</button>
+    </span>
+    <form class="td-save" data-td-save>
+      <label class="sr-only" for="td-name">Theme name</label>
+      <input class="input" id="td-name" name="name" placeholder="Name your theme" required maxlength="40" autocomplete="off" />
+      <button class="btn" data-size="sm" type="submit"><i data-lucide="save"></i> Save</button>
+    </form>
+  </div>
+
+  <div class="td-main">
+    <div class="td-panel" aria-label="Theme settings">
+      <div class="tabs td-tabs">
+        <div class="tab-list" role="tablist" aria-label="Settings">
+          <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="td-p-colors" id="td-t-colors">Colors</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-p-saved" id="td-t-saved" tabindex="-1">Saved</button>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-p-colors" aria-labelledby="td-t-colors" tabindex="0"><div data-td-colors></div></div>
+        <div class="tab-content" role="tabpanel" id="td-p-saved" aria-labelledby="td-t-saved" tabindex="0" hidden><div data-td-saved></div></div>
+      </div>
+    </div>
+
+    <div class="td-preview" aria-label="Live preview">
+      <p class="td-hint">Click a colour to change it. The Forms &amp; Inputs card is the rest of the editor: roundness, fonts, letter spacing and shadows.</p>
+      <div class="td-palette" data-td-palette role="group" aria-label="Palette"></div>
+      <div class="popover td-chip-pop" id="td-chip-pop" popover>
+        <div class="popover-header"><p class="popover-title"></p><p class="popover-description"></p></div>
+        <div class="popover-content"></div>
+      </div>
+      <div class="tabs td-views">
+        <div class="tab-list" role="tablist" aria-label="Preview" data-size="sm">
+          <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="td-v-components" id="td-vt-components">Components</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-admin-dashboard" id="td-vt-admin-dashboard" tabindex="-1">Admin Dashboard</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-messenger" id="td-vt-messenger" tabindex="-1">Messenger</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-issue-tracker" id="td-vt-issue-tracker" tabindex="-1">Issue Tracker</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-notes" id="td-vt-notes" tabindex="-1">Notes &amp; Docs</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-status-page" id="td-vt-status-page" tabindex="-1">Status Page</button>
+          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-desktop" id="td-vt-desktop" tabindex="-1">Desktop</button>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-components" aria-labelledby="td-vt-components" tabindex="0">
+      <div class="td-cards">
+
+        <section class="card td-card" aria-labelledby="tdp-actions">
+          <div class="card-header"><h3 class="card-title" id="tdp-actions">Actions</h3></div>
+          <div class="card-content td-stack">
+            <div class="td-row">
+              <button class="btn" type="button">Primary</button>
+              <button class="btn" data-variant="secondary" type="button">Secondary</button>
+              <button class="btn" data-variant="outline" type="button">Outline</button>
+            </div>
+            <div class="td-row">
+              <button class="btn" data-variant="ghost" type="button">Ghost</button>
+              <button class="btn" data-variant="destructive" type="button">Delete</button>
+              <button class="btn" data-variant="link" type="button">Link</button>
+              <button class="btn" data-size="icon" type="button" aria-label="Add"><i data-lucide="plus"></i></button>
+            </div>
+            <div class="td-row">
+              <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple" data-variant="outline">
+                <button class="toggle" type="button" aria-pressed="true" aria-label="Bold"><i data-lucide="bold"></i></button>
+                <button class="toggle" type="button" aria-pressed="false" aria-label="Italic"><i data-lucide="italic"></i></button>
+                <button class="toggle" type="button" aria-pressed="false" aria-label="Underline"><i data-lucide="underline"></i></button>
+              </div>
+              <span class="td-kbd"><kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card td-card td-form-card" aria-labelledby="tdp-forms">
+          <div class="card-header"><h3 class="card-title" id="tdp-forms">Forms &amp; Inputs</h3><p class="card-description">These controls are live - they shape the theme.</p></div>
+          <div class="card-content td-stack">
+            <div class="td-form" data-td-form></div>
+            <div class="td-form-samples">
+              <div class="td-field"><label class="label" for="tdp-email">Email</label><input class="input" id="tdp-email" type="email" placeholder="you@example.com" /></div>
+              <div class="td-field"><label class="label" for="tdp-plan">Plan</label><select class="select" id="tdp-plan"><option>Pro</option><option>Team</option><option>Enterprise</option></select></div>
+              <div class="td-row">
+                <label class="td-check"><input class="checkbox" type="checkbox" checked /> Updates</label>
+                <label class="td-check"><input class="radio" type="radio" name="tdp-r" checked /> Monthly</label>
+                <label class="td-check"><input class="radio" type="radio" name="tdp-r" /> Yearly</label>
+              </div>
+              <textarea class="textarea" rows="2" aria-label="Message" placeholder="Write a message…"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-data">
+          <div class="card-header"><h3 class="card-title" id="tdp-data">Data Display</h3><p class="card-description">This month</p></div>
+          <div class="card-content td-stack">
+            <div class="statistic">
+              <p class="statistic-title">Revenue</p>
+              <p class="statistic-value">$45,231</p>
+              <p class="statistic-description"><span class="statistic-trend" data-trend="up">+20.1%</span> from last month</p>
+            </div>
+            <div class="td-row">
+              <span class="badge">New</span>
+              <span class="badge" data-variant="secondary">Draft</span>
+              <span class="badge" data-variant="outline">Archived</span>
+              <span class="td-avatars">
+                <span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /></span>
+                <span class="avatar" data-size="sm"><img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt="" /></span>
+                <span class="avatar" data-size="sm"><span class="avatar-fallback">AH</span></span>
+              </span>
+            </div>
+            <progress class="progress" value="68" max="100" aria-label="Quota used">68%</progress>
+            <div class="table-container">
+              <table class="table">
+                <thead><tr class="table-row"><th class="table-head" scope="col">Invoice</th><th class="table-head" scope="col">Status</th><th class="table-head" scope="col" style="text-align:end">Amount</th></tr></thead>
+                <tbody>
+                  <tr class="table-row"><th class="table-cell" scope="row">INV001</th><td class="table-cell"><span class="badge" data-variant="secondary">Paid</span></td><td class="table-cell" style="text-align:end">$250</td></tr>
+                  <tr class="table-row"><th class="table-cell" scope="row">INV002</th><td class="table-cell"><span class="badge" data-variant="outline">Pending</span></td><td class="table-cell" style="text-align:end">$150</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-charts">
+          <div class="card-header"><h3 class="card-title" id="tdp-charts">Charts</h3><p class="card-description">--chart-1 … --chart-5</p></div>
+          <div class="card-content td-charts">
+            <div class="td-bars" role="img" aria-label="Bar chart in the five chart colours">
+              <i style="--h:72%;--c:var(--chart-1)"></i><i style="--h:48%;--c:var(--chart-2)"></i><i style="--h:88%;--c:var(--chart-3)"></i><i style="--h:36%;--c:var(--chart-4)"></i><i style="--h:60%;--c:var(--chart-5)"></i>
+              <i style="--h:54%;--c:var(--chart-1)"></i><i style="--h:80%;--c:var(--chart-2)"></i><i style="--h:42%;--c:var(--chart-3)"></i><i style="--h:66%;--c:var(--chart-4)"></i><i style="--h:30%;--c:var(--chart-5)"></i>
+            </div>
+            <div class="td-donut" role="img" aria-label="Donut chart in the five chart colours"></div>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-feedback">
+          <div class="card-header"><h3 class="card-title" id="tdp-feedback">Feedback &amp; Status</h3></div>
+          <div class="card-content td-stack">
+            <div class="alert" role="status"><i data-lucide="info" class="alert-icon"></i><div class="alert-content"><h5 class="alert-title">Heads up</h5><p class="alert-description">Your theme follows every change.</p></div></div>
+            <div class="alert" data-variant="destructive" role="status"><i data-lucide="circle-alert" class="alert-icon"></i><div class="alert-content"><h5 class="alert-title">Error</h5><p class="alert-description">Something went wrong.</p></div></div>
+            <div class="td-row">
+              <svg class="spinner" role="status" aria-label="Loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <div class="skeleton skeleton-round" style="width:2rem;height:2rem;"></div>
+              <div class="td-skel"><div class="skeleton" style="height:0.625rem;width:70%;"></div><div class="skeleton" style="height:0.625rem;width:45%;"></div></div>
+              <button class="btn" data-variant="outline" data-size="sm" type="button" data-td-toast>Toast</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-overlays">
+          <div class="card-header"><h3 class="card-title" id="tdp-overlays">Overlays</h3></div>
+          <div class="card-content td-stack">
+            <div class="td-row">
+              <button class="btn" data-variant="outline" data-size="sm" type="button" data-dialog-trigger="tdp-dialog" aria-haspopup="dialog">Dialog</button>
+              <button class="btn" data-variant="outline" data-size="sm" type="button" popovertarget="tdp-popover">Popover</button>
+              <button class="btn" data-variant="outline" data-size="sm" type="button" data-tooltip-trigger="tdp-tip">Tooltip</button>
+              <button class="btn" data-variant="outline" data-size="sm" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="tdp-menu" data-dropdown-trigger="tdp-menu">Menu <i data-lucide="chevron-down"></i></button>
+            </div>
+            <div class="tooltip" id="tdp-tip" popover="hint" role="tooltip">A tooltip in the popover colours</div>
+            <div class="popover" id="tdp-popover" popover><p class="td-pop-title">Popover</p><p class="td-pop-text">Surfaces use --popover and --popover-foreground.</p></div>
+            <div id="tdp-menu" role="menu" popover class="dropdown-content" aria-label="Menu">
+              <button class="dropdown-item" role="menuitem" tabindex="-1"><i data-lucide="user"></i> Profile</button>
+              <button class="dropdown-item" role="menuitem" tabindex="-1"><i data-lucide="settings"></i> Settings</button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button class="dropdown-item" role="menuitem" tabindex="-1" data-variant="destructive"><i data-lucide="log-out"></i> Log out</button>
+            </div>
+            <div class="accordion">
+              <details class="accordion-item" open>
+                <summary class="accordion-trigger"><span>Is it accessible?</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+                <div class="accordion-content"><p>Yes - native details and summary.</p></div>
+              </details>
+              <details class="accordion-item">
+                <summary class="accordion-trigger"><span>Is it themable?</span><svg class="accordion-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
+                <div class="accordion-content"><p>Every colour is a token.</p></div>
+              </details>
+            </div>
+            <dialog class="dialog" id="tdp-dialog" role="dialog" aria-modal="true" aria-labelledby="tdp-dialog-title">
+              <div class="dialog-content">
+                <div class="dialog-header"><h2 class="dialog-title" id="tdp-dialog-title">Edit profile</h2><p class="dialog-description">Dialogs use the card surface and the shadow scale.</p></div>
+                <div class="dialog-body"><label class="label" for="tdp-d-name">Name</label><input class="input" id="tdp-d-name" value="Aron Homberg" /></div>
+                <div class="dialog-footer"><button class="btn" data-variant="outline" data-dialog-close>Cancel</button><button class="btn" data-dialog-close>Save</button></div>
+              </div>
+            </dialog>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-nav">
+          <div class="card-header"><h3 class="card-title" id="tdp-nav">Navigation</h3></div>
+          <div class="card-content td-stack">
+            <div class="tabs">
+              <div class="tab-list" role="tablist" aria-label="Account">
+                <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tdp-tab-a" id="tdp-tab-a-t">Account</button>
+                <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tdp-tab-b" id="tdp-tab-b-t" tabindex="-1">Password</button>
+              </div>
+              <div class="tab-content" role="tabpanel" id="tdp-tab-a" aria-labelledby="tdp-tab-a-t" tabindex="0"><p class="td-muted">Make changes to your account.</p></div>
+              <div class="tab-content" role="tabpanel" id="tdp-tab-b" aria-labelledby="tdp-tab-b-t" tabindex="0" hidden><p class="td-muted">Change your password.</p></div>
+            </div>
+            <nav class="breadcrumb" aria-label="Breadcrumb"><ol class="breadcrumb-list"><li class="breadcrumb-item"><a class="breadcrumb-link" href="index.html">Home</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><a class="breadcrumb-link" href="theming.html">Theming</a></li><li class="breadcrumb-separator" aria-hidden="true">/</li><li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Themes</span></li></ol></nav>
+            <nav class="pagination" aria-label="Pagination"><ul class="pagination-list"><li><a class="pagination-link" href="theme-designer.html">1</a></li><li><a class="pagination-link pagination-active" href="theme-designer.html" aria-current="page">2</a></li><li><a class="pagination-link" href="theme-designer.html">3</a></li><li><span class="pagination-ellipsis" aria-hidden="true">…</span></li></ul></nav>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-app">
+          <div class="card-header"><h3 class="card-title" id="tdp-app">Application</h3><p class="card-description">The sidebar tokens</p></div>
+          <div class="card-content">
+            <div class="td-side">
+              <p class="td-side-head"><span class="td-side-logo">A</span> Acme Inc.</p>
+              <span class="td-side-item" data-active><i data-lucide="layout-dashboard"></i> Dashboard</span>
+              <span class="td-side-item" data-hover><i data-lucide="inbox"></i> Inbox <span class="td-side-badge">4</span></span>
+              <span class="td-side-item"><i data-lucide="settings"></i> Settings</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-chat">
+          <div class="card-header"><h3 class="card-title" id="tdp-chat">Chat</h3></div>
+          <div class="card-content td-stack">
+            <div class="bubble" data-variant="secondary" data-tail><div class="bubble-content">Did the new theme ship?</div></div>
+            <div class="bubble" data-align="end" data-tail><div class="bubble-content">Yes - it looks great!</div></div>
+          </div>
+        </section>
+
+        <section class="card td-card" aria-labelledby="tdp-cal">
+          <div class="card-header"><h3 class="card-title" id="tdp-cal">Calendar</h3></div>
+          <div class="card-content">
+            <div class="calendar" aria-label="Calendar">
+              <div class="calendar-header">
+                <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+                <button type="button" class="calendar-heading" aria-live="polite"></button>
+                <button class="calendar-nav" data-action="next-month" aria-label="Next month"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+              </div>
+              <table class="calendar-grid" role="grid"></table>
+            </div>
+          </div>
+        </section>
+
+        <section class="card td-card td-wide" aria-labelledby="tdp-type">
+          <div class="card-header"><h3 class="card-title" id="tdp-type">Typography</h3><p class="card-description" data-td-fontnames>Sans · Serif · Mono</p></div>
+          <div class="card-content td-type">
+            <p class="td-type-h">The quick brown fox jumps over the lazy dog</p>
+            <p>Body text in the sans font: themes are one identity in two palettes - the same shape, the same type, light and dark.</p>
+            <blockquote class="td-type-serif">“Design is not just what it looks like and feels like. Design is how it works.”</blockquote>
+            <pre class="td-type-mono"><code>--primary: oklch(0.205 0.005 285);</code></pre>
+          </div>
+        </section>
+
+      </div>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-admin-dashboard" aria-labelledby="td-vt-admin-dashboard" tabindex="0" hidden>
+          <div class="td-app" data-td-app="app-admin-dashboard.html" data-title="Admin Dashboard"><a class="btn" data-variant="outline" data-size="sm" href="app-admin-dashboard.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Admin Dashboard full screen</a></div>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-messenger" aria-labelledby="td-vt-messenger" tabindex="0" hidden>
+          <div class="td-app" data-td-app="app-messenger.html" data-title="Messenger"><a class="btn" data-variant="outline" data-size="sm" href="app-messenger.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Messenger full screen</a></div>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-issue-tracker" aria-labelledby="td-vt-issue-tracker" tabindex="0" hidden>
+          <div class="td-app" data-td-app="app-issue-tracker.html" data-title="Issue Tracker"><a class="btn" data-variant="outline" data-size="sm" href="app-issue-tracker.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Issue Tracker full screen</a></div>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-notes" aria-labelledby="td-vt-notes" tabindex="0" hidden>
+          <div class="td-app" data-td-app="app-notes.html" data-title="Notes &amp; Docs"><a class="btn" data-variant="outline" data-size="sm" href="app-notes.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Notes &amp; Docs full screen</a></div>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-status-page" aria-labelledby="td-vt-status-page" tabindex="0" hidden>
+          <div class="td-app" data-td-app="app-status-page.html" data-title="Status Page"><a class="btn" data-variant="outline" data-size="sm" href="app-status-page.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Status Page full screen</a></div>
+        </div>
+        <div class="tab-content" role="tabpanel" id="td-v-desktop" aria-labelledby="td-vt-desktop" tabindex="0" hidden>
+          <div class="td-app" data-td-app="app-desktop.html" data-title="Desktop"><a class="btn" data-variant="outline" data-size="sm" href="app-desktop.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Desktop full screen</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* export and import */}
+  <dialog class="dialog td-dialog" id="td-export" role="dialog" aria-modal="true" aria-labelledby="td-export-title">
+    <div class="dialog-content">
+      <div class="dialog-header"><h2 class="dialog-title" id="td-export-title">Export theme</h2><p class="dialog-description">Drop it in after the token file - the same shape tweakcn exports.</p></div>
+      <div class="dialog-body td-dialog-body">
+        <textarea class="textarea td-code" readonly rows="14" aria-label="Theme CSS" data-td-css></textarea>
+      </div>
+      <div class="dialog-footer"><button class="btn" data-variant="outline" type="button" data-dialog-close>Close</button><button class="btn" data-variant="outline" type="button" data-td-download><i data-lucide="download"></i> Download</button><button class="btn" type="button" data-td-copy><i data-lucide="copy"></i> Copy</button></div>
+    </div>
+  </dialog>
+  <dialog class="dialog td-dialog" id="td-import" role="dialog" aria-modal="true" aria-labelledby="td-import-title">
+    <form class="dialog-content" method="dialog" data-td-import-form>
+      <div class="dialog-header"><h2 class="dialog-title" id="td-import-title">Import theme</h2><p class="dialog-description">Paste theme CSS - a :root block and a .dark block, from tweakcn or an export.</p></div>
+      <div class="dialog-body td-dialog-body">
+        <textarea class="textarea td-code" rows="12" name="css" required aria-label="Theme CSS to import" placeholder=":root { --primary: … }  .dark { --primary: … }"></textarea>
+        <p class="td-muted" data-td-import-error hidden>No theme tokens found in that CSS.</p>
+      </div>
+      <div class="dialog-footer"><button class="btn" data-variant="outline" type="button" data-dialog-close>Cancel</button><button class="btn" type="submit">Import</button></div>
+    </form>
+  </dialog>
+</div>
+
+</DocPage>

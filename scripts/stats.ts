@@ -27,5 +27,6 @@ console.log(
     `${doc.withJs} with JS / ${doc.withoutJs} CSS-only · ` +
     `total ${kb(doc.totalSize)} (${kb(doc.totalSizeMinified)} min, ${kb(doc.totalSizeGz)} gz, ${kb(doc.totalSizeGzMinified)} gz-min) · ` +
     `bundle ${kb(doc.bundle.totalSizeGzMinified)} gz-min · ` +
-    `core ${kb(doc.core.totalSizeGzMinified)} gz-min → dist/stats.json`,
+    `core ${kb(doc.core.totalSizeGzMinified)} gz-min · ` +
+    `apps ${Object.entries(doc.apps).map(([n, a]) => `${n} ${kb(a.totalSizeGzMinified)}`).join(', ')} gz-min → dist/stats.json`,
 );

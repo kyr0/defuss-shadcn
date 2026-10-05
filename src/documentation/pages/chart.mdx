@@ -4,7 +4,7 @@ description: "Chart component - a thin token bridge over Apache ECharts: declara
 slug: "chart"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -61,6 +61,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code>.</p>
 </StatesSection>
+
+<ApiSection component="chart" />
 
 <SourceFiles component="chart">
   <SourceNote for="css">The sizing surface (three <code>data-size</code> height presets) and the editorial <code>.chart-frame</code> chrome - tokens only.</SourceNote>

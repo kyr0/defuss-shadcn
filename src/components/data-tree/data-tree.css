@@ -1,0 +1,225 @@
+/* -- Data Tree --------------------------------------------------- */
+/* A windowed tree: the sizer gives the scrollbar its length, a      */
+/* recycled pool of items rides inside it. Depth is one custom       */
+/* property per item - indentation is CSS.                           */
+
+@layer components {
+  .data-tree {
+    --data-tree-row-height: 32px;
+    --data-tree-indent: 1.25rem;
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.875rem;
+    contain: strict;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .data-tree-sizer {
+    position: relative;
+    width: 100%;
+  }
+
+  .data-tree-items {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    padding-inline: 0.25rem;
+    will-change: translate;
+  }
+
+  .data-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: var(--data-tree-row-height);
+    padding-inline-start: calc(var(--depth, 0) * var(--data-tree-indent) + 0.25rem);
+    padding-inline-end: 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: default;
+    user-select: none;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &[aria-selected="true"] {
+      background: color-mix(in oklch, var(--primary) 14%, var(--card));
+      color: var(--foreground);
+      font-weight: 500;
+    }
+
+    /* a filter's own hits, among the ancestors kept to reach them */
+    &[data-match] .data-tree-label {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+  }
+
+  .data-tree:focus-visible .data-tree-item[data-active] {
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+
+  .data-tree-toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--radius-sm);
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      width: 0.375rem;
+      height: 0.375rem;
+      border-inline-end: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      rotate: -45deg;
+      transition: rotate 150ms ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklch, var(--foreground) 8%, transparent);
+    }
+  }
+
+  /* a leaf has no toggle - only its place, so labels line up */
+  .data-tree-item:not([aria-expanded]) .data-tree-toggle {
+    cursor: default;
+
+    &::before {
+      content: none;
+    }
+  }
+
+  .data-tree-item[aria-expanded="true"] .data-tree-toggle::before {
+    rotate: 45deg;
+  }
+
+  .data-tree-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* secondary text inside a label (counts, sizes) */
+  .data-tree-meta {
+    margin-inline-start: auto;
+    padding-inline-start: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- loading and empty -------------------------------------- */
+  .data-tree[data-state="loading"],
+  .data-tree[data-state="empty"] {
+    & .data-tree-items {
+      display: none;
+    }
+
+    & .data-tree-sizer {
+      height: 100% !important; /* nothing to scroll in these states */
+    }
+  }
+
+  .data-tree[data-state="loading"]::before {
+    content: "";
+    position: absolute;
+    inset: 0.25rem;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--muted) 0,
+      var(--muted) calc(var(--data-tree-row-height) - 6px),
+      transparent calc(var(--data-tree-row-height) - 6px),
+      transparent var(--data-tree-row-height)
+    );
+    opacity: 0.6;
+    animation: data-tree-pulse 1.6s ease-in-out infinite;
+  }
+
+  .data-tree[data-state="empty"]::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--muted-foreground);
+  }
+
+  .data-tree:not([data-empty-text])[data-state="empty"]::after {
+    content: "Nothing matches.";
+  }
+
+  @keyframes data-tree-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .data-tree,
+    .data-tree *,
+    .data-tree::before,
+    .data-tree::after,
+    .data-tree *::before,
+    .data-tree *::after,
+    .data-tree[data-state="loading"]::before {
+      transition: none;
+      animation: none;
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .data-tree {
+      border-color: var(--muted-foreground);
+    }
+
+    .data-tree:focus-visible .data-tree-item[data-active] {
+      box-shadow: inset 0 0 0 2px var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .data-tree {
+      border-color: ButtonText;
+    }
+
+    .data-tree-item[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .data-tree:focus-visible .data-tree-item[data-active] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .data-tree-toggle::before {
+      border-color: ButtonText;
+    }
+  }
+}

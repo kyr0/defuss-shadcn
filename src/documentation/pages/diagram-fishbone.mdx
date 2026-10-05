@@ -1,0 +1,356 @@
+---
+title: "Illustrative · Fishbone"
+description: "Fishbone (Ishikawa) diagrams with the diagram component - categories on 60° bones above and below a spine into the effect, the confirmed root cause in the accent; step by step and as a delta."
+slug: "diagram-fishbone"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-fishbone" title="Illustrative · Fishbone" component="diagram">
+  Root-cause analysis: one effect (<code>data-effect</code>) at the head of a spine, categories (<code>data-bone</code>, <code>data-side="below"</code> for the lower row) with their sub-causes as a list. The component draws the spine and the 60° bones; the confirmed root cause bone takes the accent.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Checkout latency post-mortem" component="diagram" hint="Categories are nodes in rows 1 and 3; the effect spans all three rows at the head."
+<figure class="diagram" id="dg-fish" data-type="fishbone" aria-label="Root causes of checkout latency">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Fishbone · post-mortem</span>
+    <span class="diagram-title">Why checkout p95 went past 2 seconds</span>
+    <span class="diagram-dek">Six categories investigated; the confirmed root cause is the accent bone.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:10rem">
+    <div class="diagram-node" data-node="people" data-bone style="--col:1;--row:1">
+      <span class="diagram-node-name">People</span>
+      <ul class="diagram-node-fields">
+        <li>on-call handover gap</li>
+        <li>no perf owner</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="process" data-bone style="--col:2;--row:1">
+      <span class="diagram-node-name">Process</span>
+      <ul class="diagram-node-fields">
+        <li>no load test in CI</li>
+        <li>big-bang release</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="tools" data-bone style="--col:3;--row:1">
+      <span class="diagram-node-name">Tools</span>
+      <ul class="diagram-node-fields">
+        <li>APM sampling 1%</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="data" data-tone="accent" data-side="below" data-step-label="Root cause" data-bone style="--col:1;--row:3">
+      <span class="diagram-node-name">Data</span>
+      <ul class="diagram-node-fields">
+        <li>N+1 query on cart</li>
+        <li>missing index</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="env" data-side="below" data-bone style="--col:2;--row:3">
+      <span class="diagram-node-name">Environment</span>
+      <ul class="diagram-node-fields">
+        <li>Black Friday traffic</li>
+        <li>noisy neighbour</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="vendors" data-side="below" data-bone style="--col:3;--row:3">
+      <span class="diagram-node-name">Vendors</span>
+      <ul class="diagram-node-fields">
+        <li>tax API slow</li>
+        <li>CDN purge storm</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="effect" data-tone="accent" data-step-label="The effect" data-effect style="--col:4;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Effect</span>
+      <span class="diagram-node-name">Checkout p95 > 2s for 3h</span>
+      <span class="diagram-node-meta">18% cart abandonment</span>
+    </div>
+  </div>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="The investigation, bone by bone" component="diagram" hint="The effect first, then each category as it was investigated."
+<figure class="diagram" id="dg-fish-steps" data-type="fishbone" data-steps data-autoplay aria-label="Root causes of checkout latency">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Fishbone · post-mortem</span>
+    <span class="diagram-title">Why checkout p95 went past 2 seconds</span>
+    <span class="diagram-dek">Six categories investigated; the confirmed root cause is the accent bone.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:10rem">
+    <div class="diagram-node" data-node="people" data-step="2" data-bone style="--col:1;--row:1">
+      <span class="diagram-node-name">People</span>
+      <ul class="diagram-node-fields">
+        <li>on-call handover gap</li>
+        <li>no perf owner</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="process" data-step="3" data-bone style="--col:2;--row:1">
+      <span class="diagram-node-name">Process</span>
+      <ul class="diagram-node-fields">
+        <li>no load test in CI</li>
+        <li>big-bang release</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="tools" data-step="4" data-bone style="--col:3;--row:1">
+      <span class="diagram-node-name">Tools</span>
+      <ul class="diagram-node-fields">
+        <li>APM sampling 1%</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="data" data-tone="accent" data-side="below" data-step="5" data-step-label="Root cause" data-bone style="--col:1;--row:3">
+      <span class="diagram-node-name">Data</span>
+      <ul class="diagram-node-fields">
+        <li>N+1 query on cart</li>
+        <li>missing index</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="env" data-side="below" data-step="6" data-bone style="--col:2;--row:3">
+      <span class="diagram-node-name">Environment</span>
+      <ul class="diagram-node-fields">
+        <li>Black Friday traffic</li>
+        <li>noisy neighbour</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="vendors" data-side="below" data-step="7" data-bone style="--col:3;--row:3">
+      <span class="diagram-node-name">Vendors</span>
+      <ul class="diagram-node-fields">
+        <li>tax API slow</li>
+        <li>CDN purge storm</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="effect" data-tone="accent" data-step="1" data-step-label="The effect" data-effect style="--col:4;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Effect</span>
+      <span class="diagram-node-name">Checkout p95 > 2s for 3h</span>
+      <span class="diagram-node-meta">18% cart abandonment</span>
+    </div>
+  </div>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Fishbone, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-fish-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-fish-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-fish-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-fish-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-fish-live" data-interactive data-type="fishbone" aria-label="Root causes of checkout latency">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Fishbone · post-mortem</span>
+    <span class="diagram-title">Why checkout p95 went past 2 seconds</span>
+    <span class="diagram-dek">Six categories investigated; the confirmed root cause is the accent bone.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:10rem">
+    <div class="diagram-node" data-node="people" data-bone style="--col:1;--row:1">
+      <span class="diagram-node-name">People</span>
+      <ul class="diagram-node-fields">
+        <li>on-call handover gap</li>
+        <li>no perf owner</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="process" data-bone style="--col:2;--row:1">
+      <span class="diagram-node-name">Process</span>
+      <ul class="diagram-node-fields">
+        <li>no load test in CI</li>
+        <li>big-bang release</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="tools" data-bone style="--col:3;--row:1">
+      <span class="diagram-node-name">Tools</span>
+      <ul class="diagram-node-fields">
+        <li>APM sampling 1%</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="data" data-tone="accent" data-side="below" data-step-label="Root cause" data-bone style="--col:1;--row:3">
+      <span class="diagram-node-name">Data</span>
+      <ul class="diagram-node-fields">
+        <li>N+1 query on cart</li>
+        <li>missing index</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="env" data-side="below" data-bone style="--col:2;--row:3">
+      <span class="diagram-node-name">Environment</span>
+      <ul class="diagram-node-fields">
+        <li>Black Friday traffic</li>
+        <li>noisy neighbour</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="vendors" data-side="below" data-bone style="--col:3;--row:3">
+      <span class="diagram-node-name">Vendors</span>
+      <ul class="diagram-node-fields">
+        <li>tax API slow</li>
+        <li>CDN purge storm</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="effect" data-tone="accent" data-step-label="The effect" data-effect style="--col:4;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Effect</span>
+      <span class="diagram-node-name">Checkout p95 > 2s for 3h</span>
+      <span class="diagram-node-meta">18% cart abandonment</span>
+    </div>
+  </div>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Fishbone, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-fish-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-fish-edit" data-interactive data-type="fishbone" aria-label="Root causes of checkout latency">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Fishbone · post-mortem</span>
+        <span class="diagram-title">Why checkout p95 went past 2 seconds</span>
+        <span class="diagram-dek">Six categories investigated; the confirmed root cause is the accent bone.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:4;--diagram-node-w:10rem">
+        <div class="diagram-node" data-node="people" data-bone style="--col:1;--row:1">
+          <span class="diagram-node-name">People</span>
+          <ul class="diagram-node-fields">
+            <li>on-call handover gap</li>
+            <li>no perf owner</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="process" data-bone style="--col:2;--row:1">
+          <span class="diagram-node-name">Process</span>
+          <ul class="diagram-node-fields">
+            <li>no load test in CI</li>
+            <li>big-bang release</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="tools" data-bone style="--col:3;--row:1">
+          <span class="diagram-node-name">Tools</span>
+          <ul class="diagram-node-fields">
+            <li>APM sampling 1%</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="data" data-tone="accent" data-side="below" data-step-label="Root cause" data-bone style="--col:1;--row:3">
+          <span class="diagram-node-name">Data</span>
+          <ul class="diagram-node-fields">
+            <li>N+1 query on cart</li>
+            <li>missing index</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="env" data-side="below" data-bone style="--col:2;--row:3">
+          <span class="diagram-node-name">Environment</span>
+          <ul class="diagram-node-fields">
+            <li>Black Friday traffic</li>
+            <li>noisy neighbour</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="vendors" data-side="below" data-bone style="--col:3;--row:3">
+          <span class="diagram-node-name">Vendors</span>
+          <ul class="diagram-node-fields">
+            <li>tax API slow</li>
+            <li>CDN purge storm</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="effect" data-tone="accent" data-step-label="The effect" data-effect style="--col:4;--row:1;--rspan:3">
+          <span class="diagram-node-eyebrow">Effect</span>
+          <span class="diagram-node-name">Checkout p95 > 2s for 3h</span>
+          <span class="diagram-node-meta">18% cart abandonment</span>
+        </div>
+      </div>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-fish-edit-panel" aria-labelledby="dg-fish-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-fish-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-fish-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-fish-edit');
+    const grid = document.getElementById('dg-fish-edit-grid');
+    const title = document.getElementById('dg-fish-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Day 1 → day 3" component="diagram" hint="Sub-causes are list rows - each can be added, removed or changed (data-before keeps the old wording)."
+<figure class="diagram" id="dg-fish-delta" data-type="fishbone" data-delta aria-label="Fishbone after the investigation">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Investigation</span>
+    <span class="diagram-title">Day 1 → day 3 of the investigation</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:10rem">
+    <div class="diagram-node" data-node="process" data-bone style="--col:1;--row:1">
+      <span class="diagram-node-name">Process</span>
+      <ul class="diagram-node-fields">
+        <li>no load test in CI</li>
+        <li data-change="removed">big-bang release</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="tools" data-bone style="--col:2;--row:1">
+      <span class="diagram-node-name">Tools</span>
+      <ul class="diagram-node-fields">
+        <li>APM sampling 1%</li>
+        <li data-change="added">slow-query log off</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="data" data-tone="accent" data-side="below" data-change="changed" data-change-note="suspected → confirmed root cause" data-bone style="--col:1;--row:3">
+      <span class="diagram-node-name">Data</span>
+      <ul class="diagram-node-fields">
+        <li data-change="changed" data-before="suspected: N+1 query">N+1 query on cart</li>
+        <li>missing index</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="vendors" data-side="below" data-bone style="--col:2;--row:3">
+      <span class="diagram-node-name">Vendors</span>
+      <ul class="diagram-node-fields">
+        <li>tax API slow</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="effect" data-tone="accent" data-effect style="--col:3;--row:1;--rspan:3">
+      <span class="diagram-node-eyebrow">Effect</span>
+      <span class="diagram-node-name">Checkout p95 > 2s</span>
+    </div>
+  </div>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

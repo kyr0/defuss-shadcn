@@ -1,0 +1,264 @@
+---
+title: "Illustrative · Wardley Map"
+description: "Wardley maps with the diagram component - a value chain against evolution, four bands, dependency lines and a movement arrow; step by step and as a delta."
+slug: "diagram-wardley"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-wardley" title="Illustrative · Wardley Map" component="diagram">
+  A value chain positioned against evolution: up is visible to the user, right is commodity (genesis · custom · product · commodity). Components are dots on a free canvas (<code>--x</code> / <code>--y</code> in percent), dependencies straight lines, and an evolving component carries a dashed accent arrow to a <code>ghost</code> node - where it is heading.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Online grocery" component="diagram" hint="Straight edges with data-head=none are dependencies; the movement arrow ends on an invisible ghost node."
+<figure class="diagram" id="dg-ward" data-type="wardley" aria-label="Wardley map of an online grocery">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Wardley map</span>
+    <span class="diagram-title">Online grocery: build, buy or wait</span>
+    <span class="diagram-dek">Up is visible to the customer, right is commodity. Recommendations are moving to product - stop building them.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="customer" data-shape="dot" style="--x:54;--y:5"><span class="diagram-node-name">Customer</span></div>
+    <div class="diagram-node" data-node="order" data-shape="dot" style="--x:56;--y:22"><span class="diagram-node-name">Online ordering</span></div>
+    <div class="diagram-node" data-node="delivery" data-shape="dot" style="--x:28;--y:32"><span class="diagram-node-name">Delivery slots</span></div>
+    <div class="diagram-node" data-node="reco" data-shape="dot" data-tone="accent" data-step-label="The move" style="--x:22;--y:50"><span class="diagram-node-name">Recommendations</span></div>
+    <div class="diagram-node" data-node="reco-next" data-shape="ghost" style="--x:50;--y:50">
+    </div>
+    <div class="diagram-node" data-node="payment" data-shape="dot" style="--x:72;--y:46"><span class="diagram-node-name">Payments</span></div>
+    <div class="diagram-node" data-node="data" data-shape="dot" style="--x:36;--y:68"><span class="diagram-node-name">Data platform</span></div>
+    <div class="diagram-node" data-node="compute" data-shape="dot" style="--x:90;--y:86"><span class="diagram-node-name">Compute</span></div>
+    <div class="diagram-axis" data-axis="x"><span>Genesis</span><span>Custom</span><span>Product</span><span>Commodity</span></div>
+    <div class="diagram-axis" data-axis="y"><span>Visible</span><span>Invisible</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="delivery" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="reco" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="payment" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="data" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="delivery" data-to="data" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="data" data-to="compute" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="payment" data-to="compute" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="reco-next" data-curve="straight" data-line="dashed" data-tone="accent"></li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="dot">Component</li>
+    <li data-swatch="line">Depends on</li>
+    <li data-swatch="accent-line">Evolving</li>
+  </ul>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Down the value chain" component="diagram" hint="From the user need down to compute, then the move."
+<figure class="diagram" id="dg-ward-steps" data-type="wardley" data-steps data-autoplay aria-label="Wardley map of an online grocery">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Wardley map</span>
+    <span class="diagram-title">Online grocery: build, buy or wait</span>
+    <span class="diagram-dek">Up is visible to the customer, right is commodity. Recommendations are moving to product - stop building them.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="customer" data-shape="dot" data-step="1" style="--x:54;--y:5"><span class="diagram-node-name">Customer</span></div>
+    <div class="diagram-node" data-node="order" data-shape="dot" data-step="2" style="--x:56;--y:22"><span class="diagram-node-name">Online ordering</span></div>
+    <div class="diagram-node" data-node="delivery" data-shape="dot" data-step="2" style="--x:28;--y:32"><span class="diagram-node-name">Delivery slots</span></div>
+    <div class="diagram-node" data-node="reco" data-shape="dot" data-tone="accent" data-step="3" data-step-label="The move" style="--x:22;--y:50"><span class="diagram-node-name">Recommendations</span></div>
+    <div class="diagram-node" data-node="reco-next" data-shape="ghost" data-step="3" style="--x:50;--y:50">
+    </div>
+    <div class="diagram-node" data-node="payment" data-shape="dot" data-step="4" style="--x:72;--y:46"><span class="diagram-node-name">Payments</span></div>
+    <div class="diagram-node" data-node="data" data-shape="dot" data-step="4" style="--x:36;--y:68"><span class="diagram-node-name">Data platform</span></div>
+    <div class="diagram-node" data-node="compute" data-shape="dot" data-step="5" style="--x:90;--y:86"><span class="diagram-node-name">Compute</span></div>
+    <div class="diagram-axis" data-axis="x"><span>Genesis</span><span>Custom</span><span>Product</span><span>Commodity</span></div>
+    <div class="diagram-axis" data-axis="y"><span>Visible</span><span>Invisible</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="delivery" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="reco" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="payment" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="data" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="delivery" data-to="data" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="data" data-to="compute" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="payment" data-to="compute" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="reco-next" data-curve="straight" data-line="dashed" data-tone="accent"></li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="dot">Component</li>
+    <li data-swatch="line">Depends on</li>
+    <li data-swatch="accent-line">Evolving</li>
+  </ul>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Wardley Map, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-ward-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-ward-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-ward-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-ward-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-ward-live" data-interactive data-type="wardley" aria-label="Wardley map of an online grocery">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Wardley map</span>
+    <span class="diagram-title">Online grocery: build, buy or wait</span>
+    <span class="diagram-dek">Up is visible to the customer, right is commodity. Recommendations are moving to product - stop building them.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="customer" data-shape="dot" style="--x:54;--y:5"><span class="diagram-node-name">Customer</span></div>
+    <div class="diagram-node" data-node="order" data-shape="dot" style="--x:56;--y:22"><span class="diagram-node-name">Online ordering</span></div>
+    <div class="diagram-node" data-node="delivery" data-shape="dot" style="--x:28;--y:32"><span class="diagram-node-name">Delivery slots</span></div>
+    <div class="diagram-node" data-node="reco" data-shape="dot" data-tone="accent" data-step-label="The move" style="--x:22;--y:50"><span class="diagram-node-name">Recommendations</span></div>
+    <div class="diagram-node" data-node="reco-next" data-shape="ghost" style="--x:50;--y:50">
+    </div>
+    <div class="diagram-node" data-node="payment" data-shape="dot" style="--x:72;--y:46"><span class="diagram-node-name">Payments</span></div>
+    <div class="diagram-node" data-node="data" data-shape="dot" style="--x:36;--y:68"><span class="diagram-node-name">Data platform</span></div>
+    <div class="diagram-node" data-node="compute" data-shape="dot" style="--x:90;--y:86"><span class="diagram-node-name">Compute</span></div>
+    <div class="diagram-axis" data-axis="x"><span>Genesis</span><span>Custom</span><span>Product</span><span>Commodity</span></div>
+    <div class="diagram-axis" data-axis="y"><span>Visible</span><span>Invisible</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="delivery" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="reco" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="payment" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="data" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="delivery" data-to="data" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="data" data-to="compute" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="payment" data-to="compute" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="reco-next" data-curve="straight" data-line="dashed" data-tone="accent"></li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="dot">Component</li>
+    <li data-swatch="line">Depends on</li>
+    <li data-swatch="accent-line">Evolving</li>
+  </ul>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Wardley Map, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-ward-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-ward-edit" data-interactive data-type="wardley" aria-label="Wardley map of an online grocery">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Wardley map</span>
+        <span class="diagram-title">Online grocery: build, buy or wait</span>
+        <span class="diagram-dek">Up is visible to the customer, right is commodity. Recommendations are moving to product - stop building them.</span>
+      </figcaption>
+      <div class="diagram-canvas">
+        <div class="diagram-node" data-node="customer" data-shape="dot" style="--x:54;--y:5"><span class="diagram-node-name">Customer</span></div>
+        <div class="diagram-node" data-node="order" data-shape="dot" style="--x:56;--y:22"><span class="diagram-node-name">Online ordering</span></div>
+        <div class="diagram-node" data-node="delivery" data-shape="dot" style="--x:28;--y:32"><span class="diagram-node-name">Delivery slots</span></div>
+        <div class="diagram-node" data-node="reco" data-shape="dot" data-tone="accent" data-step-label="The move" style="--x:22;--y:50"><span class="diagram-node-name">Recommendations</span></div>
+        <div class="diagram-node" data-node="reco-next" data-shape="ghost" style="--x:50;--y:50">
+        </div>
+        <div class="diagram-node" data-node="payment" data-shape="dot" style="--x:72;--y:46"><span class="diagram-node-name">Payments</span></div>
+        <div class="diagram-node" data-node="data" data-shape="dot" style="--x:36;--y:68"><span class="diagram-node-name">Data platform</span></div>
+        <div class="diagram-node" data-node="compute" data-shape="dot" style="--x:90;--y:86"><span class="diagram-node-name">Compute</span></div>
+        <div class="diagram-axis" data-axis="x"><span>Genesis</span><span>Custom</span><span>Product</span><span>Commodity</span></div>
+        <div class="diagram-axis" data-axis="y"><span>Visible</span><span>Invisible</span></div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="customer" data-to="order" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="order" data-to="delivery" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="order" data-to="reco" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="order" data-to="payment" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="reco" data-to="data" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="delivery" data-to="data" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="data" data-to="compute" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="payment" data-to="compute" data-curve="straight" data-head="none"></li>
+        <li class="diagram-edge" data-from="reco" data-to="reco-next" data-curve="straight" data-line="dashed" data-tone="accent"></li>
+      </ol>
+      <ul class="diagram-legend">
+        <li data-swatch="dot">Component</li>
+        <li data-swatch="line">Depends on</li>
+        <li data-swatch="accent-line">Evolving</li>
+      </ul>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-ward-edit-panel" aria-labelledby="dg-ward-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-ward-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-ward-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-ward-edit');
+    const grid = document.getElementById('dg-ward-edit-grid');
+    const title = document.getElementById('dg-ward-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="A year later" component="diagram" hint="The moved component (data-before-style holds its old --x / --y) - the ledger note says why."
+<figure class="diagram" id="dg-ward-delta" data-type="wardley" data-delta aria-label="The map a year later">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Wardley map · a year later</span>
+    <span class="diagram-title">Bought, not built</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="customer" data-shape="dot" style="--x:54;--y:6"><span class="diagram-node-name">Customer</span></div>
+    <div class="diagram-node" data-node="order" data-shape="dot" style="--x:56;--y:24"><span class="diagram-node-name">Online ordering</span></div>
+    <div class="diagram-node" data-node="reco" data-shape="dot" data-tone="accent" data-change="moved" data-change-note="custom → product: a vendor API" data-before-style="--x:22;--y:50" style="--x:62;--y:48"><span class="diagram-node-name">Recommendations</span></div>
+    <div class="diagram-node" data-node="llm" data-shape="dot" data-change="added" style="--x:84;--y:62"><span class="diagram-node-name">LLM API</span></div>
+    <div class="diagram-node" data-node="servers" data-shape="dot" data-change="removed" style="--x:70;--y:86"><span class="diagram-node-name">Own servers</span></div>
+    <div class="diagram-node" data-node="compute" data-shape="dot" data-change="added" style="--x:90;--y:86"><span class="diagram-node-name">Cloud compute</span></div>
+    <div class="diagram-axis" data-axis="x"><span>Genesis</span><span>Custom</span><span>Product</span><span>Commodity</span></div>
+    <div class="diagram-axis" data-axis="y"><span>Visible</span><span>Invisible</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="order" data-to="reco" data-curve="straight" data-head="none"></li>
+    <li class="diagram-edge" data-from="reco" data-to="llm" data-curve="straight" data-head="none" data-change="added"></li>
+    <li class="diagram-edge" data-from="order" data-to="servers" data-curve="straight" data-head="none" data-change="removed"></li>
+    <li class="diagram-edge" data-from="order" data-to="compute" data-curve="straight" data-head="none" data-change="added"></li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

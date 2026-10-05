@@ -27,6 +27,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+
+<!-- 4. only for the HTML Preview Editor (code-example): the extra bundle, after 3a / 3b -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
 ```
 
 **Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step.
@@ -41,6 +45,7 @@ Then: for every component you use, read its skill file (linked per-component bel
 - **Tokens are the source of truth** - all colors, radius, shadows, and fonts are CSS custom properties in `theme/utils/default-semantic-tokens.css` (tweakcn-compatible shape). To re-theme, replace that file; never hardcode colors in markup or custom CSS.
 - **Variants via data attributes, never classes** - `data-variant`, `data-size`, `data-side` on one base class per component (`.btn[data-variant="outline"]`, never `.btn-outline`).
 - **State API on interactive components** - each interactive element exposes `el.api.setState('open')` / `el.api.getState()`; state names are listed per component below. Drive and observe UI state through this API, not by toggling classes.
+- **Every state is a store** - `el.store` (defuss-store) holds the element's `{ name, config }`: `el.store.subscribe(fn)` follows every change (also the user's), `el.store.set({ name, config })` applies one. Keep app state in `df$.store.create(v)` and anything that must survive a reload in `df$.store.persisted(key, initial)` - never raw `localStorage`. Big data: `df$.dataview` (filter / multisort / tree queries) behind Virtual List, Data Tree and Data Grid.
 - **Accessibility is built in** - WAI-ARIA patterns, keyboard navigation, focus management, and `prefers-reduced-motion` support ship in the files. Don't duplicate or fight them.
 
 ## Where things live (`dist/`)
@@ -52,6 +57,7 @@ dist/
 ├── theme/utils/default-semantic-tokens.css ← design tokens (the only theme file)
 ├── components/all.css                ← bundle: every component stylesheet (+ .min twin & map)
 ├── components/all.js                 ← bundle: every component's behavior (+ .min twin & maps)
+├── components/wysiwyg.css / .js      ← the extra bundle: the HTML Preview Editor (code-example) - NOT in all.*; load after all.* / core
 ├── components/{name}/
 │   ├── component-skill.md            ← HOW to build the HTML - read this before using a component
 │   ├── {name}.css                    ← the stylesheet (tokens only; always include)

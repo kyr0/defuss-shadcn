@@ -50,23 +50,56 @@ try {
     assert.deepEqual(await visibleViews(), ['overview']);
   });
 
-  await check('checking orders reveals the bulk bar (CSS :has)', async () => {
+  const grid = () => page.$eval('#dash-orders-grid', (g: any) => ({
+    config: g.store.value.config,
+    status: g.querySelector('.data-grid-status')?.textContent ?? '',
+    first: [...(g.querySelector('.data-grid-rows > .data-grid-row')?.children ?? [])].map((c: any) => c.textContent.trim()),
+  }));
+
+  await check('the orders are a data grid: 1,284 orders, newest first, a page of 12', async () => {
     await page.click('#dash-sidebar .sidebar-link[href="#orders"]');
-    const before = await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display);
-    await page.check('#orders tbody .checkbox >> nth=1');
-    const after = await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display);
-    assert.deepEqual([before, after], ['none', 'flex']);
-    await page.check('#orders tbody .checkbox >> nth=3');
-    assert.equal(await page.textContent('.dash-bulk-count'), '2 orders selected');
-    const indeterminate = await page.$eval('[data-dash-all]', (e) => (e as HTMLInputElement).indeterminate);
-    assert.equal(indeterminate, true);
+    await page.waitForFunction(() => (document.querySelector('#dash-orders-grid') as any)?.store?.value.name === 'default');
+    const g = await grid();
+    assert.deepEqual(g.config.sorters, [{ field: 'date', direction: 'desc' }]);
+    assert.equal(g.status, '1–12 of 1,284 rows');
+    assert.equal(g.first[0], '#A-20481');
+    assert.match(g.first[1], /^Anna Silva/);
   });
 
-  await check('select all checks every order', async () => {
-    await page.check('[data-dash-all]');
-    const n = await page.evaluate(() => [...document.querySelectorAll('#orders tbody .checkbox')].filter((c) => !(c as HTMLInputElement).checked).length);
-    assert.equal(n, 0);
-    await page.uncheck('[data-dash-all]');
+  await check('filters and sorting run over every order; the view is kept in local storage under the app prefix', async () => {
+    await page.selectOption('#dash-orders-grid .data-grid-filter[data-field="status"]', 'Pending');
+    await page.waitForFunction(() => (document.querySelector('#dash-orders-grid') as any).store.value.config.filters.length === 1);
+    const all = await page.$eval('#dash-orders-grid', (g) => (globalThis as any).df$.shadcn.dataGrid.rows(g).map((o: any) => o.status));
+    assert.ok(all.length > 0 && all.every((x: string) => x === 'Pending'));
+    await page.click('#dash-orders-grid .data-grid-header[data-field="total"]');
+    const key = Object.keys(await page.evaluate(() => ({ ...localStorage }))).find((k) => k.startsWith('acme-admin:') && k.endsWith(':data-grid:dash-orders-grid'));
+    assert.ok(key, 'a key under the acme-admin prefix');
+    await page.reload();
+    await page.waitForFunction(() => (document.querySelector('#dash-orders-grid') as any)?.store?.value.name === 'default');
+    const g = await grid();
+    assert.deepEqual(g.config.sorters, [{ field: 'total', direction: 'asc' }]);
+    assert.deepEqual(g.config.filters, [{ field: 'status', op: 'eq', value: 'Pending' }]);
+    await page.$eval('#dash-orders-grid', (el) => (globalThis as any).df$.shadcn.dataGrid.query(el, { filters: [], sorters: [{ field: 'date', direction: 'desc' }] }));
+  });
+
+  await check('selecting orders reveals the bulk bar with the count; Select all; Mark shipped edits the rows', async () => {
+    await page.click('#dash-sidebar .sidebar-link[href="#orders"]');
+    assert.equal(await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display), 'none');
+    await page.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(2) .data-grid-cell:nth-child(3)');
+    await page.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(4) .data-grid-cell:nth-child(3)', { modifiers: ['ControlOrMeta'] });
+    assert.equal(await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display), 'flex');
+    assert.equal(await page.textContent('.dash-bulk-count'), '2 orders selected');
+    await page.click('[data-dash-bulk="ship"]');
+    const shipped = await page.$eval('#dash-orders-grid', (g) => (globalThis as any).df$.shadcn.dataGrid.rows(g).slice(0, 4).map((o: any) => o.status));
+    assert.equal(shipped[1], 'Shipped');
+    assert.equal(shipped[3], 'Shipped');
+    assert.equal(await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display), 'none', 'the selection is cleared');
+    await page.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(1) .data-grid-cell:nth-child(3)');
+    await page.click('[data-dash-bulk="all"]');
+    assert.equal(await page.textContent('.dash-bulk-count'), '1,284 orders selected');
+    await page.click('[data-dash-bulk="clear"]');
+    assert.equal(await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display), 'none');
+    await page.evaluate(() => localStorage.clear());
   });
 
   await check('⌘K opens the command palette; an item jumps to its view', async () => {
@@ -87,7 +120,8 @@ try {
     await page.click('#dash-new-order button[type="submit"]');
     await page.waitForTimeout(300);
     assert.equal(await page.evaluate(() => (document.getElementById('dash-new-order') as HTMLDialogElement).open), false);
-    const t = await page.textContent('.toast-container .toast');
+    // the newest toast (earlier checks may have left one)
+    const t = await page.$$eval('.toast-container .toast', (ts) => ts.map((x) => x.textContent ?? '').find((x) => x.includes('Order created')));
     assert.ok(t?.includes('Order created') && t.includes('Marco Rossi'), String(t));
   });
 

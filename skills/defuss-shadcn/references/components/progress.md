@@ -149,6 +149,21 @@ bar.api.getState(); // { name: 'complete', config: { value: 100, max: 100, perce
 Every change fires `progress:change` (`detail: { value, max, percent }`) on the
 bar. Writing `bar.value` directly also repaints the readouts.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.progressApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.progressStates` = `default`, `indeterminate`, `complete`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `progress:change` | `value`, `max`, `percent` | Fires when the value changes - value, max and the fraction done (0 to 1). |
+| `progress:completed` | - | Fires once when the value reaches max. |
+
 ## Notes
 
 - **Steps vs glide**: the bar itself has no CSS transition - a jump is a jump.

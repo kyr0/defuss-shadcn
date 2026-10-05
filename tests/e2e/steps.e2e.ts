@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: steps is CSS-only - the status circle scale (32px default, sm/lg)
@@ -139,6 +140,12 @@ await cssSmoke('steps', [
       assert.equal(await page.$eval('#st-live', (el) => (el as any).api.getState().name), 'default', "declared state 'default'");
       await page.$eval('#st-live', (el) => (el as any).api.setState('default', { errorStep: 2 }));
       assert.equal(await page.$eval('#st-live .step:nth-child(2)', (el) => el.getAttribute('data-status')), 'error');
+    },
+  },
+  {
+    label: 'render(): reproduces the authored markup 1:1 and every state',
+    run: async (page) => {
+      await assertRenderContract(page, '.steps[id]', ['default']);
     },
   },
 ]);

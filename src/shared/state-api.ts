@@ -37,6 +37,17 @@ export { draw, entrance, type MotionOptions } from './motion.js';
 // play data-attribute-declared animations through the same registry agents
 // reach as df$.anim
 export { anim, animChannel, type AnimOptions, type AnimRegistry } from './anim.js';
+// the render() half of the State API: snapshot the authored markup, rebuild
+// it with a state applied (AGENTS.md "State API" → render)
+export { elementModel, renderModel, RUNTIME_ATTRS, type ElementModel } from './render.js';
+// the State API itself, built once on a defuss-store store per element
+// (AGENTS.md "State through stores")
+export { componentState, bindComponent, unbindComponent, type ComponentApi, type ComponentState, type StateSpec } from './component-state.js';
+export { createStore, computed, persisted, reload, forget, persistOk, viewPersistence, type ViewPersistence } from './store.js';
+// the big-data layer: a cached query source over defuss-dataview + the
+// windowing maths (virtual list, data tree, data grid)
+export { dataSource, parseFilter, filterText, cycleSort, type DataSource, type DataQuery, type DataResult, type TreeFields } from './dataview.js';
+export { virtualWindow, sizerHeight, scrollTopFor, scrollIntoViewTop, MAX_SIZER_PX, OVERSCAN, type VirtualWindow } from './virtual.js';
 // the theme resource loader too (the theme-switcher applies a theme's font
 // <link>s through it right after mounting the theme stylesheet)
 export { loadTheme, clearThemeLinks, type ThemeLinkNode } from './theme-links.js';

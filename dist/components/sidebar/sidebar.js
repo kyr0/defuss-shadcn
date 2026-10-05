@@ -17,9 +17,21 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { bindGlobalKeys, defussGlobals } = __df$shared;
+const { bindGlobalKeys, defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const sidebarStates = ['default', 'collapsed'];
+/**
+ * The markup of a state, for render(): the attributes every state writes -
+ * the same as triggerStateChange does on the live element - applied to a
+ * detached copy of the authored markup. The e2e render round trip proves
+ * the two agree.
+ */
+function applyMarkup(el, stateName) {
+    // 'default' is the authored data-state (expanded when none was authored) -
+    // on the authored copy that value is still in place
+    dfDollar(el).attr('data-state', stateName === 'collapsed' ? 'collapsed' : (el._authoredState ??= dfDollar(el).attr('data-state') || 'expanded'));
+}
 /**
  * UI side of setState: 'collapsed' docks the rail to icon-width (CSS key is
  * the documented data-state attribute); 'default' restores the authored
@@ -36,43 +48,43 @@ function triggerStateChange(sidebar, stateName, _config) {
     }
 }
 /** Registry-level API; pass the sidebar element explicitly. Unknown names throw. */
-export const sidebarApi = {
-    setState(sidebar, stateName, config = {}) {
-        if (!sidebarStates.includes(stateName)) {
-            throw new Error(`sidebar: unknown state "${stateName}" (supported: ${sidebarStates.join(', ')})`);
-        }
-        triggerStateChange(sidebar, stateName, config);
-        // state lives on the ELEMENT, not the module (many sidebars per page)
-        sidebar.dataset.stateName = stateName;
-        sidebar._stateConfig = config;
+export const sidebarApi = componentState({
+    component: 'sidebar',
+    states: sidebarStates,
+    apply: (sidebar, state) => {
+        // an explicit state is a decision: the auto-collapse stays out
+        sidebar._pinned = true;
+        triggerStateChange(sidebar, state.name, state.config);
     },
-    getState(sidebar) {
+    read: (sidebar, state) => {
         // reflect reality: trigger clicks and Cmd+B change data-state directly
         return {
             name: sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default',
-            config: sidebar._stateConfig ?? {},
+            config: state.config,
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.sidebarApi = sidebarApi;
 df$.sidebarStates = sidebarStates;
 function init() {
-    document.querySelectorAll('.app-sidebar:not([data-init])').forEach((sidebar) => {
+    dfDollar('.app-sidebar:not([data-init])').toArray().forEach((sidebar) => {
         sidebar.dataset.init = '';
         // snapshot the authored state + bind per sidebar: `$('#my-sidebar').api.setState('collapsed')`
         sidebar._defaultState = sidebar.dataset.state || 'expanded';
-        sidebar.api = {
-            setState: (stateName, config) => sidebarApi.setState(sidebar, stateName, config),
-            getState: () => sidebarApi.getState(sidebar),
-        };
+        // a state named before init (a page restoring a remembered choice) pins it;
+        // after init data-state-name only MIRRORS the store, so the pin is _pinned
+        sidebar._pinned = !!sidebar.dataset.stateName;
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(sidebar, sidebarApi);
         // -- Toggle button → collapse/expand -----------------------
         const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : '.sidebar-trigger';
-        document.querySelectorAll(triggerId).forEach((trigger) => {
+        dfDollar(triggerId).toArray().forEach((trigger) => {
             trigger.addEventListener('click', () => {
                 const state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
                 sidebar.dataset.state = state;
-                // user interaction also moves the named state (keeps getState honest)
-                sidebar.dataset.stateName = state === 'collapsed' ? 'collapsed' : 'default';
+                // a user decision: pins against the auto-collapse heuristic
+                sidebar._pinned = true;
             });
         });
         // -- Auto-collapse wiring: correct state at first paint + on row resize --
@@ -82,16 +94,16 @@ function init() {
         autoCollapseSidebar(sidebar);
     });
     // -- Mobile dialog triggers ----------------------------------
-    document.querySelectorAll('[data-sidebar-mobile]:not([data-init])').forEach((trigger) => {
+    dfDollar('[data-sidebar-mobile]:not([data-init])').toArray().forEach((trigger) => {
         trigger.dataset.init = '';
-        const dialog = document.getElementById(trigger.dataset.sidebarMobile);
+        const dialog = dfDollar('#' + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
         if (!dialog)
             return;
         trigger.addEventListener('click', () => {
             dialog.showModal();
         });
         // Close button inside the dialog
-        dialog.querySelectorAll('.sidebar-mobile-close').forEach((btn) => {
+        dfDollar(dialog).find('.sidebar-mobile-close').toArray().forEach((btn) => {
             btn.addEventListener('click', () => { dialog.close(); });
         });
     });
@@ -102,13 +114,13 @@ function init() {
 // component docks itself to the icon rail, restoring above
 // AUTO_COLLAPSE_ABOVE (hysteresis, so a scrollbar appearing never flickers
 // it). An explicit choice always wins: trigger clicks, Cmd+B and
-// api.setState all set dataset.stateName, and while that is set the auto
-// behavior stays out. ponytail: threshold is px-based (authored default is
+// api.setState (and a data-state-name present before init) set _pinned, and
+// while that is set the auto behavior stays out. ponytail: threshold is px-based (authored default is
 // 16rem); a custom --sidebar-width beyond ~24rem needs a larger constant.
 const AUTO_COLLAPSE_BELOW = 24 * 16; // 384px
 const AUTO_COLLAPSE_ABOVE = 28 * 16; // 448px
 function autoCollapseSidebar(sidebar) {
-    if (sidebar.dataset.stateName)
+    if (sidebar._pinned)
         return; // deliberate state - never fight it
     // available space = the sidebar's row (a .sidebar-layout or any container);
     // clientWidth of the parent, not the sidebar's own width (flex-shrink: 0
@@ -153,13 +165,13 @@ if (!document.__sidebarKbInit) {
         if (!(e.metaKey || e.ctrlKey) || e.key !== 'b')
             return;
         // Toggle the first sidebar found on the page
-        const sidebar = document.querySelector('.app-sidebar');
+        const sidebar = dfDollar('.app-sidebar').get(0);
         if (!sidebar)
             return;
         e.preventDefault();
         sidebar.dataset.state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
         // user decision - pins against the auto-collapse heuristic
-        sidebar.dataset.stateName = sidebar.dataset.state === 'collapsed' ? 'collapsed' : 'default';
+        sidebar._pinned = true;
         return true;
     });
 }

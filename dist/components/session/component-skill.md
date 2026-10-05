@@ -140,6 +140,34 @@ s.api.getState(); // → { name: 'detached', config: { to: 'start' } }
 
 ---
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.sessionApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sessionStates` = `default`, `detached`, `streaming`.
+
+### `df$.shadcn.session`
+
+| Member | Description |
+|---|---|
+| `append(t, content, options)` | Adds a message at the end; follows (or anchors) as the session decides. |
+| `prepend(t, content, options)` | Adds older messages at the start; the reader's place is kept. |
+| `scrollToEnd(t, o)` | Scroll to the newest message and follow again (options: { behavior }). |
+| `scrollToStart(t, o)` | Scroll to the oldest message (the session stops following). |
+| `scrollToMessage(t, id, o)` | Bring a message into view by id - false when there is none. |
+| `isAtEnd(t)` | Whether the reader is at the end (within data-threshold, 48px by default). |
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `session-drop` | `files` | Fires when files are dropped on the session (data-drop) - the accepted files. |
+| `session-visibility` | `currentAnchorId`, `visibleMessageIds` | Fires when the messages in view change - the current anchor's id and the ids of the visible messages. |
+
+---
+
 ## ARIA
 
 | Element | Attribute | Notes |

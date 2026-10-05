@@ -164,6 +164,14 @@ document.querySelector('#alignment').api.getState(); // { name: 'disabled', conf
 The api is bound per group; the registry global is
 `df$.shadcn.toggleGroupApi` / `df$.shadcn.toggleGroupStates` (camelCase).
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.toggleGroupApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.toggleGroupStates` = `default`, `disabled`.
+
 ## Notes
 
 - Uses **roving tabindex**: only one item has `tabindex="0"` at a time; others have `tabindex="-1"`. Tab enters/exits the group as a single stop.

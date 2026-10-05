@@ -4,7 +4,7 @@ description: "Presentation component - a fixed-artboard slide deck: responsive v
 slug: "presentation"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, StatsClaim, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, StatsClaim, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -513,7 +513,9 @@ Machine contract - verified against <a href="../schemas/presentation.schema.json
 
 </StatesSection>
 
-## API
+<ApiSection component="presentation" />
+
+## Driving it from code
 
 ```html example label="Imperative control" schema="none" hint="The same deck driven from JS: the State API on the element (open the State tab to drive it), plus the shared-library scope for clamped navigation. Motion replays come free with activation."
 <div id="deck-host"></div>

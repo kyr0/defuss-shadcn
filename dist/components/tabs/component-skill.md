@@ -255,6 +255,14 @@ tablist.api.getState(); // { name: 'active', config: { index: 2, id: 'settings-t
 
 The registry global is `df$.shadcn.tabsApi` / `df$.shadcn.tabsStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.tabsApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.tabsStates` = `default`, `active`, `disabled`.
+
 ## Notes
 
 - Only the active tab is in the tab order (`tabindex="0"`) - inactive tabs use `tabindex="-1"`

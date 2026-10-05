@@ -1,0 +1,307 @@
+---
+title: "Illustrative · Swimlane"
+description: "Swimlane diagrams with the diagram component - one lane per team, steps in the lane of who does them, handoffs across lanes; step by step and as a delta."
+slug: "diagram-swimlane"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-swimlane" title="Illustrative · Swimlane" component="diagram">
+  Cross-functional processes: one horizontal lane per actor (<code>.diagram-group</code> with <code>data-shape="lane"</code> spanning the grid, its label in the first column), each step in the lane of whoever does it. The handoffs - edges that cross a lane boundary - are the point; the costliest one gets the accent.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Bug report across four teams" component="diagram" hint="Lanes are groups; the first grid column (6rem here, set inline with grid-template-columns) holds their labels."
+<figure class="diagram" id="dg-swim" data-type="swimlane" aria-label="Support escalation across teams">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Swimlane</span>
+    <span class="diagram-title">A bug report, across four teams</span>
+    <span class="diagram-dek">The handoff into engineering is where the days go.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Customer</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Support</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Engineering</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:6"><span class="diagram-group-label">Release</span></div>
+    <div class="diagram-node" data-node="report" data-shape="pill" style="--col:2;--row:1"><span class="diagram-node-name">Reports a bug</span></div>
+    <div class="diagram-node" data-node="triage" style="--col:3;--row:2">
+      <span class="diagram-node-name">Triage</span>
+      <span class="diagram-node-meta">reproduce · tag</span>
+    </div>
+    <div class="diagram-node" data-node="known" data-shape="diamond" style="--col:4;--row:2"><span class="diagram-node-name">Known issue?</span></div>
+    <div class="diagram-node" data-node="answer" style="--col:5;--row:1">
+      <span class="diagram-node-name">Answer</span>
+      <span class="diagram-node-meta">workaround</span>
+    </div>
+    <div class="diagram-node" data-node="fix" data-tone="accent" data-step-label="The handoff" style="--col:4;--row:3">
+      <span class="diagram-node-name">Fix</span>
+      <span class="diagram-node-meta">branch · PR</span>
+    </div>
+    <div class="diagram-node" data-node="review" style="--col:5;--row:3">
+      <span class="diagram-node-name">Review</span>
+      <span class="diagram-node-meta">two approvals</span>
+    </div>
+    <div class="diagram-node" data-node="ship" style="--col:6;--row:4">
+      <span class="diagram-node-name">Ship</span>
+      <span class="diagram-node-meta">next train</span>
+    </div>
+    <div class="diagram-node" data-node="notify" data-shape="pill" style="--col:6;--row:1"><span class="diagram-node-name">Notified</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="report" data-to="triage">ticket</li>
+    <li class="diagram-edge" data-from="triage" data-to="known"></li>
+    <li class="diagram-edge" data-from="known" data-to="answer">yes</li>
+    <li class="diagram-edge" data-from="known" data-to="fix" data-tone="accent">no · handoff</li>
+    <li class="diagram-edge" data-from="fix" data-to="review"></li>
+    <li class="diagram-edge" data-from="review" data-to="ship">merge</li>
+    <li class="diagram-edge" data-from="ship" data-to="notify" data-line="dashed">release note</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Bug report, step by step" component="diagram" hint="Lanes are step 0 (always shown); the steps follow the ticket."
+<figure class="diagram" id="dg-swim-steps" data-type="swimlane" data-steps data-autoplay aria-label="Support escalation across teams">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Swimlane</span>
+    <span class="diagram-title">A bug report, across four teams</span>
+    <span class="diagram-dek">The handoff into engineering is where the days go.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Customer</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Support</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Engineering</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:4;--span:6"><span class="diagram-group-label">Release</span></div>
+    <div class="diagram-node" data-node="report" data-shape="pill" data-step="1" style="--col:2;--row:1"><span class="diagram-node-name">Reports a bug</span></div>
+    <div class="diagram-node" data-node="triage" data-step="2" style="--col:3;--row:2">
+      <span class="diagram-node-name">Triage</span>
+      <span class="diagram-node-meta">reproduce · tag</span>
+    </div>
+    <div class="diagram-node" data-node="known" data-shape="diamond" data-step="3" style="--col:4;--row:2"><span class="diagram-node-name">Known issue?</span></div>
+    <div class="diagram-node" data-node="answer" data-step="4" style="--col:5;--row:1">
+      <span class="diagram-node-name">Answer</span>
+      <span class="diagram-node-meta">workaround</span>
+    </div>
+    <div class="diagram-node" data-node="fix" data-tone="accent" data-step="4" data-step-label="The handoff" style="--col:4;--row:3">
+      <span class="diagram-node-name">Fix</span>
+      <span class="diagram-node-meta">branch · PR</span>
+    </div>
+    <div class="diagram-node" data-node="review" data-step="5" style="--col:5;--row:3">
+      <span class="diagram-node-name">Review</span>
+      <span class="diagram-node-meta">two approvals</span>
+    </div>
+    <div class="diagram-node" data-node="ship" data-step="6" style="--col:6;--row:4">
+      <span class="diagram-node-name">Ship</span>
+      <span class="diagram-node-meta">next train</span>
+    </div>
+    <div class="diagram-node" data-node="notify" data-shape="pill" data-step="7" style="--col:6;--row:1"><span class="diagram-node-name">Notified</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="report" data-to="triage">ticket</li>
+    <li class="diagram-edge" data-from="triage" data-to="known"></li>
+    <li class="diagram-edge" data-from="known" data-to="answer">yes</li>
+    <li class="diagram-edge" data-from="known" data-to="fix" data-tone="accent">no · handoff</li>
+    <li class="diagram-edge" data-from="fix" data-to="review"></li>
+    <li class="diagram-edge" data-from="review" data-to="ship">merge</li>
+    <li class="diagram-edge" data-from="ship" data-to="notify" data-line="dashed">release note</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Swimlane, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-swim-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-swim-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-swim-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-swim-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-swim-live" data-interactive data-type="swimlane" aria-label="Support escalation across teams">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Swimlane</span>
+    <span class="diagram-title">A bug report, across four teams</span>
+    <span class="diagram-dek">The handoff into engineering is where the days go.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Customer</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Support</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Engineering</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:6"><span class="diagram-group-label">Release</span></div>
+    <div class="diagram-node" data-node="report" data-shape="pill" style="--col:2;--row:1"><span class="diagram-node-name">Reports a bug</span></div>
+    <div class="diagram-node" data-node="triage" style="--col:3;--row:2">
+      <span class="diagram-node-name">Triage</span>
+      <span class="diagram-node-meta">reproduce · tag</span>
+    </div>
+    <div class="diagram-node" data-node="known" data-shape="diamond" style="--col:4;--row:2"><span class="diagram-node-name">Known issue?</span></div>
+    <div class="diagram-node" data-node="answer" style="--col:5;--row:1">
+      <span class="diagram-node-name">Answer</span>
+      <span class="diagram-node-meta">workaround</span>
+    </div>
+    <div class="diagram-node" data-node="fix" data-tone="accent" data-step-label="The handoff" style="--col:4;--row:3">
+      <span class="diagram-node-name">Fix</span>
+      <span class="diagram-node-meta">branch · PR</span>
+    </div>
+    <div class="diagram-node" data-node="review" style="--col:5;--row:3">
+      <span class="diagram-node-name">Review</span>
+      <span class="diagram-node-meta">two approvals</span>
+    </div>
+    <div class="diagram-node" data-node="ship" style="--col:6;--row:4">
+      <span class="diagram-node-name">Ship</span>
+      <span class="diagram-node-meta">next train</span>
+    </div>
+    <div class="diagram-node" data-node="notify" data-shape="pill" style="--col:6;--row:1"><span class="diagram-node-name">Notified</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="report" data-to="triage">ticket</li>
+    <li class="diagram-edge" data-from="triage" data-to="known"></li>
+    <li class="diagram-edge" data-from="known" data-to="answer">yes</li>
+    <li class="diagram-edge" data-from="known" data-to="fix" data-tone="accent">no · handoff</li>
+    <li class="diagram-edge" data-from="fix" data-to="review"></li>
+    <li class="diagram-edge" data-from="review" data-to="ship">merge</li>
+    <li class="diagram-edge" data-from="ship" data-to="notify" data-line="dashed">release note</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Swimlane, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-swim-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-swim-edit" data-interactive data-type="swimlane" aria-label="Support escalation across teams">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Swimlane</span>
+        <span class="diagram-title">A bug report, across four teams</span>
+        <span class="diagram-dek">The handoff into engineering is where the days go.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Customer</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Support</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Engineering</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:6"><span class="diagram-group-label">Release</span></div>
+        <div class="diagram-node" data-node="report" data-shape="pill" style="--col:2;--row:1"><span class="diagram-node-name">Reports a bug</span></div>
+        <div class="diagram-node" data-node="triage" style="--col:3;--row:2">
+          <span class="diagram-node-name">Triage</span>
+          <span class="diagram-node-meta">reproduce · tag</span>
+        </div>
+        <div class="diagram-node" data-node="known" data-shape="diamond" style="--col:4;--row:2"><span class="diagram-node-name">Known issue?</span></div>
+        <div class="diagram-node" data-node="answer" style="--col:5;--row:1">
+          <span class="diagram-node-name">Answer</span>
+          <span class="diagram-node-meta">workaround</span>
+        </div>
+        <div class="diagram-node" data-node="fix" data-tone="accent" data-step-label="The handoff" style="--col:4;--row:3">
+          <span class="diagram-node-name">Fix</span>
+          <span class="diagram-node-meta">branch · PR</span>
+        </div>
+        <div class="diagram-node" data-node="review" style="--col:5;--row:3">
+          <span class="diagram-node-name">Review</span>
+          <span class="diagram-node-meta">two approvals</span>
+        </div>
+        <div class="diagram-node" data-node="ship" style="--col:6;--row:4">
+          <span class="diagram-node-name">Ship</span>
+          <span class="diagram-node-meta">next train</span>
+        </div>
+        <div class="diagram-node" data-node="notify" data-shape="pill" style="--col:6;--row:1"><span class="diagram-node-name">Notified</span></div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="report" data-to="triage">ticket</li>
+        <li class="diagram-edge" data-from="triage" data-to="known"></li>
+        <li class="diagram-edge" data-from="known" data-to="answer">yes</li>
+        <li class="diagram-edge" data-from="known" data-to="fix" data-tone="accent">no · handoff</li>
+        <li class="diagram-edge" data-from="fix" data-to="review"></li>
+        <li class="diagram-edge" data-from="review" data-to="ship">merge</li>
+        <li class="diagram-edge" data-from="ship" data-to="notify" data-line="dashed">release note</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-swim-edit-panel" aria-labelledby="dg-swim-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-swim-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-swim-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-swim-edit');
+    const grid = document.getElementById('dg-swim-edit-grid');
+    const title = document.getElementById('dg-swim-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="A bot does the first triage" component="diagram" hint="A whole lane can be added: data-change on the lane group."
+<figure class="diagram" id="dg-swim-delta" data-type="swimlane" data-delta aria-label="Escalation with a bot triage">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process change</span>
+    <span class="diagram-title">A bot does the first triage</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:6rem repeat(4,minmax(7rem,1fr));--diagram-node-w:8.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:5"><span class="diagram-group-label">Customer</span></div>
+    <div class="diagram-group" data-shape="lane" data-change="added" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">Bot</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Support</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:4;--span:5"><span class="diagram-group-label">Engineering</span></div>
+    <div class="diagram-node" data-node="report" data-shape="pill" style="--col:2;--row:1"><span class="diagram-node-name">Reports a bug</span></div>
+    <div class="diagram-node" data-node="bot" data-tone="accent" data-change="added" style="--col:3;--row:2">
+      <span class="diagram-node-name">Auto-triage</span>
+      <span class="diagram-node-meta">dedupe · label</span>
+    </div>
+    <div class="diagram-node" data-node="triage" data-change="changed" style="--col:3;--row:3">
+      <span class="diagram-node-name">Triage</span>
+      <span class="diagram-node-meta" data-before="every ticket">only new issues</span>
+    </div>
+    <div class="diagram-node" data-node="fix" style="--col:5;--row:4"><span class="diagram-node-name">Fix</span></div>
+    <div class="diagram-node" data-node="macro" data-change="removed" style="--col:4;--row:3"><span class="diagram-node-name">Macro reply</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="report" data-to="bot" data-change="added">ticket</li>
+    <li class="diagram-edge" data-from="bot" data-to="triage" data-change="added">new</li>
+    <li class="diagram-edge" data-from="report" data-to="triage" data-change="removed">ticket</li>
+    <li class="diagram-edge" data-from="triage" data-to="macro" data-change="removed">known</li>
+    <li class="diagram-edge" data-from="triage" data-to="fix" data-tone="accent">handoff</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

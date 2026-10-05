@@ -21,6 +21,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
    2. `components/all.css` - every component's styles,
    3. `components/all.js` as an ES module - the `df$` runtime + every component's behavior.
    (`all.css` holds component styles only: without `core.css` there are no tokens and no utilities.)
+   The HTML Preview Editor (`code-example`) alone needs a fourth pair after them: `components/wysiwyg.css` + `components/wysiwyg.js` - the extra bundle it ships in.
 3. **For each component you use:** open its skill (index in §4), copy the **Structure** markup verbatim, then pick variants/sizes via `data-variant` / `data-size`. Never invent class names.
 4. **Need a state** (open dialog, expanded tree, selected tab)? Author it in markup, or call `el.api.setState('<state>')` - never toggle classes.
 5. **Serve over HTTP** (`npx serve .` or the project's dev server). ES modules do not run from `file://`.

@@ -126,6 +126,23 @@ tw.api.getState(); // → { name: 'done', config: { index: 2 } }
 
 ---
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.typewriterApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.typewriterStates` = `default`, `paused`, `done`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `typewriter-done` | `index` | Fires when a run ends on its last string - that string's index. |
+| `typewriter-typed` | `index`, `text` | the string is complete |
+
+---
+
 ## Accessibility
 
 | Concern | Handling |

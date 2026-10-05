@@ -16,9 +16,16 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const navigationMenuStates = ['default', 'open'];
+/**
+ * The markup of a state: none - 'open' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) { }
 /**
  * UI side of setState: 'default' hides, 'open' shows. Open/close mechanics
  * stay native (Popover API via popovertarget on the trigger).
@@ -41,20 +48,12 @@ function triggerStateChange(content, stateName, _config) {
     }
 }
 /** Registry-level API; pass the content element explicitly. Unknown names throw. */
-export const navigationMenuApi = {
-    setState(content, stateName, config = {}) {
-        if (!navigationMenuStates.includes(stateName)) {
-            throw new Error(`navigation-menu: unknown state "${stateName}" (supported: ${navigationMenuStates.join(', ')})`);
-        }
-        triggerStateChange(content, stateName, config);
-        // state lives on the ELEMENT, not the module (multiple menus per page)
-        content.dataset.stateName = stateName;
-        content._stateConfig = config;
-    },
-    getState(content) {
-        return { name: content.dataset.stateName || 'default', config: content._stateConfig ?? {} };
-    },
-};
+export const navigationMenuApi = componentState({
+    component: 'navigation-menu',
+    states: navigationMenuStates,
+    apply: (content, state) => triggerStateChange(content, state.name, state.config),
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.navigationMenuApi = navigationMenuApi;
 df$.navigationMenuStates = navigationMenuStates;
 function init() {
@@ -63,9 +62,9 @@ function init() {
     // .nav-menu ancestor. Scanning wrappers left those panels unanchored —
     // position-anchor stayed 'normal' and the popover fell back to the viewport
     // top-left (reported twice: site-header Default + Sticky).
-    document.querySelectorAll('.nav-menu-trigger[popovertarget]:not([data-init])').forEach((trigger) => {
+    dfDollar('.nav-menu-trigger[popovertarget]:not([data-init])').toArray().forEach((trigger) => {
         trigger.dataset.init = '';
-        const content = document.getElementById(trigger.getAttribute('popovertarget'));
+        const content = dfDollar('#' + CSS.escape(trigger.getAttribute('popovertarget'))).get(0);
         if (!content)
             return;
         // CSS anchor positioning - unique name per trigger-content pair
@@ -74,12 +73,10 @@ function init() {
         content.style.positionAnchor = anchorId;
     });
     // bind-scope the api per content element: `$('#nav-products').api.setState('open')`
-    document.querySelectorAll('.nav-menu-content[popover]:not([data-init])').forEach((content) => {
+    dfDollar('.nav-menu-content[popover]:not([data-init])').toArray().forEach((content) => {
         content.dataset.init = '';
-        content.api = {
-            setState: (stateName, config) => navigationMenuApi.setState(content, stateName, config),
-            getState: () => navigationMenuApi.getState(content),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(content, navigationMenuApi);
     });
 }
 init();

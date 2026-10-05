@@ -4,11 +4,22 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const dialogStates = ['default', 'open'];
+
+/**
+ * The markup of a state: an open dialog carries `open`. render() applies it
+ * to a detached copy; on the live dialog showModal()/close() (the native
+ * protocol: top layer, focus, inert background) produce exactly this
+ * attribute - the e2e render round trip proves they agree.
+ */
+function applyMarkup(dialog, stateName) {
+  dfDollar(dialog).attr('open', stateName === 'open' ? '' : null);
+}
 
 /**
  * UI side of setState: 'default' closes, 'open' opens modally. Native
@@ -27,28 +38,20 @@ function triggerStateChange(dialog, stateName, _config) {
 }
 
 /** Registry-level API; pass the dialog element explicitly. Unknown names throw. */
-export const dialogApi = {
-  setState(dialog, stateName, config = {}) {
-    if (!dialogStates.includes(stateName)) {
-      throw new Error(`dialog: unknown state "${stateName}" (supported: ${dialogStates.join(', ')})`);
-    }
-    triggerStateChange(dialog, stateName, config);
-    // state lives on the ELEMENT, not the module (multiple dialogs per page)
-    dialog.dataset.stateName = stateName;
-    dialog._stateConfig = config;
-  },
-  getState(dialog) {
-    return { name: dialog.dataset.stateName || 'default', config: dialog._stateConfig ?? {} };
-  },
-};
+export const dialogApi = componentState({
+  component: 'dialog',
+  states: dialogStates,
+  apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.dialogApi = dialogApi;
 df$.dialogStates = dialogStates;
 
 function init() {
-  document.querySelectorAll('[data-dialog-trigger]:not([data-init])').forEach((trigger) => {
+  dfDollar('[data-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
     trigger.dataset.init = '';
-    const dialog = document.getElementById(trigger.dataset.dialogTrigger);
+    const dialog = dfDollar('#' + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
     if (!dialog) return;
     trigger.addEventListener('click', () => {
       dialog._trigger = trigger;
@@ -58,17 +61,14 @@ function init() {
   /* .command excluded: the command component owns its dialogs (own backdrop
      close, filtering, focus). Without this, dialog.js - which loads first —
      claims them via data-init and command.js's init silently skips them. */
-  document.querySelectorAll('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])').forEach((dialog) => {
-    dialog.dataset.init = '';
-    // bind-scope the api per instance: `$('#confirm').api.setState('open')`
-    dialog.api = {
-      setState: (stateName, config) => dialogApi.setState(dialog, stateName, config),
-      getState: () => dialogApi.getState(dialog),
-    };
+  dfDollar('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])').toArray().forEach((dialog) => {
+    dfDollar(dialog).data('init', '');
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(dialog, dialogApi);
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) dialog.close();
     });
-    dialog.querySelectorAll('[data-dialog-close]').forEach((btn) => {
+    dfDollar(dialog).find('[data-dialog-close]').toArray().forEach((btn) => {
       btn.addEventListener('click', () => { dialog.close(); });
     });
     dialog.addEventListener('close', () => {

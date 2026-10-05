@@ -1,0 +1,133 @@
+---
+title: "Questionnaire: Flow Graph"
+description: "The questionnaire as a graph - analyze() checks a flow for missing targets, cycles, dead ends, unreachable steps and fields a rule may read unanswered (dominators); toMermaid() draws it with the walked path, live."
+slug: "questionnaire-graph"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="questionnaire-graph" title="Flow Graph" component="questionnaire">
+  Every questionnaire is a directed graph: steps are nodes, and each <code>data-goto</code>, rule and <code>data-next</code> is an edge. The controller walks it - and it can also check it before anyone fills it in, and draw it. <code>analyze(form)</code> runs on every form at load (a broken one gets <code>data-flow-invalid</code> and a console warning); <code>toMermaid(form)</code> turns the graph into a <a href="mermaid.html">Mermaid</a> flowchart with the path taken so far marked.
+</PageHeader>
+
+<H2 id="live">The graph, live</H2>
+
+```html example label="Onboarding, drawn as you answer" schema="none" height="44" hint="Answer on the left; the flowchart on the right is toMermaid(form), re-rendered on every move (the form's store is subscribed): every possible edge with its choice or rule as the label, the steps taken bold, the current one dashed. Change an early answer and watch the path move."
+<div class="flex flex-wrap gap-6 items-start">
+  <form class="questionnaire" id="q-onboard" aria-label="Onboarding" data-persist="none" style="flex:1 1 18rem;">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="role">
+      <legend class="questionnaire-title">Your role?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="role" value="dev" required data-goto="repo"><span class="questionnaire-choice-label">Engineer</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="role" value="pm" data-goto="size"><span class="questionnaire-choice-label">Manager</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="repo" data-next="size">
+      <legend class="questionnaire-title">Connect a repository?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="repo" value="github" required><span class="questionnaire-choice-label">GitHub</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="repo" value="later"><span class="questionnaire-choice-label">Later</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="size">
+      <legend class="questionnaire-title">Team size?</legend>
+      <input class="input" name="size" type="number" min="1" required aria-label="Team size" style="max-width:8rem;">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="sales" data-next="done">
+      <legend class="questionnaire-title">Talk to sales?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="sales" value="yes" required><span class="questionnaire-choice-label">Yes please</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="sales" value="no"><span class="questionnaire-choice-label">No thanks</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="done" data-end>
+      <legend class="questionnaire-title">You're set</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Finish</button>
+    </div>
+    <div class="questionnaire-complete"><p>Welcome!</p></div>
+    <script type="application/json" class="questionnaire-rules">
+      { "branches": { "size": [{ "when": [{ "field": "size", "op": "gte", "value": 20 }], "goto": "sales" }, { "when": [], "goto": "done" }] } }
+    </script>
+  </form>
+  <figure class="mermaid-diagram" id="q-onboard-graph" aria-label="The onboarding flow" style="flex:1 1 18rem;margin:0;">
+    <pre class="mermaid">flowchart TD
+  start["…"]</pre>
+  </figure>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('q-onboard');
+    const fig = document.getElementById('q-onboard-graph');
+    const draw = () => {
+      fig.querySelector('pre.mermaid').textContent = df$.shadcn.questionnaire.toMermaid(form);
+      fig.api?.setState('rendered');
+    };
+    // a move (not every keystroke) redraws: the step or the history changed
+    let last = '';
+    form.store.subscribe(({ config }) => {
+      const key = config.step + '|' + config.history.join(',') + '|' + config.index;
+      if (key !== last) { last = key; draw(); }
+    }, { immediate: true });
+  });
+</script>
+```
+
+<H2 id="analyze">Checking a flow</H2>
+
+<DocText><code>analyze(form)</code> returns <code>\{ ok, errors, warnings, nodes, edges \}</code>. <strong>Errors</strong>: an edge to a step that does not exist, a cycle (a questionnaire must end), a dead end (a step that leads nowhere and is no <code>data-end</code>), no end at all or none reachable, a rule or <code>data-depends-on</code> that reads a field no step asks. <strong>Warnings</strong>: steps no path reaches, and fields a rule reads that a path can arrive without - computed with <em>dominators</em>: a field is only guaranteed at a step when every path to it passes a step where the field is required.</DocText>
+
+```html example label="A broken flow, explained" schema="none" hint="This flow is wrong on purpose. The list is analyze(form): a jump to a missing step, a loop between 'details' and 'confirm', a dead end, an unreachable step, a rule reading a field only one branch asks, a dependency on a field nobody asks. The form also carries data-flow-invalid."
+<div class="flex flex-col gap-3" style="max-width:40rem;">
+  <form class="questionnaire" id="q-broken" aria-label="A broken flow" data-persist="none" hidden>
+    <fieldset class="questionnaire-step" data-step="start">
+      <legend class="questionnaire-title">Start</legend>
+      <label class="questionnaire-choice"><input type="radio" name="path" value="a" required data-goto="details"><span>A</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="path" value="b" data-goto="extra"><span>B</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="path" value="c" data-goto="summery"><span>C</span></label>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="extra" data-next="details"><legend class="questionnaire-title">Extra</legend><input name="coupon" required aria-label="Coupon"></fieldset>
+    <fieldset class="questionnaire-step" data-step="details" data-next="confirm" data-depends-on="voucher"><legend class="questionnaire-title">Details</legend><input name="name" required aria-label="Name"></fieldset>
+    <fieldset class="questionnaire-step" data-step="confirm" data-next="details"><legend class="questionnaire-title">Confirm</legend><input name="ok" aria-label="OK"></fieldset>
+    <fieldset class="questionnaire-step" data-step="orphan" data-next="end"><legend class="questionnaire-title">Never reached</legend></fieldset>
+    <fieldset class="questionnaire-step" data-step="end" data-end><legend class="questionnaire-title">End</legend></fieldset>
+    <fieldset class="questionnaire-step" data-step="stuck"><legend class="questionnaire-title">Leads nowhere</legend></fieldset>
+    <script type="application/json" class="questionnaire-rules">
+      { "branches": { "details": [{ "when": [{ "field": "coupon", "op": "answered" }], "goto": "end" }] } }
+    </script>
+  </form>
+  <div class="card"><div class="card-content" style="padding-block:1rem;">
+    <p class="text-sm font-medium m-0 mb-2">Errors</p>
+    <ul class="text-sm m-0 mb-3 ps-5" id="q-broken-errors"></ul>
+    <p class="text-sm font-medium m-0 mb-2">Warnings</p>
+    <ul class="text-sm m-0 ps-5" id="q-broken-warnings"></ul>
+  </div></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const report = df$.shadcn.questionnaire.analyze(document.getElementById('q-broken'));
+    const fill = (id, list) => document.getElementById(id).replaceChildren(...list.map((m) => Object.assign(document.createElement('li'), { textContent: m })));
+    fill('q-broken-errors', report.errors);
+    fill('q-broken-warnings', report.warnings);
+  });
+</script>
+```
+
+<H2 id="dominators">Why dominators</H2>
+
+<DocText>A rule on step <em>S</em> that reads the answer <em>f</em> is only safe if every way to <em>S</em> asked <em>f</em> - otherwise some users reach <em>S</em> without it, the condition sees nothing, and the branch quietly goes the other way. A step <em>D</em> dominates <em>S</em> when every path from the start to <em>S</em> passes <em>D</em>; the fields that are required on <em>S</em>'s dominators are exactly the fields guaranteed at <em>S</em>. In the broken flow above, <code>coupon</code> is asked only on the B branch, so the rule on <code>details</code> gets a warning. In the onboarding flow the rule on <code>size</code> reads <code>size</code> itself - always safe.</DocText>
+
+<SourceFiles component="questionnaire" section="css">
+  <SourceNote for="css">The graph is computed by the questionnaire's script (<code>analyze</code>, <code>toMermaid</code>); the drawing is the <a href="mermaid.html">Mermaid</a> component.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="questionnaire" section="js" jsTitle="JS" />
+
+</DocPage>

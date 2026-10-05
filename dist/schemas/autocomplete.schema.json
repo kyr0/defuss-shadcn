@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "name": "autocomplete",
+  "states": {
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".autocomplete" },
+      "mutation": { "kind": "api", "name": "open" },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    },
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".autocomplete" },
+      "mutation": { "kind": "api", "name": "loading" },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    },
+    "empty": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".autocomplete" },
+      "mutation": { "kind": "api", "name": "empty" },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    },
+    "error": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".autocomplete" },
+      "mutation": { "kind": "api", "name": "error" },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    }
+  },
+  "actions": {}
+}

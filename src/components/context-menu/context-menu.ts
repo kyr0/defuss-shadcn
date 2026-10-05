@@ -5,9 +5,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
+import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const contextMenuStates = ['default', 'open'];
 
@@ -24,6 +25,13 @@ function keepInView(menu, x, y) {
   if (menu.matches(':popover-open')) fit();
   else menu.addEventListener('toggle', (e) => { if (e.newState === 'open') fit(); }, { once: true });
 }
+
+/**
+ * The markup of a state: none - 'open' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) {}
 
 /**
  * UI side of setState (per menu popover): 'open' shows the menu at { x, y }
@@ -51,24 +59,19 @@ function triggerStateChange(menu, stateName, config) {
 }
 
 /** Registry-level API; pass the menu popover explicitly. Unknown names throw. */
-export const contextMenuApi = {
-  setState(menu, stateName, config = {}) {
-    if (!contextMenuStates.includes(stateName)) {
-      throw new Error(`context-menu: unknown state "${stateName}" (supported: ${contextMenuStates.join(', ')})`);
-    }
-    triggerStateChange(menu, stateName, config);
-    // state lives on the ELEMENT, not the module (many menus per page)
-    menu.dataset.stateName = stateName;
-    menu._stateConfig = config;
-  },
-  getState(menu) {
+export const contextMenuApi = componentState({
+  component: 'context-menu',
+  states: contextMenuStates,
+  apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
+  read: (menu, state) => {
     // reflect reality: right-clicks and item clicks change the UI too
     return {
       name: menu.matches(':popover-open') ? 'open' : 'default',
-      config: menu._stateConfig ?? {},
+      config: state.config,
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.contextMenuApi = contextMenuApi;
 df$.contextMenuStates = contextMenuStates;
@@ -111,15 +114,13 @@ function openMenuAt(menu, x, y) {
 }
 
 function init() {
-  document.querySelectorAll('[data-context-menu]:not([data-init])').forEach((trigger) => {
+  dfDollar('[data-context-menu]:not([data-init])').toArray().forEach((trigger) => {
   trigger.dataset.init = '';
-  const menu = document.getElementById(trigger.dataset.contextMenu);
+  const menu = dfDollar('#' + CSS.escape(trigger.dataset.contextMenu)).get(0);
   if (!menu) return;
   // bind-scope the api per menu popover: `$('#my-ctx').api.setState('open', { x: 40, y: 40 })`
-  menu.api = {
-    setState: (stateName, config) => contextMenuApi.setState(menu, stateName, config),
-    getState: () => contextMenuApi.getState(menu),
-  };
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(menu, contextMenuApi);
   trigger.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     // no pointer press (keyboard-synthesized, e.g. a11y tooling) → open next frame

@@ -17,16 +17,26 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const productShowcaseStates = ['default', 'playing'];
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+    dfDollar(el).attr('data-state', stateName === 'playing' ? 'playing' : 'default');
+}
 /**
  * UI side of setState: the only function touching the DOM for a state
  * change. 'playing' hides the poster/play button (CSS, via data-state) and
  * starts playback; 'default' pauses and rewinds so the poster returns.
  */
 function triggerStateChange(showcase, stateName, _config) {
-    const video = showcase.querySelector('video');
+    const video = dfDollar(showcase).find('video').get(0);
     switch (stateName) {
         case 'default':
             if (video) {
@@ -47,42 +57,34 @@ function triggerStateChange(showcase, stateName, _config) {
     }
 }
 /** Registry-level API; pass the showcase element explicitly. Unknown names throw. */
-export const productShowcaseApi = {
-    setState(showcase, stateName, config = {}) {
-        if (!productShowcaseStates.includes(stateName)) {
-            throw new Error(`product-showcase: unknown state "${stateName}" (supported: ${productShowcaseStates.join(', ')})`);
-        }
-        triggerStateChange(showcase, stateName, config);
-        // state lives on the ELEMENT, not the module (multiple showcases per page)
-        showcase.dataset.stateName = stateName;
-        showcase._stateConfig = config;
-    },
-    getState(showcase) {
+export const productShowcaseApi = componentState({
+    component: 'product-showcase',
+    states: productShowcaseStates,
+    apply: (showcase, state) => triggerStateChange(showcase, state.name, state.config),
+    read: (showcase, state) => {
         // reflect reality: a user pausing the native controls returns to the poster
         const playing = showcase.dataset.state === 'playing';
         return {
             name: showcase.dataset.stateName || (playing ? 'playing' : 'default'),
-            config: showcase._stateConfig ?? {},
+            config: state.config,
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.productShowcaseApi = productShowcaseApi;
 df$.productShowcaseStates = productShowcaseStates;
 function init() {
-    document.querySelectorAll('.mk-showcase:not([data-init])').forEach((showcase) => {
+    dfDollar('.mk-showcase:not([data-init])').toArray().forEach((showcase) => {
         showcase.dataset.init = '';
         showcase.dataset.state = 'default';
-        // bind-scope the api per instance: `$('#showcase').api.setState('playing')`
-        showcase.api = {
-            setState: (stateName, config) => productShowcaseApi.setState(showcase, stateName, config),
-            getState: () => productShowcaseApi.getState(showcase),
-        };
-        showcase.querySelector('.mk-showcase-play')?.addEventListener('click', () => {
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(showcase, productShowcaseApi);
+        dfDollar(showcase).find('.mk-showcase-play').get(0)?.addEventListener('click', () => {
             productShowcaseApi.setState(showcase, 'playing');
         });
         // native pause/ended returns to the poster: route it through the API so
         // the visible state and getState() never diverge (pause covers `ended` too)
-        showcase.querySelector('video')?.addEventListener('pause', () => {
+        dfDollar(showcase).find('video').get(0)?.addEventListener('pause', () => {
             if (showcase.dataset.state === 'playing')
                 productShowcaseApi.setState(showcase, 'default');
         });

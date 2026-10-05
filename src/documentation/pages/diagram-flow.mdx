@@ -1,0 +1,244 @@
+---
+title: "Illustrative · Flow"
+description: "Flowcharts with the diagram component - pills for start and end, diamonds for decisions, labelled exits; animated step by step and as a before/changes/after delta."
+slug: "diagram-flow"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-flow" title="Illustrative · Flow" component="diagram">
+  Decision logic as a flowchart: shape carries the type - <code>pill</code> for start and end, <code>diamond</code> for a decision, a rectangle for a step - and every exit of a decision is labelled. The happy path gets the accent.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Refund decision" component="diagram" hint="Decisions are diamonds (data-shape=diamond); the connector leaves the side that faces its target and carries its answer as a masked label."
+<figure class="diagram" id="dg-flow" data-type="flow" aria-label="Refund decision flow">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Flowchart</span>
+    <span class="diagram-title">Should this refund go through?</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-node" data-node="req" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Refund request</span></div>
+    <div class="diagram-node" data-node="paid" data-shape="diamond" style="--col:2;--row:1"><span class="diagram-node-name">Paid within 30 days?</span></div>
+    <div class="diagram-node" data-node="amount" data-shape="diamond" style="--col:3;--row:1"><span class="diagram-node-name">Under €200?</span></div>
+    <div class="diagram-node" data-node="auto" data-tone="accent" style="--col:4;--row:1"><span class="diagram-node-name">Refund automatically</span></div>
+    <div class="diagram-node" data-node="review" style="--col:2;--row:2">
+      <span class="diagram-node-name">Manual review</span>
+      <span class="diagram-node-meta">support queue</span>
+    </div>
+    <div class="diagram-node" data-node="approve" data-shape="diamond" style="--col:3;--row:2"><span class="diagram-node-name">Approve?</span></div>
+    <div class="diagram-node" data-node="done" data-shape="pill" style="--col:4;--row:2"><span class="diagram-node-name">Closed</span></div>
+    <div class="diagram-node" data-node="deny" style="--col:3;--row:3"><span class="diagram-node-name">Decline + explain</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="req" data-to="paid"></li>
+    <li class="diagram-edge" data-from="paid" data-to="amount">yes</li>
+    <li class="diagram-edge" data-from="amount" data-to="auto" data-tone="accent">yes</li>
+    <li class="diagram-edge" data-from="paid" data-to="review">no</li>
+    <li class="diagram-edge" data-from="amount" data-to="review">no</li>
+    <li class="diagram-edge" data-from="review" data-to="approve"></li>
+    <li class="diagram-edge" data-from="approve" data-to="done">yes</li>
+    <li class="diagram-edge" data-from="auto" data-to="done"></li>
+    <li class="diagram-edge" data-from="approve" data-to="deny">no</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+<DocText>Automatic order: no <code>data-step</code> anywhere, so the nodes enter in document order and each exit appears with the step it leads to.</DocText>
+
+```html example label="Refund decision, step by step" component="diagram" hint="Automatic steps: one node a step, in markup order."
+<figure class="diagram" id="dg-flow-steps" data-type="flow" data-steps data-autoplay aria-label="Refund decision flow">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Flowchart</span>
+    <span class="diagram-title">Should this refund go through?</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-node" data-node="req" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Refund request</span></div>
+    <div class="diagram-node" data-node="paid" data-shape="diamond" style="--col:2;--row:1"><span class="diagram-node-name">Paid within 30 days?</span></div>
+    <div class="diagram-node" data-node="amount" data-shape="diamond" style="--col:3;--row:1"><span class="diagram-node-name">Under €200?</span></div>
+    <div class="diagram-node" data-node="auto" data-tone="accent" style="--col:4;--row:1"><span class="diagram-node-name">Refund automatically</span></div>
+    <div class="diagram-node" data-node="review" style="--col:2;--row:2">
+      <span class="diagram-node-name">Manual review</span>
+      <span class="diagram-node-meta">support queue</span>
+    </div>
+    <div class="diagram-node" data-node="approve" data-shape="diamond" style="--col:3;--row:2"><span class="diagram-node-name">Approve?</span></div>
+    <div class="diagram-node" data-node="done" data-shape="pill" style="--col:4;--row:2"><span class="diagram-node-name">Closed</span></div>
+    <div class="diagram-node" data-node="deny" style="--col:3;--row:3"><span class="diagram-node-name">Decline + explain</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="req" data-to="paid"></li>
+    <li class="diagram-edge" data-from="paid" data-to="amount">yes</li>
+    <li class="diagram-edge" data-from="amount" data-to="auto" data-tone="accent">yes</li>
+    <li class="diagram-edge" data-from="paid" data-to="review">no</li>
+    <li class="diagram-edge" data-from="amount" data-to="review">no</li>
+    <li class="diagram-edge" data-from="review" data-to="approve"></li>
+    <li class="diagram-edge" data-from="approve" data-to="done">yes</li>
+    <li class="diagram-edge" data-from="auto" data-to="done"></li>
+    <li class="diagram-edge" data-from="approve" data-to="deny">no</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Flow, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-flow-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-flow-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-flow-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-flow-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-flow-live" data-interactive data-type="flow" aria-label="Refund decision flow">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Flowchart</span>
+    <span class="diagram-title">Should this refund go through?</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-node" data-node="req" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Refund request</span></div>
+    <div class="diagram-node" data-node="paid" data-shape="diamond" style="--col:2;--row:1"><span class="diagram-node-name">Paid within 30 days?</span></div>
+    <div class="diagram-node" data-node="amount" data-shape="diamond" style="--col:3;--row:1"><span class="diagram-node-name">Under €200?</span></div>
+    <div class="diagram-node" data-node="auto" data-tone="accent" style="--col:4;--row:1"><span class="diagram-node-name">Refund automatically</span></div>
+    <div class="diagram-node" data-node="review" style="--col:2;--row:2">
+      <span class="diagram-node-name">Manual review</span>
+      <span class="diagram-node-meta">support queue</span>
+    </div>
+    <div class="diagram-node" data-node="approve" data-shape="diamond" style="--col:3;--row:2"><span class="diagram-node-name">Approve?</span></div>
+    <div class="diagram-node" data-node="done" data-shape="pill" style="--col:4;--row:2"><span class="diagram-node-name">Closed</span></div>
+    <div class="diagram-node" data-node="deny" style="--col:3;--row:3"><span class="diagram-node-name">Decline + explain</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="req" data-to="paid"></li>
+    <li class="diagram-edge" data-from="paid" data-to="amount">yes</li>
+    <li class="diagram-edge" data-from="amount" data-to="auto" data-tone="accent">yes</li>
+    <li class="diagram-edge" data-from="paid" data-to="review">no</li>
+    <li class="diagram-edge" data-from="amount" data-to="review">no</li>
+    <li class="diagram-edge" data-from="review" data-to="approve"></li>
+    <li class="diagram-edge" data-from="approve" data-to="done">yes</li>
+    <li class="diagram-edge" data-from="auto" data-to="done"></li>
+    <li class="diagram-edge" data-from="approve" data-to="deny">no</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Flow, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-flow-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-flow-edit" data-interactive data-type="flow" aria-label="Refund decision flow">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Flowchart</span>
+        <span class="diagram-title">Should this refund go through?</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:4">
+        <div class="diagram-node" data-node="req" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Refund request</span></div>
+        <div class="diagram-node" data-node="paid" data-shape="diamond" style="--col:2;--row:1"><span class="diagram-node-name">Paid within 30 days?</span></div>
+        <div class="diagram-node" data-node="amount" data-shape="diamond" style="--col:3;--row:1"><span class="diagram-node-name">Under €200?</span></div>
+        <div class="diagram-node" data-node="auto" data-tone="accent" style="--col:4;--row:1"><span class="diagram-node-name">Refund automatically</span></div>
+        <div class="diagram-node" data-node="review" style="--col:2;--row:2">
+          <span class="diagram-node-name">Manual review</span>
+          <span class="diagram-node-meta">support queue</span>
+        </div>
+        <div class="diagram-node" data-node="approve" data-shape="diamond" style="--col:3;--row:2"><span class="diagram-node-name">Approve?</span></div>
+        <div class="diagram-node" data-node="done" data-shape="pill" style="--col:4;--row:2"><span class="diagram-node-name">Closed</span></div>
+        <div class="diagram-node" data-node="deny" style="--col:3;--row:3"><span class="diagram-node-name">Decline + explain</span></div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="req" data-to="paid"></li>
+        <li class="diagram-edge" data-from="paid" data-to="amount">yes</li>
+        <li class="diagram-edge" data-from="amount" data-to="auto" data-tone="accent">yes</li>
+        <li class="diagram-edge" data-from="paid" data-to="review">no</li>
+        <li class="diagram-edge" data-from="amount" data-to="review">no</li>
+        <li class="diagram-edge" data-from="review" data-to="approve"></li>
+        <li class="diagram-edge" data-from="approve" data-to="done">yes</li>
+        <li class="diagram-edge" data-from="auto" data-to="done"></li>
+        <li class="diagram-edge" data-from="approve" data-to="deny">no</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-flow-edit-panel" aria-labelledby="dg-flow-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-flow-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-flow-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-flow-edit');
+    const grid = document.getElementById('dg-flow-edit-grid');
+    const title = document.getElementById('dg-flow-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Fraud check added" component="diagram" hint="A changed decision keeps its identity (data-node) - the old wording is data-before on its name."
+<figure class="diagram" id="dg-flow-delta" data-type="flow" data-delta aria-label="Refund flow, revised">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process change</span>
+    <span class="diagram-title">Fraud check before the money moves</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-node" data-node="req" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Refund request</span></div>
+    <div class="diagram-node" data-node="paid" data-shape="diamond" data-change="changed" style="--col:2;--row:1">
+      <span class="diagram-node-name" data-before="Paid within 14 days?">Paid within 30 days?</span>
+    </div>
+    <div class="diagram-node" data-node="fraud" data-shape="diamond" data-tone="accent" data-change="added" style="--col:3;--row:1"><span class="diagram-node-name">Fraud score < 0.4?</span></div>
+    <div class="diagram-node" data-node="auto" style="--col:3;--row:2"><span class="diagram-node-name">Refund automatically</span></div>
+    <div class="diagram-node" data-node="review" style="--col:2;--row:2"><span class="diagram-node-name">Manual review</span></div>
+    <div class="diagram-node" data-node="call" data-change="removed" style="--col:1;--row:2"><span class="diagram-node-name">Call the customer</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="req" data-to="paid"></li>
+    <li class="diagram-edge" data-from="paid" data-to="fraud" data-change="added">yes</li>
+    <li class="diagram-edge" data-from="fraud" data-to="auto" data-change="added">yes</li>
+    <li class="diagram-edge" data-from="fraud" data-to="review" data-change="added">no</li>
+    <li class="diagram-edge" data-from="paid" data-to="auto" data-change="removed">yes</li>
+    <li class="diagram-edge" data-from="paid" data-to="review">no</li>
+    <li class="diagram-edge" data-from="review" data-to="call" data-change="removed">unclear</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

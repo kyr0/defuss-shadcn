@@ -149,17 +149,17 @@ test('dialog component: the CodeExample card drives showModal/close end to end',
   const { doc } = await openDocPage('dialog.html');
 
   const card = doc.querySelector('.code-example[data-component="dialog"]') as HTMLElement & {
-    api?: { setState(name: string, config?: unknown): void };
+    preview?: { setState(name: string, config?: unknown): void };
   };
-  await waitFor(() => card?.api, 'dialog example card to boot its sandbox');
+  await waitFor(() => card?.preview, 'dialog example card to boot its sandbox');
 
-  card.api!.setState('open', true);
+  card.preview!.setState('open', true);
   await waitFor(
     () => JSON.parse(card.dataset.stateValues || '{}').open === true,
     'dialog to open (mirrored)',
   );
 
-  card.api!.setState('open', false);
+  card.preview!.setState('open', false);
   await waitFor(
     () => JSON.parse(card.dataset.stateValues || '{}').open === false,
     'dialog to close (mirrored)',
@@ -172,15 +172,95 @@ test('menubar component: the CodeExample card opens and closes a menu of the bar
   const { doc } = await openDocPage('menubar.html');
 
   const card = doc.querySelector('.code-example[data-component="menubar"]') as HTMLElement & {
-    api?: { setState(name: string, config?: unknown): void };
+    preview?: { setState(name: string, config?: unknown): void };
   };
-  await waitFor(() => card?.api, 'menubar example card to boot its sandbox');
+  await waitFor(() => card?.preview, 'menubar example card to boot its sandbox');
 
-  card.api!.setState('open', true);
+  card.preview!.setState('open', true);
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').open === true, 'a menu of the bar to open (mirrored)');
 
-  card.api!.setState('open', false);
+  card.preview!.setState('open', false);
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').open === false, 'the bar to close (mirrored)');
+});
+
+for (const name of ['data-grid', 'data-tree', 'autocomplete']) {
+  test(`${name} component: the big-data CodeExample card drives loading through the State API end to end`, async () => {
+    // the big-data demos are executable fences: the records are generated and
+    // queried inside the sandbox - the card mirrors the observed state name
+    const { doc } = await openDocPage(`${name}.html`);
+    const card = doc.querySelector(`.code-example[data-component="${name}"]`) as HTMLElement & {
+      preview?: { setState(state: string, value?: unknown): void };
+    };
+    await waitFor(() => card?.preview, `${name} example card to boot its sandbox`);
+    await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').loading === false, `${name} to settle`);
+    card.preview!.setState('loading', true);
+    await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').loading === true, `${name} to be loading (mirrored)`);
+    card.preview!.setState('loading', false);
+    await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').loading === false, `${name} to show its records again (mirrored)`);
+  });
+}
+
+test('questionnaire component: the CodeExample card walks to the review and back through the State API', async () => {
+  // the feedback flow is an executable fence: the walk happens in the
+  // sandbox, the card mirrors the observed state name
+  const { doc } = await openDocPage('questionnaire.html');
+  const card = doc.querySelector('.code-example[data-component="questionnaire"]') as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+  };
+  await waitFor(() => card?.preview, 'questionnaire example card to boot its sandbox');
+  card.preview!.setState('review', true);
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').review === true, 'the questionnaire to show its review (mirrored)');
+  card.preview!.setState('review', false);
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').review === false, 'the questionnaire to leave the review (mirrored)');
+});
+
+test('diagram component: the CodeExample card pauses on a step and plays through the State API', async () => {
+  // the first example on the page is a played diagram: the State tab drives
+  // the step in the sandbox, the card mirrors data-step-current / the state
+  const { doc } = await openDocPage('diagram.html');
+  const card = doc.querySelector('.code-example[data-component="diagram"]') as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+  };
+  await waitFor(() => card?.preview, 'diagram example card to boot its sandbox');
+  card.preview!.setState('paused', 2);
+  await waitFor(() => String(JSON.parse(card.dataset.stateValues || '{}').paused) === '2', 'the diagram to pause on step 2 (mirrored)');
+  card.preview!.setState('playing', true);
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').playing === true, 'the diagram to play (mirrored)');
+  card.preview!.setState('active', 'api');
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').active === 'api', 'the gateway to be active (mirrored)');
+});
+
+test('property-grid component: the CodeExample card opens an editor through the State API', async () => {
+  // the settings grid is an executable fence: the State tab names a path,
+  // the sandbox opens that value's editor and the card mirrors data-editing
+  const { doc } = await openDocPage('property-grid.html');
+  const card = doc.querySelector('.code-example[data-component="property-grid"]') as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+  };
+  await waitFor(() => card?.preview, 'property grid example card to boot its sandbox');
+  card.preview!.setState('editing', 'replicas');
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').editing === 'replicas', 'the replicas editor to open (mirrored)');
+});
+
+test('code-example component: every docs card IS the shipped HTML Preview Editor; its page previews nested cards', async () => {
+  // the page's first example nests a card in its preview: the State tab's
+  // `code` control drives the nested card's own State API in the sandbox
+  const { doc } = await openDocPage('code-example.html');
+  const card = doc.querySelector('.code-example[data-component="code-example"]') as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+    api?: { setState(name: string, config?: unknown): void; getState(): { name: string; config: { source: string } } };
+  };
+  await waitFor(() => card?.preview, 'the HTML Preview Editor example card to boot its sandbox');
+  card.preview!.setState('code', true);
+  await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').code === true, 'the nested card to open its source (mirrored)');
+  // dogfooding: the docs card itself runs the component's State API
+  card.api!.setState('code');
+  const panel = card.querySelector('.code-example-panel[data-panel="code"]') as HTMLElement;
+  expect(panel.hidden).toBe(false);
+  expect(card.api!.getState().name).toBe('code');
+  expect(card.api!.getState().config.source).toContain('class="code-example"');
+  card.api!.setState('default');
+  expect(panel.hidden).toBe(true);
 });
 
 test('index states the current stats.json footprint and dogfoods the Statistic component', async () => {
@@ -266,7 +346,8 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
   await clickSelector(doc, 'details[data-nav-section="Introduction"] > summary');
   await waitFor(() => !intro.open, 'Introduction to collapse');
   await waitFor(
-    () => doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') === JSON.stringify({ Introduction: '0' }),
+    // a persisted store: the defuss-store envelope around the map
+    () => JSON.stringify(JSON.parse(doc.defaultView!.localStorage.getItem('defuss-shadcn-nav-collapsed') ?? 'null')?.value) === JSON.stringify({ Introduction: '0' }),
     'only the Introduction toggle is stored',
   );
   doc.defaultView!.localStorage.removeItem('defuss-shadcn-nav-collapsed');
@@ -484,7 +565,7 @@ test('code collapse-all toggles every snippet block - including the standalone C
 
 test('CodeExample fullscreen: the whole card fills the screen with the toolbar docked at the bottom', async () => {
   // the test page sits in an iframe without allow="fullscreen", so the request
-  // is rejected and the card takes the .ce-fs fixed-overlay fallback - the
+  // is rejected and the card takes the data-fullscreen fixed-overlay fallback - the
   // same layout the native :fullscreen rules produce
   const { doc } = await openDocPage('sheet.html');
   await waitFor(() => doc.querySelector('.code-example[data-init]'), 'booted card');
@@ -492,7 +573,7 @@ test('CodeExample fullscreen: the whole card fills the screen with the toolbar d
   const win = doc.defaultView!;
   card.scrollIntoView();
   (card.querySelector('.code-example-full') as HTMLElement).click();
-  await waitFor(() => card.classList.contains('ce-fs'), 'fullscreen fallback overlay');
+  await waitFor(() => card.hasAttribute('data-fullscreen'), 'fullscreen fallback overlay');
 
   const tb = card.querySelector('.code-example-toolbar')!.getBoundingClientRect();
   const stage = card.querySelector('.preview')!.getBoundingClientRect();
@@ -505,13 +586,13 @@ test('CodeExample fullscreen: the whole card fills the screen with the toolbar d
   // device modes keep working in fullscreen - and the canvas is no longer
   // pinned to 100%: the phone box is its own size with resize handles
   (card.querySelector('.code-example-vp[data-vp="phone"]') as HTMLElement).click();
-  await waitFor(() => (card.querySelector('.ce-screen') as HTMLElement).dataset.mode === 'phone', 'phone mode');
-  const rz = card.querySelector('.ce-resizer') as HTMLElement;
+  await waitFor(() => (card.querySelector('.code-example-screen') as HTMLElement).dataset.mode === 'phone', 'phone mode');
+  const rz = card.querySelector('.code-example-resizer') as HTMLElement;
   expect(Math.round(rz.getBoundingClientRect().width), 'phone canvas keeps its own width').toBeLessThan(win.innerWidth);
   expect(rz.querySelectorAll('.resizer-handle').length, 'resize handles present').toBeGreaterThan(0);
 
   (card.querySelector('.code-example-full-exit') as HTMLElement).click();
-  await waitFor(() => !card.classList.contains('ce-fs'), 'exit fullscreen');
+  await waitFor(() => !card.hasAttribute('data-fullscreen'), 'exit fullscreen');
   expect(card.querySelector('.code-example-full')!.textContent).toContain('Fullscreen');
   (card.querySelector('.code-example-vp[data-vp="full"]') as HTMLElement).click();
 });
@@ -524,16 +605,16 @@ test('accordion state contract: the CodeExample card exposes the schema State AP
   const { doc } = await openDocPage('accordion.html');
 
   const card = doc.querySelector('.code-example[data-component="accordion"]') as HTMLElement & {
-    api?: { setState(name: string, config?: Record<string, unknown>): void; getState(): { name: Record<string, unknown> } };
+    preview?: { setState(name: string, config?: Record<string, unknown>): void; getState(): { name: Record<string, unknown> } };
   };
-  await waitFor(() => card?.api, 'accordion example card to boot its sandbox');
+  await waitFor(() => card?.preview, 'accordion example card to boot its sandbox');
 
   const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
-  card.api!.setState('all-open');
+  card.preview!.setState('all-open');
   await waitFor(() => mirrored()['all-open'] === true, 'all-open to mirror onto the card');
   expect(mirrored()['all-closed'], 'all-closed is false while all-open').toBe(false);
 
-  card.api!.setState('default');
+  card.preview!.setState('default');
   await waitFor(() => mirrored()['all-open'] === false, 'default clears all-open');
 });
 
@@ -543,24 +624,24 @@ test('presentation state contract: the CodeExample card drives the sandbox deck 
   const { doc } = await openDocPage('presentation.html');
 
   const card = doc.querySelector('.code-example[data-component="presentation"]') as HTMLElement & {
-    // host card api: name is a SCHEMA state (slide/notes/fullscreen), config the
+    // host card preview api: name is a SCHEMA state (slide/notes/fullscreen), config the
     // scalar editor value - the bridge maps it onto the runtime's own contract
-    api?: { setState(name: string, config?: unknown): void; getState(): { name: Record<string, unknown> } };
+    preview?: { setState(name: string, config?: unknown): void; getState(): { name: Record<string, unknown> } };
   };
-  await waitFor(() => card?.api, 'presentation example card to boot its sandbox');
+  await waitFor(() => card?.preview, 'presentation example card to boot its sandbox');
 
   const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
-  card.api!.setState('slide', 1);
+  card.preview!.setState('slide', 1);
   await waitFor(() => mirrored()['slide'] === '1' || mirrored()['slide'] === 1, 'slide 1 to mirror onto the card');
 
-  card.api!.setState('notes');
+  card.preview!.setState('notes');
   await waitFor(() => mirrored()['notes'] === true, 'notes to mirror onto the card');
 
-  card.api!.setState('slide', 0);
+  card.preview!.setState('slide', 0);
   await waitFor(() => mirrored()['slide'] === '0' || mirrored()['slide'] === 0, 'back to slide 0');
   expect(mirrored()['notes'], 'notes survive a slide move').toBe(true);
 
-  card.api!.setState('notes', false);
+  card.preview!.setState('notes', false);
   await waitFor(() => mirrored()['notes'] === false, 'notes cleared');
 });
 
@@ -572,22 +653,22 @@ test('anim-canvas state contract: the CodeExample card drives the sandbox canvas
   const { doc } = await openDocPage('anim-canvas.html');
 
   const card = doc.querySelector('.code-example[data-component="anim-canvas"]') as HTMLElement & {
-    api?: { setState(name: string, config?: unknown): void; getState(): { name: Record<string, unknown> } };
+    preview?: { setState(name: string, config?: unknown): void; getState(): { name: Record<string, unknown> } };
   };
-  await waitFor(() => card?.api, 'anim-canvas example card to boot its sandbox');
+  await waitFor(() => card?.preview, 'anim-canvas example card to boot its sandbox');
 
   const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
   // initial observation: the authored data-active slide, no overview
   await waitFor(() => mirrored()['slide'] === 'ac-1', 'initial slide to mirror onto the card');
   expect(mirrored()['overview'], 'overview starts off').toBe(false);
 
-  card.api!.setState('slide', 'ac-2');
+  card.preview!.setState('slide', 'ac-2');
   await waitFor(() => mirrored()['slide'] === 'ac-2', 'slide ac-2 to mirror onto the card');
 
-  card.api!.setState('overview');
+  card.preview!.setState('overview');
   await waitFor(() => mirrored()['overview'] === true, 'overview to mirror onto the card');
 
-  card.api!.setState('overview', false);
+  card.preview!.setState('overview', false);
   await waitFor(() => mirrored()['overview'] === false, 'overview cleared');
   expect(mirrored()['slide'], 'slide survives the overview round-trip').toBe('ac-2');
 });

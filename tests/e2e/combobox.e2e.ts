@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped combobox component. Loads the fixture
@@ -540,6 +541,10 @@ try {
     assert.equal(await page.$eval('#' + popover, (p: any) => p.api.getState().name), 'open');
     await page.$eval('#' + popover, (p: any) => p.api.setState('default'));
     await page.waitForFunction((id) => !document.getElementById(id)!.matches(':popover-open'), popover, { timeout: 5000 });
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.combobox-content[popover][id]', ['default','open'], { runtimeAttrs: ['style','data-highlighted','aria-activedescendant','hidden','aria-expanded'] });
   });
 
 } finally {

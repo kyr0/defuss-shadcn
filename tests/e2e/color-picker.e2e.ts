@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped color-picker component. Loads the
@@ -193,6 +194,11 @@ try {
 
   await check('no data-format keeps hex (unchanged default)', async () => {
     assert.match((await shown('cp-default'))!, /^#[0-9a-f]{6}$/);
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.color-picker[id]', ['default']);
   });
 
 } finally {

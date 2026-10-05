@@ -84,7 +84,7 @@
     document.documentElement.style.colorScheme = isDark ? 'light' : 'dark';
     document.getElementById('icon-sun').style.display  = isDark ? 'block' : 'none';
     document.getElementById('icon-moon').style.display = isDark ? 'none'  : 'block';
-    localStorage.setItem('defuss-shadcn-theme', isDark ? 'light' : 'dark');
+    if (docs.prefs) docs.prefs.colorScheme.set(isDark ? 'light' : 'dark');
     // theme files carry :root + .dark - the class switch re-themes by
     // itself; only the favicon derives from live tokens
     if (docs.updateFavicon) docs.updateFavicon();
@@ -332,6 +332,34 @@
 
     // Viewport-width toolbars on resizable demos
     initViewportStages();
+
+    // Counting statistics (the index's stat cards)
+    initStatCounts();
+  }
+
+  /* Figures marked data-stat-count count once they come into view: from
+     data-count-from to data-count (a count rises from 0, a size falls from
+     the next power of ten) - the shared counter, reduced motion included.
+     The rendered text is the final value; the counter only animates to it. */
+  function initStatCounts() {
+    var $ = globalThis.df$;
+    var shared = $ && $.shadcn && $.shadcn.shared;
+    if (!shared || !shared.animateCount || !('IntersectionObserver' in globalThis)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        var decimals = Number(en.target.dataset.countDecimals || 0);
+        shared.animateCount(en.target, {
+          duration: 1600,
+          format: function (n) { return n.toFixed(decimals); },
+        });
+      });
+    }, { threshold: 0.6 });
+    $('[data-stat-count]:not([data-counted])').each(function (_i, el) {
+      el.dataset.counted = '';
+      io.observe(el);
+    });
   }
 
   // Register content initializer with SPA router
@@ -340,7 +368,29 @@
   // both into the live df$.shadcn.docs - register after that point
   document.addEventListener('DOMContentLoaded', function () {
     docs.onPageReady(initPageContent);
+    docs.onPageReady(initThemeDesigner);
   });
+
+  /* The Theme Designer (theme-designer.html): its script loads on demand -
+     one page needs it - and leaving that page ends its live preview, so the
+     saved theme comes back. */
+  function initThemeDesigner() {
+    var root = document.querySelector('[data-theme-designer]');
+    if (!root) {
+      if (docs.leaveThemeDesigner) docs.leaveThemeDesigner();
+      return;
+    }
+    if (docs.initThemeDesigner) {
+      docs.initThemeDesigner(root);
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = 'js/theme-designer.js';
+    script.onload = function () {
+      if (docs.initThemeDesigner && document.contains(root)) docs.initThemeDesigner(root);
+    };
+    document.head.appendChild(script);
+  }
 
   // The Component Skill `<details>` (with its `[data-spec-href]` link in the
   // summary) toggles natively. It renders as a sibling AFTER .page-header

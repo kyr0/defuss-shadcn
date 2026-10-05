@@ -5,11 +5,24 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const avatarStates = ['default', 'error'];
+
+/**
+ * The markup of a state, for render(): the attributes every state writes -
+ * the same as triggerStateChange does on the live element - applied to a
+ * detached copy of the authored markup. The e2e render round trip proves
+ * the two agree.
+ */
+function applyMarkup(el, stateName) {
+  const img = dfDollar(el).find('.avatar-image');
+  if (stateName === 'error') img.attr('data-error', '').css('display', 'none');
+  else img.attr('data-error', null).css('display', '');
+}
 
 /**
  * UI side of setState (per wrapper): 'error' forces the broken-image look
@@ -17,7 +30,7 @@ const avatarStates = ['default', 'error'];
  * the image view. Wrappers without an <img> have nothing to toggle.
  */
 function triggerStateChange(wrapper, stateName, _config) {
-  const img = wrapper.querySelector('.avatar-image');
+  const img = dfDollar(wrapper).find('.avatar-image').get(0);
   if (!img) return;
   switch (stateName) {
     case 'default':
@@ -32,39 +45,31 @@ function triggerStateChange(wrapper, stateName, _config) {
 }
 
 /** Registry-level API; pass the wrapper explicitly. Unknown names throw. */
-export const avatarApi = {
-  setState(wrapper, stateName, config = {}) {
-    if (!avatarStates.includes(stateName)) {
-      throw new Error(`avatar: unknown state "${stateName}" (supported: ${avatarStates.join(', ')})`);
-    }
-    triggerStateChange(wrapper, stateName, config);
-    // state lives on the ELEMENT, not the module (many avatars per page)
-    wrapper.dataset.stateName = stateName;
-    wrapper._stateConfig = config;
-  },
-  getState(wrapper) {
+export const avatarApi = componentState({
+  component: 'avatar',
+  states: avatarStates,
+  apply: (wrapper, state) => triggerStateChange(wrapper, state.name, state.config),
+  read: (wrapper, state) => {
     // reflect reality: a network failure flips it without setState()
-    const img = wrapper.querySelector('.avatar-image');
+    const img = dfDollar(wrapper).find('.avatar-image').get(0);
     const errored = img ? img.hasAttribute('data-error') : true;
     return {
       name: errored ? 'error' : 'default',
-      config: wrapper._stateConfig ?? {},
+      config: state.config,
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.avatarApi = avatarApi;
 df$.avatarStates = avatarStates;
 
 function init() {
-  document.querySelectorAll('.avatar:not([data-init])').forEach((wrapper) => {
+  dfDollar('.avatar:not([data-init])').toArray().forEach((wrapper) => {
   wrapper.dataset.init = '';
-  // bind-scope the api per avatar: `$('#my-avatar').api.setState('error')`
-  wrapper.api = {
-    setState: (stateName, config) => avatarApi.setState(wrapper, stateName, config),
-    getState: () => avatarApi.getState(wrapper),
-  };
-  const img = wrapper.querySelector('.avatar-image');
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(wrapper, avatarApi);
+  const img = dfDollar(wrapper).find('.avatar-image').get(0);
   if (!img) return;
   img.dataset.init = '';
   // catch images that errored BEFORE this script ran (module scripts are

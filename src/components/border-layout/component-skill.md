@@ -28,7 +28,7 @@ columns or the full five.
 - [`setPointerCapture()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture) - the drag (the Resizer's)
 - [`role="separator"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/separator_role) + [`aria-valuenow`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-valuenow) - each divider is a window splitter; its value is the region size
 - [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - the frame shrinks: sides give way so the center keeps its minimum
-- [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) - `data-save` remembers sizes and folded regions
+- [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) - `data-save` remembers sizes and folded regions (through a `persisted()` defuss-store store: validated, memory when storage is blocked)
 - [`border-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/border-style) - dashed, dotted, double dividers
 - [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) / [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - system-colour and full-contrast dividers
 
@@ -84,7 +84,7 @@ Nest a border layout in a center (with `data-frame="none"`) for more.
 | `data-dominant` | `ns` | `ns`: north and south span the full width; `we`: west and east span the full height |
 | `data-center-min` | `120` | px the center always keeps - sides stop there, and give way when the frame shrinks |
 | `data-collapsible` | - | Every region folds (double-click its divider, or Enter on it); per region: `data-collapsible` on its resizer |
-| `data-save` | - | A key: sizes and folded regions are remembered (`localStorage`) |
+| `data-save` | - | A key: sizes and folded regions are remembered (a persisted store in `localStorage`) |
 | `data-frame="none"` | - | No border / radius / surface - fills a window or a nested center |
 
 ## Dividers
@@ -144,6 +144,32 @@ layout.api.setState('collapsed', { regions: ['east'] });
 layout.api.getState(); // → { name: 'collapsed', config: { regions: ['east'] } }
 layout.api.setState('default');
 ```
+
+---
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.borderLayoutApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.borderLayoutStates` = `default`, `collapsed`.
+
+### `df$.shadcn.borderLayout`
+
+| Member | Description |
+|---|---|
+| `collapse(t, side)` | Folds a region away. |
+| `expand(t, side)` | Brings a folded region back. |
+| `toggle(t, side)` | Folds or unfolds; returns whether it is now collapsed. |
+| `resize(t, side, px)` | Sets a region's size in px (clamped by the resizer). |
+| `sizes(t)` | The current sizes: { west: 240, east: 0 (collapsed), … }. |
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `border-layout-collapse` | `region`, `collapsed` | Fires when a region folds away or comes back - which region, and whether it is collapsed now. |
 
 ---
 

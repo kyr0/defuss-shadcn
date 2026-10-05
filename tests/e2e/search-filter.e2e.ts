@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: the search box's promise is a clear (×) that exists only while there
@@ -117,7 +118,7 @@ try {
     assert.equal(await value('#sb-in'), 'preset');
     await page.evaluate(() => (document.getElementById('sb') as any).api.setState('default'));
     assert.equal(await value('#sb-in'), '');
-    assert.deepEqual(await page.evaluate(() => (document.getElementById('sb') as any).api.getState()), { name: 'default', config: {} });
+    assert.deepEqual(await page.evaluate(() => { const { name, config } = (document.getElementById('sb') as any).api.getState(); return { name, config }; }), { name: 'default', config: {} });
     const threw = await page.evaluate(() => { try { (document.getElementById('sb') as any).api.setState('nope'); return false; } catch { return true; } });
     assert.equal(threw, true);
   });
@@ -251,6 +252,10 @@ try {
     assert.deepEqual(r.heights, ['28px', '40px']);
     assert.equal(r.disabled, '0.5');
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.search-box[id]', ['default','filled','searching']);
+  });
+
 } finally {
   await browser.close();
   server.stop?.();

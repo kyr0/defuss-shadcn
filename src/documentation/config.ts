@@ -3,6 +3,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import type { SsgConfig } from 'defuss-ssg';
 import { docsPlugins } from './lib/plugins.js';
 import { remarkDocExamples } from './lib/mdx-example.js';
+import { captureViteServer } from './lib/release-pages.js';
 
 export default {
   pages: 'pages',
@@ -26,4 +27,7 @@ export default {
     remarkDocExamples,
   ],
   rehypePlugins: [],
+  // the page-rendering dev server, so each written page's module can be
+  // released (lib/release-pages.ts) - build-docs stays under a small heap cap
+  viteConfig: { plugins: [captureViteServer] },
 } satisfies SsgConfig;

@@ -192,6 +192,14 @@ document.querySelector('#hero-figure').api.getState(); // { name: 'error', confi
 
 The registry global is `df$.shadcn.imageApi` / `df$.shadcn.imageStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.imageApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.imageStates` = `default`, `error`.
+
 ## Notes
 
 - Fallback is shown automatically when the image fails to load, using `:has()` to detect error state.

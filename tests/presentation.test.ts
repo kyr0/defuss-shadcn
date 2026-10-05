@@ -1,3 +1,5 @@
+// the df$ runtime core installs in production (shared code selects through it)
+import './lib/df-runtime.ts';
 import { afterEach, describe, expect, it } from 'vitest';
 import { anim } from '../src/shared/anim.js';
 import {

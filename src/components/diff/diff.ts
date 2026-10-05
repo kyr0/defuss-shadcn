@@ -8,15 +8,16 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 /** default = the authored (or configured) position; before / after reveal
  * one side completely (item 1 at 100% / item 2 at 100%). */
 const diffStates = ['default', 'before', 'after'];
 
-const rangeOf = (el) => el.querySelector(':scope > .diff-range');
+const rangeOf = (el) => dfDollar(el).find(':scope > .diff-range').get(0);
 
 /** Paint: the range's value (0..100) → --diff-pos on the figure. */
 function paint(el) {
@@ -51,6 +52,19 @@ function pointerPct(el, e) {
   return getComputedStyle(el).direction === 'rtl' ? 100 - x : x;
 }
 
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  // the divider is the range's value (a property, not markup) and the
+  // --diff-pos inline style the runtime paints: render() follows that paint
+  const pct = stateName === 'before' ? 100 : stateName === 'after' ? 0 : null;
+  if (pct !== null) dfDollar(el).css('--diff-pos', pct + '%');
+}
+
 function triggerStateChange(el, stateName, config) {
   switch (stateName) {
     case 'default':
@@ -66,38 +80,31 @@ function triggerStateChange(el, stateName, config) {
 }
 
 /** Registry-level API; pass the .diff figure explicitly. Unknown names throw. */
-export const diffApi = {
-  setState(el, stateName, config = {}) {
-    if (!diffStates.includes(stateName)) {
-      throw new Error(`diff: unknown state "${stateName}" (supported: ${diffStates.join(', ')})`);
-    }
-    triggerStateChange(el, stateName, config);
-    // state lives on the ELEMENT, not the module (many diffs per page)
-    el.dataset.stateName = stateName;
-    el._stateConfig = config;
-  },
-  getState(el) {
+export const diffApi = componentState({
+  component: 'diff',
+  states: diffStates,
+  apply: (el, state) => triggerStateChange(el, state.name, state.config),
+  read: (el, state) => {
     // reflect reality: dragging moves the divider without setState()
     const pct = parseFloat(el.style.getPropertyValue('--diff-pos')) || 0;
     const name = pct >= 100 ? 'before' : pct <= 0 ? 'after' : 'default';
-    return { name, config: { ...el._stateConfig, position: Math.round(pct * 100) / 100 } };
+    return { name, config: { ...state.config, position: Math.round(pct * 100) / 100 } };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.diffApi = diffApi;
 df$.diffStates = diffStates;
 
 function init() {
-  document.querySelectorAll('.diff:not([data-init])').forEach((el) => {
+  dfDollar('.diff:not([data-init])').toArray().forEach((el) => {
     el.dataset.init = '';
     const range = rangeOf(el);
     if (!range) return;
     paint(el);
     el._defaultPosition = parseFloat(el.style.getPropertyValue('--diff-pos')) || 50;
-    el.api = {
-      setState: (stateName, config) => diffApi.setState(el, stateName, config),
-      getState: () => diffApi.getState(el),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(el, diffApi);
     range.addEventListener('input', () => paint(el));
     // the range's fine step (0.1) keeps dragging smooth; the keyboard moves
     // in whole percent (Shift / Page Up/Down: 10)

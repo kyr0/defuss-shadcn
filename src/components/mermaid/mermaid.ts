@@ -27,15 +27,17 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 // 'default' = the source (not rendered yet / shown as text), 'rendered' =
 // the SVG, 'error' = the source + an error message
 const mermaidStates = ['default', 'rendered', 'error'];
 
 /** The pinned, tested official build - never @latest (tests/e2e pin it). */
+/** The pinned official Mermaid build the component loads (never @latest). */
 export const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs';
 
 interface MermaidLike {
@@ -55,7 +57,7 @@ let moduleUrl = '';
  * retried (the next call imports again).
  */
 function load(url?: string): Promise<MermaidLike> {
-  const vendorUrl = url || document.querySelector<HTMLMetaElement>('meta[name="mermaid-module"]')?.content || MERMAID_URL;
+  const vendorUrl = url || ((dfDollar('meta[name="mermaid-module"]').get(0) ?? null) as HTMLMetaElement | null)?.content || MERMAID_URL;
   if (modulePromise && vendorUrl === moduleUrl) return modulePromise;
   moduleUrl = vendorUrl;
   // the ONE vendor import (verify: VENDOR_IMPORTS) - the official renderer, never our code
@@ -177,38 +179,41 @@ export function mermaidTheme(el: Element): Record<string, unknown> {
  * to it), so hand-written and generated markup agree.
  */
 function sourceOf(fig: HTMLElement): string {
-  const pre = fig.querySelector<HTMLElement>(':scope > pre.mermaid');
+  const pre = ((dfDollar(fig).find(':scope > pre.mermaid').get(0) ?? null) as HTMLElement | null);
   if (!pre) return '';
-  const decode = document.createElement('textarea');
-  decode.innerHTML = pre.innerHTML;
-  return decode.value.replace(/^\n+|\s+$/g, '');
+  // text nodes carry the decoded characters; an element written in the
+  // diagram (a literal <br>) is kept as markup - serialized through df$
+  return Array.from(pre.childNodes)
+    .map((n) => (n.nodeType === Node.TEXT_NODE ? (n as Text).data : n.nodeType === Node.ELEMENT_NODE ? dfDollar('<div></div>').append(n.cloneNode(true)).html() ?? '' : ''))
+    .join('')
+    .replace(/^\n+|\s+$/g, '');
 }
 
 /** The runtime-made output node (SVG host) - CodeExample chrome, never source. */
 function outputOf(fig: HTMLElement): HTMLElement {
-  let out = fig.querySelector<HTMLElement>(':scope > .mermaid-output');
+  let out = ((dfDollar(fig).find(':scope > .mermaid-output').get(0) ?? null) as HTMLElement | null);
   if (!out) {
     out = document.createElement('div');
     out.className = 'mermaid-output';
     out.setAttribute('data-ce-chrome', '');
-    fig.querySelector(':scope > pre.mermaid')?.after(out);
+    dfDollar(fig).find(':scope > pre.mermaid').get(0)?.after(out);
   }
   return out;
 }
 
 function clearError(fig: HTMLElement): void {
-  fig.querySelector(':scope > .mermaid-error')?.remove();
+  dfDollar(fig).find(':scope > .mermaid-error').get(0)?.remove();
 }
 
 function showError(fig: HTMLElement, message: string): void {
   clearError(fig);
-  fig.querySelector(':scope > .mermaid-output')?.remove();
+  dfDollar(fig).find(':scope > .mermaid-output').get(0)?.remove();
   const out = document.createElement('output');
   out.className = 'mermaid-error';
   out.setAttribute('role', 'alert');
   out.setAttribute('data-ce-chrome', '');
   out.textContent = message;
-  fig.querySelector(':scope > pre.mermaid')?.after(out);
+  dfDollar(fig).find(':scope > pre.mermaid').get(0)?.after(out);
   fig.dataset.state = 'error';
   fig.dataset.stateName = 'error';
 }
@@ -218,7 +223,7 @@ let seq = 0;
 let queue: Promise<unknown> = Promise.resolve();
 
 /** Render one diagram from its source (queued). Resolves true on success. */
-function render(fig: HTMLElement): Promise<boolean> {
+function renderDiagram(fig: HTMLElement): Promise<boolean> {
   // until the first render lands the source is a placeholder (mermaid.css hides
   // its text - no flash of raw markup); a re-render keeps the old SVG meanwhile
   if (fig.dataset.state !== 'rendered') fig.dataset.state = 'pending';
@@ -248,14 +253,21 @@ function render(fig: HTMLElement): Promise<boolean> {
       if (!fig.isConnected) return false;
       clearError(fig);
       const out = outputOf(fig);
-      out.innerHTML = svg;
-      const el = out.querySelector('svg');
+      // Mermaid's own SVG markup, parsed by the browser's HTML parser and
+      // mounted through df$. Not df$'s markup factory: it creates every
+      // descendant of <svg> in the SVG namespace, but the labels are HTML
+      // inside <foreignObject> (an HTML integration point) - created as SVG
+      // elements they never lay out and every box stays empty.
+      const parsed = new DOMParser().parseFromString(svg, 'text/html').body.firstElementChild;
+      dfDollar(out).empty();
+      if (parsed) dfDollar(out).append(document.importNode(parsed, true));
+      const el = dfDollar(out).find('svg').get(0) as SVGSVGElement | undefined;
       const label = fig.getAttribute('aria-label');
       if (el) {
         el.removeAttribute('height');
         el.style.maxWidth = '';
         el.setAttribute('role', 'img');
-        if (label && !el.querySelector(':scope > title')) el.setAttribute('aria-label', label);
+        if (label && !dfDollar(el).find(':scope > title').get(0)) el.setAttribute('aria-label', label);
       }
       bindFunctions?.(out);
       fig.dataset.state = 'rendered';
@@ -273,21 +285,43 @@ function render(fig: HTMLElement): Promise<boolean> {
   return job;
 }
 
+/** Render every diagram on the page again - resolves with one result per diagram. */
 function renderAll(): Promise<boolean[]> {
-  return Promise.all([...document.querySelectorAll<HTMLElement>('.mermaid-diagram[data-init]')].map(render));
+  return Promise.all([...(dfDollar('.mermaid-diagram[data-init]').toArray() as HTMLElement[])].map(renderDiagram));
 }
 
 /** UI side of setState: the only function that switches a diagram's state. */
+/**
+ * The markup of a state, for render(), on a detached copy of the authored
+ * figure: no output in 'default', data-state="rendered" in 'rendered' (the
+ * SVG itself is Mermaid's - runtime-owned), the alert output with the
+ * message in 'error' - what showError() writes.
+ */
+function applyMarkup(fig: HTMLElement, stateName: string, config: Record<string, unknown> = {}): void {
+  dfDollar(fig).children('.mermaid-output, .mermaid-error').remove();
+  if (stateName === 'default') {
+    dfDollar(fig).attr('data-state', null);
+    return;
+  }
+  if (stateName === 'rendered') {
+    dfDollar(fig).attr('data-state', 'rendered');
+    return;
+  }
+  const out = dfDollar('<output class="mermaid-error" role="alert" data-ce-chrome></output>').text(typeof config.message === 'string' ? config.message : 'This diagram could not be rendered.');
+  dfDollar(fig).children('pre.mermaid').after(out);
+  dfDollar(fig).attr('data-state', 'error');
+}
+
 function triggerStateChange(fig: HTMLElement, stateName: string, config: Record<string, unknown>): Promise<boolean> | void {
   switch (stateName) {
     case 'default':
       clearError(fig);
-      fig.querySelector(':scope > .mermaid-output')?.remove();
+      dfDollar(fig).find(':scope > .mermaid-output').get(0)?.remove();
       delete fig.dataset.state;
       fig.dataset.stateName = 'default';
       return;
     case 'rendered':
-      return render(fig);
+      return renderDiagram(fig);
     case 'error':
       showError(fig, typeof config.message === 'string' ? config.message : 'This diagram could not be rendered.');
       return;
@@ -295,23 +329,24 @@ function triggerStateChange(fig: HTMLElement, stateName: string, config: Record<
 }
 
 /** Registry-level API; pass the figure explicitly. Unknown names throw. */
-export const mermaidApi = {
-  setState(fig: HTMLElement, stateName: string, config: Record<string, unknown> = {}) {
-    if (!mermaidStates.includes(stateName)) {
-      throw new Error(`mermaid: unknown state "${stateName}" (supported: ${mermaidStates.join(', ')})`);
-    }
-    fig._stateConfig = config;
-    return triggerStateChange(fig, stateName, config);
+export const mermaidApi = componentState({
+  component: 'mermaid',
+  states: mermaidStates,
+  apply: (fig, state) => triggerStateChange(fig, state.name, state.config),
+  read: (fig, state) => {
+    // reflect reality: a failed render shows the parser's message - reported, so
+    // setState('error', getState().config) keeps it
+    const error = dfDollar(fig).children('.mermaid-error').get(0);
+    const config = { ...state.config, ...(error ? { message: error.textContent ?? '' } : {}) };
+    return { name: fig.dataset.stateName || 'default', config };
   },
-  getState(fig: HTMLElement) {
-    return { name: fig.dataset.stateName || 'default', config: fig._stateConfig ?? {} };
-  },
-};
+  markup: (el, state) => applyMarkup(el as HTMLElement, state.name, state.config),
+});
 
 df$.mermaidApi = mermaidApi;
 df$.mermaidStates = mermaidStates;
 // public imperative API (AGENTS.md "No window globals": df$.shadcn.mermaid)
-df$.mermaid = { load, render, renderAll, theme: mermaidTheme, url: MERMAID_URL };
+df$.mermaid = { load, render: renderDiagram, renderAll, theme: mermaidTheme, url: MERMAID_URL };
 
 // -- live re-theming ---------------------------------------------------------
 
@@ -329,8 +364,8 @@ function watchTheme(): void {
   const schedule = (): void => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      document.querySelectorAll<HTMLElement>('.mermaid-diagram[data-state="rendered"]').forEach((fig) => {
-        if (JSON.stringify(mermaidTheme(fig)) !== fig._mermaidTheme) render(fig);
+      (dfDollar('.mermaid-diagram[data-state="rendered"]').toArray() as HTMLElement[]).forEach((fig) => {
+        if (JSON.stringify(mermaidTheme(fig)) !== fig._mermaidTheme) renderDiagram(fig);
       });
     }, 80) as unknown as number;
   };
@@ -344,22 +379,20 @@ function watchTheme(): void {
 
 function init() {
   // Mermaid's own convention works bare: wrap a lone <pre class="mermaid">
-  document.querySelectorAll<HTMLElement>('pre.mermaid:not(.mermaid-diagram > pre)').forEach((pre) => {
+  (dfDollar('pre.mermaid:not(.mermaid-diagram > pre)').toArray() as HTMLElement[]).forEach((pre) => {
     const fig = document.createElement('figure');
     fig.className = 'mermaid-diagram';
     pre.before(fig);
     fig.append(pre);
   });
-  document.querySelectorAll<HTMLElement>('.mermaid-diagram:not([data-init])').forEach((fig) => {
+  (dfDollar('.mermaid-diagram:not([data-init])').toArray() as HTMLElement[]).forEach((fig) => {
     fig.dataset.init = '';
-    if (!fig.querySelector(':scope > pre.mermaid')) return;
+    if (!dfDollar(fig).find(':scope > pre.mermaid').get(0)) return;
     fig.dataset.stateName = 'default';
-    fig.api = {
-      setState: (stateName: string, config?: Record<string, unknown>) => mermaidApi.setState(fig, stateName, config),
-      getState: () => mermaidApi.getState(fig),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(fig, mermaidApi);
     watchTheme();
-    render(fig);
+    renderDiagram(fig);
   });
 }
 

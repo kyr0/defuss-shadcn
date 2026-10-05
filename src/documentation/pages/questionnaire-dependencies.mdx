@@ -1,0 +1,137 @@
+---
+title: "Questionnaire: Dependent Answers"
+description: "Dependent-answer invalidation in a branching questionnaire - answers on a branch the walk abandoned are cleared (reachability over the flow graph), answers that declare data-depends-on a changed field are cleared, the user is told, and only answers on the path are submitted."
+slug: "questionnaire-dependencies"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="questionnaire-dependencies" title="Dependent Answers" component="questionnaire">
+  Going back and changing an answer can make later answers wrong. The questionnaire handles two kinds: answers on a branch the new answer no longer leads to (a beach preference after switching to a city break), and answers that were chosen <em>from</em> the changed one (a state picked for the previous country). Both are cleared when the changed step is left - the user is told, <code>questionnaire-invalidate</code> lists them, and they are never submitted.
+</PageHeader>
+
+<H2 id="orphans">Abandoned branches</H2>
+
+<DocText>After a changed answer the controller asks the graph which answered steps the answers can still reach: an answered (or skipped) step leads where its answer leads, a step still open may take any of its edges. Every answered step outside that set is an orphan and loses its answers. Answers further along that are still reachable stay.</DocText>
+
+```html example label="Plan picker" schema="none" hint="Pick 'Team', answer its two questions, reach the review - then Edit the first answer to 'Personal'. Leaving that step clears the team answers (the log lists them); the device question, on both ways, keeps its answer."
+<div class="flex flex-col gap-3" style="max-width:34rem;">
+  <form class="questionnaire" id="q-plan" aria-label="Plan picker" data-persist="none">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="who">
+      <legend class="questionnaire-title">Who is it for?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="who" value="personal" required data-goto="devices"><span class="questionnaire-choice-label">Just me</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="who" value="team" data-goto="seats"><span class="questionnaire-choice-label">A team</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="seats">
+      <legend class="questionnaire-title">How many seats?</legend>
+      <input class="input" name="seats" type="number" min="2" required aria-label="Seats" style="max-width:8rem;">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="sso">
+      <legend class="questionnaire-title">Single sign-on?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="sso" value="yes" required><span class="questionnaire-choice-label">Yes</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="sso" value="no"><span class="questionnaire-choice-label">No</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="devices">
+      <legend class="questionnaire-title">On which devices?</legend>
+      <div class="questionnaire-choices" data-columns="2">
+        <label class="questionnaire-choice"><input type="checkbox" name="devices" value="mac"><span class="questionnaire-choice-label">Mac</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="devices" value="win"><span class="questionnaire-choice-label">Windows</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="devices" value="ios"><span class="questionnaire-choice-label">iPhone</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="devices" value="android"><span class="questionnaire-choice-label">Android</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="review" data-end>
+      <legend class="questionnaire-title">Your plan</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Choose plan</button>
+    </div>
+    <div class="questionnaire-complete"><p>Plan chosen.</p></div>
+  </form>
+  <ol class="text-sm text-muted-foreground m-0 ps-5" id="q-plan-log" aria-live="polite"></ol>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const log = document.getElementById('q-plan-log');
+    document.getElementById('q-plan').addEventListener('questionnaire-invalidate', (e) => {
+      const li = document.createElement('li');
+      li.textContent = 'Changed ' + e.detail.changed.join(', ') + ' on "' + e.detail.cause + '" → cleared: ' + e.detail.cleared.join(', ');
+      log.append(li);
+    });
+  });
+</script>
+```
+
+<H2 id="depends-on">Declared dependencies</H2>
+
+<DocText>Some answers stay on the path but stop making sense: a state chosen for a country, a size chosen for a product. <code>data-depends-on="country"</code> (a list: <code>"a, b"</code>) on a step clears its answers whenever one of those fields changes - even when the walk still passes it. The step asks again with its options for the new answer.</DocText>
+
+```html example label="Shipping address" schema="none" hint="Choose a country, then a region - its options are built from the country. Go back, change the country, continue: the region is empty again (data-depends-on='country'), because a German state is no answer for Canada."
+<form class="questionnaire" id="q-ship" aria-label="Shipping" data-persist="none" style="max-width:32rem;">
+  <div class="questionnaire-progress"></div>
+  <fieldset class="questionnaire-step" data-step="country">
+    <legend class="questionnaire-title">Ship to which country?</legend>
+    <div class="questionnaire-choices">
+      <label class="questionnaire-choice"><input type="radio" name="country" value="DE" required><span class="questionnaire-choice-label">Germany</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="country" value="CA"><span class="questionnaire-choice-label">Canada</span></label>
+    </div>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="region" data-depends-on="country">
+    <legend class="questionnaire-title">Which region?</legend>
+    <select class="select" name="region" required aria-label="Region" id="q-region"><option value="">Choose…</option></select>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="speed">
+    <legend class="questionnaire-title">How fast?</legend>
+    <div class="questionnaire-choices">
+      <label class="questionnaire-choice"><input type="radio" name="speed" value="standard" required><span class="questionnaire-choice-label">Standard</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="speed" value="express"><span class="questionnaire-choice-label">Express</span></label>
+    </div>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="ok" data-end>
+    <legend class="questionnaire-title">Ship it?</legend>
+    <div class="questionnaire-summary"></div>
+  </fieldset>
+  <div class="questionnaire-actions">
+    <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+    <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+    <button class="btn" type="submit" data-questionnaire="submit">Ship</button>
+  </div>
+  <div class="questionnaire-complete"><p>On its way.</p></div>
+</form>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const REGIONS = { DE: ['Bavaria', 'Berlin', 'Hamburg', 'Saxony'], CA: ['Alberta', 'British Columbia', 'Ontario', 'Quebec'] };
+    const form = document.getElementById('q-ship');
+    const select = document.getElementById('q-region');
+    // the region's options follow the country - built when the region step shows
+    form.addEventListener('questionnaire-step', (e) => {
+      if (e.detail.step !== 'region') return;
+      const keep = select.value;
+      select.replaceChildren(new Option('Choose…', ''), ...(REGIONS[e.detail.answers.country] || []).map((r) => new Option(r, r)));
+      select.value = keep;
+    });
+  });
+</script>
+```
+
+<H2 id="what-is-sent">What is sent</H2>
+
+<DocText>Sending passes only the answers of the steps on the path to the end - an answer that survived on a hidden step (typed, then the user went another way before leaving the step) is still not sent. <code>questionnaire-submit</code> carries <code>\{ answers, history \}</code>; <code>configure(form, \{ onSubmit \})</code> receives the same.</DocText>
+
+<SourceFiles component="questionnaire" section="css">
+  <SourceNote for="css">Invalidation is behavior - the stylesheet is the questionnaire's (the notice: <code>.questionnaire-notice</code>).</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="questionnaire" section="js" jsTitle="JS" />
+
+</DocPage>

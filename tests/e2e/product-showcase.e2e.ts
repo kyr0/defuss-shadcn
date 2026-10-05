@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: product-showcase swaps a poster frame for the native <video> on a
@@ -190,6 +191,10 @@ try {
     });
     assert.ok(threw);
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.mk-showcase[id]', ['default','playing']);
+  });
+
 } finally {
   await browser.close();
   server.stop();

@@ -1,0 +1,14 @@
+{
+  "command": "bun scripts/verify.ts",
+  "seconds": 10.2,
+  "gates": 78,
+  "e2eFiles": 242,
+  "machine": "MacBook Air",
+  "chip": "Apple M4",
+  "cores": 10,
+  "memoryGB": 24,
+  "os": "macOS 15.7.3",
+  "bun": "1.4.2",
+  "agent": "Claude Code · Opus 5.5 (high effort)",
+  "date": "2026-10-05"
+}

@@ -27,6 +27,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+
+<!-- 4. only for the HTML Preview Editor (code-example): the extra bundle, after 3a / 3b -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
 ```
 
 **Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step.
@@ -41,6 +45,7 @@ Then: for every component you use, read its skill file (linked per-component bel
 - **Tokens are the source of truth** - all colors, radius, shadows, and fonts are CSS custom properties in `theme/utils/default-semantic-tokens.css` (tweakcn-compatible shape). To re-theme, replace that file; never hardcode colors in markup or custom CSS.
 - **Variants via data attributes, never classes** - `data-variant`, `data-size`, `data-side` on one base class per component (`.btn[data-variant="outline"]`, never `.btn-outline`).
 - **State API on interactive components** - each interactive element exposes `el.api.setState('open')` / `el.api.getState()`; state names are listed per component below. Drive and observe UI state through this API, not by toggling classes.
+- **Every state is a store** - `el.store` (defuss-store) holds the element's `{ name, config }`: `el.store.subscribe(fn)` follows every change (also the user's), `el.store.set({ name, config })` applies one. Keep app state in `df$.store.create(v)` and anything that must survive a reload in `df$.store.persisted(key, initial)` - never raw `localStorage`. Big data: `df$.dataview` (filter / multisort / tree queries) behind Virtual List, Data Tree and Data Grid.
 - **Accessibility is built in** - WAI-ARIA patterns, keyboard navigation, focus management, and `prefers-reduced-motion` support ship in the files. Don't duplicate or fight them.
 
 ## Where things live (`dist/`)
@@ -52,6 +57,7 @@ dist/
 ├── theme/utils/default-semantic-tokens.css ← design tokens (the only theme file)
 ├── components/all.css                ← bundle: every component stylesheet (+ .min twin & map)
 ├── components/all.js                 ← bundle: every component's behavior (+ .min twin & maps)
+├── components/wysiwyg.css / .js      ← the extra bundle: the HTML Preview Editor (code-example) - NOT in all.*; load after all.* / core
 ├── components/{name}/
 │   ├── component-skill.md            ← HOW to build the HTML - read this before using a component
 │   ├── {name}.css                    ← the stylesheet (tokens only; always include)
@@ -233,6 +239,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/author-list.png
 **Skill:** [components/author-list/component-skill.md](components/author-list/component-skill.md)
 
+## Autocomplete
+
+**Type:** MOL
+**Why:** An input with a manual popover listbox anchored under it (CSS anchor positioning, APG combobox) - suggestions from local records, a URL or your own network client, every request a defuss-dataview request; debounced, the in-flight request aborted by the next keystroke, pages loaded as the list scrolls.
+**When:** Searching data too big or too remote to put in a select - places, people, products, tickets - as the user types. A Combobox for a short fixed list of options; a Select when typing adds nothing.
+**Files:** dist/components/autocomplete/autocomplete.css + dist/components/autocomplete/autocomplete.js
+**Supported states:** default, open, loading, empty, error
+**Screenshots:** screenshots/{light,dark}/autocomplete.png, screenshots/{light,dark}/autocomplete-open.png, screenshots/{light,dark}/autocomplete-loading.png, screenshots/{light,dark}/autocomplete-empty.png, screenshots/{light,dark}/autocomplete-error.png
+**Skill:** [components/autocomplete/component-skill.md](components/autocomplete/component-skill.md)
+
 ## Avatar
 
 **Type:** ATM
@@ -262,6 +278,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/before-after.png
 **Skill:** [components/before-after/component-skill.md](components/before-after/component-skill.md)
+
+## BibTeX
+
+**Type:** ATM
+**Why:** The authored BibTeX stays the one source - parsed once, shown as BibTeX (normalized, aligned, highlighted) or as an APA, MLA, Chicago, Harvard or IEEE reference, copied with the Clipboard API exactly as shown; without JS the source is still readable.
+**When:** Wherever a reader should cite something - a paper page, a dataset, a release, a references section (several entries become a list). A terminal transcript is mockup-code; source code is a code block.
+**Files:** dist/components/bibtex/bibtex.css + dist/components/bibtex/bibtex.js
+**Supported states:** default, copied
+**Screenshots:** screenshots/{light,dark}/bibtex.png, screenshots/{light,dark}/bibtex-copied.png
+**Skill:** [components/bibtex/component-skill.md](components/bibtex/component-skill.md)
 
 ## Blog
 
@@ -483,6 +509,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/code-block.png
 **Skill:** [components/code-block/component-skill.md](components/code-block/component-skill.md)
 
+## HTML Preview Editor
+
+**Type:** MOL
+**Why:** One source, two views - the <textarea> you edit is the srcdoc the sandboxed <iframe> runs, so the code shown and the code run cannot differ; the preview runs in an opaque origin, device emulation is CSS zoom over a real viewport, highlighting is Shiki.
+**When:** Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea.
+**Files:** dist/components/wysiwyg.css + dist/components/wysiwyg.js (the extra bundle - load it after all.css / all.js; per component: dist/components/code-example/code-example.css + code-example.js)
+**Supported states:** default, code, state, fullscreen
+**Screenshots:** screenshots/{light,dark}/code-example.png, screenshots/{light,dark}/code-example-code.png, screenshots/{light,dark}/code-example-state.png, screenshots/{light,dark}/code-example-fullscreen.png
+**Skill:** [components/code-example/component-skill.md](components/code-example/component-skill.md)
+
 ## Collapsible
 
 **Type:** ATM
@@ -653,6 +689,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/cta.png
 **Skill:** [components/cta/component-skill.md](components/cta/component-skill.md)
 
+## Data Grid
+
+**Type:** ATM
+**Why:** One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
+**When:** Tables of thousands to millions of records that people sort, filter, lock columns of, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
+**Files:** dist/components/data-grid/data-grid.css + dist/components/data-grid/data-grid.js
+**Supported states:** default, loading, empty
+**Screenshots:** screenshots/{light,dark}/data-grid.png, screenshots/{light,dark}/data-grid-loading.png, screenshots/{light,dark}/data-grid-empty.png
+**Skill:** [components/data-grid/component-skill.md](components/data-grid/component-skill.md)
+
+## Data Tree
+
+**Type:** ATM
+**Why:** A windowed ARIA tree - only the items on screen exist and focus stays on the tree (aria-activedescendant) - over records that name their parent; hierarchy, filtering and sorting run locally over every node through defuss-dataview.
+**When:** Hierarchies too big for nested markup - catalogs, file systems, org charts, taxonomies - that people filter and walk with the keyboard. Tree View for a small tree written as markup; Tree Grid when each node has columns.
+**Files:** dist/components/data-tree/data-tree.css + dist/components/data-tree/data-tree.js
+**Supported states:** default, loading, empty
+**Screenshots:** screenshots/{light,dark}/data-tree.png, screenshots/{light,dark}/data-tree-loading.png, screenshots/{light,dark}/data-tree-empty.png
+**Skill:** [components/data-tree/component-skill.md](components/data-tree/component-skill.md)
+
 ## Date Picker
 
 **Type:** ATM
@@ -672,6 +728,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/delivery-options.png
 **Skill:** [components/delivery-options/component-skill.md](components/delivery-options/component-skill.md)
+
+## Diagram
+
+**Type:** ATM
+**Why:** Illustrative diagrams an agent can write as plain HTML - nodes on a CSS grid, relationships as an ordered list (readable without JavaScript), wires drawn into an SVG layer from the measured layout, labels kept clear of every box, wire and text. The theme's colors (chart colors for accents and changes), radius and monospace; the only state is the picture's - step-by-step reveal, an activated box or arrow (click, keyboard or outside controls) and a before / changes / after delta from one annotated source. No Mermaid, no dependency.
+**When:** Architecture, flows, state machines, ER and schema, sequences, org charts, swimlanes, layers, containment, loops, data platforms, matrices, fishbones, Wardley maps, journeys, kanban, story maps, quadrants, policy traces. Data charts (values on axes) are chart; text-defined diagrams you already have in Mermaid syntax are mermaid.
+**Files:** dist/components/diagram/diagram.css + dist/components/diagram/diagram.js
+**Supported states:** default, playing, paused, active
+**Screenshots:** screenshots/{light,dark}/diagram.png, screenshots/{light,dark}/diagram-playing.png, screenshots/{light,dark}/diagram-paused.png, screenshots/{light,dark}/diagram-active.png
+**Skill:** [components/diagram/component-skill.md](components/diagram/component-skill.md)
 
 ## Dialog
 
@@ -1339,9 +1405,19 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Why:** A titled .card whose minimize / maximize tools are Swaps - a native checkbox each, so the face and the keyboard are the browser's; the runtime keeps the state in step and makes the panel a border-layout region that folds to its title bar (a vertical tab in west / east) like the ExtJS 4 border layout.
 **When:** Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window.
 **Files:** dist/components/panel/panel.css + dist/components/panel/panel.js (+ card, swap)
-**Supported states:** default, minimized, maximized
-**Screenshots:** screenshots/{light,dark}/panel.png, screenshots/{light,dark}/panel-minimized.png, screenshots/{light,dark}/panel-maximized.png
+**Supported states:** default, minimized, maximized, closed
+**Screenshots:** screenshots/{light,dark}/panel.png, screenshots/{light,dark}/panel-minimized.png, screenshots/{light,dark}/panel-maximized.png, screenshots/{light,dark}/panel-closed.png
 **Skill:** [components/panel/component-skill.md](components/panel/component-skill.md)
+
+## Modern Paper
+
+**Type:** TPL
+**Why:** A research-paper project page as one <article> on a named grid - a centered reading column, a wider track for the title block and figures, all type and color from the theme tokens; CSS-only.
+**When:** The web page of a paper, a technical report or a project write-up - title, authors, resources, abstract, sections, figures, results and the citation. A product landing page is the Landing Page template; long documentation is Docs Content.
+**Files:** dist/components/paper/paper.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/paper.png
+**Skill:** [components/paper/component-skill.md](components/paper/component-skill.md)
 
 ## Parallax
 
@@ -1502,6 +1578,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/project-item.png
 **Skill:** [components/project-item/component-skill.md](components/project-item/component-skill.md)
+
+## Property Grid
+
+**Type:** ATM
+**Why:** The ExtJS property grid as a native table - one JSON object as two dense columns (key, value), nested objects and arrays as folding groups, in-place editors chosen by type (or by getEditorFn), keyRenderFn / valueRenderFn for the cells; the object is the store's state, replaced on every committed edit.
+**When:** Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form.
+**Files:** dist/components/property-grid/property-grid.css + dist/components/property-grid/property-grid.js
+**Supported states:** default, editing
+**Screenshots:** screenshots/{light,dark}/property-grid.png, screenshots/{light,dark}/property-grid-editing.png
+**Skill:** [components/property-grid/component-skill.md](components/property-grid/component-skill.md)
+
+## Questionnaire
+
+**Type:** MOL
+**Why:** One native <form>, one <fieldset> per step - the controller walks a flow graph (option data-goto, conditional rules, data-next, markup order) one validated step at a time, keeps a branch history and a session draft, and invalidates answers a changed answer cut off. Without JavaScript it is a plain long form.
+**When:** Multi-step forms that ask different people different questions - intake, onboarding, surveys, quotes, triage - where the next question depends on the answers. A plain Form for one screen of fields; Steps for a fixed, linear progress indicator.
+**Files:** dist/components/questionnaire/questionnaire.css + dist/components/questionnaire/questionnaire.js
+**Supported states:** default, answering, review, submitted
+**Screenshots:** screenshots/{light,dark}/questionnaire.png, screenshots/{light,dark}/questionnaire-answering.png, screenshots/{light,dark}/questionnaire-review.png, screenshots/{light,dark}/questionnaire-submitted.png
+**Skill:** [components/questionnaire/component-skill.md](components/questionnaire/component-skill.md)
 
 ## Quick Links
 
@@ -2236,8 +2332,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Virtual List
 
 **Type:** ATM
-**Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same.
-**When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once.
+**Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same; records behind a defuss-dataview source filter and sort locally.
+**When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
 **Files:** dist/components/virtual-list/virtual-list.css + dist/components/virtual-list/virtual-list.js
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/virtual-list.png, screenshots/{light,dark}/virtual-list-loading.png, screenshots/{light,dark}/virtual-list-empty.png

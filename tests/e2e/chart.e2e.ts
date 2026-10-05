@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped chart component. Loads the fixture
@@ -271,6 +272,10 @@ try {
     assert.equal(r.transition, true, 'series default to universalTransition');
     assert.equal(r.visible3, false, 'a slide without data-chart-state hides the stage');
     assert.equal(r.state3, null);
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.chart[id]', ['default'], { runtimeAttrs: ['style','_echarts_instance_'], runtimeOwned: '.chart[id] > *, .chart[id] > * *' });
   });
 
 } finally {

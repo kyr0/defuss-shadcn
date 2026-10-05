@@ -1,0 +1,669 @@
+// -- Property Grid ----------------------------------------------------------
+// The ExtJS property grid for this library: a two-column table - key, value -
+// over ONE JSON object, dense by default. Nested objects and arrays become
+// collapsible groups with their properties indented below. A click on a value
+// (or Enter / F2) edits it in place with an editor that fits its type - text,
+// number, a switch, a select of options, a color, a date, a textarea - or the
+// one getEditorFn hands back; keyRenderFn / valueRenderFn draw the cells. The
+// JSON object IS the state: el.store.value.config.source, replaced (never
+// mutated) on every committed edit, so subscribers see each change.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+/** default = the table; editing = one value open in its editor (config.editing is its path). */
+const propertyGridStates = ['default', 'editing'];
+
+const isGroup = (v) => v !== null && typeof v === 'object';
+const pathKey = (path) => path.join('.');
+const toPath = (path) => (Array.isArray(path) ? path.map(String) : String(path).split('.').filter((s) => s !== ''));
+const clone = (v) => (v === undefined ? undefined : structuredClone(v));
+const configOf = (root) => root._config ?? root.store?.value.config ?? {};
+const optionsOf = (root) => root._options ?? {};
+
+function getAt(obj, path) {
+  let at = obj;
+  for (const k of path) {
+    if (!isGroup(at)) return undefined;
+    at = at[k];
+  }
+  return at;
+}
+
+/** a copy of obj with the value at path replaced - the source is never mutated */
+function setAt(obj, path, value) {
+  if (!path.length) return value;
+  const [head, ...rest] = path;
+  const copy = Array.isArray(obj) ? [...obj] : { ...obj };
+  copy[head] = setAt(isGroup(obj) ? obj[head] : undefined, rest, value);
+  return copy;
+}
+
+/** the type a property edits as: its sourceConfig type, else what its value looks like */
+function typeOf(value, conf) {
+  if (conf?.type) return conf.type;
+  if (conf?.options) return 'enum';
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'array';
+  if (typeof value === 'object') return 'object';
+  if (typeof value === 'boolean') return 'boolean';
+  if (typeof value === 'number') return 'number';
+  if (typeof value === 'string') {
+    if (/^#[0-9a-f]{6}$/i.test(value)) return 'color';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'date';
+    if (value.includes('\n')) return 'text';
+  }
+  return 'string';
+}
+
+/** a key's sourceConfig - by its full path ("owner.team"), else by its own key */
+function confOf(root, path) {
+  const sc = optionsOf(root).sourceConfig ?? {};
+  return sc[pathKey(path)] ?? sc[path[path.length - 1]] ?? null;
+}
+
+// -- the table ---------------------------------------------------------------------------------
+
+/** a function's answer as cell content: a node, or text (null → the default rendering) */
+function fill(cell, content) {
+  if (content == null || content === false) return false;
+  dfDollar(cell).empty();
+  if (content instanceof Node) dfDollar(cell).append(content);
+  else dfDollar(cell).text(String(content));
+  return true;
+}
+
+function defaultValue(cell, value, type) {
+  dfDollar(cell).empty();
+  const span = document.createElement('span');
+  if (type === 'object' || type === 'array') {
+    span.className = 'property-grid-summary';
+    const n = Object.keys(value).length;
+    dfDollar(span).text(type === 'array' ? `[${n} ${n === 1 ? 'item' : 'items'}]` : `{${n} ${n === 1 ? 'property' : 'properties'}}`);
+  } else if (type === 'boolean') {
+    span.className = 'property-grid-bool';
+    span.dataset.value = String(value);
+    dfDollar(span).text(String(value));
+  } else if (type === 'color') {
+    span.className = 'property-grid-color';
+    const swatch = document.createElement('i');
+    swatch.className = 'property-grid-swatch';
+    swatch.style.background = value;
+    swatch.setAttribute('aria-hidden', 'true');
+    dfDollar(span).append(swatch).append(document.createTextNode(value));
+  } else if (type === 'json') {
+    span.className = 'property-grid-summary';
+    dfDollar(span).text(JSON.stringify(value));
+  } else if (type === 'null') {
+    span.className = 'property-grid-null';
+    dfDollar(span).text('null');
+  } else {
+    dfDollar(span).text(String(value ?? ''));
+  }
+  dfDollar(cell).append(span);
+}
+
+/** the rows of a source: one per property, a group row (+ its children unless collapsed) per object / array */
+function rowsOf(root, source) {
+  const out = [];
+  const collapsed = new Set(configOf(root).collapsed ?? []);
+  const sort = root.dataset.sort;
+  const walk = (obj, path, depth) => {
+    let keys = Object.keys(obj);
+    if (!Array.isArray(obj) && (sort === 'asc' || sort === 'desc')) {
+      keys = keys.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }) * (sort === 'desc' ? -1 : 1));
+    }
+    for (const key of keys) {
+      const p = [...path, key];
+      const value = obj[key];
+      const conf = confOf(root, p);
+      if (conf?.hidden) continue;
+      out.push({ path: p, key, value, depth, conf, type: typeOf(value, conf), group: isGroup(value) && !conf?.type });
+      if (isGroup(value) && !conf?.type && !collapsed.has(pathKey(p))) walk(value, p, depth + 1);
+    }
+  };
+  if (isGroup(source)) walk(source, [], 0);
+  return out;
+}
+
+/** the table, (re)built from the current source - keeps the focused row */
+function renderRows(root) {
+  const { source = {} } = configOf(root);
+  const opts = optionsOf(root);
+  let table = dfDollar(root).children('.property-grid-table').get(0);
+  const focused = table?.contains(document.activeElement) ? document.activeElement.closest('tr')?.dataset.path : null;
+  if (!table) {
+    table = document.createElement('table');
+    table.className = 'property-grid-table';
+    const head = document.createElement('thead');
+    const tr = document.createElement('tr');
+    for (const [label, cls] of [[root.dataset.keyLabel || 'Property', 'property-grid-key'], [root.dataset.valueLabel || 'Value', 'property-grid-value']]) {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.className = cls;
+      dfDollar(th).text(label);
+      tr.append(th);
+    }
+    head.append(tr);
+    if (root.hasAttribute('data-headless')) head.hidden = true;
+    table.append(head, document.createElement('tbody'));
+    dfDollar(root).append(table);
+  }
+  const body = dfDollar(table).children('tbody').get(0);
+  dfDollar(body).empty();
+  const readonlyAll = root.hasAttribute('data-readonly');
+  const rows = rowsOf(root, source);
+  for (const row of rows) {
+    const tr = document.createElement('tr');
+    tr._path = row.path;
+    tr.className = row.group ? 'property-grid-group' : 'property-grid-row';
+    tr.dataset.path = pathKey(row.path);
+    tr.dataset.type = row.type;
+    if (row.depth) tr.style.setProperty('--depth', String(row.depth));
+    const keyCell = document.createElement('th');
+    keyCell.scope = 'row';
+    keyCell.className = 'property-grid-key';
+    const valueCell = document.createElement('td');
+    valueCell.className = 'property-grid-value';
+    const ctx = { path: [...row.path], depth: row.depth, type: row.type, config: row.conf, source, grid: root };
+    if (row.conf?.description) keyCell.title = row.conf.description;
+    // the key: keyRenderFn, else the displayName, else the key
+    const keyText = document.createElement('span');
+    keyText.className = 'property-grid-label';
+    if (!fill(keyText, opts.keyRenderFn?.(row.key, row.value, ctx))) dfDollar(keyText).text(row.conf?.displayName ?? row.key);
+    if (row.group) {
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'property-grid-toggle';
+      const open = !(configOf(root).collapsed ?? []).includes(tr.dataset.path);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.tabIndex = -1;
+      dfDollar(toggle).append(keyText);
+      dfDollar(keyCell).append(toggle);
+    } else {
+      dfDollar(keyCell).append(keyText);
+    }
+    // the value: valueRenderFn, else by type
+    if (!fill(valueCell, opts.valueRenderFn?.(row.value, row.key, ctx))) defaultValue(valueCell, row.value, row.type);
+    const readonly = readonlyAll || row.conf?.readOnly || (row.group && !opts.getEditorFn);
+    if (readonly) tr.dataset.readonly = '';
+    else valueCell.setAttribute('aria-label', `${row.conf?.displayName ?? row.key}: edit`);
+    valueCell.tabIndex = -1;
+    tr.append(keyCell, valueCell);
+    body.append(tr);
+  }
+  if (!rows.length) {
+    const tr = document.createElement('tr');
+    tr.className = 'property-grid-empty';
+    const td = document.createElement('td');
+    td.colSpan = 2;
+    dfDollar(td).text(root.dataset.emptyText || 'No properties.');
+    tr.append(td);
+    body.append(tr);
+  }
+  // one row in the tab order (roving)
+  const target = focusTargets(root);
+  const keep = target.find((t) => t.closest('tr')?.dataset.path === focused) ?? target.find((t) => t.closest('tr')?.dataset.path === root._current) ?? target[0];
+  if (keep) {
+    keep.tabIndex = 0;
+    root._current = keep.closest('tr').dataset.path;
+    if (focused) keep.focus();
+  }
+}
+
+/** each row's keyboard stop: a group's toggle, a property's value cell */
+const focusTargets = (root) =>
+  dfDollar(root)
+    .find('.property-grid-table > tbody > tr')
+    .toArray()
+    .map((tr) => (tr.classList.contains('property-grid-group') ? dfDollar(tr).find('.property-grid-toggle').get(0) : dfDollar(tr).children('.property-grid-value').get(0)))
+    .filter(Boolean);
+
+function moveFocus(root, from, by) {
+  const targets = focusTargets(root);
+  const at = targets.indexOf(from);
+  const next = targets[by === Infinity ? targets.length - 1 : by === -Infinity ? 0 : Math.max(0, Math.min(targets.length - 1, at + by))];
+  if (!next) return;
+  for (const t of targets) t.tabIndex = -1;
+  next.tabIndex = 0;
+  root._current = next.closest('tr').dataset.path;
+  next.focus();
+}
+
+// -- editing ---------------------------------------------------------------------------------
+
+/** the built-in editor for a type */
+function defaultEditor(type, value, conf) {
+  let el;
+  if (type === 'boolean') {
+    el = document.createElement('input');
+    el.type = 'checkbox';
+    el.className = 'switch';
+    el.setAttribute('role', 'switch');
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === 'enum') {
+    el = document.createElement('select');
+    el.className = 'select';
+    el.dataset.size = 'xs';
+    for (const opt of conf?.options ?? []) {
+      const o = document.createElement('option');
+      const [v, label] = isGroup(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value) o.selected = true;
+      el.append(o);
+    }
+    const values = (conf?.options ?? []).map((o) => (isGroup(o) ? o.value : o));
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === 'text' || type === 'object' || type === 'array' || type === 'json') {
+    el = document.createElement('textarea');
+    el.className = 'textarea';
+    el.rows = type === 'text' ? 3 : 5;
+    const json = type !== 'text';
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? '');
+    return {
+      el,
+      multiline: true,
+      getValue: () => (json ? JSON.parse(el.value) : el.value),
+      validate: () => {
+        if (!json) return '';
+        try {
+          JSON.parse(el.value);
+          return '';
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      },
+    };
+  }
+  el = document.createElement('input');
+  el.className = type === 'color' ? 'property-grid-color-input' : 'input';
+  if (type !== 'color') el.dataset.size = 'xs';
+  el.type = type === 'number' ? 'number' : type === 'color' ? 'color' : type === 'date' ? 'date' : 'text';
+  if (type === 'number') {
+    el.step = conf?.step ?? 'any';
+    if (conf?.min != null) el.min = conf.min;
+    if (conf?.max != null) el.max = conf.max;
+    el.inputMode = 'decimal';
+  }
+  el.value = value == null ? '' : String(value);
+  return {
+    el,
+    immediate: type === 'color' || type === 'date',
+    getValue: () => (type === 'number' ? (el.value === '' ? null : el.valueAsNumber) : type === 'null' && el.value === '' ? null : el.value),
+    validate: () => (type === 'number' && el.value !== '' && Number.isNaN(el.valueAsNumber) ? 'not a number' : el.validity && !el.validity.valid ? el.validationMessage : ''),
+  };
+}
+
+/** getEditorFn's answer as an editor - an element, an { el, getValue … } object, null (the default) or false (read-only) */
+function editorFor(root, row, value) {
+  const conf = confOf(root, row._path);
+  const type = row.dataset.type;
+  const ctx = { path: [...row._path], type, config: conf, source: configOf(root).source, grid: root };
+  const custom = optionsOf(root).getEditorFn?.(row._path[row._path.length - 1], value, ctx);
+  if (custom === false) return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return { el, immediate: el.type === 'checkbox' || el.tagName === 'SELECT', getValue: () => (el.type === 'checkbox' ? el.checked : el.type === 'number' || el.type === 'range' ? el.valueAsNumber : el.value) };
+  }
+  if (custom && custom.el) return custom;
+  return defaultEditor(type, value, conf);
+}
+
+/** open a value's editor in its cell */
+function openEditor(root, path) {
+  closeEditor(root);
+  const row = dfDollar(root).find('.property-grid-table > tbody > tr').toArray().find((tr) => tr.dataset.path === path);
+  if (!row || row.hasAttribute('data-readonly')) return false;
+  const cell = dfDollar(row).children('.property-grid-value').get(0);
+  const value = getAt(configOf(root).source, row._path);
+  const editor = editorFor(root, row, value);
+  if (!editor) return false;
+  const wrap = document.createElement('div');
+  wrap.className = 'property-grid-editor';
+  dfDollar(wrap).append(editor.el);
+  cell.dataset.editing = '';
+  dfDollar(cell).empty().append(wrap);
+  root._editor = { path, row, cell, editor, value };
+  const target = editor.el.matches?.('input, select, textarea, button, [tabindex]') ? editor.el : dfDollar(editor.el).find('input, select, textarea, button, [tabindex]').get(0) ?? editor.el;
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && target.type !== 'checkbox' && target.type !== 'color' && target.type !== 'date') target.select();
+  return true;
+}
+
+/**
+ * The declarative rules of a key (sourceConfig): required, min / max (numbers),
+ * minLength / maxLength / pattern (text), integer. Returns the first broken
+ * rule as a message ('' = valid); config.message replaces it.
+ */
+function ruleProblem(conf, value) {
+  if (!conf) return '';
+  const say = (fallback) => conf.message || fallback;
+  const empty = value === null || value === undefined || value === '' || (Array.isArray(value) && !value.length);
+  if (conf.required && empty) return say('Required');
+  if (empty) return '';
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) return say('Not a number');
+    if (conf.integer && !Number.isInteger(value)) return say('Must be a whole number');
+    if (conf.min != null && value < conf.min) return say(`Must be at least ${conf.min}`);
+    if (conf.max != null && value > conf.max) return say(`Must be at most ${conf.max}`);
+  }
+  if (typeof value === 'string') {
+    if (conf.minLength != null && value.length < conf.minLength) return say(`At least ${conf.minLength} characters`);
+    if (conf.maxLength != null && value.length > conf.maxLength) return say(`At most ${conf.maxLength} characters`);
+    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value)) return say('Does not match the expected format');
+  }
+  if (Array.isArray(value)) {
+    if (conf.minItems != null && value.length < conf.minItems) return say(`At least ${conf.minItems}`);
+    if (conf.maxItems != null && value.length > conf.maxItems) return say(`At most ${conf.maxItems}`);
+  }
+  return '';
+}
+
+/** an invalid value: the control is marked, the message shows under it (and is announced) */
+function showProblem(ed, control, problem) {
+  control.setAttribute?.('aria-invalid', 'true');
+  const wrap = dfDollar(ed.cell).children('.property-grid-editor').get(0) ?? ed.cell;
+  let note = dfDollar(wrap).children('.property-grid-error').get(0);
+  if (!note) {
+    note = document.createElement('div');
+    note.className = 'property-grid-error';
+    note.setAttribute('role', 'alert');
+    note.id = `pg-error-${Math.random().toString(36).slice(2, 8)}`;
+    dfDollar(wrap).append(note);
+    control.setAttribute?.('aria-describedby', note.id);
+  }
+  dfDollar(note).text(problem);
+}
+
+/** remove the editor without writing - the table shows the values again */
+function closeEditor(root) {
+  if (!root._editor) return;
+  root._editor = null;
+  renderRows(root);
+}
+
+/**
+ * Commit the open editor: validate, ask property-grid-beforechange (cancelable),
+ * write a NEW source with the value replaced, then property-grid-change.
+ * Returns false when the value is invalid (the editor stays open).
+ */
+function commit(root, then = 'stay') {
+  const ed = root._editor;
+  if (!ed) return true;
+  const control = dfDollar(ed.editor.el).find('input, select, textarea').get(0) ?? ed.editor.el;
+  const { path, row } = ed;
+  const key = row._path[row._path.length - 1];
+  let problem = ed.editor.validate?.() ?? '';
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  // the key's rules (sourceConfig), then the grid's validateFn
+  if (!problem) problem = ruleProblem(confOf(root, row._path), value);
+  if (!problem) {
+    const answer = optionsOf(root).validateFn?.(key, value, { path: [...row._path], type: row.dataset.type, config: confOf(root, row._path), source: configOf(root).source, grid: root });
+    if (typeof answer === 'string' && answer) problem = answer;
+    else if (answer === false) problem = 'Invalid value';
+  }
+  if (problem) {
+    showProblem(ed, control, problem);
+    return false;
+  }
+  const oldValue = ed.value;
+  closeEditor(root);
+  const same = JSON.stringify(value) === JSON.stringify(oldValue);
+  // Fires before a committed value is written - cancelable: preventDefault() keeps the old value. detail.path is the property's path ("owner.team").
+  const before = new CustomEvent('property-grid-beforechange', { bubbles: true, cancelable: true, detail: { path, key, value, oldValue } });
+  if (same || !root.dispatchEvent(before)) {
+    root.api.setState('default', { editing: null });
+    restoreFocus(root, path, then);
+    return true;
+  }
+  const source = setAt(configOf(root).source, row._path, value);
+  root.api.setState('default', { source, editing: null });
+  // Fires after a value was written - its path, key, the new and the old value and the whole new source object.
+  root.dispatchEvent(new CustomEvent('property-grid-change', { bubbles: true, detail: { path, key, value, oldValue, source: clone(source) } }));
+  restoreFocus(root, path, then);
+  return true;
+}
+
+function restoreFocus(root, path, then) {
+  const target = focusTargets(root).find((t) => t.closest('tr').dataset.path === path);
+  if (!target) return;
+  if (then === 'next' || then === 'prev') moveFocus(root, target, then === 'next' ? 1 : -1);
+  else if (then === 'stay') moveFocus(root, target, 0);
+}
+
+// -- State API -------------------------------------------------------------------------------
+
+/** The markup of a state, for render() AND the live element: the path being edited. */
+function applyMarkup(el, state) {
+  dfDollar(el).attr('data-editing', state.name === 'editing' && state.config?.editing ? String(state.config.editing) : null);
+}
+
+/** UI side of setState: rebuild the table when the source or the groups changed, open / close the editor */
+function triggerStateChange(root, state, incoming) {
+  root._config = state.config ?? {};
+  applyMarkup(root, state);
+  const rebuild = !dfDollar(root).children('.property-grid-table').get(0) || 'source' in (incoming ?? {}) || 'collapsed' in (incoming ?? {});
+  if (rebuild) {
+    root._editor = null;
+    renderRows(root);
+  }
+  if (state.name === 'editing' && state.config?.editing) {
+    if (root._editor?.path !== state.config.editing) {
+      if (!openEditor(root, state.config.editing)) queueMicrotask(() => root.api.setState('default', { editing: null }));
+    }
+  } else if (root._editor) {
+    // leaving 'editing' without a commit: the cell shows its value again
+    closeEditor(root);
+  }
+}
+
+/** Registry-level API; pass the grid explicitly. Unknown names throw. */
+export const propertyGridApi = componentState({
+  component: 'property-grid',
+  states: propertyGridStates,
+  // the config IS the grid's data: { source, editing, collapsed } - each setState merges into it
+  mergeConfig: true,
+  apply: (root, state, _previous, incoming) => triggerStateChange(root, state, incoming),
+  markup: (el, state) => applyMarkup(el, state),
+});
+
+df$.propertyGridApi = propertyGridApi;
+df$.propertyGridStates = propertyGridStates;
+
+// -- df$.shadcn.propertyGrid: the imperative surface -----------------------------------------
+
+const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
+
+df$.propertyGrid = {
+  /**
+   * Configure a grid. source: the JSON object to show and edit. sourceConfig:
+   * per key or path ("owner.team") - { displayName, type ('string' | 'number' |
+   * 'boolean' | 'enum' | 'color' | 'date' | 'text' | 'json'), options (enum
+   * values or { value, label }), readOnly, hidden, description, and the rules
+   * required, min, max, integer, step, minLength, maxLength, pattern,
+   * minItems, maxItems, message (replaces the rule's own message).
+   * validateFn(key, value, ctx) returns a message (or false) to refuse a value.
+   * keyRenderFn(key, value, ctx) / valueRenderFn(value, key, ctx) return the
+   * cell's content (text or a node; null = the default rendering).
+   * getEditorFn(key, value, ctx) returns an editor - an input / select element,
+   * or { el, getValue(), validate?(), focus?(), immediate?, ownsEnter? } - null for the
+   * built-in one, false for read-only. ctx = { path, depth, type, config, source, grid }.
+   */
+  configure(target, options = {}) {
+    const root = resolve(target);
+    if (!root) return null;
+    const { source, ...rest } = options;
+    root._options = { ...root._options, ...rest };
+    if (!root.api) {
+      // not initialized yet (a script before the component): init picks it up
+      if (source !== undefined) root._pendingSource = clone(source);
+      return root;
+    }
+    if (source !== undefined) root.api.setState('default', { source: clone(source), editing: null });
+    else root.api.setState(root.store.value.name, { collapsed: configOf(root).collapsed ?? [] });
+    return root;
+  },
+  /** Show another object (a copy is kept - the grid never mutates what you pass). */
+  setSource(target, source) {
+    const root = resolve(target);
+    if (!root) return;
+    if (!root.api) root._pendingSource = clone(source ?? {});
+    else root.api.setState('default', { source: clone(source ?? {}), editing: null, collapsed: [] });
+  },
+  /** A copy of the object the grid holds now - every committed edit included. */
+  getSource: (target) => clone(configOf(resolve(target)).source ?? {}),
+  /** Write one property ("a.b" or ['a', 'b']) - fires property-grid-change like an edit. */
+  setProperty(target, path, value) {
+    const root = resolve(target);
+    if (!root) return;
+    const p = toPath(path);
+    const oldValue = getAt(configOf(root).source, p);
+    const source = setAt(configOf(root).source, p, clone(value));
+    root.api.setState(root.store.value.name === 'editing' ? 'default' : root.store.value.name, { source, editing: null });
+    root.dispatchEvent(new CustomEvent('property-grid-change', { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
+  },
+  /** One property's value ("a.b" or ['a', 'b']). */
+  getProperty: (target, path) => clone(getAt(configOf(resolve(target)).source, toPath(path))),
+  /** Open a property's editor (state 'editing'). */
+  edit: (target, path) => resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) }),
+  /** Commit the open editor; false when its value is invalid. */
+  commit: (target) => commit(resolve(target)),
+  /** Close the open editor without writing. */
+  cancel: (target) => resolve(target)?.api.setState('default', { editing: null }),
+  /** Expand a group (an object / array property). */
+  expand(target, path) {
+    const root = resolve(target);
+    const key = pathKey(toPath(path));
+    root?.api.setState(root.store.value.name, { collapsed: (configOf(root).collapsed ?? []).filter((p) => p !== key) });
+  },
+  /** Collapse a group. */
+  collapse(target, path) {
+    const root = resolve(target);
+    const key = pathKey(toPath(path));
+    const collapsed = new Set(configOf(root)?.collapsed ?? []);
+    collapsed.add(key);
+    root?.api.setState(root.store.value.name, { collapsed: [...collapsed] });
+  },
+};
+
+// -- init ------------------------------------------------------------------------------------
+
+function toggleGroup(root, path) {
+  const collapsed = new Set(configOf(root).collapsed ?? []);
+  if (collapsed.has(path)) collapsed.delete(path);
+  else collapsed.add(path);
+  root.api.setState('default', { collapsed: [...collapsed], editing: null });
+}
+
+function init() {
+  dfDollar('.property-grid:not([data-init])').toArray().forEach((root) => {
+    root.dataset.init = '';
+    let source = root._pendingSource ?? {};
+    const script = dfDollar(root).children('script.property-grid-source').get(0);
+    try {
+      if (root._pendingSource) delete root._pendingSource;
+      else if (script) source = JSON.parse(script.textContent || '{}');
+      else if (root.dataset.source) source = JSON.parse(root.dataset.source);
+    } catch (error) {
+      console.error('[property-grid] invalid source JSON', error);
+    }
+    // per-key settings without script: <script type="application/json" class="property-grid-config">
+    const conf = dfDollar(root).children('script.property-grid-config').get(0);
+    if (conf) {
+      try {
+        root._options = { ...root._options, sourceConfig: JSON.parse(conf.textContent || '{}') };
+      } catch (error) {
+        console.error('[property-grid] invalid config JSON', error);
+      }
+    }
+    if (!root.getAttribute('role')) root.setAttribute('role', 'group');
+
+    dfDollar(root).on('click', (e) => {
+      const t = e.target;
+      if (!t?.closest || t.closest('.property-grid-editor')) return;
+      const toggle = t.closest('.property-grid-toggle');
+      if (toggle) {
+        toggleGroup(root, toggle.closest('tr').dataset.path);
+        return;
+      }
+      const cell = t.closest('.property-grid-value');
+      const row = cell?.closest('tr');
+      if (!row || row.closest('thead') || row.hasAttribute('data-readonly')) return;
+      root.api.setState('editing', { editing: row.dataset.path });
+    });
+
+    dfDollar(root).on('keydown', (e) => {
+      const t = e.target;
+      if (root._editor && root._editor.cell.contains(t)) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          e.stopPropagation();
+          const { path } = root._editor;
+          root.api.setState('default', { editing: null });
+          restoreFocus(root, path, 'stay');
+        } else if (e.key === 'Enter' && (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)) {
+          e.preventDefault();
+          commit(root);
+        } else if (e.key === 'Tab') {
+          const targets = focusTargets(root);
+          const at = targets.findIndex((x) => x.closest('tr') === root._editor.row);
+          const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;
+          if (!edge) e.preventDefault();
+          commit(root, edge ? 'none' : e.shiftKey ? 'prev' : 'next');
+        }
+        return;
+      }
+      const row = t.closest?.('tr');
+      if (!row || !root.contains(row) || row.closest('thead')) return;
+      const keys = { ArrowDown: 1, ArrowUp: -1, Home: -Infinity, End: Infinity, PageDown: 10, PageUp: -10 };
+      if (e.key in keys) {
+        e.preventDefault();
+        moveFocus(root, t, keys[e.key]);
+      } else if (row.classList.contains('property-grid-group') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ')) {
+        const open = !(configOf(root).collapsed ?? []).includes(row.dataset.path);
+        if ((e.key === 'ArrowLeft' && open) || (e.key === 'ArrowRight' && !open) || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleGroup(root, row.dataset.path);
+        }
+      } else if ((e.key === 'Enter' || e.key === 'F2') && !row.hasAttribute('data-readonly')) {
+        e.preventDefault();
+        root.api.setState('editing', { editing: row.dataset.path });
+      }
+    });
+
+    // an editor that commits on change (a switch, a select, a color, a date) or when focus leaves it
+    dfDollar(root).on('change', (e) => {
+      if (root._editor?.editor.immediate && root._editor.cell.contains(e.target)) commit(root, 'stay');
+    });
+    dfDollar(root).on('focusout', (e) => {
+      const ed = root._editor;
+      if (!ed || !ed.cell.contains(e.target) || ed.cell.contains(e.relatedTarget)) return;
+      // after the click that moved focus has been handled (it may open another editor)
+      setTimeout(() => {
+        if (root._editor === ed && !ed.cell.contains(document.activeElement)) commit(root, 'none');
+      }, 0);
+    });
+
+    // el.store + el.api (AGENTS.md "State through stores") - the source is the state
+    bindComponent(root, propertyGridApi, { name: 'default', config: { source, editing: null, collapsed: [] } });
+    triggerStateChange(root, { name: 'default', config: { source, editing: null, collapsed: [] } }, { source });
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

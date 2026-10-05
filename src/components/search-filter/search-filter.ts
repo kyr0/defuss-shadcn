@@ -8,9 +8,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const searchFilterStates = ['default', 'filled', 'searching'];
 
@@ -20,6 +21,19 @@ function setValue(box, value) {
   if (field.value === value) return;
   field.value = value;
   field.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  // init-time enhancement (the live field always has it) + the busy flag
+  const field = dfDollar(el).children('input');
+  if (!field.attr('enterkeyhint')) field.attr('enterkeyhint', 'search');
+  field.attr('aria-busy', stateName === 'searching' ? 'true' : null);
 }
 
 /**
@@ -45,23 +59,17 @@ function triggerStateChange(box, stateName, config) {
 }
 
 /** Registry-level API; pass the .search-box element explicitly. Unknown names throw. */
-export const searchFilterApi = {
-  setState(box, stateName, config = {}) {
-    if (!searchFilterStates.includes(stateName)) {
-      throw new Error(
-        `search-filter: unknown state "${stateName}" (supported: ${searchFilterStates.join(', ')})`,
-      );
-    }
+export const searchFilterApi = componentState({
+  component: 'search-filter',
+  states: searchFilterStates,
+  apply: (box, state) => {
     // named before the DOM changes: the input event a new value fires reads
     // it, and must not overwrite 'searching' with 'filled'
-    box.dataset.stateName = stateName;
-    box._stateConfig = config;
-    triggerStateChange(box, stateName, config);
+    box.dataset.stateName = state.name;
+    triggerStateChange(box, state.name, state.config);
   },
-  getState(box) {
-    return { name: box.dataset.stateName || 'default', config: box._stateConfig ?? {} };
-  },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.searchFilterApi = searchFilterApi;
 df$.searchFilterStates = searchFilterStates;
@@ -70,14 +78,15 @@ df$.searchFilterStates = searchFilterStates;
 function clear(box) {
   searchFilterApi.setState(box, 'default', {});
   box._field.focus();
+  // Fires when the search is cleared with its clear button.
   box.dispatchEvent(new CustomEvent('search-clear', { bubbles: true }));
 }
 
 function init() {
-  document.querySelectorAll('.search-box:not([data-init])').forEach((box) => {
+  dfDollar('.search-box:not([data-init])').toArray().forEach((box) => {
     box.dataset.init = '';
 
-    const field = box.querySelector(':scope > input');
+    const field = dfDollar(box).find(':scope > input').get(0);
     if (!field) return; // the input is authored, not generated — nothing to drive
     box._field = field;
     if (!field.getAttribute('enterkeyhint')) field.setAttribute('enterkeyhint', 'search');
@@ -103,7 +112,7 @@ function init() {
       }
     });
 
-    box.querySelector(':scope > .search-box-clear')?.addEventListener('click', () => clear(box));
+    dfDollar(box).find(':scope > .search-box-clear').get(0)?.addEventListener('click', () => clear(box));
 
     // a click on the frame (icon, padding) lands in the field
     box.addEventListener('mousedown', (e) => {
@@ -113,10 +122,9 @@ function init() {
       }
     });
 
-    box.api = {
-      setState: (stateName, config) => searchFilterApi.setState(box, stateName, config),
-      getState: () => searchFilterApi.getState(box),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(box, searchFilterApi);
 
     searchFilterApi.setState(box, field.value === '' ? 'default' : 'filled', {});
   });

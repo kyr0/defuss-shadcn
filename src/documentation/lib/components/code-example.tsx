@@ -15,24 +15,30 @@ import { repoFile } from '../repo';
  * controls from it exclusively (§10), and pages stay self-contained on any host
  * (no runtime fetch that a mirror/CDN layout could break).
  *
- * All interactivity (srcdoc assembly, sandbox bridge, controls, rerun/reset,
- * viewport/device emulation) lives in runtime/code-example.ts; SSR emits the
- * static shell so the layout, source and toolbars exist pre-JS.
+ * The card IS the shipped HTML Preview Editor (src/components/code-example,
+ * the wysiwyg bundle): all interactivity (srcdoc assembly, sandbox bridge,
+ * controls, rerun/reset, viewport/device emulation, Shiki) lives in the
+ * component; SSR emits its static shell so the layout, source and toolbars
+ * exist pre-JS, and runtime/code-example.ts only configures the docs' preview
+ * assets.
  *
  * Viewport toolbar (every card, not just the layout demos): Rotate / Phone /
  * Tablet / Desktop / Full + custom W×H fields. Phone (390×844) and tablet
  * (834×1112) pin the frame to a device box and draw a scaling CSS bezel + island
- * + home indicator around the sandbox (the .ce-device shell) so it reads as a
+ * + home indicator around the sandbox (the .code-example-device shell) so it reads as a
  * handheld; Rotate flips the box for landscape. Desktop / Full measure the
  * content instead and reset the height field (placeholder "Full").
  */
 /**
  * The example frame's sandbox. Every example runs in an opaque origin
  * (allow-scripts allow-forms) - isolated from the docs page and from each
- * other. `sandbox="embed"` is the one opt-in, for an example that hosts a
- * third-party player (YouTube): such players need their own origin's storage,
- * which a nested frame only gets when this frame is same-origin - and the
- * player's permissions must be delegated through this frame.
+ * other. Two opt-ins widen one card: `sandbox="embed"`, for an example that
+ * hosts a third-party player (YouTube): such players need their own origin's
+ * storage, which a nested frame only gets when this frame is same-origin - and
+ * the player's permissions must be delegated through this frame;
+ * `sandbox="links"`, for an example whose links open a page in a new tab (the
+ * flagship deck's full-screen apps): popups only, the frame stays opaque, the
+ * opened page runs unsandboxed like any link the reader follows.
  */
 export const EXAMPLE_SANDBOX = {
   default: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write' },
@@ -40,6 +46,7 @@ export const EXAMPLE_SANDBOX = {
     sandbox: 'allow-scripts allow-forms allow-same-origin allow-presentation allow-popups',
     allow: 'clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture',
   },
+  links: { sandbox: 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox', allow: 'clipboard-write' },
 } as const;
 
 export interface CodeExampleProps {
@@ -103,14 +110,31 @@ function showsStateTab(schemaText: string | null): boolean {
   return s.stateTab !== false && Object.keys(s.states ?? {}).length > 0;
 }
 
+/** The component's own icons (lucide, inline) - read from its source at build
+ * time, so the server-rendered shell and the runtime-built one are the same. */
+const ICONS: Record<string, string> = (() => {
+  const src = readFileSync(repoFile('src', 'components', 'code-example', 'code-example.ts'), 'utf8');
+  const block = /const ICONS = \{([\s\S]*?)\n\};/.exec(src)?.[1] ?? '';
+  const out: Record<string, string> = {};
+  for (const m of block.matchAll(/'([a-z-]+)': '([^']*)'/g)) out[m[1]] = m[2];
+  return out;
+})();
+
+function Icon({ name }: { name: string }) {
+  if (!ICONS[name]) throw new Error(`CodeExample: no icon "${name}" in components/code-example`);
+  return (
+    <svg class={`lucide lucide-${name}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICONS[name] }}></svg>
+  );
+}
+
 const H2_LABEL = 'text-sm font-medium mb-2';
 const H2_HINT = 'text-xs text-muted-foreground mb-3';
 
 export function CodeExample({ source, component, label, hint, height, mode, previewStyle, sandbox, children, code, preview, previewSource }: CodeExampleProps) {
   const problems = codeExampleProblems({ source, children, code, preview, previewSource });
   if (problems.length) throw new Error(`CodeExample: ${problems.join(' | ')}`);
-  if (sandbox !== undefined && sandbox !== 'embed') throw new Error(`CodeExample: sandbox="${sandbox}" - the only opt-in is sandbox="embed"`);
-  const frame = EXAMPLE_SANDBOX[sandbox === 'embed' ? 'embed' : 'default'];
+  if (sandbox !== undefined && sandbox !== 'embed' && sandbox !== 'links') throw new Error(`CodeExample: sandbox="${sandbox}" - the opt-ins are sandbox="embed" and sandbox="links"`);
+  const frame = EXAMPLE_SANDBOX[(sandbox ?? 'default') as keyof typeof EXAMPLE_SANDBOX];
   const schemaText = readSchema(component);
   const stateTab = showsStateTab(schemaText);
   const name = label ?? `${component ?? 'Example'} example`;
@@ -133,65 +157,47 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
     >
       {label ? <p class={H2_LABEL}>{label}</p> : null}
       {hint ? <p class={H2_HINT}>{hint}</p> : null}
-      {/* class="preview" exactly (verify's `preview blocks` gate + screenshot anchor);
-          the iframe is inside it, so the captured default-state PNG shows the live sandbox.
-          .ce-screen/.ce-device: the device emulation wrapper - phone/tablet modes put a
-          scaling bezel (border + island + home indicator, pure CSS) around the iframe.
-          padding gives the canvas breathing room inside the card (medium 0.75rem);
-          overflow hidden keeps wide content clipped until the viewport toolbar's
-          device modes flip it (code-example.js). */}
-      {/* the resizer component (dogfooded): 8 handles around the preview box —
-          any side or corner drags, replacing the old SE-only grip. Controlled
-          mode: the toolbar runtime owns the size (drives the W/H fields), the
-          resizer only measures + dispatches. clamps mirror the old grip
-          (240..1600 w, 240..1400 h). */}
-      <div class="preview" style="padding:0.75rem;overflow:hidden;">
-        <div class="ce-screen" data-mode="full">
-          {/* the resizer component (dogfooded): handles on EVERY side and
-              corner of the canvas box (the old SE-only grip is retired).
-              Controlled mode: the toolbar runtime owns the size (drives the
-              W/H fields) - the component only measures, clamps, keyboard-
-              drives and dispatches resizer-resize. Clamps mirror the old
-              grip (240..1600 w, 240..1400 h). */}
-          <div class="resizer ce-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">
-            <div class="ce-device">
-              <iframe class="code-example-frame" sandbox={frame.sandbox} allow={frame.allow} {...(sandbox === 'embed' ? { allowfullscreen: '' } : {})} title={name} style="width:100%;min-height:8rem;border:0;display:block;"></iframe>
-              <span class="ce-device-island" aria-hidden="true"></span>
-              <span class="ce-device-home" aria-hidden="true"></span>
+      {/* the shipped code-example component's shell (components/code-example,
+          the wysiwyg bundle) rendered here so the card exists pre-JS - the
+          runtime finds .code-example-toolbar and builds nothing. class
+          "preview" rides along on the stage (verify's `preview blocks` gate +
+          the screenshot anchor); the inline padding undoes the docs .preview
+          padding. The resizer component (all.js) puts handles on every side. */}
+      <div class="code-example-stage preview" style="padding:0.75rem;overflow:hidden;">
+        <div class="code-example-screen" data-mode="full">
+          <div class="resizer code-example-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">
+            <div class="code-example-device">
+              <iframe class="code-example-frame" sandbox={frame.sandbox} allow={frame.allow} {...(sandbox === 'embed' ? { allowfullscreen: '' } : {})} title={name}></iframe>
+              <span class="code-example-device-island" aria-hidden="true"></span>
+              <span class="code-example-device-home" aria-hidden="true"></span>
             </div>
           </div>
         </div>
         <output class="code-example-error" role="alert" hidden></output>
-        {/* fullscreen exit: hidden in normal flow; CSS docks it top-right as
-            soon as the stage is :fullscreen (or carries the .ce-fs fallback) —
-            it must live INSIDE .preview to ride into the top layer */}
-        <button class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen">
-          <i data-lucide="x"></i>
+        <button type="button" class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen">
+          <Icon name="x" />
         </button>
       </div>
       <div class="code-example-toolbar">
-        {/* device toolbar (every CodeExample, not only the layout demos):
-            orientation rotate + quick sizes + custom W×H - runtime
-            (code-example.js) owns the mode state and the device chrome */}
         <span class="code-example-viewport" role="group" aria-label="Preview device">
-          <button class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">
-            <i data-lucide="rotate-cw"></i>
+          <button type="button" class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">
+            <Icon name="rotate-cw" />
             <span>Rotate</span>
           </button>
-          <button class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844">
-            <i data-lucide="smartphone"></i>
+          <button type="button" class="code-example-vp" data-vp="phone" aria-pressed="false" title="Phone 390×844">
+            <Icon name="smartphone" />
             <span>Phone</span>
           </button>
-          <button class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112">
-            <i data-lucide="tablet"></i>
+          <button type="button" class="code-example-vp" data-vp="tablet" aria-pressed="false" title="Tablet 834×1112">
+            <Icon name="tablet" />
             <span>Tablet</span>
           </button>
-          <button class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024">
-            <i data-lucide="monitor"></i>
+          <button type="button" class="code-example-vp" data-vp="desktop" aria-pressed="false" title="Desktop 1024">
+            <Icon name="monitor" />
             <span>Desktop</span>
           </button>
-          <button class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width (source default)">
-            <i data-lucide="app-window"></i>
+          <button type="button" class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width">
+            <Icon name="app-window" />
             <span>Full</span>
           </button>
         </span>
@@ -201,53 +207,44 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <span class="code-example-vp-x" aria-hidden="true">×</span>
           <input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled />
         </span>
-        {/* zoom: empty = auto-fit (shrink the device to the card, never blow
-            the page), 25–100 = manual %. CSS zoom - unlike transform - keeps
-            the iframe's own viewport at the declared width, so media queries
-            inside the sandbox stay honest while it visually shrinks. */}
         <span class="code-example-sep" aria-hidden="true"></span>
         <span class="code-example-size">
           <input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)" />
           <span class="code-example-vp-x" aria-hidden="true">%</span>
         </span>
         <span class="code-example-spacer"></span>
-        {/* Both tabs start OFF: the rendered demo is the hero, the lower area
-            (source editor / state contract) is opt-in - the runtime makes the
-            buttons toggles (radio + click-again collapses everything). */}
-        <button class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the example source">
-          <i data-lucide="code-xml"></i>
+        {/* both tabs start off: the preview is the hero, a panel is opt-in */}
+        <button type="button" class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the source">
+          <Icon name="code-xml" />
           <span>Code</span>
         </button>
-        {/* State tab renders ONLY when the schema offers editable states - an
-            empty contract (or stateTab:false) means no tab: editor stands alone. */}
+        {/* State tab only when the schema offers editable states */}
         {stateTab ? (
-          <button class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state contract">
-            <i data-lucide="sliders-horizontal"></i>
+          <button type="button" class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state controls">
+            <Icon name="sliders-horizontal" />
             <span>State</span>
           </button>
         ) : null}
-        <button class="code-example-reset" title="Restore the original source and rerun">
-          <i data-lucide="rotate-ccw"></i>
+        <button type="button" class="code-example-reset" title="Restore the original source and rerun">
+          <Icon name="rotate-ccw" />
           <span>Reset</span>
         </button>
-        <button class="code-example-full" title="Preview fullscreen (Esc to exit)">
-          <i data-lucide="maximize"></i>
+        <button type="button" class="code-example-full" title="Preview fullscreen (Esc to exit)">
+          <Icon name="maximize" />
           <span>Fullscreen</span>
         </button>
       </div>
       <div class="code-example-panel" data-panel="code" hidden>
-        {/* Copy floats top-right over the editor - it only exists in the code
-            panel, so it is visible exactly when the editor is open */}
-        <button class="code-example-copy" title="Copy the example source">
-          <i data-lucide="copy"></i>
+        <button type="button" class="code-example-copy" title="Copy the source">
+          <Icon name="copy" />
           <span>Copy</span>
         </button>
-        <textarea
-          class="code-example-src"
-          spellcheck="false"
-          aria-label={`Editable source for: ${name}`}
-          rows="10"
-        >{source}</textarea>
+        {/* the textarea is the source the preview runs; the component's
+            paint layer (Shiki) sits under it with the same metrics */}
+        <div class="code-example-editor">
+          <div class="code-example-paint" aria-hidden="true"></div>
+          <textarea class="code-example-src" spellcheck="false" aria-label={`Editable source for: ${name}`} rows="10">{source}</textarea>
+        </div>
       </div>
       {stateTab ? <div class="code-example-panel" data-panel="state" hidden></div> : null}
     </div>

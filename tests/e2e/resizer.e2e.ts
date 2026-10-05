@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Locator, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped resizer component. Loads the fixture
@@ -267,6 +268,10 @@ try {
       ['n', 'ne', 'nw', 's', 'se', 'sw'],
     );
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.resizer[id]', ['default'], { runtimeAttrs: ['style','data-width','data-height'] });
+  });
+
 } finally {
   await browser.close();
   server.stop();

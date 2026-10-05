@@ -224,6 +224,20 @@ document.querySelector('#cb-framework-popover').api.getState(); // { name: 'open
 
 The registry global is `df$.shadcn.comboboxApi` / `df$.shadcn.comboboxStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.comboboxApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.comboboxStates` = `default`, `open`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `combobox:change` | `values`, `labels`, `created` | Fires when the user changes the selection - the selected values, their labels, and the values created from typed text. |
+
 ## Notes
 
 - Filtering toggles option `hidden` flags **in place** through the core `df$`

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped presentation component. Loads the
@@ -431,6 +432,10 @@ try {
     await page.waitForFunction(() => !(document.querySelector('#a3-video') as HTMLVideoElement).paused, undefined, { timeout: 4000 });
     await page.evaluate(() => (document.querySelector('#anim-deck') as HTMLElement).api!.setState('default', { index: 0 }));
     await page.waitForFunction(() => (document.querySelector('#a3-video') as HTMLVideoElement).paused, undefined, { timeout: 4000 });
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.presentation[id]', ['default','notes','fullscreen'], { runtimeAttrs: ['style','data-fullscreen','data-leaving','data-curtain'] });
   });
 
 } finally {

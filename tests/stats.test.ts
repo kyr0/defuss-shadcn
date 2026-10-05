@@ -112,6 +112,8 @@ describe('statsClaimText / statsClaimProblems', () => {
       cssSizeMinified: 1000,
       totalSizeGz: 900,
       totalSizeGzMinified: 1024,
+      jsSizeGzMinified: 700,
+      cssSizeGzMinified: 324,
     });
     expect(statsClaimText(withBundle)).toContain('1.0 KiB as the all.css/all.js bundle');
     expect(withBundle.bundle.totalSizeGzMinified).toBe(1024);
@@ -130,6 +132,8 @@ describe('statsClaimText / statsClaimProblems', () => {
         cssSizeMinified: 0,
         totalSizeGz: 800,
         totalSizeGzMinified: 512,
+        jsSizeGzMinified: 400,
+        cssSizeGzMinified: 112,
       },
     );
     expect(withCore.core.totalSizeGzMinified).toBe(512);
@@ -187,5 +191,11 @@ describe('templates, TOK and EXL', () => {
   it('passes the token and example counts through (zero when not measured)', () => {
     expect(aggregateStats([], undefined, undefined, 0, { tokens: 50, examples: 1023 })).toMatchObject({ tokens: 50, examples: 1023 });
     expect(aggregateStats([])).toMatchObject({ templatePages: 0, templates: 0, tokens: 0, examples: 0 });
+  });
+
+  it('passes the per-app measurements through (empty when not measured)', () => {
+    const app = { page: 'scaffold-x', href: 'app-x.html', components: ['badge'], jsSize: 1, jsSizeMinified: 1, cssSize: 1, cssSizeMinified: 1, totalSizeGz: 2, totalSizeGzMinified: 2, jsSizeGzMinified: 1, cssSizeGzMinified: 1 };
+    expect(aggregateStats([], undefined, undefined, 0, { apps: { x: app } }).apps).toEqual({ x: app });
+    expect(aggregateStats([]).apps).toEqual({});
   });
 });

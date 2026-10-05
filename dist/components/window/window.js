@@ -19,17 +19,18 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const windowStates = ['default', 'maximized', 'minimized', 'closed'];
 /** Stacking order is shared by every window on the page - a counter, not state. */
 let topZ = 10;
 /** How much of a window must stay inside its desktop, so it can be grabbed back. */
 const KEEP = 48;
 const resolve = (target) => typeof target === 'string'
-    ? document.getElementById(target) ?? document.querySelector(target)
+    ? dfDollar('#' + CSS.escape(target)).get(0) ?? dfDollar(target).get(0)
     : target;
-const titleOf = (w) => w.querySelector('.window-title')?.textContent?.trim() ?? '';
+const titleOf = (w) => dfDollar(w).find('.window-title').get(0)?.textContent?.trim() ?? '';
 /** The window's position inside its desktop, in px. */
 const posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 /**
@@ -39,9 +40,9 @@ const posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
  */
 function moveTo(w, x, y) {
     const parent = w.offsetParent;
-    const bar = w.querySelector('.window-titlebar');
+    const bar = dfDollar(w).find('.window-titlebar').get(0);
     if (parent) {
-        const ctl = w.querySelector('.window-controls')?.offsetWidth ?? 0;
+        const ctl = dfDollar(w).find('.window-controls').get(0)?.offsetWidth ?? 0;
         const maxX = parent.clientWidth - KEEP - ctl;
         const minX = KEEP + ctl - w.offsetWidth;
         const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
@@ -60,9 +61,10 @@ function raise(w) {
         return;
     topZ += 1;
     w.style.zIndex = String(topZ);
-    document.querySelectorAll('.window[data-active]').forEach((o) => { if (o !== w)
+    dfDollar('.window[data-active]').toArray().forEach((o) => { if (o !== w)
         o.removeAttribute('data-active'); });
     w.setAttribute('data-active', '');
+    // Fires when a window comes to the front - its title.
     w.dispatchEvent(new CustomEvent('window-focus', { bubbles: true, detail: { title: titleOf(w) } }));
 }
 /**
@@ -81,7 +83,7 @@ function showQuietly(w) {
 }
 /** Hands "active" to the front-most open window left (after one closed). */
 function activateTopmost() {
-    const open = Array.from(document.querySelectorAll('.window[open]'));
+    const open = Array.from(dfDollar('.window[open]').toArray());
     if (!open.length)
         return;
     const top = open.reduce((a, b) => (Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a));
@@ -103,12 +105,26 @@ function restoreSize(w) {
     w._stash = null;
 }
 /**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+    const open = stateName !== 'closed';
+    dfDollar(el).attr('open', open ? '' : null);
+    dfDollar(el).attr('data-maximized', stateName === 'maximized' ? '' : null);
+    dfDollar(el).attr('data-minimized', stateName === 'minimized' ? '' : null);
+    dfDollar(el).find('.window-maximize').attr('aria-label', stateName === 'maximized' ? 'Restore' : 'Maximize');
+    dfDollar(el).find('.window-minimize').attr('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
+}
+/**
  * UI side of setState. 'default' = open, normal size (opens a closed
  * window; `{ x, y }` moves it); 'maximized' fills the desktop; 'minimized'
  * rolls it up to its title bar; 'closed' closes the dialog.
  */
 function triggerStateChange(w, stateName, config) {
-    const maxBtn = w.querySelector('.window-maximize');
+    const maxBtn = dfDollar(w).find('.window-maximize').get(0);
     if (stateName !== 'closed' && !w.open)
         showQuietly(w);
     switch (stateName) {
@@ -134,29 +150,31 @@ function triggerStateChange(w, stateName, config) {
         case 'closed':
             if (w.open)
                 w.close(); // the close event hands "active" on
+            // closed means closed: the size modes are not kept for the next open
+            w.removeAttribute('data-maximized');
+            w.removeAttribute('data-minimized');
             break;
     }
     if (maxBtn)
         maxBtn.setAttribute('aria-label', stateName === 'maximized' ? 'Restore' : 'Maximize');
-    w.querySelector('.window-minimize')?.setAttribute('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
+    dfDollar(w).find('.window-minimize').get(0)?.setAttribute('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
 }
 /** Registry-level API; pass the .window element explicitly. Unknown names throw. */
-export const windowApi = {
-    setState(w, stateName, config = {}) {
-        if (!windowStates.includes(stateName)) {
-            throw new Error(`window: unknown state "${stateName}" (supported: ${windowStates.join(', ')})`);
-        }
-        w.dataset.stateName = stateName;
-        w._stateConfig = config;
-        triggerStateChange(w, stateName, config);
+export const windowApi = componentState({
+    component: 'window',
+    states: windowStates,
+    apply: (w, state) => {
+        w.dataset.stateName = state.name;
+        triggerStateChange(w, state.name, state.config);
     },
-    getState(w) {
+    read: (w, state) => {
         // the dialog is the truth: closed the moment it closes, before the
         // queued close event updates data-state-name
         const name = !w.open ? 'closed' : w.dataset.stateName || 'default';
-        return { name, config: name === 'closed' ? {} : w._stateConfig ?? {} };
+        return { name, config: name === 'closed' ? {} : state.config };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.windowApi = windowApi;
 df$.windowStates = windowStates;
 /** Title-bar dragging: pointer capture, so a fast drag never loses the window. */
@@ -178,6 +196,7 @@ function bindDrag(w, bar) {
             bar.removeEventListener('pointerup', onUp);
             bar.removeEventListener('pointercancel', onUp);
             w.removeAttribute('data-dragging');
+            // Fires after a window was dragged (or moved with the keyboard) - its position.
             w.dispatchEvent(new CustomEvent('window-move', { bubbles: true, detail: posOf(w) }));
         };
         bar.addEventListener('pointermove', onMove);
@@ -203,16 +222,16 @@ function bindDrag(w, bar) {
     });
 }
 function init() {
-    document.querySelectorAll('dialog.window:not([data-init])').forEach((w) => {
+    dfDollar('dialog.window:not([data-init])').toArray().forEach((w) => {
         w.dataset.init = '';
-        const bar = w.querySelector(':scope > .window-titlebar');
+        const bar = dfDollar(w).find(':scope > .window-titlebar').get(0);
         if (bar) {
             if (!bar.hasAttribute('tabindex'))
                 bar.tabIndex = 0;
             bindDrag(w, bar);
         }
         if (!w.hasAttribute('aria-labelledby') && !w.hasAttribute('aria-label')) {
-            const title = w.querySelector('.window-title');
+            const title = dfDollar(w).find('.window-title').get(0);
             if (title) {
                 if (!title.id)
                     title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
@@ -223,15 +242,15 @@ function init() {
         // the content handles it); so does focus arriving by keyboard
         w.addEventListener('pointerdown', () => raise(w), true);
         w.addEventListener('focusin', () => raise(w));
-        w.querySelector('.window-maximize')?.addEventListener('click', () => windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {}));
+        dfDollar(w).find('.window-maximize').get(0)?.addEventListener('click', () => windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {}));
         // the × closes through the API too: the native form submit already
         // does it, but a page that cancels submits (a sandbox, a SPA) must not
         // strand the window open
-        w.querySelector('.window-close')?.addEventListener('click', (e) => {
+        dfDollar(w).find('.window-close').get(0)?.addEventListener('click', (e) => {
             e.preventDefault();
             windowApi.setState(w, 'closed', {});
         });
-        w.querySelector('.window-minimize')?.addEventListener('click', () => windowApi.setState(w, w.hasAttribute('data-minimized') ? 'default' : 'minimized', {}));
+        dfDollar(w).find('.window-minimize').get(0)?.addEventListener('click', () => windowApi.setState(w, w.hasAttribute('data-minimized') ? 'default' : 'minimized', {}));
         // however it closed - the × (form method="dialog"), Escape-less
         // close(), the API - the state follows the dialog
         w.addEventListener('close', () => {
@@ -240,18 +259,22 @@ function init() {
                 return;
             w.dataset.stateName = 'closed';
             w.removeAttribute('data-active');
+            w.removeAttribute('data-maximized');
+            w.removeAttribute('data-minimized');
             activateTopmost();
         });
-        w.api = {
-            setState: (stateName, config) => windowApi.setState(w, stateName, config),
-            getState: () => windowApi.getState(w),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(w, windowApi);
         const initial = !w.open ? 'closed' : w.hasAttribute('data-maximized') ? 'maximized' : w.hasAttribute('data-minimized') ? 'minimized' : 'default';
         w.dataset.stateName = initial;
+        // the buttons name what they do in the state the window starts in (an
+        // authored maximized window's button restores it)
+        dfDollar(w).find('.window-maximize').attr('aria-label', initial === 'maximized' ? 'Restore' : 'Maximize');
+        dfDollar(w).find('.window-minimize').attr('aria-label', initial === 'minimized' ? 'Restore' : 'Minimize');
         if (w.open) {
             w.style.zIndex = String(++topZ);
             // the last authored open window starts active
-            document.querySelectorAll('.window[data-active]').forEach((o) => o.removeAttribute('data-active'));
+            dfDollar('.window[data-active]').toArray().forEach((o) => o.removeAttribute('data-active'));
             w.setAttribute('data-active', '');
         }
     });
@@ -259,7 +282,7 @@ function init() {
 /** Builds a window element from options - the shape the skill documents. */
 function create(options = {}) {
     const { title = 'Untitled', icon, content, html, statusbar, id, x, y, width, height, chrome, resizable = true, parent, focus = true, flush = false, } = options;
-    const host = resolve(parent) ?? document.querySelector('.window-desktop') ?? document.body;
+    const host = resolve(parent) ?? dfDollar('.window-desktop').get(0) ?? document.body;
     const w = document.createElement('dialog');
     w.className = 'window';
     if (id)
@@ -268,7 +291,7 @@ function create(options = {}) {
         w.dataset.chrome = chrome;
     if (resizable)
         w.setAttribute('data-resizable', '');
-    const count = host.querySelectorAll(':scope > .window').length;
+    const count = dfDollar(host).find(':scope > .window').toArray().length;
     w.style.setProperty('--window-x', typeof x === 'number' ? `${x}px` : x ?? `${24 + (count % 8) * 28}px`);
     w.style.setProperty('--window-y', typeof y === 'number' ? `${y}px` : y ?? `${24 + (count % 8) * 28}px`);
     if (width !== undefined)
@@ -324,7 +347,7 @@ function create(options = {}) {
     return w;
 }
 /** Windows (open unless `all`) inside `scope` (default: the page). */
-const list = (scope, all = false) => Array.from((resolve(scope) ?? document).querySelectorAll(all ? '.window' : '.window[open]'));
+const list = (scope, all = false) => dfDollar(resolve(scope) ?? document).find(all ? '.window' : '.window[open]').toArray();
 /** Steps the open windows diagonally from the top-left, front-most last. */
 function cascade(scope, step = 28) {
     list(scope)
@@ -355,13 +378,18 @@ function tile(scope) {
 // an id or a selector
 df$.win = {
     create,
+    /** Open a window (closed, minimized or not shown yet) - config is the state's config. */
     open: (t, config = {}) => { const w = resolve(t); if (w)
         windowApi.setState(w, 'default', config); return w; },
+    /** Close it (the closed state). */
     close: (t) => { const w = resolve(t); if (w)
         windowApi.setState(w, 'closed', {}); return w; },
+    /** Bring it to the front (the active window). */
     focus: (t) => { const w = resolve(t); if (w?.open)
         raise(w); return w; },
+    /** Move it to x, y (px, inside its desktop). */
     move: (t, x, y) => { const w = resolve(t); return w ? moveTo(w, x, y) : null; },
+    /** Size it: width (and height) as px numbers or CSS lengths. */
     resize: (t, width, height) => {
         const w = resolve(t);
         if (!w)
@@ -373,19 +401,24 @@ df$.win = {
             w.style.setProperty('--window-h', typeof height === 'number' ? `${height}px` : height);
         return w;
     },
+    /** Fill the desktop. */
     maximize: (t) => { const w = resolve(t); if (w)
         windowApi.setState(w, 'maximized', {}); return w; },
+    /** Minimize it to the taskbar. */
     minimize: (t) => { const w = resolve(t); if (w)
         windowApi.setState(w, 'minimized', {}); return w; },
+    /** Back to its normal size and place. */
     restore: (t) => { const w = resolve(t); if (w)
         windowApi.setState(w, 'default', {}); return w; },
+    /** Maximize it, or restore it when it is maximized. */
     toggleMaximize: (t) => {
         const w = resolve(t);
         if (w)
             windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {});
         return w;
     },
-    active: () => document.querySelector('.window[open][data-active]'),
+    /** The window in front, if any. */
+    active: () => dfDollar('.window[open][data-active]').get(0),
     list,
     cascade,
     tile,

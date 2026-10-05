@@ -14,9 +14,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const stepsStates = ['default'];
 
@@ -31,7 +32,7 @@ const numAttr = (el: HTMLElement, key: string, fallback: number): number => {
  * function of the attributes - idempotent, safe to run after every change.
  */
 function renderSteps(ol: HTMLElement): void {
-  const items = Array.from(ol.querySelectorAll<HTMLElement>('.step'));
+  const items = Array.from((dfDollar(ol).find('.step').toArray() as HTMLElement[]));
   if (items.length === 0) return;
   const total = items.length;
   const active = Math.min(total, Math.max(1, numAttr(ol, 'activeStep', 1)));
@@ -58,34 +59,53 @@ function renderSteps(ol: HTMLElement): void {
  * re-maps. activeStepError (boolean, per the panel) maps to the ERROR INDEX:
  * true marks the active step, false clears it.
  */
+/**
+ * The markup of a state, for render(): the tracker attributes the state's
+ * config names - written only where they differ from what the markup already
+ * says (getState() reports the derived values: activeStep 1, size md, … even
+ * when none was authored) - then the same renderSteps() the live list runs on
+ * setState. Applied to a detached copy of the authored markup.
+ */
+function applyMarkup(ol: HTMLElement, config: Record<string, unknown> = {}): void {
+  if (config.activeStep !== undefined && numAttr(ol, 'activeStep', 1) !== Number(config.activeStep)) ol.dataset.activeStep = String(config.activeStep);
+  if (config.errorStep !== undefined && numAttr(ol, 'errorStep', 0) !== Number(config.errorStep)) {
+    if (Number(config.errorStep)) ol.dataset.errorStep = String(config.errorStep);
+    else delete ol.dataset.errorStep;
+  }
+  if (config.size !== undefined && (ol.dataset.size ?? 'md') !== config.size) ol.dataset.size = String(config.size);
+  if (ol.hasAttribute('data-active-step')) renderSteps(ol);
+}
+
 function triggerStateChange(ol: HTMLElement, stateName: string, config: Record<string, unknown> = {}): void {
   if (stateName !== 'default') return;
+  // only what differs is written: setState(getState()) changes nothing (getState
+  // reports the derived activeStep 1 / errorStep 0 even when none was authored)
   const a = config.activeStep ?? config.step ?? config.page;
-  if (a !== undefined) ol.dataset.activeStep = String(a);
-  if (config.errorStep !== undefined) ol.dataset.errorStep = String(config.errorStep);
-  else if (config.activeStepError === true) ol.dataset.errorStep = ol.dataset.activeStep ?? '1';
+  if (a !== undefined && numAttr(ol, 'activeStep', 1) !== Number(a)) ol.dataset.activeStep = String(a);
+  if (config.errorStep !== undefined) {
+    if (numAttr(ol, 'errorStep', 0) !== Number(config.errorStep)) {
+      if (Number(config.errorStep)) ol.dataset.errorStep = String(config.errorStep);
+      else delete ol.dataset.errorStep;
+    }
+  } else if (config.activeStepError === true) ol.dataset.errorStep = ol.dataset.activeStep ?? '1';
   else if (config.activeStepError === false) delete ol.dataset.errorStep;
-  if (config.size !== undefined) ol.dataset.size = String(config.size);
-  renderSteps(ol);
+  if (config.size !== undefined && (ol.dataset.size ?? 'md') !== config.size) ol.dataset.size = String(config.size);
+  // the same opt-in as init: only a data-driven list is re-mapped - a static
+  // list keeps its authored statuses (setState('default') must not erase them)
+  if (ol.hasAttribute('data-active-step')) renderSteps(ol);
 }
 
 /** Registry-level API; pass the <ol> explicitly. Unknown names throw. */
-export const stepsApi = {
-  setState(ol: HTMLElement, stateName: string, config: Record<string, unknown> = {}) {
-    if (!stepsStates.includes(stateName)) {
-      throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(', ')})`);
-    }
-    triggerStateChange(ol, stateName, config);
-    // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-    ol.dataset.stateName = stateName;
-    ol._stateConfig = config;
-  },
-  getState(ol: HTMLElement) {
+export const stepsApi = componentState({
+  component: 'steps',
+  states: stepsStates,
+  apply: (ol, state) => triggerStateChange(ol, state.name, state.config),
+  read: (ol, state) => {
     // reflect reality: clicking a clickable step moves the tracker without setState()
     return {
       name: ol.dataset.stateName || 'default',
       config: {
-        ...ol._stateConfig,
+        ...state.config,
         activeStep: numAttr(ol, 'activeStep', 1),
         activeStepError: numAttr(ol, 'errorStep', 0) === numAttr(ol, 'activeStep', 1) && numAttr(ol, 'errorStep', 0) !== 0,
         errorStep: numAttr(ol, 'errorStep', 0),
@@ -93,19 +113,17 @@ export const stepsApi = {
       },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el as HTMLElement, state.config),
+});
 
 df$.stepsApi = stepsApi;
 df$.stepsStates = stepsStates;
 
 function init(): void {
-  document.querySelectorAll<HTMLElement>('.steps:not([data-init])').forEach((ol) => {
+  (dfDollar('.steps:not([data-init])').toArray() as HTMLElement[]).forEach((ol) => {
     ol.dataset.init = '';
-    // bind-scope the api per instance: `$('#checkout').api.setState('default', { activeStep: 3 })`
-    ol.api = {
-      setState: (stateName: string, config?: Record<string, unknown>) => stepsApi.setState(ol, stateName, config),
-      getState: () => stepsApi.getState(ol),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(ol, stepsApi);
 
     // opt-in: only a data-driven <ol> (declaring data-active-step) is mapped —
     // authored data-status markup stays exactly as written (progressive
@@ -125,7 +143,7 @@ function init(): void {
     ol.addEventListener('click', (e) => {
       const item = (e.target as HTMLElement).closest<HTMLElement>('.step[data-clickable]');
       if (!item || !ol.contains(item)) return;
-      const items = Array.from(ol.querySelectorAll('.step'));
+      const items = Array.from(dfDollar(ol).find('.step').toArray());
       ol.dataset.activeStep = String(items.indexOf(item) + 1);
       delete ol.dataset.errorStep; // navigating clears the error
     });

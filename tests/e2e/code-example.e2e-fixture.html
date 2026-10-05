@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>code-example e2e fixture</title>
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/all.css" />
+    <link rel="stylesheet" href="/dist/components/wysiwyg.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 2.5rem; }</style>
+  </head>
+  <body>
+    <!-- generated from pages/code-example.mdx's example fences (tmp/sys/cx-gen.ts) -->
+    <section class="fx">
+<div class="code-example" id="cx-switch" aria-label="Switch preview" data-preview-style="display:flex;justify-content:center" data-schema='{"schemaVersion":1,"name":"switch","states":{"checked":{"type":"boolean","default":false,"target":{"kind":"selector","selector":".switch"},"mutation":{"kind":"property","name":"checked"},"observation":{"kind":"property","name":"checked"},"editor":{"component":"checkbox"}}},"actions":{}}'>
+  <textarea>
+<div class="switch-item flex items-center gap-2">
+  <input class="switch" type="checkbox" role="switch" id="wifi">
+  <label class="label" for="wifi">Wi-Fi</label>
+</div>
+  </textarea>
+</div>
+    </section>
+    <section class="fx">
+<div class="code-example" id="cx-buttons" aria-label="Buttons preview" data-preview-style="display:flex;gap:0.5rem;justify-content:center">
+  <textarea>
+<button class="btn">Save</button>
+<button class="btn" data-variant="outline">Cancel</button>
+<button class="btn" data-variant="ghost">Later</button>
+  </textarea>
+</div>
+    </section>
+    <section class="fx">
+<div class="code-example" id="cx-phone" aria-label="Responsive grid" data-vp-mode="phone">
+  <textarea>
+<div class="grid gap-3" style="grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))">
+  <div class="card"><div class="card-header"><p class="card-description">Revenue</p><h3 class="card-title">$48.2k</h3></div></div>
+  <div class="card"><div class="card-header"><p class="card-description">Orders</p><h3 class="card-title">1,284</h3></div></div>
+  <div class="card"><div class="card-header"><p class="card-description">Refunds</p><h3 class="card-title">12</h3></div></div>
+</div>
+  </textarea>
+</div>
+    </section>
+    <section class="fx">
+<div class="grid gap-3" style="width:100%">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-load">Load a card</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-source">Show the source</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-tablet">Tablet</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-reset">Reset</button>
+  </div>
+  <div class="code-example" id="cx-play" aria-label="Playground">
+    <textarea>
+<p class="text-sm">Edit me - the preview follows.</p>
+    </textarea>
+  </div>
+  <output id="cx-log" class="text-sm text-muted-foreground">Changes show up here.</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const lib = df$.shadcn.codeExample;
+    const card = df$('#cx-play').get(0);
+    card.addEventListener('code-example-change', (e) => {
+      df$('#cx-log').text('code-example-change (' + e.detail.origin + '): ' + e.detail.source.trim().length + ' characters');
+    });
+    df$('#cx-load').on('click', () => lib.setSource(card, '<div class="card">\n  <div class="card-header">\n    <h3 class="card-title">A card</h3>\n    <p class="card-description">Loaded with setSource().</p>\n  </div>\n</div>'));
+    df$('#cx-source').on('click', () => card.api.setState(card.api.getState().name === 'code' ? 'default' : 'code'));
+    df$('#cx-tablet').on('click', () => lib.viewport(card, 'tablet'));
+    df$('#cx-reset').on('click', () => lib.reset(card));
+  });
+</script>
+    </section>
+    <script type="module" src="/dist/components/all.js"></script>
+    <script type="module" src="/dist/components/wysiwyg.js"></script>
+  </body>
+</html>

@@ -1,0 +1,216 @@
+/* -- Autocomplete ------------------------------------------------ */
+/* An input and a manual popover under it (CSS anchor positioning):  */
+/* the listbox, a status line, and the empty / error notes - which   */
+/* one shows is the root's data-state.                               */
+
+@layer components {
+  .autocomplete {
+    position: relative;
+    display: grid;
+    gap: 0.375rem;
+    width: 100%;
+  }
+
+  .autocomplete-input {
+    width: 100%;
+  }
+
+  .autocomplete-popover {
+    position: fixed;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    width: anchor-size(width);
+    min-width: 12rem;
+    max-height: min(22rem, 60dvh);
+    margin: 0.25rem 0 0;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    position-try-fallbacks: flip-block;
+
+    /* open: fade + slide in; closed: out of the layout */
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity 120ms ease, translate 120ms ease, display 120ms allow-discrete, overlay 120ms allow-discrete;
+
+    &:popover-open {
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+      translate: 0 0;
+
+      @starting-style {
+        opacity: 0;
+        translate: 0 -4px;
+      }
+    }
+  }
+
+  .autocomplete-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .autocomplete-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    cursor: default;
+    user-select: none;
+
+    &[data-active] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .autocomplete-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* secondary text in an option (a country, a count) */
+  .autocomplete-meta {
+    margin-inline-start: auto;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .autocomplete-match {
+    background: transparent;
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .autocomplete-status {
+    padding: 0.375rem 0.5rem 0.125rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .autocomplete-empty,
+  .autocomplete-error {
+    display: none;
+    padding: 0.75rem 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .autocomplete[data-state="empty"] .autocomplete-empty {
+    display: block;
+  }
+
+  .autocomplete[data-state="error"] .autocomplete-error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--destructive);
+  }
+
+  .autocomplete[data-state="empty"] .autocomplete-list,
+  .autocomplete[data-state="error"] .autocomplete-list,
+  .autocomplete[data-state="loading"] .autocomplete-list {
+    display: none;
+  }
+
+  /* first page on its way: placeholder rows, drawn rather than built */
+  .autocomplete[data-state="loading"] .autocomplete-popover::before {
+    content: "";
+    display: block;
+    height: 6rem;
+    margin: 0.25rem;
+    border-radius: var(--radius-sm);
+    background: repeating-linear-gradient(to bottom, var(--muted) 0 1.5rem, transparent 1.5rem 2rem);
+    animation: autocomplete-pulse 1.4s ease-in-out infinite;
+  }
+
+  .autocomplete-retry {
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  @keyframes autocomplete-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.35; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .autocomplete-popover,
+    .autocomplete[data-state="loading"] .autocomplete-popover::before {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .autocomplete-popover {
+      border-color: var(--foreground);
+    }
+
+    .autocomplete-option[data-active] {
+      outline: 2px solid var(--foreground);
+      outline-offset: -2px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .autocomplete-popover {
+      border-color: CanvasText;
+    }
+
+    .autocomplete-option[data-active] {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .autocomplete-match {
+      text-decoration: underline;
+    }
+  }
+}

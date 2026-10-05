@@ -20,8 +20,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 /** default = following the live edge; detached = the reader scrolled away
  *  (or a turn anchored); streaming = a reply is being written (aria-busy),
  *  the transcript follows it. */
@@ -31,10 +32,10 @@ const num = (el, key, fallback) => {
     return Number.isFinite(v) ? v : fallback;
 };
 const reduced = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-const resolve = (t) => (typeof t === 'string' ? document.getElementById(t) ?? document.querySelector(t) : t);
+const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
 const parts = (s) => ({
-    viewport: s.querySelector(':scope > .session-viewport'),
-    content: s.querySelector(':scope > .session-viewport > .session-content'),
+    viewport: dfDollar(s).find(':scope > .session-viewport').get(0),
+    content: dfDollar(s).find(':scope > .session-viewport > .session-content').get(0),
 });
 /** How far from the end the reader is, in px. */
 const fromEnd = (v) => v.scrollHeight - v.scrollTop - v.clientHeight;
@@ -65,7 +66,7 @@ function measure(s) {
         s.setAttribute('data-scrollable', tokens);
     else
         s.removeAttribute('data-scrollable');
-    s.querySelectorAll('.session-scroll-button').forEach((b) => {
+    dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
         const active = b.dataset.to === 'start' ? start : end;
         b.dataset.active = String(active);
         b.inert = !active;
@@ -86,10 +87,8 @@ function setStick(s, stick) {
     if (name === 'streaming')
         return; // streaming stays the named state
     const next = stick ? 'default' : 'detached';
-    if (name !== next) {
-        s.dataset.stateName = next;
-        s._stateConfig = {};
-    }
+    if (name !== next)
+        sessionApi.commit(s, next, {});
 }
 /** Keeps a target position while rows settle - see onResize. */
 function hold(s, target, ms) {
@@ -138,7 +137,7 @@ function scrollToStart(s, { smooth = true } = {}) {
     scrollViewport(s, 0, smooth);
 }
 function scrollToMessage(s, id, { smooth = true } = {}) {
-    const item = s._parts.content.querySelector(`.session-item[data-message-id="${CSS.escape(id)}"]`);
+    const item = dfDollar(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
     if (!item)
         return false;
     s.removeAttribute('data-stick');
@@ -147,6 +146,19 @@ function scrollToMessage(s, id, { smooth = true } = {}) {
     // the message for a moment (the reader's own scroll cancels the hold)
     hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
     return true;
+}
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+    // the busy log while streaming. Following (data-stick) is the scroll
+    // position's - layout, written by the scroll tracking - runtime-owned
+    const { content } = parts(el);
+    if (content)
+        dfDollar(content).attr('aria-busy', stateName === 'streaming' ? 'true' : null);
 }
 /**
  * UI side of setState. 'default' re-engages following and scrolls to the
@@ -178,19 +190,15 @@ function triggerStateChange(s, stateName, config) {
     }
 }
 /** Registry-level API; pass the .session element explicitly. Unknown names throw. */
-export const sessionApi = {
-    setState(s, stateName, config = {}) {
-        if (!sessionStates.includes(stateName)) {
-            throw new Error(`session: unknown state "${stateName}" (supported: ${sessionStates.join(', ')})`);
-        }
-        s.dataset.stateName = stateName;
-        s._stateConfig = config;
-        triggerStateChange(s, stateName, config);
+export const sessionApi = componentState({
+    component: 'session',
+    states: sessionStates,
+    apply: (s, state) => {
+        s.dataset.stateName = state.name;
+        triggerStateChange(s, state.name, state.config);
     },
-    getState(s) {
-        return { name: s.dataset.stateName || 'default', config: s._stateConfig ?? {} };
-    },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.sessionApi = sessionApi;
 df$.sessionStates = sessionStates;
 // -- Reacting to the transcript changing ------------------------------------
@@ -238,10 +246,8 @@ function onItems(s, records) {
         scrollViewport(s, anchorTop(s, anchored), true);
         // rows above may still settle to their real height - keep aiming at the turn
         hold(s, () => anchorTop(s, anchored), 900);
-        if (s.dataset.stateName !== 'streaming') {
-            s.dataset.stateName = 'detached';
-            s._stateConfig = {};
-        }
+        if (s.dataset.stateName !== 'streaming')
+            sessionApi.commit(s, 'detached', {});
         return;
     }
     if (appended && s.hasAttribute('data-stick'))
@@ -276,7 +282,7 @@ function track(s) {
     const { viewport, content } = s._parts;
     const top = viewport.getBoundingClientRect().top;
     const bottom = top + viewport.clientHeight;
-    const items = Array.from(content.querySelectorAll(':scope > .session-item'));
+    const items = Array.from(dfDollar(content).find(':scope > .session-item').toArray());
     const visible = items.filter((it) => {
         const r = it.getBoundingClientRect();
         return r.bottom > top && r.top < bottom;
@@ -300,6 +306,7 @@ function track(s) {
     s._currentId = currentId;
     s._visibleIds = ids.join();
     items.forEach((it) => it.toggleAttribute('data-current', it === current));
+    // Fires when the messages in view change - the current anchor's id and the ids of the visible messages.
     s.dispatchEvent(new CustomEvent('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
 }
 // -- Drop target (data-drop) ----------------------------------------------------
@@ -325,6 +332,7 @@ function bindDrop(s) {
         e.preventDefault();
         s.removeAttribute('data-drop-active');
         const files = [...e.dataTransfer.files].filter(ok);
+        // Fires when files are dropped on the session (data-drop) - the accepted files.
         if (files.length)
             s.dispatchEvent(new CustomEvent('session-drop', { bubbles: true, detail: { files } }));
     });
@@ -338,7 +346,7 @@ function follow(s, options = {}) {
 }
 // -- init ---------------------------------------------------------------------
 function init() {
-    document.querySelectorAll('.session:not([data-init])').forEach((s) => {
+    dfDollar('.session:not([data-init])').toArray().forEach((s) => {
         const p = parts(s);
         if (!p.viewport || !p.content)
             return; // not a session yet
@@ -368,20 +376,18 @@ function init() {
         new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
         new ResizeObserver(() => onResize(s)).observe(content);
         new ResizeObserver(() => measure(s)).observe(viewport);
-        s.querySelectorAll('.session-scroll-button').forEach((b) => {
+        dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
             b.addEventListener('click', () => (b.dataset.to === 'start' ? scrollToStart(s) : follow(s)));
         });
         if (s.hasAttribute('data-drop'))
             bindDrop(s);
-        s.api = {
-            setState: (stateName, config) => sessionApi.setState(s, stateName, config),
-            getState: () => sessionApi.getState(s),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(s, sessionApi);
         // the opening position - applied once, before anyone reads the thread
         s.setAttribute('data-pending-scroll', '');
         s.dataset.stateName = 'default';
         const where = s.dataset.defaultPosition || 'end';
-        const last = [...content.querySelectorAll(':scope > .session-item[data-anchor]')].pop();
+        const last = [...dfDollar(content).find(':scope > .session-item[data-anchor]').toArray()].pop();
         if (where === 'start')
             s._opening = () => 0;
         else if (where === 'last-anchor' && last)
@@ -431,11 +437,15 @@ df$.session = {
         s?._parts?.content.prepend(...items);
         return items;
     },
+    /** Scroll to the newest message and follow again (options: { behavior }). */
     scrollToEnd: (t, o) => { const s = resolve(t); if (s)
         follow(s, o); },
+    /** Scroll to the oldest message (the session stops following). */
     scrollToStart: (t, o) => { const s = resolve(t); if (s)
         scrollToStart(s, o); },
+    /** Bring a message into view by id - false when there is none. */
     scrollToMessage: (t, id, o) => { const s = resolve(t); return s ? scrollToMessage(s, id, o) : false; },
+    /** Whether the reader is at the end (within data-threshold, 48px by default). */
     isAtEnd: (t) => { const s = resolve(t); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
 };
 init();

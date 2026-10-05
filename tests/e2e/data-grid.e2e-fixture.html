@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Grid e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/data-grid/data-grid.css">
+  <style>
+    /* spacing and container size only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1.5rem; }
+    .data-grid { height: 360px; max-width: 46rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <!-- 100,000 orders: virtual scrolling, multisort, column filters, a locked column, multiple selection -->
+  <div class="data-grid" id="dg-orders" aria-label="Orders" data-select="multiple" data-empty-text="No orders match.">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-width="6rem" data-format="" data-filter="number" data-locked>ID</div>
+          <div class="data-grid-header" data-field="customer" data-width="12rem" data-filter="text">Customer</div>
+          <div class="data-grid-header" data-field="region" data-width="8rem" data-filter="select" data-options="EU,US,APAC">Region</div>
+          <div class="data-grid-header" data-field="amount" data-type="number" data-width="9rem" data-format="currency:EUR" data-filter="number">Amount</div>
+          <div class="data-grid-header" data-field="status" data-width="9rem" data-filter="select">Status</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- pagination: 25 rows a page -->
+  <div class="data-grid" id="dg-pages" aria-label="Paged orders" data-paging="pages" data-page-size="25">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-width="6rem" data-format="">ID</div>
+          <div class="data-grid-header" data-field="customer" data-width="12rem">Customer</div>
+          <div class="data-grid-header" data-field="amount" data-type="number" data-width="9rem" data-format="currency:EUR">Amount</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- infinite: pages load from an async loader as you near the end -->
+  <div class="data-grid" id="dg-infinite" aria-label="Event log" data-paging="infinite" data-page-size="40">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-width="6rem" data-format="">#</div>
+          <div class="data-grid-header" data-field="event" data-width="14rem">Event</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- tree grid: every row may have a parent -->
+  <div class="data-grid" id="dg-tree" aria-label="Files" data-parent-field="parentId" data-select="single">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-width="16rem" data-filter="text">Name</div>
+          <div class="data-grid-header" data-field="size" data-type="number" data-width="8rem" data-filter="number">Size</div>
+          <div class="data-grid-header" data-field="kind" data-width="8rem">Kind</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- persistence: local storage under its own key, with an authored sort (data-sort) -->
+  <div class="data-grid" id="dg-local" aria-label="Kept locally" data-persist="local" data-persist-key="fixture-grid" style="height:200px;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem">ID</div>
+          <div class="data-grid-header" data-field="customer" data-width="12rem">Customer</div>
+          <div class="data-grid-header" data-field="amount" data-type="number" data-width="9rem" data-sort="desc">Amount</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- persistence opted out -->
+  <div class="data-grid" id="dg-none" aria-label="Not kept" data-persist="none" style="height:200px;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem">ID</div>
+          <div class="data-grid-header" data-field="customer" data-width="12rem">Customer</div>
+          <div class="data-grid-header" data-field="amount" data-type="number" data-width="9rem">Amount</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- persistence + starting query from setSource's config -->
+  <div class="data-grid" id="dg-config" aria-label="Configured" style="height:200px;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem">ID</div>
+          <div class="data-grid-header" data-field="customer" data-width="12rem">Customer</div>
+          <div class="data-grid-header" data-field="amount" data-type="number" data-width="9rem">Amount</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <!-- waits for records: the loading state -->
+  <div class="data-grid" id="dg-wait" aria-label="Pending">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id">ID</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/data-grid/data-grid.js"></script>
+  <script type="module">
+    const grid = globalThis.df$.shadcn.dataGrid;
+    const names = ['Ada', 'Grace', 'Linus', 'Barbara', 'Ken', 'Margaret', 'Dennis', 'Frances'];
+    const regions = ['EU', 'US', 'APAC'];
+    const statuses = ['open', 'paid', 'shipped', 'refunded'];
+    // deterministic: row i always reads the same
+    const orders = Array.from({ length: 100_000 }, (_, i) => ({
+      id: i + 1,
+      customer: `${names[i % 8]} ${String.fromCharCode(65 + (i * 7) % 26)}.`,
+      region: regions[i % 3],
+      amount: ((i * 7919) % 100_000) / 100,
+      status: statuses[(i * 5) % 4],
+    }));
+    grid.setSource(document.getElementById('dg-orders'), orders);
+    grid.setSource(document.getElementById('dg-pages'), orders.slice(0, 1000));
+    grid.setSource(document.getElementById('dg-infinite'), [], {
+      load: (offset, size) => new Promise((r) => setTimeout(() => r(offset >= 200 ? [] : Array.from({ length: size }, (_, i) => ({ id: offset + i + 1, event: `Event ${offset + i + 1}` }))), 30)),
+    });
+    // 20 folders × 50 sub-folders × 10 files = 11,020 rows
+    const files = [];
+    let id = 0;
+    for (let a = 0; a < 20; a++) {
+      const top = ++id;
+      files.push({ id: top, parentId: null, name: `Folder ${a + 1}`, size: 0, kind: 'folder' });
+      for (let b = 0; b < 50; b++) {
+        const sub = ++id;
+        files.push({ id: sub, parentId: top, name: `Folder ${a + 1}.${b + 1}`, size: 0, kind: 'folder' });
+        for (let c = 0; c < 10; c++) files.push({ id: ++id, parentId: sub, name: `file-${a + 1}-${b + 1}-${c + 1}.txt`, size: ((id * 37) % 9000) + 100, kind: 'file' });
+      }
+    }
+    grid.setSource(document.getElementById('dg-tree'), files);
+    const few = orders.slice(0, 200);
+    grid.setSource(document.getElementById('dg-local'), few);
+    grid.setSource(document.getElementById('dg-none'), few);
+    grid.setSource(document.getElementById('dg-config'), few, {
+      query: { sorters: [{ field: 'id', direction: 'desc' }] },
+      persist: { area: 'local', prefix: 'myapp' },
+    });
+    globalThis.__fixtureReady = true;
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "name": "bibtex",
+  "states": {
+    "format": {
+      "type": "enum",
+      "values": [
+        "bibtex",
+        "apa",
+        "mla",
+        "chicago",
+        "harvard",
+        "ieee"
+      ],
+      "default": "bibtex",
+      "target": {
+        "kind": "selector",
+        "selector": ".bibtex"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "format": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-format"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "copied": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".bibtex"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "copied"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

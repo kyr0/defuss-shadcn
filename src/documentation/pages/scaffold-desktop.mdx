@@ -848,8 +848,10 @@ Things to try:
     // -- settings: one place, every control (context menu, quick settings, Settings) --------
     const BOOL = ['glass', 'night', 'showicons', 'right', 'seconds'];
     const S = { wallpaper: 'bloom', mode: document.documentElement.classList.contains('dark') ? 'dark' : 'light', accent: 'blue', glass: true, brightness: 100, night: false, icons: 'medium', showicons: true, right: false, taskbar: 'center', seconds: false };
+    let kept = null; // the persisted settings (below), once df$ is up
     const set = (k, v) => {
       S[k] = v;
+      if (kept && k !== 'mode') kept.set(k, v);
       if (k === 'mode') document.documentElement.classList.toggle('dark', v === 'dark');
       else if (k === 'brightness') app.style.setProperty('--os-bright', v / 100);
       else if (BOOL.includes(k)) app.toggleAttribute('data-' + k, !!v);
@@ -876,6 +878,18 @@ Things to try:
     };
     app.addEventListener('input', (e) => { const c = e.target.closest('input[type="range"][data-set]'); if (c) fromControl(c); });
     app.addEventListener('change', (e) => { const c = e.target.closest('[data-set]'); if (c && !c.matches('input[type="range"]')) fromControl(c); });
+
+    // the settings survive a reload: a persisted store (df$.store - checked
+    // against these defaults, kept in memory when storage is blocked). Dark
+    // mode is the page's own, so 'mode' stays out. df$ is up after all.js ran.
+    const keep = () => {
+      const defaults = Object.fromEntries(Object.keys(S).filter((k) => k !== 'mode').map((k) => [k, S[k]]));
+      const store = globalThis.df$?.store?.persisted('os-desktop:settings', defaults);
+      if (!store) return;
+      Object.keys(defaults).forEach((k) => { if (store.value[k] !== S[k]) set(k, store.value[k]); });
+      kept = store;
+    };
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', keep); else setTimeout(keep);
 
     // -- windows and the taskbar ---------------------------------------------------------
     const wins = (a) => [...desk.querySelectorAll('.window' + (a ? '[data-app="' + a + '"]' : ''))];

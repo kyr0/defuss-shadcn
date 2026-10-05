@@ -4,7 +4,7 @@ description: "Panel component - a title bar inside a card: icon, title, minimize
 slug: "panel"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -339,6 +339,36 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </div>
 ```
 
+```html example label="Closable" schema="none" height="26" hint="A .panel-close button in the tools closes the panel - in a border layout the region goes with it and the center takes the room. A [data-panel-open] button anywhere brings it back; focus follows (to the opener on close, to the first tool on open)."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-open="cl-insp"><i data-lucide="panel-right"></i> Inspector</button>
+</div>
+<div class="border-layout" style="height:16rem">
+  <main class="border-layout-center" style="display:grid;place-items:center">
+    <p class="text-sm text-muted-foreground">Close the inspector - the canvas takes its room.</p>
+  </main>
+  <div class="resizer border-layout-east">
+    <section class="card panel" id="cl-insp" style="width:15rem" aria-labelledby="cl-insp-t">
+      <header class="panel-header">
+        <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="cl-insp-t">Inspector</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Inspector">
+            <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+          </label>
+          <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        </div>
+      </header>
+      <div class="panel-body">
+        <p class="text-sm m-0">Selection details go here.</p>
+      </div>
+    </section>
+  </div>
+</div>
+```
+
 ```html example label="Driven from script" schema="none" height="30" hint="df$.shadcn.panel.minimize / maximize / restore / toggle take a panel, an id or a selector; every change fires panel-change with the state, the previous state and the region."
 <div class="flex flex-col gap-3">
   <div class="flex flex-wrap items-center gap-2">
@@ -392,6 +422,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
     <li><code>default</code> - title bar and body at the authored size</li>
     <li><code>minimized</code> - the title bar only; in a border layout region the region folds with it (a vertical tab in west / east)</li>
     <li><code>maximized</code> - fills its border layout, <code>[data-panel-host]</code> or the viewport</li>
+    <li><code>closed</code> - gone (<code>hidden</code>); in a border layout its region goes with it - a <code>.panel-close</code> tool closes, a <code>[data-panel-open]</code> button opens</li>
   </ul>
   <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/panel-\{state\}.png</code>.</p>
 
@@ -402,9 +433,12 @@ Machine contract - verified against <a href="../schemas/panel.schema.json"><code
 | --- | --- | --- | --- | --- |
 | `minimized` | `boolean` | `true`, `false` | `false` | The title bar only - in a border layout region, the region folds with it. |
 | `maximized` | `boolean` | `true`, `false` | `false` | Fills its border layout, a `[data-panel-host]` or the viewport. |
+| `closed` | `boolean` | `true`, `false` | `false` | Closed - hidden; in a border layout the region goes with it. |
 ```
 
 </StatesSection>
+
+<ApiSection component="panel" />
 
 <SourceFiles component="panel" section="css" />
 

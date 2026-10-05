@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped tree-view component. Loads the fixture
@@ -409,6 +410,10 @@ try {
     await page.locator('#ts-m > details > summary').dragTo(page.locator('#ts-2 .tree-leaf'));
     assert.equal(await page.$eval('#ts-m', (m) => m.parentElement!.id), 'ts');
     assert.equal(await page.$$eval('#ts [data-drop], #ts [data-dragging]', (l) => l.length), 0, 'no leftover markers');
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, 'details.tree-branch[id]', ['default','expanded']);
   });
 
 } finally {

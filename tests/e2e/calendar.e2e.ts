@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped calendar component. Loads the fixture
@@ -515,6 +516,10 @@ try {
     assert.deepEqual(r, { launch: 'event', xmas: 'holiday', month: 11 });
     await page.$eval('#cal-days', (c: any) => c.api.setDays({}));
     assert.equal(await page.$eval('#cal-days', (c) => [c.querySelectorAll('[data-mark]').length, c.hasAttribute('data-notes')].join()), '0,false');
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.calendar[id]', ['default']);
   });
 
 } finally {

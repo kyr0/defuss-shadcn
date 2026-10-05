@@ -16,43 +16,46 @@ var __export = (target, all) => {
 // node_modules/defuss-morph/dist/index.mjs
 var exports_dist = {};
 __export(exports_dist, {
-  updateDomWithVdom: () => updateDomWithVdom,
-  resolveGlobals: () => resolveGlobals,
-  replaceDomWithVdom: () => replaceDomWithVdom,
-  renderMarkup: () => renderMarkup,
-  removeDelegatedEventByKey: () => removeDelegatedEventByKey,
-  removeDelegatedEvent: () => removeDelegatedEvent,
-  registerDelegatedEvent: () => registerDelegatedEvent,
-  queueCallback: () => queueCallback,
-  performTransition: () => performTransition,
-  parseEventPropName: () => parseEventPropName,
-  parseDOM: () => parseDOM,
-  observeUnmount: () => observeUnmount,
-  nsMap: () => nsMap,
-  morph: () => morph,
-  isSVG: () => isSVG,
-  isMarkup: () => isMarkup,
-  isHTML: () => isHTML,
-  htmlStringToVNodes: () => htmlStringToVNodes,
-  handleLifecycleEventsForOnMount: () => handleLifecycleEventsForOnMount,
-  getTransitionStyles: () => getTransitionStyles,
-  getRenderer: () => getRenderer,
-  getRegisteredEventTypes: () => getRegisteredEventTypes,
-  getRegisteredEventKeys: () => getRegisteredEventKeys,
-  getMimeType: () => getMimeType,
-  domNodeToVNode: () => domNodeToVNode,
-  clearDelegatedEventsDeep: () => clearDelegatedEventsDeep,
-  clearDelegatedEvents: () => clearDelegatedEvents,
-  areDomNodesEqual: () => areDomNodesEqual,
-  applyStyles: () => applyStyles,
-  XMLNS_ATTRIBUTE_NAME: () => XMLNS_ATTRIBUTE_NAME,
-  XLINK_ATTRIBUTE_NAME: () => XLINK_ATTRIBUTE_NAME,
-  REF_ATTRIBUTE_NAME: () => REF_ATTRIBUTE_NAME,
-  FROM_DOM_MARKER: () => FROM_DOM_MARKER,
-  DEFAULT_TRANSITION_CONFIG: () => DEFAULT_TRANSITION_CONFIG,
-  DANGEROUSLY_SET_INNER_HTML_ATTRIBUTE: () => DANGEROUSLY_SET_INNER_HTML_ATTRIBUTE,
+  CAPTURE_ONLY_EVENTS: () => CAPTURE_ONLY_EVENTS,
   CLASS_ATTRIBUTE_NAME: () => CLASS_ATTRIBUTE_NAME,
-  CAPTURE_ONLY_EVENTS: () => CAPTURE_ONLY_EVENTS
+  COMMENT_TYPE: () => COMMENT_TYPE,
+  DANGEROUSLY_SET_INNER_HTML_ATTRIBUTE: () => DANGEROUSLY_SET_INNER_HTML_ATTRIBUTE,
+  DEFAULT_TRANSITION_CONFIG: () => DEFAULT_TRANSITION_CONFIG,
+  FROM_DOM_MARKER: () => FROM_DOM_MARKER,
+  REF_ATTRIBUTE_NAME: () => REF_ATTRIBUTE_NAME,
+  XLINK_ATTRIBUTE_NAME: () => XLINK_ATTRIBUTE_NAME,
+  XMLNS_ATTRIBUTE_NAME: () => XMLNS_ATTRIBUTE_NAME,
+  applyStyles: () => applyStyles,
+  areDomNodesEqual: () => areDomNodesEqual,
+  clearDelegatedEvents: () => clearDelegatedEvents,
+  clearDelegatedEventsDeep: () => clearDelegatedEventsDeep,
+  domNodeToVNode: () => domNodeToVNode,
+  getMimeType: () => getMimeType,
+  getRegisteredEventKeys: () => getRegisteredEventKeys,
+  getRegisteredEventTypes: () => getRegisteredEventTypes,
+  getRenderer: () => getRenderer,
+  getTransitionStyles: () => getTransitionStyles,
+  handleLifecycleEventsForOnMount: () => handleLifecycleEventsForOnMount,
+  htmlStringToVNodes: () => htmlStringToVNodes,
+  isCommentVNode: () => isCommentVNode,
+  isHTML: () => isHTML,
+  isMarkup: () => isMarkup,
+  isSVG: () => isSVG,
+  morph: () => morph,
+  nsMap: () => nsMap,
+  observeUnmount: () => observeUnmount,
+  onClearDelegatedEvents: () => onClearDelegatedEvents,
+  parseDOM: () => parseDOM,
+  parseEventPropName: () => parseEventPropName,
+  performTransition: () => performTransition,
+  queueCallback: () => queueCallback,
+  registerDelegatedEvent: () => registerDelegatedEvent,
+  removeDelegatedEvent: () => removeDelegatedEvent,
+  removeDelegatedEventByKey: () => removeDelegatedEventByKey,
+  renderMarkup: () => renderMarkup,
+  replaceDomWithVdom: () => replaceDomWithVdom,
+  resolveGlobals: () => resolveGlobals,
+  updateDomWithVdom: () => updateDomWithVdom
 });
 var queueCallback = (cb) => (...args) => queueMicrotask(() => cb(...args));
 var CAPTURE_ONLY_EVENTS = /* @__PURE__ */ new Set([
@@ -63,8 +66,7 @@ var CAPTURE_ONLY_EVENTS = /* @__PURE__ */ new Set([
   "mouseleave"
 ]);
 var elementHandlerMap = /* @__PURE__ */ new WeakMap;
-var bubbleDispatched = /* @__PURE__ */ new WeakMap;
-var captureDispatched = /* @__PURE__ */ new WeakMap;
+var slotListeners = /* @__PURE__ */ new WeakMap;
 var activeDispatches = /* @__PURE__ */ new WeakMap;
 var parseEventPropName = (propName) => {
   if (!propName.startsWith("on"))
@@ -87,146 +89,66 @@ var getOrCreateElementHandlers = (el) => {
   elementHandlerMap.set(el, created);
   return created;
 };
-var getEventPath = (event) => {
-  const composedPath = event.composedPath?.();
-  if (composedPath && composedPath.length > 0)
-    return composedPath;
-  const path = [];
-  let node = event.target;
-  while (node) {
-    path.push(node);
-    const maybeNode = node;
-    if (typeof maybeNode === "object" && maybeNode && "parentNode" in maybeNode) {
-      node = maybeNode.parentNode;
-      continue;
+var runSlot = (target, eventType, phase, event) => {
+  const handler = elementHandlerMap.get(target)?.get(eventType)?.[phase];
+  if (!handler)
+    return;
+  const dispatchKey = `${eventType}:${phase}`;
+  let active = activeDispatches.get(target);
+  if (active?.has(dispatchKey))
+    return;
+  if (!active) {
+    active = /* @__PURE__ */ new Set;
+    activeDispatches.set(target, active);
+  }
+  active.add(dispatchKey);
+  try {
+    handler.call(target, event);
+  } finally {
+    active.delete(dispatchKey);
+  }
+};
+var setSlot = (target, eventType, phase, entry, handler) => {
+  entry[phase] = handler;
+  const key = `${eventType}:${phase}`;
+  const capture = phase === "capture";
+  let byKey = slotListeners.get(target);
+  const installed = byKey?.get(key);
+  if (handler && !installed) {
+    if (!byKey) {
+      byKey = /* @__PURE__ */ new Map;
+      slotListeners.set(target, byKey);
     }
-    break;
-  }
-  const doc = event.target?.ownerDocument;
-  if (doc && path[path.length - 1] !== doc)
-    path.push(doc);
-  const win = doc?.defaultView;
-  if (win && path[path.length - 1] !== win)
-    path.push(win);
-  return path;
-};
-var createPhaseHandler = (eventType, phase) => {
-  const dispatched = phase === "capture" ? captureDispatched : bubbleDispatched;
-  return (event) => {
-    const path = getEventPath(event).filter((t) => typeof t === "object" && t !== null && t.nodeType === 1);
-    const ordered = phase === "capture" ? [...path].reverse() : path;
-    for (const target of ordered) {
-      const handlersByEvent = elementHandlerMap.get(target);
-      if (!handlersByEvent)
-        continue;
-      const entry = handlersByEvent.get(eventType);
-      if (!entry)
-        continue;
-      let targets = dispatched.get(event);
-      if (targets?.has(target))
-        continue;
-      if (!targets) {
-        targets = /* @__PURE__ */ new WeakSet;
-        dispatched.set(event, targets);
-      }
-      targets.add(target);
-      const dispatchKey = `${eventType}:${phase}`;
-      let activeSet = activeDispatches.get(target);
-      if (activeSet?.has(dispatchKey))
-        continue;
-      if (!activeSet) {
-        activeSet = /* @__PURE__ */ new Set;
-        activeDispatches.set(target, activeSet);
-      }
-      activeSet.add(dispatchKey);
-      try {
-        if (phase === "capture") {
-          if (entry.capture) {
-            entry.capture.call(target, event);
-            if (event.cancelBubble)
-              return;
-          }
-          if (entry.captureSet) {
-            for (const handler of entry.captureSet) {
-              handler.call(target, event);
-              if (event.cancelBubble)
-                return;
-            }
-          }
-        } else {
-          if (entry.bubble) {
-            entry.bubble.call(target, event);
-            if (event.cancelBubble)
-              return;
-          }
-          if (entry.bubbleSet) {
-            for (const handler of entry.bubbleSet) {
-              handler.call(target, event);
-              if (event.cancelBubble)
-                return;
-            }
-          }
-        }
-      } finally {
-        activeSet.delete(dispatchKey);
-      }
-    }
-  };
-};
-var installedRootListeners = /* @__PURE__ */ new WeakMap;
-var ensureRootListener = (root, eventType) => {
-  const installed = installedRootListeners.get(root) ?? /* @__PURE__ */ new Set;
-  installedRootListeners.set(root, installed);
-  const captureKey = `${eventType}:capture`;
-  if (!installed.has(captureKey)) {
-    root.addEventListener(eventType, createPhaseHandler(eventType, "capture"), true);
-    installed.add(captureKey);
-  }
-  const bubbleKey = `${eventType}:bubble`;
-  if (!installed.has(bubbleKey)) {
-    root.addEventListener(eventType, createPhaseHandler(eventType, "bubble"), false);
-    installed.add(bubbleKey);
+    const trampoline = (event) => runSlot(target, eventType, phase, event);
+    byKey.set(key, trampoline);
+    target.addEventListener(eventType, trampoline, capture);
+  } else if (!handler && installed) {
+    byKey.delete(key);
+    target.removeEventListener(eventType, installed, capture);
   }
 };
-var getEventRoot = (element) => {
-  const root = element.getRootNode();
-  if (root && root.nodeType === 9) {
-    return root;
-  }
-  if (root && root.nodeType === 11 && "host" in root) {
-    return root;
-  }
-  return null;
+var clearPhase = (target, eventType, entry, phase) => {
+  setSlot(target, eventType, phase, entry, undefined);
+  const setKey = phase === "capture" ? "captureSet" : "bubbleSet";
+  for (const handler of entry[setKey] ?? [])
+    target.removeEventListener(eventType, handler, phase === "capture");
+  entry[setKey] = undefined;
 };
 var registerDelegatedEvent = (element, eventType, handler, options = {}) => {
-  const root = getEventRoot(element);
   const capture = options.capture || CAPTURE_ONLY_EVENTS.has(eventType);
-  if (root) {
-    ensureRootListener(root, eventType);
-  } else if (element.ownerDocument) {
-    ensureRootListener(element.ownerDocument, eventType);
-  } else {
-    element.addEventListener(eventType, handler, capture);
-  }
+  const phase = capture ? "capture" : "bubble";
   const byEvent = getOrCreateElementHandlers(element);
   const entry = byEvent.get(eventType) ?? {};
   byEvent.set(eventType, entry);
   if (options.multi) {
-    if (capture) {
-      if (!entry.captureSet)
-        entry.captureSet = /* @__PURE__ */ new Set;
-      entry.captureSet.add(handler);
-    } else {
-      if (!entry.bubbleSet)
-        entry.bubbleSet = /* @__PURE__ */ new Set;
-      entry.bubbleSet.add(handler);
+    const setKey = capture ? "captureSet" : "bubbleSet";
+    const set = entry[setKey] ??= /* @__PURE__ */ new Set;
+    if (!set.has(handler)) {
+      set.add(handler);
+      element.addEventListener(eventType, handler, capture);
     }
   } else {
-    if (capture) {
-      entry.capture = handler;
-    } else {
-      entry.bubble = handler;
-    }
+    setSlot(element, eventType, phase, entry, handler);
   }
 };
 var isEntryEmpty = (entry) => !entry.capture && !entry.bubble && (!entry.captureSet || entry.captureSet.size === 0) && (!entry.bubbleSet || entry.bubbleSet.size === 0);
@@ -238,35 +160,39 @@ var removeDelegatedEvent = (target, eventType, handler, _options = {}) => {
   if (!entry)
     return;
   if (handler) {
-    if (entry.captureSet) {
-      entry.captureSet.delete(handler);
+    for (const phase of ["capture", "bubble"]) {
+      const set = phase === "capture" ? entry.captureSet : entry.bubbleSet;
+      if (set?.delete(handler))
+        target.removeEventListener(eventType, handler, phase === "capture");
+      if (entry[phase] === handler)
+        setSlot(target, eventType, phase, entry, undefined);
     }
-    if (entry.bubbleSet) {
-      entry.bubbleSet.delete(handler);
-    }
-    if (entry.capture === handler) {
-      entry.capture = undefined;
-    }
-    if (entry.bubble === handler) {
-      entry.bubble = undefined;
-    }
-    target.removeEventListener(eventType, handler, true);
-    target.removeEventListener(eventType, handler, false);
   } else {
-    entry.capture = undefined;
-    entry.bubble = undefined;
-    entry.captureSet = undefined;
-    entry.bubbleSet = undefined;
+    clearPhase(target, eventType, entry, "capture");
+    clearPhase(target, eventType, entry, "bubble");
   }
   if (isEntryEmpty(entry)) {
     byEvent.delete(eventType);
   }
 };
+var clearHooks = /* @__PURE__ */ new Set;
+var onClearDelegatedEvents = (hook) => {
+  clearHooks.add(hook);
+  return () => {
+    clearHooks.delete(hook);
+  };
+};
 var clearDelegatedEvents = (target) => {
   const byEvent = elementHandlerMap.get(target);
-  if (!byEvent)
-    return;
-  byEvent.clear();
+  if (byEvent) {
+    for (const [eventType, entry] of byEvent) {
+      clearPhase(target, eventType, entry, "capture");
+      clearPhase(target, eventType, entry, "bubble");
+    }
+    byEvent.clear();
+  }
+  for (const hook of clearHooks)
+    hook(target);
 };
 var clearDelegatedEventsDeep = (root) => {
   clearDelegatedEvents(root);
@@ -306,16 +232,107 @@ var removeDelegatedEventByKey = (element, eventType, phase) => {
   const entry = byEvent.get(eventType);
   if (!entry)
     return;
-  if (phase === "capture") {
-    entry.capture = undefined;
-    entry.captureSet = undefined;
-  } else {
-    entry.bubble = undefined;
-    entry.bubbleSet = undefined;
-  }
+  clearPhase(element, eventType, entry, phase);
   if (isEntryEmpty(entry))
     byEvent.delete(eventType);
 };
+var FROM_DOM_MARKER = Symbol("defuss-morph.from-dom");
+var COMMENT_TYPE = "#comment";
+var isCommentVNode = (value) => !!value && typeof value === "object" && value.type === COMMENT_TYPE;
+var HTML_BOOLEAN_ATTRIBUTES = /* @__PURE__ */ new Set([
+  "allowfullscreen",
+  "async",
+  "autofocus",
+  "autoplay",
+  "checked",
+  "controls",
+  "default",
+  "defer",
+  "disabled",
+  "formnovalidate",
+  "hidden",
+  "inert",
+  "ismap",
+  "itemscope",
+  "loop",
+  "multiple",
+  "muted",
+  "nomodule",
+  "novalidate",
+  "open",
+  "playsinline",
+  "readonly",
+  "required",
+  "reversed",
+  "selected"
+]);
+var domAttributeToVNodeValue = (attr) => HTML_BOOLEAN_ATTRIBUTES.has(attr.name.toLowerCase()) ? true : attr.value;
+function parseDOM(input, type, Parser) {
+  return new Parser().parseFromString(input, type);
+}
+function isSVG(input, Parser) {
+  const doc = parseDOM(input, "image/svg+xml", Parser);
+  if (!doc.documentElement)
+    return false;
+  return doc.documentElement.nodeName.toLowerCase() === "svg";
+}
+function isHTML(input, Parser) {
+  const doc = parseDOM(input, "text/html", Parser);
+  return doc.documentElement.querySelectorAll("*").length > 2;
+}
+var isMarkup = (input, Parser) => input.indexOf("<") > -1 && input.indexOf(">") > -1 && (isHTML(input, Parser) || isSVG(input, Parser));
+function renderMarkup(markup, Parser, doc) {
+  const parsed = doc ? doc : parseDOM(markup, getMimeType(markup, Parser), Parser);
+  if (parsed.body)
+    return Array.from(parsed.body.childNodes);
+  return parsed.documentElement ? [parsed.documentElement] : [];
+}
+function getMimeType(input, Parser) {
+  if (isSVG(input, Parser)) {
+    return "image/svg+xml";
+  }
+  return "text/html";
+}
+function domNodeToVNode(node) {
+  if (node.nodeType === 3) {
+    return node.textContent || "";
+  }
+  if (node.nodeType === 1) {
+    const element = node;
+    const attributes = {};
+    for (let i = 0;i < element.attributes.length; i++) {
+      const attr = element.attributes[i];
+      attributes[attr.name] = domAttributeToVNodeValue(attr);
+    }
+    const children = [];
+    for (let i = 0;i < element.childNodes.length; i++) {
+      const childVNode = domNodeToVNode(element.childNodes[i]);
+      children.push(childVNode);
+    }
+    return {
+      type: element.tagName.toLowerCase(),
+      attributes: { ...attributes, [FROM_DOM_MARKER]: true },
+      children
+    };
+  }
+  if (node.nodeType === 8) {
+    return { type: COMMENT_TYPE, value: node.nodeValue ?? "" };
+  }
+  return "";
+}
+var DOCUMENT_START = /^\s*(?:<!--[\s\S]*?-->\s*)*<(?:!doctype|html|head|body)[\s>/]/i;
+function htmlStringToVNodes(html, Parser) {
+  const parser = new Parser;
+  const doc = parser.parseFromString(DOCUMENT_START.test(html) ? html : `<body>${html}`, "text/html");
+  const vNodes = [];
+  for (let i = 0;i < doc.body.childNodes.length; i++) {
+    const vnode = domNodeToVNode(doc.body.childNodes[i]);
+    if (vnode !== "") {
+      vNodes.push(vnode);
+    }
+  }
+  return vNodes;
+}
 var CLASS_ATTRIBUTE_NAME = "class";
 var XLINK_ATTRIBUTE_NAME = "xlink";
 var XMLNS_ATTRIBUTE_NAME = "xmlns";
@@ -387,6 +404,11 @@ var getRenderer = (document2) => {
     },
     createElement: (virtualNode, parentDomElement) => {
       let newEl;
+      if (isCommentVNode(virtualNode)) {
+        const comment = document2.createComment(virtualNode.value ?? "");
+        parentDomElement?.appendChild(comment);
+        return comment;
+      }
       try {
         if (typeof virtualNode === "function" && virtualNode.constructor.name === "AsyncFunction") {
           newEl = document2.createElement("div");
@@ -541,97 +563,6 @@ var getRenderer = (document2) => {
   };
   return renderer;
 };
-var FROM_DOM_MARKER = Symbol("defuss-morph.from-dom");
-var HTML_BOOLEAN_ATTRIBUTES = /* @__PURE__ */ new Set([
-  "allowfullscreen",
-  "async",
-  "autofocus",
-  "autoplay",
-  "checked",
-  "controls",
-  "default",
-  "defer",
-  "disabled",
-  "formnovalidate",
-  "hidden",
-  "inert",
-  "ismap",
-  "itemscope",
-  "loop",
-  "multiple",
-  "muted",
-  "nomodule",
-  "novalidate",
-  "open",
-  "playsinline",
-  "readonly",
-  "required",
-  "reversed",
-  "selected"
-]);
-var domAttributeToVNodeValue = (attr) => HTML_BOOLEAN_ATTRIBUTES.has(attr.name.toLowerCase()) ? true : attr.value;
-function parseDOM(input, type, Parser) {
-  return new Parser().parseFromString(input, type);
-}
-function isSVG(input, Parser) {
-  const doc = parseDOM(input, "image/svg+xml", Parser);
-  if (!doc.documentElement)
-    return false;
-  return doc.documentElement.nodeName.toLowerCase() === "svg";
-}
-function isHTML(input, Parser) {
-  const doc = parseDOM(input, "text/html", Parser);
-  return doc.documentElement.querySelectorAll("*").length > 2;
-}
-var isMarkup = (input, Parser) => input.indexOf("<") > -1 && input.indexOf(">") > -1 && (isHTML(input, Parser) || isSVG(input, Parser));
-function renderMarkup(markup, Parser, doc) {
-  const parsed = doc ? doc : parseDOM(markup, getMimeType(markup, Parser), Parser);
-  if (parsed.body)
-    return Array.from(parsed.body.childNodes);
-  return parsed.documentElement ? [parsed.documentElement] : [];
-}
-function getMimeType(input, Parser) {
-  if (isSVG(input, Parser)) {
-    return "image/svg+xml";
-  }
-  return "text/html";
-}
-function domNodeToVNode(node) {
-  if (node.nodeType === 3) {
-    return node.textContent || "";
-  }
-  if (node.nodeType === 1) {
-    const element = node;
-    const attributes = {};
-    for (let i = 0;i < element.attributes.length; i++) {
-      const attr = element.attributes[i];
-      attributes[attr.name] = domAttributeToVNodeValue(attr);
-    }
-    const children = [];
-    for (let i = 0;i < element.childNodes.length; i++) {
-      const childVNode = domNodeToVNode(element.childNodes[i]);
-      children.push(childVNode);
-    }
-    return {
-      type: element.tagName.toLowerCase(),
-      attributes: { ...attributes, [FROM_DOM_MARKER]: true },
-      children
-    };
-  }
-  return "";
-}
-function htmlStringToVNodes(html, Parser) {
-  const parser = new Parser;
-  const doc = parser.parseFromString(html, "text/html");
-  const vNodes = [];
-  for (let i = 0;i < doc.body.childNodes.length; i++) {
-    const vnode = domNodeToVNode(doc.body.childNodes[i]);
-    if (vnode !== "") {
-      vNodes.push(vnode);
-    }
-  }
-  return vNodes;
-}
 var areDomNodesEqual = (oldNode, newNode) => {
   if (oldNode === newNode)
     return true;
@@ -653,8 +584,8 @@ var areDomNodesEqual = (oldNode, newNode) => {
         return false;
     }
   }
-  if (oldNode.nodeType === 3) {
-    if (oldNode.textContent !== newNode.textContent)
+  if (oldNode.nodeType === 3 || oldNode.nodeType === 8) {
+    if (oldNode.nodeValue !== newNode.nodeValue)
       return false;
   }
   return true;
@@ -751,6 +682,8 @@ function areNodeAndChildMatching(domNode, child) {
   if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") {
     return domNode.nodeType === 3;
   }
+  if (isCommentVNode(child))
+    return domNode.nodeType === 8;
   if (child && typeof child === "object") {
     if (domNode.nodeType !== 1)
       return false;
@@ -844,6 +777,11 @@ function patchElementInPlace(el, vnode, globals, mergeAttributes = false) {
     return;
   morphDomDirect(el, vnode.children ?? [], globals);
 }
+function replaceNode(old, next) {
+  if (old.nodeType === 1)
+    clearDelegatedEventsDeep(old);
+  old.parentNode?.replaceChild(next, old);
+}
 function morphNode(domNode, child, globals, mergeAttributes = false) {
   if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") {
     const text = String(child);
@@ -853,7 +791,18 @@ function morphNode(domNode, child, globals, mergeAttributes = false) {
       return domNode;
     }
     const next = globals.window.document.createTextNode(text);
-    domNode.parentNode?.replaceChild(next, domNode);
+    replaceNode(domNode, next);
+    return next;
+  }
+  if (isCommentVNode(child)) {
+    const data = child.value ?? "";
+    if (domNode.nodeType === 8) {
+      if (domNode.nodeValue !== data)
+        domNode.nodeValue = data;
+      return domNode;
+    }
+    const next = globals.window.document.createComment(data);
+    replaceNode(domNode, next);
     return next;
   }
   if (child && typeof child === "object") {
@@ -877,13 +826,15 @@ function morphNode(domNode, child, globals, mergeAttributes = false) {
       const first = Array.isArray(created) ? created[0] : created;
       if (!first)
         return null;
-      el.parentNode?.replaceChild(first, el);
+      replaceNode(el, first);
       handleLifecycleEventsForOnMount(first);
       return first;
     }
     patchElementInPlace(el, child, globals, mergeAttributes);
     return el;
   }
+  if (domNode.nodeType === 1)
+    clearDelegatedEventsDeep(domNode);
   domNode.parentNode?.removeChild(domNode);
   return null;
 }
@@ -943,6 +894,8 @@ function morphDiff(targetRoot, patchItems, globals) {
   }
   for (const item of patchItems) {
     if (typeof item === "string" && item.trim() === "")
+      continue;
+    if (isCommentVNode(item))
       continue;
     const key = getVNodeMatchKey(item);
     if (!key) {
@@ -1269,7 +1222,7 @@ function createDomAdapter(api) {
     const Parser = doc.defaultView?.DOMParser;
     if (!Parser)
       throw new Error("defuss-query: context document has no DOMParser");
-    const tag = /^\s*<([a-z][\w:-]*)/i.exec(html)?.[1].toLowerCase();
+    const tag = /^\s*(?:<!--[\s\S]*?-->\s*)*<([a-z][\w:-]*)/i.exec(html)?.[1].toLowerCase();
     const wrappers = {
       tr: ["table", "tbody"],
       td: ["table", "tbody", "tr"],
@@ -1345,21 +1298,9 @@ function createDomAdapter(api) {
       if (node === parent || node.contains(parent))
         throw new DOMException("Cannot insert an ancestor into its descendant", "HierarchyRequestError");
     for (const node of created) {
-      const previousRoot = node.getRootNode();
       parent.insertBefore(node, anchor);
-      if (isElement(node)) {
-        if (previousRoot !== node.getRootNode()) {
-          const noop = () => {};
-          for (const el of [node, ...node.querySelectorAll("*")])
-            for (const type of api.getRegisteredEventTypes(el)) {
-              api.registerDelegatedEvent(el, type, noop, {
-                multi: true
-              });
-              api.removeDelegatedEvent(el, type, noop);
-            }
-        }
+      if (isElement(node))
         api.handleLifecycleEventsForOnMount(node);
-      }
     }
     return created;
   }
@@ -1376,7 +1317,7 @@ function createDomAdapter(api) {
     remove(target);
     return inserted;
   }
-  function morph2(target, content, options) {
+  function morph(target, content, options) {
     requireMorph();
     const snapshot = (item) => isNode(item) ? item.nodeType === 11 ? Array.from(item.childNodes, (child) => api.domNodeToVNode(child)) : api.domNodeToVNode(item) : Array.isArray(item) ? item.map(snapshot) : item;
     return api.morph(target, typeof content === "string" ? parse(content, target) : snapshot(content), options);
@@ -1384,18 +1325,34 @@ function createDomAdapter(api) {
   function text(target, value) {
     requireMorph();
     if (isElement(target))
-      morph2(target, [value]);
+      morph(target, [value]);
     else if (target.nodeType === 3 || target.nodeType === 4)
       target.nodeValue = value;
   }
-  return { create: render, insert, replace, remove, morph: morph2, text };
+  return { create: render, insert, replace, remove, morph, text };
 }
 
 // node_modules/defuss-query/dist/query.js
 var _a;
-var QUERY_VERSION = "0.1.0";
+var QUERY_VERSION = "0.2.0";
 var brand = Symbol.for("defuss-query.factory");
 var nativeListeners = new WeakMap;
+var detachListeners = (target, names, handler) => {
+  const entries = nativeListeners.get(target);
+  if (!entries)
+    return;
+  const kept = entries.filter((entry) => {
+    const match = (!names || names.includes(entry.type)) && (!handler || entry.handler === handler);
+    if (match)
+      target.removeEventListener(entry.type, entry.handler, entry.capture);
+    return !match;
+  });
+  if (kept.length)
+    nativeListeners.set(target, kept);
+  else
+    nativeListeners.delete(target);
+};
+var clearListeners = (target) => detachListeners(target);
 var styleName = (name) => name.startsWith("--") ? name : name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 var propRecord = (target) => target;
 
@@ -1628,7 +1585,7 @@ class DfQuery extends Array {
     if (typeof handler !== "function")
       throw new TypeError("defuss-query: on() requires a function");
     if (typeof options === "object" && Object.keys(options).some((key) => key !== "capture"))
-      throw new TypeError("defuss-query: delegated on() supports capture only; use native addEventListener for other options");
+      throw new TypeError("defuss-query: on() supports capture only; use native addEventListener for other options");
     const capture = typeof options === "boolean" ? options : !!options.capture;
     for (const target of this)
       for (const name of tokens(type)) {
@@ -1636,37 +1593,20 @@ class DfQuery extends Array {
         if (isElement(target)) {
           if (typeof this.#runtime.api.registerDelegatedEvent !== "function")
             throw new Error("defuss-query: load defuss-morph before on()");
-          this.#runtime.api.registerDelegatedEvent(target, name, listener, { multi: true, capture });
-        } else {
-          target.addEventListener(name, listener, capture);
-          const entries = nativeListeners.get(target) ?? [];
-          if (!entries.some((entry) => entry.type === name && entry.handler === listener && entry.capture === capture))
-            entries.push({ type: name, handler: listener, capture });
-          nativeListeners.set(target, entries);
+          this.#runtime.api.onClearDelegatedEvents?.(clearListeners);
         }
+        target.addEventListener(name, listener, capture);
+        const entries = nativeListeners.get(target) ?? [];
+        if (!entries.some((entry) => entry.type === name && entry.handler === listener && entry.capture === capture))
+          entries.push({ type: name, handler: listener, capture });
+        nativeListeners.set(target, entries);
       }
     return this;
   }
   off(type, handler) {
     const names = type === undefined ? undefined : tokens(type);
-    for (const target of this) {
-      if (isElement(target)) {
-        if (!names)
-          this.#runtime.api.clearDelegatedEvents(target);
-        else
-          for (const name of names)
-            this.#runtime.api.removeDelegatedEvent(target, name, handler);
-      } else {
-        const entries = nativeListeners.get(target) ?? [];
-        nativeListeners.set(target, entries.filter((entry) => {
-          if ((!names || names.includes(entry.type)) && (!handler || entry.handler === handler)) {
-            target.removeEventListener(entry.type, entry.handler, entry.capture);
-            return false;
-          }
-          return true;
-        }));
-      }
-    }
+    for (const target of this)
+      detachListeners(target, names, handler);
     return this;
   }
   trigger(type, detail) {
@@ -1735,7 +1675,7 @@ function createDf$(morphApi) {
 }
 
 // src/shared/debounce.ts
-function debounce(fn, wait2) {
+function debounce(fn, wait) {
   let timer;
   let lastArgs;
   const invoke = () => {
@@ -1749,7 +1689,7 @@ function debounce(fn, wait2) {
     lastArgs = args;
     if (timer !== undefined)
       clearTimeout(timer);
-    timer = setTimeout(invoke, wait2);
+    timer = setTimeout(invoke, wait);
   };
   wrapped.flush = () => {
     if (timer === undefined)
@@ -1802,10 +1742,7 @@ var MORPH_METHODS = [
   "renderMarkup",
   "domNodeToVNode",
   "registerDelegatedEvent",
-  "removeDelegatedEvent",
-  "getRegisteredEventTypes",
   "clearDelegatedEventsDeep",
-  "clearDelegatedEvents",
   "handleLifecycleEventsForOnMount"
 ];
 var RUNTIME_INCOMPLETE = "defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone";
@@ -1961,10 +1898,10 @@ function animateCount(el, opts = {}) {
 }
 var PRESENTATION_NOT_INITIALIZED = "ddf$: presentation element is not initialized - load dist/components/presentation/presentation.js (or all.js) first";
 function presentationScope(el) {
-  const mount = el?.closest(".presentation") ?? (typeof document !== "undefined" ? document.querySelector(".presentation") : null);
+  const mount = el?.closest(".presentation") ?? (typeof document !== "undefined" ? defussQuery()(".presentation").get(0) ?? null : null);
   if (!mount)
     throw new Error("ddf$: no .presentation element found");
-  const slides = () => Array.from(mount.querySelectorAll(":scope > [data-slide]"));
+  const slides = () => defussQuery()(mount).find(":scope > [data-slide]").toArray();
   const apply = (index) => {
     const api = mount.api;
     if (!api)
@@ -2392,13 +2329,1630 @@ function channelFor(name) {
   };
 }
 var anim = Object.freeze(Object.assign(Object.fromEntries(ANIM_NAMES.map((name) => [name, channelFor(name)])), { names: ANIM_NAMES }));
+// src/shared/render.ts
+var RUNTIME_ATTRS = ["data-init", "data-api", "data-state-name"];
+var AUTHORED = new WeakMap;
+var inert = null;
+function captureAuthored(root) {
+  inert ??= document.implementation.createHTMLDocument("");
+  const copy = inert.importNode(root, true);
+  const live = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  const twin = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT);
+  for (let a = live.currentNode, b = twin.currentNode;a && b; a = live.nextNode(), b = twin.nextNode())
+    if (!AUTHORED.has(a))
+      AUTHORED.set(a, b);
+}
+function elementModel(el, runtimeAttrs = []) {
+  const skip = new Set([...RUNTIME_ATTRS, ...runtimeAttrs]);
+  const src = AUTHORED.get(el) ?? el;
+  return {
+    tag: src.localName,
+    attrs: Array.from(src.attributes).filter((a) => !skip.has(a.name)).map((a) => [a.name, a.value]),
+    html: defussQuery()(src).html() ?? ""
+  };
+}
+function renderModel(model, apply) {
+  const $ = defussQuery();
+  const node = $(`<${model.tag}></${model.tag}>`);
+  for (const [name, value] of model.attrs)
+    node.attr(name, value);
+  node.html(model.html);
+  const host = $("<div></div>").append(node);
+  const el = node.get(0);
+  if (el && apply)
+    apply(el);
+  return host.html() ?? "";
+}
+// node_modules/defuss-store/dist/internal-C4BA7RyW.js
+var INTERNAL = /* @__PURE__ */ Symbol.for("defuss-store.internal.v1");
+function installInternal(store, api) {
+  Object.defineProperty(store, INTERNAL, { value: api });
+}
+function internalOf(store) {
+  const api = store[INTERNAL];
+  if (!api)
+    throw new TypeError("Expected a defuss-store v1 protocol store");
+  return api;
+}
+function reportError(error) {
+  try {
+    console.error(error);
+  } catch {}
+}
+function isContainer(value) {
+  return typeof value === "object" && value !== null && (Array.isArray(value) || Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+}
+
+// node_modules/defuss-store/dist/index.js
+var own = (value, key) => Object.hasOwn(value, key);
+function parsePath(path) {
+  if (typeof path !== "string" || !path)
+    throw new TypeError("A nonempty path is required");
+  const invalid = () => new TypeError(`Invalid path: ${path}`);
+  const keys = [];
+  for (let i = 0;i < path.length; ) {
+    const bracket = path[i] === "[";
+    const start = bracket ? ++i : i;
+    let index = 0;
+    let canonical = true;
+    for (let code;i < path.length && (code = path.charCodeAt(i)) !== 46 && code !== 91 && code !== 93; i++) {
+      canonical &&= code > 47 && code < 58 && (i === start || index > 0);
+      index = index * 10 + code - 48;
+    }
+    if (i === start || bracket && (!canonical || path[i++] !== "]"))
+      throw invalid();
+    if (canonical) {
+      if (index > 4294967294)
+        throw new RangeError("Array index out of range");
+      keys.push(index);
+    } else {
+      const key = path.slice(start, i);
+      if (key === "__proto__" || key === "prototype" || key === "constructor")
+        throw new TypeError(`Unsafe path segment: ${key}`);
+      keys.push(key);
+    }
+    if (path[i] === ".") {
+      if (++i === path.length || path[i] === "[")
+        throw invalid();
+    } else if (i < path.length && path[i] !== "[")
+      throw invalid();
+  }
+  return keys;
+}
+function getByPath(value, path) {
+  for (const key of parsePath(path)) {
+    if (Object(value) !== value || !own(value, key))
+      return;
+    value = value[key];
+  }
+  return value;
+}
+function setByPath(root, path, next) {
+  const keys = parsePath(path);
+  const deleting = next === undefined;
+  function visit(current, depth) {
+    const key = keys[depth];
+    if (!isContainer(current)) {
+      if (current != null)
+        throw new TypeError("Path updates require plain objects or arrays");
+      if (deleting)
+        return current;
+      current = typeof key === "number" ? [] : {};
+    }
+    const source = current;
+    const array = Array.isArray(source);
+    if (array && typeof key !== "number")
+      throw new TypeError("Array paths require nonnegative indices");
+    const exists = own(source, key);
+    if (!exists && deleting)
+      return current;
+    const old = exists ? source[key] : undefined;
+    const leaf = depth === keys.length - 1;
+    const updated = leaf ? next : visit(old, depth + 1);
+    if (Object.is(old, updated) && (!deleting || !leaf))
+      return current;
+    const copy = array ? source.slice() : { ...source, [key]: updated };
+    if (leaf && deleting) {
+      if (array)
+        copy.splice(key, 1);
+      else
+        delete copy[key];
+    } else if (array) {
+      if (exists)
+        copy[key] = updated;
+      else
+        Object.defineProperty(copy, key, { value: updated, enumerable: true, configurable: true, writable: true });
+    }
+    return copy;
+  }
+  return visit(root, 0);
+}
+function createStore(initial, options = {}) {
+  const equals = options.equals ?? Object.is;
+  let value = initial;
+  let destroyed = false;
+  let revision = 0;
+  let draining = false;
+  const listeners = /* @__PURE__ */ new Set;
+  let snapshot;
+  const cleanups = /* @__PURE__ */ new Set;
+  const queue = [];
+  function alive() {
+    if (destroyed)
+      throw new Error("Store is destroyed");
+  }
+  function observe(listener) {
+    alive();
+    const registration = { listener, active: true };
+    listeners.add(registration);
+    snapshot = undefined;
+    return () => {
+      registration.active = false;
+      if (listeners.delete(registration))
+        snapshot = undefined;
+    };
+  }
+  function commit(next, path, origin) {
+    alive();
+    if (equals(value, next))
+      return;
+    const previous = value;
+    value = next;
+    ++revision;
+    if (!listeners.size)
+      return;
+    queue.push({ value, previous, path, origin, revision, listeners: snapshot ??= [...listeners] });
+    if (draining)
+      return;
+    draining = true;
+    const errors = [];
+    try {
+      for (let index = 0;index < queue.length; index++) {
+        const entry = queue[index];
+        for (const registration of entry.listeners) {
+          if (!registration.active)
+            continue;
+          try {
+            registration.listener(entry);
+          } catch (error) {
+            errors.push(error);
+          }
+        }
+      }
+    } finally {
+      queue.length = 0;
+      draining = false;
+    }
+    if (errors.length)
+      throw new AggregateError(errors, "Store listeners failed after state committed");
+  }
+  function subscribe(select, listener, options2 = {}) {
+    alive();
+    if (typeof listener !== "function") {
+      options2 = listener ?? {};
+      listener = select;
+      select = undefined;
+    }
+    const notify = listener;
+    const compare = options2.equals ?? Object.is;
+    let selected = select?.(value);
+    const off = observe((change) => {
+      let next = change.value;
+      let old = change.previous;
+      if (select) {
+        next = select(change.value);
+        if (compare(selected, next))
+          return;
+        old = selected;
+        selected = next;
+      }
+      notify(next, old, change.path);
+    });
+    try {
+      if (options2.immediate)
+        notify(select ? selected : value, undefined, undefined);
+    } catch (error) {
+      off();
+      throw error;
+    }
+    return off;
+  }
+  const store = {
+    get value() {
+      return value;
+    },
+    get destroyed() {
+      return destroyed;
+    },
+    get: (path) => path ? getByPath(value, path) : value,
+    getRaw: () => value,
+    set(pathOrValue, next) {
+      alive();
+      if (arguments.length === 1)
+        commit(pathOrValue);
+      else if (arguments.length === 2 && typeof pathOrValue === "string")
+        commit(setByPath(value, pathOrValue, next), pathOrValue);
+      else
+        throw new TypeError("set expects a value or a string path and value");
+    },
+    setRaw: (next) => commit(next),
+    update(updater) {
+      alive();
+      commit(updater(value));
+    },
+    remove(path) {
+      alive();
+      commit(setByPath(value, path, undefined), path);
+    },
+    reset(next) {
+      commit(arguments.length ? next : initial);
+    },
+    subscribe,
+    onDestroy(cleanup) {
+      alive();
+      cleanups.add(cleanup);
+      return () => {
+        cleanups.delete(cleanup);
+      };
+    },
+    destroy() {
+      if (destroyed)
+        return;
+      destroyed = true;
+      for (const registration of listeners)
+        registration.active = false;
+      listeners.clear();
+      snapshot = undefined;
+      const errors = [];
+      for (const cleanup of cleanups) {
+        cleanups.delete(cleanup);
+        try {
+          cleanup();
+        } catch (error) {
+          errors.push(error);
+        }
+      }
+      if (errors.length)
+        throw new AggregateError(errors, "Store cleanup failed");
+    }
+  };
+  installInternal(store, { set: (next, origin) => commit(next, undefined, origin), observe, revision: () => revision });
+  return store;
+}
+function computed(inputs, project, options) {
+  const sources = Array.isArray(inputs) ? inputs : [inputs];
+  if (sources.some((source) => source.destroyed))
+    throw new Error("Computed source is destroyed");
+  const calculate = () => project(...sources.map((source) => source.value));
+  const target = createStore(calculate(), options);
+  const releases = [];
+  target.onDestroy(() => {
+    for (const release of releases.splice(0))
+      release();
+  });
+  try {
+    for (const source of new Set(sources)) {
+      releases.push(source.subscribe(() => target.setRaw(calculate())));
+      releases.push(source.onDestroy(() => target.destroy()));
+    }
+  } catch (error) {
+    target.destroy();
+    throw error;
+  }
+  return {
+    get value() {
+      return target.value;
+    },
+    get destroyed() {
+      return target.destroyed;
+    },
+    get: target.get,
+    getRaw: target.getRaw,
+    subscribe: target.subscribe,
+    onDestroy: target.onDestroy,
+    destroy: target.destroy
+  };
+}
+var jsonEquals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+// src/shared/component-state.ts
+var entries = new WeakMap;
+function sameState(a, b) {
+  if (a === b)
+    return true;
+  if (!a || !b || a.name !== b.name)
+    return false;
+  try {
+    return JSON.stringify(a.config) === JSON.stringify(b.config);
+  } catch {
+    return a.config === b.config;
+  }
+}
+function entryOf(el, api) {
+  const entry = entries.get(el);
+  if (entry)
+    return entry;
+  bindComponent(el, api);
+  return entries.get(el);
+}
+function quietly(entry, next) {
+  entry.recorded.add(next);
+  entry.store.set(next);
+}
+function applyAndRecord(el, entry, next, previous, incoming = next.config) {
+  entry.observer?.takeRecords();
+  const result = entry.spec.apply(el, next, previous, incoming);
+  const named = entry.observer?.takeRecords().some((r) => r.attributeName === "data-state-name") && el.dataset.stateName;
+  quietly(entry, named && entry.spec.states.includes(named) ? { name: named, config: next.config } : { ...next });
+  if (result && typeof result.then === "function") {
+    const pending = Promise.resolve(result).then(() => {
+      if (entries.get(el) === entry)
+        sync(el, entry);
+    }, () => {
+      if (entries.get(el) === entry)
+        sync(el, entry);
+    });
+    entry.pending = pending;
+  }
+  return result;
+}
+function sync(el, entry) {
+  const current = entry.store.value;
+  const read = entry.spec.read ? entry.spec.read(el, current) : { name: el.dataset.stateName || current.name, config: current.config };
+  if (!sameState(read, current))
+    quietly(entry, read);
+}
+function componentState(spec) {
+  const validate = (name) => {
+    if (!spec.states.includes(name)) {
+      throw new Error(`${spec.component}: unknown state "${name}" (supported: ${spec.states.join(", ")})`);
+    }
+  };
+  const api = {
+    setState(el, name, config = {}) {
+      validate(name);
+      const entry = entryOf(el, api);
+      const previous = entry.store.value;
+      const next = { name, config: spec.mergeConfig ? { ...previous.config, ...config } : config };
+      const result = applyAndRecord(el, entry, next, previous, config);
+      sync(el, entry);
+      return result;
+    },
+    getState(el) {
+      const entry = entryOf(el, api);
+      sync(el, entry);
+      return { ...entry.store.value, model: entry.model };
+    },
+    render(state) {
+      return renderModel(state.model, (copy) => spec.markup?.(copy, state));
+    },
+    store(el) {
+      return entryOf(el, api).store;
+    },
+    commit(el, name, config) {
+      validate(name);
+      const entry = entryOf(el, api);
+      const next = { name, config: config ?? entry.store.value.config };
+      if (!sameState(next, entry.store.value))
+        quietly(entry, next);
+    }
+  };
+  api.spec = spec;
+  return api;
+}
+function unbindComponent(el) {
+  const entry = entries.get(el);
+  if (!entry)
+    return;
+  entries.delete(el);
+  entry.observer?.disconnect();
+  entry.unlisten?.();
+  entry.store.destroy();
+  const host = el;
+  if (host.store === entry.store)
+    delete host.store;
+}
+function bindComponent(el, api, initial) {
+  const spec = api.spec;
+  const known = entries.get(el);
+  if (known?.bound)
+    return known.bound;
+  const start = initial ?? { name: el.dataset.stateName || "default", config: {} };
+  const store = createStore(start, { equals: sameState });
+  const entry = { store, model: elementModel(el), recorded: new WeakSet, spec, queued: false };
+  entries.set(el, entry);
+  const host = el;
+  store.subscribe((next, previous) => {
+    if (host.dataset.stateName !== next.name)
+      host.dataset.stateName = next.name;
+    if (!previous || entry.recorded.has(next))
+      return;
+    if (store.value !== next)
+      return;
+    if (!spec.states.includes(next.name))
+      throw new Error(`${spec.component}: unknown state "${next.name}"`);
+    applyAndRecord(host, entry, next, previous);
+    sync(host, entry);
+  }, { immediate: true });
+  const later = () => {
+    if (entry.queued)
+      return;
+    entry.queued = true;
+    queueMicrotask(() => {
+      entry.queued = false;
+      if (entries.get(el) === entry && !store.destroyed)
+        sync(host, entry);
+    });
+  };
+  for (const type of spec.events ?? [])
+    host.addEventListener(type, later);
+  entry.unlisten = () => {
+    for (const type of spec.events ?? [])
+      host.removeEventListener(type, later);
+  };
+  entry.observer = new MutationObserver((records) => {
+    if (records.some((r) => r.attributeName !== "data-init"))
+      later();
+  });
+  entry.observer.observe(host, { attributes: true, subtree: true });
+  const bound = {
+    setState: (name, config) => api.setState(el, name, config),
+    getState: () => api.getState(el),
+    render: (state) => api.render(state ?? api.getState(el)),
+    settled: async () => {
+      let seen;
+      while (entry.pending && entry.pending !== seen) {
+        seen = entry.pending;
+        await seen;
+      }
+    }
+  };
+  entry.bound = bound;
+  Object.assign(el, { api: bound, store });
+  return bound;
+}
+// node_modules/defuss-store/dist/codec-CUhpHYA_.js
+function assertJsonValue(value) {
+  const active = [];
+  function visit(item) {
+    if (item === null || typeof item === "string" || typeof item === "boolean")
+      return;
+    if (typeof item === "number" && Number.isFinite(item) && !Object.is(item, -0))
+      return;
+    if (typeof item !== "object")
+      throw new TypeError("Value is not lossless JSON data");
+    if (active.includes(item))
+      throw new TypeError("Cyclic values cannot be persisted as JSON");
+    if (!isContainer(item))
+      throw new TypeError("JSON persistence requires plain objects or arrays");
+    const array = Array.isArray(item);
+    const keys = Reflect.ownKeys(item);
+    if (array && keys.length !== item.length + 1)
+      throw new TypeError("Sparse or extended arrays are not JSON data");
+    let extra = false;
+    active.push(item);
+    for (const key of keys) {
+      if (array && key === "length") {
+        extra = true;
+        continue;
+      }
+      const descriptor = Object.getOwnPropertyDescriptor(item, key);
+      if (typeof key === "symbol" || !descriptor.enumerable || !("value" in descriptor)) {
+        throw new TypeError("JSON data cannot contain symbols, accessors or hidden properties");
+      }
+      if (extra)
+        throw new TypeError("Extended arrays are not JSON data");
+      visit(descriptor.value);
+    }
+    active.pop();
+  }
+  visit(value);
+}
+var jsonCodec = {
+  encode(value) {
+    assertJsonValue(value);
+    return JSON.stringify(value);
+  },
+  decode(serialized) {
+    const value = JSON.parse(serialized);
+    assertJsonValue(value);
+    return value;
+  }
+};
+
+// node_modules/defuss-store/dist/storage/index.js
+function createMemoryStorage() {
+  const cache = /* @__PURE__ */ new Map;
+  return {
+    get length() {
+      return cache.size;
+    },
+    key(index) {
+      return Number.isInteger(index) && index >= 0 ? [...cache.keys()][index] ?? null : null;
+    },
+    getItem: (key) => cache.get(String(key)) ?? null,
+    setItem: (key, value) => {
+      cache.set(String(key), String(value));
+    },
+    removeItem: (key) => {
+      cache.delete(String(key));
+    },
+    clear: () => {
+      cache.clear();
+    }
+  };
+}
+function createWebStorage(area, options = {}) {
+  if (area !== "local" && area !== "session")
+    throw new TypeError("Storage area must be local or session");
+  let backend;
+  let host;
+  function resolve() {
+    if (backend)
+      return backend;
+    try {
+      const browser = globalThis.window;
+      const storage = browser?.document && browser[`${area}Storage`];
+      if (!storage)
+        throw new Error("Browser Web Storage is unavailable");
+      host = browser;
+      backend = storage;
+    } catch (error) {
+      if (!options.fallback)
+        throw error;
+      backend = options.fallback;
+      try {
+        options.onUnavailable?.(error);
+      } catch (reportingError) {
+        reportError(reportingError);
+      }
+    }
+    return backend;
+  }
+  return {
+    getItem: (key) => resolve().getItem(key),
+    setItem: (key, value) => resolve().setItem(key, value),
+    removeItem: (key) => resolve().removeItem(key),
+    subscribe(listener) {
+      const storage = resolve();
+      const browser = host;
+      if (!browser) {
+        if (!storage.subscribe)
+          throw new Error("Selected fallback does not support storage synchronization");
+        return storage.subscribe(listener);
+      }
+      const handle = (event) => {
+        if (event.storageArea === storage)
+          listener({ key: event.key });
+      };
+      browser.addEventListener("storage", handle);
+      return () => browser.removeEventListener("storage", handle);
+    }
+  };
+}
+
+// node_modules/defuss-store/dist/persist/index.js
+var format = "defuss-store";
+var validVersion = (value) => Number.isSafeInteger(value) && value >= 0;
+function attachPersistence(store, options) {
+  const api = internalOf(store);
+  if (store.destroyed)
+    throw new Error("Store is destroyed");
+  if (api.persistence)
+    throw new Error("Store already has an attached persistence controller");
+  if (typeof options.key !== "string" || !validVersion(options.version) || typeof options.validate !== "function") {
+    throw new TypeError("Persistence requires a string key, nonnegative schema version and validator");
+  }
+  if (options.legacyVersion !== undefined && !validVersion(options.legacyVersion))
+    throw new TypeError("Invalid legacyVersion");
+  const mode = options.hydrate ?? "immediate";
+  if (!["immediate", "manual", "skip"].includes(mode))
+    throw new TypeError("Invalid hydration mode");
+  if (options.sync && !options.storage.subscribe)
+    throw new TypeError("Storage backend does not support synchronization");
+  const codec = options.codec ?? jsonCodec;
+  const origin = {};
+  let phase = mode === "skip" ? "active" : "paused";
+  let dirty = true;
+  let hasStoredValue = false;
+  let lastError;
+  let acceptedBytes;
+  const releases = [];
+  const dead = () => phase === "destroyed";
+  function alive() {
+    if (dead())
+      throw new Error("Persistence controller is destroyed");
+  }
+  function fail(operation, error, pause = false) {
+    if (dead())
+      return false;
+    lastError = { operation, key: options.key, error };
+    dirty = true;
+    if (pause)
+      phase = "paused";
+    try {
+      if (options.onError)
+        options.onError(lastError);
+      else
+        reportError(lastError);
+    } catch (reportingError) {
+      reportError(reportingError);
+    }
+    return false;
+  }
+  function settle(bytes, stale) {
+    acceptedBytes = bytes;
+    hasStoredValue = bytes !== null;
+    dirty = stale;
+    lastError = undefined;
+    phase = "active";
+    return true;
+  }
+  function write() {
+    alive();
+    const value = store.value;
+    const revision = api.revision();
+    let step = "validate";
+    let bytes;
+    try {
+      if (!options.validate(value))
+        throw new TypeError("Current state failed persistence validation");
+      step = "encode";
+      const envelope = { format, formatVersion: 1, version: options.version, value };
+      bytes = codec.encode(envelope);
+      if (typeof bytes !== "string")
+        throw new TypeError("Codec must encode to a string");
+      if (api.revision() !== revision || dead())
+        return false;
+      step = "write";
+      options.storage.setItem(options.key, bytes);
+    } catch (error) {
+      return fail(step, error);
+    }
+    return dead() || settle(bytes, api.revision() !== revision);
+  }
+  function read(remote = false) {
+    alive();
+    let step = "read";
+    let raw;
+    let value;
+    let stale = false;
+    try {
+      raw = options.storage.getItem(options.key);
+      if (dead())
+        return false;
+      if (raw === null)
+        return settle(null, true);
+      if (typeof raw !== "string")
+        throw new TypeError("Storage getItem must return string or null");
+      hasStoredValue = true;
+      if (remote && raw === acceptedBytes && !dirty && phase === "active")
+        return true;
+      step = "decode";
+      const decoded = codec.decode(raw);
+      step = "version";
+      let version;
+      if (typeof decoded === "object" && decoded?.format === format && !Array.isArray(decoded)) {
+        if (decoded.formatVersion !== 1 || !validVersion(decoded.version) || !Object.hasOwn(decoded, "value")) {
+          throw new TypeError("Unsupported or malformed persistence envelope");
+        }
+        version = decoded.version;
+        value = decoded.value;
+      } else if (options.legacyVersion !== undefined) {
+        stale = true;
+        version = options.legacyVersion;
+        value = decoded;
+      } else
+        throw new TypeError("Expected a defuss-store envelope; raw data needs legacyVersion");
+      if (version > options.version)
+        throw new Error("Stored schema is newer than this application");
+      if (version !== options.version) {
+        stale = true;
+        step = "migrate";
+        if (!options.migrate)
+          throw new Error("Schema migration is required");
+        value = options.migrate(value, version);
+      }
+      step = "validate";
+      if (!options.validate(value))
+        throw new TypeError("Stored state failed validation");
+    } catch (error) {
+      return fail(step, error, true);
+    }
+    if (dead())
+      return false;
+    const revision = api.revision();
+    settle(raw, stale);
+    try {
+      api.set(value, origin);
+    } catch (error) {
+      return fail("notify", error);
+    }
+    if (acceptedBytes === raw && api.revision() <= revision + 1 && !Object.is(store.value, value))
+      dirty = true;
+    return true;
+  }
+  const controller = {
+    rehydrate: () => read(),
+    flush: () => write(),
+    clear() {
+      alive();
+      try {
+        options.storage.removeItem(options.key);
+      } catch (error) {
+        return fail("remove", error);
+      }
+      return dead() || settle(null, true);
+    },
+    status: () => ({ phase, dirty, hasStoredValue, ...lastError ? { lastError } : {} }),
+    destroy() {
+      if (dead())
+        return;
+      phase = "destroyed";
+      if (api.persistence === controller)
+        delete api.persistence;
+      const errors = [];
+      for (const release of releases.splice(0)) {
+        try {
+          release();
+        } catch (error) {
+          errors.push(error);
+        }
+      }
+      if (errors.length)
+        throw new AggregateError(errors, "Persistence cleanup failed");
+    }
+  };
+  api.persistence = controller;
+  try {
+    releases.push(api.observe((change) => {
+      if (change.origin === origin)
+        return;
+      dirty = true;
+      if (phase === "active" && change.revision === api.revision())
+        write();
+    }));
+    releases.push(store.onDestroy(() => controller.destroy()));
+    if (options.sync)
+      releases.push(options.storage.subscribe((change) => {
+        if (!dead() && (mode !== "manual" || acceptedBytes !== undefined) && (change.key === null || change.key === options.key))
+          read(true);
+      }));
+    if (mode === "immediate")
+      read();
+  } catch (error) {
+    controller.destroy();
+    throw error;
+  }
+  return controller;
+}
+
+// src/shared/store.ts
+var areas = {};
+var inMemory = new Set;
+function storageOf(area) {
+  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+}
+function sameShape(initial) {
+  const check = (model, value) => {
+    if (model === null)
+      return value === null;
+    if (Array.isArray(model))
+      return Array.isArray(value);
+    if (typeof model === "object") {
+      if (typeof value !== "object" || value === null || Array.isArray(value))
+        return false;
+      return Object.keys(model).every((k) => (k in value) && check(model[k], value[k]));
+    }
+    return typeof value === typeof model;
+  };
+  return (value) => check(initial, value);
+}
+function adoptingCodec(legacyVersion) {
+  return {
+    encode: (value) => jsonCodec.encode(value),
+    decode: (serialized) => {
+      let parsed;
+      try {
+        parsed = jsonCodec.decode(serialized);
+      } catch {
+        return { format: "defuss-store", formatVersion: 1, version: legacyVersion, value: serialized };
+      }
+      const isEnvelope = typeof parsed === "object" && parsed !== null && parsed.format === "defuss-store";
+      return isEnvelope ? parsed : { format: "defuss-store", formatVersion: 1, version: legacyVersion, value: parsed };
+    }
+  };
+}
+var WRITE_EVENT = "defuss-store-write";
+var peerSeq = 0;
+var controllers = new WeakMap;
+var controllerOf = (store) => controllers.get(store);
+function reload(store) {
+  return controllerOf(store)?.rehydrate() ?? false;
+}
+function forget(store) {
+  return controllerOf(store)?.clear() ?? false;
+}
+function persistOk(store) {
+  const status = controllerOf(store)?.status();
+  return !!status && status.phase === "active" && !status.lastError;
+}
+function persisted(key, initial, options = {}) {
+  const store = createStore(initial, { equals: jsonEquals });
+  const area = options.storage ? null : options.area ?? "local";
+  const controller = attachPersistence(store, {
+    key,
+    storage: options.storage ?? storageOf(area),
+    version: options.version ?? 1,
+    validate: options.validate ?? sameShape(initial),
+    sync: options.sync ?? false,
+    codec: adoptingCodec(options.migrate ? 0 : options.version ?? 1),
+    ...options.migrate ? { migrate: (old, from) => from === 0 ? options.migrate(old) : old } : {},
+    onError: options.onError ?? (() => {})
+  });
+  controllers.set(store, controller);
+  store.subscribe(() => {
+    if (controller.status().phase === "paused")
+      controller.flush();
+  });
+  const doc = globalThis.document;
+  if (doc && area) {
+    const id = ++peerSeq + ":" + Math.random();
+    let reading = false;
+    store.subscribe(() => {
+      if (!reading)
+        doc.dispatchEvent(new CustomEvent(WRITE_EVENT, { detail: { area, key, id } }));
+    });
+    const onPeerWrite = (e) => {
+      const d = e.detail;
+      if (!d || d.id === id || d.area !== area || d.key !== key || store.destroyed)
+        return;
+      reading = true;
+      try {
+        controller.rehydrate();
+      } finally {
+        reading = false;
+      }
+    };
+    doc.addEventListener(WRITE_EVENT, onPeerWrite);
+    store.onDestroy(() => doc.removeEventListener(WRITE_EVENT, onPeerWrite));
+  }
+  return store;
+}
+function viewPersistence(el, kind, fallbackId, config = {}) {
+  const area = config.area ?? el.dataset.persist ?? "session";
+  if (area === "none")
+    return null;
+  const path = globalThis.location?.pathname ?? "";
+  const prefix = config.prefix ?? el.dataset.persistPrefix ?? `defuss-shadcn:${path}`;
+  const key = config.key ?? el.dataset.persistKey ?? `${prefix}:${kind}:${el.id || fallbackId}`;
+  return { area: area === "local" ? "local" : "session", key };
+}
+// node_modules/defuss-dataview/dist/index.mjs
+var forbidden = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
+function fieldParts(field) {
+  if (typeof field !== "string" || !field)
+    throw new TypeError("Dataview field must be a non-empty dot path.");
+  const parts = field.split(".");
+  if (parts.some((part) => !part || forbidden.has(part)))
+    throw new TypeError(`Invalid or unsafe Dataview field: ${field}`);
+  return parts;
+}
+function compileAccessor(field) {
+  const parts = fieldParts(field);
+  if (parts.length === 1)
+    return (row) => typeof row === "object" && row !== null && Object.hasOwn(row, field) ? row[field] : undefined;
+  return (row) => {
+    let current = row;
+    for (const part of parts) {
+      if (typeof current !== "object" || current === null || !Object.hasOwn(current, part))
+        return;
+      current = current[part];
+    }
+    return current;
+  };
+}
+function setField(row, field, value) {
+  const parts = fieldParts(field);
+  const ancestors = [];
+  let current = row;
+  for (const part of parts) {
+    if (current === undefined || current === null)
+      current = /^(0|[1-9]\d*)$/.test(part) ? [] : {};
+    if (typeof current !== "object" || current !== row && !Array.isArray(current) && Object.getPrototypeOf(current) !== Object.prototype && Object.getPrototypeOf(current) !== null) {
+      throw new TypeError("Parent paths require plain objects or arrays.");
+    }
+    if (Array.isArray(current) && (!/^(0|[1-9]\d*)$/.test(part) || Number(part) > 4294967294))
+      throw new TypeError("Array paths require valid nonnegative indices.");
+    const container = current;
+    ancestors.push(container);
+    current = Object.hasOwn(container, part) ? container[part] : undefined;
+  }
+  if (Object.is(current, value))
+    return row;
+  let next = value;
+  for (let index = parts.length - 1;index >= 0; index--) {
+    const original = ancestors[index];
+    const copy = Array.isArray(original) ? original.slice() : { ...original };
+    Object.defineProperty(copy, parts[index], { value: next, enumerable: true, configurable: true, writable: true });
+    next = copy;
+  }
+  return next;
+}
+function idKey(value) {
+  if (value === null || typeof value === "boolean" || typeof value === "string" || typeof value === "number" && Number.isFinite(value))
+    return JSON.stringify(value);
+  const active = /* @__PURE__ */ new Set;
+  function encode(item) {
+    if (item === null || typeof item === "boolean" || typeof item === "string")
+      return JSON.stringify(item);
+    if (typeof item === "number" && Number.isFinite(item))
+      return JSON.stringify(item);
+    if (typeof item !== "object" || item === null)
+      throw new TypeError("Dataview identifiers must be finite JSON values.");
+    if (active.has(item))
+      throw new TypeError("Dataview identifiers cannot contain cycles.");
+    const array = Array.isArray(item);
+    if (!array && Object.getPrototypeOf(item) !== Object.prototype && Object.getPrototypeOf(item) !== null) {
+      throw new TypeError("Dataview identifiers require plain JSON objects.");
+    }
+    const ownKeys = Reflect.ownKeys(item);
+    if (array && ownKeys.length !== item.length + 1)
+      throw new TypeError("Sparse or extended arrays are not JSON identifiers.");
+    const values = /* @__PURE__ */ new Map;
+    for (const key of ownKeys) {
+      if (array && key === "length")
+        continue;
+      const descriptor = Object.getOwnPropertyDescriptor(item, key);
+      if (typeof key !== "string" || !descriptor.enumerable || !("value" in descriptor))
+        throw new TypeError("Invalid JSON identifier property.");
+      if (array && (!/^(0|[1-9]\d*)$/.test(key) || Number(key) >= item.length))
+        throw new TypeError("Invalid JSON identifier array index.");
+      values.set(key, descriptor.value);
+    }
+    active.add(item);
+    try {
+      if (array)
+        return "[" + Array.from({ length: item.length }, (_, index) => encode(values.get(String(index)))).join(",") + "]";
+      return "{" + [...values.keys()].sort().map((key) => JSON.stringify(key) + ":" + encode(values.get(key))).join(",") + "}";
+    } finally {
+      active.delete(item);
+    }
+  }
+  return encode(value);
+}
+function uniqueIds(values) {
+  const seen = /* @__PURE__ */ new Set;
+  const result = [];
+  for (const value of values) {
+    const key = idKey(value);
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(JSON.parse(key));
+    }
+  }
+  return result;
+}
+var rowIdKey = (value) => value == null ? undefined : idKey(value);
+function selectionKey(value) {
+  try {
+    return rowIdKey(value);
+  } catch (error) {
+    if (error instanceof TypeError)
+      return;
+    throw error;
+  }
+}
+var invalid = (value) => value == null || typeof value === "number" && Number.isNaN(value) || value instanceof Date && Number.isNaN(value.getTime());
+var rank = (value) => value == null ? 7 : invalid(value) ? 6 : typeof value === "boolean" ? 0 : typeof value === "number" ? 1 : typeof value === "bigint" ? 2 : typeof value === "string" ? 3 : value instanceof Date ? 4 : 5;
+function compareValues(left, right) {
+  if (Object.is(left, right) || left === right)
+    return 0;
+  if (typeof left === "number" && typeof right === "number") {
+    if (Number.isNaN(left))
+      return 1;
+    if (Number.isNaN(right))
+      return -1;
+    return left < right ? -1 : 1;
+  }
+  if (typeof left === "string" && typeof right === "string")
+    return left.localeCompare(right);
+  if (typeof left === "boolean" && typeof right === "boolean")
+    return left ? 1 : -1;
+  const a = rank(left), b = rank(right);
+  if (a !== b)
+    return a - b;
+  if (a >= 6)
+    return 0;
+  if (left instanceof Date && right instanceof Date)
+    return Math.sign(left.getTime() - right.getTime());
+  return String(left).localeCompare(String(right));
+}
+function testFilter(cell, filter) {
+  const { op, value } = filter;
+  switch (op) {
+    case "eq":
+      return cell === value;
+    case "neq":
+      return cell !== value;
+    case "gt":
+      return !invalid(cell) && !invalid(value) && compareValues(cell, value) > 0;
+    case "gte":
+      return !invalid(cell) && !invalid(value) && compareValues(cell, value) >= 0;
+    case "lt":
+      return !invalid(cell) && !invalid(value) && compareValues(cell, value) < 0;
+    case "lte":
+      return !invalid(cell) && !invalid(value) && compareValues(cell, value) <= 0;
+    case "in":
+      return Array.isArray(value) && value.some((item) => item === cell);
+    case "contains":
+      return typeof cell === "string" && typeof value === "string" ? cell.includes(value) : Array.isArray(cell) && cell.some((item) => item === value);
+    case "startsWith":
+      return typeof cell === "string" && typeof value === "string" && cell.startsWith(value);
+    case "endsWith":
+      return typeof cell === "string" && typeof value === "string" && cell.endsWith(value);
+    default:
+      return false;
+  }
+}
+function compileQuery(view) {
+  const filters = view.filters.map((filter) => {
+    const get = compileAccessor(filter.field);
+    if (filter.op === "in" && Array.isArray(filter.value) && filter.value.length > 16) {
+      const values = new Set(filter.value);
+      return (row) => {
+        const value = get(row);
+        return !Number.isNaN(value) && values.has(value);
+      };
+    }
+    return (row) => testFilter(get(row), filter);
+  });
+  const sorters = view.sorters.map((sorter) => ({ get: compileAccessor(sorter.field), sign: sorter.direction === "desc" ? -1 : 1 }));
+  return {
+    matches: (row) => {
+      for (const filter of filters)
+        if (!filter(row))
+          return false;
+      return true;
+    },
+    compare: (left, right) => {
+      for (const sorter of sorters) {
+        const result = compareValues(sorter.get(left), sorter.get(right));
+        if (result !== 0)
+          return result * sorter.sign;
+      }
+      return 0;
+    }
+  };
+}
+function evaluateTree(rows, view) {
+  const tree = view.tree;
+  const getId = compileAccessor(tree.idField), getParent = compileAccessor(tree.parentIdField);
+  const keys = rows.map((row) => rowIdKey(getId(row)));
+  const parents = rows.map((row) => getParent(row));
+  const byId = /* @__PURE__ */ new Map;
+  for (let index = 0;index < rows.length; index++) {
+    const key = keys[index];
+    if (key !== undefined && !byId.has(key))
+      byId.set(key, index);
+  }
+  const parentIndex = new Int32Array(rows.length);
+  for (let index = 0;index < rows.length; index++) {
+    const key = rowIdKey(parents[index]);
+    const parent = key === undefined ? -1 : byId.get(key) ?? -1;
+    parentIndex[index] = parent === index ? -1 : parent;
+  }
+  const color = new Uint8Array(rows.length);
+  for (let start = 0;start < rows.length; start++) {
+    if (color[start] !== 0)
+      continue;
+    const trail = [];
+    let current = start;
+    while (current !== -1 && color[current] === 0) {
+      color[current] = 1;
+      trail.push(current);
+      current = parentIndex[current];
+    }
+    if (current !== -1 && color[current] === 1) {
+      let root = current;
+      for (let node = parentIndex[current];node !== current; node = parentIndex[node])
+        root = Math.min(root, node);
+      parentIndex[root] = -1;
+    }
+    for (const node of trail)
+      color[node] = 2;
+  }
+  const children = Array.from({ length: rows.length });
+  const roots = [];
+  for (let index = 0;index < rows.length; index++) {
+    const parent = parentIndex[index];
+    if (parent === -1)
+      roots.push(index);
+    else
+      (children[parent] ??= []).push(index);
+  }
+  const query = compileQuery(view);
+  if (view.sorters.length) {
+    const compare = (left, right) => query.compare(rows[left], rows[right]) || left - right;
+    roots.sort(compare);
+    for (const group of children)
+      if (group && group.length > 1)
+        group.sort(compare);
+  }
+  const matched = new Uint8Array(rows.length);
+  let matchedRows = 0;
+  for (let index = 0;index < rows.length; index++) {
+    if (query.matches(rows[index])) {
+      matched[index] = 1;
+      matchedRows++;
+    }
+  }
+  const included = matched.slice();
+  if (tree.includeAncestors) {
+    const done = new Uint8Array(rows.length);
+    for (let index = 0;index < rows.length; index++) {
+      if (!matched[index])
+        continue;
+      for (let parent = parentIndex[index];parent !== -1 && !done[parent]; parent = parentIndex[parent]) {
+        done[parent] = 1;
+        included[parent] = 1;
+      }
+    }
+  }
+  if (tree.includeDescendantsOfMatch) {
+    const done = new Uint8Array(rows.length);
+    const stack2 = [];
+    for (let index = 0;index < rows.length; index++) {
+      if (!matched[index] || done[index])
+        continue;
+      stack2.push(index);
+      while (stack2.length) {
+        const node = stack2.pop();
+        if (done[node])
+          continue;
+        done[node] = 1;
+        included[node] = 1;
+        for (const child of children[node] ?? [])
+          stack2.push(child);
+      }
+    }
+  }
+  const expanded = new Set(tree.expandedIds.map(idKey));
+  const collapsed = new Set((tree.collapsedIds ?? []).map(idKey));
+  const all = tree.expandAll ?? tree.expandedIds.length === 0;
+  const selected = new Set(view.meta.selectedRowIds.map(idKey));
+  const getSelectionId = compileAccessor(view.idField);
+  const offset = view.pageSize ? view.page * view.pageSize : 0;
+  const end = view.pageSize ? offset + view.pageSize : Infinity;
+  const entries = [];
+  let visibleRows = 0;
+  const stack = [];
+  for (let index = roots.length - 1;index >= 0; index--)
+    stack.push({ index: roots[index], depth: 0 });
+  while (stack.length) {
+    const { index, depth } = stack.pop();
+    const group = children[index];
+    const hasChildren = !!group?.length;
+    const key = keys[index];
+    const isOpen = all ? key === undefined || !collapsed.has(key) : key !== undefined && expanded.has(key);
+    const canDescend = isOpen && (tree.maxDepth === undefined || depth < tree.maxDepth);
+    if (included[index]) {
+      if (visibleRows >= offset && visibleRows < end) {
+        const selectedKey = selected.size ? selectionKey(getSelectionId(rows[index])) : undefined;
+        entries.push({ row: rows[index], meta: {
+          depth,
+          hasChildren,
+          isExpanded: hasChildren && canDescend,
+          isMatch: matched[index] === 1,
+          isSelected: selectedKey !== undefined && selected.has(selectedKey),
+          parentId: parents[index] ?? null
+        } });
+      }
+      visibleRows++;
+    }
+    if (canDescend && group)
+      for (let child = group.length - 1;child >= 0; child--)
+        stack.push({ index: group[child], depth: depth + 1 });
+  }
+  return { entries, matchedRows, visibleRows };
+}
+var operators = ["eq", "neq", "gt", "gte", "lt", "lte", "in", "contains", "startsWith", "endsWith"];
+var array = (value, name) => {
+  if (!Array.isArray(value))
+    throw new TypeError(`Dataview ${name} must be an array.`);
+  return value;
+};
+function normalizeMeta(meta = {}) {
+  return {
+    selectedRowIds: uniqueIds(Array.isArray(meta.selectedRowIds) ? meta.selectedRowIds : []),
+    lockedColumns: Array.isArray(meta.lockedColumns) ? [...new Set(meta.lockedColumns.filter((column) => typeof column === "string" && column.length > 0))] : []
+  };
+}
+function createDataview(request = {}) {
+  if (typeof request !== "object" || request === null || Array.isArray(request))
+    throw new TypeError("Dataview request must be an object.");
+  const filters = (request.filters === undefined ? [] : array(request.filters, "filters")).map((filter) => {
+    fieldParts(filter?.field);
+    if (!operators.includes(filter.op))
+      throw new TypeError(`Dataview filter op '${String(filter.op)}' is not supported.`);
+    return { field: filter.field, op: filter.op, value: filter.value };
+  });
+  const sorters = (request.sorters === undefined ? [] : array(request.sorters, "sorters")).map((sorter) => {
+    fieldParts(sorter?.field);
+    const raw = sorter.direction ?? sorter.dir ?? "asc";
+    if (typeof raw !== "string" || !["asc", "desc"].includes(raw.toLowerCase()))
+      throw new TypeError(`Dataview sorter direction '${String(raw)}' is not supported.`);
+    return { field: sorter.field, direction: raw.toLowerCase() };
+  });
+  const page = request.page ?? 0, pageSize = request.pageSize;
+  if (!Number.isSafeInteger(page) || page < 0)
+    throw new RangeError("Dataview page must be a safe integer >= 0.");
+  if (pageSize != null && (!Number.isSafeInteger(pageSize) || pageSize <= 0))
+    throw new RangeError("Dataview pageSize must be a safe integer > 0.");
+  if (pageSize != null && !Number.isSafeInteger(page * pageSize))
+    throw new RangeError("Dataview page offset exceeds the safe integer range.");
+  let tree;
+  if (request.tree !== undefined) {
+    const input = request.tree;
+    if (typeof input !== "object" || input === null)
+      throw new TypeError("Dataview tree must be an object.");
+    fieldParts(input.idField);
+    fieldParts(input.parentIdField);
+    if (input.maxDepth != null && (!Number.isSafeInteger(input.maxDepth) || input.maxDepth < 0))
+      throw new RangeError("Dataview tree maxDepth must be a safe integer >= 0.");
+    for (const flag of ["includeAncestors", "includeDescendantsOfMatch", "expandAll"]) {
+      if (input[flag] !== undefined && typeof input[flag] !== "boolean")
+        throw new TypeError(`Dataview tree ${flag} must be boolean.`);
+    }
+    tree = {
+      idField: input.idField,
+      parentIdField: input.parentIdField,
+      expandedIds: uniqueIds(input.expandedIds === undefined ? [] : array(input.expandedIds, "expandedIds")),
+      expandAll: input.expandAll ?? input.expandedIds === undefined,
+      collapsedIds: uniqueIds(input.collapsedIds === undefined ? [] : array(input.collapsedIds, "collapsedIds")),
+      maxDepth: input.maxDepth,
+      includeAncestors: input.includeAncestors ?? true,
+      includeDescendantsOfMatch: input.includeDescendantsOfMatch ?? false
+    };
+  }
+  const idField = request.idField ?? tree?.idField ?? "id";
+  fieldParts(idField);
+  return { filters, sorters, page, pageSize, idField, meta: normalizeMeta(request.meta), tree };
+}
+function evaluateFlat(rows, view) {
+  const query = compileQuery(view);
+  const selected = new Set(view.meta.selectedRowIds.map(idKey));
+  const getId = compileAccessor(view.idField);
+  const offset = view.pageSize ? view.page * view.pageSize : 0;
+  const end = view.pageSize ? offset + view.pageSize : Infinity;
+  const entries = [];
+  let matchedRows = 0;
+  function append(row) {
+    if (matchedRows >= offset && matchedRows < end) {
+      const key = selected.size ? selectionKey(getId(row)) : undefined;
+      entries.push({ row, meta: {
+        depth: 0,
+        hasChildren: false,
+        isExpanded: false,
+        isMatch: true,
+        isSelected: key !== undefined && selected.has(key),
+        parentId: null
+      } });
+    }
+    matchedRows++;
+  }
+  if (view.sorters.length || !view.filters.length) {
+    const ordered = view.filters.length ? rows.filter(query.matches) : view.sorters.length ? [...rows] : rows;
+    if (view.sorters.length)
+      ordered.sort(query.compare);
+    matchedRows = offset;
+    for (let index = offset;index < Math.min(end, ordered.length); index++)
+      append(ordered[index]);
+    matchedRows = ordered.length;
+  } else {
+    for (const row of rows)
+      if (query.matches(row))
+        append(row);
+  }
+  return { entries, matchedRows, visibleRows: matchedRows };
+}
+function evaluateDataview(rows, view) {
+  const result = view.tree ? evaluateTree(rows, view) : evaluateFlat(rows, view);
+  const pageCount = view.pageSize ? Math.ceil(result.visibleRows / view.pageSize) : Number(result.visibleRows > 0);
+  return {
+    ...result,
+    totalRows: rows.length,
+    page: view.page,
+    pageSize: view.pageSize,
+    pageCount,
+    hasPreviousPage: !!view.pageSize && view.page > 0 && pageCount > 0,
+    hasNextPage: !!view.pageSize && view.page < pageCount - 1
+  };
+}
+function updateRows(rows, ids, updates, idField = "id") {
+  if (ids.length !== updates.length)
+    throw new Error("updateRows expects ids and updates arrays with equal length.");
+  const getId = compileAccessor(idField);
+  if (!ids.length)
+    return rows;
+  const patches = /* @__PURE__ */ new Map;
+  for (let index = 0;index < ids.length; index++) {
+    const patch = updates[index];
+    if (patch === null || typeof patch !== "object" || Array.isArray(patch))
+      throw new TypeError("Row patches must be objects.");
+    patches.set(idKey(ids[index]), patch);
+  }
+  let next;
+  for (let index = 0;index < rows.length; index++) {
+    const row = rows[index], value = getId(row);
+    if (value === undefined)
+      continue;
+    const patch = patches.get(idKey(value));
+    if (!patch)
+      continue;
+    const keys = Reflect.ownKeys(patch).filter((key) => Object.prototype.propertyIsEnumerable.call(patch, key));
+    if (!keys.some((key) => !Object.hasOwn(row, key) || !Object.is(Reflect.get(row, key), Reflect.get(patch, key))))
+      continue;
+    next ??= rows.slice();
+    next[index] = { ...row, ...patch };
+  }
+  return next ?? rows;
+}
+function addRows(rows, newRows, anchorId, position = "after", idField = "id") {
+  const getId = compileAccessor(idField);
+  if (position !== "before" && position !== "after")
+    throw new TypeError("Row insertion position must be before or after.");
+  if (!newRows.length)
+    return rows;
+  if (!rows.length || anchorId === undefined)
+    return [...rows, ...newRows];
+  const key = idKey(anchorId);
+  const anchor = rows.findIndex((row) => {
+    const id = getId(row);
+    return id !== undefined && idKey(id) === key;
+  });
+  const index = anchor < 0 ? rows.length : anchor + Number(position === "after");
+  return [...rows.slice(0, index), ...newRows, ...rows.slice(index)];
+}
+function removeRows(rows, ids, idField = "id") {
+  const getId = compileAccessor(idField);
+  if (!ids.length)
+    return rows;
+  const keys = new Set(ids.map(idKey));
+  const result = rows.filter((row) => {
+    const value = getId(row);
+    return value === undefined || !keys.has(idKey(value));
+  });
+  return result.length === rows.length ? rows : result;
+}
+function setParent(rows, nodeId, parentId, idField = "id", parentIdField = "parentId") {
+  const getId = compileAccessor(idField), getParent = compileAccessor(parentIdField);
+  const node = idKey(nodeId), parent = rowIdKey(parentId);
+  if (!rows.length)
+    return rows;
+  const byId = /* @__PURE__ */ new Map;
+  const targets = [];
+  for (let index = 0;index < rows.length; index++) {
+    const key = rowIdKey(getId(rows[index]));
+    if (key !== undefined && !byId.has(key))
+      byId.set(key, rows[index]);
+    if (key === node)
+      targets.push(index);
+  }
+  if (!targets.length)
+    return rows;
+  const seen = /* @__PURE__ */ new Set;
+  for (let key = parent;key !== undefined; ) {
+    if (key === node || seen.has(key))
+      throw new Error("setParent would create or attach to a parent cycle.");
+    seen.add(key);
+    const ancestor = byId.get(key);
+    key = ancestor ? rowIdKey(getParent(ancestor)) : undefined;
+  }
+  let next;
+  for (const index of targets) {
+    if (rowIdKey(getParent(rows[index])) === parent)
+      continue;
+    next ??= rows.slice();
+    next[index] = setField(rows[index], parentIdField, parentId);
+  }
+  return next ?? rows;
+}
+
+// src/shared/dataview.ts
+var lower = (v) => (v == null ? "" : String(v)).toLowerCase();
+function predicate(filter) {
+  const { field, op, value } = filter;
+  if (op === "in") {
+    const set = new Set((Array.isArray(value) ? value : [value]).map((v) => typeof v === "string" ? v.toLowerCase() : v));
+    return (row) => {
+      const v = row[field];
+      return set.has(typeof v === "string" ? v.toLowerCase() : v);
+    };
+  }
+  if (typeof value === "string" && op !== "gt" && op !== "gte" && op !== "lt" && op !== "lte") {
+    const needle = value.toLowerCase();
+    switch (op) {
+      case "contains":
+        return (row) => lower(row[field]).includes(needle);
+      case "startsWith":
+        return (row) => lower(row[field]).startsWith(needle);
+      case "endsWith":
+        return (row) => lower(row[field]).endsWith(needle);
+      case "neq":
+        return (row) => lower(row[field]) !== needle;
+      default:
+        return (row) => lower(row[field]) === needle;
+    }
+  }
+  return (row) => {
+    const v = row[field];
+    switch (op) {
+      case "gt":
+        return v != null && v > value;
+      case "gte":
+        return v != null && v >= value;
+      case "lt":
+        return v != null && v < value;
+      case "lte":
+        return v != null && v <= value;
+      case "neq":
+        return v !== value;
+      default:
+        return v === value;
+    }
+  };
+}
+function dataSource(rows, options = {}) {
+  const idField = options.tree?.idField ?? options.idField ?? "id";
+  let current = rows;
+  let cacheKey = "";
+  let cache = null;
+  let matchKey = "";
+  let matchIds = null;
+  let branches = null;
+  const matching = (filters) => {
+    const key = JSON.stringify(filters);
+    if (matchIds && key === matchKey)
+      return matchIds;
+    const tests = filters.map(predicate);
+    const ids = [];
+    for (const row of current)
+      if (tests.every((t) => t(row)))
+        ids.push(row[idField]);
+    matchKey = key;
+    matchIds = ids;
+    return ids;
+  };
+  return {
+    get rows() {
+      return current;
+    },
+    idField,
+    tree: options.tree,
+    query(q = {}) {
+      const key = JSON.stringify([q.filters ?? [], q.sorters ?? [], q.expanded ?? [], q.collapsed ?? []]);
+      if (cache && key === cacheKey)
+        return cache;
+      const filters = (q.filters ?? []).filter((f) => f && f.field && f.value !== "" && f.value != null);
+      const filtering = filters.length > 0;
+      const view = createDataview({
+        idField,
+        sorters: q.sorters ?? [],
+        filters: filtering ? [{ field: idField, op: "in", value: matching(filters) }] : [],
+        tree: options.tree ? {
+          ...options.tree,
+          includeAncestors: true,
+          ...filtering ? { expandAll: true, collapsedIds: q.collapsed ?? [] } : { expandedIds: q.expanded ?? [] }
+        } : undefined
+      });
+      const result = evaluateDataview(current, view);
+      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cacheKey = key;
+      return cache;
+    },
+    setRows(next) {
+      current = next;
+      cache = null;
+      cacheKey = "";
+      matchIds = null;
+      branches = null;
+    },
+    branchIds() {
+      if (!options.tree)
+        return [];
+      if (branches)
+        return branches;
+      const parents = new Set;
+      for (const row of current) {
+        const parent = row[options.tree.parentIdField];
+        if (parent != null)
+          parents.add(parent);
+      }
+      branches = current.filter((row) => parents.has(row[idField])).map((row) => row[idField]);
+      return branches;
+    }
+  };
+}
+function parseFilter(field, text, kind = "text") {
+  const raw = text.trim();
+  if (!raw)
+    return null;
+  if (kind === "select")
+    return { field, op: "eq", value: raw };
+  if (kind === "number") {
+    const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
+    if (!m)
+      return null;
+    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
+  }
+  return { field, op: "contains", value: raw };
+}
+function filterText(filter) {
+  if (!filter)
+    return "";
+  const sym = { gte: ">=", lte: "<=", neq: "!=", gt: ">", lt: "<" };
+  return (sym[filter.op] ?? "") + String(filter.value ?? "");
+}
+function cycleSort(sorters = [], field, add = false) {
+  const at = sorters.findIndex((s) => s.field === field);
+  const dir = at < 0 ? undefined : sorters[at].direction ?? sorters[at].dir ?? "asc";
+  const next = dir === undefined ? "asc" : dir === "asc" ? "desc" : null;
+  if (!add)
+    return next ? [{ field, direction: next }] : [];
+  const kept = sorters.map((s) => ({ field: s.field, direction: s.direction ?? s.dir ?? "asc" }));
+  if (at < 0)
+    return [...kept, { field, direction: "asc" }];
+  if (!next)
+    return kept.filter((_, i) => i !== at);
+  kept[at] = { field, direction: next };
+  return kept;
+}
+// src/shared/virtual.ts
+var MAX_SIZER_PX = 15000000;
+var OVERSCAN = 4;
+function sizerHeight(total, rowHeight) {
+  return Math.min(total * rowHeight, MAX_SIZER_PX);
+}
+function realOffset(scrollTop, viewport, total, rowHeight) {
+  const real = total * rowHeight - viewport;
+  const capped = sizerHeight(total, rowHeight) - viewport;
+  if (real <= 0 || capped <= 0)
+    return 0;
+  return scrollTop / capped * real;
+}
+function virtualWindow(scrollTop, viewport, rowHeight, total, overscan = OVERSCAN) {
+  const visible = Math.ceil(viewport / rowHeight) + overscan * 2;
+  const offset = realOffset(scrollTop, viewport, total, rowHeight);
+  let first = Math.max(0, Math.floor(offset / rowHeight) - overscan);
+  if (first + visible > total)
+    first = Math.max(0, total - visible);
+  return { first, count: Math.min(visible, total), shift: first * rowHeight - (offset - scrollTop) };
+}
+function scrollTopFor(index, viewport, rowHeight, total) {
+  const real = Math.max(0, Math.min(total - 1, index)) * rowHeight;
+  const span = total * rowHeight - viewport;
+  return span > 0 ? real * ((sizerHeight(total, rowHeight) - viewport) / span) : 0;
+}
+function scrollIntoViewTop(index, scrollTop, viewport, rowHeight, total) {
+  const top = scrollTopFor(index, viewport, rowHeight, total);
+  const shown = realOffset(scrollTop, viewport, total, rowHeight);
+  const row = index * rowHeight;
+  if (row >= shown && row + rowHeight <= shown + viewport)
+    return scrollTop;
+  if (row < shown)
+    return top;
+  return scrollTopFor(index - Math.max(0, Math.floor(viewport / rowHeight) - 1), viewport, rowHeight, total);
+}
 // src/shared/theme-links.ts
 var LINK_ATTR = "data-df-theme-link";
 var inflight = new Map;
 function themeJsonHref(id) {
-  const tokens2 = document.getElementById("tokens-css") ?? document.querySelector('link[href*="default-semantic-tokens.css"]');
-  if (tokens2)
-    return new URL(`../${id}.json`, tokens2.href).href;
+  const $ = defussQuery();
+  const tokens = $("#tokens-css").get(0) ?? $('link[href*="default-semantic-tokens.css"]').get(0);
+  if (tokens)
+    return new URL(`../${id}.json`, tokens.href).href;
   return `${id}.json`;
 }
 function parseThemeLinks(text) {
@@ -2422,10 +3976,11 @@ function parseThemeLinks(text) {
   return { schema: "v1", links: file.links };
 }
 function clearThemeLinks() {
-  document.querySelectorAll(`link[${LINK_ATTR}]`).forEach((el) => el.remove());
+  defussQuery()(`link[${LINK_ATTR}]`).remove();
 }
 function applyThemeLinks(themeId, links) {
-  if (!document.getElementById("df-theme-links")) {
+  const $ = defussQuery();
+  if (!$("#df-theme-links").get(0)) {
     const marker = document.createElement("template");
     marker.id = "df-theme-links";
     document.head.append(marker);
@@ -2434,7 +3989,7 @@ function applyThemeLinks(themeId, links) {
   for (const node of links) {
     const rel = node.attributes.rel ?? "";
     const href = node.attributes.href ?? "";
-    const existing = document.querySelector(`link[rel="${CSS.escape(rel)}"][href="${CSS.escape(href)}"]`);
+    const existing = $(`link[rel="${CSS.escape(rel)}"][href="${CSS.escape(href)}"]`).get(0);
     if (existing)
       continue;
     const link = document.createElement("link");
@@ -2525,9 +4080,57 @@ shadcn.shared = {
   anim,
   bindGlobalKeys,
   isEditableTarget,
-  loadTheme
+  loadTheme,
+  elementModel,
+  renderModel,
+  componentState,
+  bindComponent,
+  unbindComponent,
+  createStore,
+  computed,
+  persisted,
+  reload,
+  forget,
+  persistOk,
+  viewPersistence,
+  dataSource,
+  parseFilter,
+  filterText,
+  cycleSort,
+  virtualWindow,
+  sizerHeight,
+  scrollTopFor,
+  scrollIntoViewTop
 };
+Reflect.set(df, "store", { create: createStore, computed, persisted });
+Reflect.set(df, "dataview", {
+  source: dataSource,
+  parseFilter,
+  cycleSort,
+  create: createDataview,
+  evaluate: evaluateDataview,
+  addRows,
+  removeRows,
+  updateRows,
+  setParent
+});
 Reflect.set(df, "anim", anim);
+if (typeof document !== "undefined") {
+  const captureAll = () => {
+    if (document.body)
+      captureAuthored(document.body);
+    new MutationObserver((records) => {
+      for (const r of records)
+        for (const n of r.addedNodes)
+          if (n.nodeType === Node.ELEMENT_NODE)
+            captureAuthored(n);
+    }).observe(document, { childList: true, subtree: true });
+  };
+  if (document.body)
+    captureAll();
+  else
+    document.addEventListener("DOMContentLoaded", captureAll, { once: true });
+}
 shadcn.anim = anim;
 installDdf({
   abi: SHARED_ABI,
@@ -2548,6 +4151,6 @@ installDdf({
   coerceIndex
 });
 
-//# debugId=BAA13F21EFA7260264756E2164756E21
-/* defuss-shadcn v0.9.4 runtime provenance: bundles defuss-morph@0.1.1 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.1.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
+//# debugId=1C8805BE8A5465D264756E2164756E21
+/* defuss-shadcn v0.9.4 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

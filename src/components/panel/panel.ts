@@ -10,18 +10,21 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js -
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 /** default = title bar + body; minimized = the title bar only (in a border
- *  layout region the region shrinks with it); maximized = fills its host. */
-const panelStates = ['default', 'minimized', 'maximized'];
+ *  layout region the region shrinks with it); maximized = fills its host;
+ *  closed = gone (hidden - a .panel-close tool or close(); open() or a
+ *  [data-panel-open] trigger brings it back). */
+const panelStates = ['default', 'minimized', 'maximized', 'closed'];
 
 const SIDES = ['north', 'south', 'west', 'east', 'center'];
 
-const resolve = (t) => (typeof t === 'string' ? document.getElementById(t) ?? document.querySelector(t) : t);
-const toolInput = (panel, tool) => panel.querySelector(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`);
+const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+const toolInput = (panel, tool) => dfDollar(panel).find(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
 
 /**
  * The border-layout region a panel sits in: the panel itself (a fixed region),
@@ -43,12 +46,28 @@ const hostOf = (panel) => panel.parentElement?.closest('.border-layout, [data-pa
 
 // -- State API ------------------------------------------------------------------
 
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  dfDollar(el).attr('data-minimized', stateName === 'minimized' ? '' : null).attr('data-maximized', stateName === 'maximized' ? '' : null);
+  dfDollar(el).attr('hidden', stateName === 'closed' ? '' : null);
+  // the body leaves the a11y tree with the card (the swaps' checked flags are
+  // properties, not markup; the region / host flags live outside the panel)
+  dfDollar(el).children('.panel-body').attr('inert', stateName === 'minimized' ? '' : null);
+}
+
 /** The only function that touches the DOM for a state change. */
 function triggerStateChange(panel, stateName) {
   const minimized = stateName === 'minimized';
   const maximized = stateName === 'maximized';
+  const closed = stateName === 'closed';
   panel.toggleAttribute('data-minimized', minimized);
   panel.toggleAttribute('data-maximized', maximized);
+  panel.toggleAttribute('hidden', closed);
 
   // the swaps show the state - a checkbox each
   const min = toolInput(panel, 'minimize');
@@ -57,15 +76,17 @@ function triggerStateChange(panel, stateName) {
   if (max) max.checked = maximized;
 
   // the body leaves the a11y tree with the card
-  const body = panel.querySelector(':scope > .panel-body');
+  const body = dfDollar(panel).find(':scope > .panel-body').get(0);
   if (body) body.toggleAttribute('inert', minimized);
 
   // a region shrinks to the title bar; its divider rests until it comes back
   const region = regionOf(panel);
   if (region && region !== panel) {
     region.toggleAttribute('data-panel-minimized', minimized);
-    const handle = region.querySelector(':scope > .resizer-handle');
-    if (handle) handle.inert = minimized || maximized;
+    // a closed panel takes its region (and the region's divider) with it
+    region.toggleAttribute('data-panel-closed', closed);
+    const handle = dfDollar(region).find(':scope > .resizer-handle').get(0);
+    if (handle) handle.inert = minimized || maximized || closed;
   }
 
   // maximized: the host becomes the positioning context
@@ -74,28 +95,25 @@ function triggerStateChange(panel, stateName) {
     panel._host = host;
     host.setAttribute('data-panel-maximized', '');
   } else if (panel._host) {
-    if (!panel._host.querySelector('.panel[data-maximized]')) panel._host.removeAttribute('data-panel-maximized');
+    if (!dfDollar(panel._host).find('.panel[data-maximized]').get(0)) panel._host.removeAttribute('data-panel-maximized');
     panel._host = null;
   }
 }
 
-export const panelApi = {
-  setState(panel, stateName, config = {}) {
-    if (!panelStates.includes(stateName)) {
-      throw new Error(`panel: unknown state "${stateName}" (supported: ${panelStates.join(', ')})`);
-    }
+export const panelApi = componentState({
+  component: 'panel',
+  states: panelStates,
+  apply: (panel, state) => {
     const from = panel.dataset.stateName || 'default';
-    triggerStateChange(panel, stateName);
-    panel.dataset.stateName = stateName;
-    panel._stateConfig = config;
-    if (from !== stateName) {
-      panel.dispatchEvent(new CustomEvent('panel-change', { bubbles: true, detail: { state: stateName, previous: from, region: sideOf(regionOf(panel)) } }));
+    triggerStateChange(panel, state.name);
+    queueMicrotask(() => syncToggles(panel));
+    if (from !== state.name) {
+      // Fires when the panel changes state - the new state, the previous one and the border-layout region it sits in.
+      panel.dispatchEvent(new CustomEvent('panel-change', { bubbles: true, detail: { state: state.name, previous: from, region: sideOf(regionOf(panel)) } }));
     }
   },
-  getState(panel) {
-    return { name: panel.dataset.stateName || 'default', config: panel._stateConfig ?? {} };
-  },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.panelApi = panelApi;
 df$.panelStates = panelStates;
@@ -103,7 +121,7 @@ df$.panelStates = panelStates;
 // -- init --------------------------------------------------------------------------
 
 function init() {
-  document.querySelectorAll('.panel:not([data-init])').forEach((panel) => {
+  dfDollar('.panel:not([data-init])').toArray().forEach((panel) => {
     panel.dataset.init = '';
 
     // where it sits: data-region drives the vertical title bar and the
@@ -111,8 +129,8 @@ function init() {
     const side = sideOf(regionOf(panel));
     if (side) panel.dataset.region = side;
 
-    const header = panel.querySelector(':scope > .panel-header');
-    const body = panel.querySelector(':scope > .panel-body');
+    const header = dfDollar(panel).find(':scope > .panel-header').get(0);
+    const body = dfDollar(panel).find(':scope > .panel-body').get(0);
     if (body) {
       if (!body.id) body.id = `panel-${Math.random().toString(36).slice(2, 8)}-body`;
       toolInput(panel, 'minimize')?.setAttribute('aria-controls', body.id);
@@ -134,6 +152,15 @@ function init() {
       panelApi.setState(panel, panel.hasAttribute('data-minimized') ? 'default' : 'minimized');
     });
 
+    // the close tool (a plain button - closing is not a toggle): the panel goes,
+    // focus goes back to whatever opens it again
+    dfDollar(panel).on('click', (e) => {
+      const close = e.target?.closest?.('.panel-close');
+      if (!close || close.closest('.panel') !== panel) return;
+      panelApi.setState(panel, 'closed');
+      if (panel.id) dfDollar(`[data-panel-open="${CSS.escape(panel.id)}"], [data-panel-toggle="${CSS.escape(panel.id)}"]`).get(0)?.focus();
+    });
+
     // Escape leaves maximized
     panel.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape' || !panel.hasAttribute('data-maximized')) return;
@@ -142,18 +169,18 @@ function init() {
       toolInput(panel, 'maximize')?.focus();
     });
 
-    panel.api = {
-      setState: (stateName, config) => panelApi.setState(panel, stateName, config),
-      getState: () => panelApi.getState(panel),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(panel, panelApi);
 
     // markup may start minimized / maximized (attribute or a checked swap)
-    const start = panel.hasAttribute('data-maximized') || toolInput(panel, 'maximize')?.checked ? 'maximized'
-      : panel.hasAttribute('data-minimized') || toolInput(panel, 'minimize')?.checked ? 'minimized'
-        : 'default';
+    const start = panel.hasAttribute('hidden') ? 'closed'
+      : panel.hasAttribute('data-maximized') || toolInput(panel, 'maximize')?.checked ? 'maximized'
+        : panel.hasAttribute('data-minimized') || toolInput(panel, 'minimize')?.checked ? 'minimized'
+          : 'default';
     triggerStateChange(panel, start);
     panel.dataset.stateName = start;
-    panel._stateConfig = {};
+    syncToggles(panel);
   });
 }
 
@@ -172,6 +199,10 @@ df$.panel = {
   maximize: (t) => act(t, 'maximized'),
   /** Back to title bar + body at the authored size. */
   restore: (t) => act(t, 'default'),
+  /** Closes the panel (hidden; in a border layout its region goes too). */
+  close: (t) => act(t, 'closed'),
+  /** Opens a closed panel again (title bar + body). */
+  open: (t) => act(t, 'default'),
   /** Minimizes or restores; returns whether it is now minimized. */
   toggle: (t) => {
     const panel = resolve(t);
@@ -181,5 +212,37 @@ df$.panel = {
   },
 };
 
+// [data-panel-open="id"] anywhere opens that panel again (and puts focus on its
+// first tool); [data-panel-toggle="id"] closes an open panel, opens a closed one
+// and says which (aria-expanded, kept in step with every state change)
+let openersBound = false;
+function bindOpeners() {
+  if (openersBound) return;
+  openersBound = true;
+  dfDollar(document).on('click', (e) => {
+    const trigger = e.target?.closest?.('[data-panel-open], [data-panel-toggle]');
+    if (!trigger) return;
+    const id = trigger.dataset.panelOpen ?? trigger.dataset.panelToggle;
+    const panel = dfDollar(`#${CSS.escape(id)}`).get(0);
+    if (!panel?.api) return;
+    if (trigger.hasAttribute('data-panel-toggle') && panel.dataset.stateName !== 'closed') {
+      panel.api.setState('closed');
+      return;
+    }
+    panel.api.setState('default');
+    dfDollar(panel).find(':scope > .panel-header .panel-tools :is(input, button)').get(0)?.focus();
+  });
+}
+
+/** the toggles of a panel say whether it is open */
+function syncToggles(panel) {
+  if (!panel.id) return;
+  for (const t of dfDollar(`[data-panel-toggle="${CSS.escape(panel.id)}"]`).toArray()) {
+    t.setAttribute('aria-expanded', String(panel.dataset.stateName !== 'closed' && !panel.hidden));
+    t.setAttribute('aria-controls', panel.id);
+  }
+}
+
+bindOpeners();
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });

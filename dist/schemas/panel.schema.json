@@ -39,6 +39,25 @@
       "editor": {
         "component": "checkbox"
       }
+    },
+    "closed": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".panel"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "closed"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
     }
   },
   "actions": {}

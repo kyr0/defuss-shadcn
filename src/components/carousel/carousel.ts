@@ -10,7 +10,7 @@
 // defussQuery: the callable runtime - dots are (re)rendered through keyed
 // morph, flags ride .attr()/.prop() (plans/defuss-query-morph-integration.md
 // §3 carousel row).
-import { defussGlobals, defussQuery } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -18,6 +18,17 @@ const dfDollar = defussQuery();
 let carSeq = 0;
 
 const carouselStates = ['default'];
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state, and it writes no markup: { index } scrolls the track - the
+  // position and the generated dots follow it (runtime-owned, see the e2e)
+}
 
 /**
  * UI side of setState: scroll to a slide index (clamped/looped by the
@@ -29,45 +40,37 @@ function triggerStateChange(carousel, config) {
 }
 
 /** Registry-level API; pass the carousel element explicitly. Unknown names throw. */
-export const carouselApi = {
-  setState(carousel, stateName, config = {}) {
-    if (!carouselStates.includes(stateName)) {
-      throw new Error(`carousel: unknown state "${stateName}" (supported: ${carouselStates.join(', ')})`);
-    }
-    triggerStateChange(carousel, config);
-    // state lives on the ELEMENT, not the module (many carousels per page)
-    carousel.dataset.stateName = stateName;
-    carousel._stateConfig = config;
-  },
-  getState(carousel) {
+export const carouselApi = componentState({
+  component: 'carousel',
+  states: carouselStates,
+  apply: (carousel, state) => triggerStateChange(carousel, state.config),
+  read: (carousel, state) => {
     return {
       name: carousel.dataset.stateName || 'default',
       // live slide index - updated by updateState() on scroll, not just setState
-      config: { ...carousel._stateConfig, index: Number(carousel.dataset.currentIndex || 0) },
+      config: { ...state.config, index: Number(carousel.dataset.currentIndex || 0) },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.carouselApi = carouselApi;
 df$.carouselStates = carouselStates;
 
 function init() {
-document.querySelectorAll('.carousel:not([data-init])').forEach((carousel) => {
+dfDollar('.carousel:not([data-init])').toArray().forEach((carousel) => {
   carousel.dataset.init = '';
-  // bind-scope the api per instance: `$('#gallery').api.setState('default', { index: 2 })`
-  carousel.api = {
-    setState: (stateName, config) => carouselApi.setState(carousel, stateName, config),
-    getState: () => carouselApi.getState(carousel),
-  };
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(carousel, carouselApi);
 
-  const viewport = carousel.querySelector('.carousel-viewport');
-  const prevBtn = carousel.querySelector('.carousel-prev');
-  const nextBtn = carousel.querySelector('.carousel-next');
-  const dotsContainer = carousel.querySelector('.carousel-dots');
-  const counter = carousel.querySelector('.carousel-counter');
+  const viewport = dfDollar(carousel).find('.carousel-viewport').get(0);
+  const prevBtn = dfDollar(carousel).find('.carousel-prev').get(0);
+  const nextBtn = dfDollar(carousel).find('.carousel-next').get(0);
+  const dotsContainer = dfDollar(carousel).find('.carousel-dots').get(0);
+  const counter = dfDollar(carousel).find('.carousel-counter').get(0);
   if (!viewport) return;
 
-  const slides = () => Array.from(viewport.querySelectorAll('.carousel-slide'));
+  const slides = () => Array.from(dfDollar(viewport).find('.carousel-slide').toArray());
   const isVertical = carousel.dataset.orientation === 'vertical';
   const isLoop = carousel.hasAttribute('data-loop');
   const autoplayDelay = carousel.dataset.autoplay ? parseInt(carousel.dataset.autoplay, 10) : 0;
@@ -188,7 +191,7 @@ document.querySelectorAll('.carousel:not([data-init])').forEach((carousel) => {
     dotsContainer.addEventListener('click', (e) => {
       const dot = e.target.closest('.carousel-dot');
       if (!dot) return;
-      const idx = Array.from(dotsContainer.querySelectorAll('.carousel-dot')).indexOf(dot);
+      const idx = Array.from(dfDollar(dotsContainer).find('.carousel-dot').toArray()).indexOf(dot);
       if (idx !== -1) scrollToIndex(idx);
     });
   }

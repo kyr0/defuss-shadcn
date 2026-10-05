@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped theme-switcher component. The fixture
@@ -42,6 +43,14 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage();
+  /** a persisted store's value (defuss-store envelope), null when unset */
+  const storedValue = (key: string) =>
+    page.evaluate((k) => {
+      const raw = localStorage.getItem(k);
+      if (raw == null) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && parsed.format === 'defuss-store' ? parsed.value : parsed;
+    }, key);
   await page.goto(`${server.url}${FIXTURE}`);
 
   await check('theme-switcher.js initialized menus (data-init)', async () => {
@@ -110,8 +119,8 @@ try {
     assert.equal(await page.textContent('#ts1-trigger .theme-switcher-label'), 'Claude');
   });
 
-  await check('selection persists to localStorage', async () => {
-    assert.equal(await page.evaluate(() => localStorage.getItem('defuss-shadcn-color-theme')), 'claude');
+  await check('selection persists to localStorage (a persisted store)', async () => {
+    assert.equal(await storedValue('defuss-shadcn-color-theme'), 'claude');
   });
 
   await check('second switcher synced via defuss-theme-change', async () => {
@@ -145,7 +154,7 @@ try {
     await page.keyboard.press('Home'); // focus the Default item before Enter
     await page.keyboard.press('Enter');
     assert.equal(await themeLink(page), null, 'theme link removed');
-    assert.equal(await page.evaluate(() => localStorage.getItem('defuss-shadcn-color-theme')), null);
+    assert.equal(await storedValue('defuss-shadcn-color-theme'), 'default', "'default' is the stored choice now (a persisted store)");
     assert.notEqual(await primary(page), '#c96442', '--primary back to base token');
   });
 
@@ -155,7 +164,7 @@ try {
     await page.waitForFunction(() => document.querySelector('#ts1-menu')!.matches(':popover-open'), undefined, { timeout: 2000 });
     assert.ok(await isOpen(page, 'ts1-menu'), "setState('open') shows the menu");
     assert.deepEqual(
-      await page.evaluate(() => (document.querySelector('#ts1-menu') as any).api.getState()),
+      await page.evaluate(() => { const { name, config } = (document.querySelector('#ts1-menu') as any).api.getState(); return { name, config }; }),
       { name: 'open', config: {} },
     );
     await page.evaluate(() => (document.querySelector('#ts1-menu') as any).api.setState('default'));
@@ -240,6 +249,10 @@ try {
 
   console.log(failures ? `theme-switcher.e2e: ${failures} FAILED` : 'theme-switcher.e2e: all checks passed');
   process.exitCode = failures ? 1 : 0;
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.theme-switcher-menu[id]', ['default','open'], { runtimeAttrs: ['style'] });
+  });
+
 } finally {
   await browser.close();
   server.stop(); // otherwise the Bun server keeps the event loop alive forever

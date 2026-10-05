@@ -101,6 +101,14 @@ document.querySelector('#my-popover').api.getState(); // { name: 'open', config:
 The api is bound per popover element; the registry global is
 `df$.shadcn.popoverApi` / `df$.shadcn.popoverStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.popoverApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.popoverStates` = `default`, `open`.
+
 ## Notes
 
 - The popover renders in the **top layer**, so it appears above all other content regardless of `z-index`.

@@ -97,12 +97,26 @@ Declared states: `default` (unpressed - the authored `aria-pressed` value is
 restored) · `pressed` (`aria-pressed="true"`).
 
 ```js
-document.querySelector('#my-toggle').api.setState('pressed');
-document.querySelector('#my-toggle').api.getState(); // { name: 'pressed', config: {} }
+const toggle = df$('#my-toggle').get(0);
+toggle.api.setState('pressed');
+toggle.api.getState(); // { name: 'pressed', config: {}, model: { … } }
+toggle.api.render();   // the authored button with aria-pressed="true" - markup of the state
 ```
+
+`render(state)` reproduces the markup from state: the authored markup (its
+model, snapshotted at init, byte for byte) with the state's `aria-pressed` applied - AGENTS.md "State
+API" → render.
 
 The api is bound per button; the registry global is
 `df$.shadcn.toggleApi` / `df$.shadcn.toggleStates`.
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.toggleApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.toggleStates` = `default`, `pressed`.
 
 ## Notes
 

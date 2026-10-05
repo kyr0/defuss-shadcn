@@ -1,0 +1,259 @@
+---
+title: "Autocomplete"
+description: "Autocomplete component - suggestions as you type from local records, a URL or your own network client: every request a defuss-dataview request (pre-configured sort and filters, pages), debounced, the in-flight request aborted by the next keystroke, more results as the list scrolls."
+slug: "autocomplete"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="autocomplete" title="Autocomplete" component="autocomplete">
+  A search field that suggests as you type - from records in the page, from a URL, or from a network client you write. Every search is a <a href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> request (<code>query</code>, <code>filters</code>, <code>sorters</code>, <code>page</code>, <code>pageSize</code>), so a pre-configured sort and filters travel with it and local records are answered by the same engine a server can run. Typing is debounced; the next keystroke aborts the request still in flight, so a stale answer never lands; more results load as the list scrolls.
+</PageHeader>
+
+<SkillPanel component="autocomplete">
+  <SkillField label="Native basis">
+<SkillText>A text <code>input</code> with <code>role="combobox"</code> and a <code>popover="manual"</code> listbox anchored under it - focus stays in the input, <code>aria-activedescendant</code> names the active option. <code>df$.shadcn.autocomplete.configure(el, \{ rows | url | load \})</code> binds the data.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" title="the next keystroke aborts the request in flight"><code>AbortController</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the popup in the top layer"><code>popover="manual"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="under the input, flipped when there is no room"><code>anchor()</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="list autocomplete with a listbox popup"><code>ARIA combobox</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.autocomplete</code>
+    <code>.autocomplete-input</code>
+    <code>.autocomplete-popover</code>
+    <code>.autocomplete-list</code>
+    <code>.autocomplete-option</code>
+    <code>.autocomplete-label</code>
+    <code>.autocomplete-meta</code>
+    <code>.autocomplete-value</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-debounce</code>, <code>data-min-chars</code>, <code>data-page-size</code>, <code>data-sort</code>, <code>data-search-field</code>, <code>data-match</code>, <code>data-label-field</code>, <code>data-value-field</code>, <code>data-url</code>, <code>data-empty-text</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A remote source - debounced, cancelled, paged" height="28" hint="load(request, { signal }) is a fake server here: 96,000 places, 350 ms per request, answering the dataview request with dataview itself. Type 'new ber' fast - one request after you pause (data-debounce='250'); keep typing while one is on its way and it is ABORTED (the log counts both). The sort is pre-configured (population, largest first) and scrolling the list asks for the next page."
+<div class="flex flex-col gap-2" style="max-width:26rem;">
+  <div class="autocomplete" id="ac-places" data-label-field="name" data-debounce="250" data-page-size="20" data-empty-text="No place like that.">
+    <label class="label" for="ac-places-input">Place</label>
+    <input class="input autocomplete-input" id="ac-places-input" type="text" value="new" placeholder="Search 96,000 places…">
+  </div>
+  <p class="text-sm text-muted-foreground m-0" id="ac-places-log" aria-live="polite">No request yet.</p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 96,000 deterministic places: name, country, population
+    const pre = ['Ber', 'Mar', 'Lis', 'Osa', 'Tor', 'Nai', 'Lim', 'San', 'Por', 'Val', 'Kan', 'Ros', 'Mil', 'Ham', 'Bre', 'Gra', 'Ald', 'Win', 'Ash', 'Fair'];
+    const suf = ['lin', 'seille', 'bon', 'ka', 'onto', 'robi', 'ma', 'ta', 'to', 'encia', 'sas', 'ario', 'an', 'burg', 'men', 'nada', 'ford', 'ton', 'ley', 'field'];
+    const lead = ['', 'New ', 'Old ', 'Upper ', 'Lower ', 'North ', 'South ', 'Port '];
+    const countries = ['DE', 'FR', 'PT', 'JP', 'CA', 'KE', 'PE', 'BR', 'ES', 'IT', 'US', 'GB', 'IN', 'NO', 'AU'];
+    const places = [];
+    for (let i = 0; i < 96_000; i++) {
+      places.push({ id: i + 1, name: lead[(i >> 2) % 8] + pre[i % 20] + suf[(i * 7) % 20], country: countries[(i * 11) % 15], population: 500 + ((i * 7919) % 3_000_000) });
+    }
+    // the "server": a dataview source answers the request the component sends
+    const server = df$.dataview.source(places);
+    const log = { sent: 0, aborted: 0 };
+    const line = document.getElementById('ac-places-log');
+    const show = (request) => {
+      line.textContent = log.sent + ' requests · ' + log.aborted + ' aborted' + (request ? ' · last: "' + request.query + '", page ' + request.page : '');
+    };
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-places'), {
+      sorters: [{ field: 'population', direction: 'desc' }],
+      load: (request, { signal }) => new Promise((resolve, reject) => {
+        log.sent++;
+        show(request);
+        const timer = setTimeout(() => {
+          const all = server.query({ filters: request.filters, sorters: request.sorters }).entries;
+          const start = request.page * request.pageSize;
+          resolve({ rows: all.slice(start, start + request.pageSize).map((e) => e.row), total: all.length });
+        }, 350);
+        signal.addEventListener('abort', () => {
+          clearTimeout(timer);
+          log.aborted++;
+          show(request);
+          reject(new DOMException('aborted', 'AbortError'));
+        });
+      }),
+      render: (option, place, { query }) => {
+        const label = document.createElement('span');
+        label.className = 'autocomplete-label';
+        label.textContent = place.name;
+        const meta = document.createElement('span');
+        meta.className = 'autocomplete-meta';
+        meta.textContent = place.country + ' · ' + place.population.toLocaleString();
+        option.append(label, meta);
+      },
+    });
+  });
+</script>
+```
+
+```html example label="Local records" height="28" schema="none" hint="rows: the records are in the page - a dataview source filters (case-insensitive), sorts and pages them; no network. data-match='startsWith' and data-sort='name:asc' are the pre-configured query; data-debounce='0' searches on every key."
+<div class="autocomplete" id="ac-langs" data-label-field="name" data-match="startsWith" data-sort="name:asc" data-debounce="0" data-page-size="12" style="max-width:22rem;">
+  <label class="label" for="ac-langs-input">Language</label>
+  <input class="input autocomplete-input" id="ac-langs-input" type="text" placeholder="Type a letter…">
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const names = ['Ada', 'Assembly', 'Bash', 'C', 'C#', 'C++', 'Clojure', 'COBOL', 'Crystal', 'Dart', 'Elixir', 'Elm', 'Erlang', 'F#', 'Fortran', 'Gleam', 'Go', 'Groovy', 'Haskell', 'Java', 'JavaScript', 'Julia', 'Kotlin', 'Lisp', 'Lua', 'MATLAB', 'Nim', 'OCaml', 'Odin', 'Pascal', 'Perl', 'PHP', 'Prolog', 'Python', 'R', 'Racket', 'Ruby', 'Rust', 'Scala', 'Scheme', 'Smalltalk', 'SQL', 'Swift', 'Tcl', 'TypeScript', 'V', 'Zig'];
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-langs'), { rows: names.map((name, i) => ({ id: i + 1, name })) });
+  });
+</script>
+```
+
+```html example label="Your own network client" height="28" schema="none" hint="The default client GETs data-url with ?q=&page=&pageSize=&sort= - client.fetch swaps the transport (auth, retries, a mock: here a fake fetch that answers with a Response), client.headers adds headers, client.parse maps any JSON to { rows, total, hasMore }. The signal still reaches your fetch."
+<div class="flex flex-col gap-2" style="max-width:26rem;">
+  <div class="autocomplete" id="ac-users" data-url="/api/users" data-label-field="name" data-sort="name:asc" data-debounce="200" data-page-size="15">
+    <label class="label" for="ac-users-input">Teammate</label>
+    <input class="input autocomplete-input" id="ac-users-input" type="text" placeholder="Search 5,000 teammates…">
+  </div>
+  <p class="text-sm text-muted-foreground m-0" id="ac-users-url" aria-live="polite" style="font-family:var(--font-mono);"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = ['Ana', 'Ben', 'Chen', 'Dara', 'Eli', 'Fatima', 'Goran', 'Hana', 'Ivo', 'Jun', 'Kofi', 'Lena'];
+    const last = ['Silva', 'Rossi', 'Kim', 'Okafor', 'Novak', 'Haddad', 'Berg', 'Sato', 'Diaz', 'Weber'];
+    const users = Array.from({ length: 5000 }, (_, i) => ({ id: 'u' + (i + 1), name: first[i % 12] + ' ' + last[(i * 7) % 10] + ' ' + (i + 1), team: ['Design', 'Platform', 'Growth'][i % 3] }));
+    const server = df$.dataview.source(users);
+    const shown = document.getElementById('ac-users-url');
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-users'), {
+      client: {
+        headers: { 'x-team': 'docs' },
+        // a fetch of your own: here it never leaves the page
+        fetch: (url, init) => new Promise((resolve, reject) => {
+          shown.textContent = 'GET ' + url;
+          const p = new URL(url, 'https://example.invalid').searchParams; // relative URL: any base parses it
+          const [field, direction] = (p.get('sort') || 'name:asc').split(':');
+          const all = server.query({ filters: [{ field: 'name', op: 'contains', value: p.get('q') }], sorters: [{ field, direction }] }).entries;
+          const start = Number(p.get('page')) * Number(p.get('pageSize'));
+          const timer = setTimeout(() => resolve(new Response(JSON.stringify({
+            data: all.slice(start, start + Number(p.get('pageSize'))).map((e) => e.row),
+            meta: { total: all.length },
+          }), { headers: { 'content-type': 'application/json' } })), 200);
+          init.signal.addEventListener('abort', () => { clearTimeout(timer); reject(new DOMException('aborted', 'AbortError')); });
+        }),
+        parse: (json) => ({ rows: json.data, total: json.meta.total }),
+      },
+      render: (option, user) => {
+        const label = document.createElement('span');
+        label.className = 'autocomplete-label';
+        label.textContent = user.name;
+        const meta = document.createElement('span');
+        meta.className = 'autocomplete-meta';
+        meta.textContent = user.team;
+        option.append(label, meta);
+      },
+    });
+  });
+</script>
+```
+
+```html example label="A live API" height="28" schema="none" hint="url(request) builds the request for a public API (Open-Meteo's geocoding - no key) and client.parse reads its { results }; it returns one page, so hasMore is false. Real network: watch the requests in the devtools - typing on cancels the one in flight."
+<div class="autocomplete" id="ac-geo" data-label-field="name" data-debounce="300" data-min-chars="2" style="max-width:26rem;">
+  <label class="label" for="ac-geo-input">City (live)</label>
+  <input class="input autocomplete-input" id="ac-geo-input" type="text" placeholder="Try 'Lisb'…">
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-geo'), {
+      url: (request) => 'https://geocoding-api.open-meteo.com/v1/search?count=20&language=en&name=' + encodeURIComponent(request.query),
+      client: { parse: (json) => ({ rows: json.results ?? [], hasMore: false }) },
+      render: (option, city) => {
+        const label = document.createElement('span');
+        label.className = 'autocomplete-label';
+        label.textContent = city.name;
+        const meta = document.createElement('span');
+        meta.className = 'autocomplete-meta';
+        meta.textContent = [city.admin1, city.country_code].filter(Boolean).join(', ');
+        option.append(label, meta);
+      },
+    });
+  });
+</script>
+```
+
+```html example label="In a form" height="28" schema="none" hint="The chosen value goes to the hidden .autocomplete-value (data-value-field); autocomplete-select carries the whole record. The form below reads FormData on submit."
+<form class="flex flex-col gap-3" id="ac-form" style="max-width:24rem;">
+  <div class="autocomplete" id="ac-country" data-label-field="name" data-value-field="code" data-sort="name:asc" data-debounce="0">
+    <label class="label" for="ac-country-input">Country</label>
+    <input class="input autocomplete-input" id="ac-country-input" type="text" placeholder="Search countries…">
+    <input type="hidden" name="country" class="autocomplete-value">
+  </div>
+  <button class="btn" type="submit" style="align-self:flex-start;">Submit</button>
+  <output class="text-sm text-muted-foreground" id="ac-form-out">country = (none)</output>
+</form>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const countries = [['AR', 'Argentina'], ['AU', 'Australia'], ['BR', 'Brazil'], ['CA', 'Canada'], ['CN', 'China'], ['DE', 'Germany'], ['EG', 'Egypt'], ['ES', 'Spain'], ['FR', 'France'], ['GB', 'United Kingdom'], ['IN', 'India'], ['IT', 'Italy'], ['JP', 'Japan'], ['KE', 'Kenya'], ['MX', 'Mexico'], ['NG', 'Nigeria'], ['NO', 'Norway'], ['NZ', 'New Zealand'], ['PE', 'Peru'], ['PT', 'Portugal'], ['US', 'United States'], ['ZA', 'South Africa']];
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-country'), { rows: countries.map(([code, name]) => ({ code, name })) });
+    document.getElementById('ac-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('ac-form-out').textContent = 'country = ' + (new FormData(e.target).get('country') || '(none)');
+    });
+  });
+</script>
+```
+
+```html example label="Empty and error" height="28" schema="none" hint="A query nothing matches shows data-empty-text; a source that throws shows its message and a Retry button (the 'error' state, config.message)."
+<div class="flex flex-wrap gap-4">
+  <div class="autocomplete" id="ac-none" data-debounce="0" data-empty-text="Nothing in this list." style="flex:1;min-width:12rem;">
+    <label class="label" for="ac-none-input">Empty list</label>
+    <input class="input autocomplete-input" id="ac-none-input" type="text" placeholder="Type anything…">
+  </div>
+  <div class="autocomplete" id="ac-down" data-debounce="0" style="flex:1;min-width:12rem;">
+    <label class="label" for="ac-down-input">Broken source</label>
+    <input class="input autocomplete-input" id="ac-down-input" type="text" placeholder="Type anything…">
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-none'), { rows: [] });
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-down'), { load: () => Promise.reject(new Error('The search service is down.')) });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>; the config is <code>\{ query, value, label \}</code> (merged on each <code>setState</code>), observable as <code>el.store</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - closed, nothing in flight</li>
+    <li><code>open</code> - the suggestions; <code>setState('open', \{ query \})</code> types and searches</li>
+    <li><code>loading</code> - the first page is on its way (<code>aria-busy</code>)</li>
+    <li><code>empty</code> - nothing matched: <code>data-empty-text</code></li>
+    <li><code>error</code> - the source failed: its message (<code>config.message</code>) and Retry</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/autocomplete-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/autocomplete.schema.json"><code>autocomplete.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | The list shows suggestions (`setState('open')`). |
+| `loading` | `boolean` | `true`, `false` | `false` | The first page is on its way (`setState('loading')`). |
+| `empty` | `boolean` | `true`, `false` | `false` | Nothing matched - shows data-empty-text (`setState('empty')`). |
+| `error` | `boolean` | `true`, `false` | `false` | The source failed - its message and Retry (`setState('error')`). |
+```
+
+</StatesSection>
+
+<ApiSection component="autocomplete" />
+
+<SourceFiles component="autocomplete" section="css" />
+
+<SourceFiles component="autocomplete" section="js" jsTitle="JS" />
+
+</DocPage>

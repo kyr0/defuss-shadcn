@@ -203,6 +203,16 @@ Set `data-density` on the `.steps` root; the flex gaps scale - the size ladder k
 
 ---
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.stepsApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.stepsStates` = `default`.
+
+---
+
 ## ARIA
 
 | Attribute | Element | Purpose |

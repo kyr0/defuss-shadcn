@@ -1,0 +1,121 @@
+---
+title: "Questionnaire: Drafts & History"
+description: "Questionnaire drafts and branch history - every keystroke kept in session storage (or local, or nowhere) and restored on load, back navigation along the steps actually taken, jumping back from the trail or the review, forward again without losing the way, start over."
+slug: "questionnaire-drafts"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="questionnaire-drafts" title="Drafts & History" component="questionnaire">
+  Nothing typed is lost in a session. The walk - the step, every answer, the history of steps taken, what was skipped - is a <code>persisted()</code> store, written on every keystroke and read back when the page loads: a reload, a crash, an accidental close all come back to the same question with the same answers. Back goes back along the branch history, not to the previous fieldset; the trail and the review's Edit jump to any step taken.
+</PageHeader>
+
+<H2 id="draft">The draft</H2>
+
+<DocText>By default the draft lives in <strong>session storage</strong> - this tab, until it closes - under <code>defuss-shadcn:&lt;page path&gt;:questionnaire:&lt;id&gt;</code>. <code>data-persist="local"</code> keeps it across visits, <code>data-persist="none"</code> nowhere; <code>data-persist-prefix</code> / <code>data-persist-key</code> (or <code>configure(form, \{ persist \})</code>) name the place. A restored draft says so, with Start over. Sending clears it.</DocText>
+
+```html example label="A draft that comes back" schema="none" hint="Answer a step or two, type half an answer - then 'Simulate a reload' mounts a fresh copy of the form: it comes back on the same step with every answer, and says so. (This sandboxed example has no storage, so the store keeps the draft in memory; on your page it is session storage and survives a real reload.)"
+<div class="flex flex-col gap-3" style="max-width:32rem;">
+  <button class="btn" data-variant="outline" data-size="sm" type="button" id="q-reload" style="align-self:flex-start;">Simulate a reload</button>
+  <div id="q-draft-host"></div>
+</div>
+<template id="q-draft-template">
+  <form class="questionnaire" id="q-draft" aria-label="Moving checklist">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="when">
+      <legend class="questionnaire-title">When do you move?</legend>
+      <input class="input" name="date" type="date" required aria-label="Moving date">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="from">
+      <legend class="questionnaire-title">Where from?</legend>
+      <input class="input" name="from" required aria-label="Current address" autocomplete="street-address">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="to">
+      <legend class="questionnaire-title">Where to?</legend>
+      <input class="input" name="to" required aria-label="New address">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="boxes">
+      <legend class="questionnaire-title">How many boxes, roughly?</legend>
+      <input class="input" name="boxes" type="number" min="1" required aria-label="Boxes" style="max-width:8rem;">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="done" data-end>
+      <legend class="questionnaire-title">Get the quote?</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Get the quote</button>
+    </div>
+    <div class="questionnaire-complete"><p>Quote on its way. <button class="questionnaire-edit" type="button" data-questionnaire="restart">Start over</button></p></div>
+  </form>
+</template>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const host = document.getElementById('q-draft-host');
+    // a fresh copy of the same markup: it reads the draft on init
+    const mount = () => host.replaceChildren(document.getElementById('q-draft-template').content.cloneNode(true));
+    document.getElementById('q-reload').addEventListener('click', mount);
+    mount();
+  });
+</script>
+```
+
+<H2 id="history">Branch history and back navigation</H2>
+
+<DocText>The history is the list of steps taken - on a branching flow that is not the order of the markup. <strong>Back</strong> walks it backwards and keeps the steps ahead: going forward again without changing an answer follows the same way. Change an answer and the history ahead is cut at that step (and answers the new way no longer reaches are <a href="questionnaire-dependencies.html">cleared</a>). The <code>.questionnaire-trail</code> - inside the form or anywhere with <code>data-for="form-id"</code> - lists the steps with their answers; each is a button back. The review's <strong>Edit</strong> does the same.</DocText>
+
+```html example label="Trip planner with a trail" schema="none" hint="City break and beach holiday ask different things. Walk one branch to the review, then Edit the first answer and pick the other branch: the trail shows the new way, and the old branch's answers are gone. Back and forward again (unchanged) keeps the way."
+<div class="flex flex-wrap gap-6">
+  <form class="questionnaire" id="q-trip" aria-label="Trip planner" data-persist="none" style="flex:1 1 20rem;">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="kind">
+      <legend class="questionnaire-title">What kind of trip?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="kind" value="city" required data-goto="city"><span class="questionnaire-choice-label">City break</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="kind" value="beach" data-goto="beach"><span class="questionnaire-choice-label">Beach holiday</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="city" data-next="nights">
+      <legend class="questionnaire-title">Which city?</legend>
+      <input class="input" name="city" required aria-label="City">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="beach" data-next="nights">
+      <legend class="questionnaire-title">Warm water or quiet beach?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="beach" value="warm" required><span class="questionnaire-choice-label">Warm water</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="beach" value="quiet"><span class="questionnaire-choice-label">Quiet beach</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="nights">
+      <legend class="questionnaire-title">How many nights?</legend>
+      <input class="input" name="nights" type="number" min="1" max="60" required aria-label="Nights" style="max-width:8rem;">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="plan" data-end>
+      <legend class="questionnaire-title">Your trip</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Plan it</button>
+    </div>
+    <div class="questionnaire-complete"><p>Bon voyage!</p></div>
+  </form>
+  <nav class="questionnaire-trail" data-for="q-trip" aria-label="Steps taken" style="flex:0 1 14rem;"></nav>
+</div>
+```
+
+<H2 id="api">In code</H2>
+
+<DocText><code>df$.shadcn.questionnaire</code> has <code>back(form)</code>, <code>next(form)</code>, <code>skip(form)</code>, <code>goTo(form, step)</code> (a step of the history), <code>restart(form)</code>, <code>history(form)</code> and <code>answers(form)</code>; the walk is <code>form.store.value.config</code> - <code>\{ step, answers, history, index, skipped \}</code> - and <code>questionnaire-step</code> fires on every move.</DocText>
+
+<SourceFiles component="questionnaire" section="css">
+  <SourceNote for="css">The trail and the notice are the questionnaire's: <code>.questionnaire-trail-*</code>, <code>.questionnaire-notice</code>.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="questionnaire" section="js" jsTitle="JS" />
+
+</DocPage>

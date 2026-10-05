@@ -143,6 +143,20 @@ document.querySelector('#tasks').api.getState(); // { name: 'default', config: {
 The api is bound per list; the registry global is
 `df$.shadcn.sortableApi` / `df$.shadcn.sortableStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.sortableApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sortableStates` = `default`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `sortable-change` | `item`, `index`, `from`, `to` | Fires after a move (drag or keyboard) - the item, its new index, and the positions it moved from and to. |
+
 ## Keyboard
 
 | Key | Action |

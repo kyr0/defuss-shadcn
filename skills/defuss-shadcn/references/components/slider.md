@@ -203,6 +203,14 @@ document.querySelector('#volume').api.getState(); // { name: 'disabled', config:
 The api is bound per input; the registry global is
 `df$.shadcn.sliderApi` / `df$.shadcn.sliderStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.sliderApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sliderStates` = `default`, `disabled`.
+
 ## Notes
 
 - **Filled track**: Firefox uses `::-moz-range-progress` natively. WebKit/Blink requires a `linear-gradient` on the track with a `--slider-value` custom property set by JS.

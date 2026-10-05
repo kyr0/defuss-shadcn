@@ -97,6 +97,14 @@ document.querySelector('#formatting').api.getState(); // { name: 'default', conf
 The api is bound per toolbar; the registry global is
 `df$.shadcn.toolbarApi` / `df$.shadcn.toolbarStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.toolbarApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.toolbarStates` = `default`.
+
 ## Notes
 
 - Toolbars compose Toggle Groups, Button Groups, Buttons, and Separators.

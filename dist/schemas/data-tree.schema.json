@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "name": "data-tree",
+  "states": {
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".data-tree"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "loading"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "empty": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".data-tree"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "empty"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

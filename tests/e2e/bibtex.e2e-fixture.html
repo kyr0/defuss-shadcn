@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>bibtex e2e fixture</title>
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/bibtex/bibtex.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 2.5rem; }</style>
+  </head>
+  <body>
+    <!-- generated from pages/bibtex.mdx's example fences (tmp/sys/bibtex-gen.ts) -->
+    <section class="fx">
+<figure class="bibtex" id="cite-report" data-state-demo aria-label="Cite this report">
+  <figcaption>Cite this report</figcaption>
+  <pre><code class="bibtex-source">@techreport{homberg2026vae,
+  title = {Verified Agentic Engineering: How a deterministic verifier lets coding agents grow a UI system},
+  author = {Homberg, Aron},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://github.com/kyr0/defuss-vae}
+}</code></pre>
+</figure>
+    </section>
+    <section class="fx">
+<figure class="bibtex" id="cite-list" data-formats="ieee apa chicago bibtex" data-format="ieee" aria-label="References">
+  <figcaption>References</figcaption>
+  <pre><code class="bibtex-source">@inproceedings{vaswani2017attention,
+  author = {Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and {\L}ukasz Kaiser and Illia Polosukhin},
+  title = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume = {30},
+  pages = {5998--6008},
+  year = {2017},
+  publisher = {Curran Associates, Inc.}
+}
+
+@article{knuth1984literate,
+  author = {Knuth, Donald E.},
+  title = {Literate Programming},
+  journal = {The Computer Journal},
+  volume = {27},
+  number = {2},
+  pages = {97--111},
+  year = {1984},
+  doi = {10.1093/comjnl/27.2.97}
+}
+
+@book{knuth1984texbook,
+  author = {Donald E. Knuth},
+  title = {The {\TeX}book},
+  publisher = {Addison-Wesley},
+  address = {Reading, MA},
+  year = {1984}
+}</code></pre>
+</figure>
+    </section>
+    <section class="fx">
+<figure class="bibtex" id="cite-minimal" data-variant="minimal" data-formats="apa" aria-label="Literate Programming, APA">
+  <pre><code class="bibtex-source">@article{knuth1984literate,
+  author = {Knuth, Donald E.},
+  title = {Literate Programming},
+  journal = {The Computer Journal},
+  volume = {27},
+  number = {2},
+  pages = {97--111},
+  year = {1984},
+  doi = {10.1093/comjnl/27.2.97}
+}</code></pre>
+</figure>
+    </section>
+    <section class="fx">
+<p style="max-width:40rem;margin:0;line-height:1.7">The idea of writing programs as literature goes back to <span class="bibtex" id="cite-inline" data-variant="inline" data-formats="mla"><code class="bibtex-source">@article{knuth1984literate, author = {Knuth, Donald E.}, title = {Literate Programming}, journal = {The Computer Journal}, volume = {27}, number = {2}, pages = {97--111}, year = {1984}, doi = {10.1093/comjnl/27.2.97} }</code></span> - and it shaped how documentation tools work today.</p>
+    </section>
+    <section class="fx">
+<figure class="bibtex" id="cite-plain" data-size="sm" data-formats="bibtex harvard" data-align="none" data-highlight="none" data-copy="none" aria-label="The TeXbook">
+  <pre><code class="bibtex-source">@book{knuth1984texbook,
+  author = {Donald E. Knuth},
+  title = {The {\TeX}book},
+  publisher = {Addison-Wesley},
+  address = {Reading, MA},
+  year = {1984}
+}</code></pre>
+</figure>
+    </section>
+    <section class="fx">
+<div class="grid gap-3" style="max-width:44rem">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-size="sm" data-variant="outline" id="cite-js-apa">Show APA</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cite-js-ieee">Show IEEE</button>
+    <button class="btn" data-size="sm" id="cite-js-copy">Copy</button>
+  </div>
+  <figure class="bibtex" id="cite-js" data-formats="bibtex apa ieee" aria-label="Attention Is All You Need">
+    <pre><code class="bibtex-source">@inproceedings{vaswani2017attention,
+  author = {Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and {\L}ukasz Kaiser and Illia Polosukhin},
+  title = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume = {30},
+  pages = {5998--6008},
+  year = {2017},
+  publisher = {Curran Associates, Inc.}
+}</code></pre>
+  </figure>
+  <output id="cite-js-log" class="text-sm text-muted-foreground">Events show up here.</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const lib = df$.shadcn.bibtex;
+    const el = document.getElementById('cite-js');
+    const log = document.getElementById('cite-js-log');
+    document.getElementById('cite-js-apa').addEventListener('click', () => lib.show(el, 'apa'));
+    document.getElementById('cite-js-ieee').addEventListener('click', () => lib.show(el, 'ieee'));
+    document.getElementById('cite-js-copy').addEventListener('click', () => lib.copy(el));
+    el.addEventListener('bibtex-format', (e) => { log.textContent = 'bibtex-format: ' + e.detail.format; });
+    el.addEventListener('bibtex-copy', (e) => { log.textContent = 'bibtex-copy: ' + e.detail.format + (e.detail.ok ? ' - ' + e.detail.text.length + ' characters' : ' - selected for a manual copy'); });
+  });
+</script>
+    </section>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/bibtex/bibtex.js"></script>
+  </body>
+</html>

@@ -4,7 +4,7 @@ description: "Animation Canvas component - a chess-board slide canvas: slides si
 slug: "anim-canvas"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -250,6 +250,8 @@ Machine contract - verified against <a href="../schemas/anim-canvas.schema.json"
 ```
 
 </StatesSection>
+
+<ApiSection component="anim-canvas" />
 
 <SourceFiles component="anim-canvas" section="css">
   <SourceNote for="css">The canvas surface: viewport + board layer, card-ish slides, the overview tile affordance (cursor, radius, ring hover), optional directional chrome, and the required reduced-motion / forced-colors blocks. All motion is the shared engine - this sheet animates nothing.</SourceNote>

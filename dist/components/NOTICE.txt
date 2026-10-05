@@ -5,9 +5,9 @@ Version: 0.9.4
 Embedded runtime packages (bundled into dist/components/core.js, core.min.js,
 all.js and all.min.js by scripts/bundle.ts + scripts/minify.ts):
 
-- defuss-morph@0.1.1 (pinned "0.1.1" in package.json)
+- defuss-morph@0.2.0 (pinned "0.2.0" in package.json)
   license: MIT - LICENSE sha256 6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599
-- defuss-query@0.1.0 (pinned "0.1.0" in package.json)
+- defuss-query@0.2.0 (pinned "0.2.0" in package.json)
   license: MIT - LICENSE sha256 6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599
 
 The pointer comment at the end of each artifact names the exact versions +

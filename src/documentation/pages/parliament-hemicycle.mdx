@@ -1,6 +1,6 @@
 ---
 title: "Parliament Hemicycle - Presentation"
-description: "Civic Parchment design language presenting a fictional national assembly as a 12-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart."
+description: "Civic Parchment design language presenting a fictional national assembly as a 13-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart."
 slug: "parliament-hemicycle"
 ---
 
@@ -11,7 +11,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   Civic Parchment: aged paper, iron-gall ink and one bordeaux seal - the new Assembly of the fictional Republic of Veldmark, 400 seats, and the arithmetic of who can govern.
 </PageHeader>
 
-```html example label="Civic Parchment" schema="none" height="26" hint="Slides wipe in like a turned page and fade out (df$.anim, declared on the deck); bordeaux curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): 400 seat dots light up the progressive coalition, then merge into one bar per party (universalTransition by group) and re-sort into seat changes. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+```html example label="Civic Parchment" schema="none" height="26" hint="Slides wipe in like a turned page and fade out (df$.anim, declared on the deck); bordeaux curtains open the data and the ending. One deck-level chart (df$.shadcn.chart.deck): 400 seat dots light up the progressive coalition, then merge into one bar per party (universalTransition by group) and re-sort into seat changes. Use ← / → inside the deck. One interactive diagram slide (an Illustrative Diagram in the deck's palette) plays step by step on arrival - click its boxes." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <section class="presentation" id="deck-hemicycle" data-anim-in="wipeIn" data-anim-in-direction="east" data-anim-out="fadeOut" style="--presentation-ink:#27231D;--presentation-ink-foreground:#F6EDD9;--presentation-paper:#ECE3CF;--presentation-paper-foreground:#27231D;--presentation-accent:#8A2E2A;font-family:Baskerville, Georgia, serif;" tabindex="-1" aria-label="The new Assembly - 400 seats of the fictional Republic of Veldmark">
   <!-- ONE chart for the whole deck: slides name the state they show via
@@ -141,6 +141,68 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">The stability question is the one to take seriously.</p>
   </section>
+  <section class="slide" data-slide data-dg-slide data-theme="paper" style="justify-content:flex-start;" aria-label="How the Assembly works">
+    <header class="presentation-header"><span>Structure</span><span>How the Assembly works</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:4.5rem 1.75rem; max-width:1300px; font-family:Baskerville, Georgia, serif; font-weight:400; letter-spacing:0;">Who answers to whom</h2>
+    <div style="width:900px; transform:scale(1.45); transform-origin:0 0;">
+      <figure class="diagram" id="hemi-org" data-type="organigram" data-steps data-interactive data-autoplay="900" aria-label="How the Assembly of Veldmark is organized">
+        <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem;--diagram-gap-x:2rem">
+          <div class="diagram-node" data-node="assembly" data-step="1" style="--col:3;--row:1">
+            <span class="diagram-node-eyebrow">Parliament</span>
+            <span class="diagram-node-name">Assembly</span>
+            <span class="diagram-node-meta">400 seats · elects the PM</span>
+          </div>
+          <div class="diagram-node" data-node="speaker" data-step="2" style="--col:1;--row:2">
+            <span class="diagram-node-eyebrow">Presides</span>
+            <span class="diagram-node-name">Speaker</span>
+            <span class="diagram-node-meta">order · agenda</span>
+          </div>
+          <div class="diagram-node" data-node="gov" data-tone="accent" data-step="2" style="--col:3;--row:2">
+            <span class="diagram-node-eyebrow">Coalition</span>
+            <span class="diagram-node-name">Government</span>
+            <span class="diagram-node-meta">PM · three groups</span>
+          </div>
+          <div class="diagram-node" data-node="committees" data-step="2" style="--col:5;--row:2">
+            <span class="diagram-node-eyebrow">Scrutiny</span>
+            <span class="diagram-node-name">Committees</span>
+            <span class="diagram-node-meta">standing · ad hoc</span>
+          </div>
+          <div class="diagram-node" data-node="clerk" data-step="3" style="--col:1;--row:3">
+            <span class="diagram-node-name">Clerk’s office</span>
+            <span class="diagram-node-meta">records · procedure</span>
+          </div>
+          <div class="diagram-node" data-node="finance" data-step="3" style="--col:2;--row:3">
+            <span class="diagram-node-name">Finance</span>
+            <span class="diagram-node-meta">budget · tax</span>
+          </div>
+          <div class="diagram-node" data-node="interior" data-step="3" style="--col:3;--row:3">
+            <span class="diagram-node-name">Interior</span>
+            <span class="diagram-node-meta">police · cities</span>
+          </div>
+          <div class="diagram-node" data-node="climate" data-step="3" style="--col:4;--row:3">
+            <span class="diagram-node-name">Climate</span>
+            <span class="diagram-node-meta">energy · transport</span>
+          </div>
+          <div class="diagram-node" data-node="budget" data-step="3" style="--col:5;--row:3">
+            <span class="diagram-node-name">Budget committee</span>
+            <span class="diagram-node-meta">checks Finance</span>
+          </div>
+        </div>
+        <ol class="diagram-edges">
+          <li class="diagram-edge" data-from="assembly" data-to="speaker"></li>
+          <li class="diagram-edge" data-from="assembly" data-to="gov"></li>
+          <li class="diagram-edge" data-from="assembly" data-to="committees"></li>
+          <li class="diagram-edge" data-from="speaker" data-to="clerk"></li>
+          <li class="diagram-edge" data-from="gov" data-to="finance"></li>
+          <li class="diagram-edge" data-from="gov" data-to="interior"></li>
+          <li class="diagram-edge" data-from="gov" data-to="climate"></li>
+          <li class="diagram-edge" data-from="committees" data-to="budget"></li>
+        </ol>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The structure behind the seats, tier by tier - click a box to follow its line.</p>
+  </section>
   <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
     <header class="presentation-header"><span>Findings</span><span>For the record</span></header>
     <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
@@ -163,10 +225,10 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <div class="presentation-controls">
     <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
-    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <span class="presentation-counter" aria-live="polite">1 / 13</span>
     <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
   </div>
-  <progress class="presentation-progress" max="12" value="1"></progress>
+  <progress class="presentation-progress" max="13" value="1"></progress>
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the

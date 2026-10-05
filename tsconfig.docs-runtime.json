@@ -15,5 +15,14 @@
     "skipLibCheck": true,
     "sourceMap": false
   },
-  "include": ["src/documentation/runtime/**/*.ts"]
+  "include": ["src/documentation/runtime/**/*.ts"],
+  // bundled into js/head.js by scripts/build-docs.ts (they import the
+  // persisted stores) - never emitted one by one
+  "exclude": [
+    "src/documentation/runtime/head.ts",
+    "src/documentation/runtime/prefs.ts",
+    "src/documentation/runtime/themes.ts",
+    "src/documentation/runtime/theme-switcher.ts",
+    "src/documentation/runtime/layout.ts"
+  ]
 }

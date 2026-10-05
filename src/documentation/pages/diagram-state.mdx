@@ -1,0 +1,397 @@
+---
+title: "Illustrative · State"
+description: "State machines with the diagram component - start and end dots, labelled transitions (event [guard] / action), self loops; plus a complex current-state landscape; step by step and as deltas."
+slug: "diagram-state"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-state" title="Illustrative · State" component="diagram">
+  Finite state logic: rounded states, a filled start dot, a ringed end dot, transitions labelled <code>event [guard] / action</code>. An edge from a state to itself is a self loop. Further down, a <em>complex state</em>: a whole current-state IT landscape - the before picture of a modernization.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Order state machine" component="diagram" hint="data-shape=start / end are the initial and final pseudo-states; their names stay in the markup for screen readers."
+<figure class="diagram" id="dg-state" data-type="state" aria-label="Order state machine">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">State machine</span>
+    <span class="diagram-title">An order, from cart to delivery</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;grid-template-columns:2.5rem repeat(4,minmax(7.5rem,1fr));--diagram-node-w:8rem;--diagram-gap-x:3.25rem">
+    <div class="diagram-node" data-node="s0" data-shape="start" style="--col:1;--row:1"><span class="diagram-node-name">new</span></div>
+    <div class="diagram-node" data-node="cart" style="--col:2;--row:1"><span class="diagram-node-name">Cart</span></div>
+    <div class="diagram-node" data-node="paid" style="--col:3;--row:1"><span class="diagram-node-name">Paid</span></div>
+    <div class="diagram-node" data-node="shipped" style="--col:4;--row:1"><span class="diagram-node-name">Shipped</span></div>
+    <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col:5;--row:1"><span class="diagram-node-name">Delivered</span></div>
+    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:3;--row:2"><span class="diagram-node-name">Cancelled</span></div>
+    <div class="diagram-node" data-node="returned" style="--col:4;--row:2"><span class="diagram-node-name">Returned</span></div>
+    <div class="diagram-node" data-node="s1" data-shape="end" style="--col:5;--row:2"><span class="diagram-node-name">closed</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="s0" data-to="cart"></li>
+    <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
+    <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
+    <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
+    <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+    <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
+    <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
+    <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
+    <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Order state machine, step by step" component="diagram" hint="Automatic order - the states in markup order, transitions with their later state."
+<figure class="diagram" id="dg-state-steps" data-type="state" data-steps data-autoplay aria-label="Order state machine">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">State machine</span>
+    <span class="diagram-title">An order, from cart to delivery</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;grid-template-columns:2.5rem repeat(4,minmax(7.5rem,1fr));--diagram-node-w:8rem;--diagram-gap-x:3.25rem">
+    <div class="diagram-node" data-node="s0" data-shape="start" style="--col:1;--row:1"><span class="diagram-node-name">new</span></div>
+    <div class="diagram-node" data-node="cart" style="--col:2;--row:1"><span class="diagram-node-name">Cart</span></div>
+    <div class="diagram-node" data-node="paid" style="--col:3;--row:1"><span class="diagram-node-name">Paid</span></div>
+    <div class="diagram-node" data-node="shipped" style="--col:4;--row:1"><span class="diagram-node-name">Shipped</span></div>
+    <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col:5;--row:1"><span class="diagram-node-name">Delivered</span></div>
+    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:3;--row:2"><span class="diagram-node-name">Cancelled</span></div>
+    <div class="diagram-node" data-node="returned" style="--col:4;--row:2"><span class="diagram-node-name">Returned</span></div>
+    <div class="diagram-node" data-node="s1" data-shape="end" style="--col:5;--row:2"><span class="diagram-node-name">closed</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="s0" data-to="cart"></li>
+    <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
+    <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
+    <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
+    <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+    <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
+    <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
+    <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
+    <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="State, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-state-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-state-live" data-interactive data-type="state" aria-label="Order state machine">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">State machine</span>
+    <span class="diagram-title">An order, from cart to delivery</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;grid-template-columns:2.5rem repeat(4,minmax(7.5rem,1fr));--diagram-node-w:8rem;--diagram-gap-x:3.25rem">
+    <div class="diagram-node" data-node="s0" data-shape="start" style="--col:1;--row:1"><span class="diagram-node-name">new</span></div>
+    <div class="diagram-node" data-node="cart" style="--col:2;--row:1"><span class="diagram-node-name">Cart</span></div>
+    <div class="diagram-node" data-node="paid" style="--col:3;--row:1"><span class="diagram-node-name">Paid</span></div>
+    <div class="diagram-node" data-node="shipped" style="--col:4;--row:1"><span class="diagram-node-name">Shipped</span></div>
+    <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col:5;--row:1"><span class="diagram-node-name">Delivered</span></div>
+    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:3;--row:2"><span class="diagram-node-name">Cancelled</span></div>
+    <div class="diagram-node" data-node="returned" style="--col:4;--row:2"><span class="diagram-node-name">Returned</span></div>
+    <div class="diagram-node" data-node="s1" data-shape="end" style="--col:5;--row:2"><span class="diagram-node-name">closed</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="s0" data-to="cart"></li>
+    <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
+    <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
+    <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
+    <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+    <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
+    <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
+    <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
+    <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="State, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-state-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-state-edit" data-interactive data-type="state" aria-label="Order state machine">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">State machine</span>
+        <span class="diagram-title">An order, from cart to delivery</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:5;grid-template-columns:2.5rem repeat(4,minmax(7.5rem,1fr));--diagram-node-w:8rem;--diagram-gap-x:3.25rem">
+        <div class="diagram-node" data-node="s0" data-shape="start" style="--col:1;--row:1"><span class="diagram-node-name">new</span></div>
+        <div class="diagram-node" data-node="cart" style="--col:2;--row:1"><span class="diagram-node-name">Cart</span></div>
+        <div class="diagram-node" data-node="paid" style="--col:3;--row:1"><span class="diagram-node-name">Paid</span></div>
+        <div class="diagram-node" data-node="shipped" style="--col:4;--row:1"><span class="diagram-node-name">Shipped</span></div>
+        <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col:5;--row:1"><span class="diagram-node-name">Delivered</span></div>
+        <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:3;--row:2"><span class="diagram-node-name">Cancelled</span></div>
+        <div class="diagram-node" data-node="returned" style="--col:4;--row:2"><span class="diagram-node-name">Returned</span></div>
+        <div class="diagram-node" data-node="s1" data-shape="end" style="--col:5;--row:2"><span class="diagram-node-name">closed</span></div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="s0" data-to="cart"></li>
+        <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
+        <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
+        <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
+        <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+        <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
+        <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
+        <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
+        <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-state-edit-panel" aria-labelledby="dg-state-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-state-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-state-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-state-edit');
+    const grid = document.getElementById('dg-state-edit-grid');
+    const title = document.getElementById('dg-state-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Partial shipping" component="diagram" hint="An added state, a changed state (its meta in data-before), a removed one - and the transitions that come and go with them."
+<figure class="diagram" id="dg-state-delta" data-type="state" data-delta aria-label="Order states with partial shipping">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Model change</span>
+    <span class="diagram-title">Partial shipping</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-node" data-node="paid" style="--col:1;--row:1"><span class="diagram-node-name">Paid</span></div>
+    <div class="diagram-node" data-node="partial" data-tone="accent" data-change="added" style="--col:2;--row:2"><span class="diagram-node-name">Partly shipped</span></div>
+    <div class="diagram-node" data-node="shipped" data-change="changed" style="--col:3;--row:1">
+      <span class="diagram-node-name" data-before="Shipped">Shipped</span>
+      <span class="diagram-node-meta" data-before="one parcel">all parcels</span>
+    </div>
+    <div class="diagram-node" data-node="delivered" style="--col:4;--row:1"><span class="diagram-node-name">Delivered</span></div>
+    <div class="diagram-node" data-node="hold" data-change="removed" style="--col:1;--row:2"><span class="diagram-node-name">On hold</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch all</li>
+    <li class="diagram-edge" data-from="paid" data-to="partial" data-change="added">dispatch some</li>
+    <li class="diagram-edge" data-from="partial" data-to="shipped" data-change="added">dispatch rest</li>
+    <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+    <li class="diagram-edge" data-from="paid" data-to="hold" data-change="removed">stock gap</li>
+  </ol>
+</figure>
+```
+
+<H2 id="complex-state">Complex state</H2>
+
+<DocText>A current-state landscape: departments as zones, systems with their pain points (<code>data-tone="warn"</code>, a <code>SPOF</code> badge), file hand-offs dashed. It is a state too - the state of the organization before the change.</DocText>
+
+```html example label="Before the platform" component="diagram" hint="Groups as zones spanning three rows; badges via data-badge; pain points via data-tone=warn."
+<figure class="diagram" id="dg-complex" data-type="complex-state" aria-label="Current IT landscape of a statistics office">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Current state</span>
+    <span class="diagram-title">Before the platform</span>
+    <span class="diagram-dek">Three departments, five hand-offs by file - the friction is in the dashed boxes.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-group" data-node="collect" data-step-label="Collection" style="--col:1;--row:1;--rspan:3"><span class="diagram-group-label">Collection</span></div>
+    <div class="diagram-group" data-node="process" data-step-label="Processing" style="--col:2;--row:1;--rspan:3"><span class="diagram-group-label">Processing</span></div>
+    <div class="diagram-group" data-node="publish" data-step-label="Dissemination" style="--col:3;--row:1;--rspan:3"><span class="diagram-group-label">Dissemination</span></div>
+    <div class="diagram-node" data-node="capi" style="--col:1;--row:1">
+      <span class="diagram-node-name">Survey Solutions</span>
+      <span class="diagram-node-meta">CAPI · PostgreSQL</span>
+    </div>
+    <div class="diagram-node" data-node="crvs" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-name">Civil registry</span>
+      <span class="diagram-node-meta">external · CRVS</span>
+    </div>
+    <div class="diagram-node" data-node="xls" data-tone="warn" data-badge="SPOF" style="--col:2;--row:1">
+      <span class="diagram-node-name">Excel macros</span>
+      <span class="diagram-node-meta">on one laptop</span>
+    </div>
+    <div class="diagram-node" data-node="sas" data-tone="warn" style="--col:2;--row:2">
+      <span class="diagram-node-name">SAS scripts</span>
+      <span class="diagram-node-meta">no version control</span>
+    </div>
+    <div class="diagram-node" data-node="stata" style="--col:2;--row:3">
+      <span class="diagram-node-name">Stata do-files</span>
+      <span class="diagram-node-meta">weighting</span>
+    </div>
+    <div class="diagram-node" data-node="site" style="--col:3;--row:1">
+      <span class="diagram-node-name">Website</span>
+      <span class="diagram-node-meta">manual upload</span>
+    </div>
+    <div class="diagram-node" data-node="pdf" style="--col:3;--row:2">
+      <span class="diagram-node-name">PDF reports</span>
+      <span class="diagram-node-meta">quarterly</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-tone="external" style="--col:3;--row:3">
+      <span class="diagram-node-name">Data portal</span>
+      <span class="diagram-node-meta">not live</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capi" data-to="xls" data-line="dashed">CSV export</li>
+    <li class="diagram-edge" data-from="crvs" data-to="sas" data-line="dashed">FTP · monthly</li>
+    <li class="diagram-edge" data-from="xls" data-to="sas" data-line="dashed" data-tone="accent">XLSX by mail</li>
+    <li class="diagram-edge" data-from="sas" data-to="stata">DTA</li>
+    <li class="diagram-edge" data-from="stata" data-to="pdf">tables</li>
+    <li class="diagram-edge" data-from="xls" data-to="site" data-line="dashed">copy-paste</li>
+    <li class="diagram-edge" data-from="stata" data-to="api" data-line="dotted">planned</li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="warn">Pain point</li>
+    <li data-swatch="external">External / not live</li>
+    <li data-swatch="dashed">File hand-off</li>
+  </ul>
+</figure>
+```
+
+```html example label="Before the platform, step by step" component="diagram" hint="Explicit steps: one department a step - data-step on the zone and on its systems."
+<figure class="diagram" id="dg-complex-steps" data-type="complex-state" data-steps data-autoplay aria-label="Current IT landscape of a statistics office">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Current state</span>
+    <span class="diagram-title">Before the platform</span>
+    <span class="diagram-dek">Three departments, five hand-offs by file - the friction is in the dashed boxes.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-group" data-node="collect" data-step="1" data-step-label="Collection" style="--col:1;--row:1;--rspan:3"><span class="diagram-group-label">Collection</span></div>
+    <div class="diagram-group" data-node="process" data-step="2" data-step-label="Processing" style="--col:2;--row:1;--rspan:3"><span class="diagram-group-label">Processing</span></div>
+    <div class="diagram-group" data-node="publish" data-step="3" data-step-label="Dissemination" style="--col:3;--row:1;--rspan:3"><span class="diagram-group-label">Dissemination</span></div>
+    <div class="diagram-node" data-node="capi" data-step="1" style="--col:1;--row:1">
+      <span class="diagram-node-name">Survey Solutions</span>
+      <span class="diagram-node-meta">CAPI · PostgreSQL</span>
+    </div>
+    <div class="diagram-node" data-node="crvs" data-tone="external" data-step="1" style="--col:1;--row:2">
+      <span class="diagram-node-name">Civil registry</span>
+      <span class="diagram-node-meta">external · CRVS</span>
+    </div>
+    <div class="diagram-node" data-node="xls" data-tone="warn" data-badge="SPOF" data-step="2" style="--col:2;--row:1">
+      <span class="diagram-node-name">Excel macros</span>
+      <span class="diagram-node-meta">on one laptop</span>
+    </div>
+    <div class="diagram-node" data-node="sas" data-tone="warn" data-step="2" style="--col:2;--row:2">
+      <span class="diagram-node-name">SAS scripts</span>
+      <span class="diagram-node-meta">no version control</span>
+    </div>
+    <div class="diagram-node" data-node="stata" data-step="2" style="--col:2;--row:3">
+      <span class="diagram-node-name">Stata do-files</span>
+      <span class="diagram-node-meta">weighting</span>
+    </div>
+    <div class="diagram-node" data-node="site" data-step="3" style="--col:3;--row:1">
+      <span class="diagram-node-name">Website</span>
+      <span class="diagram-node-meta">manual upload</span>
+    </div>
+    <div class="diagram-node" data-node="pdf" data-step="3" style="--col:3;--row:2">
+      <span class="diagram-node-name">PDF reports</span>
+      <span class="diagram-node-meta">quarterly</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-tone="external" data-step="3" style="--col:3;--row:3">
+      <span class="diagram-node-name">Data portal</span>
+      <span class="diagram-node-meta">not live</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capi" data-to="xls" data-line="dashed">CSV export</li>
+    <li class="diagram-edge" data-from="crvs" data-to="sas" data-line="dashed">FTP · monthly</li>
+    <li class="diagram-edge" data-from="xls" data-to="sas" data-line="dashed" data-tone="accent">XLSX by mail</li>
+    <li class="diagram-edge" data-from="sas" data-to="stata">DTA</li>
+    <li class="diagram-edge" data-from="stata" data-to="pdf">tables</li>
+    <li class="diagram-edge" data-from="xls" data-to="site" data-line="dashed">copy-paste</li>
+    <li class="diagram-edge" data-from="stata" data-to="api" data-line="dotted">planned</li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="warn">Pain point</li>
+    <li data-swatch="external">External / not live</li>
+    <li data-swatch="dashed">File hand-off</li>
+  </ul>
+</figure>
+```
+
+```html example label="From files to a platform" component="diagram" hint="Current state to target state: the Excel hand-off disappears, a lake appears, three systems change their role."
+<figure class="diagram" id="dg-complex-delta" data-type="complex-state" data-delta aria-label="Current state to target state">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Modernization</span>
+    <span class="diagram-title">From files to a platform</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-node" data-node="capi" style="--col:1;--row:1">
+      <span class="diagram-node-name">Survey Solutions</span>
+      <span class="diagram-node-meta">CAPI</span>
+    </div>
+    <div class="diagram-node" data-node="xls" data-tone="warn" data-change="removed" style="--col:2;--row:1">
+      <span class="diagram-node-name">Excel macros</span>
+      <span class="diagram-node-meta">on one laptop</span>
+    </div>
+    <div class="diagram-node" data-node="lake" data-shape="store" data-tone="accent" data-change="added" style="--col:2;--row:2">
+      <span class="diagram-node-name">Data lake</span>
+      <span class="diagram-node-meta">MinIO · Iceberg</span>
+    </div>
+    <div class="diagram-node" data-node="sas" data-change="changed" style="--col:3;--row:2">
+      <span class="diagram-node-name" data-before="SAS scripts">Analysis</span>
+      <span class="diagram-node-meta" data-before="SAS scripts · no VCS">Python notebooks</span>
+    </div>
+    <div class="diagram-node" data-node="site" data-change="changed" style="--col:4;--row:1">
+      <span class="diagram-node-name">Website</span>
+      <span class="diagram-node-meta" data-before="manual upload">built from the lake</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-change="changed" style="--col:4;--row:2">
+      <span class="diagram-node-name">Data portal</span>
+      <span class="diagram-node-meta" data-before="not live">live API</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capi" data-to="xls" data-line="dashed" data-change="removed">CSV</li>
+    <li class="diagram-edge" data-from="capi" data-to="lake" data-change="added">JDBC · nightly</li>
+    <li class="diagram-edge" data-from="lake" data-to="sas" data-change="added">Trino</li>
+    <li class="diagram-edge" data-from="xls" data-to="sas" data-line="dashed" data-change="removed">XLSX by mail</li>
+    <li class="diagram-edge" data-from="lake" data-to="site" data-change="added">publish</li>
+    <li class="diagram-edge" data-from="sas" data-to="api" data-change="added">feeds</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

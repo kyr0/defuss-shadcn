@@ -133,6 +133,14 @@ document.querySelector('#sheet-right').api.getState(); // { name: 'open', config
 The api is bound per sheet element; the registry global is
 `df$.shadcn.sheetApi` / `df$.shadcn.sheetStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.sheetApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sheetStates` = `default`, `open`.
+
 ## Notes
 
 - While a sheet is modal, `html:has(dialog.sheet:modal)` sets `overflow: hidden` + `scrollbar-gutter: stable` - the page behind cannot scroll and its position is preserved for when the sheet closes (no JS scroll-lock).

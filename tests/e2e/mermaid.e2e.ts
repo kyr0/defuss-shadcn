@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E for the shipped Mermaid adapter. The official renderer is served
@@ -100,6 +101,18 @@ try {
     assert.deepEqual(r.pre, ['none', 'none', 'none', 'none']);
     assert.equal(r.source, true, 'source text untouched');
     assert.equal(r.chrome, true, 'the SVG host is runtime chrome');
+  });
+
+  await check('node labels are HTML inside <foreignObject> and lay out (not SVG-namespaced, not 0×0)', async () => {
+    const labels = await page.$$eval('#mm-flow .mermaid-output .node foreignObject > *', (els) => els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { ns: el.namespaceURI, w: Math.round(r.width), h: Math.round(r.height), text: el.textContent!.trim() };
+    }));
+    assert.ok(labels.length > 0, 'nodes with labels');
+    for (const l of labels) {
+      assert.equal(l.ns, 'http://www.w3.org/1999/xhtml', `"${l.text}" is an HTML element`);
+      assert.ok(l.w > 0 && l.h > 0, `"${l.text}" has a box (${l.w}×${l.h})`);
+    }
   });
 
   await check('<br/> in a label renders as a line break (source read like Mermaid reads it)', async () => {
@@ -246,6 +259,10 @@ try {
     await p2.waitForFunction(() => (document.getElementById('mm-flow') as HTMLElement).dataset.state === 'rendered', undefined, { timeout: 30000 });
     assert.equal(await p2.$eval('#mm-flow pre.mermaid', (p) => getComputedStyle(p).display), 'none');
     await p2.close();
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, 'figure.mermaid-diagram[id]', ['default','rendered','error'], { runtimeOwned: '.mermaid-output', settled: '.mermaid-diagram[data-state="pending"]' });
   });
 
 } finally {

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped image component. Loads the fixture
@@ -387,6 +388,10 @@ try {
     const r = await p2.$eval('#hg', (g) => ({ d: getComputedStyle(g).display, snap: getComputedStyle(g).scrollSnapType, scroll: g.scrollWidth > g.clientWidth * 3, op: getComputedStyle(g.children[2]).opacity }));
     assert.deepEqual(r, { d: 'flex', snap: 'x mandatory', scroll: true, op: '1' });
     await ctx.close();
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.image[id]', ['default','error']);
   });
 
 } finally {

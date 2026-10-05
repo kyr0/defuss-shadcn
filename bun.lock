@@ -5,8 +5,10 @@
     "": {
       "name": "defuss-shadcn",
       "dependencies": {
-        "defuss-morph": "0.1.1",
-        "defuss-query": "0.1.0",
+        "defuss-dataview": "0.4.0",
+        "defuss-morph": "0.2.0",
+        "defuss-query": "0.2.0",
+        "defuss-store": "0.1.0",
       },
       "devDependencies": {
         "@types/bun": "^1.4.1",
@@ -658,21 +660,25 @@
 
     "defuss": ["defuss@3.4.9", "", { "dependencies": { "@types/w3c-xmlserializer": "^2.0.4", "csstype": "^3.2.3", "defuss-runtime": "^1.3.1", "happy-dom": "^20.5.0", "w3c-xmlserializer": "^5.0.0" } }, "sha512-uLQ3wUWWLzWipolpguJxmm1l03Kd7VMjyFiXRW6+L7+fMKeXG3kCBrjEd8SACo9Tbo+hK3zZxR64eMROE3bMWg=="],
 
+    "defuss-dataview": ["defuss-dataview@0.4.0", "", {}, "sha512-CA1Y0vHSWocGOcM6jmX3UKij6LoSMWzJ7y7LZYQUrX0sTWWO8a4QARo7XK2+TKGyh7RC5p9XyCvKJD2dcTQK0w=="],
+
     "defuss-dson": ["defuss-dson@1.1.2", "", {}, "sha512-oO22rsRUZaA48yv17ffu2yV+a9wcZc73vVk4DZB+VTseKMvsLIFUjcotO9EE7+R41n7p8Aand1z6RbgHGlil3A=="],
 
     "defuss-express": ["defuss-express@0.3.5", "", { "dependencies": { "defuss-open-telemetry": "^0.1.0", "ultimate-express": "^2.0.17" } }, "sha512-juonuu2/TpSmDmSXQbeYMYMG2u5a+yTLtY1GzR3kBDzcLPkvS7ZkG3Jk+rfmRIJycQNsZ/1p0tdSALGlfFRpDw=="],
 
-    "defuss-morph": ["defuss-morph@0.1.1", "", {}, "sha512-mAIL1Mqbvlr6+AMJohM1FRRn8k3m6G+bn0L6G2K00ZKIcPxPidiiJdhJAEewyZDHNbElbP+txSTr9i4Z1pEbWg=="],
+    "defuss-morph": ["defuss-morph@0.2.0", "", {}, "sha512-QMzZL3zMB100dTycyE7NJ1ey7KE8iap7CpfXrZ+tXu+tzoWugVJdMPr7v7pm+ce8iPjLLaYgTqAUG9p35U9cKQ=="],
 
     "defuss-open-telemetry": ["defuss-open-telemetry@0.1.2", "", {}, "sha512-isAHlfF89nb7SBHv20i9moSCeHM08jjC59HVQPdDsYDhu6FmuzsxLx+JBVNYDtKo6NUll9nAn+Fxhy8N/T3XFg=="],
 
-    "defuss-query": ["defuss-query@0.1.0", "", { "peerDependencies": { "defuss-morph": "^0.1.1" } }, "sha512-siwnM1kgqj+y5zFNV1fNn2XFoUbQWoJkg93Hq1BZFL7YIwTvc/EduetIkvR4WepJQF/UmR6oRz5RaLY1zx2fNA=="],
+    "defuss-query": ["defuss-query@0.2.0", "", { "peerDependencies": { "defuss-morph": "^0.2.0" } }, "sha512-S18fLhxZXS8WTRXBqy0EQ9FZnecF6v1KEiGAoONjCQjOiJ5GiBY2ejiU+L0BIdDUkS1KYGi8KGZ4suC6l7r6lQ=="],
 
     "defuss-rpc": ["defuss-rpc@1.6.2", "", { "dependencies": { "defuss-dson": "^1.1.2" }, "peerDependencies": { "astro": "*", "defuss-express": ">=0.1.0", "vite": ">=5.0.0" }, "optionalPeers": ["astro", "defuss-express", "vite"] }, "sha512-CvebS8rvue3RLDKvqFNXijVmr6eZfqE6Hah2wq+eyZVavimXyLMRI0F/7TxJRkVlecnRAODZ/M0dD8i2Rw1rxw=="],
 
     "defuss-runtime": ["defuss-runtime@1.3.3", "", {}, "sha512-DrZ3r5wEnoxcx+QB8btpQUZ/N13LQ4nH+KQMj3qdqe31S62YZDOi1EkrftabYg0m9ObxO86AxmT+3fNufK26kA=="],
 
     "defuss-ssg": ["defuss-ssg@0.7.5", "", { "dependencies": { "@mdx-js/rollup": "^3.1.0", "defuss": "^3.4.7", "defuss-express": "^0.3.5", "defuss-vite": "^1.2.0", "esbuild": "^0.27.3", "fast-glob": "^3.3.3", "rehype-katex": "^7.0.1", "rehype-stringify": "^10.0.1", "remark-frontmatter": "^5.0.0", "remark-gfm": "^4.0.1", "remark-math": "^6.0.0", "remark-mdx-frontmatter": "^5.2.0", "remark-parse": "^11.0.0", "remark-rehype": "^11.1.2", "rolldown": "^1.0.0-rc.18", "toml": "^3.0.0", "vite": "^8.0.0", "ws": "^8.20.0", "yaml": "^2.8.2" }, "peerDependencies": { "defuss-rpc": "*" }, "bin": { "defuss-ssg": "dist/cli.mjs" } }, "sha512-9XJBGQMIypyai1kGAUpiIVAw2v5iyz9tk5zcA1GBBVhvdiU48stVaDP0vFTlc09140ttU0he5JeY+RotUVu++Q=="],
+
+    "defuss-store": ["defuss-store@0.1.0", "", {}, "sha512-1FaR2bO8Zz8MyD95v1/+NXKcxsWarq3p1vazlwWfvW/JBWUcM/srvxNLFgFs2tUQh8bLLQUmYiZxCguTvLs85Q=="],
 
     "defuss-vite": ["defuss-vite@1.2.1", "", { "dependencies": { "@swc/core": "^1.10.2", "vite": "^8.0.0" } }, "sha512-qLc3TVyTg1NI6kXPdNStlehF6PHhdGCs2XgvecwtiBGIe4jxGr2TVyAShR8/X+QY5RSIHs37M1aBGp6wZPQDpQ=="],
 

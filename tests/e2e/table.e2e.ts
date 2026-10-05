@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: the table's look is CSS - the container (overflow + inline-size container
@@ -243,6 +244,12 @@ await cssSmoke('table', [
       assert.deepEqual(r.def[1], ['s-1', 's-2', 's-3', 's-4', 's-5']);
       assert.ok(r.err.includes('unknown state'));
       assert.deepEqual(r.states, ['default', 'sorted', 'selected']); assert.ok(r.api);
+    },
+  },
+  {
+    label: 'render(): reproduces the authored markup 1:1 and every state',
+    run: async (page) => {
+      await assertRenderContract(page, 'table.table[id]', ['default','sorted','selected']);
     },
   },
 ]);

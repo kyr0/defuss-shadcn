@@ -16,9 +16,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> Each component instance binds a tiny API directly on the element. State lives <em>on the element</em> (never in module scope), so twenty components on one page can each hold a different state: </p>
 
-<CodeWindow lang="javascript" title="the shape - any JS component" mb="2.5rem" code={"// the element - df$ selects it (get(0) = the node itself)\nconst el = df$('#confirm').get(0);\n\n// set a declared state by name - throws on unknown names\nel.api.setState('open', { /* optional config */ });\n\n// read it back - always reflects the real UI\nel.api.getState(); // → { name: 'open', config: { ... } }"} />
+<CodeWindow lang="javascript" title="the shape - any JS component" mb="2.5rem" code={"// the element - df$ selects it (get(0) = the node itself)\nconst el = df$('#confirm').get(0);\n\n// set a declared state by name - throws on unknown names\nel.api.setState('open', { /* optional config */ });\n\n// read it back - always reflects the real UI\nel.api.getState(); // → { name: 'open', config: { ... }, model: { ... } }\n\n// the markup of a state - the authored HTML, 1:1, with that state applied\nel.api.render();                                  // the current state\nel.api.render({ ...el.api.getState(), name: 'default' }); // any declared state"} />
 
-<p class="text-sm text-muted-foreground mb-5"> Three guarantees, verified by <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/scripts/verify.ts" target="_blank">the build's verifier</DocLink> for every component: </p>
+<p class="text-sm text-muted-foreground mb-5"> Four guarantees, verified by <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/scripts/verify.ts" target="_blank">the build's verifier</DocLink> for every component: </p>
 
 <div class="grid grid-cols-auto gap-4 mb-10">
   <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
@@ -28,6 +28,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
     <p class="text-sm font-medium mb-2" style="margin-top:0;">Honest reads</p>
     <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> <code>getState()</code> reflects what the user sees: pressing Escape on an open dialog returns <code>default</code>, not the stale last <code>setState</code> value. </p>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
+    <p class="text-sm font-medium mb-2" style="margin-top:0;">Reproducible markup</p>
+    <p class="text-sm text-muted-foreground" style="margin-bottom:0;"> <code>render(state)</code> rebuilds the component's HTML from state: its model is the authored markup byte for byte, and for every state it equals what <code>setState()</code> produces on the live element. Every component with JavaScript has it, and its e2e test proves both. </p>
   </div>
   <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.25rem;">
     <p class="text-sm font-medium mb-2" style="margin-top:0;">Documented visually</p>
@@ -68,6 +72,35 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   });
 </script>
 ```
+
+<H2>The state is a store</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Behind <code>el.api</code> every component keeps its state in a <a href="https://www.npmjs.com/package/defuss-store">defuss-store</a> store, exposed as <code>el.store</code> - a tiny synchronous observable holding <code>\{ name, config \}</code>. Subscribe to react to <em>any</em> change, including the ones a user makes without <code>setState</code> (a click, Escape, a native close); write it to drive the component exactly like <code>setState</code> does. The big-data components keep their whole query there - a <a href="data-grid.html">Data Grid</a>'s sort, filters, locked columns and selection are <code>el.store.value.config</code>. </p>
+
+```html example label="Subscribe and write" schema="none" height="22" hint="The log subscribes to the toggle's store: press the toggle with the mouse or the keyboard - every change arrives, though nothing called setState. The second button writes the store directly; the toggle applies it like setState."
+<div class="flex flex-col gap-3" style="max-width:28rem;">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="toggle" type="button" aria-pressed="false" id="sa-toggle">Bold</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="sa-write">el.store.set({ name: 'pressed' })</button>
+  </div>
+  <pre class="text-xs m-0" id="sa-log" style="padding:0.75rem;border-radius:var(--radius-md);background:var(--muted);min-height:4rem;"></pre>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = df$('#sa-toggle').get(0);
+    const log = df$('#sa-log').get(0);
+    // every change - by click, keyboard or code - reaches the subscriber
+    toggle.store.subscribe((state) => {
+      log.textContent = JSON.stringify(state) + '\n' + log.textContent;
+    });
+    df$('#sa-write').on('click', () => toggle.store.set({ name: 'pressed', config: {} }));
+  });
+</script>
+```
+
+<p class="text-sm text-muted-foreground mb-5"> The same primitive is the system's only way into Web Storage: <code>df$.store.persisted(key, initial)</code> returns a store whose value lives in <code>localStorage</code> (or <code>sessionStorage</code>) - validated, versioned, kept in memory when the browser blocks storage, and in step with every other store for that key on the page. Components use it for <code>data-save</code> (border layout, data grid, data tree), the theme switcher and the cookie consent; this site keeps every remembered choice (dark mode, theme, sidebar) that way. </p>
+
+<CodeWindow lang="javascript" title="df$.store" mb="2.5rem" code={"// an observable value\nconst count = df$.store.create(0);\nconst off = count.subscribe((n) => console.log('count', n));\ncount.set(1);                       // → count 1\n\n// a value kept in localStorage - validated against the initial shape,\n// in memory when storage is blocked\nconst prefs = df$.store.persisted('my-app:prefs', { compact: false });\nprefs.set('compact', true);         // a path write; stored at once\nprefs.subscribe((p) => df$('html').toggleClass('compact', p.compact));\n\n// a component's state, from outside\nconst grid = df$('#orders').get(0);\ngrid.store.subscribe(({ config }) => console.log(config.sorters, config.selected));"} />
 
 <H2>Discovering the states</H2>
 

@@ -1,6 +1,6 @@
 ---
 title: "Bump Ranking - Presentation"
-description: "Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 12-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars."
+description: "Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 13-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars."
 slug: "bump-ranking"
 ---
 
@@ -11,7 +11,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   Neo Tokyo Neon: midnight violet, magenta and cyan glow - how six genres traded places on a streaming platform from 2019 to 2025, with K-pop climbing from sixth to first on one continuous chart.
 </PageHeader>
 
-```html example label="Neo Tokyo Neon" schema="none" height="26" hint="Slides blur in and zoom out (df$.anim, declared on the deck); magenta curtains mark the data section. One deck-level chart (df$.shadcn.chart.deck): the bump chart isolates the two climbers, then morphs into 2025 streams and growth since 2019. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+```html example label="Neo Tokyo Neon" schema="none" height="26" hint="Slides blur in and zoom out (df$.anim, declared on the deck); magenta curtains mark the data section. One deck-level chart (df$.shadcn.chart.deck): the bump chart isolates the two climbers, then morphs into 2025 streams and growth since 2019. Use ← / → inside the deck. One interactive diagram slide (an Illustrative Diagram in the deck's palette) plays step by step on arrival - click its boxes." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <section class="presentation" id="deck-bump" data-anim-in="blurIn" data-anim-out="zoomOut" style="--presentation-ink:#090716;--presentation-ink-foreground:#F6F0FF;--presentation-paper:#14102B;--presentation-paper-foreground:#F6F0FF;--presentation-accent:#FF2DD1;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Genre charts 2019 to 2025 - a neon deck">
   <!-- ONE chart for the whole deck: slides name the state they show via
@@ -134,6 +134,40 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">The Latin answer sets up the next meeting.</p>
   </section>
+  <section class="slide" data-slide data-dg-slide data-theme="ink" style="justify-content:flex-start;" aria-label="How a track climbs">
+    <header class="presentation-header"><span>Lifecycle</span><span>How a track climbs</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:4.5rem 1.75rem; max-width:1300px; font-weight:800; letter-spacing:-0.03em;">Release to catalog, one state at a time</h2>
+    <div style="width:1000px; transform:scale(1.35); transform-origin:0 0;">
+      <figure class="diagram" id="track-state" data-type="state" data-steps data-interactive data-autoplay="900" aria-label="States of a track on a streaming platform">
+        <div class="diagram-canvas" style="--cols:5;grid-template-columns:2.5rem repeat(4,minmax(7.5rem,1fr));--diagram-node-w:8rem;--diagram-gap-x:3.25rem;--diagram-gap-y:3rem">
+          <div class="diagram-node" data-node="s0" data-shape="start" data-step="1" style="--col:1;--row:1"><span class="diagram-node-name">release</span></div>
+          <div class="diagram-node" data-node="new" data-step="1" style="--col:2;--row:1"><span class="diagram-node-name">New release</span></div>
+          <div class="diagram-node" data-node="discovery" data-step="2" style="--col:3;--row:1">
+            <span class="diagram-node-name">Discovery</span>
+            <span class="diagram-node-meta">algorithmic mixes</span>
+          </div>
+          <div class="diagram-node" data-node="editorial" data-step="3" style="--col:4;--row:1">
+            <span class="diagram-node-name">Editorial</span>
+            <span class="diagram-node-meta">curated playlists</span>
+          </div>
+          <div class="diagram-node" data-node="charts" data-tone="accent" data-step="4" style="--col:5;--row:1"><span class="diagram-node-name">Charting</span></div>
+          <div class="diagram-node" data-node="catalog" data-tone="muted" data-step="5" style="--col:4;--row:2"><span class="diagram-node-name">Catalog</span></div>
+          <div class="diagram-node" data-node="s1" data-shape="end" data-step="5" style="--col:5;--row:2"><span class="diagram-node-name">archived</span></div>
+        </div>
+        <ol class="diagram-edges">
+          <li class="diagram-edge" data-from="s0" data-to="new" data-step="1"></li>
+          <li class="diagram-edge" data-from="new" data-to="discovery" data-step="2">first plays</li>
+          <li class="diagram-edge" data-from="discovery" data-to="editorial" data-step="3">saves rise</li>
+          <li class="diagram-edge" data-from="editorial" data-to="charts" data-step="4">top 200</li>
+          <li class="diagram-edge" data-from="charts" data-to="catalog" data-step="5">falls out</li>
+          <li class="diagram-edge" data-from="discovery" data-to="catalog" data-step="5">never picked</li>
+          <li class="diagram-edge" data-from="catalog" data-to="s1" data-step="5"></li>
+        </ol>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The path behind the ranks as a state machine - most tracks fall back from the charts into discovery; click a state.</p>
+  </section>
   <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
     <header class="presentation-header"><span>Takeaways</span><span>For the roster</span></header>
     <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
@@ -158,10 +192,10 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <div class="presentation-controls">
     <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
-    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <span class="presentation-counter" aria-live="polite">1 / 13</span>
     <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
   </div>
-  <progress class="presentation-progress" max="12" value="1"></progress>
+  <progress class="presentation-progress" max="13" value="1"></progress>
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the

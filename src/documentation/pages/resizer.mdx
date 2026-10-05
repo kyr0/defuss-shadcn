@@ -4,7 +4,7 @@ description: "Resizer component - wrap any single container and drag handles on 
 slug: "resizer"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocText, DocLink, ApiPill, SkillField, SkillText, SkillRow } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, DocText, DocLink, ApiPill, SkillField, SkillText, SkillRow, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -191,6 +191,8 @@ Machine contract - verified against <a href="../schemas/resizer.schema.json"><co
 The action `reset` dispatches <code>resizer-reset</code> on the wrapper - equivalent to <code>setState('default')</code>.
 
 </StatesSection>
+
+<ApiSection component="resizer" />
 
 <SourceFiles component="resizer">
   <SourceNote for="css">Handle geometry, cursors and the drag feedback state live here; the sizing behavior is runtime-driven.</SourceNote>

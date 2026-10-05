@@ -132,6 +132,20 @@ document.querySelector('#launch').api.getState(); // → { name: 'running', conf
 
 The registry global is `df$.shadcn.countdownApi` / `df$.shadcn.countdownStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.countdownApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.countdownStates` = `default`, `running`, `paused`, `finished`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `countdown:finished` | - | Fires once when the countdown reaches zero. |
+
 ## Notes
 
 - The ones digit and the higher digits roll separately, so 59 → 60 turns

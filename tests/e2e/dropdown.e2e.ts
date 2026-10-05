@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped dropdown component. Loads the fixture
@@ -385,6 +386,10 @@ try {
     assert.ok(Math.abs(r[1] - r[0]) < 14, `sub right ${r[1]} ~ trigger left ${r[0]}`);
     await closeAll();
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.dropdown-content[popover][id]:not(.dropdown-sub-content)', ['default','open']);
+  });
+
 } finally {
   await browser.close();
   server.stop();

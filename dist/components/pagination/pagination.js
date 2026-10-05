@@ -28,7 +28,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const paginationStates = ['default'];
@@ -44,9 +44,9 @@ const numAttr = (el, key, fallback) => {
  * same attribute state produces the same DOM (morph keys by data-page).
  */
 function renderWindow(nav) {
-    const list = nav.querySelector('.pagination-list');
-    const prev = nav.querySelector('.pagination-prev');
-    const next = nav.querySelector('.pagination-next');
+    const list = dfDollar(nav).find('.pagination-list').get(0);
+    const prev = dfDollar(nav).find('.pagination-prev').get(0);
+    const next = dfDollar(nav).find('.pagination-next').get(0);
     const prevLi = prev?.closest('li') ?? null;
     const nextLi = next?.closest('li') ?? null;
     if (!list || !prev || !next || !prevLi || !nextLi)
@@ -75,7 +75,7 @@ function renderWindow(nav) {
     while (n && n !== nextLi) {
         const node = n;
         n = n.nextSibling;
-        const page = node.querySelector?.('.pagination-link[data-page]')?.getAttribute('data-page');
+        const page = node.nodeType === Node.ELEMENT_NODE ? dfDollar(node).find('.pagination-link[data-page]').attr('data-page') : null;
         const p = page ? parseInt(page, 10) : NaN;
         if (Number.isFinite(p) && p >= start && p <= end) {
             node.remove(); // detach, then re-insert in order below
@@ -128,7 +128,7 @@ function windowNodes(start, end, min, max, active, survivors) {
             // reused link: drop stale active markers (it WAS the active page before
             // this render - its class/aria are now wrong)
             const node = survivors.get(p);
-            const a = node.querySelector('a');
+            const a = dfDollar(node).find('a').get(0);
             a?.classList.remove('pagination-active');
             a?.removeAttribute('aria-current');
             out.push(node);
@@ -149,6 +149,7 @@ function setPage(nav, page) {
     if (next === numAttr(nav, 'activePage', min))
         return;
     nav.dataset.activePage = String(next); // the attribute MO re-renders
+    // Fires when the user changes the page (a link, the arrows) - the new page.
     nav.dispatchEvent(new CustomEvent('pagination-change', { bubbles: true, detail: { page: next } }));
 }
 /**
@@ -156,37 +157,49 @@ function setPage(nav, page) {
  * minPage, maxPage, pageDisplayCount } config onto the attributes (the MO
  * re-renders). Without config it just re-renders the current contract.
  */
+/**
+ * The pager attributes a config names - only where they differ from what the
+ * markup already says (getState() reports the defaults - page 1, 5 slots -
+ * even when none was authored): setState(getState()) changes nothing.
+ */
+function applyConfig(nav, config) {
+    const a = config.activePage ?? config.page;
+    if (a !== undefined && numAttr(nav, 'activePage', 1) !== Number(a))
+        nav.dataset.activePage = String(a);
+    if (config.minPage !== undefined && numAttr(nav, 'minPage', 1) !== Number(config.minPage))
+        nav.dataset.minPage = String(config.minPage);
+    if (config.maxPage !== undefined && numAttr(nav, 'maxPage', 1) !== Number(config.maxPage))
+        nav.dataset.maxPage = String(config.maxPage);
+    if (config.pageDisplayCount !== undefined && numAttr(nav, 'pageDisplayCount', 5) !== Number(config.pageDisplayCount))
+        nav.dataset.pageDisplayCount = String(config.pageDisplayCount);
+}
+/** The markup of a state, for render(): the same config + window render the
+ *  live nav runs on setState, on a detached copy of the authored markup. */
+function applyMarkup(nav, config = {}) {
+    applyConfig(nav, config);
+    if (nav.hasAttribute('data-active-page'))
+        renderWindow(nav);
+}
 function triggerStateChange(nav, stateName, config = {}) {
     if (stateName !== 'default')
         return;
-    const a = config.activePage ?? config.page;
-    if (a !== undefined)
-        nav.dataset.activePage = String(a);
-    if (config.minPage !== undefined)
-        nav.dataset.minPage = String(config.minPage);
-    if (config.maxPage !== undefined)
-        nav.dataset.maxPage = String(config.maxPage);
-    if (config.pageDisplayCount !== undefined)
-        nav.dataset.pageDisplayCount = String(config.pageDisplayCount);
-    renderWindow(nav);
+    applyConfig(nav, config);
+    // the same opt-in as init: only a data-driven nav is re-rendered - an
+    // authored one stays exactly as written
+    if (nav.hasAttribute('data-active-page'))
+        renderWindow(nav);
 }
 /** Registry-level API; pass the nav element explicitly. Unknown names throw. */
-export const paginationApi = {
-    setState(nav, stateName, config = {}) {
-        if (!paginationStates.includes(stateName)) {
-            throw new Error(`pagination: unknown state "${stateName}" (supported: ${paginationStates.join(', ')})`);
-        }
-        triggerStateChange(nav, stateName, config);
-        // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-        nav.dataset.stateName = stateName;
-        nav._stateConfig = config;
-    },
-    getState(nav) {
+export const paginationApi = componentState({
+    component: 'pagination',
+    states: paginationStates,
+    apply: (nav, state) => triggerStateChange(nav, state.name, state.config),
+    read: (nav, state) => {
         // reflect reality: clicks and actions move the page without setState()
         return {
             name: nav.dataset.stateName || 'default',
             config: {
-                ...nav._stateConfig,
+                ...state.config,
                 activePage: numAttr(nav, 'activePage', 1),
                 minPage: numAttr(nav, 'minPage', 1),
                 maxPage: numAttr(nav, 'maxPage', 1),
@@ -194,17 +207,15 @@ export const paginationApi = {
             },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.config),
+});
 df$.paginationApi = paginationApi;
 df$.paginationStates = paginationStates;
 function init() {
-    document.querySelectorAll('.pagination:not([data-init])').forEach((nav) => {
+    dfDollar('.pagination:not([data-init])').toArray().forEach((nav) => {
         nav.dataset.init = '';
-        // bind-scope the api per instance: `$('#pager').api.setState('default', { page: 4 })`
-        nav.api = {
-            setState: (stateName, config) => paginationApi.setState(nav, stateName, config),
-            getState: () => paginationApi.getState(nav),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(nav, paginationApi);
         // opt-in: only a data-driven nav (one that declares its contract with
         // data-active-page) gets its window rendered - plain authored markup is
         // left exactly as written (progressive enhancement)

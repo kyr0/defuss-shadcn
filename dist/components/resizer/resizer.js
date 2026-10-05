@@ -44,8 +44,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const resizerStates = ['default'];
 /** The 8 handle positions; corners resize both axes unless data-axis limits it. */
 const HANDLES = ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw'];
@@ -196,6 +197,7 @@ function applySize(wrapper, axis, px) {
         if (wrapper.dataset[key] !== value)
             wrapper.dataset[key] = value;
     }
+    // Fires while the divider moves (pointer or keys) - the axis and the new width / height.
     wrapper.dispatchEvent(new CustomEvent('resizer-resize', {
         bubbles: true,
         detail: {
@@ -204,6 +206,16 @@ function applySize(wrapper, axis, px) {
             height: axis === 'h' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'h')) : currentPx(wrapper, 'h'),
         },
     }));
+}
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+    // one state, and its markup is a measured size (inline style / data-width,
+    // data-height - pixels from layout): runtime-owned, see the e2e
 }
 /**
  * UI side of setState. 'default' restores the authored snapshot taken at init
@@ -219,29 +231,24 @@ function triggerStateChange(wrapper, stateName, config = {}) {
         applySize(wrapper, 'h', Number(config.height ?? wrapper._defaultSize?.[1]));
 }
 /** Registry-level API; pass the .resizer wrapper explicitly. Unknown names throw. */
-export const resizerApi = {
-    setState(wrapper, stateName, config = {}) {
-        if (!resizerStates.includes(stateName)) {
-            throw new Error(`resizer: unknown state "${stateName}" (supported: ${resizerStates.join(', ')})`);
-        }
-        triggerStateChange(wrapper, stateName, config);
-        // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-        wrapper.dataset.stateName = stateName;
-        wrapper._stateConfig = config;
-    },
-    getState(wrapper) {
+export const resizerApi = componentState({
+    component: 'resizer',
+    states: resizerStates,
+    apply: (wrapper, state) => triggerStateChange(wrapper, state.name, state.config),
+    read: (wrapper, state) => {
         // reflect reality: drags move the size without setState()
         return {
             name: wrapper.dataset.stateName || 'default',
             config: {
-                ...wrapper._stateConfig,
+                ...state.config,
                 width: currentPx(wrapper, 'w'),
                 height: currentPx(wrapper, 'h'),
                 mode: wrapper.dataset.resizeMode || 'px',
             },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.resizerApi = resizerApi;
 df$.resizerStates = resizerStates;
 const HANDLE_LABEL = {
@@ -275,13 +282,13 @@ function makeHandle(wrapper, h) {
  *  data-handles / data-axis changes - the CodeExample toolbar flips modes). */
 function syncHandles(wrapper) {
     const want = handleSet(wrapper);
-    for (const el of Array.from(wrapper.querySelectorAll(':scope > .resizer-handle'))) {
+    for (const el of Array.from(dfDollar(wrapper).find(':scope > .resizer-handle').toArray())) {
         if (!want.includes(el.dataset.handle))
             el.remove();
     }
     for (const h of want) {
-        if (!wrapper.querySelector(`:scope > .resizer-handle[data-handle="${h}"]`))
-            wrapper.appendChild(makeHandle(wrapper, h));
+        if (!dfDollar(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
+            dfDollar(wrapper).append(makeHandle(wrapper, h));
     }
 }
 /** Keyboard parity (same convention as the CodeExample preview grip):
@@ -370,17 +377,15 @@ function startDrag(wrapper, handle, ev) {
     handle.addEventListener('lostpointercapture', onUp);
 }
 function init() {
-    document.querySelectorAll('.resizer:not([data-init])').forEach((wrapper) => {
+    dfDollar('.resizer:not([data-init])').toArray().forEach((wrapper) => {
         wrapper.dataset.init = '';
         if (!targetOf(wrapper))
             return; // a resizer wraps exactly ONE element
         // authored snapshot for the 'default' state (computed - works for px and
         // classes authored alike)
         wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
-        wrapper.api = {
-            setState: (stateName, config) => resizerApi.setState(wrapper, stateName, config),
-            getState: () => resizerApi.getState(wrapper),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(wrapper, resizerApi);
         syncHandles(wrapper);
         // native CSS `resize` (e.g. a resizable textarea) would double the
         // affordances - this component owns the interaction

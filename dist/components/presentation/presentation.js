@@ -32,8 +32,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim } = __df$shared;
+const { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const presentationStates = ['default', 'notes', 'fullscreen'];
 /** A deck that declares nothing still animates every slide in and out. */
 const DEFAULT_IN = 'fadeIn';
@@ -137,7 +138,7 @@ function curtainColor(root, from, to, declared) {
     return getComputedStyle(from).color;
 }
 /** The mount's slide elements, document order (direct children only). */
-const slidesOf = (root) => Array.from(root.querySelectorAll(':scope > [data-slide]'));
+const slidesOf = (root) => Array.from(dfDollar(root).find(':scope > [data-slide]').toArray());
 /** The live 0-based index, mirrored by activate() for ddf$ / bridge reads. */
 const indexOf = (root) => coerceIndex(root.dataset.currentSlide, 0);
 /**
@@ -190,15 +191,49 @@ function exitFullscreen(root) {
  * the mode toggles back to the authored surface. 'notes'/'fullscreen' turn
  * their mode ON (the bridge sends value:false to clear). Unknown names throw.
  */
+/**
+ * The markup of a state, for render(), on a detached copy of the authored
+ * deck: the active slide (data-active / inert / aria-hidden - what enter()
+ * writes) and the notes view, as triggerStateChange applies them. Fullscreen
+ * and the slide transitions (inline styles, data-leaving, data-curtain) are
+ * the browser's and the animation engine's - runtime-owned.
+ */
+function applyMarkup(root, stateName, config = {}) {
+    const slides = slidesOf(root);
+    const want = config.index ?? config.slide;
+    if (want !== undefined && slides.length) {
+        const target = slides[clampIndex(want, slides.length)];
+        slides.forEach((slide) => {
+            const on = slide === target;
+            dfDollar(slide).attr('data-active', on ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', String(!on));
+        });
+    }
+    if (stateName === 'notes')
+        root.toggleAttribute('data-notes', config.value !== false);
+    else if (typeof config.notes === 'boolean')
+        root.toggleAttribute('data-notes', config.notes);
+    else if (stateName === 'default' && want === undefined && config.fullscreen === undefined)
+        root.removeAttribute('data-notes');
+}
 function triggerStateChange(root, stateName, config = {}) {
     if (!presentationStates.includes(stateName)) {
         throw new Error(`presentation: unknown state "${stateName}" (supported: ${presentationStates.join(', ')})`);
     }
+    // a getState() config describes the whole state: { slide } is the slide
+    // (alias of { index }), a boolean { notes } the notes view - applied in
+    // every state but 'notes' (which takes { value }). Only what differs is
+    // written, so setState(getState()) changes nothing (no replayed entrance)
+    const want = config.index ?? config.slide;
+    if (stateName !== 'notes' && typeof config.notes === 'boolean')
+        root.toggleAttribute('data-notes', config.notes);
     if (stateName === 'default') {
-        if (config.index !== undefined)
-            root._presentationActivate?.(clampIndex(config.index, slidesOf(root).length));
+        if (want !== undefined) {
+            const to = clampIndex(want, slidesOf(root).length);
+            if (to !== indexOf(root))
+                root._presentationActivate?.(to);
+        }
         // bare reset (no index, no explicit mode) → authored surface
-        if (config.index === undefined && config.notes === undefined && config.fullscreen === undefined) {
+        if (want === undefined && config.notes === undefined && config.fullscreen === undefined) {
             delete root.dataset.notes;
             exitFullscreen(root);
         }
@@ -214,26 +249,24 @@ function triggerStateChange(root, stateName, config = {}) {
         enterFullscreen(root);
 }
 /** Registry-level API; pass the mount explicitly. Unknown names throw. */
-export const presentationApi = {
-    setState(root, stateName, config = {}) {
-        triggerStateChange(root, stateName, config);
-        // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-        root.dataset.stateName = stateName;
-        root._stateConfig = config;
-    },
-    getState(root) {
+export const presentationApi = componentState({
+    component: 'presentation',
+    states: presentationStates,
+    apply: (root, state) => triggerStateChange(root, state.name, state.config),
+    read: (root, state) => {
         // reflect reality: keyboard/controls/hash move the deck without setState()
         return {
             name: root.dataset.stateName || 'default',
             config: {
-                ...root._stateConfig,
+                ...state.config,
                 slide: indexOf(root),
                 notes: root.hasAttribute('data-notes'),
                 fullscreen: root.hasAttribute('data-fullscreen'),
             },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
 df$.presentationApi = presentationApi;
 df$.presentationStates = presentationStates;
 /** One document-level keyboard listener for all decks (global-flag guard). */
@@ -252,7 +285,7 @@ function bindKeyboard() {
     // typed into inputs, textareas, selects and contenteditable
     bindGlobalKeys((e) => {
         const target = e.target;
-        const root = target?.closest('.presentation') ?? document.querySelector('.presentation');
+        const root = target?.closest('.presentation') ?? (dfDollar('.presentation').get(0) ?? null);
         if (!root)
             return;
         // Space belongs to a focused control, not to the deck
@@ -312,7 +345,7 @@ function bindHash() {
         const id = decodeURIComponent(location.hash.slice(1));
         if (!id)
             return;
-        const slide = document.getElementById(id);
+        const slide = dfDollar('#' + CSS.escape(id)).get(0);
         const root = slide?.closest('.presentation');
         if (root && slide)
             root._presentationActivate?.(slidesOf(root).indexOf(slide));
@@ -339,13 +372,11 @@ function bindFullscreen() {
     });
 }
 function init() {
-    document.querySelectorAll('.presentation:not([data-init])').forEach((root) => {
+    dfDollar('.presentation:not([data-init])').toArray().forEach((root) => {
         root.dataset.init = '';
         // bind-scope the api per instance: `$('#deck').api.setState('notes')`
-        root.api = {
-            setState: (stateName, config) => presentationApi.setState(root, stateName, config),
-            getState: () => presentationApi.getState(root),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(root, presentationApi);
         // ── the visual flip: the one place slide visibility (and its a11y state)
         // changes, plus everything a slide does on arrival ──────────────────────
         const enter = (target) => {
@@ -359,7 +390,7 @@ function init() {
                 slide.setAttribute('aria-hidden', String(!on));
                 // media belongs to the stage it is on: autoplay videos run only on
                 // the active slide and restart on every arrival
-                slide.querySelectorAll('video[autoplay]').forEach((video) => {
+                dfDollar(slide).find('video[autoplay]').toArray().forEach((video) => {
                     if (on) {
                         video.currentTime = 0;
                         void video.play()?.catch(() => { });
@@ -369,15 +400,15 @@ function init() {
                 });
             });
             // animated counters are per-slide on activation (a revisit re-runs them)
-            target.querySelectorAll('[data-count]').forEach((el) => animateCount(el));
+            dfDollar(target).find('[data-count]').toArray().forEach((el) => animateCount(el));
             // entrances replay per activation through the SHARED motion controller
             // (motion.css keyframes): cancel → play is deterministic, so a fresh
             // load AND a revisit get identical entrances (AGENTS.md: animations,
             // not transitions - no rendered "from" state required)
-            target.querySelectorAll('[data-df-entrance]').forEach((el) => {
+            dfDollar(target).find('[data-df-entrance]').toArray().forEach((el) => {
                 entrance(el);
             });
-            target.querySelectorAll('[data-df-draw]').forEach((el) => {
+            dfDollar(target).find('[data-df-draw]').toArray().forEach((el) => {
                 draw(el);
             });
         };
@@ -463,17 +494,17 @@ function init() {
             transition(previous, slides[clamped], forward ?? clamped >= fromIndex);
             // mirror the live index for ddf$, the bridge and getState()
             root.dataset.currentSlide = String(clamped);
-            const counter = root.querySelector('.presentation-counter');
+            const counter = dfDollar(root).find('.presentation-counter').get(0);
             if (counter)
                 counter.textContent = `${clamped + 1} / ${slides.length}`;
-            const progress = root.querySelector('progress.presentation-progress');
+            const progress = dfDollar(root).find('progress.presentation-progress').get(0);
             if (progress) {
                 progress.setAttribute('max', String(slides.length));
                 progress.setAttribute('value', String(clamped + 1));
             }
             const loop = root.hasAttribute('data-loop');
-            const prev = root.querySelector('[data-presentation-action="prev"]');
-            const next = root.querySelector('[data-presentation-action="next"]');
+            const prev = (dfDollar(root).find('[data-presentation-action="prev"]').get(0) ?? null);
+            const next = (dfDollar(root).find('[data-presentation-action="next"]').get(0) ?? null);
             if (prev)
                 prev.disabled = clamped === 0 && !loop;
             if (next)
@@ -481,7 +512,7 @@ function init() {
             // in-slide number chip: NN ⁄ NN (fraction slash - inherently slanted),
             // filled per activation; the chrome counter remains the a11y surface
             const pad = (n) => String(n).padStart(2, '0');
-            const number = slides[clamped].querySelector('.presentation-slide-number');
+            const number = dfDollar(slides[clamped]).find('.presentation-slide-number').get(0);
             if (number)
                 number.textContent = `${pad(clamped + 1)}⁄${pad(slides.length)}`;
         };

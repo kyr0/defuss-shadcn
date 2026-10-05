@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from './lib/css-smoke.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: the ring is CSS (the stylesheet plus the public custom properties);
@@ -216,6 +217,12 @@ await cssSmoke('radial-progress', [
       await page.$eval('#rp-v50', (el) => el.setAttribute('aria-valuenow', '65'));
       await page.waitForFunction(() => document.getElementById('rp-v50')!.textContent === '65%', undefined, { timeout: 2000 });
       assert.equal(await page.$eval('#rp-v50', (el) => (el as HTMLElement).style.getPropertyValue('--value')), '65');
+    },
+  },
+  {
+    label: 'render(): reproduces the authored markup 1:1 and every state',
+    run: async (page) => {
+      await assertRenderContract(page, '.radial-progress[id]', ['default','indeterminate','complete']);
     },
   },
 ]);

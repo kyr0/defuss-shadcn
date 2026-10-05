@@ -4,8 +4,10 @@
 //
 // The chrome MARKUP (header, sidebar, TOC, prev/next, footer) is static —
 // rendered into every page at build time by defuss-ssg (lib/components/*).
-// This file only wires behavior. Loaded synchronously in <head>.
-// No ES modules - works with file:// protocol.
+// This file only wires behavior. Loaded synchronously in <head> - bundled
+// into js/head.js (an IIFE: works with file:// too) with prefs.ts, the
+// stores of every remembered choice.
+import { prefs } from './prefs.js';
 
 (function () {
   'use strict';
@@ -24,8 +26,20 @@
     docs = live;
   });
 
+  // the deferred scripts (site.js, theme-designer.js) share the stores
+  docs.prefs = prefs;
+
+  /* -- Remembered sidebar state, for DocPage's pre-paint script ----
+     The inline script after the sidebar markup reads these attributes
+     (it cannot import the stores): a docked sidebar, and the sections
+     whose remembered toggle is closed. */
+  var rootEl = document.documentElement;
+  rootEl.toggleAttribute('data-nav-docked', prefs.navDocked.value);
+  var closedSections = Object.keys(prefs.navCollapsed.value).filter(function (k) { return prefs.navCollapsed.value[k] === '0'; });
+  if (closedSections.length) rootEl.dataset.navClosed = closedSections.join(' ');
+
   /* -- Dark mode (must run before first paint) ----------------- */
-  var saved = localStorage.getItem('defuss-shadcn-theme');
+  var saved = prefs.colorScheme.value;
   var darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
   var prefersDark = darkMQ.matches;
   if (saved === 'dark' || (!saved && prefersDark)) {
@@ -35,7 +49,7 @@
 
   /* React to OS theme changes in real time (only if user hasn't set a manual preference) */
   darkMQ.addEventListener('change', function (e) {
-    if (localStorage.getItem('defuss-shadcn-theme')) return;   // user chose manually - respect it
+    if (prefs.colorScheme.value) return;   // user chose manually - respect it
     document.documentElement.classList.toggle('dark', e.matches);
     document.documentElement.style.colorScheme = e.matches ? 'dark' : 'light';
     var sun = document.getElementById('icon-sun');
@@ -97,54 +111,112 @@
     /* -- Theme swatch grid (data lives in themes.js - building the grid at
           runtime keeps ~40 theme definitions out of every page's HTML) -- */
     var grid = document.getElementById('theme-grid');
-    if (grid && docs.THEMES && !grid.hasChildNodes()) {
-      var activeId = docs.__activeColorTheme || 'default';
-      docs.THEMES.forEach(function (t) {
-        var btn = document.createElement('button');
-        btn.className = 'theme-swatch' + (t.id === activeId ? ' active' : '');
-        btn.setAttribute('data-theme-id', t.id);
+    var DEFAULT_DOTS = {
+      light: { primary: 'oklch(0.205 0.005 285)', secondary: 'oklch(0.94 0.003 247)', accent: 'oklch(0.94 0.003 247)', destructive: 'oklch(0.577 0.245 27.325)', muted: 'oklch(0.94 0.003 247)' },
+      dark: { primary: 'oklch(0.985 0.002 247)', secondary: 'oklch(0.22 0.006 285)', accent: 'oklch(0.22 0.006 285)', destructive: 'oklch(0.396 0.141 25.723)', muted: 'oklch(0.22 0.006 285)' }
+    };
+    var swatch = function (t, activeId, mode) {
+      var btn = document.createElement('button');
+      btn.className = 'theme-swatch' + (t.id === activeId ? ' active' : '');
+      btn.setAttribute('data-theme-id', t.id);
 
-        var label = document.createElement('span');
-        label.className = 'theme-swatch-label';
-        label.textContent = t.label;
-        btn.appendChild(label);
+      var label = document.createElement('span');
+      label.className = 'theme-swatch-label';
+      label.textContent = t.label;
+      btn.appendChild(label);
 
-        var colors = document.createElement('div');
-        colors.className = 'theme-swatch-colors';
-
-        // Show 5 color dots: primary, secondary, accent, destructive, muted
-        var dotKeys = ['primary', 'secondary', 'accent', 'destructive', 'muted'];
-        var isDark = document.documentElement.classList.contains('dark');
-        var mode = isDark ? 'dark' : 'light';
-        dotKeys.forEach(function (key) {
-          var dot = document.createElement('span');
-          dot.className = 'theme-swatch-dot';
-          var color = null;
-          if (t.styles && t.styles[mode]) {
-            color = t.styles[mode][key];
-          }
-          if (!color && t.id === 'default') {
-            // Default theme colors from default-semantic-tokens.css
-            var defaults = {
-              light: { primary: 'oklch(0.205 0.005 285)', secondary: 'oklch(0.94 0.003 247)', accent: 'oklch(0.94 0.003 247)', destructive: 'oklch(0.577 0.245 27.325)', muted: 'oklch(0.94 0.003 247)' },
-              dark: { primary: 'oklch(0.985 0.002 247)', secondary: 'oklch(0.22 0.006 285)', accent: 'oklch(0.22 0.006 285)', destructive: 'oklch(0.396 0.141 25.723)', muted: 'oklch(0.22 0.006 285)' }
-            };
-            color = defaults[mode][key];
-          }
-          if (color) dot.style.background = color;
-          colors.appendChild(dot);
-        });
-        btn.appendChild(colors);
-
-        btn.addEventListener('click', function () {
-          if (docs.applyTheme) docs.applyTheme(t.id);
-          var popover = document.getElementById('theme-popover');
-          if (popover) popover.hidePopover();
-        });
-
-        grid.appendChild(btn);
+      // 5 color dots: primary, secondary, accent, destructive, muted
+      var colors = document.createElement('div');
+      colors.className = 'theme-swatch-colors';
+      ['primary', 'secondary', 'accent', 'destructive', 'muted'].forEach(function (key) {
+        var dot = document.createElement('span');
+        dot.className = 'theme-swatch-dot';
+        var color = (t.styles && t.styles[mode] && t.styles[mode][key]) || (t.id === 'default' ? DEFAULT_DOTS[mode][key] : null);
+        if (color) dot.style.background = color;
+        colors.appendChild(dot);
       });
-    }
+      btn.appendChild(colors);
+
+      btn.addEventListener('click', function () {
+        if (t.id === '__draft') { if (docs.themeDraft) docs.themeDraft.resume(); }
+        else if (docs.applyTheme) docs.applyTheme(t.id);
+        var popover = document.getElementById('theme-popover');
+        if (popover) popover.hidePopover();
+      });
+      return btn;
+    };
+    var heading = function (text) {
+      var h = document.createElement('p');
+      h.className = 'theme-grid-heading';
+      h.textContent = text;
+      return h;
+    };
+    /* the Theme Designer's unsaved draft: its swatch (shows it again when
+       paused), back to the designer, or throw it away */
+    var draftBlock = function (draft, mode) {
+      var live = draft.live !== false;
+      var btn = swatch({ id: '__draft', label: live ? 'Unsaved draft' : 'Unsaved draft · paused', styles: draft.theme.styles }, live ? '__draft' : '', mode);
+      btn.title = live ? 'Your draft is on - save it in the Theme Designer' : 'Show your draft again';
+      var row = document.createElement('div');
+      row.className = 'theme-draft-actions';
+      var go = document.createElement('a');
+      go.className = 'btn nav-link';
+      go.setAttribute('data-variant', 'outline');
+      go.setAttribute('data-size', 'sm');
+      go.href = 'theme-designer.html';
+      go.textContent = 'Continue designing';
+      var drop = document.createElement('button');
+      drop.className = 'btn';
+      drop.type = 'button';
+      drop.setAttribute('data-variant', 'ghost');
+      drop.setAttribute('data-size', 'sm');
+      drop.textContent = 'Discard';
+      var close = function () {
+        var popover = document.getElementById('theme-popover');
+        if (popover && popover.matches(':popover-open')) popover.hidePopover();
+      };
+      go.addEventListener('click', close);
+      drop.addEventListener('click', function () { if (docs.themeDraft) docs.themeDraft.discard(); });
+      row.append(go, drop);
+      return [btn, row];
+    };
+    /* the grid: the designer's draft and your designed themes on top, then
+       the presets - rebuilt when themes or the draft change, and on a mode
+       switch (the dots show the mode you are in) */
+    var buildThemeGrid = function () {
+      if (!grid || !docs.THEMES) return;
+      var activeId = docs.__activeColorTheme || 'default';
+      var mode = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      var mine = docs.customThemes ? docs.customThemes.list() : [];
+      var draft = docs.themeDraft ? docs.themeDraft.get() : null;
+      if (draft && draft.live !== false) activeId = '__draft';
+      var menuBtn = document.getElementById('theme-selector-btn');
+      if (menuBtn) menuBtn.setAttribute('aria-label', activeId === '__draft' ? 'Change color theme (unsaved draft on)' : 'Change color theme');
+      grid.replaceChildren();
+      if (draft) {
+        grid.appendChild(heading('Theme Designer'));
+        grid.append.apply(grid, draftBlock(draft, mode));
+        if (!mine.length) grid.appendChild(heading('Presets'));
+      }
+      if (mine.length) {
+        grid.appendChild(heading('Your themes'));
+        mine.forEach(function (t) { grid.appendChild(swatch(t, activeId, mode)); });
+        grid.appendChild(heading('Presets'));
+      }
+      docs.THEMES.forEach(function (t) { grid.appendChild(swatch(t, activeId, mode)); });
+    };
+    buildThemeGrid();
+    docs.buildThemeGrid = buildThemeGrid;
+    document.addEventListener('defuss-custom-themes-change', buildThemeGrid);
+    document.addEventListener('defuss-theme-draft-change', buildThemeGrid);
+    new MutationObserver(buildThemeGrid).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    /* "Design your own" navigates (the router owns a.nav-link) - the menu closes */
+    var designBtn = document.querySelector('.theme-design-btn');
+    if (designBtn) designBtn.addEventListener('click', function () {
+      var popover = document.getElementById('theme-popover');
+      if (popover && popover.matches(':popover-open')) popover.hidePopover();
+    });
 
     /* Theme reset button */
     var resetBtn = document.getElementById('theme-reset-btn');
@@ -231,14 +303,13 @@
        aria-label honest. Every path that flips it - the header toggle and
        ⌘B/Ctrl+B (sidebar.js's shortcut, which toggles the first .app-sidebar
        directly) - funnels through this one sync. */
-    var NAV_DOCK_KEY = 'defuss-shadcn-nav-docked';
     var syncDockState = function () {
       var sidebar = document.querySelector('.site-sidebar');
       var toggle = document.getElementById('sidebar-toggle');
       if (!sidebar || !toggle) return;
       var collapsed = sidebar.dataset.state === 'collapsed';
       toggle.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
-      try { localStorage.setItem(NAV_DOCK_KEY, collapsed ? '1' : '0'); } catch { /* private mode */ }
+      prefs.navDocked.set(collapsed);
     };
     /* label must reflect a pre-paint restored dock (DocPage inline script) */
     syncDockState();
@@ -288,8 +359,10 @@
       toggle.addEventListener('click', function () {
         if (!isDrawerMode()) {
           var collapsed = sidebar.dataset.state !== 'collapsed';
-          sidebar.dataset.state = collapsed ? 'collapsed' : 'expanded';
-          sidebar.dataset.stateName = collapsed ? 'collapsed' : 'default';
+          // the component's State API: a set state pins it against its
+          // auto-collapse (data-state-name only mirrors the store)
+          if (sidebar.api) sidebar.api.setState(collapsed ? 'collapsed' : 'default');
+          else sidebar.dataset.state = collapsed ? 'collapsed' : 'expanded';
           syncDockState();
           return;
         }
@@ -324,16 +397,14 @@
        Introduction); other sections' toggles last until the next navigation,
        so 13 sections never pile up open. Saving rewrites the map with that
        one key, which also drops the per-section entries older builds kept. */
-    var NAV_COLLAPSE_KEY = 'defuss-shadcn-nav-collapsed';
     document.querySelectorAll('details[data-nav-always-open]').forEach(function (d) {
       d.addEventListener('toggle', function () {
         var map: Record<string, string> = {};
         map[d.dataset.navSection] = d.open ? '1' : '0';
-        try { localStorage.setItem(NAV_COLLAPSE_KEY, JSON.stringify(map)); } catch { /* private mode */ }
+        prefs.navCollapsed.set(map);
       });
     });
 
-    /* -- GitHub star count (cached in sessionStorage) ------------ */
     /* ⌘B flips data-state through sidebar.js; #sidebar-toggle's own click
        handler funnels through syncDockState, but the shortcut bypasses it —
        re-sync on that keystroke so the persisted dock + aria-label stay right. */
@@ -341,12 +412,12 @@
       if ((e.metaKey || e.ctrlKey) && e.key === 'b') setTimeout(syncDockState, 0);
     });
 
-    /* -- GitHub star count (cached in sessionStorage) ------------ */
+    /* -- GitHub star count (cached for the session: prefs.ghStars) */
     var updateStarCount = function (count) {
       var el = document.querySelector('.github-stars');
       if (el) el.textContent = count;
     };
-    var cachedStars = sessionStorage.getItem('gh-stars');
+    var cachedStars = prefs.ghStars.value;
     if (cachedStars) {
       updateStarCount(cachedStars);
     } else {
@@ -355,7 +426,7 @@
         .then(function (data) {
           if (data.stargazers_count != null) {
             var count = String(data.stargazers_count);
-            sessionStorage.setItem('gh-stars', count);
+            prefs.ghStars.set(count);
             updateStarCount(count);
           }
         })
@@ -369,23 +440,21 @@
   /* Save scroll position before navigating, restore on load.   */
   /* (With SPA router, sidebar persists - this handles fallback */
   /* cases: first load, hard refresh, external navigation.)     */
-  var SCROLL_KEY = 'shadcn-nav-scroll';
-
   document.addEventListener('click', function (e) {
     var link = e.target.closest('a.nav-link, .site-header a[href="index.html"]');
     if (!link) return;
     var sidebar = document.querySelector('.site-sidebar .sidebar-content');
-    if (sidebar) sessionStorage.setItem(SCROLL_KEY, sidebar.scrollTop);
+    if (sidebar) prefs.navScroll.set(sidebar.scrollTop);
   });
 
   /* Restore sidebar scroll & scroll active link into view */
   document.addEventListener('DOMContentLoaded', function () {
     var sidebar = document.querySelector('.site-sidebar .sidebar-content');
     if (!sidebar) return;
-    var saved = sessionStorage.getItem(SCROLL_KEY);
-    if (saved) {
-      sidebar.scrollTop = parseInt(saved, 10);
-      sessionStorage.removeItem(SCROLL_KEY);
+    var saved = prefs.navScroll.value;
+    if (saved >= 0) {
+      sidebar.scrollTop = saved;
+      prefs.navScroll.set(-1);
     } else {
       /* First visit - scroll active link into view */
       var active = sidebar.querySelector('.nav-link.active');

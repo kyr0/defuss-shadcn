@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionnaire e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/button/button.css">
+  <link rel="stylesheet" href="/dist/components/input/input.css">
+  <link rel="stylesheet" href="/dist/components/label/label.css">
+  <link rel="stylesheet" href="/dist/components/rating/rating.css">
+  <link rel="stylesheet" href="/dist/components/questionnaire/questionnaire.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1.5rem; display: grid; gap: 2.5rem; max-width: 40rem; }
+  </style>
+</head>
+<body>
+  <!-- the full flow: blocks, choice + rule branches, validation, dependencies, skip, review -->
+  <form class="questionnaire" id="q-intake" aria-label="Project intake">
+    <div class="questionnaire-progress"></div>
+    <section class="questionnaire-block" data-block="you" data-title="About you">
+      <fieldset class="questionnaire-step" data-step="role">
+        <legend class="questionnaire-title">What describes you best?</legend>
+        <p class="questionnaire-description">We'll only ask what matters for your role.</p>
+        <div class="questionnaire-choices">
+          <label class="questionnaire-choice"><input type="radio" name="role" value="dev" required data-goto="stack"><span class="questionnaire-choice-label">Developer</span></label>
+          <label class="questionnaire-choice"><input type="radio" name="role" value="design" data-goto="tools"><span class="questionnaire-choice-label">Designer</span></label>
+          <label class="questionnaire-choice"><input type="radio" name="role" value="lead" data-goto="team"><span class="questionnaire-choice-label">Team lead</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="stack" data-next="framework" data-min="1" data-max="3">
+        <legend class="questionnaire-title">Which languages do you use?</legend>
+        <p class="questionnaire-description">Pick one to three.</p>
+        <div class="questionnaire-choices">
+          <label class="questionnaire-choice"><input type="checkbox" name="stack" value="ts"><span class="questionnaire-choice-label">TypeScript</span></label>
+          <label class="questionnaire-choice"><input type="checkbox" name="stack" value="py"><span class="questionnaire-choice-label">Python</span></label>
+          <label class="questionnaire-choice"><input type="checkbox" name="stack" value="go"><span class="questionnaire-choice-label">Go</span></label>
+          <label class="questionnaire-choice"><input type="checkbox" name="stack" value="rs"><span class="questionnaire-choice-label">Rust</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="framework" data-depends-on="stack" data-next="team">
+        <legend class="questionnaire-title">Your main framework?</legend>
+        <div class="questionnaire-field">
+          <label class="label" for="q-fw">Framework</label>
+          <input class="input" id="q-fw" name="framework" required>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="tools" data-next="team">
+        <legend class="questionnaire-title">Your design tool?</legend>
+        <div class="questionnaire-choices">
+          <label class="questionnaire-choice"><input type="radio" name="tool" value="figma" required><span class="questionnaire-choice-label">Figma</span></label>
+          <label class="questionnaire-choice"><input type="radio" name="tool" value="sketch"><span class="questionnaire-choice-label">Sketch</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="team">
+        <legend class="questionnaire-title">How many people are on your team?</legend>
+        <div class="questionnaire-field">
+          <label class="label" for="q-size">Team size</label>
+          <input class="input" id="q-size" name="size" type="number" min="1" max="10000" required>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="enterprise" data-next="budget">
+        <legend class="questionnaire-title">Do you need single sign-on?</legend>
+        <div class="questionnaire-choices">
+          <label class="questionnaire-choice"><input type="radio" name="sso" value="yes" required><span class="questionnaire-choice-label">Yes</span></label>
+          <label class="questionnaire-choice"><input type="radio" name="sso" value="no"><span class="questionnaire-choice-label">No</span></label>
+        </div>
+      </fieldset>
+    </section>
+    <section class="questionnaire-block" data-block="project" data-title="Your project">
+      <fieldset class="questionnaire-step" data-step="budget">
+        <legend class="questionnaire-title">Your budget range (EUR)?</legend>
+        <div class="questionnaire-field">
+          <label class="label" for="q-min">From</label>
+          <input class="input" id="q-min" name="budgetMin" type="number" min="0" required>
+        </div>
+        <div class="questionnaire-field">
+          <label class="label" for="q-max">To</label>
+          <input class="input" id="q-max" name="budgetMax" type="number" min="0" required>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="email">
+        <legend class="questionnaire-title">Where can we reach you?</legend>
+        <div class="questionnaire-field">
+          <label class="label" for="q-email">Email</label>
+          <input class="input" id="q-email" name="email" type="email" required>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="referral" data-optional>
+        <legend class="questionnaire-title">How did you hear about us?</legend>
+        <div class="questionnaire-choices">
+          <label class="questionnaire-choice"><input type="radio" name="referral" value="friend"><span class="questionnaire-choice-label">A friend</span></label>
+          <label class="questionnaire-choice"><input type="radio" name="referral" value="other"><span class="questionnaire-choice-label">Other:</span><input class="questionnaire-other" name="referralOther" aria-label="Other source"></label>
+        </div>
+      </fieldset>
+    </section>
+    <fieldset class="questionnaire-step" data-step="review" data-end>
+      <legend class="questionnaire-title">Check your answers</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" data-variant="outline" type="button" data-questionnaire="skip">Skip</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Send</button>
+    </div>
+    <div class="questionnaire-complete">
+      <p>Thanks - we'll be in touch.</p>
+    </div>
+    <script type="application/json" class="questionnaire-rules">
+      {
+        "branches": {
+          "team": [{ "when": [{ "field": "size", "op": "gte", "value": 50 }], "goto": "enterprise" }, { "when": [], "goto": "budget" }]
+        },
+        "validate": {
+          "budget": [{ "assert": [{ "field": "budgetMax", "op": "gte", "value": { "field": "budgetMin" } }], "message": "The upper end must not be below the lower end.", "field": "budgetMax" }]
+        }
+      }
+    </script>
+  </form>
+
+  <!-- the branch history beside the intake -->
+  <nav class="questionnaire-trail" id="q-trail-host" data-for="q-intake" aria-label="Your answers so far"></nav>
+
+  <!-- a broken flow: the analysis reports it -->
+  <form class="questionnaire" id="q-broken" aria-label="Broken flow" data-persist="none">
+    <fieldset class="questionnaire-step" data-step="a"><legend class="questionnaire-title">A</legend>
+      <label class="questionnaire-choice"><input type="radio" name="x" value="1" data-goto="ghost" required><span>One</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="x" value="2" data-goto="c"><span>Two</span></label>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="b" data-next="a"><legend class="questionnaire-title">B (unreachable)</legend></fieldset>
+    <fieldset class="questionnaire-step" data-step="c" data-next="d"><legend class="questionnaire-title">C</legend><input name="y"></fieldset>
+    <fieldset class="questionnaire-step" data-step="d" data-next="c"><legend class="questionnaire-title">D</legend><input name="z"></fieldset>
+    <script type="application/json" class="questionnaire-rules">
+      { "branches": { "c": [{ "when": [{ "field": "nope", "op": "eq", "value": 1 }], "goto": "d" }] } }
+    </script>
+  </form>
+
+  <!-- dominators: a rule reading a field only one branch asks gets a warning -->
+  <form class="questionnaire" id="q-dom" aria-label="Dominators" data-persist="none">
+    <fieldset class="questionnaire-step" data-step="pick"><legend class="questionnaire-title">Pick</legend>
+      <label class="questionnaire-choice"><input type="radio" name="pick" value="a" required data-goto="x"><span>A</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="pick" value="b" data-goto="y"><span>B</span></label>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="x" data-next="y"><legend class="questionnaire-title">X</legend><input name="coupon" required aria-label="Coupon"></fieldset>
+    <fieldset class="questionnaire-step" data-step="y" data-next="end"><legend class="questionnaire-title">Y</legend><input name="note" aria-label="Note"></fieldset>
+    <fieldset class="questionnaire-step" data-step="end" data-end><legend class="questionnaire-title">End</legend></fieldset>
+    <script type="application/json" class="questionnaire-rules">
+      { "branches": { "y": [{ "when": [{ "field": "coupon", "op": "answered" }], "goto": "end" }, { "when": [{ "field": "pick", "op": "eq", "value": "a" }], "goto": "end" }] } }
+    </script>
+  </form>
+
+  <!-- quick poll: digits as shortcuts, auto-advance, local persistence under its own key -->
+  <form class="questionnaire" id="q-poll" aria-label="Poll" data-shortcuts="digits" data-auto-advance data-persist="local" data-persist-key="fixture-poll">
+    <fieldset class="questionnaire-step" data-step="mood">
+      <legend class="questionnaire-title">How is your day?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="mood" value="good" required><span class="questionnaire-choice-label">Good</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="mood" value="meh"><span class="questionnaire-choice-label">Meh</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="rate">
+      <legend class="questionnaire-title">Rate it</legend>
+      <div class="rating" role="radiogroup" aria-label="Rating">
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="1" aria-label="1 star" required></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="2" aria-label="2 stars"></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="3" aria-label="3 stars"></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="4" aria-label="4 stars"></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="5" aria-label="5 stars"></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="thanks" data-end>
+      <legend class="questionnaire-title">Thanks!</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">OK</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Done</button>
+    </div>
+  </form>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/questionnaire/questionnaire.js"></script>
+  <script type="module">
+    globalThis.__fixtureReady = true;
+  </script>
+</body>
+</html>

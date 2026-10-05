@@ -18,14 +18,15 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const dropdownStates = ['default', 'open'];
 const ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 const isDisabled = (el) => el.disabled || el.getAttribute('aria-disabled') === 'true';
 /** The items that belong to THIS menu - not those of its nested submenus. */
-const itemsOf = (menu) => Array.from(menu.querySelectorAll(ITEM)).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
-const subOf = (trigger) => trigger.closest('.dropdown-sub')?.querySelector(':scope > .dropdown-sub-content') ?? null;
+const itemsOf = (menu) => Array.from(dfDollar(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+const subOf = (trigger) => dfDollar(trigger).closest('.dropdown-sub').children('.dropdown-sub-content').get(0) ?? null;
 /** The outermost menu of a (sub)menu - the one its trigger opened. */
 const rootOf = (menu) => {
     let m = menu;
@@ -35,6 +36,12 @@ const rootOf = (menu) => {
 };
 const HOVER_OPEN = 120;
 const HOVER_CLOSE = 220;
+/**
+ * The markup of a state: none - 'open' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) { }
 /**
  * UI side of setState: 'default' hides, 'open' shows. Open/close mechanics
  * stay native (Popover API); the toggle listener keeps aria-expanded and
@@ -56,20 +63,12 @@ function triggerStateChange(menu, stateName, _config) {
     }
 }
 /** Registry-level API; pass the menu element explicitly. Unknown names throw. */
-export const dropdownApi = {
-    setState(menu, stateName, config = {}) {
-        if (!dropdownStates.includes(stateName)) {
-            throw new Error(`dropdown: unknown state "${stateName}" (supported: ${dropdownStates.join(', ')})`);
-        }
-        triggerStateChange(menu, stateName, config);
-        // state lives on the ELEMENT, not the module (multiple menus per page)
-        menu.dataset.stateName = stateName;
-        menu._stateConfig = config;
-    },
-    getState(menu) {
-        return { name: menu.dataset.stateName || 'default', config: menu._stateConfig ?? {} };
-    },
-};
+export const dropdownApi = componentState({
+    component: 'dropdown',
+    states: dropdownStates,
+    apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.dropdownApi = dropdownApi;
 df$.dropdownStates = dropdownStates;
 let anchorSeq = 0;
@@ -94,12 +93,13 @@ function activate(menu, item) {
     if (role === 'menuitemcheckbox') {
         const checked = item.getAttribute('aria-checked') !== 'true';
         item.setAttribute('aria-checked', String(checked));
+        // Fires when an item is chosen - the item, its value (data-value or its text) and, for a checkbox item, whether it is checked now.
         item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
         return; // stays open: toggling several options in one go
     }
     if (role === 'menuitemradio') {
         const group = item.closest('[role="group"]') ?? menu;
-        group.querySelectorAll('[role="menuitemradio"]').forEach((r) => { if (r.closest('[role="menu"]') === menu)
+        dfDollar(group).find('[role="menuitemradio"]').toArray().forEach((r) => { if (r.closest('[role="menu"]') === menu)
             r.setAttribute('aria-checked', String(r === item)); });
         item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
         return;
@@ -141,7 +141,7 @@ function wireMenu(menu) {
         return;
     menu._wired = true;
     const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
-    const openSubs = () => Array.from(menu.querySelectorAll('.dropdown-sub-content')).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(':popover-open'));
+    const openSubs = () => Array.from(dfDollar(menu).find('.dropdown-sub-content').toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(':popover-open'));
     menu.addEventListener('mousemove', (e) => {
         if (!own(e))
             return;
@@ -267,8 +267,8 @@ function wireMenu(menu) {
  * focus to the first item when opened by keyboard, back to the trigger when
  * closed from inside. */
 function wireSub(wrap) {
-    const trigger = wrap.querySelector(':scope > .dropdown-sub-trigger');
-    const sub = wrap.querySelector(':scope > .dropdown-sub-content');
+    const trigger = dfDollar(wrap).find(':scope > .dropdown-sub-trigger').get(0);
+    const sub = dfDollar(wrap).find(':scope > .dropdown-sub-content').get(0);
     if (!trigger || !sub || sub._subWired)
         return;
     sub._subWired = true;
@@ -307,9 +307,9 @@ function wireSub(wrap) {
     });
 }
 function init() {
-    document.querySelectorAll('[data-dropdown-trigger]:not([data-init])').forEach((trigger) => {
+    dfDollar('[data-dropdown-trigger]:not([data-init])').toArray().forEach((trigger) => {
         trigger.dataset.init = '';
-        const menu = document.getElementById(trigger.dataset.dropdownTrigger);
+        const menu = dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
         if (!menu)
             return;
         // CSS anchor positioning - unique name per trigger-menu pair
@@ -348,23 +348,21 @@ function init() {
                 // was focused when this menu opened; that one is taken back.
                 const active = document.activeElement;
                 const other = active instanceof Element && active !== trigger ? active.closest('[data-dropdown-trigger]') : null;
-                const otherOpen = other ? document.getElementById(other.getAttribute('data-dropdown-trigger'))?.matches(':popover-open') : false;
+                const otherOpen = other ? dfDollar('#' + CSS.escape(other.getAttribute('data-dropdown-trigger'))).get(0)?.matches(':popover-open') : false;
                 if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
                     trigger.focus({ preventScroll: true });
             }
         });
         wireMenu(menu);
-        menu.querySelectorAll('.dropdown-sub').forEach(wireSub);
+        dfDollar(menu).find('.dropdown-sub').toArray().forEach(wireSub);
     });
     // submenus added later (dynamic menus)
-    document.querySelectorAll('.dropdown-sub').forEach(wireSub);
+    dfDollar('.dropdown-sub').toArray().forEach(wireSub);
     // bind-scope the api per menu instance: `$('#menu').api.setState('open')`
-    document.querySelectorAll('.dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])').forEach((menu) => {
+    dfDollar('.dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])').toArray().forEach((menu) => {
         menu.dataset.init = '';
-        menu.api = {
-            setState: (stateName, config) => dropdownApi.setState(menu, stateName, config),
-            getState: () => dropdownApi.getState(menu),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(menu, dropdownApi);
     });
 }
 init();

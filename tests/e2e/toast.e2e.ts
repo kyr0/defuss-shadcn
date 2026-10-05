@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped toast component. Loads the fixture
@@ -295,6 +296,10 @@ try {
     assert.ok(r.surface && r.surfaceBg !== 'rgba(0, 0, 0, 0)');
     await page.evaluate(() => (globalThis as any).df$.shadcn.toast.dismiss());
     await page.waitForTimeout(400);
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '#toast-container', ['default'], { runtimeOwned: '.toast, .toast *' });
   });
 
 } finally {

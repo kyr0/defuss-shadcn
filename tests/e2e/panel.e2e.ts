@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: a panel is a card with a title bar whose minimize / maximize tools are
@@ -54,7 +55,7 @@ try {
     assert.equal(r.bar, 'flex');
     assert.deepEqual(r.regions, [null, 'north', 'west', 'center', 'east', 'south']);
     assert.ok(r.controls);
-    assert.deepEqual(r.states, ['default', 'minimized', 'maximized']);
+    assert.deepEqual(r.states, ['default', 'minimized', 'maximized', 'closed']);
   });
 
   await check('state "default": title bar + body at the authored height, both swaps off', async () => {
@@ -282,6 +283,51 @@ try {
       'south:default>minimized', 'south:minimized>default',
     ]);
   });
+  await check('state "closed" via the close tool: the panel and its region leave the layout, focus goes to the opener; the opener brings it back', async () => {
+    const width = () => page.$eval('#bl-close-c', (c) => Math.round(c.getBoundingClientRect().width));
+    const before = await width();
+    await page.click('#insp .panel-close');
+    assert.equal(await state('#insp'), 'closed');
+    const r = await page.evaluate(() => ({
+      hidden: document.getElementById('insp')!.hidden,
+      region: document.getElementById('r-insp')!.hasAttribute('data-panel-closed'),
+      shown: getComputedStyle(document.getElementById('r-insp')!).display,
+      focus: document.activeElement?.id,
+    }));
+    assert.deepEqual(r, { hidden: true, region: true, shown: 'none', focus: 'open-insp' });
+    assert.ok((await width()) > before, 'the center takes the closed region');
+    await page.click('#open-insp');
+    assert.equal(await state('#insp'), 'default');
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).getAttribute('aria-label')), 'Close Inspector');
+    assert.equal(await width(), before);
+  });
+
+  await check('data-panel-toggle closes an open panel, opens a closed one, and its aria-expanded follows the panel', async () => {
+    const expanded = () => page.$eval('#toggle-insp', (b) => b.getAttribute('aria-expanded'));
+    assert.equal(await expanded(), 'true');
+    await page.click('#toggle-insp');
+    assert.equal(await state('#insp'), 'closed');
+    assert.equal(await expanded(), 'false');
+    await page.click('#toggle-insp');
+    assert.equal(await state('#insp'), 'default');
+    assert.equal(await expanded(), 'true');
+  });
+
+  await check("df$.shadcn.panel.close() / open(); setState('closed') hides, 'default' shows", async () => {
+    const r = await page.evaluate(() => {
+      const p = (globalThis as any).df$.shadcn.panel;
+      p.close('insp');
+      const closed = document.getElementById('insp')!.hidden;
+      p.open('insp');
+      return [closed, document.getElementById('insp')!.hidden];
+    });
+    assert.deepEqual(r, [true, false]);
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.panel[id]', ['default','minimized','maximized','closed'], { runtimeAttrs: ['data-region','id','aria-controls'] });
+  });
+
 } finally {
   await browser.close();
   server.stop?.();

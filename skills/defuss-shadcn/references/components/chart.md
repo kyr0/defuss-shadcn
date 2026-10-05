@@ -128,6 +128,28 @@ Editorial frame (optional chrome around the mount):
 
 Example: `document.querySelector('#c').api.setState('default', { option: { series: [{ type: 'bar', data: [5, 4, 3] }] } })`
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.chartApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.chartStates` = `default`.
+
+### `df$.shadcn.chart`
+
+| Member | Description |
+|---|---|
+| `mount(el, option = {})` | Why: the one mount path (declarative and imperative converge here). The token theme goes to init(); the option carries only what the author said. The renderer is SVG (crisp at any density, selectable, small); a ResizeObserver keeps the canvas honest - never a window resize listener. |
+| `instance(el)` | The stored instance for an element (undefined until mounted). |
+| `theme(el)` | Why: the theme adapter - the chart reads the DESIGN TOKENS off its own computed style and returns an ECharts THEME object (passed to init() and setTheme()). A theme, unlike a merged base option, is only defaults: it survives setOption(…, notMerge) (stories, deck stages), applies per component type (categoryAxis/valueAxis only style axes that EXIST - no phantom axes on pies/treemaps) and per series type (bar radius, line width, pie separators). Sources: the --chart-1..5 palette (resolved to rgb; empty tokens dropped), the element's own `color` for text (so a chart inherits card, slide or page foreground; muted/axis/grid are fixed mixes of it), --popover* for the tooltip, --font-sans for type, and `--chart-font-size` (component- local, default 13px; decks raise it to artboard scale) for the type scale every size here derives from. prefers-reduced-motion disables animation. |
+| `color(el, value, alpha = 1)` | Why: page and deck options that pick token colors themselves (a highlight bar, a visualMap gradient) need ECharts-parseable colors too. Resolves a token name ('--chart-2', read off the element) or any CSS color to rgb()/rgba(), optionally at an alpha. '' when unresolvable. |
+| `deck(deck, { base = {}, states })` | Why: the deck stage - ONE chart instance for a whole presentation, so every chart slide MORPHS into the next (bars → dots → donut …) instead of cutting between separate charts. The stage is a `.chart.presentation- stage` child of the `.presentation` mount, laid out in artboard coordinates by presentation.css; slides name the state they show with data-chart-state="name". Slides without one fade the stage out - the instance keeps its last state, so the next chart slide morphs from there. Each state is deep-merged over `base` (shared chrome) and applied with notMerge, so a state is a complete surface; series default to universalTransition. The first appearance mounts the chart, so its entrance animation plays on stage - never hidden at page load. |
+
+### `df$.shadcn.chartStory`
+
+`df$.shadcn.chartStory(el, states, { loop = false } = {})` - Why: data-storytelling - a sequence of option states driven like slides. go() clamps (or wraps with { loop: true }) and applies states[i] with notMerge, so each step is a full surface (the token theme persists - it is the instance's theme, not part of the option). Series default to universalTransition, so keeping series.id and data names stable across states makes ECharts MORPH instead of redrawing. An unmounted element is lazily mounted with states[0].
+
 ## Reuse boundary
 
 Generalize **lifecycle** (mount/resize/dispose), **theme** (the token adapter)

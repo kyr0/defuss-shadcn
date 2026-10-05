@@ -1,0 +1,368 @@
+---
+title: "Illustrative · Loop"
+description: "Loop and flywheel diagrams with the diagram component - stations on a ring around a hub that accumulates state, curved arcs and dashed write-backs, a flow token; step by step and as a delta."
+slug: "diagram-loop"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-loop" title="Illustrative · Loop" component="diagram">
+  Reinforcing cycles: stations on a ring (<code>--i</code> of <code>--n</code>, placed with CSS <code>sin()</code> / <code>cos()</code>), a hub in the middle (<code>data-hub</code>) that every pass writes back to. Arcs are <code>data-curve="curve"</code> (they bend away from the center); a <code>data-flow</code> token travels the closing arc.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Product learning loop" component="diagram" hint="The dashed spokes are the point - without the hub it is just a circular process."
+<figure class="diagram" id="dg-loop" data-type="loop" aria-label="The product learning loop">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Loop</span>
+    <span class="diagram-title">Every pass improves the shared record</span>
+    <span class="diagram-dek">Work goes clockwise; each station writes back to the hub (dashed).</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--n:6">
+    <div class="diagram-node" data-node="hub" data-tone="muted" data-hub>
+      <span class="diagram-node-name">Product memory</span>
+      <span class="diagram-node-meta">one record · every loop</span>
+    </div>
+    <div class="diagram-node" data-node="capture" style="--i:0">
+      <span class="diagram-node-name">Capture</span>
+      <span class="diagram-node-meta">signals in</span>
+    </div>
+    <div class="diagram-node" data-node="research" style="--i:1">
+      <span class="diagram-node-name">Research</span>
+      <span class="diagram-node-meta">evidence pulled</span>
+    </div>
+    <div class="diagram-node" data-node="decide" data-tone="accent" style="--i:2">
+      <span class="diagram-node-name">Decide</span>
+      <span class="diagram-node-meta">human approves</span>
+    </div>
+    <div class="diagram-node" data-node="build" style="--i:3">
+      <span class="diagram-node-name">Build</span>
+      <span class="diagram-node-meta">work ships</span>
+    </div>
+    <div class="diagram-node" data-node="measure" style="--i:4">
+      <span class="diagram-node-name">Measure</span>
+      <span class="diagram-node-meta">outcomes logged</span>
+    </div>
+    <div class="diagram-node" data-node="learn" style="--i:5">
+      <span class="diagram-node-name">Learn</span>
+      <span class="diagram-node-meta">playbook updated</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capture" data-to="research" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="research" data-to="decide" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="decide" data-to="build" data-curve="curve" data-tone="accent"></li>
+    <li class="diagram-edge" data-from="build" data-to="measure" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="measure" data-to="learn" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="learn" data-to="capture" data-curve="curve" data-flow="3200"></li>
+    <li class="diagram-edge" data-from="capture" data-to="hub" data-curve="straight" data-line="dashed">signals</li>
+    <li class="diagram-edge" data-from="measure" data-to="hub" data-curve="straight" data-line="dashed">outcomes</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="The loop, one station at a time" component="diagram" hint="Clockwise from the top; the hub is step 0."
+<figure class="diagram" id="dg-loop-steps" data-type="loop" data-steps data-autoplay aria-label="The product learning loop">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Loop</span>
+    <span class="diagram-title">Every pass improves the shared record</span>
+    <span class="diagram-dek">Work goes clockwise; each station writes back to the hub (dashed).</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--n:6">
+    <div class="diagram-node" data-node="hub" data-tone="muted" data-step="0" data-hub>
+      <span class="diagram-node-name">Product memory</span>
+      <span class="diagram-node-meta">one record · every loop</span>
+    </div>
+    <div class="diagram-node" data-node="capture" data-step="1" style="--i:0">
+      <span class="diagram-node-name">Capture</span>
+      <span class="diagram-node-meta">signals in</span>
+    </div>
+    <div class="diagram-node" data-node="research" data-step="2" style="--i:1">
+      <span class="diagram-node-name">Research</span>
+      <span class="diagram-node-meta">evidence pulled</span>
+    </div>
+    <div class="diagram-node" data-node="decide" data-tone="accent" data-step="3" style="--i:2">
+      <span class="diagram-node-name">Decide</span>
+      <span class="diagram-node-meta">human approves</span>
+    </div>
+    <div class="diagram-node" data-node="build" data-step="4" style="--i:3">
+      <span class="diagram-node-name">Build</span>
+      <span class="diagram-node-meta">work ships</span>
+    </div>
+    <div class="diagram-node" data-node="measure" data-step="5" style="--i:4">
+      <span class="diagram-node-name">Measure</span>
+      <span class="diagram-node-meta">outcomes logged</span>
+    </div>
+    <div class="diagram-node" data-node="learn" data-step="6" style="--i:5">
+      <span class="diagram-node-name">Learn</span>
+      <span class="diagram-node-meta">playbook updated</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capture" data-to="research" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="research" data-to="decide" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="decide" data-to="build" data-curve="curve" data-tone="accent"></li>
+    <li class="diagram-edge" data-from="build" data-to="measure" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="measure" data-to="learn" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="learn" data-to="capture" data-curve="curve" data-flow="3200"></li>
+    <li class="diagram-edge" data-from="capture" data-to="hub" data-curve="straight" data-line="dashed">signals</li>
+    <li class="diagram-edge" data-from="measure" data-to="hub" data-curve="straight" data-line="dashed">outcomes</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Loop, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-loop-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-loop-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-loop-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-loop-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-loop-live" data-interactive data-type="loop" aria-label="The product learning loop">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Loop</span>
+    <span class="diagram-title">Every pass improves the shared record</span>
+    <span class="diagram-dek">Work goes clockwise; each station writes back to the hub (dashed).</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--n:6">
+    <div class="diagram-node" data-node="hub" data-tone="muted" data-hub>
+      <span class="diagram-node-name">Product memory</span>
+      <span class="diagram-node-meta">one record · every loop</span>
+    </div>
+    <div class="diagram-node" data-node="capture" style="--i:0">
+      <span class="diagram-node-name">Capture</span>
+      <span class="diagram-node-meta">signals in</span>
+    </div>
+    <div class="diagram-node" data-node="research" style="--i:1">
+      <span class="diagram-node-name">Research</span>
+      <span class="diagram-node-meta">evidence pulled</span>
+    </div>
+    <div class="diagram-node" data-node="decide" data-tone="accent" style="--i:2">
+      <span class="diagram-node-name">Decide</span>
+      <span class="diagram-node-meta">human approves</span>
+    </div>
+    <div class="diagram-node" data-node="build" style="--i:3">
+      <span class="diagram-node-name">Build</span>
+      <span class="diagram-node-meta">work ships</span>
+    </div>
+    <div class="diagram-node" data-node="measure" style="--i:4">
+      <span class="diagram-node-name">Measure</span>
+      <span class="diagram-node-meta">outcomes logged</span>
+    </div>
+    <div class="diagram-node" data-node="learn" style="--i:5">
+      <span class="diagram-node-name">Learn</span>
+      <span class="diagram-node-meta">playbook updated</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capture" data-to="research" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="research" data-to="decide" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="decide" data-to="build" data-curve="curve" data-tone="accent"></li>
+    <li class="diagram-edge" data-from="build" data-to="measure" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="measure" data-to="learn" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="learn" data-to="capture" data-curve="curve" data-flow="3200"></li>
+    <li class="diagram-edge" data-from="capture" data-to="hub" data-curve="straight" data-line="dashed">signals</li>
+    <li class="diagram-edge" data-from="measure" data-to="hub" data-curve="straight" data-line="dashed">outcomes</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Loop, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-loop-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-loop-edit" data-interactive data-type="loop" aria-label="The product learning loop">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Loop</span>
+        <span class="diagram-title">Every pass improves the shared record</span>
+        <span class="diagram-dek">Work goes clockwise; each station writes back to the hub (dashed).</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--n:6">
+        <div class="diagram-node" data-node="hub" data-tone="muted" data-hub>
+          <span class="diagram-node-name">Product memory</span>
+          <span class="diagram-node-meta">one record · every loop</span>
+        </div>
+        <div class="diagram-node" data-node="capture" style="--i:0">
+          <span class="diagram-node-name">Capture</span>
+          <span class="diagram-node-meta">signals in</span>
+        </div>
+        <div class="diagram-node" data-node="research" style="--i:1">
+          <span class="diagram-node-name">Research</span>
+          <span class="diagram-node-meta">evidence pulled</span>
+        </div>
+        <div class="diagram-node" data-node="decide" data-tone="accent" style="--i:2">
+          <span class="diagram-node-name">Decide</span>
+          <span class="diagram-node-meta">human approves</span>
+        </div>
+        <div class="diagram-node" data-node="build" style="--i:3">
+          <span class="diagram-node-name">Build</span>
+          <span class="diagram-node-meta">work ships</span>
+        </div>
+        <div class="diagram-node" data-node="measure" style="--i:4">
+          <span class="diagram-node-name">Measure</span>
+          <span class="diagram-node-meta">outcomes logged</span>
+        </div>
+        <div class="diagram-node" data-node="learn" style="--i:5">
+          <span class="diagram-node-name">Learn</span>
+          <span class="diagram-node-meta">playbook updated</span>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="capture" data-to="research" data-curve="curve"></li>
+        <li class="diagram-edge" data-from="research" data-to="decide" data-curve="curve"></li>
+        <li class="diagram-edge" data-from="decide" data-to="build" data-curve="curve" data-tone="accent"></li>
+        <li class="diagram-edge" data-from="build" data-to="measure" data-curve="curve"></li>
+        <li class="diagram-edge" data-from="measure" data-to="learn" data-curve="curve"></li>
+        <li class="diagram-edge" data-from="learn" data-to="capture" data-curve="curve" data-flow="3200"></li>
+        <li class="diagram-edge" data-from="capture" data-to="hub" data-curve="straight" data-line="dashed">signals</li>
+        <li class="diagram-edge" data-from="measure" data-to="hub" data-curve="straight" data-line="dashed">outcomes</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-loop-edit-panel" aria-labelledby="dg-loop-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-loop-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-loop-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-loop-edit');
+    const grid = document.getElementById('dg-loop-edit-grid');
+    const title = document.getElementById('dg-loop-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="flow">Flow</H2>
+
+<DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
+
+```html example label="Loop, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-loop-flow" data-type="loop" aria-label="The product learning loop">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Loop</span>
+    <span class="diagram-title">Every pass improves the shared record</span>
+    <span class="diagram-dek">Work goes clockwise; each station writes back to the hub (dashed).</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--n:6">
+    <div class="diagram-node" data-node="hub" data-tone="muted" data-hub>
+      <span class="diagram-node-name">Product memory</span>
+      <span class="diagram-node-meta">one record · every loop</span>
+    </div>
+    <div class="diagram-node" data-node="capture" style="--i:0">
+      <span class="diagram-node-name">Capture</span>
+      <span class="diagram-node-meta">signals in</span>
+    </div>
+    <div class="diagram-node" data-node="research" style="--i:1">
+      <span class="diagram-node-name">Research</span>
+      <span class="diagram-node-meta">evidence pulled</span>
+    </div>
+    <div class="diagram-node" data-node="decide" data-tone="accent" style="--i:2">
+      <span class="diagram-node-name">Decide</span>
+      <span class="diagram-node-meta">human approves</span>
+    </div>
+    <div class="diagram-node" data-node="build" style="--i:3">
+      <span class="diagram-node-name">Build</span>
+      <span class="diagram-node-meta">work ships</span>
+    </div>
+    <div class="diagram-node" data-node="measure" style="--i:4">
+      <span class="diagram-node-name">Measure</span>
+      <span class="diagram-node-meta">outcomes logged</span>
+    </div>
+    <div class="diagram-node" data-node="learn" style="--i:5">
+      <span class="diagram-node-name">Learn</span>
+      <span class="diagram-node-meta">playbook updated</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capture" data-to="research" data-curve="curve" data-flow="2600" data-flow-tokens="2" data-flow-delay="0"></li>
+    <li class="diagram-edge" data-from="research" data-to="decide" data-curve="curve" data-flow="2600" data-flow-tokens="2" data-flow-delay="700"></li>
+    <li class="diagram-edge" data-from="decide" data-to="build" data-curve="curve" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400"></li>
+    <li class="diagram-edge" data-from="build" data-to="measure" data-curve="curve" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100"></li>
+    <li class="diagram-edge" data-from="measure" data-to="learn" data-curve="curve" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800"></li>
+    <li class="diagram-edge" data-from="learn" data-to="capture" data-curve="curve" data-flow="2600" data-flow-tokens="2" data-flow-delay="3500"></li>
+    <li class="diagram-edge" data-from="capture" data-to="hub" data-curve="straight" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="4200">signals</li>
+    <li class="diagram-edge" data-from="measure" data-to="hub" data-curve="straight" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="4900">outcomes</li>
+  </ol>
+</figure>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Experiment before building" component="diagram" hint="The ring re-spaces itself: --n is the station count, --i each station’s seat."
+<figure class="diagram" id="dg-loop-delta" data-type="loop" data-delta aria-label="The loop gets an experiment station">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Loop change</span>
+    <span class="diagram-title">Experiment before building</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--n:5">
+    <div class="diagram-node" data-node="hub" data-tone="muted" data-hub><span class="diagram-node-name">Product memory</span></div>
+    <div class="diagram-node" data-node="capture" style="--i:0"><span class="diagram-node-name">Capture</span></div>
+    <div class="diagram-node" data-node="decide" data-change="changed" style="--i:1">
+      <span class="diagram-node-name">Decide</span>
+      <span class="diagram-node-meta" data-before="on opinion">on evidence</span>
+    </div>
+    <div class="diagram-node" data-node="exp" data-tone="accent" data-change="added" style="--i:2">
+      <span class="diagram-node-name">Experiment</span>
+      <span class="diagram-node-meta">2-week test</span>
+    </div>
+    <div class="diagram-node" data-node="build" style="--i:3"><span class="diagram-node-name">Build</span></div>
+    <div class="diagram-node" data-node="learn" style="--i:4"><span class="diagram-node-name">Learn</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="capture" data-to="decide" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="decide" data-to="exp" data-curve="curve" data-change="added"></li>
+    <li class="diagram-edge" data-from="exp" data-to="build" data-curve="curve" data-change="added"></li>
+    <li class="diagram-edge" data-from="decide" data-to="build" data-curve="curve" data-change="removed"></li>
+    <li class="diagram-edge" data-from="build" data-to="learn" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="learn" data-to="capture" data-curve="curve"></li>
+    <li class="diagram-edge" data-from="exp" data-to="hub" data-curve="straight" data-line="dashed" data-change="added">results</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

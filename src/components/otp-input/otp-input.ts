@@ -7,9 +7,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const otpInputStates = ['default', 'filled', 'invalid'];
 
@@ -52,9 +53,24 @@ function paint(otp) {
 
 /** Fires when the field reaches its full length, so a form can submit itself. */
 function announceComplete(otp) {
+  // Fires when every cell is filled - the whole code.
   otp.dispatchEvent(
     new CustomEvent('otp-complete', { bubbles: true, detail: { value: otp._field.value } }),
   );
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  // the slots mirror the field's value (a property): with the same value
+  // in every state they do not change - only the invalid flags do
+  const invalid = stateName === 'invalid';
+  dfDollar(el).attr('data-invalid', invalid ? '' : null);
+  dfDollar(el).find('input').first().attr('aria-invalid', invalid ? 'true' : null);
 }
 
 /**
@@ -92,32 +108,31 @@ function triggerStateChange(otp, stateName, config) {
 }
 
 /** Registry-level API; pass the otp-input element explicitly. Unknown names throw. */
-export const otpInputApi = {
-  setState(otp, stateName, config = {}) {
-    if (!otpInputStates.includes(stateName)) {
-      throw new Error(
-        `otp-input: unknown state "${stateName}" (supported: ${otpInputStates.join(', ')})`,
-      );
-    }
-    triggerStateChange(otp, stateName, config);
-    // state lives on the ELEMENT, not the module: a page may hold several
+export const otpInputApi = componentState({
+  component: 'otp-input',
+  states: otpInputStates,
+  apply: (otp, state) => {
+    triggerStateChange(otp, state.name, state.config);
     // fields, each in a different state
-    otp.dataset.stateName = stateName;
-    otp._stateConfig = config;
   },
-  getState(otp) {
-    return { name: otp.dataset.stateName || 'default', config: otp._stateConfig ?? {} };
+  read: (otp, state) => {
+    // reflect reality: the live value (typing changes it without setState)
+    return {
+      name: otp.dataset.stateName || 'default',
+      config: { ...state.config, ...(otp._field ? { value: otp._field.value } : {}) },
+    };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.otpInputApi = otpInputApi;
 df$.otpInputStates = otpInputStates;
 
 function init() {
-  document.querySelectorAll('.otp-input:not([data-init])').forEach((otp) => {
+  dfDollar('.otp-input:not([data-init])').toArray().forEach((otp) => {
     otp.dataset.init = '';
 
-    const field = otp.querySelector('input');
+    const field = dfDollar(otp).find('input').get(0);
     if (!field) return; // the input is authored, not generated — nothing to drive
     otp._field = field;
 
@@ -138,14 +153,14 @@ function init() {
       if (groupSize && i > 0 && i % groupSize === 0) {
         const sep = document.createElement('div');
         sep.className = 'otp-input-separator';
-        shell.appendChild(sep);
+        dfDollar(shell).append(sep);
       }
       const slot = document.createElement('div');
       slot.className = 'otp-input-slot';
-      shell.appendChild(slot);
+      dfDollar(shell).append(slot);
       otp._slots.push(slot);
     }
-    otp.appendChild(shell);
+    dfDollar(otp).append(shell);
 
     const sync = () => {
       const cleaned = clean(otp, field.value);
@@ -174,10 +189,9 @@ function init() {
     field.addEventListener('click', () => paint(otp));
     field.addEventListener('select', () => paint(otp));
 
-    otp.api = {
-      setState: (stateName, config) => otpInputApi.setState(otp, stateName, config),
-      getState: () => otpInputApi.getState(otp),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(otp, otpInputApi);
 
     otpInputApi.setState(otp, field.value.length === length ? 'filled' : 'default', {});
   });

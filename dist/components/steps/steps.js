@@ -25,8 +25,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const stepsStates = ['default'];
 /** Read one numeric data attribute (camelCase key) with a fallback. */
 const numAttr = (el, key, fallback) => {
@@ -38,7 +39,7 @@ const numAttr = (el, key, fallback) => {
  * function of the attributes - idempotent, safe to run after every change.
  */
 function renderSteps(ol) {
-    const items = Array.from(ol.querySelectorAll('.step'));
+    const items = Array.from(dfDollar(ol).find('.step').toArray());
     if (items.length === 0)
         return;
     const total = items.length;
@@ -70,39 +71,65 @@ function renderSteps(ol) {
  * re-maps. activeStepError (boolean, per the panel) maps to the ERROR INDEX:
  * true marks the active step, false clears it.
  */
+/**
+ * The markup of a state, for render(): the tracker attributes the state's
+ * config names - written only where they differ from what the markup already
+ * says (getState() reports the derived values: activeStep 1, size md, … even
+ * when none was authored) - then the same renderSteps() the live list runs on
+ * setState. Applied to a detached copy of the authored markup.
+ */
+function applyMarkup(ol, config = {}) {
+    if (config.activeStep !== undefined && numAttr(ol, 'activeStep', 1) !== Number(config.activeStep))
+        ol.dataset.activeStep = String(config.activeStep);
+    if (config.errorStep !== undefined && numAttr(ol, 'errorStep', 0) !== Number(config.errorStep)) {
+        if (Number(config.errorStep))
+            ol.dataset.errorStep = String(config.errorStep);
+        else
+            delete ol.dataset.errorStep;
+    }
+    if (config.size !== undefined && (ol.dataset.size ?? 'md') !== config.size)
+        ol.dataset.size = String(config.size);
+    if (ol.hasAttribute('data-active-step'))
+        renderSteps(ol);
+}
 function triggerStateChange(ol, stateName, config = {}) {
     if (stateName !== 'default')
         return;
+    // only what differs is written: setState(getState()) changes nothing (getState
+    // reports the derived activeStep 1 / errorStep 0 even when none was authored)
     const a = config.activeStep ?? config.step ?? config.page;
-    if (a !== undefined)
+    if (a !== undefined && numAttr(ol, 'activeStep', 1) !== Number(a))
         ol.dataset.activeStep = String(a);
-    if (config.errorStep !== undefined)
-        ol.dataset.errorStep = String(config.errorStep);
+    if (config.errorStep !== undefined) {
+        if (numAttr(ol, 'errorStep', 0) !== Number(config.errorStep)) {
+            if (Number(config.errorStep))
+                ol.dataset.errorStep = String(config.errorStep);
+            else
+                delete ol.dataset.errorStep;
+        }
+    }
     else if (config.activeStepError === true)
         ol.dataset.errorStep = ol.dataset.activeStep ?? '1';
     else if (config.activeStepError === false)
         delete ol.dataset.errorStep;
-    if (config.size !== undefined)
+    if (config.size !== undefined && (ol.dataset.size ?? 'md') !== config.size)
         ol.dataset.size = String(config.size);
-    renderSteps(ol);
+    // the same opt-in as init: only a data-driven list is re-mapped - a static
+    // list keeps its authored statuses (setState('default') must not erase them)
+    if (ol.hasAttribute('data-active-step'))
+        renderSteps(ol);
 }
 /** Registry-level API; pass the <ol> explicitly. Unknown names throw. */
-export const stepsApi = {
-    setState(ol, stateName, config = {}) {
-        if (!stepsStates.includes(stateName)) {
-            throw new Error(`steps: unknown state "${stateName}" (supported: ${stepsStates.join(', ')})`);
-        }
-        triggerStateChange(ol, stateName, config);
-        // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-        ol.dataset.stateName = stateName;
-        ol._stateConfig = config;
-    },
-    getState(ol) {
+export const stepsApi = componentState({
+    component: 'steps',
+    states: stepsStates,
+    apply: (ol, state) => triggerStateChange(ol, state.name, state.config),
+    read: (ol, state) => {
         // reflect reality: clicking a clickable step moves the tracker without setState()
         return {
             name: ol.dataset.stateName || 'default',
             config: {
-                ...ol._stateConfig,
+                ...state.config,
                 activeStep: numAttr(ol, 'activeStep', 1),
                 activeStepError: numAttr(ol, 'errorStep', 0) === numAttr(ol, 'activeStep', 1) && numAttr(ol, 'errorStep', 0) !== 0,
                 errorStep: numAttr(ol, 'errorStep', 0),
@@ -110,17 +137,15 @@ export const stepsApi = {
             },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.config),
+});
 df$.stepsApi = stepsApi;
 df$.stepsStates = stepsStates;
 function init() {
-    document.querySelectorAll('.steps:not([data-init])').forEach((ol) => {
+    dfDollar('.steps:not([data-init])').toArray().forEach((ol) => {
         ol.dataset.init = '';
-        // bind-scope the api per instance: `$('#checkout').api.setState('default', { activeStep: 3 })`
-        ol.api = {
-            setState: (stateName, config) => stepsApi.setState(ol, stateName, config),
-            getState: () => stepsApi.getState(ol),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(ol, stepsApi);
         // opt-in: only a data-driven <ol> (declaring data-active-step) is mapped —
         // authored data-status markup stays exactly as written (progressive
         // enhancement; the e2e fixture's static statuses stay stable)
@@ -141,7 +166,7 @@ function init() {
             const item = e.target.closest('.step[data-clickable]');
             if (!item || !ol.contains(item))
                 return;
-            const items = Array.from(ol.querySelectorAll('.step'));
+            const items = Array.from(dfDollar(ol).find('.step').toArray());
             ol.dataset.activeStep = String(items.indexOf(item) + 1);
             delete ol.dataset.errorStep; // navigating clears the error
         });

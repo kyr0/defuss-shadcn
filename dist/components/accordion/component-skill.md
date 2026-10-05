@@ -14,11 +14,25 @@ Named states via the shared State API (AGENTS.md "State API"), bound per instanc
 `default` (authored markup, snapshotted at init), `all-open`, `all-closed`.
 
 ```js
-document.querySelector('.accordion[data-type="single"]').api.setState('all-open');
-document.querySelector('.accordion[data-type="single"]').api.getState(); // { name: 'all-open', config: {} }
+const accordion = df$('.accordion[data-type="single"]').get(0);
+accordion.api.setState('all-open');
+accordion.api.getState(); // { name: 'all-open', config: {}, model: { … } }
+accordion.api.render();   // the authored accordion with every item open
 ```
 
+`render(state)` reproduces the markup from state: the authored markup (its
+model, snapshotted at init, byte for byte) with the state's `open` items applied - AGENTS.md "State
+API" → render.
+
 Unknown state names throw. `globalThis.df$.shadcn.accordionStates` lists them.
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.accordionApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.accordionStates` = `default`, `all-open`, `all-closed`.
 
 ## Native basis
 `<details>` / `<summary>` elements. The browser provides:

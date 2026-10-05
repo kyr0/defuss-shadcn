@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped menubar (menubar.js on top of
@@ -178,6 +179,10 @@ try {
     assert.ok(Math.abs(r[0] - r[1]) < 2, `menu right ${r[1]} ~ trigger right ${r[0]}`);
     await closeAll();
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.menubar[id]', ['default','open'], { runtimeAttrs: ['tabindex','aria-expanded'] });
+  });
+
 } finally {
   await browser.close();
   server.stop();

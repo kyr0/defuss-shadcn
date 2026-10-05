@@ -180,6 +180,26 @@ document.querySelector('#my-calendar').api.getState(); // { name: 'default', con
 The api is bound per calendar; the registry global is
 `df$.shadcn.calendarApi` / `df$.shadcn.calendarStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.calendarApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`, `setDays(cal, days, options = {})`; `df$.shadcn.calendarStates` = `default`.
+
+| `df$.shadcn.calendarApi` | Description |
+|---|---|
+| `setDays(cal, days, options = {})` | Day data for this calendar (a range picker: for its whole .calendar-range): { 'YYYY-MM-DD': { mark?, note?, label?, disabled? } }. Replaces the map unless { merge: true }; re-renders without moving the view. |
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `calendar:range` | `start`, `end`, `startIso`, `endIso` | Fires when a range is complete (its second date) - start and end as Dates and as ISO dates. |
+| `calendar:select` | `date` | /* Dispatch custom event |
+| `calendar:view` | `view`, `year`, `month` | Fires when the panel changes - the view (days, months, years) and the year and month it shows. |
+
 
 ## Density
 

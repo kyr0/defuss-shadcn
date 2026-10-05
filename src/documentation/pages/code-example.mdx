@@ -1,0 +1,174 @@
+---
+title: "HTML Preview Editor"
+description: "An HTML source and its live, sandboxed preview in one card - device toolbar, resize handles, zoom, fullscreen, Shiki-coloured source, state controls from a component schema. The live examples of this site, shipped as the wysiwyg bundle."
+slug: "code-example"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="code-example" title="HTML Preview Editor" component="code-example">
+  An HTML source and its live, sandboxed preview in one card - device toolbar, resize handles, fullscreen, the source coloured by <DocLink href="https://shiki.style">Shiki</DocLink>. Every live example on this site is one.
+</PageHeader>
+
+<p class="text-sm text-muted-foreground">The <code>&lt;textarea&gt;</code> you edit is the <code>srcdoc</code> a sandboxed <code>&lt;iframe&gt;</code> runs, so the code shown and the code run cannot differ. With a component schema the card generates state controls that drive the previewed component and read it back. It ships as its own <strong>wysiwyg bundle</strong> - <code>wysiwyg.css</code> + <code>wysiwyg.js</code>, loaded after <code>all.css</code> / <code>all.js</code> - kept out of <code>all.*</code>, so pages without an editor do not pay for it. The first of the WYSIWYG Editors; its markup and API carry the name <code>code-example</code>.</p>
+
+<SkillPanel component="code-example">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div class="code-example"&gt;</code> around one <code>&lt;textarea&gt;</code> - the source. The runtime builds the stage (a sandboxed <code>&lt;iframe srcdoc&gt;</code> in a device frame, the <code>resizer</code> around it), the toolbar and the Code / State panels; the textarea moves into the Code panel over an <code>aria-hidden</code> paint layer.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox" title="the preview runs in an opaque origin"><code>&lt;iframe srcdoc sandbox&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage" title="card ↔ preview bridge, one channel per card"><code>postMessage()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/zoom" title="device boxes shrink, the viewport width stays"><code>CSS zoom</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API" title="the card fills the screen"><code>Fullscreen API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="previews boot near the viewport"><code>IntersectionObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="Shiki loads on the first paint"><code>import()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.code-example</code>
+    <code>.code-example-stage</code>
+    <code>.code-example-frame</code>
+    <code>.code-example-toolbar</code>
+    <code>.code-example-panel</code>
+    <code>.code-example-editor</code>
+    <code>.code-example-src</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-schema</code>, <code>data-vp-mode="phone|tablet|desktop|full"</code>, <code>data-height</code>, <code>data-preview-style</code>, <code>data-language</code>, <code>data-sandbox="embed|links"</code>; set by the runtime: <code>data-fullscreen</code>, <code>data-edited</code>, <code>data-state-values</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+## Installation
+
+The component ships in the extra bundle - include it after the system:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.min.js"></script>
+```
+
+## Example
+
+```html example label="Source, preview and state controls" hint="A .code-example around one &lt;textarea&gt; - the runtime builds the card: the preview runs the source in a sandbox, Code opens the source (Shiki colours, Tab indents), State the controls generated from data-schema. Toggle the switch in the preview: the State tab and the source follow." height="22"
+<div class="code-example" id="cx-switch" aria-label="Switch preview" data-preview-style="display:flex;justify-content:center" data-schema='{"schemaVersion":1,"name":"switch","states":{"checked":{"type":"boolean","default":false,"target":{"kind":"selector","selector":".switch"},"mutation":{"kind":"property","name":"checked"},"observation":{"kind":"property","name":"checked"},"editor":{"component":"checkbox"}}},"actions":{}}'>
+  <textarea>
+<div class="switch-item flex items-center gap-2">
+  <input class="switch" type="checkbox" role="switch" id="wifi">
+  <label class="label" for="wifi">Wi-Fi</label>
+</div>
+  </textarea>
+</div>
+```
+
+## Without a schema
+
+```html example label="Just a source and its preview" hint="No data-schema, no State tab. data-preview-style styles the preview body - here a centred row."
+<div class="code-example" id="cx-buttons" aria-label="Buttons preview" data-preview-style="display:flex;gap:0.5rem;justify-content:center">
+  <textarea>
+<button class="btn">Save</button>
+<button class="btn" data-variant="outline">Cancel</button>
+<button class="btn" data-variant="ghost">Later</button>
+  </textarea>
+</div>
+```
+
+## Devices
+
+```html example label="Booting as a phone" hint="data-vp-mode=&quot;phone|tablet|desktop|full&quot; picks the device the preview starts as - the iframe gets that viewport width, so media and container queries inside it react; the card zooms it to fit. Rotate turns phone and tablet; the handles resize any side."
+<div class="code-example" id="cx-phone" aria-label="Responsive grid" data-vp-mode="phone">
+  <textarea>
+<div class="grid gap-3" style="grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))">
+  <div class="card"><div class="card-header"><p class="card-description">Revenue</p><h3 class="card-title">$48.2k</h3></div></div>
+  <div class="card"><div class="card-header"><p class="card-description">Orders</p><h3 class="card-title">1,284</h3></div></div>
+  <div class="card"><div class="card-header"><p class="card-description">Refunds</p><h3 class="card-title">12</h3></div></div>
+</div>
+  </textarea>
+</div>
+```
+
+## Driven from outside
+
+```html example label="A playground with an API" hint="el.api.setState('code' | 'state' | 'fullscreen' | 'default'), df$.shadcn.codeExample.setSource / reset / viewport drive the card; code-example-change reports every rerun of the preview."
+<div class="grid gap-3" style="width:100%">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-load">Load a card</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-source">Show the source</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-tablet">Tablet</button>
+    <button class="btn" data-size="sm" data-variant="outline" id="cx-reset">Reset</button>
+  </div>
+  <div class="code-example" id="cx-play" aria-label="Playground">
+    <textarea>
+<p class="text-sm">Edit me - the preview follows.</p>
+    </textarea>
+  </div>
+  <output id="cx-log" class="text-sm text-muted-foreground">Changes show up here.</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const lib = df$.shadcn.codeExample;
+    const card = df$('#cx-play').get(0);
+    card.addEventListener('code-example-change', (e) => {
+      df$('#cx-log').text('code-example-change (' + e.detail.origin + '): ' + e.detail.source.trim().length + ' characters');
+    });
+    df$('#cx-load').on('click', () => lib.setSource(card, '<div class="card">\n  <div class="card-header">\n    <h3 class="card-title">A card</h3>\n    <p class="card-description">Loaded with setSource().</p>\n  </div>\n</div>'));
+    df$('#cx-source').on('click', () => card.api.setState(card.api.getState().name === 'code' ? 'default' : 'code'));
+    df$('#cx-tablet').on('click', () => lib.viewport(card, 'tablet'));
+    df$('#cx-reset').on('click', () => lib.reset(card));
+  });
+</script>
+```
+
+## Configuration
+
+By default a preview loads the page's own stylesheets and inlines its `all.js` (or `core.js`). `configure()` replaces that - this site hands every preview its sheets as inlined text, lucide and the current theme:
+
+```js
+df$.shadcn.codeExample.configure({
+  styles: ['https://example.com/app.css'],          // URLs (<link>) or { css } texts - or a function of the source
+  scripts: [{ js: runtimeText }],                    // URLs (fetched, inlined) or { js } texts
+  tail: '<script src="https://unpkg.com/lucide"></script>',
+  theme: () => document.getElementById('theme-css').textContent,
+  highlight: (code, language) => myHighlighter(code, language), // HTML of coloured spans
+});
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each card:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the preview alone, both panels closed</li>
+    <li><code>code</code> - the source is open (and painted)</li>
+    <li><code>state</code> - the state controls are open (cards with <code>data-schema</code>; without one it lands in <code>default</code>)</li>
+    <li><code>fullscreen</code> - the card fills the screen; <code>config.panel</code> keeps a panel open below the stage</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">Every config carries <code>source</code> - setting it reruns the preview. The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives the card inside it and captures <code>screenshots/\{mode\}/code-example-\{state\}.png</code>. A card's <code>el.preview</code> drives the component it previews.</p>
+
+Machine contract - verified against <a href="../schemas/code-example.schema.json"><code>code-example.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `code` | `boolean` | `true`, `false` | `false` | The source is open - `setState('code')`; off returns to `default`. |
+| `state` | `boolean` | `true`, `false` | `false` | The state controls are open - `setState('state')` (a card with `data-schema`). |
+| `fullscreen` | `boolean` | `true`, `false` | `false` | The card fills the screen - `setState('fullscreen')`; off (or Escape) returns to `default`. |
+```
+
+</StatesSection>
+
+<ApiSection component="code-example" />
+
+<SourceFiles component="code-example" section="css" />
+
+<SourceFiles component="code-example" section="js" jsTitle="JS" />
+
+</DocPage>

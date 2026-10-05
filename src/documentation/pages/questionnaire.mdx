@@ -1,0 +1,260 @@
+---
+title: "Questionnaire"
+description: "Questionnaire component - a branching step-flow controller over one native form: one question at a time, blocks and progress, choice cards with keyboard shortcuts, validation before each step is left, a branch history, dependent-answer invalidation, a session draft and a review before sending."
+slug: "questionnaire"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="questionnaire" title="Questionnaire" component="questionnaire">
+  One question at a time, the next one chosen by the answers. The questionnaire is a single native <code>&lt;form&gt;</code> whose steps are <code>&lt;fieldset&gt;</code>s, grouped into blocks; the controller walks a <a href="questionnaire-branching.html">flow graph</a>, <a href="questionnaire-validation.html">validates</a> each step before it is left, keeps the <a href="questionnaire-drafts.html">branch history and a draft</a> that survives a reload, <a href="questionnaire-dependencies.html">clears answers</a> a changed answer cut off, and can <a href="questionnaire-graph.html">check and draw its own graph</a>. Without JavaScript it is a plain long form.
+</PageHeader>
+
+<SkillPanel component="questionnaire">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;form&gt;</code> of <code>&lt;fieldset&gt;</code> steps (the <code>&lt;legend&gt;</code> is the question); native constraint validation per step; <code>hidden</code> on the steps not shown; the answers are the form's own controls.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, min, pattern, type=email … per step"><code>checkValidity()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="a step and its question"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent/submitter" title="Continue / Send / Skip; Enter continues"><code>submitter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API" title="the draft, through a persisted() store"><code>sessionStorage</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.questionnaire</code>
+    <code>.questionnaire-block</code>
+    <code>.questionnaire-step</code>
+    <code>.questionnaire-title</code>
+    <code>.questionnaire-choices</code>
+    <code>.questionnaire-choice</code>
+    <code>.questionnaire-other</code>
+    <code>.questionnaire-progress</code>
+    <code>.questionnaire-actions</code>
+    <code>.questionnaire-summary</code>
+    <code>.questionnaire-trail</code>
+    <code>.questionnaire-complete</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>Step: <code>data-step</code>, <code>data-next</code>, <code>data-end</code>, <code>data-optional</code>, <code>data-min</code> / <code>data-max</code>, <code>data-depends-on</code>. Choice: <code>data-goto</code>, <code>data-key</code>. Form: <code>data-start</code>, <code>data-auto-advance</code>, <code>data-shortcuts</code>, <code>data-persist</code>. Buttons: <code>data-questionnaire="back|next|skip|submit|restart"</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Product feedback" hint="Answer with the mouse or the keyboard - A, B, C pick a choice, 1 to 5 the stars (the Rating component), Enter continues. 'Rarely' takes another branch (data-goto); the features step allows at most two (data-max); the comment is optional (Skip). The progress estimates the questions left along the shortest way to the end; the review lists every answer with Edit."
+<form class="questionnaire" id="q-feedback" aria-label="Product feedback" style="max-width:34rem;">
+  <div class="questionnaire-progress"></div>
+  <section class="questionnaire-block" data-block="usage" data-title="Your usage">
+    <fieldset class="questionnaire-step" data-step="often">
+      <legend class="questionnaire-title">How often do you use the app?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="often" value="daily" required><span class="questionnaire-choice-label">Every day</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="often" value="weekly"><span class="questionnaire-choice-label">Every week</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="often" value="rarely" data-goto="why"><span class="questionnaire-choice-label">Rarely</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="features" data-min="1" data-max="2" data-next="score">
+      <legend class="questionnaire-title">Which features do you rely on?</legend>
+      <p class="questionnaire-description">Pick up to two.</p>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="checkbox" name="features" value="search"><span class="questionnaire-choice-label">Search</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="features" value="sync"><span class="questionnaire-choice-label">Sync across devices</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="features" value="share"><span class="questionnaire-choice-label">Sharing</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="features" value="offline"><span class="questionnaire-choice-label">Offline mode</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="why" data-next="score">
+      <legend class="questionnaire-title">What keeps you from using it more?</legend>
+      <div class="questionnaire-field">
+        <label class="label" for="q-why">In a sentence or two</label>
+        <textarea class="textarea" id="q-why" name="why" rows="3" required minlength="10"></textarea>
+      </div>
+    </fieldset>
+  </section>
+  <section class="questionnaire-block" data-block="opinion" data-title="Your opinion">
+    <fieldset class="questionnaire-step" data-step="score">
+      <legend class="questionnaire-title">How would you rate the app?</legend>
+      <p class="questionnaire-description">Click a star - or press 1 to 5.</p>
+      <div class="rating" data-size="lg" role="radiogroup" aria-label="Your rating">
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="1" aria-label="1 star" required></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="2" aria-label="2 stars"></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="3" aria-label="3 stars"></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="4" aria-label="4 stars"></label>
+        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="5" aria-label="5 stars"></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="comment" data-optional>
+      <legend class="questionnaire-title">Anything else?</legend>
+      <div class="questionnaire-field">
+        <label class="label" for="q-comment">Comment</label>
+        <textarea class="textarea" id="q-comment" name="comment" rows="3"></textarea>
+      </div>
+    </fieldset>
+  </section>
+  <fieldset class="questionnaire-step" data-step="review" data-end>
+    <legend class="questionnaire-title">Check your answers</legend>
+    <div class="questionnaire-summary"></div>
+  </fieldset>
+  <div class="questionnaire-actions">
+    <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+    <button class="btn" data-variant="outline" type="submit" data-questionnaire="skip">Skip</button>
+    <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+    <button class="btn" type="submit" data-questionnaire="submit">Send feedback</button>
+  </div>
+  <div class="questionnaire-complete">
+    <p class="questionnaire-title">Thank you!</p>
+    <p class="questionnaire-description">Your feedback goes straight to the team. <button class="questionnaire-edit" type="button" data-questionnaire="restart">Answer again</button></p>
+  </div>
+</form>
+```
+
+```html example label="Keyboard first" schema="none" hint="data-shortcuts='digits' puts 1, 2, 3 on the choices; data-auto-advance moves on as soon as a single choice is picked - click anywhere in the example, press a digit and the next question is there (the keys work wherever the focus is, as long as you are not typing). data-persist='none': a quick poll keeps no draft."
+<form class="questionnaire" id="q-poll" aria-label="Team poll" data-shortcuts="digits" data-auto-advance data-persist="none" style="max-width:30rem;">
+  <div class="questionnaire-progress"></div>
+  <fieldset class="questionnaire-step" data-step="lunch">
+    <legend class="questionnaire-title">Team lunch on…</legend>
+    <div class="questionnaire-choices">
+      <label class="questionnaire-choice"><input type="radio" name="lunch" value="thu" required><span class="questionnaire-choice-label">Thursday</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="lunch" value="fri"><span class="questionnaire-choice-label">Friday</span></label>
+    </div>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="food">
+    <legend class="questionnaire-title">…eating?</legend>
+    <div class="questionnaire-choices">
+      <label class="questionnaire-choice"><input type="radio" name="food" value="pizza" required><span class="questionnaire-choice-label">Pizza</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="food" value="ramen"><span class="questionnaire-choice-label">Ramen</span></label>
+      <label class="questionnaire-choice"><input type="radio" name="food" value="salad"><span class="questionnaire-choice-label">Salad</span></label>
+    </div>
+  </fieldset>
+  <fieldset class="questionnaire-step" data-step="done" data-end>
+    <legend class="questionnaire-title">Got it.</legend>
+    <div class="questionnaire-summary"></div>
+  </fieldset>
+  <div class="questionnaire-actions">
+    <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+    <button class="btn" type="submit" data-questionnaire="next">Next</button>
+    <button class="btn" type="submit" data-questionnaire="submit">Vote</button>
+  </div>
+  <div class="questionnaire-complete"><p>Vote counted.</p></div>
+</form>
+```
+
+```html example label="In a card, sending somewhere" schema="none" hint="The form composes freely - here inside a card. onSubmit(answers) may return a promise: the actions wait (data-busy), a rejection keeps the review and says why. This one fails the first time and succeeds on retry."
+<div class="card" style="max-width:30rem;">
+  <div class="card-header">
+    <h3 class="card-title">Book a demo</h3>
+    <p class="card-description">Two questions, then we call you.</p>
+  </div>
+  <div class="card-content">
+    <form class="questionnaire" id="q-demo" aria-label="Book a demo" data-persist="none">
+      <fieldset class="questionnaire-step" data-step="name">
+        <legend class="questionnaire-title">Your name?</legend>
+        <input class="input" name="name" required aria-label="Your name" autocomplete="name">
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="phone">
+        <legend class="questionnaire-title">Your phone number?</legend>
+        <input class="input" name="phone" type="tel" required pattern="[+0-9 ()-]{6,}" aria-label="Phone number" autocomplete="tel">
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="confirm" data-end>
+        <legend class="questionnaire-title">Shall we call?</legend>
+        <div class="questionnaire-summary"></div>
+      </fieldset>
+      <div class="questionnaire-actions">
+        <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+        <button class="btn" type="submit" data-questionnaire="next">Next</button>
+        <button class="btn" type="submit" data-questionnaire="submit">Call me</button>
+      </div>
+      <div class="questionnaire-complete"><p>We'll call you within a day.</p></div>
+    </form>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let tries = 0;
+    df$.shadcn.questionnaire.configure(document.getElementById('q-demo'), {
+      onSubmit: () => new Promise((resolve, reject) => setTimeout(() => (++tries === 1 ? reject(new Error('the line was busy - try again')) : resolve()), 600)),
+    });
+  });
+</script>
+```
+
+```html example label="In a dialog" schema="none" height="46" hint="A questionnaire inside the Dialog component: open it, answer, send - questionnaire-submit closes the dialog. The draft (session storage) keeps half-finished answers if it is closed in between."
+<button class="btn" type="button" commandfor="q-dialog" command="show-modal">Report a problem</button>
+<dialog class="dialog" id="q-dialog" data-size="lg" aria-labelledby="q-dialog-title">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="q-dialog-title">Report a problem</h2>
+    </div>
+    <form class="questionnaire" id="q-report" aria-labelledby="q-dialog-title">
+      <div class="questionnaire-progress"></div>
+      <fieldset class="questionnaire-step" data-step="area">
+        <legend class="questionnaire-title">Where did it happen?</legend>
+        <div class="questionnaire-choices">
+          <label class="questionnaire-choice"><input type="radio" name="area" value="web" required><span class="questionnaire-choice-label">The website</span></label>
+          <label class="questionnaire-choice"><input type="radio" name="area" value="app"><span class="questionnaire-choice-label">The mobile app</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="what">
+        <legend class="questionnaire-title">What went wrong?</legend>
+        <textarea class="textarea" name="what" rows="3" required aria-label="What went wrong"></textarea>
+      </fieldset>
+      <fieldset class="questionnaire-step" data-step="send" data-end>
+        <legend class="questionnaire-title">Send this report?</legend>
+        <div class="questionnaire-summary"></div>
+      </fieldset>
+      <div class="questionnaire-actions">
+        <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+        <button class="btn" type="submit" data-questionnaire="next">Next</button>
+        <button class="btn" type="submit" data-questionnaire="submit">Send report</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('q-report');
+    form.addEventListener('questionnaire-submit', () => {
+      document.getElementById('q-dialog').close();
+      df$.shadcn.toast.show({ title: 'Report sent', description: 'Thanks - we are on it.' });
+      df$.shadcn.questionnaire.restart(form);
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API; the config is the walk - <code>\{ step, answers, history, index, skipped \}</code> - observable as <code>el.store</code> (every keystroke included):</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - at the start step</li>
+    <li><code>answering</code> - on a later step; <code>setState('answering', \{ step \})</code> jumps there</li>
+    <li><code>review</code> - on an end step: the summary and Send</li>
+    <li><code>submitted</code> - sent: the steps give way to <code>.questionnaire-complete</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/questionnaire-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/questionnaire.schema.json"><code>questionnaire.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `answering` | `boolean` | `true`, `false` | `false` | On a step after the start (`setState('answering')`). |
+| `review` | `boolean` | `true`, `false` | `false` | On an end step - the summary and Send (`setState('review')`). |
+| `submitted` | `boolean` | `true`, `false` | `false` | Sent - the completion shows (`setState('submitted')`). |
+```
+
+</StatesSection>
+
+<ApiSection component="questionnaire" />
+
+<SourceFiles component="questionnaire" section="css" />
+
+<SourceFiles component="questionnaire" section="js" jsTitle="JS" />
+
+</DocPage>

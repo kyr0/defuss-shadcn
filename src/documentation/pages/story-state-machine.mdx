@@ -1,6 +1,6 @@
 ---
 title: "Story State Machine - Presentation"
-description: "Cinematic Presentation design language presenting five fictional streaming services as a 12-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next."
+description: "Cinematic Presentation design language presenting five fictional streaming services as a 13-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next."
 slug: "story-state-machine"
 ---
 
@@ -11,7 +11,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   Cinematic Presentation: letterboxed black, warm white and one orange - a chart built as a sequence of claims about five fictional streaming services, every claim a new state of the same instance.
 </PageHeader>
 
-```html example label="Cinematic Presentation" schema="none" height="26" hint="Slides cross-fade slowly like cuts in a film (df$.anim fadeIn over 1.8s, declared on the deck); orange curtains mark the act breaks. One deck-level chart (df$.shadcn.chart.deck) is the state machine: baseline bars → comparison with last year → composition donut → churn bars, one instance throughout. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+```html example label="Cinematic Presentation" schema="none" height="26" hint="Slides cross-fade slowly like cuts in a film (df$.anim fadeIn over 1.8s, declared on the deck); orange curtains mark the act breaks. One deck-level chart (df$.shadcn.chart.deck) is the state machine: baseline bars → comparison with last year → composition donut → churn bars, one instance throughout. Use ← / → inside the deck. One interactive diagram slide (an Illustrative Diagram in the deck's palette) plays step by step on arrival - click its boxes." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <section class="presentation" id="deck-story" data-anim-in="fadeIn" data-anim-in-duration="1800" data-anim-out="fadeOut" data-anim-out-duration="1800" style="--presentation-ink:#050505;--presentation-ink-foreground:#F6F4EF;--presentation-paper:#F6F4EF;--presentation-paper-foreground:#050505;--presentation-accent:#FF5B35;font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif;" tabindex="-1" aria-label="The streaming year - told as a sequence of claims">
   <!-- ONE chart for the whole deck: slides name the state they show via
@@ -132,6 +132,80 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">The Reel answer is the sharpest.</p>
   </section>
+  <section class="slide" data-slide data-dg-slide data-theme="ink" style="justify-content:flex-start;" aria-label="The data behind the claims">
+    <header class="presentation-header"><span>Data model</span><span>The data behind the claims</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:4.5rem 1.75rem; max-width:1300px; font-family:'Avenir Next', 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:-0.03em;">Every claim, one query away</h2>
+    <div style="width:1020px; transform:scale(1.3); transform-origin:0 0;">
+      <figure class="diagram" id="stream-er" data-type="er" data-steps data-interactive data-autoplay="900" aria-label="Streaming data model: services, plans, subscriptions, subscribers, titles and viewing">
+        <div class="diagram-canvas" style="--cols:3;--diagram-gap-y:2.75rem;--diagram-gap-x:4.5rem">
+          <div class="diagram-node" data-node="service" data-step="1" style="--col:1;--row:1">
+            <span class="diagram-node-eyebrow">Entity</span>
+            <span class="diagram-node-name">Service</span>
+            <ul class="diagram-node-fields">
+              <li># id</li>
+              <li>name</li>
+              <li>launched</li>
+            </ul>
+          </div>
+          <div class="diagram-node" data-node="plan" data-step="2" style="--col:2;--row:1">
+            <span class="diagram-node-eyebrow">Entity</span>
+            <span class="diagram-node-name">Plan</span>
+            <ul class="diagram-node-fields">
+              <li># id</li>
+              <li>→ service</li>
+              <li>price</li>
+            </ul>
+          </div>
+          <div class="diagram-node" data-node="subscription" data-tone="accent" data-step="3" style="--col:3;--row:1">
+            <span class="diagram-node-eyebrow">Entity</span>
+            <span class="diagram-node-name">Subscription</span>
+            <ul class="diagram-node-fields">
+              <li>→ subscriber</li>
+              <li>→ plan</li>
+              <li>started · churned</li>
+            </ul>
+          </div>
+          <div class="diagram-node" data-node="title" data-step="4" style="--col:1;--row:2">
+            <span class="diagram-node-eyebrow">Entity</span>
+            <span class="diagram-node-name">Title</span>
+            <ul class="diagram-node-fields">
+              <li># id</li>
+              <li>→ service</li>
+              <li>genre</li>
+            </ul>
+          </div>
+          <div class="diagram-node" data-node="viewing" data-step="5" style="--col:2;--row:2">
+            <span class="diagram-node-eyebrow">Event</span>
+            <span class="diagram-node-name">Viewing</span>
+            <ul class="diagram-node-fields">
+              <li>→ subscriber</li>
+              <li>→ title</li>
+              <li>minutes</li>
+            </ul>
+          </div>
+          <div class="diagram-node" data-node="subscriber" data-step="3" style="--col:3;--row:2">
+            <span class="diagram-node-eyebrow">Entity</span>
+            <span class="diagram-node-name">Subscriber</span>
+            <ul class="diagram-node-fields">
+              <li># id</li>
+              <li>country</li>
+              <li>signed up</li>
+            </ul>
+          </div>
+        </div>
+        <ol class="diagram-edges">
+          <li class="diagram-edge" data-from="service" data-to="plan" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="1..*" data-step="2">offers</li>
+          <li class="diagram-edge" data-from="plan" data-to="subscription" data-head="zero-many" data-tail="one" data-from-label="1" data-to-label="0..*" data-step="3">sold as</li>
+          <li class="diagram-edge" data-from="subscriber" data-to="subscription" data-head="one-many" data-tail="one" data-step="3">holds</li>
+          <li class="diagram-edge" data-from="service" data-to="title" data-head="one-many" data-tail="one" data-step="4">streams</li>
+          <li class="diagram-edge" data-from="title" data-to="viewing" data-head="zero-many" data-tail="one" data-step="5">watched in</li>
+          <li class="diagram-edge" data-from="subscriber" data-to="viewing" data-head="zero-many" data-tail="one" data-step="5">watches</li>
+        </ol>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The entities the five claims are computed from - click an entity to see what it relates to.</p>
+  </section>
   <section class="slide" data-slide data-theme="ink" aria-label="Takeaways">
     <header class="presentation-header"><span>Final act</span><span>Four claims</span></header>
     <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
@@ -156,10 +230,10 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <div class="presentation-controls">
     <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
-    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <span class="presentation-counter" aria-live="polite">1 / 13</span>
     <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
   </div>
-  <progress class="presentation-progress" max="12" value="1"></progress>
+  <progress class="presentation-progress" max="13" value="1"></progress>
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Tree e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/data-tree/data-tree.css">
+  <style>
+    /* spacing and container size only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1.5rem; }
+    .data-tree { height: 320px; max-width: 28rem; margin-bottom: 1.5rem; }
+    input { margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <!-- 111,110 nodes, four levels: filter input bound by data-tree-filter -->
+  <input id="dt-filter" data-tree-filter="dt-big" aria-label="Filter the tree" placeholder="Filter…">
+  <div class="data-tree" id="dt-big" aria-label="Catalog" data-label-field="name" data-empty-text="No node matches."></div>
+
+  <!-- custom labels + local persistence under its own key (expanded / selected survive a reload) -->
+  <div class="data-tree" id="dt-saved" aria-label="Saved tree" data-persist="local" data-persist-key="fixture-tree"></div>
+
+  <!-- waits for records: the loading state -->
+  <div class="data-tree" id="dt-wait" aria-label="Pending tree"></div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/data-tree/data-tree.js"></script>
+  <script type="module">
+    const tree = globalThis.df$.shadcn.dataTree;
+    // 10 regions × 10 countries × 100 cities × 10 districts = 101,110 + 10,000 … deterministic
+    const rows = [];
+    let id = 0;
+    for (let a = 0; a < 10; a++) {
+      const region = ++id;
+      rows.push({ id: region, parentId: null, name: `Region ${a + 1}` });
+      for (let b = 0; b < 10; b++) {
+        const country = ++id;
+        rows.push({ id: country, parentId: region, name: `Country ${a + 1}.${b + 1}` });
+        for (let c = 0; c < 100; c++) {
+          const city = ++id;
+          rows.push({ id: city, parentId: country, name: `City ${a + 1}.${b + 1}.${c + 1}` });
+          for (let d = 0; d < 10; d++) rows.push({ id: ++id, parentId: city, name: `District ${a + 1}.${b + 1}.${c + 1}.${d + 1}` });
+        }
+      }
+    }
+    tree.setSource(document.getElementById('dt-big'), rows);
+    tree.setSource(document.getElementById('dt-saved'), [
+      { id: 'src', parentId: null, name: 'src', files: 3 },
+      { id: 'src/a.ts', parentId: 'src', name: 'a.ts' },
+      { id: 'src/b.ts', parentId: 'src', name: 'b.ts' },
+      { id: 'src/lib', parentId: 'src', name: 'lib', files: 1 },
+      { id: 'src/lib/c.ts', parentId: 'src/lib', name: 'c.ts' },
+      { id: 'README.md', parentId: null, name: 'README.md' },
+    ], {
+      render: (el, record) => {
+        const name = document.createElement('span');
+        name.textContent = record.name;
+        el.append(name);
+        if (record.files) {
+          const meta = document.createElement('span');
+          meta.className = 'data-tree-meta';
+          meta.textContent = `${record.files} files`;
+          el.append(meta);
+        }
+      },
+    });
+    globalThis.__fixtureReady = true;
+  </script>
+</body>
+</html>

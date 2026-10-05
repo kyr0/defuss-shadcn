@@ -1,0 +1,560 @@
+/* ── components/code-example/code-example.css ── */
+/* -- HTML Preview Editor (code-example) ---------------------------------------
+   A live preview stage (sandboxed iframe in a device frame with resize
+   handles), a device toolbar, and the source editor: a <textarea> over a
+   Shiki-coloured paint layer with the same box metrics - once a paint is in
+   place (data-painted) the textarea's glyphs turn transparent and only its
+   caret and selection show. Shipped in the wysiwyg bundle (wysiwyg.css). */
+
+@layer components {
+  .code-example {
+    --code-example-pad: 0.75rem;
+    --code-example-font-size: 0.75rem;
+    --code-example-line-height: 1.5;
+
+    display: block;
+    margin: 0.75rem 0 1.5rem;
+    color: var(--foreground);
+  }
+
+  /* -- the stage ------------------------------------------------ */
+  .code-example-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 11rem;
+    padding: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    background-color: var(--background);
+    background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .code-example-frame {
+    display: block;
+    width: 100%;
+    min-height: 8rem;
+    border: 0;
+    background: var(--background);
+  }
+
+  .code-example-error {
+    display: block;
+    margin: 0;
+    padding: 0.625rem 0.875rem;
+    border-top: 1px solid var(--destructive);
+    background: color-mix(in oklch, var(--destructive) 12%, var(--background));
+    color: var(--destructive);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  /* -- device emulation ------------------------------------------ */
+  /* the stage is a flex row - the screen grows into it, or Full mode
+     would shrink-wrap the iframe to a sliver */
+  .code-example-screen {
+    display: block;
+    flex: 1;
+    min-width: 0;
+  }
+  /* measured modes (full / desktop): a dashed outline keeps the canvas visible at any width */
+  .code-example-screen:is([data-mode='full'], [data-mode='desktop']) .code-example-device {
+    border: 1px dashed var(--border);
+  }
+  .code-example-device {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+  }
+  /* a dark fixed-colour shell reads as hardware in both themes */
+  .code-example-screen:is([data-mode='phone'], [data-mode='tablet']) .code-example-device {
+    overflow: hidden;
+    border-style: solid;
+    border-color: #18181b;
+    box-shadow: var(--shadow-lg);
+  }
+  .code-example-screen[data-mode='phone'] .code-example-device {
+    --code-example-bezel: 0.6875rem;
+    border-width: var(--code-example-bezel);
+    border-radius: 2.5rem;
+  }
+  .code-example-screen[data-mode='tablet'] .code-example-device {
+    --code-example-bezel: 0.5rem;
+    border-width: var(--code-example-bezel);
+    border-radius: 1.5rem;
+  }
+  /* the resizer (handles on every side) is the canvas box: the toolbar
+     writes its size, the device fills it */
+  .code-example-screen .code-example-resizer {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+  }
+  .code-example-resizer > .code-example-device {
+    width: 100%;
+    height: 100%;
+  }
+  .code-example-resizer[data-resizing] {
+    outline-offset: 0;
+  }
+  .code-example-device-island,
+  .code-example-device-home {
+    position: absolute;
+    z-index: 1;
+    display: none;
+    border-radius: 999px;
+    background: #18181b;
+    pointer-events: none;
+  }
+  .code-example-screen[data-mode='phone'] {
+    & .code-example-device-island {
+      display: block;
+      top: 0.375rem;
+      left: 50%;
+      translate: -50% 0;
+      width: 6rem;
+      height: 1.375rem;
+    }
+    & .code-example-device-home {
+      display: block;
+      bottom: 0.375rem;
+      left: 50%;
+      translate: -50% 0;
+      width: 7.5rem;
+      height: 0.4375rem;
+    }
+    /* landscape: the island slides to the left edge, the home bar to the right */
+    &[data-landscape] .code-example-device-island {
+      top: 50%;
+      left: 0.375rem;
+      translate: 0 -50%;
+      width: 1.375rem;
+      height: 6rem;
+    }
+    &[data-landscape] .code-example-device-home {
+      top: 50%;
+      right: 0.375rem;
+      bottom: auto;
+      left: auto;
+      translate: 0 -50%;
+      width: 0.4375rem;
+      height: 7.5rem;
+    }
+  }
+
+  /* -- the toolbar ------------------------------------------------ */
+  .code-example-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.375rem;
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    background: var(--muted);
+
+    & button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.625rem;
+      border: 0;
+      border-radius: var(--radius-sm);
+      appearance: none;
+      background: transparent;
+      color: var(--muted-foreground);
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+
+      &:hover {
+        background: color-mix(in oklch, var(--foreground) 8%, transparent);
+        color: var(--foreground);
+      }
+      &[aria-pressed='true'] {
+        background: var(--background);
+        color: var(--foreground);
+        box-shadow: var(--shadow-2xs);
+      }
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      &:disabled:hover {
+        background: transparent;
+        color: var(--muted-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 1px;
+      }
+    }
+  }
+  :is(.code-example-toolbar, .code-example-copy, .code-example-full-exit) svg {
+    flex: none;
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  .code-example-viewport,
+  .code-example-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .code-example-sep {
+    align-self: stretch;
+    width: 1px;
+    min-height: 1.25rem;
+    margin: 0 0.375rem;
+    background: var(--border);
+  }
+  .code-example-vp-x {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+  .code-example-size input[type='number'] {
+    width: 4.25rem;
+    height: 1.5rem;
+    padding: 0 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.75rem;
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+  /* zoom carries a 2-3 digit % */
+  .code-example-size input.code-example-vp-z {
+    width: 3.5rem;
+    margin-left: 0.5rem;
+  }
+  .code-example-spacer {
+    flex: 1;
+  }
+
+  /* -- the panels --------------------------------------------------- */
+  .code-example-panel {
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    background: var(--background);
+
+    &[hidden] {
+      display: none;
+    }
+    &[data-panel='code'] {
+      position: relative;
+    }
+  }
+  /* the toolbar's corners square off while a panel hangs below it */
+  .code-example:has(> .code-example-panel:not([hidden])) .code-example-toolbar {
+    border-radius: 0;
+  }
+  /* Copy floats over the editor - it exists exactly while the source shows */
+  .code-example-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    appearance: none;
+    background: var(--background);
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.75rem;
+    box-shadow: var(--shadow-2xs);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--muted);
+      color: var(--foreground);
+    }
+  }
+
+  /* -- the editor: a textarea over the paint layer, same metrics ------- */
+  .code-example-editor {
+    position: relative;
+    display: block;
+    min-inline-size: 0;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: var(--code-example-font-size);
+    line-height: var(--code-example-line-height);
+  }
+  .code-example-src,
+  .code-example-paint {
+    box-sizing: border-box;
+    margin: 0;
+    padding: var(--code-example-pad);
+    border: 0;
+    font: inherit;
+    letter-spacing: normal;
+    tab-size: 2;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+    scrollbar-gutter: stable;
+  }
+  .code-example-src {
+    position: relative;
+    z-index: 1;
+    display: block;
+    inline-size: 100%;
+    min-block-size: 6rem;
+    resize: vertical;
+    outline: none;
+    background: transparent;
+    color: var(--foreground);
+    caret-color: var(--foreground);
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--ring) 45%, transparent);
+    }
+  }
+  .code-example-editor[data-painted] .code-example-src {
+    color: transparent;
+
+    &::selection {
+      color: transparent;
+      background: color-mix(in oklch, var(--ring) 30%, transparent);
+    }
+  }
+  .code-example-paint {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    color: var(--foreground);
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .code-example-editor[data-painted] .code-example-paint {
+    visibility: visible;
+  }
+  /* Shiki writes each token's colours as --code-example-light / -dark */
+  .code-example-paint span {
+    color: var(--code-example-light, inherit);
+  }
+  .dark .code-example-paint span {
+    color: var(--code-example-dark, inherit);
+  }
+
+  /* -- schema-generated state controls ------------------------------ */
+  .code-example-states {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  .code-example-row {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+
+    & > label {
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+    & :is(input[type='text'], input[type='number'], select) {
+      box-sizing: border-box;
+      width: 100%;
+      height: 1.75rem;
+      padding: 0 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--background);
+      color: var(--foreground);
+      font: inherit;
+      font-size: 0.8125rem;
+    }
+    & input[type='checkbox'] {
+      justify-self: start;
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--primary);
+    }
+  }
+  .code-example-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.875rem;
+    font-size: 0.8125rem;
+
+    & label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--foreground);
+      cursor: pointer;
+    }
+    & input[type='radio'] {
+      width: 0.875rem;
+      height: 0.875rem;
+      margin: 0;
+      accent-color: var(--primary);
+    }
+  }
+  .code-example-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    padding: 0 0.75rem 0.75rem;
+
+    & button {
+      padding: 0.25rem 0.625rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      appearance: none;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+  }
+  .code-example-note {
+    margin: 0;
+    padding: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+
+  /* -- fullscreen ---------------------------------------------------- */
+  /* the whole card fills the screen (native fullscreen when granted, a
+     fixed overlay otherwise): stage on top, open panel below it, the
+     toolbar docked at the bottom, the exit button top-right */
+  .code-example-full-exit {
+    display: none;
+  }
+  .code-example[data-fullscreen] {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--background);
+
+    & > :not(.code-example-stage, .code-example-toolbar, .code-example-panel) {
+      display: none;
+    }
+    & .code-example-stage {
+      order: 1;
+      flex: 1 1 0;
+      min-height: 0;
+      overflow: auto !important;
+      border-inline: 0;
+      border-top: 0;
+      border-radius: 0;
+    }
+    & .code-example-panel {
+      order: 2;
+      flex: 0 1 auto;
+      max-height: 40vh;
+      overflow: auto;
+      border-inline: 0;
+      border-radius: 0;
+    }
+    & .code-example-toolbar {
+      order: 3;
+      flex: none;
+      padding: 0.375rem 0.75rem;
+      border: 0;
+      border-top: 1px solid var(--border);
+      border-radius: 0;
+    }
+    /* measured modes fill the stage instead of shrink-wrapping short content */
+    & .code-example-screen:not([data-mode='phone'], [data-mode='tablet']) .code-example-frame {
+      min-height: calc(100dvh - 6.5rem) !important;
+    }
+    & .code-example-full-exit {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: color-mix(in oklch, var(--background) 85%, transparent);
+      color: var(--foreground);
+      cursor: pointer;
+
+      &:hover {
+        background: var(--muted);
+      }
+    }
+  }
+
+  /* phones: the labelled toolbar cannot fit - icon-only buttons (title and aria-label name them) */
+  @media (max-width: 30rem) {
+    :is(.code-example-vp, .code-example-tab, .code-example-copy, .code-example-reset, .code-example-full) span {
+      display: none;
+    }
+    .code-example-size input[type='number'] {
+      width: 3.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .code-example * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+  @media (prefers-contrast: more) {
+    :is(.code-example-stage, .code-example-toolbar, .code-example-panel, .code-example-copy) {
+      border-color: var(--foreground);
+    }
+    .code-example-toolbar button,
+    .code-example-vp-x {
+      color: var(--foreground);
+    }
+  }
+  @media (forced-colors: active) {
+    /* system colours own the editor: no paint layer, plain text */
+    .code-example-editor[data-painted] .code-example-paint {
+      visibility: hidden;
+    }
+    .code-example-editor[data-painted] .code-example-src {
+      color: CanvasText;
+    }
+    .code-example-toolbar button[aria-pressed='true'] {
+      outline: 2px solid Highlight;
+    }
+    :is(.code-example-stage, .code-example-toolbar, .code-example-panel) {
+      border-color: CanvasText;
+    }
+  }
+}

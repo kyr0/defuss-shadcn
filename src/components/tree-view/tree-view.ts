@@ -8,11 +8,24 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const treeViewStates = ['default', 'expanded'];
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  // 'expanded' is open; 'default' is the authored open flag - in place on the
+  // authored copy
+  if (stateName === 'expanded') dfDollar(el).attr('open', '');
+}
 
 /**
  * UI side of setState (per branch): 'expanded' opens the branch, 'default'
@@ -31,24 +44,19 @@ function triggerStateChange(details, stateName, _config) {
 }
 
 /** Registry-level API; pass the branch element explicitly. Unknown names throw. */
-export const treeViewApi = {
-  setState(details, stateName, config = {}) {
-    if (!treeViewStates.includes(stateName)) {
-      throw new Error(`tree-view: unknown state "${stateName}" (supported: ${treeViewStates.join(', ')})`);
-    }
-    triggerStateChange(details, stateName, config);
-    // state lives on the ELEMENT, not the module (many branches per tree)
-    details.dataset.stateName = stateName;
-    details._stateConfig = config;
-  },
-  getState(details) {
+export const treeViewApi = componentState({
+  component: 'tree-view',
+  states: treeViewStates,
+  apply: (details, state) => triggerStateChange(details, state.name, state.config),
+  read: (details, state) => {
     // reflect reality: summary clicks and ArrowLeft/Right change it too
     return {
       name: details.open ? 'expanded' : 'default',
-      config: details._stateConfig ?? {},
+      config: state.config,
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.treeViewApi = treeViewApi;
 df$.treeViewStates = treeViewStates;
@@ -67,8 +75,9 @@ const isDisabled = (item) => item?.getAttribute('aria-disabled') === 'true';
  */
 function selectItem(tree, item) {
   if (!item || isDisabled(item) || item.getAttribute('aria-selected') === 'true') return;
-  tree.querySelectorAll('[role="treeitem"][aria-selected="true"]').forEach((other) => other.setAttribute('aria-selected', 'false'));
+  dfDollar(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute('aria-selected', 'false'));
   item.setAttribute('aria-selected', 'true');
+  // Fires when an item is selected - the item.
   tree.dispatchEvent(new CustomEvent('tree-select', { bubbles: true, detail: { item } }));
 }
 
@@ -79,8 +88,8 @@ function selectItem(tree, item) {
    checked / unchecked / indeterminate from its children. data-checkable=
    "independent" turns the cascade off. The inputs stay real form controls
    (name / value submit natively). */
-const checkOf = (item) => item?.querySelector(':scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check');
-const childItems = (item) => [...(item.querySelector(':scope > details > .tree-group')?.children ?? [])].filter((li) => li.matches('[role="treeitem"]'));
+const checkOf = (item) => (item ? dfDollar(item).find(':scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check').get(0) : undefined);
+const childItems = (item) => [...(dfDollar(item).find(':scope > details > .tree-group').get(0)?.children ?? [])].filter((li) => li.matches('[role="treeitem"]'));
 const cascades = (tree) => tree.dataset.checkable !== 'independent';
 
 /** Down: a folder's state to every descendant box. */
@@ -110,15 +119,15 @@ function rollUp(tree, item) {
   }
 }
 function syncAria(tree) {
-  tree.querySelectorAll('[role="treeitem"]').forEach((item) => {
+  dfDollar(tree).find('[role="treeitem"]').toArray().forEach((item) => {
     const box = checkOf(item);
     if (box) item.setAttribute('aria-checked', box.indeterminate ? 'mixed' : String(box.checked));
   });
 }
 function checkedValues(tree) {
-  return [...tree.querySelectorAll('.tree-check')]
+  return [...dfDollar(tree).find('.tree-check').toArray()]
     .filter((b) => b.checked && !b.indeterminate)
-    .map((b) => b.value !== 'on' ? b.value : b.closest('[role="treeitem"]').querySelector(':scope > * > span:last-child, :scope > details > summary > span:last-child')?.textContent ?? '');
+    .map((b) => b.value !== 'on' ? b.value : dfDollar(b).closest('[role="treeitem"]').find(':scope > * > span:last-child, :scope > details > summary > span:last-child').get(0)?.textContent ?? '');
 }
 function onCheck(tree, item) {
   const box = checkOf(item);
@@ -129,14 +138,15 @@ function onCheck(tree, item) {
     rollUp(tree, item);
   }
   syncAria(tree);
+  // Fires when a checkbox is toggled - the item, whether it is checked, and every checked value.
   tree.dispatchEvent(new CustomEvent('tree-check', { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
 }
 function initChecks(tree) {
   let n = 0;
-  tree.querySelectorAll('.tree-check').forEach((box) => {
+  dfDollar(tree).find('.tree-check').toArray().forEach((box) => {
     // the row's label names the checkbox
     if (!box.hasAttribute('aria-label') && !box.hasAttribute('aria-labelledby')) {
-      const label = box.parentElement.querySelector(':scope > span:last-child');
+      const label = dfDollar(box.parentElement).find(':scope > span:last-child').get(0);
       if (label) {
         label.id ||= `${tree.id || 'tree'}-lbl-${n++}-${Math.random().toString(36).slice(2, 7)}`;
         box.setAttribute('aria-labelledby', label.id);
@@ -145,8 +155,8 @@ function initChecks(tree) {
   });
   if (cascades(tree)) {
     // authored checked folders cascade down, then every folder rolls up
-    tree.querySelectorAll('[role="treeitem"]').forEach((item) => { const b = checkOf(item); if (b?.checked) checkDown(item, true); });
-    const leaves = [...tree.querySelectorAll('[role="treeitem"]')].filter((i) => !childItems(i).length);
+    dfDollar(tree).find('[role="treeitem"]').toArray().forEach((item) => { const b = checkOf(item); if (b?.checked) checkDown(item, true); });
+    const leaves = [...dfDollar(tree).find('[role="treeitem"]').toArray()].filter((i) => !childItems(i).length);
     leaves.forEach((leaf) => rollUp(tree, leaf));
   }
   syncAria(tree);
@@ -163,16 +173,17 @@ function initChecks(tree) {
    move into itself. Alt+ArrowUp / Alt+ArrowDown moves the focused item
    among its siblings. Every move fires a bubbling tree-reorder event. */
 function clearDrop(tree) {
-  tree.querySelectorAll('[data-drop]').forEach((r) => r.removeAttribute('data-drop'));
+  dfDollar(tree).find('[data-drop]').toArray().forEach((r) => r.removeAttribute('data-drop'));
 }
 function announceMove(tree, item) {
   const parentItem = item.parentElement.closest('[role="treeitem"]');
   const index = [...item.parentElement.children].indexOf(item);
+  // Fires after an item is moved - the item, its new parent and its index there.
   tree.dispatchEvent(new CustomEvent('tree-reorder', { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
 }
 function initSortable(tree) {
   let dragged = null;
-  const rows = () => tree.querySelectorAll('.tree-branch-trigger, .tree-leaf');
+  const rows = () => dfDollar(tree).find('.tree-branch-trigger, .tree-leaf').toArray();
   rows().forEach((row) => { if (!isDisabled(itemOf(row))) row.draggable = true; });
   tree.addEventListener('dragstart', (e) => {
     const row = e.target.closest?.('.tree-branch-trigger, .tree-leaf');
@@ -202,22 +213,24 @@ function initSortable(tree) {
     if (!tree.contains(e.relatedTarget)) clearDrop(tree);
   });
   tree.addEventListener('drop', (e) => {
-    const row = tree.querySelector('[data-drop]');
+    const row = dfDollar(tree).find('[data-drop]').get(0);
     if (!dragged || !row) return;
     e.preventDefault();
     const target = itemOf(row);
     const where = row.dataset.drop;
     if (where === 'inside') {
-      const details = target.querySelector(':scope > details');
+      const details = dfDollar(target).find(':scope > details').get(0);
       details.open = true;
-      details.querySelector(':scope > .tree-group').append(dragged);
+      dfDollar(details).find(':scope > .tree-group').get(0).append(dragged);
     } else {
-      target.parentElement.insertBefore(dragged, where === 'before' ? target : target.nextSibling);
+      const ref = where === 'before' ? target : target.nextSibling;
+      if (ref) dfDollar(ref).before(dragged);
+      else dfDollar(target.parentElement).append(dragged);
     }
     clearDrop(tree);
     announceMove(tree, dragged);
     if (tree.hasAttribute('data-checkable') && cascades(tree)) {
-      tree.querySelectorAll('[role="treeitem"]').forEach((i) => { if (!childItems(i).length) rollUp(tree, i); });
+      dfDollar(tree).find('[role="treeitem"]').toArray().forEach((i) => { if (!childItems(i).length) rollUp(tree, i); });
       syncAria(tree);
     }
   });
@@ -232,19 +245,21 @@ function moveByKey(tree, row, dir) {
   const item = itemOf(row);
   const sib = dir < 0 ? item.previousElementSibling : item.nextElementSibling;
   if (!sib) return;
-  item.parentElement.insertBefore(item, dir < 0 ? sib : sib.nextSibling);
+  const ref = dir < 0 ? sib : sib.nextSibling;
+  if (ref) dfDollar(ref).before(item);
+  else dfDollar(item.parentElement).append(item);
   row.focus();
   announceMove(tree, item);
 }
 
 function init() {
-  document.querySelectorAll('.tree[role="tree"]:not([data-init])').forEach((tree) => {
+  dfDollar('.tree[role="tree"]:not([data-init])').toArray().forEach((tree) => {
     tree.dataset.init = '';
     const selectable = tree.hasAttribute('data-selectable');
     if (selectable) {
       // every operable item states its selection explicitly (authored
       // aria-selected="true" wins); disabled items carry none
-      tree.querySelectorAll('[role="treeitem"]').forEach((item) => {
+      dfDollar(tree).find('[role="treeitem"]').toArray().forEach((item) => {
         if (!isDisabled(item) && !item.hasAttribute('aria-selected')) item.setAttribute('aria-selected', 'false');
       });
     }
@@ -273,17 +288,15 @@ function init() {
       }
     });
     /* Keep aria-expanded in sync with <details> open state */
-    tree.querySelectorAll('.tree-branch').forEach((details) => {
+    dfDollar(tree).find('.tree-branch').toArray().forEach((details) => {
       const treeitem = details.closest('[role="treeitem"]');
       if (!treeitem) return;
 
       // snapshot the authored state + bind the api per branch:
       // `$('#my-branch').api.setState('expanded')`
       details._defaultOpen = details.open;
-      details.api = {
-        setState: (stateName, config) => treeViewApi.setState(details, stateName, config),
-        getState: () => treeViewApi.getState(details),
-      };
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(details, treeViewApi);
 
       details.addEventListener('toggle', () => {
         treeitem.setAttribute('aria-expanded', String(details.open));
@@ -297,7 +310,7 @@ function init() {
       const target = e.target.closest('.tree-branch-trigger, .tree-leaf');
       if (!target) return;
 
-      const allItems = Array.from(tree.querySelectorAll('.tree-branch-trigger, .tree-leaf'));
+      const allItems = Array.from(dfDollar(tree).find('.tree-branch-trigger, .tree-leaf').toArray());
       const visibleItems = allItems.filter((item) => item.checkVisibility());
       const index = visibleItems.indexOf(target);
 

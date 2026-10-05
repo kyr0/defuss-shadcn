@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "code-example",
+  "states": {
+    "code": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".code-example"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "code"
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "state": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".code-example"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "state"
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "fullscreen": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".code-example"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "fullscreen"
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

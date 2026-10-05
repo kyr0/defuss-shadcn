@@ -1,0 +1,404 @@
+---
+title: "Illustrative · Process"
+description: "Process diagrams with the diagram component - responsible lanes, numbered steps with tools and IN/OUT payload chips; step by step and as a delta."
+slug: "diagram-process"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-process" title="Illustrative · Process" component="diagram">
+  A business process where the payload matters: lanes for the responsible teams, each step numbered (eyebrow), its tool (meta) and what goes in and out as chips (<code>.diagram-node-chips</code>). Prefer a swimlane when the data does not matter.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Quarterly survey" component="diagram" hint="Chips with two spans print a key (IN / OUT) and a value."
+<figure class="diagram" id="dg-proc" data-type="process" aria-label="Quarterly survey production process">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process</span>
+    <span class="diagram-title">Quarterly survey, who does what with which data</span>
+    <span class="diagram-dek">Every step names its owner (lane), its tool and what goes in and out.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:10rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:5"><span class="diagram-group-label">Methods</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">IT</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Field</span></div>
+    <div class="diagram-node" data-node="design" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">01 · Methods</span>
+      <span class="diagram-node-name">Design</span>
+      <span class="diagram-node-meta">Word · R</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>last wave</span></li>
+        <li><span>OUT</span><span>questionnaire</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="build" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">02 · IT</span>
+      <span class="diagram-node-name">Build app</span>
+      <span class="diagram-node-meta">Survey Solutions</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>questionnaire</span></li>
+        <li><span>OUT</span><span>CAPI app</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="collect" data-tone="accent" data-step-label="Fieldwork" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">03 · Field</span>
+      <span class="diagram-node-name">Interview</span>
+      <span class="diagram-node-meta">tablets</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>CAPI app</span></li>
+        <li><span>OUT</span><span>6,200 records</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="weight" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">04 · Methods</span>
+      <span class="diagram-node-name">Weight</span>
+      <span class="diagram-node-meta">R · survey pkg</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>records</span></li>
+        <li><span>OUT</span><span>estimates</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="design" data-to="build">spec</li>
+    <li class="diagram-edge" data-from="build" data-to="collect">deploy</li>
+    <li class="diagram-edge" data-from="collect" data-to="weight" data-tone="accent">sync nightly</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Quarterly survey, step by step" component="diagram" hint="One step a step - the lanes stay as the frame."
+<figure class="diagram" id="dg-proc-steps" data-type="process" data-steps data-autoplay aria-label="Quarterly survey production process">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process</span>
+    <span class="diagram-title">Quarterly survey, who does what with which data</span>
+    <span class="diagram-dek">Every step names its owner (lane), its tool and what goes in and out.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:10rem">
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:1;--span:5"><span class="diagram-group-label">Methods</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">IT</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Field</span></div>
+    <div class="diagram-node" data-node="design" data-step="1" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">01 · Methods</span>
+      <span class="diagram-node-name">Design</span>
+      <span class="diagram-node-meta">Word · R</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>last wave</span></li>
+        <li><span>OUT</span><span>questionnaire</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="build" data-step="2" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">02 · IT</span>
+      <span class="diagram-node-name">Build app</span>
+      <span class="diagram-node-meta">Survey Solutions</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>questionnaire</span></li>
+        <li><span>OUT</span><span>CAPI app</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="collect" data-tone="accent" data-step="3" data-step-label="Fieldwork" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">03 · Field</span>
+      <span class="diagram-node-name">Interview</span>
+      <span class="diagram-node-meta">tablets</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>CAPI app</span></li>
+        <li><span>OUT</span><span>6,200 records</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="weight" data-step="4" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">04 · Methods</span>
+      <span class="diagram-node-name">Weight</span>
+      <span class="diagram-node-meta">R · survey pkg</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>records</span></li>
+        <li><span>OUT</span><span>estimates</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="design" data-to="build">spec</li>
+    <li class="diagram-edge" data-from="build" data-to="collect">deploy</li>
+    <li class="diagram-edge" data-from="collect" data-to="weight" data-tone="accent">sync nightly</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Process, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-proc-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-proc-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-proc-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-proc-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-proc-live" data-interactive data-type="process" aria-label="Quarterly survey production process">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process</span>
+    <span class="diagram-title">Quarterly survey, who does what with which data</span>
+    <span class="diagram-dek">Every step names its owner (lane), its tool and what goes in and out.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:10rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:5"><span class="diagram-group-label">Methods</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">IT</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Field</span></div>
+    <div class="diagram-node" data-node="design" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">01 · Methods</span>
+      <span class="diagram-node-name">Design</span>
+      <span class="diagram-node-meta">Word · R</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>last wave</span></li>
+        <li><span>OUT</span><span>questionnaire</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="build" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">02 · IT</span>
+      <span class="diagram-node-name">Build app</span>
+      <span class="diagram-node-meta">Survey Solutions</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>questionnaire</span></li>
+        <li><span>OUT</span><span>CAPI app</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="collect" data-tone="accent" data-step-label="Fieldwork" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">03 · Field</span>
+      <span class="diagram-node-name">Interview</span>
+      <span class="diagram-node-meta">tablets</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>CAPI app</span></li>
+        <li><span>OUT</span><span>6,200 records</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="weight" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">04 · Methods</span>
+      <span class="diagram-node-name">Weight</span>
+      <span class="diagram-node-meta">R · survey pkg</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>records</span></li>
+        <li><span>OUT</span><span>estimates</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="design" data-to="build">spec</li>
+    <li class="diagram-edge" data-from="build" data-to="collect">deploy</li>
+    <li class="diagram-edge" data-from="collect" data-to="weight" data-tone="accent">sync nightly</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Process, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-proc-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-proc-edit" data-interactive data-type="process" aria-label="Quarterly survey production process">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Process</span>
+        <span class="diagram-title">Quarterly survey, who does what with which data</span>
+        <span class="diagram-dek">Every step names its owner (lane), its tool and what goes in and out.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:10rem">
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:5"><span class="diagram-group-label">Methods</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">IT</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Field</span></div>
+        <div class="diagram-node" data-node="design" style="--col:2;--row:1">
+          <span class="diagram-node-eyebrow">01 · Methods</span>
+          <span class="diagram-node-name">Design</span>
+          <span class="diagram-node-meta">Word · R</span>
+          <ul class="diagram-node-chips">
+            <li><span>IN</span><span>last wave</span></li>
+            <li><span>OUT</span><span>questionnaire</span></li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="build" style="--col:3;--row:2">
+          <span class="diagram-node-eyebrow">02 · IT</span>
+          <span class="diagram-node-name">Build app</span>
+          <span class="diagram-node-meta">Survey Solutions</span>
+          <ul class="diagram-node-chips">
+            <li><span>IN</span><span>questionnaire</span></li>
+            <li><span>OUT</span><span>CAPI app</span></li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="collect" data-tone="accent" data-step-label="Fieldwork" style="--col:4;--row:3">
+          <span class="diagram-node-eyebrow">03 · Field</span>
+          <span class="diagram-node-name">Interview</span>
+          <span class="diagram-node-meta">tablets</span>
+          <ul class="diagram-node-chips">
+            <li><span>IN</span><span>CAPI app</span></li>
+            <li><span>OUT</span><span>6,200 records</span></li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="weight" style="--col:5;--row:1">
+          <span class="diagram-node-eyebrow">04 · Methods</span>
+          <span class="diagram-node-name">Weight</span>
+          <span class="diagram-node-meta">R · survey pkg</span>
+          <ul class="diagram-node-chips">
+            <li><span>IN</span><span>records</span></li>
+            <li><span>OUT</span><span>estimates</span></li>
+          </ul>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="design" data-to="build">spec</li>
+        <li class="diagram-edge" data-from="build" data-to="collect">deploy</li>
+        <li class="diagram-edge" data-from="collect" data-to="weight" data-tone="accent">sync nightly</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-proc-edit-panel" aria-labelledby="dg-proc-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-proc-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-proc-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-proc-edit');
+    const grid = document.getElementById('dg-proc-edit-grid');
+    const title = document.getElementById('dg-proc-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="flow">Flow</H2>
+
+<DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
+
+```html example label="Process, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-proc-flow" data-type="process" aria-label="Quarterly survey production process">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process</span>
+    <span class="diagram-title">Quarterly survey, who does what with which data</span>
+    <span class="diagram-dek">Every step names its owner (lane), its tool and what goes in and out.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(4,minmax(8rem,1fr));--diagram-node-w:10rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:5"><span class="diagram-group-label">Methods</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:5"><span class="diagram-group-label">IT</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5"><span class="diagram-group-label">Field</span></div>
+    <div class="diagram-node" data-node="design" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">01 · Methods</span>
+      <span class="diagram-node-name">Design</span>
+      <span class="diagram-node-meta">Word · R</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>last wave</span></li>
+        <li><span>OUT</span><span>questionnaire</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="build" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">02 · IT</span>
+      <span class="diagram-node-name">Build app</span>
+      <span class="diagram-node-meta">Survey Solutions</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>questionnaire</span></li>
+        <li><span>OUT</span><span>CAPI app</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="collect" data-tone="accent" data-step-label="Fieldwork" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">03 · Field</span>
+      <span class="diagram-node-name">Interview</span>
+      <span class="diagram-node-meta">tablets</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>CAPI app</span></li>
+        <li><span>OUT</span><span>6,200 records</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="weight" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">04 · Methods</span>
+      <span class="diagram-node-name">Weight</span>
+      <span class="diagram-node-meta">R · survey pkg</span>
+      <ul class="diagram-node-chips">
+        <li><span>IN</span><span>records</span></li>
+        <li><span>OUT</span><span>estimates</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="design" data-to="build" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">spec</li>
+    <li class="diagram-edge" data-from="build" data-to="collect" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">deploy</li>
+    <li class="diagram-edge" data-from="collect" data-to="weight" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">sync nightly</li>
+  </ol>
+</figure>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Validation moves into the field" component="diagram" hint="A changed chip (data-change on the chip row) and a step that moves from IT into the field."
+<figure class="diagram" id="dg-proc-delta" data-type="process" data-delta aria-label="Survey process with validation">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process change</span>
+    <span class="diagram-title">Validation moves into the field</span>
+  </figcaption>
+  <div class="diagram-canvas" style="grid-template-columns:5.5rem repeat(3,minmax(8rem,1fr));--diagram-node-w:10rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:4"><span class="diagram-group-label">IT</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:4"><span class="diagram-group-label">Field</span></div>
+    <div class="diagram-node" data-node="build" style="--col:2;--row:1">
+      <span class="diagram-node-name">Build app</span>
+      <ul class="diagram-node-chips">
+        <li data-change="changed"><span>OUT</span><span>CAPI app + checks</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="collect" style="--col:3;--row:2">
+      <span class="diagram-node-name">Interview</span>
+      <ul class="diagram-node-chips">
+        <li><span>OUT</span><span>validated records</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="valid" data-change="removed" style="--col:4;--row:1">
+      <span class="diagram-node-name">Edit checks</span>
+      <span class="diagram-node-meta">after the fact</span>
+    </div>
+    <div class="diagram-node" data-node="fix" data-tone="accent" data-change="added" style="--col:4;--row:2">
+      <span class="diagram-node-name">Fix on the spot</span>
+      <span class="diagram-node-meta">interviewer</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="build" data-to="collect">deploy</li>
+    <li class="diagram-edge" data-from="collect" data-to="valid" data-change="removed">raw records</li>
+    <li class="diagram-edge" data-from="collect" data-to="fix" data-change="added">flags</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

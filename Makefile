@@ -2,7 +2,7 @@
 # KISS: every target delegates to package.json so there is one source of truth.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup dev test test-run coverage e2e lint verify screenshots minify stats build docs purge-cdn
+.PHONY: help setup dev test test-run coverage e2e lint verify screenshots minify stats build docs purge-cdn bench
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -67,3 +67,12 @@ verify: ## Static consistency gate (runs automatically after build)
 
 screenshots: ## Default-state screenshot of every component (agent inspection)
 	bun run screenshots
+
+# Measurements, never part of build/verify/test: they load the machine on
+# purpose. `make bench AGENT="Claude Code · Opus 5.5 (high effort)"` times one
+# green verify run into src/documentation/data/verify-timing.json (machine,
+# chip, OS, Bun, agent) and rewrites the data-stat figures that cite it.
+AGENT ?= none (run by hand)
+bench: ## Benchmarks (on demand): time the verifier → data/verify-timing.json, then rewrite the cited figures
+	bun run time-verify --agent "$(AGENT)"
+	bun run figures

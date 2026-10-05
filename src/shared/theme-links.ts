@@ -11,6 +11,7 @@
  * answer, not an error. core installs it at df$.shadcn.shared.loadTheme and
  * ddf$.loadTheme.
  */
+import { defussQuery } from './query.js';
 
 /** One defuss-JSX-as-JSON resource node (only <link> is loadable). */
 export interface ThemeLinkNode {
@@ -39,9 +40,8 @@ const inflight = new Map<string, Promise<ThemeLinksFile | null>>();
  * jsDelivr CDN and the sidecar resolves to the very same publish point.
  */
 function themeJsonHref(id: string): string {
-  const tokens =
-    document.getElementById('tokens-css') ??
-    document.querySelector<HTMLLinkElement>('link[href*="default-semantic-tokens.css"]');
+  const $ = defussQuery();
+  const tokens = $('#tokens-css').get(0) ?? $('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens) return new URL(`../${id}.json`, (tokens as HTMLLinkElement).href).href;
   return `${id}.json`;
 }
@@ -75,7 +75,7 @@ export function parseThemeLinks(text: string): ThemeLinksFile {
 
 /** Why: remove every link this loader mounted (theme switch / 'default'). */
 export function clearThemeLinks(): void {
-  document.querySelectorAll(`link[${LINK_ATTR}]`).forEach((el) => el.remove());
+  defussQuery()(`link[${LINK_ATTR}]`).remove();
 }
 
 /**
@@ -85,7 +85,8 @@ export function clearThemeLinks(): void {
  * font CSS is wasted bytes and, for some families, a FOUT retrigger.
  */
 export function applyThemeLinks(themeId: string, links: ThemeLinkNode[]): void {
-  if (!document.getElementById('df-theme-links')) {
+  const $ = defussQuery();
+  if (!$('#df-theme-links').get(0)) {
     // a marker element keeps "which links are ours" a pure attribute read —
     // clearThemeLinks never needs this map, but mount dedup does
     const marker = document.createElement('template');
@@ -96,9 +97,7 @@ export function applyThemeLinks(themeId: string, links: ThemeLinkNode[]): void {
   for (const node of links) {
     const rel = node.attributes.rel ?? '';
     const href = node.attributes.href ?? '';
-    const existing = document.querySelector<HTMLLinkElement>(
-      `link[rel="${CSS.escape(rel)}"][href="${CSS.escape(href)}"]`,
-    );
+    const existing = $(`link[rel="${CSS.escape(rel)}"][href="${CSS.escape(href)}"]`).get(0);
     if (existing) continue; // already present (static page link or earlier mount)
     const link = document.createElement('link');
     for (const [name, value] of Object.entries(node.attributes)) link.setAttribute(name, String(value));

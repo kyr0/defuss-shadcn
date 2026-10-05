@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped slider component. Loads the fixture
@@ -261,6 +262,11 @@ try {
     assert.ok(Math.max(...r.even) - Math.min(...r.even) <= 1, `evenly spaced: ${r.even}`);
     assert.deepEqual(r.pads, ['10px', '12px', '12px'], 'half a thumb: md, lg by sibling, lg by own data-size');
     assert.deepEqual([r.tick, r.bare], ['6px', '4px']);
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.slider[id]', ['default','disabled'], { runtimeAttrs: ['style','aria-valuetext','data-thumb'] });
   });
 
 } finally {

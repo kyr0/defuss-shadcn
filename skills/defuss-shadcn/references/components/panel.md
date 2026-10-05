@@ -4,7 +4,7 @@ type: MOL
 why: A titled .card whose minimize / maximize tools are Swaps - a native checkbox each, so the face and the keyboard are the browser's; the runtime keeps the state in step and makes the panel a border-layout region that folds to its title bar (a vertical tab in west / east) like the ExtJS 4 border layout.
 when: Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window.
 where: dist/components/panel/panel.css + dist/components/panel/panel.js (+ card, swap)
-supportedStates: default, minimized, maximized
+supportedStates: default, minimized, maximized, closed
 ---
 
 # Pattern: Panel
@@ -61,6 +61,28 @@ icon, title and restore tool still showing.
 
 - Both tools are optional; leave one out and that action is gone (a
   panel without `.panel-minimize` ignores the title-bar double-click too).
+- **Closable**: a `.panel-close` button in `.panel-tools` (a plain button -
+  closing is not a toggle) closes the panel; any
+  `<button data-panel-open="panel-id">` opens it again. Closed, the panel is
+  `hidden` and, in a border layout, its region and divider go with it - the
+  center takes the room. Focus moves to the opener on close and to the
+  panel's first tool on open. `data-panel-toggle="id"` does both (close /
+  open) and keeps its `aria-expanded` in step.
+
+```html
+<button class="btn" data-variant="outline" data-panel-open="inspector">Inspector</button>
+<section class="card panel" id="inspector" aria-labelledby="inspector-title">
+  <header class="panel-header">
+    <h3 class="panel-title" id="inspector-title">Inspector</h3>
+    <div class="panel-tools">
+      <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+  </header>
+  <div class="panel-body">…</div>
+</section>
+```
 - `.panel-icon`, `.panel-footer` are optional; extra tools (`.btn` with
   `data-variant="ghost" data-size="icon-sm"`) go in `.panel-tools`.
 - The minimize faces are `chevron-up` (off) / `chevron-down` (on): the CSS
@@ -106,6 +128,10 @@ radius - the dividers frame it (`data-divider="gap"` cards it again).
 | `data-minimized` | `.panel` | Title bar only (set by the runtime; author it to start folded) |
 | `data-maximized` | `.panel` | Fills its border layout / `[data-panel-host]` / the viewport |
 | `data-title-collapse="false"` | `.panel` | The title-bar double-click does not fold |
+| `.panel-close` | a button in `.panel-tools` | Closes the panel (state `closed`) |
+| `data-panel-open="id"` | any button | Opens that panel again |
+| `data-panel-toggle="id"` | any button | Closes an open panel, opens a closed one; its `aria-expanded` follows the panel |
+| `hidden` | `.panel` | Closed (set by the runtime; author it to start closed) |
 | `data-flush` | `.panel-body` | No padding - for lists, tables, code |
 | `data-panel-host` | any ancestor | What a maximized panel fills (border layouts are hosts already) |
 | `data-region` | `.panel` | Set by the runtime: `north` · `south` · `west` · `east` · `center` |
@@ -129,7 +155,7 @@ region's resizer; the title bar is 2.5rem, the tools 1.75rem with 1rem icons.
 
 | Event | Detail | When |
 |-------|--------|------|
-| `panel-change` | `{ state, previous, region }` | The panel was minimized, maximized or restored (bubbles) |
+| `panel-change` | `{ state, previous, region }` | The panel was minimized, maximized, closed or restored (bubbles) |
 
 ## Imperative API - `df$.shadcn.panel`
 
@@ -137,6 +163,7 @@ region's resizer; the title bar is 2.5rem, the tools 1.75rem with 1rem icons.
 |--------|------|
 | `minimize(panel)` / `maximize(panel)` / `restore(panel)` | Set the state (an element, an id or a selector) |
 | `toggle(panel)` | Minimize or restore; returns whether it is now minimized |
+| `close(panel)` / `open(panel)` | Close it / bring it back |
 
 ---
 
@@ -147,6 +174,7 @@ region's resizer; the title bar is 2.5rem, the tools 1.75rem with 1rem icons.
 | `default` | Title bar and body at the authored size |
 | `minimized` | The title bar only - in a border layout region, the region folds with it |
 | `maximized` | Fills its border layout, `[data-panel-host]` or the viewport |
+| `closed` | Gone - `hidden`; in a border layout its region and divider go too |
 
 ```js
 const panel = df$('#files').get(0);
@@ -154,6 +182,33 @@ panel.api.setState('minimized');
 panel.api.getState(); // → { name: 'minimized', config: {} }
 panel.api.setState('default');
 ```
+
+---
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.panelApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.panelStates` = `default`, `minimized`, `maximized`, `closed`.
+
+### `df$.shadcn.panel`
+
+| Member | Description |
+|---|---|
+| `minimize(t)` | Title bar only - in a border layout region, the region shrinks with it. |
+| `maximize(t)` | Fills its border layout / [data-panel-host] / the viewport. |
+| `restore(t)` | Back to title bar + body at the authored size. |
+| `close(t)` | Closes the panel (hidden; in a border layout its region goes too). |
+| `open(t)` | Opens a closed panel again (title bar + body). |
+| `toggle(t)` | Minimizes or restores; returns whether it is now minimized. |
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `panel-change` | `state`, `previous`, `region` | Fires when the panel changes state - the new state, the previous one and the border-layout region it sits in. |
 
 ---
 

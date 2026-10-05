@@ -160,6 +160,24 @@
 </section>
       </div>
     </div>
+
+    <!-- closable: a close tool, an opener outside; and a closable region in a border layout -->
+    <button type="button" class="btn" id="open-insp" data-panel-open="insp">Inspector</button>
+    <button type="button" class="btn" id="toggle-insp" data-panel-toggle="insp">Toggle inspector</button>
+    <div class="border-layout" id="bl-close" style="height:200px; width:600px;">
+      <main class="border-layout-center" id="bl-close-c">Canvas</main>
+      <div class="resizer border-layout-east" id="r-insp">
+<section class="card panel" id="insp" aria-labelledby="insp-t" style="width:220px">
+  <header class="panel-header">
+    <h3 class="panel-title" id="insp-t">Inspector</h3>
+    <div class="panel-tools">
+      <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+  </header>
+  <div class="panel-body"><p>Inspector body</p></div>
+</section>
+      </div>
+    </div>
   </div>
 
   <script type="module">

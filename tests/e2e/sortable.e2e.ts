@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped sortable component. Loads the fixture
@@ -375,6 +376,10 @@ try {
     const val = await page.$eval('#srt-spacious .sortable-item', (el) => getComputedStyle(el).paddingLeft);
     assert.equal(val, '16px');
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.sortable[id]', ['default'], { runtimeAttrs: ['tabindex','aria-selected','data-active'] });
+  });
+
 } finally {
   await browser.close();
   server.stop();

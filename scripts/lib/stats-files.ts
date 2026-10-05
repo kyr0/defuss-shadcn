@@ -2,9 +2,12 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 import { skillEntries } from './skill-files.ts';
-import { aggregateStats, buildStatsText, STATS_FILE, type BundleStats, type StatsDoc } from './stats.ts';
+import { EXTRA_BUNDLES } from './bundles.ts';
+import { aggregateStats, buildStatsText, STATS_FILE, type AppStats, type BundleStats, type StatsDoc } from './stats.ts';
+import { appPlans } from './apps-files.ts';
+import { standaloneAppFile } from './docs-ssg.ts';
 import type { ComponentType } from './taxonomy.ts';
-import { ALL_PAGES } from '../../src/documentation/lib/nav.ts';
+import { ALL_PAGES, NAV, flattenNav } from '../../src/documentation/lib/nav.ts';
 
 /** TOK: the distinct custom properties the token file defines (light + dark
  *  share names - each token counts once). */
@@ -28,6 +31,17 @@ export function countExamples(): number {
 export function countTemplatePages(componentNames: readonly string[]): number {
   const comps = new Set(componentNames);
   return ALL_PAGES.filter((p) => p.type === 'TPL' && !comps.has(p.href.replace(/\.html$/, ''))).length;
+}
+
+/** The template pages per sidebar section, in sidebar order. */
+export function templateGroups(componentNames: readonly string[]): Record<string, number> {
+  const comps = new Set(componentNames);
+  const out: Record<string, number> = {};
+  for (const sec of NAV) {
+    const n = flattenNav(sec.items).filter((p) => p.type === 'TPL' && !comps.has(p.href.replace(/\.html$/, ''))).length;
+    if (n) out[sec.heading] = n;
+  }
+  return out;
 }
 
 /**
@@ -87,11 +101,11 @@ export function measureComponents(componentsDir: string) {
  * can run on a dist/ that predates the bundle, and the `stats.json fresh`
  * gate forces a regeneration as soon as it exists.
  */
-export function measureBundle(componentsDir: string): BundleStats {
-  const js = bytesOf(join(componentsDir, 'all.js'));
-  const jsMin = bytesOf(join(componentsDir, 'all.min.js'));
-  const css = bytesOf(join(componentsDir, 'all.css'));
-  const cssMin = bytesOf(join(componentsDir, 'all.min.css'));
+export function measureBundle(componentsDir: string, name = 'all'): BundleStats {
+  const js = bytesOf(join(componentsDir, `${name}.js`));
+  const jsMin = bytesOf(join(componentsDir, `${name}.min.js`));
+  const css = bytesOf(join(componentsDir, `${name}.css`));
+  const cssMin = bytesOf(join(componentsDir, `${name}.min.css`));
   return {
     jsSize: sizeOf(js),
     jsSizeMinified: sizeOf(jsMin),
@@ -99,7 +113,14 @@ export function measureBundle(componentsDir: string): BundleStats {
     cssSizeMinified: sizeOf(cssMin),
     totalSizeGz: gzOf(js) + gzOf(css),
     totalSizeGzMinified: gzOf(jsMin) + gzOf(cssMin),
+    jsSizeGzMinified: gzOf(jsMin),
+    cssSizeGzMinified: gzOf(cssMin),
   };
+}
+
+/** the extra bundles (scripts/lib/bundles.ts), each measured like all.* */
+export function measureExtraBundles(componentsDir: string): Record<string, BundleStats> {
+  return Object.fromEntries(Object.keys(EXTRA_BUNDLES).map((b) => [b, measureBundle(componentsDir, b)]));
 }
 
 /**
@@ -120,14 +141,47 @@ export function measureCore(componentsDir: string): BundleStats {
     cssSizeMinified: sizeOf(cssMin),
     totalSizeGz: gzOf(js) + gzOf(css),
     totalSizeGzMinified: gzOf(jsMin) + gzOf(cssMin),
+    jsSizeGzMinified: gzOf(jsMin),
+    cssSizeGzMinified: gzOf(cssMin),
   };
+}
+
+/**
+ * Why: the Application Scaffolds built on their own (bundle.ts step 3) - each
+ * measured like the bundle, with the component list it was built from. The
+ * list is resolved again from the sources (apps-files.ts), so the gate fails
+ * when a scaffold's markup changed but dist/apps/ was not rebuilt.
+ */
+export function measureApps(distDir: string): Record<string, AppStats> {
+  const dir = join(distDir, 'apps');
+  const out: Record<string, AppStats> = {};
+  for (const plan of appPlans()) {
+    const js = bytesOf(join(dir, `${plan.name}.js`));
+    const jsMin = bytesOf(join(dir, `${plan.name}.min.js`));
+    const css = bytesOf(join(dir, `${plan.name}.css`));
+    const cssMin = bytesOf(join(dir, `${plan.name}.min.css`));
+    out[plan.name] = {
+      page: plan.slug,
+      href: standaloneAppFile(plan.slug),
+      components: plan.components,
+      jsSize: sizeOf(js),
+      jsSizeMinified: sizeOf(jsMin),
+      cssSize: sizeOf(css),
+      cssSizeMinified: sizeOf(cssMin),
+      totalSizeGz: gzOf(js) + gzOf(css),
+      totalSizeGzMinified: gzOf(jsMin) + gzOf(cssMin),
+      jsSizeGzMinified: gzOf(jsMin),
+      cssSizeGzMinified: gzOf(cssMin),
+    };
+  }
+  return out;
 }
 
 /** The full stats.json text for one dist/ tree - writer and gate share this. */
 export function buildStatsFileText(distDir: string): string {
   const componentsDir = join(distDir, 'components');
   const measures = measureComponents(componentsDir);
-  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples() });
+  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(componentsDir) });
 }
 
 /** Write dist/stats.json and return the document (for the CLI summary line). */
@@ -137,7 +191,7 @@ export function writeStatsFile(distDir: string): StatsDoc {
   const bundle = measureBundle(componentsDir);
   const core = measureCore(componentsDir);
   const pages = countTemplatePages(measures.map((m) => m.name));
-  const extra = { tokens: countTokens(distDir), examples: countExamples() };
+  const extra = { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(join(distDir, 'components')) };
   writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle, core, pages, extra));
   return aggregateStats(measures, bundle, core, pages, extra);
 }

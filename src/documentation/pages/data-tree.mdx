@@ -1,0 +1,206 @@
+---
+title: "Data Tree"
+description: "Data Tree component - a windowed ARIA tree over hundreds of thousands of flat records: expand and collapse, filter with the path to every match kept, sort siblings, keyboard per the APG tree pattern; the query is the tree's store, kept for the session (or longer, per instance)."
+slug: "data-tree"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="data-tree" title="Data Tree" component="data-tree">
+  A tree too big to write as markup. The records are one flat array - each names its parent - and <a href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> turns them into what is visible: open branches, sorted siblings, and for a filter every match with the path that leads to it. Only the items on screen exist in the DOM; focus stays on the tree and screen readers still hear "level 3, 42 of 100". For a small tree written as markup, use <a href="tree-view.html">Tree View</a>; for columns, the <a href="tree-grid.html">Tree Grid</a>.
+</PageHeader>
+
+<SkillPanel component="data-tree">
+  <SkillField label="Native basis">
+<SkillText>A focusable scroll container with <code>role="tree"</code>: a sizer gives the scrollbar the length of every visible node, a pool of recycled <code>treeitem</code>s rides inside it, <code>aria-activedescendant</code> names the active one. <code>df$.shadcn.dataTree.setSource(el, records)</code> hands it the data.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="levels, set sizes, positions on recycled items"><code>ARIA tree</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-activedescendant" title="focus stays on the tree"><code>aria-activedescendant</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/contain" title="paint and layout stay inside"><code>contain: strict</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the window follows the height"><code>ResizeObserver</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.data-tree</code>
+    <code>.data-tree-sizer</code>
+    <code>.data-tree-items</code>
+    <code>.data-tree-item</code>
+    <code>.data-tree-toggle</code>
+    <code>.data-tree-label</code>
+    <code>.data-tree-meta</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-label-field</code>, <code>data-id-field</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>; <code>data-tree-filter="tree-id"</code> on any input; <code>--data-tree-row-height</code>, <code>--data-tree-indent</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="111,110 nodes" hint="Ten regions × ten countries × a hundred cities × ten districts. Open branches with the chevrons or the keyboard (↑ ↓ → ← Home End, Enter selects, * opens every sibling). The input is bound by data-tree-filter: type 'district 7.3.4' - every match shows with the path to it opened, the first match becomes active. The line below subscribes to the tree's store."
+<div class="flex flex-col gap-2" style="max-width:26rem;">
+  <input class="input" data-tree-filter="dt-geo" aria-label="Filter places" placeholder="Filter places…">
+  <div class="data-tree" id="dt-geo" aria-label="Places" data-empty-text="No place matches." style="height:20rem;"></div>
+  <p class="text-sm text-muted-foreground m-0" id="dt-geo-line" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // one flat array: every record names its parent (null = a root)
+    const rows = [];
+    let id = 0;
+    for (let a = 1; a <= 10; a++) {
+      const region = ++id;
+      rows.push({ id: region, parentId: null, name: 'Region ' + a });
+      for (let b = 1; b <= 10; b++) {
+        const country = ++id;
+        rows.push({ id: country, parentId: region, name: 'Country ' + a + '.' + b });
+        for (let c = 1; c <= 100; c++) {
+          const city = ++id;
+          rows.push({ id: city, parentId: country, name: 'City ' + a + '.' + b + '.' + c });
+          for (let d = 1; d <= 10; d++) rows.push({ id: ++id, parentId: city, name: 'District ' + a + '.' + b + '.' + c + '.' + d });
+        }
+      }
+    }
+    const tree = document.getElementById('dt-geo');
+    df$.shadcn.dataTree.setSource(tree, rows);
+    const line = document.getElementById('dt-geo-line');
+    tree.store.subscribe(({ config }) => {
+      const picked = df$.shadcn.dataTree.selected(tree);
+      line.textContent = config.expanded.length + ' open · ' + (picked ? 'selected: ' + picked.name : 'nothing selected');
+    }, { immediate: true });
+  });
+</script>
+```
+
+```html example label="Custom labels and a kept view" schema="none" hint="render(label, record, meta) fills each label - an icon, the name, a size. The open branches, the filters, the sort and the selection are kept: in session storage by default, here in local storage under its own key (data-persist='local', data-persist-key) - on your page they survive a reload and the next visit (this sandboxed example has no storage)."
+<div class="data-tree" id="dt-files" aria-label="Project files" data-persist="local" data-persist-key="docs:project-files" style="height:16rem;max-width:26rem;--data-tree-row-height:30px;"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const files = [
+      { id: 'src', parentId: null, name: 'src' },
+      { id: 'src/components', parentId: 'src', name: 'components' },
+      { id: 'src/shared', parentId: 'src', name: 'shared' },
+      { id: 'docs', parentId: null, name: 'docs' },
+      { id: 'package.json', parentId: null, name: 'package.json', size: 2.1 },
+    ];
+    ['accordion', 'data-grid', 'data-tree', 'dialog', 'toast', 'virtual-list'].forEach((n, i) => files.push({ id: 'src/components/' + n, parentId: 'src/components', name: n + '.ts', size: 4 + i * 3.5 }));
+    ['store.ts', 'dataview.ts', 'virtual.ts'].forEach((n, i) => files.push({ id: 'src/shared/' + n, parentId: 'src/shared', name: n, size: 3 + i * 2 }));
+    ['index.html', 'data-grid.html'].forEach((n, i) => files.push({ id: 'docs/' + n, parentId: 'docs', name: n, size: 40 + i * 12 }));
+    df$.shadcn.dataTree.setSource(document.getElementById('dt-files'), files, {
+      render: (label, file, meta) => {
+        const icon = document.createElement('i');
+        icon.dataset.lucide = meta.hasChildren ? (meta.isExpanded ? 'folder-open' : 'folder') : 'file';
+        icon.style.width = '1rem';
+        icon.style.height = '1rem';
+        const name = document.createElement('span');
+        name.textContent = file.name;
+        label.append(icon, name);
+        if (file.size) {
+          const size = document.createElement('span');
+          size.className = 'data-tree-meta';
+          size.textContent = file.size.toFixed(1) + ' KB';
+          label.append(size);
+        }
+        globalThis.lucide?.createIcons({ root: label });
+      },
+    });
+  });
+</script>
+```
+
+```html example label="Selection drives a detail pane" schema="none" hint="Selecting (click, Enter, Space) dispatches data-tree-select with the record - here a detail pane follows it. Sorting orders siblings: the select writes config.sorters."
+<div class="flex flex-wrap gap-4">
+  <div class="flex flex-col gap-2" style="flex:1;min-width:14rem;">
+    <select class="select" aria-label="Sort" id="dt-org-sort">
+      <option value="">Org chart order</option>
+      <option value="name:asc">Name A–Z</option>
+      <option value="reports:desc">Most reports first</option>
+    </select>
+    <div class="data-tree" id="dt-org" aria-label="Organization" style="height:16rem;"></div>
+  </div>
+  <div class="card" style="flex:1;min-width:12rem;">
+    <div class="card-header"><h3 class="card-title" id="dt-org-name">Pick someone</h3><p class="card-description" id="dt-org-role">Their role shows here.</p></div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const titles = ['VP', 'Director', 'Manager', 'Engineer'];
+    const people = [];
+    let id = 0;
+    const add = (parentId, level) => {
+      const me = ++id;
+      people.push({ id: me, parentId, name: 'Person ' + me, title: titles[level], reports: 0 });
+      if (level < 3) for (let i = 0; i < 4; i++) people[me - 1].reports++, add(me, level + 1);
+    };
+    add(null, 0);
+    const tree = document.getElementById('dt-org');
+    df$.shadcn.dataTree.setSource(tree, people, {
+      render: (label, person) => {
+        const name = document.createElement('span');
+        name.textContent = person.name;
+        const title = document.createElement('span');
+        title.className = 'data-tree-meta';
+        title.textContent = person.title;
+        label.append(name, title);
+      },
+    });
+    df$.shadcn.dataTree.query(tree, { expanded: [1] });
+    tree.addEventListener('data-tree-select', (e) => {
+      document.getElementById('dt-org-name').textContent = e.detail.record.name;
+      document.getElementById('dt-org-role').textContent = e.detail.record.title + ' · ' + e.detail.record.reports + ' direct reports';
+    });
+    document.getElementById('dt-org-sort').addEventListener('change', (e) => {
+      const [field, direction] = e.target.value.split(':');
+      df$.shadcn.dataTree.query(tree, { sorters: field ? [{ field, direction }] : [] });
+    });
+  });
+</script>
+```
+
+```html example label="Loading and empty" schema="none" hint="A tree without records waits in 'loading' (placeholder rows, aria-busy); a filter nothing matches lands in 'empty' with data-empty-text."
+<div class="flex flex-wrap gap-4">
+  <div class="data-tree" aria-label="Waiting for data" style="height:9rem;flex:1;min-width:12rem;"></div>
+  <div class="data-tree" id="dt-none" aria-label="No matches" data-empty-text="Nothing matches 'zebra'." style="height:9rem;flex:1;min-width:12rem;"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tree = document.getElementById('dt-none');
+    df$.shadcn.dataTree.setSource(tree, [{ id: 1, parentId: null, name: 'Animals' }, { id: 2, parentId: 1, name: 'Lion' }]);
+    df$.shadcn.dataTree.query(tree, { filters: [{ field: 'name', op: 'contains', value: 'zebra' }] });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>; the config of every state is the query (<code>filters</code>, <code>sorters</code>, <code>expanded</code>, <code>collapsed</code>, <code>selected</code>), merged on each <code>setState</code> and observable as <code>el.store</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the visible nodes of the query; nothing visible lands in <code>empty</code></li>
+    <li><code>loading</code> - <code>aria-busy="true"</code> and placeholder rows; a tree without records starts here</li>
+    <li><code>empty</code> - nothing to show: the <code>data-empty-text</code> message</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/data-tree-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/data-tree.schema.json"><code>data-tree.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `loading` | `boolean` | `true`, `false` | `false` | aria-busy with placeholder rows (`setState('loading')`). |
+| `empty` | `boolean` | `true`, `false` | `false` | Nothing to show - shows data-empty-text (`setState('empty')`). |
+```
+
+</StatesSection>
+
+<ApiSection component="data-tree" />
+
+<SourceFiles component="data-tree" section="css" />
+
+<SourceFiles component="data-tree" section="js" jsTitle="JS" />
+
+</DocPage>

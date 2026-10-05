@@ -19,8 +19,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 // per tab:     'default' = enabled, not picked (the authored selection stands),
 //              'active' = selected, 'disabled' = not selectable
 // per tablist: 'default' = everything as authored (selection, disabled flags,
@@ -33,13 +34,13 @@ const tabsStates = ['default', 'active', 'disabled'];
 const ICON = ':scope > :is(svg, img, i, .tab-icon)';
 const LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
 const iconOf = (tab) => {
-    const icon = tab.querySelector(ICON);
+    const icon = dfDollar(tab).find(ICON).get(0);
     if (!icon)
         return '';
     return icon.getAttribute('data-lucide') ?? icon.textContent.trim();
 };
 const labelOf = (tab) => {
-    const label = tab.querySelector(':scope > .tab-label');
+    const label = dfDollar(tab).find(':scope > .tab-label').get(0);
     if (label)
         return label.textContent.trim();
     return Array.from(tab.childNodes)
@@ -49,7 +50,7 @@ const labelOf = (tab) => {
         .trim();
 };
 const setLabel = (tab, text) => {
-    const label = tab.querySelector(':scope > .tab-label');
+    const label = dfDollar(tab).find(':scope > .tab-label').get(0);
     if (label) {
         label.textContent = text;
         return;
@@ -61,7 +62,7 @@ const setLabel = (tab, text) => {
 /** A lucide name ("inbox") mounts <i data-lucide> for lucide to render; anything
  * else (an emoji, a glyph) becomes a <span class="tab-icon">; '' removes it. */
 const setIcon = (tab, icon) => {
-    tab.querySelector(ICON)?.remove();
+    dfDollar(tab).find(ICON).get(0)?.remove();
     if (!icon)
         return;
     const el = document.createElement(LUCIDE_NAME.test(icon) ? 'i' : 'span');
@@ -75,16 +76,18 @@ const setIcon = (tab, icon) => {
     if (el.tagName === 'I')
         globalThis.lucide?.createIcons?.();
 };
+// only what differs is written: setState(getState()) changes nothing (setLabel
+// rewrites the text node - the authored whitespace would be lost)
 const applyContent = (tab, config) => {
-    if (typeof config.label === 'string')
+    if (typeof config.label === 'string' && config.label !== labelOf(tab))
         setLabel(tab, config.label);
-    if (typeof config.icon === 'string')
+    if (typeof config.icon === 'string' && config.icon !== iconOf(tab))
         setIcon(tab, config.icon);
 };
 // -- selection ----------------------------------------------------------------
 const triggersOf = (el) => {
     const list = el.getAttribute('role') === 'tablist' ? el : el.closest('[role="tablist"]');
-    return Array.from(list.querySelectorAll('[role="tab"]'));
+    return Array.from(dfDollar(list).find('[role="tab"]').toArray());
 };
 /** Select one tab of a group and reveal its panel (single-selection model). */
 const activateTab = (tab, triggers) => {
@@ -92,14 +95,14 @@ const activateTab = (tab, triggers) => {
         t.setAttribute('aria-selected', 'false');
         t.setAttribute('tabindex', '-1');
         t.dataset.stateName = t.disabled ? 'disabled' : 'default';
-        const panel = document.getElementById(t.getAttribute('aria-controls'));
+        const panel = dfDollar('#' + CSS.escape(t.getAttribute('aria-controls'))).get(0);
         if (panel)
             panel.hidden = true;
     });
     tab.setAttribute('aria-selected', 'true');
     tab.removeAttribute('tabindex');
     tab.dataset.stateName = 'active';
-    const panel = document.getElementById(tab.getAttribute('aria-controls'));
+    const panel = dfDollar('#' + CSS.escape(tab.getAttribute('aria-controls'))).get(0);
     if (panel)
         panel.hidden = false;
 };
@@ -201,17 +204,48 @@ function triggerStateChange(el, stateName, config) {
     }
     applyContent(tab, config);
 }
+// -- render(): the markup of a state, on a detached copy of the authored markup
+/** activateTab()'s markup on the triggers (the panels live outside them). */
+const selectMarkup = (tab, triggers) => {
+    triggers.forEach((t) => dfDollar(t).attr('aria-selected', 'false').attr('tabindex', '-1'));
+    dfDollar(tab).attr('aria-selected', 'true').attr('tabindex', null);
+};
+const selectedOf = (t) => dfDollar(t).attr('aria-selected') === 'true';
+const disabledOf = (t) => dfDollar(t).attr('disabled') != null;
+/** A tablist's state, as triggerStateChange writes it - the copy IS the
+ *  authored markup, so 'default' only re-selects the authored tab. */
+function listMarkup(list, stateName, config) {
+    const triggers = dfDollar(list).find('[role="tab"]').toArray();
+    if (stateName === 'default') {
+        const tab = triggers.find(selectedOf) || triggers.find((t) => !disabledOf(t));
+        if (tab)
+            selectMarkup(tab, triggers);
+    }
+    else if (stateName === 'disabled')
+        triggers.forEach((t) => dfDollar(t).attr('disabled', ''));
+    const pick = typeof config?.index === 'number' ? triggers[config.index]
+        : typeof config?.id === 'string' ? triggers.find((t) => t.id === config.id) : null;
+    if (pick && !disabledOf(pick))
+        selectMarkup(pick, triggers);
+}
+/** One trigger's state: its disabled flag and its content. The selection is
+ *  the GROUP's (a disabled tab hands it to a sibling, if one is enabled) -
+ *  the tablist's render() carries it. */
+function tabMarkup(tab, stateName, config) {
+    if (stateName === 'active')
+        dfDollar(tab).attr('disabled', null).attr('aria-selected', 'true').attr('tabindex', null);
+    else
+        dfDollar(tab).attr('disabled', stateName === 'disabled' ? '' : null);
+    applyContent(tab, config ?? {});
+}
 /** Registry-level API; pass a tab trigger or a tablist explicitly. Unknown names throw. */
-export const tabsApi = {
-    setState(el, stateName, config = {}) {
-        if (!tabsStates.includes(stateName)) {
-            throw new Error(`tabs: unknown state "${stateName}" (supported: ${tabsStates.join(', ')})`);
-        }
-        triggerStateChange(el, stateName, config);
-        // state lives on the ELEMENT, not the module (many tabs per page)
-        el._stateConfig = { ...el._stateConfig, ...config };
-    },
-    getState(el) {
+export const tabsApi = componentState({
+    component: 'tabs',
+    states: tabsStates,
+    // the config merges into the stored one, but the DOM work takes only what
+    // this call passed (a re-entered state with no config restores)
+    apply: (el, state, _previous, incoming) => triggerStateChange(el, state.name, incoming),
+    read: (el, state) => {
         // reflect reality: clicks/keys change aria-selected without setState()
         if (el.getAttribute('role') === 'tablist') {
             const triggers = triggersOf(el);
@@ -219,22 +253,24 @@ export const tabsApi = {
             const authored = triggers.findIndex((t) => t._authored?.selected);
             const name = triggers.every((t) => t.disabled) ? 'disabled'
                 : selected === authored || (authored < 0 && selected <= 0) ? 'default' : 'active';
-            return { name, config: { ...el._stateConfig, index: selected, id: triggers[selected]?.id ?? '' } };
+            return { name, config: { ...state.config, index: selected, id: triggers[selected]?.id ?? '' } };
         }
         return {
             name: tabName(el),
-            config: { ...el._stateConfig, label: labelOf(el), icon: iconOf(el) },
+            config: { ...state.config, label: labelOf(el), icon: iconOf(el) },
         };
     },
-};
+    markup: (el, state) => (el.getAttribute('role') === 'tablist' ? listMarkup : tabMarkup)(el, state.name, state.config),
+    mergeConfig: true,
+});
 df$.tabsApi = tabsApi;
 df$.tabsStates = tabsStates;
 function init() {
-    document.querySelectorAll('[role="tablist"]:not([data-init])').forEach((tablist) => {
+    dfDollar('[role="tablist"]:not([data-init])').toArray().forEach((tablist) => {
         tablist.dataset.init = '';
-        if (!tablist.querySelector('.tab-trigger'))
+        if (!dfDollar(tablist).find('.tab-trigger').get(0))
             return;
-        const triggers = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const triggers = Array.from(dfDollar(tablist).find('[role="tab"]').toArray());
         // remember the authored tab so setState('default') restores it
         triggers.forEach((t) => {
             t._authored = {
@@ -243,17 +279,12 @@ function init() {
                 label: labelOf(t),
                 icon: iconOf(t),
             };
-            // bind-scope the api per tab: `$('#my-tab').api.setState('active')`
-            t.api = {
-                setState: (stateName, config) => tabsApi.setState(t, stateName, config),
-                getState: () => tabsApi.getState(t),
-            };
+            // el.store + el.api (AGENTS.md "State through stores")
+            bindComponent(t, tabsApi);
         });
         // …and per tablist: `$('#my-tabs').api.setState('active', { index: 2 })`
-        tablist.api = {
-            setState: (stateName, config) => tabsApi.setState(tablist, stateName, config),
-            getState: () => tabsApi.getState(tablist),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(tablist, tabsApi);
         // tabs on the left / right side of the panel are a vertical tablist:
         // the ARIA orientation (and with it Up/Down keys) follows data-side
         const side = tablist.closest('.tabs')?.getAttribute('data-side');

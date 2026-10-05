@@ -177,6 +177,9 @@
   }
   /* the region shrinks with the panel: its pane is the panel */
   .border-layout > .resizer[data-panel-minimized] > .panel { overflow: hidden; }
+  /* closed: the panel and its region leave the layout */
+  .panel[hidden],
+  .border-layout > [data-panel-closed] { display: none; }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {

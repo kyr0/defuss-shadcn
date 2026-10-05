@@ -4,7 +4,7 @@ description: "Service-specific privacy choices, consent-gated scripts and embeds
 slug: "cookie-consent"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, StatesSection, SourceFiles, SourceNote, H2, DocLink } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, StatesSection, SourceFiles, SourceNote, H2, DocLink, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -273,6 +273,8 @@ df$(root).on('cookie-consent:change', event => {
 ```
 
 </StatesSection>
+
+<ApiSection component="cookie-consent" />
 
 <SourceFiles component="cookie-consent" section="css" />
 <SourceFiles component="cookie-consent" section="js">

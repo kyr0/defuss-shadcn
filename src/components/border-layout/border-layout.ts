@@ -9,9 +9,10 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, persisted } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 /** default = every region open at its authored size; collapsed = one or
  *  more regions folded away (their divider stays). */
@@ -29,10 +30,10 @@ const num = (v, fallback) => {
   const n = parseFloat(v);
   return Number.isFinite(n) ? n : fallback;
 };
-const resolve = (t) => (typeof t === 'string' ? document.getElementById(t) ?? document.querySelector(t) : t);
+const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
 
 /** The region element (resizer wrapper or plain pane) for a side. */
-const regionOf = (layout, side) => layout.querySelector(`:scope > .border-layout-${side}`);
+const regionOf = (layout, side) => dfDollar(layout).find(`:scope > .border-layout-${side}`).get(0);
 /** The pane that carries the size: the resizer's wrapped element. */
 const paneOf = (region) => (region.classList.contains('resizer')
   ? Array.from(region.children).find((c) => !c.classList.contains('resizer-handle'))
@@ -86,7 +87,7 @@ function clamp(layout) {
 function aria(layout) {
   for (const side of REGIONS) {
     const region = regionOf(layout, side);
-    const handle = region?.querySelector(':scope > .resizer-handle');
+    const handle = region ? dfDollar(region).children('.resizer-handle').get(0) : null;
     if (!handle) continue;
     const pane = paneOf(region);
     if (pane && !pane.id) pane.id = `${layout.id || 'border-layout'}-${side}-${Math.random().toString(36).slice(2, 7)}`;
@@ -110,6 +111,7 @@ function collapse(layout, side, collapsed) {
   region.toggleAttribute('data-collapsed', collapsed);
   aria(layout);
   save(layout);
+  // Fires when a region folds away or comes back - which region, and whether it is collapsed now.
   layout.dispatchEvent(new CustomEvent('border-layout-collapse', { bubbles: true, detail: { region: side, collapsed } }));
   syncState(layout);
 }
@@ -117,13 +119,27 @@ function collapse(layout, side, collapsed) {
 /** The named state follows the regions: any collapsed → 'collapsed'. */
 function syncState(layout) {
   const folded = REGIONS.filter((s) => regionOf(layout, s)?.hasAttribute('data-collapsed'));
-  layout.dataset.stateName = folded.length ? 'collapsed' : 'default';
-  layout._stateConfig = folded.length ? { regions: folded } : {};
+  const name = folded.length ? 'collapsed' : 'default';
+  // the store records it (once bound - init calls this before binding)
+  if (layout.store) borderLayoutApi.commit(layout, name, folded.length ? { regions: folded } : {});
+  else layout.dataset.stateName = name;
 }
 
 // -- Persistence (data-save="key") ---------------------------------------------
 
-const storeKey = (layout) => `defuss-shadcn:border-layout:${layout.dataset.save}`;
+// one persisted store per data-save key (AGENTS.md "State through stores"):
+// { [side]: { size, collapsed } } - memory when storage is blocked, the plain
+// JSON older versions wrote adopted as-is
+const saved = new Map();
+const savedFor = (layout) => {
+  const key = `defuss-shadcn:border-layout:${layout.dataset.save}`;
+  if (!saved.has(key)) {
+    saved.set(key, persisted(key, {}, {
+      validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+    }));
+  }
+  return saved.get(key);
+};
 function save(layout) {
   if (!layout.dataset.save || layout._restoring) return;
   const data = {};
@@ -134,13 +150,12 @@ function save(layout) {
     const px = Math.round(num(pane?.style[SIDES[side].size], NaN));
     data[side] = { size: Number.isFinite(px) ? px : null, collapsed: region.hasAttribute('data-collapsed') };
   }
-  try { localStorage.setItem(storeKey(layout), JSON.stringify(data)); } catch { /* storage may be off */ }
+  savedFor(layout).set(data);
 }
 function restore(layout) {
   if (!layout.dataset.save) return;
-  let data = null;
-  try { data = JSON.parse(localStorage.getItem(storeKey(layout)) || 'null'); } catch { data = null; }
-  if (!data) return;
+  const data = savedFor(layout).value;
+  if (!Object.keys(data).length) return;
   layout._restoring = true;
   for (const side of REGIONS) {
     const region = regionOf(layout, side);
@@ -153,6 +168,22 @@ function restore(layout) {
 }
 
 // -- State API -------------------------------------------------------------------
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName, config) {
+  // which regions are collapsed: none in 'default', the config's in
+  // 'collapsed' (sizes are measured pixels - runtime-owned, see the e2e)
+  const want = new Set(stateName === 'collapsed' ? (config?.regions ?? (config?.region ? [config.region] : [])) : []);
+  for (const side of REGIONS) {
+    const region = regionOf(el, side);
+    if (region) dfDollar(region).attr('data-collapsed', want.has(side) ? '' : null);
+  }
+}
 
 /**
  * UI side of setState. 'default' opens every region at its authored size;
@@ -182,18 +213,15 @@ function triggerStateChange(layout, stateName, config) {
   save(layout);
 }
 
-export const borderLayoutApi = {
-  setState(layout, stateName, config = {}) {
-    if (!borderLayoutStates.includes(stateName)) {
-      throw new Error(`border-layout: unknown state "${stateName}" (supported: ${borderLayoutStates.join(', ')})`);
-    }
-    triggerStateChange(layout, stateName, config);
+export const borderLayoutApi = componentState({
+  component: 'border-layout',
+  states: borderLayoutStates,
+  apply: (layout, state) => {
+    triggerStateChange(layout, state.name, state.config);
     syncState(layout);
   },
-  getState(layout) {
-    return { name: layout.dataset.stateName || 'default', config: layout._stateConfig ?? {} };
-  },
-};
+  markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
 
 df$.borderLayoutApi = borderLayoutApi;
 df$.borderLayoutStates = borderLayoutStates;
@@ -201,7 +229,7 @@ df$.borderLayoutStates = borderLayoutStates;
 // -- init --------------------------------------------------------------------------
 
 function init() {
-  document.querySelectorAll('.border-layout:not([data-init])').forEach((layout) => {
+  dfDollar('.border-layout:not([data-init])').toArray().forEach((layout) => {
     layout.dataset.init = '';
 
     for (const side of REGIONS) {
@@ -267,10 +295,9 @@ function init() {
     });
     new ResizeObserver(() => { clamp(layout); aria(layout); }).observe(layout);
 
-    layout.api = {
-      setState: (stateName, config) => borderLayoutApi.setState(layout, stateName, config),
-      getState: () => borderLayoutApi.getState(layout),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(layout, borderLayoutApi);
     syncState(layout);
     // the resizers may initialize after this module - label their handles then
     queueMicrotask(() => { clamp(layout); aria(layout); });

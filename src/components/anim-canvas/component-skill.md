@@ -128,6 +128,14 @@ canvas.api.setState('default', { slide: 's3' });        // zoom into slide s3
 canvas.api.getState();                                  // { name, config: { slide, overview } }
 ```
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.animCanvasApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.animCanvasStates` = `default`, `overview`.
+
 ## Notes
 
 - **The relation map is the board.** Positions are never authored - they

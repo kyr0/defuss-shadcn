@@ -11,6 +11,7 @@
  * pure helpers (clampIndex/coerceIndex/revealAttr) are isomorphic and
  * unit-tested in tests/presentation.test.ts.
  */
+import { defussQuery } from './query.js';
 
 // The entrance vocabulary + its attribute helper live in the shared motion
 // module now (src/shared/motion.ts + src/components/motion/motion.css) - they
@@ -163,10 +164,10 @@ export function presentationScope(el?: Element | null): PresentationScope {
   // closest() matches SELF too - passing the mount itself works
   const mount =
     (el?.closest('.presentation') as HTMLElement | null) ??
-    (typeof document !== 'undefined' ? document.querySelector<HTMLElement>('.presentation') : null);
+    (typeof document !== 'undefined' ? ((defussQuery()('.presentation').get(0) ?? null) as HTMLElement | null) : null);
   if (!mount) throw new Error('ddf$: no .presentation element found');
   const slides = (): HTMLElement[] =>
-    Array.from(mount.querySelectorAll<HTMLElement>(':scope > [data-slide]'));
+    defussQuery()(mount).find(':scope > [data-slide]').toArray() as HTMLElement[];
   // every mutation drives the component's own State API; the live index is the
   // data-current-slide the runtime mirrors - never a module-scope cache
   const apply = (index: number): number => {

@@ -1,6 +1,6 @@
 ---
 title: "Theming"
-description: "Customize defuss-shadcn with CSS custom properties. Drop in any tweakcn.com theme for instant restyling."
+description: "Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme."
 slug: "theming"
 ---
 
@@ -9,8 +9,19 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="theming" title="Theming" introStyle="max-width:38rem;">
-  The theme is defined by semantic tokens - CSS custom properties that match the <a href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn.com</a> export format. Export a theme from tweakcn, replace <code>default-semantic-tokens.css</code> with the <code>:root</code> and <code>.dark</code> blocks, and every component rethemes instantly.
+  The theme is defined by semantic tokens - CSS custom properties that match the <a href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn.com</a> export format. Design a theme in the Theme Designer (or on tweakcn), load its <code>:root</code> and <code>.dark</code> blocks after <code>default-semantic-tokens.css</code>, and every component rethemes instantly.
 </PageHeader>
+
+<div class="alert td-callout mb-10" role="note">
+  <i data-lucide="paintbrush" class="alert-icon"></i>
+  <div class="alert-content">
+    <h5 class="alert-title">Design your own theme</h5>
+    <p class="alert-description">The Theme Designer edits every token on this site's own components and its six example apps, live - colours for light and dark, Google Fonts, radius, shadows. Save it by name to this site's theme menu, or export the CSS for your project.</p>
+  </div>
+  <div class="alert-action">
+    <a class="btn nav-link" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Open the Theme Designer</a>
+  </div>
+</div>
 
 <H2>Surface / Foreground pairs</H2>
 
@@ -222,7 +233,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-col gap-6 mb-10">
   <div>
     <h3 style="font-size:1rem;font-weight:500;margin:0 0 0.375rem;">1. Swap the entire theme</h3>
-    <p class="text-sm text-muted-foreground mb-3">Go to <DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink>, design a theme, copy the <code>:root</code> and <code>.dark</code> CSS variable blocks, and replace the contents of <code>default-semantic-tokens.css</code>. Every component updates instantly.</p>
+    <p class="text-sm text-muted-foreground mb-3">Design the theme, export its <code>:root</code> and <code>.dark</code> CSS variable blocks, and load them after (or instead of) <code>default-semantic-tokens.css</code>. Every component updates instantly. Two tools write that shape:</p>
+    <ul class="text-sm text-muted-foreground mb-4 td-ways">
+      <li><strong>The <DocLink href="theme-designer.html">Theme Designer</DocLink> (recommended)</strong> - built into these docs. You see the theme on <em>this</em> system's components while you design it: the whole site follows every edit, and a preview shows a sample of every section at once - or a whole example app (Admin Dashboard, Messenger, Issue Tracker, Notes & Docs, Status Page, Desktop) - and doubles as the editor: click a colour to change it. Contrast badges flag text that fails WCAG AA on its surface; the radius is the same in light and dark (as every theme here must be); any Google Font can be picked, and the export carries its <code>@import</code>. Save a theme by name and it sits on top of this site's theme menu, in your browser - or import a tweakcn export and refine it here.</li>
+      <li><strong><DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink></strong> - works too: its exports use the same token names, so they drop in unchanged. Its preview renders shadcn/ui's React components, not these, so check the result here (paste it into the designer's Import).</li>
+    </ul>
+    <a class="btn nav-link" data-variant="outline" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Open the Theme Designer</a>
   </div>
   <div>
     <h3 style="font-size:1rem;font-weight:500;margin:0 0 0.375rem;">2. Override individual tokens</h3>
@@ -239,16 +255,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <CodeWindow lang="html" title="ship a preset" code={"<!-- instead of theme/utils/default-semantic-tokens.css -->\n<link rel=\"stylesheet\" href=\"theme/claude.css\" />"} />
 
-<p class="text-sm text-muted-foreground mt-5 mb-5">…or load it at runtime on top of the token file - inserting a <code>{"<link id=\"theme-css\">"}</code> right after it re-themes every component instantly (later source order wins the cascade; the file's own <code>.dark</code> block keeps dark mode working, so no re-apply on toggle). The <DocLink href="theme-switcher.html">Theme Switcher</DocLink> component wraps exactly that mechanism in an accessible dropdown, with <code>localStorage</code> persistence and a State API. On this site the picker in the header does the same.</p>
+<p class="text-sm text-muted-foreground mt-5 mb-5">…or load it at runtime on top of the token file - inserting a <code>{"<link id=\"theme-css\">"}</code> right after it re-themes every component instantly (later source order wins the cascade; the file's own <code>.dark</code> block keeps dark mode working, so no re-apply on toggle). The <DocLink href="theme-switcher.html">Theme Switcher</DocLink> component wraps exactly that mechanism in an accessible dropdown, with persistence (a <code>df$.store.persisted</code> store) and a State API. On this site the picker in the header does the same.</p>
 
 <CodeWindow lang="javascript" title="re-theme at runtime with df$" mb="1.5rem" code={"// the preset link sits right after the token file - later source order wins\ndf$('#theme-css').remove();\ndf$('link[href$=\"default-semantic-tokens.css\"]')\n  .after('<link id=\"theme-css\" rel=\"stylesheet\" href=\"theme/claude.css\">');\n\n// presets with fonts ship a resource sidecar - loadTheme() adds those <link>s too\ndf$.shadcn.loadTheme?.('claude');"} />
 
-<p class="text-sm text-muted-foreground mb-5">The preset files are generated from the docs' theme dataset (<code>src/documentation/runtime/themes.ts</code>) by <code>scripts/build.ts</code> - <code>verify</code>'s <code>theme files fresh</code> gate keeps them in lockstep. For your own themes, author a file in the token-file shape (or export one from tweakcn) and link it the same way.</p>
+<p class="text-sm text-muted-foreground mb-5">The preset files are generated from the docs' theme dataset (<code>src/documentation/runtime/themes.ts</code>) by <code>scripts/build.ts</code> - <code>verify</code>'s <code>theme files fresh</code> gate keeps them in lockstep. For your own themes, export one from the <DocLink href="theme-designer.html">Theme Designer</DocLink> (or tweakcn) and link it the same way.</p>
 
 <div class="sep" />
 
 <H2>Dark mode</H2>
 
-<p class="text-sm text-muted-foreground mb-5">The theme file includes both <code>:root</code> (light) and <code>.dark</code> (dark) values. To toggle dark mode, add or remove <code>class="dark"</code> on the <code>&lt;html&gt;</code> element. Every token switches automatically - no per-component overrides needed. See the <a href="dark-mode.html" class="btn" data-variant="link">Dark Mode</a> page for system preference detection, localStorage persistence, and a step-by-step toggle implementation.</p>
+<p class="text-sm text-muted-foreground mb-5">The theme file includes both <code>:root</code> (light) and <code>.dark</code> (dark) values. To toggle dark mode, add or remove <code>class="dark"</code> on the <code>&lt;html&gt;</code> element. Every token switches automatically - no per-component overrides needed. See the <a href="dark-mode.html" class="btn" data-variant="link">Dark Mode</a> page for system preference detection, persisting the choice (a <code>df$.store.persisted</code> store), and a step-by-step toggle implementation.</p>
 
 </DocPage>

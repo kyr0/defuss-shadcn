@@ -1,0 +1,837 @@
+---
+title: "Illustrative · High-level Parametric"
+description: "Parametric diagrams - a JSON spec renders into the same markup (script.diagram-spec or df$.shadcn.diagram.build), two specs diff into a delta, inputs regenerate the picture."
+slug: "diagram-high-level-parametric"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-high-level-parametric" title="Illustrative · High-level Parametric" component="diagram">
+  The same high-level picture, generated: a spec - <code>&#123; type, cols, phases, groups, nodes, edges &#125;</code> - in a <code>&lt;script type="application/json" class="diagram-spec"&gt;</code> inside an empty figure, or passed to <code>df$.shadcn.diagram.build(el, spec)</code>. The spec becomes exactly the markup an author would write (<code>df$.shadcn.diagram.markup(spec)</code> returns it), so everything else - wires, steps, delta - works unchanged. Same inputs, same picture.
+</PageHeader>
+
+<H2 id="from-a-spec">From a spec</H2>
+
+```html example label="Built from a spec" component="diagram" hint="The figure holds only the spec; the component renders it at init. Coordinates are grid cells (col, row, span, rspan)."
+<figure class="diagram" id="dg-param" aria-label="High-level stack built from a JSON spec">
+  <script type="application/json" class="diagram-spec">
+    {
+      "type": "high-level",
+      "eyebrow": "High-level · parametric",
+      "title": "Built from a spec",
+      "cols": 4,
+      "phases": [
+        "Sources",
+        "Ingest",
+        "Lake",
+        "Serve"
+      ],
+      "groups": [
+        {
+          "id": "k8s",
+          "label": "Kubernetes",
+          "col": 2,
+          "row": 2,
+          "span": 3,
+          "rspan": 2,
+          "tone": "solid"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "pg",
+          "name": "PostgreSQL",
+          "meta": "OLTP",
+          "col": 1,
+          "row": 2,
+          "tone": "external"
+        },
+        {
+          "id": "sftp",
+          "name": "SFTP drop",
+          "meta": "CSV",
+          "col": 1,
+          "row": 3,
+          "tone": "external"
+        },
+        {
+          "id": "nifi",
+          "name": "NiFi",
+          "meta": "flows",
+          "col": 2,
+          "row": 2,
+          "rspan": 2
+        },
+        {
+          "id": "lake",
+          "name": "MinIO",
+          "meta": "Iceberg",
+          "col": 3,
+          "row": 2,
+          "rspan": 2,
+          "shape": "store",
+          "tone": "accent"
+        },
+        {
+          "id": "trino",
+          "name": "Trino",
+          "meta": "SQL",
+          "col": 4,
+          "row": 2
+        },
+        {
+          "id": "bi",
+          "name": "Superset",
+          "meta": "dashboards",
+          "col": 4,
+          "row": 3
+        },
+        {
+          "id": "kc",
+          "name": "Keycloak",
+          "eyebrow": "Identity",
+          "meta": "SSO for every UI",
+          "col": 1,
+          "row": 5,
+          "span": 4,
+          "shape": "bar",
+          "tone": "muted"
+        }
+      ],
+      "edges": [
+        {
+          "from": "pg",
+          "to": "nifi",
+          "label": "JDBC"
+        },
+        {
+          "from": "sftp",
+          "to": "nifi",
+          "label": "SFTP"
+        },
+        {
+          "from": "nifi",
+          "to": "lake",
+          "label": "write"
+        },
+        {
+          "from": "lake",
+          "to": "trino",
+          "label": "Iceberg",
+          "tone": "accent"
+        },
+        {
+          "from": "trino",
+          "to": "bi",
+          "label": "SQL"
+        }
+      ]
+    }
+  </script>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="From a spec, step by step" component="diagram" hint="A node’s step field becomes data-step; data-steps on the figure adds the toolbar."
+<figure class="diagram" id="dg-param-steps" data-steps data-autoplay aria-label="High-level stack from a spec, step by step">
+  <script type="application/json" class="diagram-spec">
+    {
+      "type": "high-level",
+      "eyebrow": "High-level · parametric",
+      "title": "Built from a spec, step by step",
+      "cols": 4,
+      "phases": [
+        "Sources",
+        "Ingest",
+        "Lake",
+        "Serve"
+      ],
+      "groups": [
+        {
+          "id": "k8s",
+          "label": "Kubernetes",
+          "col": 2,
+          "row": 2,
+          "span": 3,
+          "rspan": 2,
+          "tone": "solid"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "pg",
+          "name": "PostgreSQL",
+          "meta": "OLTP",
+          "col": 1,
+          "row": 2,
+          "tone": "external",
+          "step": 1
+        },
+        {
+          "id": "sftp",
+          "name": "SFTP drop",
+          "meta": "CSV",
+          "col": 1,
+          "row": 3,
+          "tone": "external",
+          "step": 1
+        },
+        {
+          "id": "nifi",
+          "name": "NiFi",
+          "meta": "flows",
+          "col": 2,
+          "row": 2,
+          "rspan": 2,
+          "step": 2
+        },
+        {
+          "id": "lake",
+          "name": "MinIO",
+          "meta": "Iceberg",
+          "col": 3,
+          "row": 2,
+          "rspan": 2,
+          "shape": "store",
+          "tone": "accent",
+          "step": 3
+        },
+        {
+          "id": "trino",
+          "name": "Trino",
+          "meta": "SQL",
+          "col": 4,
+          "row": 2,
+          "step": 4
+        },
+        {
+          "id": "bi",
+          "name": "Superset",
+          "meta": "dashboards",
+          "col": 4,
+          "row": 3,
+          "step": 5
+        },
+        {
+          "id": "kc",
+          "name": "Keycloak",
+          "eyebrow": "Identity",
+          "meta": "SSO for every UI",
+          "col": 1,
+          "row": 5,
+          "span": 4,
+          "shape": "bar",
+          "tone": "muted",
+          "step": 6
+        }
+      ],
+      "edges": [
+        {
+          "from": "pg",
+          "to": "nifi",
+          "label": "JDBC"
+        },
+        {
+          "from": "sftp",
+          "to": "nifi",
+          "label": "SFTP"
+        },
+        {
+          "from": "nifi",
+          "to": "lake",
+          "label": "write"
+        },
+        {
+          "from": "lake",
+          "to": "trino",
+          "label": "Iceberg",
+          "tone": "accent"
+        },
+        {
+          "from": "trino",
+          "to": "bi",
+          "label": "SQL"
+        }
+      ]
+    }
+  </script>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="High-level Parametric, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-param-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-param-live" data-interactive aria-label="High-level stack built from a JSON spec">
+  <script type="application/json" class="diagram-spec">
+    {
+      "type": "high-level",
+      "eyebrow": "High-level · parametric",
+      "title": "Built from a spec",
+      "cols": 4,
+      "phases": [
+        "Sources",
+        "Ingest",
+        "Lake",
+        "Serve"
+      ],
+      "groups": [
+        {
+          "id": "k8s",
+          "label": "Kubernetes",
+          "col": 2,
+          "row": 2,
+          "span": 3,
+          "rspan": 2,
+          "tone": "solid"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "pg",
+          "name": "PostgreSQL",
+          "meta": "OLTP",
+          "col": 1,
+          "row": 2,
+          "tone": "external"
+        },
+        {
+          "id": "sftp",
+          "name": "SFTP drop",
+          "meta": "CSV",
+          "col": 1,
+          "row": 3,
+          "tone": "external"
+        },
+        {
+          "id": "nifi",
+          "name": "NiFi",
+          "meta": "flows",
+          "col": 2,
+          "row": 2,
+          "rspan": 2
+        },
+        {
+          "id": "lake",
+          "name": "MinIO",
+          "meta": "Iceberg",
+          "col": 3,
+          "row": 2,
+          "rspan": 2,
+          "shape": "store",
+          "tone": "accent"
+        },
+        {
+          "id": "trino",
+          "name": "Trino",
+          "meta": "SQL",
+          "col": 4,
+          "row": 2
+        },
+        {
+          "id": "bi",
+          "name": "Superset",
+          "meta": "dashboards",
+          "col": 4,
+          "row": 3
+        },
+        {
+          "id": "kc",
+          "name": "Keycloak",
+          "eyebrow": "Identity",
+          "meta": "SSO for every UI",
+          "col": 1,
+          "row": 5,
+          "span": 4,
+          "shape": "bar",
+          "tone": "muted"
+        }
+      ],
+      "edges": [
+        {
+          "from": "pg",
+          "to": "nifi",
+          "label": "JDBC"
+        },
+        {
+          "from": "sftp",
+          "to": "nifi",
+          "label": "SFTP"
+        },
+        {
+          "from": "nifi",
+          "to": "lake",
+          "label": "write"
+        },
+        {
+          "from": "lake",
+          "to": "trino",
+          "label": "Iceberg",
+          "tone": "accent"
+        },
+        {
+          "from": "trino",
+          "to": "bi",
+          "label": "SQL"
+        }
+      ]
+    }
+  </script>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="High-level Parametric, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-param-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-param-edit" data-interactive aria-label="High-level stack built from a JSON spec">
+      <script type="application/json" class="diagram-spec">
+        {
+          "type": "high-level",
+          "eyebrow": "High-level · parametric",
+          "title": "Built from a spec",
+          "cols": 4,
+          "phases": [
+            "Sources",
+            "Ingest",
+            "Lake",
+            "Serve"
+          ],
+          "groups": [
+            {
+              "id": "k8s",
+              "label": "Kubernetes",
+              "col": 2,
+              "row": 2,
+              "span": 3,
+              "rspan": 2,
+              "tone": "solid"
+            }
+          ],
+          "nodes": [
+            {
+              "id": "pg",
+              "name": "PostgreSQL",
+              "meta": "OLTP",
+              "col": 1,
+              "row": 2,
+              "tone": "external"
+            },
+            {
+              "id": "sftp",
+              "name": "SFTP drop",
+              "meta": "CSV",
+              "col": 1,
+              "row": 3,
+              "tone": "external"
+            },
+            {
+              "id": "nifi",
+              "name": "NiFi",
+              "meta": "flows",
+              "col": 2,
+              "row": 2,
+              "rspan": 2
+            },
+            {
+              "id": "lake",
+              "name": "MinIO",
+              "meta": "Iceberg",
+              "col": 3,
+              "row": 2,
+              "rspan": 2,
+              "shape": "store",
+              "tone": "accent"
+            },
+            {
+              "id": "trino",
+              "name": "Trino",
+              "meta": "SQL",
+              "col": 4,
+              "row": 2
+            },
+            {
+              "id": "bi",
+              "name": "Superset",
+              "meta": "dashboards",
+              "col": 4,
+              "row": 3
+            },
+            {
+              "id": "kc",
+              "name": "Keycloak",
+              "eyebrow": "Identity",
+              "meta": "SSO for every UI",
+              "col": 1,
+              "row": 5,
+              "span": 4,
+              "shape": "bar",
+              "tone": "muted"
+            }
+          ],
+          "edges": [
+            {
+              "from": "pg",
+              "to": "nifi",
+              "label": "JDBC"
+            },
+            {
+              "from": "sftp",
+              "to": "nifi",
+              "label": "SFTP"
+            },
+            {
+              "from": "nifi",
+              "to": "lake",
+              "label": "write"
+            },
+            {
+              "from": "lake",
+              "to": "trino",
+              "label": "Iceberg",
+              "tone": "accent"
+            },
+            {
+              "from": "trino",
+              "to": "bi",
+              "label": "SQL"
+            }
+          ]
+        }
+      </script>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-param-edit-panel" aria-labelledby="dg-param-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-param-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-param-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-param-edit');
+    const grid = document.getElementById('dg-param-edit-grid');
+    const title = document.getElementById('dg-param-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta from two specs</H2>
+
+<DocText><code>&#123; "before": …, "after": … &#125;</code> diffs the two specs: a node only in after is added, only in before removed, a node whose text differs changed (its old text kept), one whose cell differs moved; an edge with other ends rewired.</DocText>
+
+```html example label="Two specs, one delta" component="diagram" hint="No data-change written by hand - df$.shadcn.diagram.diff() derives every mark and the ledger."
+<figure class="diagram" id="dg-param-delta" aria-label="Two specs diffed into a delta">
+  <script type="application/json" class="diagram-spec">
+    {
+      "before": {
+        "type": "high-level",
+        "eyebrow": "High-level · parametric",
+        "title": "Built from a spec",
+        "cols": 4,
+        "phases": [
+          "Sources",
+          "Ingest",
+          "Lake",
+          "Serve"
+        ],
+        "groups": [
+          {
+            "id": "k8s",
+            "label": "Kubernetes",
+            "col": 2,
+            "row": 2,
+            "span": 3,
+            "rspan": 2,
+            "tone": "solid"
+          }
+        ],
+        "nodes": [
+          {
+            "id": "pg",
+            "name": "PostgreSQL",
+            "meta": "OLTP",
+            "col": 1,
+            "row": 2,
+            "tone": "external"
+          },
+          {
+            "id": "sftp",
+            "name": "SFTP drop",
+            "meta": "CSV",
+            "col": 1,
+            "row": 3,
+            "tone": "external"
+          },
+          {
+            "id": "nifi",
+            "name": "NiFi",
+            "meta": "flows",
+            "col": 2,
+            "row": 2,
+            "rspan": 2
+          },
+          {
+            "id": "lake",
+            "name": "MinIO",
+            "meta": "Iceberg",
+            "col": 3,
+            "row": 2,
+            "rspan": 2,
+            "shape": "store",
+            "tone": "accent"
+          },
+          {
+            "id": "trino",
+            "name": "Trino",
+            "meta": "SQL",
+            "col": 4,
+            "row": 2
+          },
+          {
+            "id": "bi",
+            "name": "Superset",
+            "meta": "dashboards",
+            "col": 4,
+            "row": 3
+          },
+          {
+            "id": "kc",
+            "name": "Keycloak",
+            "eyebrow": "Identity",
+            "meta": "SSO for every UI",
+            "col": 1,
+            "row": 5,
+            "span": 4,
+            "shape": "bar",
+            "tone": "muted"
+          }
+        ],
+        "edges": [
+          {
+            "from": "pg",
+            "to": "nifi",
+            "label": "JDBC"
+          },
+          {
+            "from": "sftp",
+            "to": "nifi",
+            "label": "SFTP"
+          },
+          {
+            "from": "nifi",
+            "to": "lake",
+            "label": "write"
+          },
+          {
+            "from": "lake",
+            "to": "trino",
+            "label": "Iceberg",
+            "tone": "accent"
+          },
+          {
+            "from": "trino",
+            "to": "bi",
+            "label": "SQL"
+          }
+        ]
+      },
+      "after": {
+        "type": "high-level",
+        "eyebrow": "High-level · parametric",
+        "title": "Two specs, one delta",
+        "cols": 4,
+        "phases": [
+          "Sources",
+          "Ingest",
+          "Lake",
+          "Serve"
+        ],
+        "groups": [
+          {
+            "id": "k8s",
+            "label": "Kubernetes",
+            "col": 2,
+            "row": 2,
+            "span": 3,
+            "rspan": 2,
+            "tone": "solid"
+          }
+        ],
+        "nodes": [
+          {
+            "id": "pg",
+            "name": "PostgreSQL",
+            "meta": "OLTP",
+            "col": 1,
+            "row": 2,
+            "tone": "external"
+          },
+          {
+            "id": "nifi",
+            "name": "Airbyte",
+            "meta": "ELT · CDC",
+            "col": 2,
+            "row": 2,
+            "rspan": 2
+          },
+          {
+            "id": "lake",
+            "name": "MinIO",
+            "meta": "Iceberg",
+            "col": 3,
+            "row": 2,
+            "rspan": 2,
+            "shape": "store",
+            "tone": "accent"
+          },
+          {
+            "id": "trino",
+            "name": "Trino",
+            "meta": "SQL",
+            "col": 4,
+            "row": 3
+          },
+          {
+            "id": "bi",
+            "name": "Superset",
+            "meta": "dashboards",
+            "col": 4,
+            "row": 2
+          },
+          {
+            "id": "kc",
+            "name": "Keycloak",
+            "eyebrow": "Identity",
+            "meta": "SSO for every UI",
+            "col": 1,
+            "row": 5,
+            "span": 4,
+            "shape": "bar",
+            "tone": "muted"
+          },
+          {
+            "id": "kafka",
+            "name": "Kafka",
+            "meta": "events",
+            "col": 1,
+            "row": 4,
+            "tone": "external"
+          }
+        ],
+        "edges": [
+          {
+            "from": "pg",
+            "to": "nifi",
+            "label": "CDC"
+          },
+          {
+            "from": "kafka",
+            "to": "lake",
+            "label": "stream"
+          },
+          {
+            "from": "nifi",
+            "to": "lake",
+            "label": "write"
+          },
+          {
+            "from": "lake",
+            "to": "trino",
+            "label": "Iceberg",
+            "tone": "accent"
+          },
+          {
+            "from": "trino",
+            "to": "bi",
+            "label": "SQL"
+          }
+        ]
+      }
+    }
+  </script>
+</figure>
+```
+
+<H2 id="parameters">Parameters</H2>
+
+```html example label="Inputs → spec → diagram" component="diagram" hint="The slider and checkboxes feed a function that returns a spec; build() re-renders the figure on every input."
+<div class="flex flex-wrap items-center gap-4 mb-3">
+  <label class="label" for="dg-sources">Sources</label>
+  <input class="slider" id="dg-sources" type="range" min="1" max="5" value="3" style="width:10rem">
+  <label class="label"><input class="checkbox" id="dg-stream" type="checkbox"> Streaming</label>
+  <label class="label"><input class="checkbox" id="dg-semantic" type="checkbox" checked> Semantic layer</label>
+</div>
+<figure class="diagram" id="dg-param-inputs" data-type="high-level" aria-label="A generated data stack"></figure>
+<script>
+  const SOURCES = ['PostgreSQL', 'MySQL', 'SFTP drop', 'REST APIs', 'Mainframe'];
+  // the inputs → a spec → df$.shadcn.diagram.build(): same inputs, same picture
+  function specFor({ sources, stream, semantic }) {
+    const rows = Math.max(sources, 2);
+    const nodes = SOURCES.slice(0, sources).map((name, i) => ({ id: 's' + i, name, col: 1, row: i + 2, tone: 'external' }));
+    nodes.push({ id: 'ingest', name: stream ? 'Kafka + NiFi' : 'NiFi', meta: stream ? 'stream + batch' : 'batch', col: 2, row: 2, rspan: rows });
+    nodes.push({ id: 'lake', name: 'Lake', meta: 'Iceberg', col: 3, row: 2, rspan: rows, shape: 'store', tone: 'accent' });
+    nodes.push({ id: 'bi', name: 'Dashboards', col: 4, row: 2, rspan: semantic ? 1 : rows });
+    if (semantic) nodes.push({ id: 'cube', name: 'Semantic layer', meta: 'metrics', col: 4, row: 3, rspan: rows - 1 });
+    const edges = nodes.filter((n) => n.id.startsWith('s')).map((n) => ({ from: n.id, to: 'ingest' }));
+    edges.push({ from: 'ingest', to: 'lake', label: stream ? 'stream' : 'batch', line: stream ? 'dashed' : undefined });
+    edges.push(semantic ? { from: 'lake', to: 'cube', label: 'models' } : { from: 'lake', to: 'bi', label: 'SQL' });
+    if (semantic) edges.push({ from: 'cube', to: 'bi', label: 'metrics' });
+    return { type: 'high-level', cols: 4, phases: ['Sources', 'Ingest', 'Lake', 'Serve'], nodes, edges };
+  }
+  const read = () => ({
+    sources: Number(document.getElementById('dg-sources').value),
+    stream: document.getElementById('dg-stream').checked,
+    semantic: document.getElementById('dg-semantic').checked,
+  });
+  const draw = () => df$.shadcn.diagram.build('#dg-param-inputs', specFor(read()));
+  document.querySelectorAll('#dg-sources, #dg-stream, #dg-semantic').forEach((input) => input.addEventListener('input', draw));
+  addEventListener('load', draw);
+</script>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

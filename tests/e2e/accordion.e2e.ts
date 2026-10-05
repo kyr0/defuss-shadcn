@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped accordion component. Loads the fixture
@@ -285,6 +286,12 @@ try {
     assert.equal(r.swap[1], 'none'); assert.notEqual(r.swap[0], 'none');
     assert.equal(r.q, 'matrix(0, 1, -1, 0, 0, 0)');
     assert.ok(r.rtl);
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    const n = await assertRenderContract(page, '.accordion[id]', ['default', 'all-open', 'all-closed']);
+    assert.equal(n, 26, 'every accordion in the fixture');
   });
 
 } finally {

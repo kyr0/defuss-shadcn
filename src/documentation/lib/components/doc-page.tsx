@@ -64,12 +64,12 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
             shipped theme-switcher component) - generated theme files
             (../theme/<id>.css) are inserted right after this sheet */}
         <link id="tokens-css" rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
-        {/* head scripts load AFTER the token sheet: theme-switcher.js applies
+        {/* head scripts load AFTER the token sheet: head.js applies
             a persisted theme synchronously at eval, and its <link> must be
             inserted after the token chain to win the cascade */}
-        <script src="js/themes.js"></script>
-        <script src="js/theme-switcher.js"></script>
-        <script src="js/layout.js"></script>
+        {/* one bundle (scripts/build-docs.ts): runtime/themes.ts +
+            theme-switcher.ts + layout.ts + prefs.ts (the persisted stores) */}
+        <script src="js/head.js"></script>
         <script src="js/search-index.js"></script>
         <link rel="stylesheet" href="../theme/utils/sizing.css" />
         <link rel="stylesheet" href="../theme/utils/layout.css" />
@@ -78,8 +78,10 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
         <link rel="stylesheet" href="css/docs-theme.css" />
         <link rel="stylesheet" href="css/docs-utilities.css" />
         <link rel="stylesheet" href="css/layout.css" />
-        <link rel="stylesheet" href="css/code-example.css" />
         <link rel="stylesheet" href="../components/all.css" />
+        {/* the extra bundle (scripts/lib/bundles.ts): every live example is
+            the shipped HTML Preview Editor (code-example), kept out of all.* */}
+        <link rel="stylesheet" href="../components/wysiwyg.css" />
       </head>
       <body>
         <SiteHeader />
@@ -103,14 +105,15 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
             Introduction (data-nav-always-open); other sections' toggles last
             until the next navigation. The docked-sidebar state set here is
             only visible at desktop widths (CSS keys the hide there), so it
-            can be restored unconditionally. */}
+            can be restored unconditionally. The remembered values come from
+            the stores (runtime/prefs.ts) - head.js mirrors them onto <html>
+            as data-nav-closed / data-nav-docked before this runs. */}
         <script>{`try {
-  var c = JSON.parse(localStorage.getItem('defuss-shadcn-nav-collapsed') || '{}');
-  if (c && typeof c === 'object' && !Array.isArray(c)) {
-    var d = document.querySelector('details[data-nav-always-open]');
-    if (d && c[d.dataset.navSection] === '0' && !d.querySelector('a.nav-link.active')) d.open = false;
-  }
-  if (localStorage.getItem('defuss-shadcn-nav-docked') === '1') {
+  var root = document.documentElement;
+  var closed = (root.dataset.navClosed || '').split(' ');
+  var d = document.querySelector('details[data-nav-always-open]');
+  if (d && closed.indexOf(d.dataset.navSection) >= 0 && !d.querySelector('a.nav-link.active')) d.open = false;
+  if (root.hasAttribute('data-nav-docked')) {
     var sb = document.querySelector('.site-sidebar');
     /* stateName pins it: the sidebar component's auto-collapse treats a
        set stateName as a deliberate user choice and leaves it alone */
@@ -120,11 +123,13 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
         <SiteFooter />
         {overlays.length ? overlays : null}
         <script src="js/site.js" defer></script>
-        {/* CodeExample host: fetches the sandbox template/bridge + drives each
-            .code-example card (docs runtime, compiled from runtime/code-example.ts) */}
+        {/* CodeExample glue: configures the shipped code-example component
+            (wysiwyg.js) with the docs' preview assets - inlined sheets, the
+            runtime, lucide, the theme (runtime/code-example.ts) */}
         <script src="js/code-example.js" defer></script>
         <script type="module" src="js/shiki-highlight.js"></script>
         <script type="module" src="../components/all.js"></script>
+        <script type="module" src="../components/wysiwyg.js"></script>
         <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
         <script>{`globalThis.lucide?.createIcons();`}</script>
       </body>

@@ -3,6 +3,7 @@ import { dirname, join, resolve } from 'node:path';
 import type { SsgConfig, SsgPlugin } from 'defuss-ssg';
 import { flattenNav, NAV } from './nav';
 import { readSkillMeta } from './repo';
+import { capturePageWindowPlugin, releasePagesPlugin } from './release-pages';
 
 /**
  * The docs build plugins. They replace what used to be runtime DOM injection
@@ -215,4 +216,8 @@ export const docsPlugins: SsgPlugin[] = [
   tocPlugin,
   searchIndexPlugin,
   cleanHydrationRuntimePlugin,
+  // last of their phases: the page's window, then (HTML final) close it and
+  // forget its module - flat memory (release-pages.ts)
+  capturePageWindowPlugin,
+  releasePagesPlugin,
 ];

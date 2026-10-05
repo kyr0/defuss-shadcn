@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped countdown component. The CSS half is
@@ -204,6 +205,14 @@ try {
     const dur = await page.$eval('#v42 > span', (s) => getComputedStyle(s, '::after').transitionDuration);
     assert.equal(dur, '0s');
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    // a timer's digits and spoken label follow the clock, not the state
+    await assertRenderContract(page, '.countdown[id], .countdown-group[id]', ['default', 'running', 'paused', 'finished'], {
+      runtimeAttrs: ['aria-label'],
+      runtimeOwned: ':is([data-until], [data-duration]) span',
+    });
+  });
+
 } finally {
   await browser.close();
   server.stop();

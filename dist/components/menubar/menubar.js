@@ -21,12 +21,13 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 /** default = every menu closed; open = one menu open ({ menu: id | index }). */
 const menubarStates = ['default', 'open'];
-const triggersOf = (bar) => Array.from(bar.querySelectorAll('.menubar-trigger')).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
-const menuOf = (trigger) => document.getElementById(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '');
+const triggersOf = (bar) => Array.from(dfDollar(bar).find('.menubar-trigger').toArray()).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
+const menuOf = (trigger) => dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '')).get(0);
 const openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(':popover-open')) ?? null;
 function setRoving(bar, active) {
     triggersOf(bar).forEach((t) => t.setAttribute('tabindex', t === active ? '0' : '-1'));
@@ -50,11 +51,22 @@ function openMenu(bar, trigger, quiet = false) {
 }
 /** Focus the first (or last) own item of an open menu. */
 function focusItem(menu, last = false) {
-    const own = Array.from(menu.querySelectorAll('[role^="menuitem"]')).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute('aria-disabled') !== 'true');
+    const own = Array.from(dfDollar(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute('aria-disabled') !== 'true');
     own.forEach((x) => x.removeAttribute('data-highlighted'));
     const item = last ? own.at(-1) : own[0];
     item?.setAttribute('data-highlighted', '');
     item?.focus({ preventScroll: true });
+}
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+    // 'open' shows one of the bar's dropdown menus - a top-layer popover, not
+    // markup; the roving tabindex and the triggers' aria-expanded the runtime
+    // keeps are runtime-owned (see the e2e)
 }
 function triggerStateChange(bar, stateName, config) {
     switch (stateName) {
@@ -78,31 +90,28 @@ function triggerStateChange(bar, stateName, config) {
     }
 }
 /** Registry-level API; pass the .menubar explicitly. Unknown names throw. */
-export const menubarApi = {
-    setState(bar, stateName, config = {}) {
-        if (!menubarStates.includes(stateName)) {
-            throw new Error(`menubar: unknown state "${stateName}" (supported: ${menubarStates.join(', ')})`);
-        }
-        bar._stateConfig = config;
-        bar.dataset.stateName = stateName;
-        triggerStateChange(bar, stateName, config);
+export const menubarApi = componentState({
+    component: 'menubar',
+    states: menubarStates,
+    apply: (bar, state) => {
+        bar.dataset.stateName = state.name;
+        triggerStateChange(bar, state.name, state.config);
     },
-    getState(bar) {
+    read: (bar, state) => {
         const open = openMenuOf(bar);
-        return { name: open ? 'open' : 'default', config: { ...bar._stateConfig, menu: open?.id ?? null } };
+        return { name: open ? 'open' : 'default', config: { ...state.config, menu: open?.id ?? null } };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.menubarApi = menubarApi;
 df$.menubarStates = menubarStates;
 function init() {
-    document.querySelectorAll('.menubar:not([data-init])').forEach((bar) => {
+    dfDollar('.menubar:not([data-init])').toArray().forEach((bar) => {
         bar.dataset.init = '';
         if (!bar.hasAttribute('role'))
             bar.setAttribute('role', 'menubar');
-        bar.api = {
-            setState: (stateName, config) => menubarApi.setState(bar, stateName, config),
-            getState: () => menubarApi.getState(bar),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(bar, menubarApi);
         const triggers = triggersOf(bar);
         triggers.forEach((t) => { if (!t.hasAttribute('role'))
             t.setAttribute('role', 'menuitem'); });

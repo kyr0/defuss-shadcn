@@ -3,76 +3,63 @@
 // are recycled as you scroll, so a list of ten rows and a list of ten million
 // cost the same. Plus the named-state API so agents/tests can drive states by
 // name (AGENTS.md "State API").
+//
+// Two ways to feed it: setData(count, renderRow) - an index range, nothing
+// stored - or setSource(rows, { render }) - an array of records behind a
+// defuss-dataview source (src/shared/dataview.ts): filters and multisort run
+// locally over every row, the query lives in the store
+// (el.store.value.config.filters / .sorters) and the window shows its result.
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, dataSource, parseFilter, virtualWindow, sizerHeight, scrollTopFor } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const virtualListStates = ['default', 'loading', 'empty'];
-
-/** Rows kept above and below the viewport so a fast flick never shows a gap. */
-const OVERSCAN = 4;
-
-/**
- * Browsers clamp how tall an element may be — Chrome around 33.5M px, Firefox
- * lower. A million 40px rows would need 40M px of sizer, past the cap, and the
- * end of the list would simply be unreachable. Past this threshold the sizer is
- * capped and scroll positions are mapped onto the real range instead, trading
- * scrollbar granularity (which nobody can perceive at that length) for a list
- * that actually reaches its last row.
- */
-const MAX_SIZER_PX = 15_000_000;
 
 /** Items per row: 1 is a list, more is a grid. */
 const columnsOf = (list) => Math.max(1, parseInt(list.dataset.columns || '1', 10) || 1);
 
+/** How many items the list shows: the source's query result, else the count. */
+const itemCount = (list) => (list._source ? list._result.entries.length : list._count);
+
 /** How many rows the items occupy — the unit the window is measured in. */
-const rowCount = (list) => Math.ceil(list._count / columnsOf(list));
+const rowCount = (list) => Math.ceil(itemCount(list) / columnsOf(list));
 
-/** Total pixel height the rows would occupy if they all existed. */
-const contentHeight = (list) => rowCount(list) * list._rowHeight;
+/** Height given to the sizer — clamped so the browser can render it (shared/virtual.ts). */
+const listSizer = (list) => sizerHeight(rowCount(list), list._rowHeight);
 
-/** Height given to the sizer — clamped so the browser can render it. */
-const sizerHeight = (list) => Math.min(contentHeight(list), MAX_SIZER_PX);
-
-/** scrollTop (capped space) -> offset into the full content (real space). */
-function virtualOffset(list) {
-  const viewport = list.clientHeight;
-  const real = contentHeight(list) - viewport;
-  const capped = sizerHeight(list) - viewport;
-  if (real <= 0 || capped <= 0) return 0;
-  return (list.scrollTop / capped) * real;
+/** fill one recycled element with item `index` */
+function fill(list, el, index) {
+  if (!list._source) return list._renderRow(el, index);
+  const entry = list._result.entries[index];
+  list._render(el, entry.row, { index, ...entry.meta });
 }
 
 /** Writes the window of rows that belongs at the current scroll position. */
-function render(list) {
+function renderRows(list) {
   const rows = list._rows;
   if (!rows) return;
-  const count = list._count;
+  const count = itemCount(list);
   const cols = columnsOf(list);
   const total = rowCount(list);
-  const rowHeight = list._rowHeight;
-  const visible = Math.ceil(list.clientHeight / rowHeight) + OVERSCAN * 2;
-  const offset = virtualOffset(list);
-  let first = Math.max(0, Math.floor(offset / rowHeight) - OVERSCAN);
-  if (first + visible > total) first = Math.max(0, total - visible);
+  const { first, count: pool, shift } = virtualWindow(list.scrollTop, list.clientHeight, list._rowHeight, total);
 
   // grow/shrink the recycled pool to the window size
-  while (rows.children.length < Math.min(visible, total)) {
+  while (rows.children.length < pool) {
     const row = document.createElement('div');
     row.className = 'virtual-list-row';
     row.setAttribute('role', cols > 1 ? 'row' : 'listitem');
-    rows.appendChild(row);
+    dfDollar(rows).append(row);
   }
-  while (rows.children.length > Math.min(visible, total)) {
+  while (rows.children.length > pool) {
     rows.lastElementChild.remove();
   }
 
   // The pool sits inside a translated wrapper: one translate per scroll frame
   // instead of one `top` write per row.
-  const shift = first * rowHeight - (offset - list.scrollTop);
   rows.style.translate = `0 ${shift}px`;
 
   for (let i = 0; i < rows.children.length; i++) {
@@ -85,7 +72,7 @@ function render(list) {
     if (cols === 1) {
       row.setAttribute('aria-posinset', String(index + 1));
       row.setAttribute('aria-setsize', String(count));
-      list._renderRow(row, index);
+      fill(list, row, index);
       continue;
     }
 
@@ -95,7 +82,7 @@ function render(list) {
       const cell = document.createElement('div');
       cell.className = 'virtual-list-cell';
       cell.setAttribute('role', 'gridcell');
-      row.appendChild(cell);
+      dfDollar(row).append(cell);
     }
     for (let c = 0; c < cols; c++) {
       const cell = row.children[c];
@@ -109,7 +96,7 @@ function render(list) {
       }
       cell.hidden = false;
       cell.dataset.index = String(itemIndex);
-      list._renderRow(cell, itemIndex);
+      fill(list, cell, itemIndex);
     }
   }
 }
@@ -120,25 +107,49 @@ const defaultRenderRow = (row, index) => {
 };
 
 /**
- * UI side of setState: 'default' shows the rows (config `{ index }` scrolls
- * that row into view), 'loading' shows placeholder rows and marks the list
- * busy, 'empty' shows the empty message. State lives on the element.
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
  */
-function triggerStateChange(list, stateName, config) {
+function applyMarkup(el, stateName) {
+  dfDollar(el).attr('data-state', stateName).attr('aria-busy', stateName === 'loading' ? 'true' : null);
+}
+
+/**
+ * A source's query changed (or its rows): evaluate it (cached per query in
+ * the source), size the sizer, recycle every row. Returns the item count.
+ */
+function refresh(list, config) {
+  if (list._source) list._result = list._source.query({ filters: config.filters, sorters: config.sorters });
+  const sizer = list._rows?.parentElement;
+  if (sizer) sizer.style.height = `${listSizer(list)}px`;
+  if (columnsOf(list) > 1) list.setAttribute('aria-rowcount', String(rowCount(list)));
+  if (list._rows) {
+    Array.from(list._rows.children).forEach((row) => { row._index = -1; });
+  }
+  return itemCount(list);
+}
+
+/**
+ * UI side of setState: 'default' shows the rows (config `{ index }` scrolls
+ * that row into view; with a source, `{ filters, sorters }` is the query -
+ * a query nothing matches lands in 'empty'), 'loading' shows placeholder rows
+ * and marks the list busy, 'empty' shows the empty message.
+ */
+function triggerStateChange(list, stateName, config, incoming = config) {
+  if (list._source && stateName !== 'loading' && !refresh(list, config) && stateName === 'default') stateName = 'empty';
   list.dataset.state = stateName;
+  // the state it lands in (a query with no match is 'empty')
+  list.dataset.stateName = stateName;
   switch (stateName) {
     case 'default':
       list.removeAttribute('aria-busy');
-      render(list);
-      if (typeof config.index === 'number') {
-        const item = Math.max(0, Math.min(list._count - 1, config.index));
-        const real = Math.floor(item / columnsOf(list)) * list._rowHeight;
-        const viewport = list.clientHeight;
-        const ratio = Math.max(0, contentHeight(list) - viewport)
-          ? (sizerHeight(list) - viewport) / (contentHeight(list) - viewport)
-          : 0;
-        list.scrollTop = real * ratio;
-        render(list);
+      renderRows(list);
+      if (typeof incoming.index === 'number') {
+        const item = Math.floor(Math.max(0, Math.min(itemCount(list) - 1, incoming.index)) / columnsOf(list));
+        list.scrollTop = scrollTopFor(item, list.clientHeight, list._rowHeight, rowCount(list));
+        renderRows(list);
       }
       break;
     case 'loading':
@@ -151,23 +162,14 @@ function triggerStateChange(list, stateName, config) {
 }
 
 /** Registry-level API; pass the list element explicitly. Unknown names throw. */
-export const virtualListApi = {
-  setState(list, stateName, config = {}) {
-    if (!virtualListStates.includes(stateName)) {
-      throw new Error(
-        `virtual-list: unknown state "${stateName}" (supported: ${virtualListStates.join(', ')})`,
-      );
-    }
-    triggerStateChange(list, stateName, config);
-    // state lives on the ELEMENT, not the module: every instance on a page may
-    // sit in a different state
-    list.dataset.stateName = stateName;
-    list._stateConfig = config;
-  },
-  getState(list) {
-    return { name: list.dataset.stateName || 'default', config: list._stateConfig ?? {} };
-  },
-};
+export const virtualListApi = componentState({
+  component: 'virtual-list',
+  states: virtualListStates,
+  // a config merges: the query stays when only { index } is passed
+  mergeConfig: true,
+  apply: (list, state, _previous, incoming) => triggerStateChange(list, state.name, state.config, incoming),
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.virtualListApi = virtualListApi;
 df$.virtualListStates = virtualListStates;
@@ -179,35 +181,84 @@ df$.virtualListStates = virtualListStates;
  * assume the element is empty or new.
  */
 df$.virtualList = {
+  /** An index range instead of records: count rows, renderRow(row, index) fills a recycled element - nothing is stored per row. */
   setData(list, count, renderRow) {
+    list._source = null;
     list._count = Math.max(0, Math.floor(count) || 0);
     if (renderRow) list._renderRow = renderRow;
-    const sizer = list.querySelector('.virtual-list-sizer');
-    if (sizer) sizer.style.height = `${sizerHeight(list)}px`;
-    if (columnsOf(list) > 1) list.setAttribute('aria-rowcount', String(rowCount(list)));
-    if (list._rows) {
-      Array.from(list._rows.children).forEach((row) => { row._index = -1; });
-    }
-    virtualListApi.setState(list, list._count ? 'default' : 'empty');
+    refresh(list, {});
+    if (list.store) virtualListApi.setState(list, list._count ? 'default' : 'empty');
+  },
+  /**
+   * Records instead of a count: `rows` is any array of objects, `render(el,
+   * record, { index })` fills a recycled element. Filters and multisort run
+   * over every row (defuss-dataview); `query` is the first one.
+   */
+  setSource(list, rows, { render, idField = 'id', query = {} } = {}) {
+    list._source = dataSource(rows, { idField });
+    list._result = list._source.query(query);
+    if (render) list._render = render;
+    list._render ??= (el, record) => { el.textContent = String(record[idField]); };
+    if (list.store) virtualListApi.setState(list, 'default', { filters: [], sorters: [], ...query });
+    else list._pendingQuery = query;
+  },
+  /** run a query (merged into the stored one): { filters?, sorters? } */
+  query(list, query) {
+    return virtualListApi.setState(list, 'default', query);
+  },
+  /** the rows the current query shows (records, in order) */
+  rows(list) {
+    return list._source ? list._result.entries.map((entry) => entry.row) : [];
   },
 };
 
+/**
+ * Declarative query controls, anywhere on the page (one document listener):
+ * <input data-virtual-list-filter="list-id" data-field="name"> filters a
+ * source-backed list (data-kind="number" for > 10 / <= 3 …), and
+ * <select data-virtual-list-sort="list-id"> sorts it by "field:asc|desc"
+ * values ("" = source order). Several filters on one list combine (AND).
+ */
+if (!document.__virtualListQueryInit) {
+  document.__virtualListQueryInit = true;
+  const target = (el, attr) => dfDollar('#' + CSS.escape(el.getAttribute(attr))).get(0);
+  document.addEventListener('input', (e) => {
+    const input = e.target.closest?.('[data-virtual-list-filter]');
+    const list = input && target(input, 'data-virtual-list-filter');
+    if (!list?._source || !list.store) return;
+    clearTimeout(list._filterTimer);
+    list._filterTimer = setTimeout(() => {
+      const filters = dfDollar(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray()
+        .map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || 'text'))
+        .filter(Boolean);
+      virtualListApi.setState(list, 'default', { filters });
+    }, 150);
+  });
+  document.addEventListener('change', (e) => {
+    const select = e.target.closest?.('[data-virtual-list-sort]');
+    const list = select && target(select, 'data-virtual-list-sort');
+    if (!list?._source || !list.store) return;
+    const [field, direction] = select.value.split(':');
+    virtualListApi.setState(list, 'default', { sorters: field ? [{ field, direction: direction === 'desc' ? 'desc' : 'asc' }] : [] });
+  });
+}
+
 function init() {
-  document.querySelectorAll('.virtual-list:not([data-init])').forEach((list) => {
+  dfDollar('.virtual-list:not([data-init])').toArray().forEach((list) => {
     list.dataset.init = '';
 
     // the sizer gives the scrollbar its length; the pool rides inside it
-    let sizer = list.querySelector('.virtual-list-sizer');
+    let sizer = dfDollar(list).find('.virtual-list-sizer').get(0);
     if (!sizer) {
       sizer = document.createElement('div');
       sizer.className = 'virtual-list-sizer';
-      list.appendChild(sizer);
+      dfDollar(list).append(sizer);
     }
-    let rows = sizer.querySelector('.virtual-list-rows');
+    let rows = dfDollar(sizer).find('.virtual-list-rows').get(0);
     if (!rows) {
       rows = document.createElement('div');
       rows.className = 'virtual-list-rows';
-      sizer.appendChild(rows);
+      dfDollar(sizer).append(rows);
     }
 
     list._rows = rows;
@@ -227,7 +278,7 @@ function init() {
     if (cols > 1) list.setAttribute('aria-colcount', String(cols));
     if (!list.hasAttribute('tabindex')) list.tabIndex = 0; // arrow keys scroll it
 
-    sizer.style.height = `${sizerHeight(list)}px`;
+    sizer.style.height = `${listSizer(list)}px`;
 
     // one render per animation frame, however many scroll events arrive
     let queued = false;
@@ -238,7 +289,7 @@ function init() {
         queued = true;
         requestAnimationFrame(() => {
           queued = false;
-          if (list.dataset.state !== 'loading' && list.dataset.state !== 'empty') render(list);
+          if (list.dataset.state !== 'loading' && list.dataset.state !== 'empty') renderRows(list);
         });
       },
       { passive: true },
@@ -246,15 +297,15 @@ function init() {
 
     // the visible window depends on the container height, not just scrolling
     new ResizeObserver(() => {
-      if (list.dataset.state !== 'loading' && list.dataset.state !== 'empty') render(list);
+      if (list.dataset.state !== 'loading' && list.dataset.state !== 'empty') renderRows(list);
     }).observe(list);
 
-    list.api = {
-      setState: (stateName, config) => virtualListApi.setState(list, stateName, config),
-      getState: () => virtualListApi.getState(list),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
 
-    virtualListApi.setState(list, list._count ? 'default' : 'empty');
+    bindComponent(list, virtualListApi);
+
+    if (list._source) virtualListApi.setState(list, 'default', { filters: [], sorters: [], ...list._pendingQuery });
+    else virtualListApi.setState(list, list._count ? 'default' : 'empty');
   });
 }
 

@@ -9,15 +9,16 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 /** default = empty; dragover = files hover the zone; selected = files
  * chosen; error = some files were rejected (config.message). */
 const fileInputStates = ['default', 'dragover', 'selected', 'error'];
 
-const inputOf = (el) => el.querySelector('.file-drop-input');
+const inputOf = (el) => dfDollar(el).find('.file-drop-input').get(0);
 
 /** Does a file match the input's accept list (".pdf", "image/*", "image/png")? */
 function accepts(input, file) {
@@ -53,12 +54,13 @@ function setFiles(input, files) {
 
 function renderList(el) {
   const input = inputOf(el);
-  const list = el.querySelector('.file-drop-list');
+  const list = dfDollar(el).find('.file-drop-list').get(0);
   if (!list) return;
   (el._urls || []).forEach((u) => URL.revokeObjectURL(u));
   el._urls = [];
-  list.replaceChildren(
-    ...[...input.files].map((file, i) => {
+  // the list is rebuilt per change: emptied and refilled through df$
+  dfDollar(list).empty().append(
+    [...input.files].map((file, i) => {
       const li = document.createElement('li');
       li.className = 'file-drop-item';
       const thumb = document.createElement('span');
@@ -83,7 +85,7 @@ function renderList(el) {
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'file-drop-remove';
-      remove.innerHTML = ICON_X;
+      dfDollar(remove).html(ICON_X);
       remove.setAttribute('aria-label', `Remove ${file.name}`);
       remove.addEventListener('click', () => {
         setFiles(input, [...input.files].filter((_, k) => k !== i));
@@ -103,7 +105,7 @@ function renderList(el) {
 /** Show the rejections (or clear them) and settle the state name. */
 function apply(el, rejected, quiet = false) {
   const input = inputOf(el);
-  const err = el.querySelector('.file-drop-error');
+  const err = dfDollar(el).find('.file-drop-error').get(0);
   const message = rejected.length ? `Not added: ${rejected.map((r) => `${r.file.name} (${r.why})`).join(', ')}` : '';
   if (err) {
     err.textContent = message;
@@ -111,6 +113,7 @@ function apply(el, rejected, quiet = false) {
   }
   el.dataset.stateName = rejected.length ? 'error' : input.files.length ? 'selected' : 'default';
   renderList(el);
+  // Fires when chosen or dropped files are refused (type, size, count) - the files and the message shown.
   if (!quiet && rejected.length) el.dispatchEvent(new CustomEvent('file-drop:rejected', { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
 }
 
@@ -140,6 +143,20 @@ function onPick(el) {
   apply(el, rejected);
 }
 
+/**
+ * The markup of a state, for render(), on a detached copy of the authored
+ * markup: the error line - the message in 'error', empty otherwise - as
+ * apply() / the error state write it. The file list is built from the
+ * input's FileList (blob-URL thumbnails, sizes): runtime-owned.
+ */
+function applyMarkup(el, stateName, config) {
+  const err = dfDollar(el).find('.file-drop-error').first();
+  if (!err.get(0)) return;
+  err.attr('role', 'alert');
+  if (stateName === 'error') err.text(config?.message || 'Not added: archive.zip (type)');
+  else if (stateName !== 'dragover') err.text('');
+}
+
 function triggerStateChange(el, stateName, config) {
   const input = inputOf(el);
   switch (stateName) {
@@ -153,7 +170,8 @@ function triggerStateChange(el, stateName, config) {
       break;
     case 'selected': {
       // config.files: [{ name, size, type }] - placeholder files (demos, tests)
-      const files = (config?.files || [{ name: 'report.pdf', size: 248000, type: 'application/pdf' }]).map(
+      // { files: [{ name, size, type }] } - or getState()'s plain names
+      const files = (config?.files || [{ name: 'report.pdf', size: 248000, type: 'application/pdf' }]).map((f) => (typeof f === 'string' ? { name: f } : f)).map(
         // real bytes (capped at 5 MB) so size, type and name read true
         (f) => new File([new Uint8Array(Math.min(f.size ?? 0, 5e6))], f.name, { type: f.type || '' }),
       );
@@ -163,7 +181,7 @@ function triggerStateChange(el, stateName, config) {
       break;
     }
     case 'error': {
-      const err = el.querySelector('.file-drop-error');
+      const err = dfDollar(el).find('.file-drop-error').get(0);
       if (err) err.textContent = config?.message || 'Not added: archive.zip (type)';
       el.dataset.stateName = 'error';
       break;
@@ -172,38 +190,42 @@ function triggerStateChange(el, stateName, config) {
 }
 
 /** Registry-level API; pass the .file-drop explicitly. Unknown names throw. */
-export const fileInputApi = {
-  setState(el, stateName, config = {}) {
-    if (!fileInputStates.includes(stateName)) {
-      throw new Error(`file-input: unknown state "${stateName}" (supported: ${fileInputStates.join(', ')})`);
-    }
-    el._stateConfig = config;
-    triggerStateChange(el, stateName, config);
-  },
-  getState(el) {
+export const fileInputApi = componentState({
+  component: 'file-input',
+  states: fileInputStates,
+  apply: (el, state) => triggerStateChange(el, state.name, state.config),
+  read: (el, state) => {
     const input = inputOf(el);
     return {
       name: el.dataset.stateName || 'default',
-      config: { ...el._stateConfig, count: input.files.length, files: [...input.files].map((f) => f.name) },
+      config: {
+        ...state.config,
+        count: input.files.length,
+        files: [...input.files].map((f) => f.name),
+        // the live rejection message, so setState('error', getState().config) keeps it
+        ...(el.dataset.stateName === 'error' ? { message: dfDollar(el).find('.file-drop-error').text() } : {}),
+      },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
 
 df$.fileInputApi = fileInputApi;
 df$.fileInputStates = fileInputStates;
 
 function init() {
-  document.querySelectorAll('.file-drop:not([data-init])').forEach((el) => {
+  dfDollar('.file-drop:not([data-init])').toArray().forEach((el) => {
     const input = inputOf(el);
     if (!input) return;
     el.dataset.init = '';
     el.dataset.stateName = 'default';
     el._kept = [];
-    el.api = {
-      setState: (stateName, config) => fileInputApi.setState(el, stateName, config),
-      getState: () => fileInputApi.getState(el),
-    };
-    const zone = el.querySelector('.file-drop-zone') || el;
+    // the error line is a live region from the start (not only once a
+    // rejection has been written)
+    dfDollar(el).find('.file-drop-error').attr('role', 'alert');
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(el, fileInputApi);
+    const zone = dfDollar(el).find('.file-drop-zone').get(0) || el;
     let depth = 0; // dragenter/leave fire for every child - count them
     zone.addEventListener('dragenter', (e) => {
       if (!e.dataTransfer?.types.includes('Files') || input.disabled) return;

@@ -136,6 +136,22 @@ document.querySelector('#my-branch').api.getState(); // { name: 'expanded', conf
 
 The registry global is `df$.shadcn.treeViewApi` / `df$.shadcn.treeViewStates` (camelCase).
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.treeViewApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.treeViewStates` = `default`, `expanded`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `tree-check` | `item`, `checked`, `values` | Fires when a checkbox is toggled - the item, whether it is checked, and every checked value. |
+| `tree-reorder` | `item`, `parent`, `index` | Fires after an item is moved - the item, its new parent and its index there. |
+| `tree-select` | `item` | Fires when an item is selected - the item. |
+
 ## Density
 
 Set `data-density` on the `.tree` root; the row `padding-block` scales. The structural indent is never touched.

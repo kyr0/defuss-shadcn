@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped diff component. The fixture stacks a
@@ -238,6 +239,10 @@ try {
     assert.equal(r.api, 'function');
     assert.deepEqual(r.states, ['default', 'before', 'after']);
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.diff[id]', ['default','before','after'], { runtimeAttrs: ['style'] });
+  });
+
 } finally {
   await browser.close();
   server.stop();

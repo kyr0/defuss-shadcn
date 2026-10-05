@@ -218,6 +218,14 @@ The deck's entrances ARE the shared Motion component - see
 (reduced-motion aware). The JSX-equivalent `<Reveal>` / `<CountUp>` wrappers
 from the design notes are these attributes - one contract, no second technique.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.presentationApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.presentationStates` = `default`, `notes`, `fullscreen`.
+
 ## Notes
 
 - The artboard coordinate system is the feature: keep SVG geometry and

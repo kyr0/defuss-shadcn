@@ -20,16 +20,26 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 /** default = as authored (original order, no sort, nothing selected);
  * sorted = { column, direction }; selected = { rows: [indices] | 'all' }. */
 const tableStates = ['default', 'sorted', 'selected'];
 const bodyOf = (table) => table.tBodies[0];
 const bodyRows = (table) => [...(bodyOf(table)?.rows ?? [])];
-const rowBox = (row) => row.querySelector(':scope > .table-select input[type="checkbox"]');
-const headBox = (table) => table.tHead?.querySelector('.table-select input[type="checkbox"]');
+const rowBox = (row) => dfDollar(row).find(':scope > .table-select input[type="checkbox"]').get(0);
+const headBox = (table) => dfDollar(table.tHead).find('.table-select input[type="checkbox"]').get(0);
 /* -- Sorting --------------------------------------------------------------- */
+/** A sortable column states its (lack of) sort: init's enhancement, which
+ *  render() applies to its copy too. */
+function enhanceHead(table) {
+    dfDollar(table.tHead).find('.table-sort').each((_i, btn) => {
+        const th = btn.closest('th');
+        if (th && !th.hasAttribute('aria-sort'))
+            th.setAttribute('aria-sort', 'none');
+    });
+}
 function cellValue(row, col) {
     const cell = row.cells[col];
     if (!cell)
@@ -54,7 +64,7 @@ function sortBy(table, col, direction) {
     });
     body.append(...rows);
     [...(table.tHead?.rows[0]?.cells ?? [])].forEach((th, i) => {
-        if (th.querySelector('.table-sort'))
+        if (dfDollar(th).find('.table-sort').get(0))
             th.setAttribute('aria-sort', i === col ? direction : 'none');
     });
     table._sort = { column: col, direction };
@@ -63,7 +73,7 @@ function unsort(table) {
     const body = bodyOf(table);
     if (body && table._original)
         body.append(...table._original.filter((r) => r.parentElement === body));
-    table.tHead?.querySelectorAll('[aria-sort]').forEach((th) => th.setAttribute('aria-sort', 'none'));
+    dfDollar(table.tHead).find('[aria-sort]').attr('aria-sort', 'none');
     table._sort = null;
 }
 /* -- Selection ------------------------------------------------------------- */
@@ -83,6 +93,7 @@ function syncSelection(table, announce = true) {
     }
     if (announce) {
         const selected = rows.filter((r) => r.getAttribute('aria-selected') === 'true');
+        // Fires when the selection changes - the selected rows and how many.
         table.dispatchEvent(new CustomEvent('table-select', { bubbles: true, detail: { rows: selected, count: selected.length } }));
     }
 }
@@ -90,26 +101,30 @@ function selectRows(table, which) {
     const rows = bodyRows(table);
     rows.forEach((row, i) => {
         const on = which === 'all' || (Array.isArray(which) && which.includes(i));
+        // only a selectable row (it has a select box) carries aria-selected -
+        // a plain table's rows have no selection state to announce
         const box = rowBox(row);
-        if (box)
-            box.checked = on;
+        if (!box)
+            return;
+        box.checked = on;
         row.setAttribute('aria-selected', String(on));
     });
     syncSelection(table);
 }
 /* -- Reordering ------------------------------------------------------------ */
 function announceMove(table, row) {
+    // Fires after a row is moved (drag or keyboard) - the row and its new index.
     table.dispatchEvent(new CustomEvent('table-reorder', { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
 }
 function moved(table, row) {
     // a manual order is no longer the sorted one
-    table.tHead?.querySelectorAll('[aria-sort]').forEach((th) => th.setAttribute('aria-sort', 'none'));
+    dfDollar(table.tHead).find('[aria-sort]').attr('aria-sort', 'none');
     table._sort = null;
     announceMove(table, row);
 }
 function initReorder(table) {
     let dragged = null;
-    const clear = () => table.querySelectorAll('[data-drop]').forEach((r) => r.removeAttribute('data-drop'));
+    const clear = () => dfDollar(table).find('[data-drop]').toArray().forEach((r) => r.removeAttribute('data-drop'));
     // a row drags only from its grip - text in the other cells stays selectable
     table.addEventListener('pointerdown', (e) => {
         const handle = e.target.closest?.('.table-handle');
@@ -139,11 +154,15 @@ function initReorder(table) {
         }
     });
     table.addEventListener('drop', (e) => {
-        const row = table.querySelector('tbody > tr[data-drop]');
+        const row = dfDollar(table).find('tbody > tr[data-drop]').get(0);
         if (!dragged || !row)
             return;
         e.preventDefault();
-        row.parentElement.insertBefore(dragged, row.dataset.drop === 'before' ? row : row.nextSibling);
+        const ref = row.dataset.drop === 'before' ? row : row.nextSibling;
+        if (ref)
+            dfDollar(ref).before(dragged);
+        else
+            dfDollar(row.parentElement).append(dragged);
         clear();
         moved(table, dragged);
     });
@@ -166,7 +185,11 @@ function initReorder(table) {
         const sib = e.key === 'ArrowUp' ? row.previousElementSibling : row.nextElementSibling;
         if (!sib)
             return;
-        row.parentElement.insertBefore(row, e.key === 'ArrowUp' ? sib : sib.nextSibling);
+        const ref = e.key === 'ArrowUp' ? sib : sib.nextSibling;
+        if (ref)
+            dfDollar(ref).before(row);
+        else
+            dfDollar(row.parentElement).append(row);
         e.target.focus();
         moved(table, row);
     });
@@ -189,46 +212,57 @@ function triggerStateChange(table, stateName, config) {
             unsort(table);
             selectRows(table, []);
             break;
-        case 'sorted':
-            sortBy(table, config?.column ?? 0, config?.direction === 'descending' ? 'descending' : 'ascending');
+        case 'sorted': {
+            // { column, direction } - or getState()'s { sort: { column, direction } }
+            const sort = config?.sort ?? {};
+            const direction = config?.direction ?? sort.direction;
+            sortBy(table, config?.column ?? sort.column ?? 0, direction === 'descending' ? 'descending' : 'ascending');
+            // a getState() config describes the whole state: its selection too
+            if (Array.isArray(config?.selected))
+                selectRows(table, config.selected);
             break;
+        }
         case 'selected':
-            selectRows(table, config?.rows ?? [0]);
+            // a getState() config describes the whole state: its sort too
+            if (config && 'sort' in config) {
+                if (config.sort)
+                    sortBy(table, config.sort.column ?? 0, config.sort.direction === 'descending' ? 'descending' : 'ascending');
+                else
+                    unsort(table);
+            }
+            // { rows } - or getState()'s { selected }
+            selectRows(table, config?.rows ?? config?.selected ?? [0]);
             break;
     }
 }
 /** Registry-level API; pass the table explicitly. Unknown names throw. */
-export const tableApi = {
-    setState(table, stateName, config = {}) {
-        if (!tableStates.includes(stateName)) {
-            throw new Error(`table: unknown state "${stateName}" (supported: ${tableStates.join(', ')})`);
-        }
-        triggerStateChange(table, stateName, config);
-        table.dataset.stateName = stateName;
-        table._stateConfig = config;
-    },
-    getState(table) {
+export const tableApi = componentState({
+    component: 'table',
+    states: tableStates,
+    apply: (table, state) => triggerStateChange(table, state.name, state.config),
+    read: (table, state) => {
         const selected = bodyRows(table).flatMap((r, i) => (r.getAttribute('aria-selected') === 'true' ? [i] : []));
-        return { name: table.dataset.stateName || 'default', config: { ...table._stateConfig, sort: table._sort ?? null, selected } };
+        return { name: table.dataset.stateName || 'default', config: { ...state.config, sort: table._sort ?? null, selected } };
     },
-};
+    markup: (el, state) => {
+        enhanceHead(el);
+        triggerStateChange(el, state.name, state.config);
+    },
+});
 df$.tableApi = tableApi;
 df$.tableStates = tableStates;
 function init() {
-    document.querySelectorAll('table.table:not([data-init])').forEach((table) => {
+    dfDollar('table.table:not([data-init])').toArray().forEach((table) => {
         table.dataset.init = '';
         table.dataset.stateName = 'default';
         table._original = bodyRows(table);
         table._sort = null;
-        table.api = {
-            setState: (stateName, config) => tableApi.setState(table, stateName, config),
-            getState: () => tableApi.getState(table),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(table, tableApi);
         // sorting: a click on a .table-sort button cycles ascending → descending → as authored
-        table.tHead?.querySelectorAll('.table-sort').forEach((btn) => {
+        enhanceHead(table);
+        dfDollar(table.tHead).find('.table-sort').toArray().forEach((btn) => {
             const th = btn.closest('th');
-            if (!th.hasAttribute('aria-sort'))
-                th.setAttribute('aria-sort', 'none');
             btn.addEventListener('click', () => {
                 const col = th.cellIndex;
                 const now = th.getAttribute('aria-sort');
@@ -238,15 +272,16 @@ function init() {
                 else
                     sortBy(table, col, next);
                 table.dataset.stateName = next === 'none' ? 'default' : 'sorted';
+                // Fires when a column is sorted - the column and the direction (ascending, descending, none).
                 table.dispatchEvent(new CustomEvent('table-sort', { bubbles: true, detail: { column: col, direction: next } }));
             });
         });
         // an authored aria-sort sorts on load
-        const pre = table.tHead?.querySelector('th[aria-sort="ascending"], th[aria-sort="descending"]');
+        const pre = dfDollar(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
         if (pre)
             sortBy(table, pre.cellIndex, pre.getAttribute('aria-sort'));
         // selection
-        if (table.querySelector('.table-select input[type="checkbox"]')) {
+        if (dfDollar(table).find('.table-select input[type="checkbox"]').get(0)) {
             let last = null;
             table.addEventListener('click', (e) => {
                 const box = e.target.closest?.('.table-select input[type="checkbox"]');
@@ -273,7 +308,7 @@ function init() {
             });
             syncSelection(table, false);
         }
-        if (table.querySelector('.table-handle'))
+        if (dfDollar(table).find('.table-handle').get(0))
             initReorder(table);
         if (table.dataset.lockStart) {
             measureLocks(table);

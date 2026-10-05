@@ -97,6 +97,24 @@ fig.api.getState();                          // { name: 'rendered', config: {} }
 The registry global is `df$.shadcn.mermaidApi` / `df$.shadcn.mermaidStates`;
 the imperative API is `df$.shadcn.mermaid.{ load, render, renderAll, theme, url }`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.mermaidApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.mermaidStates` = `default`, `rendered`, `error`.
+
+### `df$.shadcn.mermaid`
+
+| Member | Description |
+|---|---|
+| `load(url?)` | Import the official Mermaid ESM once. `url` overrides the source (a self-hosted copy of the same build); without it: <meta name= "mermaid-module">, else the pinned jsDelivr build. A failed import can be retried (the next call imports again). |
+| `render(fig)` | Render one diagram from its source (queued). Resolves true on success. |
+| `renderAll()` | Render every diagram on the page again - resolves with one result per diagram. |
+| `theme(el)` | Mermaid "base" themeVariables from the tokens the figure resolves. |
+| `url` | The pinned official Mermaid build the component loads (never @latest). |
+
 ## ARIA
 
 | Case | Markup |

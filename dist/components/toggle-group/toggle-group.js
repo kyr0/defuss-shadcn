@@ -16,9 +16,19 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const toggleGroupStates = ['default', 'disabled'];
+/**
+ * The markup of a state, for render(): the attributes every state writes -
+ * the same as triggerStateChange does on the live element - applied to a
+ * detached copy of the authored markup. The e2e render round trip proves
+ * the two agree.
+ */
+function applyMarkup(el, stateName) {
+    dfDollar(el).attr('data-disabled', stateName === 'disabled' ? '' : null);
+}
 /**
  * UI side of setState: 'disabled' mirrors the documented data-disabled
  * attribute (CSS kills pointer events + dims items); 'default' removes it.
@@ -34,35 +44,27 @@ function triggerStateChange(group, stateName, _config) {
     }
 }
 /** Registry-level API; pass the group element explicitly. Unknown names throw. */
-export const toggleGroupApi = {
-    setState(group, stateName, config = {}) {
-        if (!toggleGroupStates.includes(stateName)) {
-            throw new Error(`toggle-group: unknown state "${stateName}" (supported: ${toggleGroupStates.join(', ')})`);
-        }
-        triggerStateChange(group, stateName, config);
-        // state lives on the ELEMENT, not the module (many groups per page)
-        group.dataset.stateName = stateName;
-        group._stateConfig = config;
-    },
-    getState(group) {
+export const toggleGroupApi = componentState({
+    component: 'toggle-group',
+    states: toggleGroupStates,
+    apply: (group, state) => triggerStateChange(group, state.name, state.config),
+    read: (group, state) => {
         return {
             name: group.hasAttribute('data-disabled') ? 'disabled' : 'default',
-            config: group._stateConfig ?? {},
+            config: state.config,
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.toggleGroupApi = toggleGroupApi;
 df$.toggleGroupStates = toggleGroupStates;
 function init() {
-    document.querySelectorAll('.toggle-group:not([data-init])').forEach((group) => {
+    dfDollar('.toggle-group:not([data-init])').toArray().forEach((group) => {
         group.dataset.init = '';
-        // bind-scope the api per group: `$('#align').api.setState('disabled')`
-        group.api = {
-            setState: (stateName, config) => toggleGroupApi.setState(group, stateName, config),
-            getState: () => toggleGroupApi.getState(group),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(group, toggleGroupApi);
         const type = group.getAttribute('data-type') || 'single';
-        const getToggles = () => Array.from(group.querySelectorAll('.toggle:not(:disabled)'));
+        const getToggles = () => Array.from(dfDollar(group).find('.toggle:not(:disabled)').toArray());
         // Roving tabindex: only one item tabbable at a time
         const initTabindex = () => {
             const toggles = getToggles();

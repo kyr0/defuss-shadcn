@@ -5,7 +5,10 @@ import { dirname, join, relative, sep } from 'node:path';
 import { parseHTML } from 'linkedom';
 import { auditUtilities, walk } from './lib/audit.ts';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
-import { BUNDLE_ARTIFACTS, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
+import { statFigureProblems } from './lib/stat-figures.ts';
+import { statSources } from './stat-figures.ts';
+import { BUNDLE_ARTIFACTS, isAppArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
+import { EXTRA_BUNDLES, extraBundleOf, inAllBundle } from './lib/bundles.ts';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
@@ -33,9 +36,11 @@ import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from '.
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
-import { docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile } from './lib/docs-ssg.ts';
+import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 import { versionDrift } from './lib/version-sites.ts';
+import { apiGaps, apiMarkdown, apiSectionOf, readComponentApi } from '../src/documentation/lib/component-api.ts';
+import { DF_ADOPTION_LEGACY, QUERY_BASELINE, QUERY_RE, RENDER_LEGACY, SINK_BASELINE, SINK_RE, hasRender, ratchet, scan } from './lib/dom-discipline.ts';
 import {
   exampleFences, exampleFragment, examplePlaceholders,
   findStatesTable,
@@ -230,12 +235,32 @@ check(
 // anchors, data-spec-href spans and escaped code samples (&lt;link…) stay
 // legal - only real tags match.
 const importProblems: string[] = [];
+const appPages = new Map(STANDALONE_APPS.map((slug) => [standaloneAppFile(slug), appName(slug)]));
 for (const [page, html] of docHtml) {
+  // a full-screen scaffold loads ONLY its own bundle (dist/apps/) - the page
+  // is the proof of the size stats.json publishes for it
+  const app = appPages.get(page);
+  if (app) {
+    if (!html.includes(`<link rel="stylesheet" href="../apps/${app}.min.css"`)) importProblems.push(`${page} missing its own app stylesheet ../apps/${app}.min.css`);
+    if (!html.includes(`<script type="module" src="../apps/${app}.min.js"`)) importProblems.push(`${page} missing its own app script ../apps/${app}.min.js`);
+    if (/(?:href|src)="\.\.\/(?:components|theme)\//.test(html)) importProblems.push(`${page} loads system files beside its app bundle - the app bundle must be all it needs`);
+    continue;
+  }
   if (!html.includes('<link rel="stylesheet" href="../components/all.css"')) {
     importProblems.push(`${page} missing the all.css bundle link`);
   }
   if (!html.includes('<script type="module" src="../components/all.js"')) {
     importProblems.push(`${page} missing the all.js bundle script`);
+  }
+  // a page with live examples (the code-example component) loads the extra
+  // bundle it ships in - after all.*
+  if (/class="code-example[" ]/.test(html)) {
+    const css = html.indexOf('<link rel="stylesheet" href="../components/wysiwyg.css"');
+    const js = html.indexOf('<script type="module" src="../components/wysiwyg.js"');
+    if (css < 0) importProblems.push(`${page} has live examples but no ../components/wysiwyg.css`);
+    else if (css < html.indexOf('href="../components/all.css"')) importProblems.push(`${page} loads wysiwyg.css before all.css`);
+    if (js < 0) importProblems.push(`${page} has live examples but no ../components/wysiwyg.js`);
+    else if (js < html.indexOf('src="../components/all.js"')) importProblems.push(`${page} loads wysiwyg.js before all.js`);
   }
   for (const m of html.matchAll(/<link\b[^>]*\bhref="\.\.\/components\/[^/"]+\/[^/"]+\.css"/g)) {
     importProblems.push(`${page} loads a per-component stylesheet (${m[0]}) - the all.css bundle replaced the include lists`);
@@ -303,7 +328,7 @@ if (!existsSync(DIST)) {
     // single-file bundle - none of them are orphans
     // scripts/build.ts publishes schema sidecars to dist/schemas/ from a
     // DIFFERENT src path (components/<n>/<n>.schema.json) - allow-listed, not orphans
-    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || rel === STATS_FILE || isSchemaArtifact(rel)) continue;
+    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || isAppArtifact(rel) || rel === STATS_FILE || isSchemaArtifact(rel)) continue;
     if (!srcSet.has(rel)) {
       // docs pages/assets originate from the SSG authoring tree
       // (pages/*.mdx, public/*, runtime/*.ts) - resolve before flagging
@@ -378,6 +403,23 @@ check(
   'run `bun run stats` (or `bun run build`, which regenerates it after minify)',
 );
 
+// 10d2. measured figures on the doc pages (data-stat="stats.…" / "verify.…",
+// scripts/lib/stat-figures.ts) must show their measurement - dist/stats.json
+// and the recorded verify run (src/documentation/data/verify-timing.json).
+// A slide that claims "54.0 KiB" or "2:20 for 81 gates" is checked, not typed.
+const figureProblems: string[] = [];
+if (statsProblems.length === 0) {
+  const sources = statSources(ROOT);
+  for (const page of readdirSync(join(DOCS, 'pages')).filter((n) => n.endsWith('.mdx'))) {
+    figureProblems.push(...statFigureProblems(readFileSync(join(DOCS, 'pages', page), 'utf8'), sources, `pages/${page}`));
+  }
+}
+check(
+  'stat figures',
+  figureProblems,
+  'run `bun scripts/stat-figures.ts` (after `bun run stats`, or `bun scripts/time-verify.ts --agent "…"` for the verify.* figures), then rebuild the docs',
+);
+
 // 10e. README + doc-site index must PROMINENTLY state the current numbers —
 // total, withJs, withoutJs and the KiB-formatted gzip sizes - as the exact
 // sentence generated from dist/stats.json (shared renderer in lib/stats.ts).
@@ -413,8 +455,9 @@ const STATE_API_PATTERNS: Array<[string, RegExp]> = [
   ['registry api assignment', /(df\$|defussGlobals\(\))\.\w+Api\s*=/],
   ['registry states assignment', /(df\$|defussGlobals\(\))\.\w+States\s*=/],
   ['states array declares default', /\w+States\s*=\s*\[[^\]]*['"]default['"]/],
-  ['setState implementation', /\bsetState\s*\(/],
-  ['getState implementation', /\bgetState\s*\(/],
+  // componentState() (src/shared/component-state.ts) implements both
+  ['setState implementation', /\bsetState\s*\(|\bcomponentState\(/],
+  ['getState implementation', /\bgetState\s*\(|\bcomponentState\(/],
   ['triggerStateChange implementation', /\btriggerStateChange\b/],
 ];
 const stateApiProblems: string[] = [];
@@ -463,6 +506,11 @@ const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: str
     pinned: 'https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs',
     reason: 'loads the official Mermaid renderer on the first diagram (pinned jsDelivr ESM, or a self-hosted copy)',
   },
+  'code-example': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?shikiUrl\)/g,
+    pinned: 'https://esm.sh/shiki@3.0.0',
+    reason: 'loads the Shiki highlighter on the first paint of a source (pinned esm.sh ESM - the module the docs code blocks use; configure({ shiki }) self-hosts it)',
+  },
 };
 const vendorProblems: string[] = [];
 /** `src` with the allow-listed vendor import call sites of `names` removed. */
@@ -474,7 +522,7 @@ function withoutVendorImports(src: string, names: string[], where: string): stri
     if (!v.site.test(out)) vendorProblems.push(`${where}: VENDOR_IMPORTS["${name}"] is stale - its call site is gone; remove the entry`);
     v.site.lastIndex = 0;
     if (!out.includes(v.pinned)) vendorProblems.push(`${where}: ${name}'s vendor URL is not the pinned ${v.pinned}`);
-    if (/mermaid@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
+    if (/(mermaid|shiki)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
     out = out.replace(v.site, '/* vendor import */');
   }
   return out;
@@ -509,7 +557,9 @@ check(
   const readDist = (rel: string): string =>
     existsSync(join(DIST, rel)) ? readFileSync(join(DIST, rel), 'utf8') : '';
   const coreJs = readDist('components/core.js');
-  const allJs = withoutVendorImports(readDist('components/all.js'), Object.keys(VENDOR_IMPORTS), 'all.js');
+  // all.js carries the vendor import sites of its own components only - an
+  // extra bundle's (scripts/lib/bundles.ts) sit in that bundle
+  const allJs = withoutVendorImports(readDist('components/all.js'), Object.keys(VENDOR_IMPORTS).filter(inAllBundle), 'all.js');
   /** component identifiers are camelCased (number-input → numberInputStates) */
   const camel = (c: string): string => c.replace(/-([a-z])/g, (_m, ch: string) => ch.toUpperCase());
 
@@ -535,11 +585,27 @@ check(
       artifactProblems.push('all.js does not embed the core runtime (morph + query)');
     for (const c of componentDirs) {
       if (!existsSync(join(COMPS, c, `${c}.ts`))) continue;
-      if (!new RegExp(`\\b${camel(c)}States\\s*=`).test(allJs))
-        artifactProblems.push(`all.js is missing component "${c}" (bundle ≠ shipping manifest)`);
+      const inAll = new RegExp(`\\b${camel(c)}States\\s*=`).test(allJs);
+      if (inAllBundle(c) && !inAll) artifactProblems.push(`all.js is missing component "${c}" (bundle ≠ shipping manifest)`);
+      if (!inAllBundle(c) && inAll) artifactProblems.push(`all.js embeds "${c}" - it ships in the ${extraBundleOf(c)} bundle (scripts/lib/bundles.ts), never in all.*`);
     }
     if (/(^|\n)\s*import[\s({]|import\(/.test(allJs))
       artifactProblems.push('all.js contains a runtime import - the payload must be self-contained');
+  }
+  // the extra bundles: exactly their members, no core payload (they bind to
+  // the df$ runtime all.js / core.js installed), import-free but for their
+  // members' pinned vendor imports
+  for (const [bundle, members] of Object.entries(EXTRA_BUNDLES)) {
+    const raw = readDist(`components/${bundle}.js`);
+    if (!raw) { artifactProblems.push(`dist/components/${bundle}.js missing - run \`bun run build\``); continue; }
+    if (!existsSync(join(DIST, 'components', `${bundle}.css`))) artifactProblems.push(`dist/components/${bundle}.css missing - run \`bun run build\``);
+    const js = withoutVendorImports(raw, members.filter((m) => m in VENDOR_IMPORTS), `${bundle}.js`);
+    for (const m of members)
+      if (existsSync(join(COMPS, m, `${m}.ts`)) && !new RegExp(`\\b${camel(m)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js is missing its component "${m}"`);
+    if (js.includes('queryVersion') || js.includes('htmlStringToVNodes')) artifactProblems.push(`${bundle}.js embeds the core runtime - an extra bundle carries only its components`);
+    for (const c of componentDirs)
+      if (!members.includes(c) && existsSync(join(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js embeds "${c}", which is not one of its members`);
+    if (/(^|\n)\s*import[\s({]|import\(/.test(js)) artifactProblems.push(`${bundle}.js contains a runtime import - the payload must be self-contained`);
   }
   check(
     'artifact contract (core/all)',
@@ -603,7 +669,9 @@ check(
 const previewProblems: string[] = [];
 for (const c of componentDirs) {
   const page = join(DOCS_DIST, `${c}.html`);
-  if (existsSync(page) && !readFileSync(page, 'utf8').includes('class="preview"')) {
+  // a class token, not the whole attribute: a live example's stage is
+  // class="code-example-stage preview" (the shipped component + the docs hook)
+  if (existsSync(page) && !/class="(?:[^"]*\s)?preview(?:\s[^"]*)?"/.test(readFileSync(page, 'utf8'))) {
     previewProblems.push(`dist/documentation/${c}.html has no .preview block`);
   }
 }
@@ -1267,7 +1335,7 @@ check(
   // the element (this exact bug disabled the docs search palette once).
   {
     const dialogSrc = readFileSync(join(COMPS, 'dialog', 'dialog.ts'), 'utf8');
-    const claim = dialogSrc.match(/querySelectorAll\((['"])dialog:not\([\s\S]*?\1\)/);
+    const claim = dialogSrc.match(/(?:querySelectorAll|dfDollar)\((['"])dialog:not\([\s\S]*?\1\)/);
     const owned = ['alert-dialog', 'sheet', 'command', 'window', 'cookie-consent-dialog'].filter(
       (c) => claim && !claim[0].includes(`not(.${c})`),
     );
@@ -1335,6 +1403,139 @@ check(
       problems,
       'route the write through the core df$ runtime - .morph()/.html() for content, .append()/.before()/.after() for moves/mounts, factory df$("<markup>") for static markup (plans/defuss-query-morph-integration.md §5.1; guide: DOM Querying & Morphing)',
     );
+  }
+
+  // 28d. DOM through df$ (AGENTS.md "DOM through df$", scripts/lib/
+  // dom-discipline.ts): component, shared and docs-runtime code selects and
+  // writes the DOM through df$ (defuss-query + defuss-morph). Native queries
+  // (getElementById / querySelector(All) / getElementsBy*) are penalized: a
+  // per-file ratchet that only goes down, the remaining debt a warning. HTML
+  // string sinks (innerHTML / outerHTML / innerText / insertAdjacentHTML /
+  // document.write) are banned outright in components and shared code; the
+  // docs runtime's old ones ride a ratchet too.
+  {
+    const files: string[] = [];
+    const jsComponents: string[] = [];
+    for (const c of componentDirs) {
+      const file = join(COMPS, c, `${c}.ts`);
+      if (existsSync(file)) { files.push(file); jsComponents.push(c); }
+    }
+    for (const dir of [join(SRC, 'shared'), join(SRC, 'documentation', 'runtime')])
+      for (const name of readdirSync(dir)) if (name.endsWith('.ts') && !name.endsWith('.d.ts')) files.push(join(dir, name));
+    const rel = (file: string) => relative(ROOT, file).split(sep).join('/');
+    const sources = new Map(files.map((file) => [rel(file), readFileSync(file, 'utf8')]));
+
+    const queryCounts: Record<string, number> = {};
+    const sinkCounts: Record<string, number> = {};
+    const banned: string[] = [];
+    for (const [file, src] of sources) {
+      const q = scan(src, QUERY_RE).length;
+      if (q) queryCounts[file] = q;
+      const sinks = scan(src, SINK_RE);
+      if (!sinks.length) continue;
+      // components + shared: no HTML string sink, ever (no baseline exists)
+      if (/^src\/(components|shared)\//.test(file)) for (const h of sinks) banned.push(`${file}:${h.line}: ${h.text.slice(0, 110)}`);
+      else sinkCounts[file] = sinks.length;
+    }
+    const queries = ratchet(queryCounts, QUERY_BASELINE, 'native DOM queries');
+    check(
+      'DOM queries through df$ (ratchet)',
+      queries.problems,
+      'select through df$ instead - df$(selector), df$(el).find(sel) / .closest(sel) / .children(sel) / .parent() / .filter(sel) / .first() / .eq(i) / .each(fn), read with .attr()/.data()/.prop()/.val()/.text(); when a file has fewer native queries than its baseline, lower QUERY_BASELINE in scripts/lib/dom-discipline.ts to the count shown (it only goes down; new files start at 0)',
+    );
+    const queryTotal = queries.debt.reduce((n, [, k]) => n + k, 0);
+    check(
+      'DOM query debt (use df$)',
+      queries.debt.slice(0, 8).map(([file, n]) => `${file}: ${n}`).concat(queries.debt.length > 8 ? [`… ${queryTotal} native queries in ${queries.debt.length} files`] : []),
+      `${queryTotal} native DOM queries left in ${queries.debt.length} files - migrate a file to df$ (toggle.ts / accordion.ts show the pattern) and lower its QUERY_BASELINE entry`,
+      true,
+    );
+    const sinks = ratchet(sinkCounts, SINK_BASELINE, 'HTML string sinks');
+    check(
+      'HTML string sinks (innerHTML & co.)',
+      banned.concat(sinks.problems),
+      'write markup through df$: df$(el).html(markup) / .morph(markup) for content (morph reconciles - no innerHTML), .text(value) for text, .append()/.before()/.after()/.replaceWith() with nodes or df$("<markup>") for mounts, .html() (no argument) to READ markup; in components and shared code there is no baseline - every sink must go; docs-runtime counts below SINK_BASELINE mean: lower it (scripts/lib/dom-discipline.ts)',
+    );
+    if (sinks.debt.length)
+      check(
+        'HTML string sink debt (docs runtime)',
+        sinks.debt.map(([file, n]) => `${file}: ${n}`),
+        'replace each with df$(el).html()/.morph()/.text() and lower SINK_BASELINE in scripts/lib/dom-discipline.ts',
+        true,
+      );
+
+    // every JS component on df$; every JS component renders its markup from
+    // state (render() + the e2e round trip). Legacy lists only shrink.
+    const adoption: string[] = [];
+    const adoptionDebt: string[] = [];
+    const renderProblems: string[] = [];
+    const renderDebt: string[] = [];
+    for (const c of jsComponents) {
+      const src = sources.get(`src/components/${c}/${c}.ts`)!;
+      const onDf = /\bdefussQuery\b/.test(src);
+      if (DF_ADOPTION_LEGACY.includes(c)) {
+        if (onDf) adoption.push(`${c}: uses df$ now - remove it from DF_ADOPTION_LEGACY`);
+        else adoptionDebt.push(c);
+      } else if (!onDf) adoption.push(`${c}: JS component without df$ - import defussQuery from the shared state-api module and select/write through it`);
+      const e2ePath = join(ROOT, 'tests', 'e2e', `${c}.e2e.ts`);
+      const proven = hasRender(c, src) && existsSync(e2ePath) && /\bassertRenderContract\s*\(/.test(readFileSync(e2ePath, 'utf8'));
+      if (RENDER_LEGACY.includes(c)) {
+        if (proven) renderProblems.push(`${c}: render() contract in place - remove it from RENDER_LEGACY`);
+        else renderDebt.push(c);
+      } else if (!proven)
+        renderProblems.push(`${c}: ${hasRender(c, src) ? 'tests/e2e/' + c + '.e2e.ts lacks an assertRenderContract() check' : 'its Api has no render(state)'}`);
+    }
+    for (const c of DF_ADOPTION_LEGACY) if (!jsComponents.includes(c)) adoption.push(`${c}: listed in DF_ADOPTION_LEGACY but ships no JS - remove it`);
+    for (const c of RENDER_LEGACY) if (!jsComponents.includes(c)) renderProblems.push(`${c}: listed in RENDER_LEGACY but ships no JS - remove it`);
+    // the store contract (AGENTS.md "State through stores"): the State API is
+    // componentState() + bindComponent() - a defuss-store store per element
+    // (el.store) the component's state lives in; the e2e's
+    // assertRenderContract() call proves it (required by `render() contract`)
+    const storeProblems = jsComponents.flatMap((c) => {
+      const src = sources.get(`src/components/${c}/${c}.ts`)!;
+      const miss = [/\bcomponentState\s*(<[^>]*>)?\(/.test(src) ? '' : 'componentState()', /\bbindComponent\(/.test(src) ? '' : 'bindComponent()'].filter(Boolean);
+      return miss.length ? [`${c}: no ${miss.join(' / ')} - its state must live in a store`] : [];
+    });
+    // the API section (AGENTS.md "API section"): every JS component's public
+    // surface - the State API, the registry, its df$.shadcn namespace, an
+    // instance interface, its events - read from the source
+    // (src/documentation/lib/component-api.ts), described by the source's JSDoc,
+    // generated into the skill's ## API section (bun run api-docs) and
+    // rendered on its page by <ApiSection>. el.api / el.store come only from
+    // bindComponent() - or, replaced by an instance, from a declared
+    // interface <Name>Instance the docs can read.
+    const apiProblems = jsComponents.flatMap((c) => {
+      const src = sources.get(`src/components/${c}/${c}.ts`)!;
+      const api = readComponentApi(c, src);
+      const out = apiGaps(api).map((g) => `${c}: ${g}`);
+      const skillFile = join(ROOT, 'src', 'components', c, 'component-skill.md');
+      const skill = existsSync(skillFile) ? readFileSync(skillFile, 'utf8') : '';
+      const section = apiSectionOf(skill);
+      if (!section) out.push(`${c}: component-skill.md has no ## API section`);
+      else if (section !== apiMarkdown(api)) out.push(`${c}: the skill's ## API section lags the source`);
+      else if (skill.indexOf('\n## States') < 0 || skill.indexOf('\n## API') < skill.indexOf('\n## States')) out.push(`${c}: ## API must follow ## States`);
+      const pageFile = join(ROOT, 'src', 'documentation', 'pages', `${c}.mdx`);
+      if (existsSync(pageFile)) {
+        const page = readFileSync(pageFile, 'utf8');
+        const at = page.search(new RegExp(`<ApiSection\\s+component="${c}"`));
+        if (at < 0) out.push(`${c}: pages/${c}.mdx has no <ApiSection component="${c}" />`);
+        else if (page.indexOf('<StatesSection') < 0 || at < page.indexOf('<StatesSection')) out.push(`${c}: <ApiSection> must follow <StatesSection> on its page`);
+      }
+      const code = src.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
+      if (/\.store\s*=[^=]/.test(code)) out.push(`${c}: assigns .store itself - el.store comes from bindComponent()`);
+      if (/\.api\s*=[^=]/.test(code) && !api.instance) out.push(`${c}: replaces el.api without a declared interface <Name>Instance`);
+      return out;
+    });
+    check('API docs (JS components)', apiProblems, 'describe every df$.shadcn member with JSDoc in the .ts and every event with a comment directly above the line that creates it (new CustomEvent), then `bun run api-docs` (rewrites each skill\'s ## API section below ## States) and put <ApiSection component="name" /> after </StatesSection> on the page (AGENTS.md "API section")');
+    check('store contract (JS components)', storeProblems, 'build the State API with componentState({ component, states, apply, read?, markup? }) and bind each element with bindComponent(el, api) - el.store + el.api (AGENTS.md "State through stores"; toggle.ts is the reference)');
+    check('df$ adoption (JS components)', adoption, 'every JS component imports defussQuery (shared state-api module) and does its DOM work through it; DF_ADOPTION_LEGACY in scripts/lib/dom-discipline.ts only shrinks');
+    check(`df$ adoption debt (${adoptionDebt.length} components)`, adoptionDebt.length ? [adoptionDebt.join(', ')] : [], 'migrate each to df$ (toggle.ts / accordion.ts) and drop it from DF_ADOPTION_LEGACY', true);
+    check(
+      'render() contract',
+      renderProblems,
+      'expose {name}Api.render(state) - snapshot the authored markup at init with elementModel(el), return it in getState() as model, render with renderModel(state.model, el => applyMarkup(el, state.name, …)) where applyMarkup is the SAME function setState uses; bind el.api.render; prove it with assertRenderContract(page, selector, states) (tests/e2e/lib/render-contract.ts) in the component e2e (AGENTS.md "State API" → render; toggle/accordion are the references)',
+    );
+    check(`render() contract debt (${renderDebt.length} components)`, renderDebt.length ? [renderDebt.join(', ')] : [], 'add render() + the e2e round trip to each, one component per commit, and drop it from RENDER_LEGACY', true);
   }
 
   // 28c. runtime provenance (§6): core.js/all.js embed defuss-morph +

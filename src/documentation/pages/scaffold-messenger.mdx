@@ -944,14 +944,16 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
     };
     dlg.addEventListener('cancel', () => { clearTimeout(ring); clearInterval(timer); });
 
-    // the list keeps the width you gave it - per viewer, best effort
+    // the list keeps the width you gave it - per viewer: a persisted store
+    // (df$.store - memory when storage is blocked), up once all.js has run
     const split = app.querySelector('.wa-split');
-    const KEY = 'relay-list-width';
-    let saved = null;
-    try { saved = localStorage.getItem(KEY); } catch {}
-    const restore = () => { if (saved && split.dataset.width !== saved) split.dataset.width = saved; };
-    if (saved) { if (document.readyState === 'loading') addEventListener('DOMContentLoaded', restore); else setTimeout(restore); }
-    new MutationObserver(() => { try { localStorage.setItem(KEY, split.dataset.width); } catch {} }).observe(split, { attributes: true, attributeFilter: ['data-width'] });
+    const keepWidth = () => {
+      const width = globalThis.df$?.store?.persisted('relay-list-width', '', { migrate: String });
+      if (!width) return;
+      if (width.value && split.dataset.width !== width.value) split.dataset.width = width.value;
+      new MutationObserver(() => width.set(split.dataset.width || '')).observe(split, { attributes: true, attributeFilter: ['data-width'] });
+    };
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', keepWidth); else setTimeout(keepWidth);
 
     // dark mode from the settings switch
     const dark = app.querySelector('[data-wa-dark]');

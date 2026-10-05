@@ -1,0 +1,402 @@
+---
+title: "Illustrative · Kanban"
+description: "Kanban board snapshots with the diagram component - columns with WIP chips, card states blocked / waiting / done, a breached limit; column by column and as a week-over-week delta."
+slug: "diagram-kanban"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-kanban" title="Illustrative · Kanban" component="diagram">
+  A state census, not a flow - so no connectors. Columns are groups (<code>data-shape="column"</code>) with a WIP chip (<code>.diagram-group-meta</code>, <code>data-over</code> when breached); cards are nodes with <code>data-status="blocked|waiting|done"</code> - each state is a dash, a bar or a check, not just a color.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Payments team board" component="diagram" hint="A badge (data-badge) says how long the blocked card has been stuck."
+<figure class="diagram" id="dg-kanban" data-type="kanban" aria-label="Team board with WIP limits">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Kanban</span>
+    <span class="diagram-title">Payments team · week 32</span>
+    <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
+      <div class="diagram-node" data-node="tax-rules-for-ch">
+        <span class="diagram-node-name">Tax rules for CH</span>
+        <span class="diagram-node-meta">PAY-212</span>
+      </div>
+      <div class="diagram-node" data-node="retry-webhooks">
+        <span class="diagram-node-name">Retry webhooks</span>
+        <span class="diagram-node-meta">PAY-207</span>
+      </div>
+      <div class="diagram-node" data-node="vendor-sso" data-status="waiting">
+        <span class="diagram-node-name">Vendor SSO</span>
+        <span class="diagram-node-meta">waiting on vendor</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column" data-step-label="Over the limit" data-over>
+      <span class="diagram-group-label">Doing <span class="diagram-group-meta">4/3</span></span>
+      <div class="diagram-node" data-node="3-d-secure-v2">
+        <span class="diagram-node-name">3-D Secure v2</span>
+        <span class="diagram-node-meta">PAY-198 · Mia</span>
+      </div>
+      <div class="diagram-node" data-node="refund-api" data-status="blocked" data-badge="blocked 3d">
+        <span class="diagram-node-name">Refund API</span>
+        <span class="diagram-node-meta">PAY-201 · Jon</span>
+      </div>
+      <div class="diagram-node" data-node="invoice-pdfs">
+        <span class="diagram-node-name">Invoice PDFs</span>
+        <span class="diagram-node-meta">PAY-205 · Ana</span>
+      </div>
+      <div class="diagram-node" data-node="ledger-export">
+        <span class="diagram-node-name">Ledger export</span>
+        <span class="diagram-node-meta">PAY-209 · Sam</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Review <span class="diagram-group-meta">1/2</span></span>
+      <div class="diagram-node" data-node="currency-rounding">
+        <span class="diagram-node-name">Currency rounding</span>
+        <span class="diagram-node-meta">PAY-190</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Done <span class="diagram-group-meta">12</span></span>
+      <div class="diagram-node" data-node="apple-pay" data-status="done">
+        <span class="diagram-node-name">Apple Pay</span>
+        <span class="diagram-node-meta">PAY-180</span>
+      </div>
+      <div class="diagram-node" data-node="sepa-mandates" data-status="done">
+        <span class="diagram-node-name">SEPA mandates</span>
+        <span class="diagram-node-meta">PAY-176</span>
+      </div>
+    </div>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="external">Waiting / external</li>
+    <li data-swatch="accent">Blocked</li>
+  </ul>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Column by column" component="diagram" hint="data-step on each column group; its cards come with it."
+<figure class="diagram" id="dg-kanban-steps" data-type="kanban" data-steps data-autoplay aria-label="Team board with WIP limits">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Kanban</span>
+    <span class="diagram-title">Payments team · week 32</span>
+    <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+    <div class="diagram-group" data-shape="column" data-step="1">
+      <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
+      <div class="diagram-node" data-node="tax-rules-for-ch">
+        <span class="diagram-node-name">Tax rules for CH</span>
+        <span class="diagram-node-meta">PAY-212</span>
+      </div>
+      <div class="diagram-node" data-node="retry-webhooks">
+        <span class="diagram-node-name">Retry webhooks</span>
+        <span class="diagram-node-meta">PAY-207</span>
+      </div>
+      <div class="diagram-node" data-node="vendor-sso" data-status="waiting">
+        <span class="diagram-node-name">Vendor SSO</span>
+        <span class="diagram-node-meta">waiting on vendor</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column" data-step="2" data-step-label="Over the limit" data-over>
+      <span class="diagram-group-label">Doing <span class="diagram-group-meta">4/3</span></span>
+      <div class="diagram-node" data-node="3-d-secure-v2">
+        <span class="diagram-node-name">3-D Secure v2</span>
+        <span class="diagram-node-meta">PAY-198 · Mia</span>
+      </div>
+      <div class="diagram-node" data-node="refund-api" data-status="blocked" data-badge="blocked 3d">
+        <span class="diagram-node-name">Refund API</span>
+        <span class="diagram-node-meta">PAY-201 · Jon</span>
+      </div>
+      <div class="diagram-node" data-node="invoice-pdfs">
+        <span class="diagram-node-name">Invoice PDFs</span>
+        <span class="diagram-node-meta">PAY-205 · Ana</span>
+      </div>
+      <div class="diagram-node" data-node="ledger-export">
+        <span class="diagram-node-name">Ledger export</span>
+        <span class="diagram-node-meta">PAY-209 · Sam</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column" data-step="3">
+      <span class="diagram-group-label">Review <span class="diagram-group-meta">1/2</span></span>
+      <div class="diagram-node" data-node="currency-rounding">
+        <span class="diagram-node-name">Currency rounding</span>
+        <span class="diagram-node-meta">PAY-190</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column" data-step="4">
+      <span class="diagram-group-label">Done <span class="diagram-group-meta">12</span></span>
+      <div class="diagram-node" data-node="apple-pay" data-status="done">
+        <span class="diagram-node-name">Apple Pay</span>
+        <span class="diagram-node-meta">PAY-180</span>
+      </div>
+      <div class="diagram-node" data-node="sepa-mandates" data-status="done">
+        <span class="diagram-node-name">SEPA mandates</span>
+        <span class="diagram-node-meta">PAY-176</span>
+      </div>
+    </div>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="external">Waiting / external</li>
+    <li data-swatch="accent">Blocked</li>
+  </ul>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Kanban, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-kanban-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-kanban-live" data-interactive data-type="kanban" aria-label="Team board with WIP limits">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Kanban</span>
+    <span class="diagram-title">Payments team · week 32</span>
+    <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
+      <div class="diagram-node" data-node="tax-rules-for-ch">
+        <span class="diagram-node-name">Tax rules for CH</span>
+        <span class="diagram-node-meta">PAY-212</span>
+      </div>
+      <div class="diagram-node" data-node="retry-webhooks">
+        <span class="diagram-node-name">Retry webhooks</span>
+        <span class="diagram-node-meta">PAY-207</span>
+      </div>
+      <div class="diagram-node" data-node="vendor-sso" data-status="waiting">
+        <span class="diagram-node-name">Vendor SSO</span>
+        <span class="diagram-node-meta">waiting on vendor</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column" data-step-label="Over the limit" data-over>
+      <span class="diagram-group-label">Doing <span class="diagram-group-meta">4/3</span></span>
+      <div class="diagram-node" data-node="3-d-secure-v2">
+        <span class="diagram-node-name">3-D Secure v2</span>
+        <span class="diagram-node-meta">PAY-198 · Mia</span>
+      </div>
+      <div class="diagram-node" data-node="refund-api" data-status="blocked" data-badge="blocked 3d">
+        <span class="diagram-node-name">Refund API</span>
+        <span class="diagram-node-meta">PAY-201 · Jon</span>
+      </div>
+      <div class="diagram-node" data-node="invoice-pdfs">
+        <span class="diagram-node-name">Invoice PDFs</span>
+        <span class="diagram-node-meta">PAY-205 · Ana</span>
+      </div>
+      <div class="diagram-node" data-node="ledger-export">
+        <span class="diagram-node-name">Ledger export</span>
+        <span class="diagram-node-meta">PAY-209 · Sam</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Review <span class="diagram-group-meta">1/2</span></span>
+      <div class="diagram-node" data-node="currency-rounding">
+        <span class="diagram-node-name">Currency rounding</span>
+        <span class="diagram-node-meta">PAY-190</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Done <span class="diagram-group-meta">12</span></span>
+      <div class="diagram-node" data-node="apple-pay" data-status="done">
+        <span class="diagram-node-name">Apple Pay</span>
+        <span class="diagram-node-meta">PAY-180</span>
+      </div>
+      <div class="diagram-node" data-node="sepa-mandates" data-status="done">
+        <span class="diagram-node-name">SEPA mandates</span>
+        <span class="diagram-node-meta">PAY-176</span>
+      </div>
+    </div>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="external">Waiting / external</li>
+    <li data-swatch="accent">Blocked</li>
+  </ul>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Kanban, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-kanban-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-kanban-edit" data-interactive data-type="kanban" aria-label="Team board with WIP limits">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Kanban</span>
+        <span class="diagram-title">Payments team · week 32</span>
+        <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+        <div class="diagram-group" data-shape="column">
+          <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
+          <div class="diagram-node" data-node="tax-rules-for-ch">
+            <span class="diagram-node-name">Tax rules for CH</span>
+            <span class="diagram-node-meta">PAY-212</span>
+          </div>
+          <div class="diagram-node" data-node="retry-webhooks">
+            <span class="diagram-node-name">Retry webhooks</span>
+            <span class="diagram-node-meta">PAY-207</span>
+          </div>
+          <div class="diagram-node" data-node="vendor-sso" data-status="waiting">
+            <span class="diagram-node-name">Vendor SSO</span>
+            <span class="diagram-node-meta">waiting on vendor</span>
+          </div>
+        </div>
+        <div class="diagram-group" data-shape="column" data-step-label="Over the limit" data-over>
+          <span class="diagram-group-label">Doing <span class="diagram-group-meta">4/3</span></span>
+          <div class="diagram-node" data-node="3-d-secure-v2">
+            <span class="diagram-node-name">3-D Secure v2</span>
+            <span class="diagram-node-meta">PAY-198 · Mia</span>
+          </div>
+          <div class="diagram-node" data-node="refund-api" data-status="blocked" data-badge="blocked 3d">
+            <span class="diagram-node-name">Refund API</span>
+            <span class="diagram-node-meta">PAY-201 · Jon</span>
+          </div>
+          <div class="diagram-node" data-node="invoice-pdfs">
+            <span class="diagram-node-name">Invoice PDFs</span>
+            <span class="diagram-node-meta">PAY-205 · Ana</span>
+          </div>
+          <div class="diagram-node" data-node="ledger-export">
+            <span class="diagram-node-name">Ledger export</span>
+            <span class="diagram-node-meta">PAY-209 · Sam</span>
+          </div>
+        </div>
+        <div class="diagram-group" data-shape="column">
+          <span class="diagram-group-label">Review <span class="diagram-group-meta">1/2</span></span>
+          <div class="diagram-node" data-node="currency-rounding">
+            <span class="diagram-node-name">Currency rounding</span>
+            <span class="diagram-node-meta">PAY-190</span>
+          </div>
+        </div>
+        <div class="diagram-group" data-shape="column">
+          <span class="diagram-group-label">Done <span class="diagram-group-meta">12</span></span>
+          <div class="diagram-node" data-node="apple-pay" data-status="done">
+            <span class="diagram-node-name">Apple Pay</span>
+            <span class="diagram-node-meta">PAY-180</span>
+          </div>
+          <div class="diagram-node" data-node="sepa-mandates" data-status="done">
+            <span class="diagram-node-name">SEPA mandates</span>
+            <span class="diagram-node-meta">PAY-176</span>
+          </div>
+        </div>
+      </div>
+      <ul class="diagram-legend">
+        <li data-swatch="external">Waiting / external</li>
+        <li data-swatch="accent">Blocked</li>
+      </ul>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-kanban-edit-panel" aria-labelledby="dg-kanban-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-kanban-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-kanban-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-kanban-edit');
+    const grid = document.getElementById('dg-kanban-edit-grid');
+    const title = document.getElementById('dg-kanban-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Week 32 → 33" component="diagram" hint="A card that moved columns is a removed + added pair with notes - the identity is its key (PAY-209)."
+<figure class="diagram" id="dg-kanban-delta" data-type="kanban" data-delta aria-label="The board a week later">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Kanban · week 32 → 33</span>
+    <span class="diagram-title">The swarm worked</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3;--diagram-gap-x:1rem">
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Doing <span class="diagram-group-meta">3/3</span></span>
+      <div class="diagram-node" data-node="3-d-secure-v2">
+        <span class="diagram-node-name">3-D Secure v2</span>
+        <span class="diagram-node-meta">PAY-198</span>
+      </div>
+      <div class="diagram-node" data-node="refund-api" data-change="changed" data-change-note="unblocked: legal signed off">
+        <span class="diagram-node-name">Refund API</span>
+        <span class="diagram-node-meta">PAY-201</span>
+      </div>
+      <div class="diagram-node" data-node="ledger-export" data-change="removed" data-change-note="moved to Review">
+        <span class="diagram-node-name">Ledger export</span>
+        <span class="diagram-node-meta">PAY-209</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Review <span class="diagram-group-meta">2/2</span></span>
+      <div class="diagram-node" data-node="currency-rounding">
+        <span class="diagram-node-name">Currency rounding</span>
+        <span class="diagram-node-meta">PAY-190</span>
+      </div>
+      <div class="diagram-node" data-node="ledger-export" data-change="added" data-change-note="from Doing">
+        <span class="diagram-node-name">Ledger export</span>
+        <span class="diagram-node-meta">PAY-209</span>
+      </div>
+    </div>
+    <div class="diagram-group" data-shape="column">
+      <span class="diagram-group-label">Done <span class="diagram-group-meta">13</span></span>
+      <div class="diagram-node" data-node="apple-pay" data-status="done">
+        <span class="diagram-node-name">Apple Pay</span>
+        <span class="diagram-node-meta">PAY-180</span>
+      </div>
+      <div class="diagram-node" data-node="invoice-pdfs" data-tone="accent" data-status="done" data-change="added" data-change-note="shipped">
+        <span class="diagram-node-name">Invoice PDFs</span>
+        <span class="diagram-node-meta">PAY-205</span>
+      </div>
+    </div>
+  </div>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

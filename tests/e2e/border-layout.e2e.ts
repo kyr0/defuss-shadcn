@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: a border layout is five grid regions whose sides are Resizers. These
@@ -110,7 +111,7 @@ try {
     await page.dblclick('#e > .resizer-handle');
     assert.equal(await page.$eval('#e-pane', (p) => getComputedStyle(p).display), 'none');
     assert.equal(await page.$eval('#e > .resizer-handle', (h) => getComputedStyle(h).display), 'block', 'divider stays');
-    assert.deepEqual(await page.evaluate(() => (document.getElementById('bl') as any).api.getState()), { name: 'collapsed', config: { regions: ['east'] } });
+    assert.deepEqual(await page.evaluate(() => { const { name, config } = (document.getElementById('bl') as any).api.getState(); return { name, config }; }), { name: 'collapsed', config: { regions: ['east'] } });
     await page.focus('#e > .resizer-handle');
     await page.keyboard.press('Enter');
     assert.notEqual(await page.$eval('#e-pane', (p) => getComputedStyle(p).display), 'none');
@@ -171,6 +172,10 @@ try {
     assert.equal(await page.$eval('#sv-w', (r) => r.hasAttribute('data-collapsed')), true, 'folded restored');
     await page.evaluate(() => localStorage.clear());
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.border-layout[id]', ['default','collapsed'], { runtimeAttrs: ['style','data-max-w','data-max-h','data-width','data-height'], runtimeOwned: '.resizer-handle' });
+  });
+
 } finally {
   await browser.close();
   server.stop?.();

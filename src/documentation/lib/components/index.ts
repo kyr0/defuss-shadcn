@@ -10,6 +10,7 @@ export { SkillPanel } from './skill-panel';
 export { Example, ExampleLabel, ExampleHint, ExampleCode } from './example';
 export { SourceFiles, SourceNote } from './source-files';
 export { StatesSection } from './states-section';
+export { ApiSection } from './api-section';
 export { StatsClaim, StatsCards, CssOnlyStat, ComponentJsSplit } from './stats-claim';
 export { ChangelogEntries } from './changelog-entries';
 export { ArchBody } from './arch-body';

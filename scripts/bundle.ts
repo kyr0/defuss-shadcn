@@ -1,8 +1,11 @@
 #!/usr/bin/env bun
 import { mkdirSync, readdirSync, readFileSync, existsSync, writeFileSync } from 'node:fs';
+import { viteIgnore } from './lib/vite-ignore.ts';
 import { join } from 'node:path';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
+import { appPlans } from './lib/apps-files.ts';
+import { EXTRA_BUNDLES, inAllBundle } from './lib/bundles.ts';
 
 /**
  * Why: doc pages (and CDN consumers who want everything) used to carry 68
@@ -67,6 +70,17 @@ if (names.length === 0) {
   process.exit(1);
 }
 
+// re-add the vite-ignore hint to dynamic imports of a computed specifier
+// (Bun.build strips comments) - and shift the sibling .map to match
+function restoreViteIgnore(file: string): void {
+  const mapFile = `${file}.map`;
+  const map = existsSync(mapFile) ? JSON.parse(readFileSync(mapFile, 'utf8')) : null;
+  const out = viteIgnore(readFileSync(file, 'utf8'), map?.mappings);
+  if (!out.count) return;
+  writeFileSync(file, out.code);
+  if (map) writeFileSync(mapFile, JSON.stringify({ ...map, mappings: out.mappings }));
+}
+
 /** stamp the sourceMappingURL comment - must be the LAST line of the file */
 function linkSourceMap(file: string, mapName: string): void {
   writeFileSync(file, `${readFileSync(file, 'utf8').trimEnd()}\n//# sourceMappingURL=${mapName}\n`);
@@ -96,7 +110,8 @@ stampProvenance(join(DIST_COMPONENTS, 'core.js')); // §6 provenance pointer
 //    df$.shadcn.shared before any component evaluates - §2.6 step 4), then
 //    one side-effect import per interactive component (each module
 //    self-initializes + registers its own MutationObserver on import).
-const jsNames = names.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
+// components of an extra bundle (scripts/lib/bundles.ts) stay out of all.*
+const jsNames = names.filter((n) => inAllBundle(n) && existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
 mkdirSync(TMP, { recursive: true });
 const entry = join(TMP, 'all-entry.ts');
 writeFileSync(
@@ -119,6 +134,11 @@ if (!result.success) {
   for (const log of result.logs) console.error(`  ${log}`);
   process.exit(1);
 }
+// Bun.build drops comments - also the `/* @vite-ignore */` the sources put in
+// a dynamic import() of a runtime URL (mermaid's vendor build). Without it a
+// consumer's Vite warns "The above dynamic import cannot be analyzed" for
+// all.js; put it back on every import() whose argument is not a literal.
+restoreViteIgnore(join(DIST_COMPONENTS, 'all.js'));
 // Bun.build writes all.js.map but only stamps a debugId comment - link the map
 // explicitly (must be the LAST line of the file)
 linkSourceMap(join(DIST_COMPONENTS, 'all.js'), 'all.js.map');
@@ -151,7 +171,7 @@ writeFileSync(join(DIST_COMPONENTS, 'core.css'), `${coreCss}\n`);
 // 2. CSS bundle: every component stylesheet, alphabetical, with a header per
 //    section so the readable file stays navigable.
 const css = names
-  .filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.css`)))
+  .filter((n) => inAllBundle(n) && existsSync(join(SRC_COMPONENTS, n, `${n}.css`)))
   .map(
     (n) =>
       `/* ── components/${n}/${n}.css ── */\n` +
@@ -159,6 +179,67 @@ const css = names
   )
   .join('\n\n');
 writeFileSync(join(DIST_COMPONENTS, 'all.css'), `${css}\n`);
+
+// 2b. the extra bundles (scripts/lib/bundles.ts): components too heavy or
+//     too specialised for all.* - e.g. wysiwyg.css + wysiwyg.js, the HTML
+//     Preview Editor. ONLY the members: no core payload, no shared layer -
+//     like a per-component .js, the bundle binds to the df$ runtime all.js /
+//     core.js installed, so a page loads it after one of them.
+for (const [bundle, members] of Object.entries(EXTRA_BUNDLES)) {
+  const bundleEntry = join(TMP, `${bundle}-entry.ts`);
+  // from the BOUND dist files (build.ts replaced their shared import with
+  // the df$.shadcn.shared binding): bundling the src would embed a second
+  // copy of the shared layer instead of using the installed one
+  const scripts = members.filter((n) => existsSync(join(DIST_COMPONENTS, n, `${n}.js`)));
+  writeFileSync(bundleEntry, scripts.map((n) => `import '../dist/components/${n}/${n}.js';`).join('\n') + '\n');
+  const built = await Bun.build({ entrypoints: [bundleEntry], outdir: DIST_COMPONENTS, naming: `${bundle}.js`, format: 'esm', target: 'browser', sourcemap: 'external', minify: false });
+  if (!built.success) {
+    console.error(`bundle: ${bundle} Bun.build failed:`);
+    for (const log of built.logs) console.error(`  ${log}`);
+    process.exit(1);
+  }
+  restoreViteIgnore(join(DIST_COMPONENTS, `${bundle}.js`));
+  linkSourceMap(join(DIST_COMPONENTS, `${bundle}.js`), `${bundle}.js.map`);
+  writeFileSync(
+    join(DIST_COMPONENTS, `${bundle}.css`),
+    members
+      .filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.css`)))
+      .map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(join(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd())
+      .join('\n\n') + '\n',
+  );
+  console.log(`bundle: ${bundle}.js + ${bundle}.css (${members.join(', ')}) - kept out of all.*`);
+}
+
+// 3. one bundle per Application Scaffold (scripts/lib/apps.ts): core + exactly
+//    the components the app's markup needs - dist/apps/{app}.css + .js. The
+//    full-screen page app-{app}.html loads only these (build-docs.ts), the
+//    scaffold-lean e2e proves it renders and behaves as on all.css + all.js,
+//    and stats.json publishes the measured sizes: what a real app ships.
+const DIST_APPS = join(ROOT, 'dist', 'apps');
+mkdirSync(DIST_APPS, { recursive: true });
+const plans = appPlans();
+for (const app of plans) {
+  const appEntry = join(TMP, `app-${app.name}-entry.ts`);
+  const scripts = app.components.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
+  writeFileSync(appEntry, [`import '../src/core/index.ts';`, ...scripts.map((n) => `import '../src/components/${n}/${n}.ts';`)].join('\n') + '\n');
+  const built = await Bun.build({ entrypoints: [appEntry], outdir: DIST_APPS, naming: `${app.name}.js`, format: 'esm', target: 'browser', sourcemap: 'external', minify: false });
+  if (!built.success) {
+    console.error(`bundle: app ${app.name} Bun.build failed:`);
+    for (const log of built.logs) console.error(`  ${log}`);
+    process.exit(1);
+  }
+  const file = join(DIST_APPS, `${app.name}.js`);
+  restoreViteIgnore(file);
+  linkSourceMap(file, `${app.name}.js.map`);
+  stampProvenance(file);
+  const sheets = app.components.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.css`)));
+  writeFileSync(
+    join(DIST_APPS, `${app.name}.css`),
+    `/* ${app.slug}: core.css + the ${app.components.length} components its markup uses (${app.components.join(', ')}) - generated by scripts/bundle.ts */\n${coreCss}\n\n` +
+      sheets.map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(join(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd()).join('\n\n') + '\n',
+  );
+}
+console.log(`bundle: ${plans.length} app bundles → dist/apps/ (${plans.map((p) => `${p.name} ${p.components.length}`).join(', ')})`);
 
 console.log(
   `bundle: core.js (+ map, morph+query+shared) + core.css (${CORE_CSS_SHEETS.length} theme sheets) → all.js (+ map, core first) + all.css (${names.length} component CSS)`,

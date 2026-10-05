@@ -24,10 +24,20 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, anim } = __df$shared;
+const { defussGlobals, defussQuery, anim, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const toastStates = ['default'];
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+    // one state, and its markup is the region as authored: the toasts inside
+    // are created and dismissed at runtime (runtime-owned, see the e2e)
+}
 /**
  * UI side of setState: 'default' dismisses every visible toast, returning
  * the region to its authored (empty) state.
@@ -35,28 +45,25 @@ const toastStates = ['default'];
 function triggerStateChange(container, stateName, _config) {
     if (stateName !== 'default')
         return;
-    container.querySelectorAll('.toast').forEach((el) => toastDismiss(el));
+    dfDollar(container).find('.toast').toArray().forEach((el) => toastDismiss(el));
 }
 /** Registry-level API; pass the container explicitly. Unknown names throw. */
-export const toastApi = {
-    setState(container, stateName, config = {}) {
-        if (!toastStates.includes(stateName)) {
-            throw new Error(`toast: unknown state "${stateName}" (supported: ${toastStates.join(', ')})`);
-        }
-        triggerStateChange(container, stateName, config);
-        // state lives on the ELEMENT, not the module (one region per page, but
+export const toastApi = componentState({
+    component: 'toast',
+    states: toastStates,
+    apply: (container, state) => {
+        triggerStateChange(container, state.name, state.config);
         // SPA navigation may replace it)
-        container.dataset.stateName = stateName;
-        container._stateConfig = config;
     },
-    getState(container) {
+    read: (container, state) => {
         return {
             name: container.dataset.stateName || 'default',
             // live count - reflects df$.toast.show() and auto-dismiss, not just setState
-            config: { ...container._stateConfig, count: container.querySelectorAll('.toast').length },
+            config: { ...state.config, count: dfDollar(container).find('.toast').toArray().length },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.toastApi = toastApi;
 df$.toastStates = toastStates;
 const DURATION = 4000;
@@ -65,7 +72,7 @@ const MAX_VISIBLE = 3;
 // click listener can find them - dynamically created toasts never get their
 // own listeners, so no per-element cleanup is ever needed.
 const toastCallbacks = new WeakMap();
-let toastContainer = document.getElementById('toast-container');
+let toastContainer = dfDollar('#toast-container').get(0);
 if (!toastContainer) {
     toastContainer = document.createElement('div');
     toastContainer.id = 'toast-container';
@@ -79,7 +86,7 @@ if (!toastContainer) {
  * CSS pins each to the corner and reads --toast-stack, which we measure here
  * (px of newer toasts below it + 0.5rem gaps, matching the container gap). */
 const stackToasts = (container) => {
-    const toasts = [...container.querySelectorAll('.toast:not([data-leaving])')];
+    const toasts = [...dfDollar(container).find('.toast:not([data-leaving])').toArray()];
     // pile (configure({ stack: 'pile' })): only the newest shows, the others
     // sit behind it - drawn as the shapes.css stack-* sheets on the newest -
     // until the pointer / focus enters the pile, which fans it out as a list
@@ -230,7 +237,7 @@ const toastCreate = (options) => {
     toastCallbacks.set(el, { onDismiss, action });
     if (duration !== Infinity)
         setTimeout(() => { toastDismiss(el, onDismiss); }, duration);
-    const toasts = toastContainer.querySelectorAll('.toast');
+    const toasts = dfDollar(toastContainer).find('.toast').toArray();
     // a pile holds more (they are sheets, not screen space)
     if (toasts.length > (toastContainer.dataset.stack === 'pile' ? 6 : MAX_VISIBLE))
         toastDismiss(toasts[0]);
@@ -241,13 +248,10 @@ const toastCreate = (options) => {
 // with data-init and re-run by the MutationObserver, per the component
 // lifecycle contract (AGENTS.md) - survives SPA navigation replacing the body.
 function init() {
-    document.querySelectorAll('#toast-container:not([data-init])').forEach((container) => {
+    dfDollar('#toast-container:not([data-init])').toArray().forEach((container) => {
         container.dataset.init = '';
-        // bind-scope the api per region: `$('#toast-container').api.setState('default')`
-        container.api = {
-            setState: (stateName, config) => toastApi.setState(container, stateName, config),
-            getState: () => toastApi.getState(container),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(container, toastApi);
         // a pile fans out while the pointer or focus is inside it
         const expand = (on) => {
             if (container.dataset.stack !== 'pile')
@@ -304,11 +308,17 @@ const toastConfigure = (opts = {}) => {
 };
 df$.toast = {
     configure: toastConfigure,
+    /** Show a toast - a title string or { title, description, variant, duration, action … }; returns its element. */
     show: toastCreate,
+    /** show() as a success toast. */
     success: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'success' })),
+    /** show() as a warning toast. */
     warning: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'warning' })),
+    /** show() as an info toast. */
     info: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'info' })),
+    /** show() as an error (destructive) toast. */
     error: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'destructive' })),
-    dismiss: () => { toastContainer.querySelectorAll('.toast').forEach((el) => { toastDismiss(el); }); }
+    /** Dismiss every toast. */
+    dismiss: () => { dfDollar(toastContainer).find('.toast').toArray().forEach((el) => { toastDismiss(el); }); }
 };
 //# sourceMappingURL=toast.js.map

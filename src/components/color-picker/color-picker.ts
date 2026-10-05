@@ -7,13 +7,14 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const colorPickerStates = ['default'];
 
-const getInput = (picker) => picker.querySelector('input[type="color"]');
+const getInput = (picker) => dfDollar(picker).find('input[type="color"]').get(0);
 
 /** Notations the picker can report. The native input always holds #rrggbb;
  *  the display (and data-color-output fields) carry the chosen notation. */
@@ -93,15 +94,31 @@ function syncValue(picker) {
   if (!input) return;
   const format = formatOf(picker);
   const text = formatColor(input.value, format);
-  const display = picker.querySelector('.color-picker-value');
+  const display = dfDollar(picker).find('.color-picker-value').get(0);
   if (display && display.textContent !== text) display.textContent = text;
-  picker.querySelectorAll('input[data-color-output]').forEach((out) => {
+  dfDollar(picker).find('input[data-color-output]').toArray().forEach((out) => {
     if (out.value === text) return;
     out.value = text;
     out.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  const switcher = picker.querySelector('select.color-picker-format');
+  const switcher = dfDollar(picker).find('select.color-picker-format').get(0);
   if (switcher && switcher.value !== format) switcher.value = format;
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, config) {
+  // the one state's markup is the value label: { format } (an attribute -
+  // written only when it differs from the authored one) and { value } (the
+  // input's property) feed the same syncValue() the live picker runs
+  if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format) && config.format !== formatOf(el)) dfDollar(el).attr('data-format', config.format);
+  const input = getInput(el);
+  if (input && typeof config?.value === 'string') input.value = config.value;
+  syncValue(el);
 }
 
 /**
@@ -109,7 +126,8 @@ function syncValue(picker) {
  * native color input (input event dispatched so the display stays in sync).
  */
 function triggerStateChange(picker, config) {
-  if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format)) {
+  // only a format that differs is written: setState(getState()) changes nothing
+  if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format) && config.format !== formatOf(picker)) {
     picker.dataset.format = config.format;
     syncValue(picker);
   }
@@ -120,17 +138,11 @@ function triggerStateChange(picker, config) {
 }
 
 /** Registry-level API; pass the wrapper explicitly. Unknown names throw. */
-export const colorPickerApi = {
-  setState(picker, stateName, config = {}) {
-    if (!colorPickerStates.includes(stateName)) {
-      throw new Error(`color-picker: unknown state "${stateName}" (supported: ${colorPickerStates.join(', ')})`);
-    }
-    triggerStateChange(picker, config);
-    // state lives on the ELEMENT, not the module (many pickers per page)
-    picker.dataset.stateName = stateName;
-    picker._stateConfig = config;
-  },
-  getState(picker) {
+export const colorPickerApi = componentState({
+  component: 'color-picker',
+  states: colorPickerStates,
+  apply: (picker, state) => triggerStateChange(picker, state.config),
+  read: (picker, state) => {
     const input = getInput(picker);
     return {
       name: picker.dataset.stateName || 'default',
@@ -138,32 +150,30 @@ export const colorPickerApi = {
       // value: the native #rrggbb; formatted: the same colour in the
       // picker's notation (format)
       config: {
-        ...picker._stateConfig,
+        ...state.config,
         value: input ? input.value : '',
         format: formatOf(picker),
         formatted: input ? formatColor(input.value, formatOf(picker)) : '',
       },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.config),
+});
 
 df$.colorPickerApi = colorPickerApi;
 df$.colorPickerStates = colorPickerStates;
 
 function init() {
-  document.querySelectorAll('.color-picker:not([data-init])').forEach((picker) => {
+  dfDollar('.color-picker:not([data-init])').toArray().forEach((picker) => {
   picker.dataset.init = '';
-  // bind-scope the api per instance: `$('#theme-color').api.setState('default', { value: '#ff0000' })`
-  picker.api = {
-    setState: (stateName, config) => colorPickerApi.setState(picker, stateName, config),
-    getState: () => colorPickerApi.getState(picker),
-  };
-  const input = picker.querySelector('input[type="color"]');
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(picker, colorPickerApi);
+  const input = dfDollar(picker).find('input[type="color"]').get(0);
   if (!input) return;
   syncValue(picker);
   input.addEventListener('input', () => { syncValue(picker); });
   // user-switchable notation: <select class="color-picker-format">
-  picker.querySelector('select.color-picker-format')?.addEventListener('change', (e) => {
+  dfDollar(picker).find('select.color-picker-format').get(0)?.addEventListener('change', (e) => {
     picker.dataset.format = e.target.value;
     syncValue(picker);
   });

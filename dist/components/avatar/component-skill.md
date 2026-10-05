@@ -135,6 +135,14 @@ document.querySelector('#my-avatar').api.getState(); // { name: 'error', config:
 
 The registry global is `df$.shadcn.avatarApi` / `df$.shadcn.avatarStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.avatarApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.avatarStates` = `default`, `error`.
+
 ## Accessibility
 
 - `<img>` must have an `alt` attribute describing the user

@@ -20,8 +20,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 /** default = determinate at a value (as authored, or config.value);
  * indeterminate = no value (the spinning arc); complete = value == max. */
 const radialProgressStates = ['default', 'indeterminate', 'complete'];
@@ -56,7 +57,7 @@ function text(el) {
 /** Where the label goes: a .radial-progress-value child, or the ring itself
  * when it holds plain text (an icon or other markup is left alone). */
 function labelTarget(el) {
-    const slot = el.querySelector(':scope > .radial-progress-value');
+    const slot = dfDollar(el).find(':scope > .radial-progress-value').get(0);
     if (slot)
         return slot;
     return el.children.length === 0 ? el : null;
@@ -64,8 +65,12 @@ function labelTarget(el) {
 function paint(el) {
     const v = valueOf(el);
     const pct = v == null ? 0 : v / maxOf(el);
+    // no value, no --value: the indeterminate arc (CSS) never reads it, and a
+    // stale one would be markup no state describes
     if (v != null)
         el.style.setProperty('--value', String(round(pct * 100)));
+    else
+        el.style.removeProperty('--value');
     el.dataset.level = pct < 0.34 ? 'low' : pct < 0.67 ? 'mid' : 'high';
     el.toggleAttribute('data-complete', v != null && v >= maxOf(el));
     const target = labelTarget(el);
@@ -95,7 +100,9 @@ function commit(el, v) {
     setValue(el, v);
     const done = v >= maxOf(el);
     el.dataset.stateName = done ? 'complete' : 'default';
+    // Fires when the value changes - value, max and the fraction done (0 to 1).
     el.dispatchEvent(new CustomEvent('progress:change', { bubbles: true, detail: { value: v, max: maxOf(el), percent: v / maxOf(el) } }));
+    // Fires once when the value reaches max.
     if (done && before !== 'complete')
         el.dispatchEvent(new CustomEvent('progress:completed', { bubbles: true }));
 }
@@ -123,10 +130,30 @@ function tween(el, to, duration) {
 }
 const stepOf = (el) => parseFloat(el.dataset.step || '') || maxOf(el) / 10;
 const durationOf = (el) => parseFloat(el.dataset.duration || '') || 3000;
+/**
+ * The markup of a state, for render(): the same setValue()/paint() the live
+ * ring runs (everything they write lives on the ring itself), on a detached
+ * copy of the authored markup.
+ */
+function applyMarkup(el, stateName, config) {
+    const authored = valueOf(el);
+    el._authorValuetext = el.hasAttribute('aria-valuetext') && !el.dataset.format && !el.dataset.template;
+    if (!el.hasAttribute('aria-valuemin'))
+        dfDollar(el).attr('aria-valuemin', '0');
+    if (config?.max != null && Number(config.max) !== maxOf(el))
+        dfDollar(el).attr('aria-valuemax', String(config.max));
+    if (stateName === 'indeterminate') {
+        dfDollar(el).attr('aria-valuenow', null);
+        paint(el);
+    }
+    else
+        setValue(el, stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : authored ?? 0));
+}
 function triggerStateChange(el, stateName, config) {
     switch (stateName) {
         case 'default': {
-            if (config.max != null)
+            // only a max that differs is written: setState(getState()) changes nothing
+            if (config.max != null && Number(config.max) !== maxOf(el))
                 el.setAttribute('aria-valuemax', String(config.max));
             const to = clamp(el, config.value != null ? config.value : el._authored ?? 0);
             if (config.duration > 0)
@@ -154,22 +181,19 @@ function triggerStateChange(el, stateName, config) {
     }
 }
 /** Registry-level API; pass the .radial-progress explicitly. Unknown names throw. */
-export const radialProgressApi = {
-    setState(el, stateName, config = {}) {
-        if (!radialProgressStates.includes(stateName)) {
-            throw new Error(`radial-progress: unknown state "${stateName}" (supported: ${radialProgressStates.join(', ')})`);
-        }
-        el._stateConfig = config;
-        triggerStateChange(el, stateName, config);
-    },
-    getState(el) {
+export const radialProgressApi = componentState({
+    component: 'radial-progress',
+    states: radialProgressStates,
+    apply: (el, state) => triggerStateChange(el, state.name, state.config),
+    read: (el, state) => {
         const v = valueOf(el);
         return {
             name: el.dataset.stateName || 'default',
-            config: { ...el._stateConfig, value: v, max: maxOf(el), percent: v == null ? null : v / maxOf(el) },
+            config: { ...state.config, value: v, max: maxOf(el), percent: v == null ? null : v / maxOf(el) },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
 df$.radialProgressApi = radialProgressApi;
 df$.radialProgressStates = radialProgressStates;
 /** The shared progress command vocabulary (see progress.js). */
@@ -209,12 +233,10 @@ function run(el, command) {
 }
 const COMMANDS = ['reset', 'increment', 'decrement', 'complete', 'indeterminate', 'play', 'pause'];
 function init() {
-    document.querySelectorAll(`${SELECTOR}:not([data-init])`).forEach((el) => {
+    dfDollar(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
         el.dataset.init = '';
-        el.api = {
-            setState: (stateName, config) => radialProgressApi.setState(el, stateName, config),
-            getState: () => radialProgressApi.getState(el),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(el, radialProgressApi);
         el._authorValuetext = el.hasAttribute('aria-valuetext') && !el.dataset.format && !el.dataset.template;
         // CSS-only markup may carry only --value: adopt it as the value
         if (!el.hasAttribute('aria-valuenow') && el.style.getPropertyValue('--value') !== '' && el.getAttribute('role') === 'progressbar') {
@@ -222,6 +244,9 @@ function init() {
         }
         if (!el.hasAttribute('role'))
             el.setAttribute('role', 'progressbar');
+        // a progressbar's minimum is 0: stated once, at init (setValue() keeps it)
+        if (!el.hasAttribute('aria-valuemin'))
+            el.setAttribute('aria-valuemin', '0');
         el._authored = valueOf(el);
         const v = valueOf(el);
         el.dataset.stateName = v == null ? 'indeterminate' : v >= maxOf(el) ? 'complete' : 'default';
@@ -240,7 +265,7 @@ if (!('commandForElement' in HTMLButtonElement.prototype) && !document.__radialP
     document.__radialProgressCommandInit = true;
     document.addEventListener('click', (e) => {
         const btn = e.target instanceof Element ? e.target.closest('button[commandfor][command^="--"]') : null;
-        const el = btn && document.getElementById(btn.getAttribute('commandfor'));
+        const el = btn && dfDollar('#' + CSS.escape(btn.getAttribute('commandfor'))).get(0);
         if (el?.matches(`${SELECTOR}[data-init]`))
             run(el, btn.getAttribute('command').slice(2));
     });

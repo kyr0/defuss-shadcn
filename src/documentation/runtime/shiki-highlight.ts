@@ -112,17 +112,6 @@ highlightAll()
 // Expose globally for spec modal and SPA re-init
 docs.__shikiHighlightAll = highlightAll
 
-// CodeExample editors paint through the same engine and themes
-// (runtime/code-example.ts overlays this HTML under the textarea)
-docs.__shikiCodeToHtml = function (raw, lang) {
-  return codeToHtml(raw, Object.assign({ lang: lang }, opts))
-}
-
-// code-example.js initializes before this module has merged into the live
-// namespace (it loads earlier), so it waits for this signal to paint
-document.addEventListener('DOMContentLoaded', function () {
-  document.dispatchEvent(new Event('docs:shiki-ready'))
-})
 
 // Re-highlight after SPA navigation. onPageReady joins the live namespace
 // at DOMContentLoaded (this module runs before all.js installs df$), so

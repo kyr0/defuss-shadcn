@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: a window is a non-modal <dialog> the runtime makes movable. These
@@ -175,7 +176,7 @@ try {
       await api('w-closed', s);
       assert.equal(await state('w-closed'), s);
     }
-    assert.deepEqual(await page.evaluate(() => (document.getElementById('w-closed') as any).api.getState()), { name: 'default', config: {} });
+    assert.deepEqual(await page.evaluate(() => { const { name, config } = (document.getElementById('w-closed') as any).api.getState(); return { name, config }; }), { name: 'default', config: {} });
     const threw = await page.evaluate(() => { try { (document.getElementById('w1') as any).api.setState('nope'); return false; } catch { return true; } });
     assert.equal(threw, true);
     await api('w-closed', 'closed');
@@ -249,6 +250,10 @@ try {
     });
     assert.deepEqual(r, { macLeft: true, macOrder: true, macRound: true, linuxRound: true, winRight: true, retro: true, max: true });
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, 'dialog.window[id]', ['default','maximized','minimized','closed'], { runtimeAttrs: ['style','data-active'] });
+  });
+
 } finally {
   await browser.close();
   server.stop?.();

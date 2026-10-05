@@ -16,7 +16,7 @@
 // through query .append(), drops/reorders through query .before()/.after(),
 // and drag/active flags ride query scalar writes (§3 sortable row: native
 // moves already keep identity; the shared adapter is the win, no morph).
-import { defussGlobals, defussQuery } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -37,6 +37,17 @@ const sortableLabels = (list) =>
     .map((item: HTMLElement) => dfDollar(item).find('span:not(.sortable-handle):not(.sortable-moves)').text().trim());
 
 /**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state: the authored order - which the authored copy already has;
+  // { index } only moves the roving focus stop (runtime-owned, see the e2e)
+}
+
+/**
  * UI side of setState: 'default' restores the authored order snapshot (taken
  * at init) and optionally activates the item at config.index.
  */
@@ -53,41 +64,33 @@ function triggerStateChange(list, stateName, config) {
 }
 
 /** Registry-level API; pass the list element explicitly. Unknown names throw. */
-export const sortableApi = {
-  setState(list, stateName, config = {}) {
-    if (!sortableStates.includes(stateName)) {
-      throw new Error(`sortable: unknown state "${stateName}" (supported: ${sortableStates.join(', ')})`);
-    }
-    triggerStateChange(list, stateName, config);
-    // state lives on the ELEMENT, not the module (many lists per page)
-    list.dataset.stateName = stateName;
-    list._stateConfig = config;
-  },
-  getState(list) {
+export const sortableApi = componentState({
+  component: 'sortable',
+  states: sortableStates,
+  apply: (list, state) => triggerStateChange(list, state.name, state.config),
+  read: (list, state) => {
     const items = Array.from(dfDollar(list).find('.sortable-item'));
     const active = dfDollar(list).find('.sortable-item[data-active]')[0];
     return {
       name: list.dataset.stateName || 'default',
       config: {
-        ...list._stateConfig,
+        ...state.config,
         order: sortableLabels(list),
         activeIndex: active ? items.indexOf(active) : -1,
       },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.sortableApi = sortableApi;
 df$.sortableStates = sortableStates;
 
 function init() {
-document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
+dfDollar('.sortable:not([data-init])').toArray().forEach((list) => {
   list.dataset.init = '';
-  // bind-scope the api per instance: `$('#tasks').api.setState('default')`
-  list.api = {
-    setState: (stateName, config) => sortableApi.setState(list, stateName, config),
-    getState: () => sortableApi.getState(list),
-  };
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(list, sortableApi);
 
   const isHorizontal = list.dataset.orientation === 'horizontal';
   const NEXT_KEY = isHorizontal ? 'ArrowRight' : 'ArrowDown';
@@ -191,6 +194,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
     announce(`${getItemLabel(item)}, moved to position ${slot + 1} of ${n}`);
     setActive(item, focus);
     syncMoves();
+    // Fires after a move (drag or keyboard) - the item, its new index, and the positions it moved from and to.
     list.dispatchEvent(new CustomEvent('sortable-change', {
       bubbles: true,
       detail: { item, index: slot }
@@ -238,7 +242,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
   const groupLists = () => {
     const group = list.dataset.group;
     return group
-      ? Array.from(document.querySelectorAll('.sortable[data-group]')).filter((l) => (l as HTMLElement).dataset.group === group)
+      ? Array.from(dfDollar('.sortable[data-group]').toArray()).filter((l) => (l as HTMLElement).dataset.group === group)
       : [list];
   };
 
@@ -267,7 +271,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
 
   function getItemLabel(item) {
     const clone = item.cloneNode(true);
-    clone.querySelectorAll('.sortable-handle, .sortable-moves, .sortable-move').forEach((el) => el.remove());
+    dfDollar(clone).find('.sortable-handle, .sortable-moves, .sortable-move').toArray().forEach((el) => el.remove());
     return clone.textContent.trim();
   }
 
@@ -364,7 +368,7 @@ document.querySelectorAll('.sortable:not([data-init])').forEach((list) => {
     // at the list's edge the button disables itself - hand focus to its twin
     moved(item, slot, false);
     const target = button.disabled
-      ? (item.querySelector(`.sortable-move[data-move="${button.dataset.move === 'up' ? 'down' : 'up'}"]`) as HTMLElement | null)
+      ? (dfDollar(item).find(`.sortable-move[data-move="${button.dataset.move === 'up' ? 'down' : 'up'}"]`).get(0) as HTMLElement | null)
       : button;
     target?.focus();
   });

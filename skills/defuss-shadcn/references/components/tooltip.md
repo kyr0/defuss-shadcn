@@ -104,6 +104,14 @@ document.querySelector('#my-tip').api.getState(); // { name: 'visible', config: 
 The api is bound per tooltip element; the registry global is
 `df$.shadcn.tooltipApi` / `df$.shadcn.tooltipStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.tooltipApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.tooltipStates` = `default`, `visible`.
+
 ## Notes
 
 - **Delay**: Default open delay is 700 ms. Set `data-delay` on the trigger to override. Set to `0` for instant.

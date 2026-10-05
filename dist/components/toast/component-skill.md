@@ -194,6 +194,26 @@ document.querySelector('#toast-container').api.getState(); // { name: 'default',
 
 The registry global is `df$.shadcn.toastApi` / `df$.shadcn.toastStates`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.toastApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.toastStates` = `default`.
+
+### `df$.shadcn.toast`
+
+| Member | Description |
+|---|---|
+| `configure(opts = {})` | Region options: stack 'list' (default, every toast visible) or 'pile' (the newest in front, the others as sheets behind it - hover / focus fans them out); position = the corner (bottom-right, bottom-left, top-right, top-left, top-center, bottom-center). |
+| `show(options)` | Show a toast - a title string or { title, description, variant, duration, action … }; returns its element. |
+| `success(o)` | show() as a success toast. |
+| `warning(o)` | show() as a warning toast. |
+| `info(o)` | show() as an info toast. |
+| `error(o)` | show() as an error (destructive) toast. |
+| `dismiss()` | Dismiss every toast. |
+
 ## Notes
 
 - The toast container should be a direct child of `<body>`

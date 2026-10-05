@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped tooltip component. Loads the fixture
@@ -181,6 +182,11 @@ try {
       await page.mouse.move(0, 0);
       await page.waitForTimeout(300);
     }
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.tooltip[popover][id]', ['default','visible'], { runtimeAttrs: ['style'] });
   });
 
 } finally {

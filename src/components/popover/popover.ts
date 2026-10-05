@@ -4,11 +4,19 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover } from '../../shared/state-api.js';
+import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const popoverStates = ['default', 'open'];
+
+/**
+ * The markup of a state: none - 'open' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) {}
 
 /**
  * UI side of setState: 'default' hides, 'open' shows. Open/close mechanics
@@ -28,28 +36,20 @@ function triggerStateChange(popover, stateName, _config) {
 }
 
 /** Registry-level API; pass the popover element explicitly. Unknown names throw. */
-export const popoverApi = {
-  setState(popover, stateName, config = {}) {
-    if (!popoverStates.includes(stateName)) {
-      throw new Error(`popover: unknown state "${stateName}" (supported: ${popoverStates.join(', ')})`);
-    }
-    triggerStateChange(popover, stateName, config);
-    // state lives on the ELEMENT, not the module (multiple popovers per page)
-    popover.dataset.stateName = stateName;
-    popover._stateConfig = config;
-  },
-  getState(popover) {
-    return { name: popover.dataset.stateName || 'default', config: popover._stateConfig ?? {} };
-  },
-};
+export const popoverApi = componentState({
+  component: 'popover',
+  states: popoverStates,
+  apply: (popover, state) => triggerStateChange(popover, state.name, state.config),
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.popoverApi = popoverApi;
 df$.popoverStates = popoverStates;
 
 function init() {
-  document.querySelectorAll('[popovertarget]:not([data-init])').forEach((trigger) => {
+  dfDollar('[popovertarget]:not([data-init])').toArray().forEach((trigger) => {
     const id = trigger.getAttribute('popovertarget');
-    const popover = document.getElementById(id);
+    const popover = dfDollar('#' + CSS.escape(id)).get(0);
     // Ownership boundary (AGENTS.md "Each component owns its dialog", popover
     // edition): only claim triggers whose target is a .popover panel. Stamping
     // every [popovertarget] starved sibling components - navigation-menu's
@@ -65,12 +65,10 @@ function init() {
   });
 
   // bind-scope the api per popover instance: `$('#demo').api.setState('open')`
-  document.querySelectorAll('.popover[popover]:not([data-init])').forEach((popover) => {
+  dfDollar('.popover[popover]:not([data-init])').toArray().forEach((popover) => {
     popover.dataset.init = '';
-    popover.api = {
-      setState: (stateName, config) => popoverApi.setState(popover, stateName, config),
-      getState: () => popoverApi.getState(popover),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(popover, popoverApi);
   });
 }
 

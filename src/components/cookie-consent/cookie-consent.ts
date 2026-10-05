@@ -1,4 +1,5 @@
-import { defussGlobals, defussQuery } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent, persisted, reload, forget, persistOk } from '../../shared/state-api.js';
+import type { ElementModel } from '../../shared/render.js';
 
 const df$ = defussGlobals();
 const q = defussQuery();
@@ -112,21 +113,39 @@ export interface CookieConsentState {
 export type ConsentReason = 'accept' | 'deny' | 'save' | 'service' | 'reset' | 'storage';
 type StoredConsent = Pick<CookieConsentState, 'revision' | 'decisionMade' | 'language' | 'acceptedServices' | 'updatedAt'> & { schemaVersion: 1 };
 export interface CookieConsentInstance {
+  /** Show a view by name (default, open, preferences, services); { language } switches the texts. */
   setState(name: ConsentView, config?: { language?: Language }): void;
-  getState(): { name: ConsentView; config: { language: Language } };
+  /** The view shown now and the language. */
+  getState(): { name: ConsentView; config: { language: Language }; model?: ElementModel };
+  /** The markup of a state (the render() contract). */
+  render(state?: DefussShadcnComponentState): string;
+  /** Open the consent dialog. */
   open(): void;
+  /** Close the dialog. */
   close(): void;
+  /** Accept every optional service and close. */
   acceptAll(): void;
+  /** Reject every optional service and close. */
   denyAll(): void;
+  /** Keep the services ticked in the settings and close. */
   save(): void;
+  /** Accept one service (also what a gated element's Allow does). */
   acceptService(id: string): void;
+  /** Revoke one optional service - its scripts and frames unload, its cookies are removed. */
   revokeService(id: string): void;
+  /** Whether a service is accepted now. */
   isServiceAccepted(id: string): boolean;
+  /** The decision: services, categories, acceptAll / denyAll, language, revision, date. */
   getConsent(): CookieConsentState;
+  /** The services ticked in the settings, not saved yet. */
   getDraft(): string[];
+  /** Switch the texts (a built-in or a translated language). */
   setLanguage(language: Language): void;
+  /** Forget the decision (in storage too) and open the notice again. */
   reset(): void;
+  /** Scan the page again for gated scripts and frames (after adding markup). */
   updateTagsActivation(): void;
+  /** Stop: listeners off, optional integrations revoked, the dialog removed. */
   destroy(): void;
 }
 
@@ -199,6 +218,9 @@ class Controller implements CookieConsentInstance {
   readonly key: string;
   readonly revision: string;
   readonly storage: CookieConsentConfig['storage'];
+  /** the stored decision (AGENTS.md "State through stores"): a persisted
+   *  store on the configured storage - null when storage is off or blocked */
+  readonly saved: ReturnType<typeof persisted<StoredConsent | null>> | null;
   readonly gates = new Map<Element, GateRecord>();
   readonly off: Array<() => void> = [];
   readonly id: string;
@@ -225,6 +247,15 @@ class Controller implements CookieConsentInstance {
       try { storage = this.doc.defaultView?.localStorage ?? null; } catch { storage = null; }
     }
     this.storage = storage;
+    // the record is the store's value; its own checks (revision, age, …) run
+    // in readStored - the store only guarantees an object or null
+    this.saved = storage
+      ? persisted<StoredConsent | null>(this.key, null, {
+        storage,
+        validate: (v): v is StoredConsent | null => v === null || (typeof v === 'object' && !Array.isArray(v)),
+        onError: () => { this.storageFailed = true; },
+      })
+      : null;
     this.state = this.readStored();
     this.draft = new Set(this.state.acceptedServices);
     const authoredView = q(root).attr('data-state-name') as ConsentView | null;
@@ -234,8 +265,15 @@ class Controller implements CookieConsentInstance {
     // .cookie-consent-dialog and data-init keeps any other claimant away.
     q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
     this.dialog = q<HTMLDialogElement>('.cookie-consent-dialog', root)[0];
+    // el.store (AGENTS.md "State through stores"); the controller stays
+    // el.api - its open() / acceptAll() / … are the documented surface, and
+    // its setState / getState run through the store
+    // registered before the first state: the store's apply reaches the
+    // controller through the registry (create() sets the same entry again)
+    controllers.set(root, this);
+    bindComponent(root, cookieConsentApi);
     root.api = this;
-    this.render();
+    this.repaint();
     this.listen(root, 'click', event => this.onClick(event));
     this.listen(root, 'change', event => this.onChange(event));
     this.listen(this.dialog, 'cancel', () => this.close());
@@ -253,11 +291,12 @@ class Controller implements CookieConsentInstance {
       const e = event as StorageEvent;
       if ((e.key === this.key || e.key === null) && e.storageArea === this.storage) {
         const previous = this.state;
+        if (this.saved) reload(this.saved);
         this.state = this.readStored();
         this.draft = new Set(this.state.acceptedServices);
         this.revoke(previous);
         this.updateTagsActivation();
-        this.render();
+        this.repaint();
         this.emit('storage');
         if (!this.state.decisionMade && this.config.autoShow !== false) this.open();
       }
@@ -304,28 +343,21 @@ class Controller implements CookieConsentInstance {
   }
   readStored(): CookieConsentState {
     const fallback = this.makeState([]);
-    if (!this.storage) return fallback;
-    try {
-      const raw = this.storage.getItem(this.key);
-      if (!raw) return fallback;
-      const saved: unknown = JSON.parse(raw);
-      if (!saved || typeof saved !== 'object') return fallback;
-      const s = saved as Partial<StoredConsent>;
-      const age = Date.now() - (s.updatedAt ?? 0);
-      if (s.schemaVersion !== 1 || s.revision !== this.revision || s.decisionMade !== true
-          || !languagesOf(this.config).includes(s.language ?? '') || !Array.isArray(s.acceptedServices)
-          || !s.acceptedServices.every(id => typeof id === 'string') || typeof s.updatedAt !== 'number'
-          || !Number.isFinite(s.updatedAt) || age < 0 || age > (this.config.maxAgeDays ?? 180) * 86400000) return fallback;
-      return this.makeState(s.acceptedServices, true, s.updatedAt, s.language);
-    } catch { this.storageFailed = true; return fallback; }
+    const s = this.saved?.value as Partial<StoredConsent> | null | undefined;
+    if (!s) return fallback;
+    const age = Date.now() - (s.updatedAt ?? 0);
+    if (s.schemaVersion !== 1 || s.revision !== this.revision || s.decisionMade !== true
+        || !languagesOf(this.config).includes(s.language ?? '') || !Array.isArray(s.acceptedServices)
+        || !s.acceptedServices.every(id => typeof id === 'string') || typeof s.updatedAt !== 'number'
+        || !Number.isFinite(s.updatedAt) || age < 0 || age > (this.config.maxAgeDays ?? 180) * 86400000) return fallback;
+    return this.makeState(s.acceptedServices, true, s.updatedAt, s.language);
   }
   persist(): void {
-    if (!this.storage) { this.storageFailed = this.config.storage !== null; return; }
-    try {
-      const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
-      this.storage.setItem(this.key, JSON.stringify({ schemaVersion: 1, revision, decisionMade, language, acceptedServices, updatedAt }));
-      this.storageFailed = false;
-    } catch { this.storageFailed = true; }
+    if (!this.saved) { this.storageFailed = this.config.storage !== null; return; }
+    const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
+    this.storageFailed = false;
+    this.saved.set({ schemaVersion: 1, revision, decisionMade, language, acceptedServices: [...acceptedServices], updatedAt });
+    this.storageFailed ||= !persistOk(this.saved);
   }
   getConsent(): CookieConsentState {
     return { ...this.state, acceptedServices: [...this.state.acceptedServices], acceptedCategories: [...this.state.acceptedCategories] };
@@ -335,10 +367,23 @@ class Controller implements CookieConsentInstance {
     this.origin(id);
     return this.state.acceptedServices.includes(id);
   }
-  getState(): { name: ConsentView; config: { language: Language } } {
+  getState(): { name: ConsentView; config: { language: Language }; model?: ElementModel } {
+    return cookieConsentApi.getState(this.root) as { name: ConsentView; config: { language: Language }; model?: ElementModel };
+  }
+  /** the state the dialog shows (the store's read-back) */
+  viewState(): { name: ConsentView; config: { language: Language } } {
     return { name: this.dialog.open ? this.view : 'default', config: { language: this.state.language } };
   }
+  /** The markup of a state (default: the current one) - AGENTS.md "State API"
+   *  → render: the authored host; the dialog the views paint is runtime chrome. */
+  render(state?: DefussShadcnComponentState): string {
+    return cookieConsentApi.render(state ?? this.getState());
+  }
   setState(name: ConsentView, config: { language?: Language } = {}): void {
+    cookieConsentApi.setState(this.root, name, config);
+  }
+  /** the DOM side of a state - the store's apply */
+  applyView(name: ConsentView, config: { language?: Language } = {}): void {
     this.assertAlive();
     if (!cookieConsentStates.includes(name)) throw new Error(`cookie-consent: unknown state "${name}"`);
     if (config.language) this.setLanguage(config.language);
@@ -349,7 +394,7 @@ class Controller implements CookieConsentInstance {
     }
     this.view = name;
     q(this.root).attr('data-state-name', name);
-    this.render();
+    this.repaint();
     // banner: the first-visit view is a NON-modal bar along the bottom of the
     // page (show()) - the page stays usable; the settings views need focus,
     // so they reopen as the modal dialog (showModal()). Switching closes and
@@ -382,7 +427,7 @@ class Controller implements CookieConsentInstance {
     if (!languagesOf(this.config).includes(language)) throw new Error(`cookie-consent: unsupported language ${language}`);
     this.state.language = language;
     if (this.state.decisionMade) this.persist();
-    this.render();
+    this.repaint();
     this.refreshOverlays();
   }
   commit(ids: Iterable<string>, reason: ConsentReason, close = true): void {
@@ -393,7 +438,7 @@ class Controller implements CookieConsentInstance {
     this.persist();
     this.revoke(previous);
     this.updateTagsActivation();
-    this.render();
+    this.repaint();
     if (close) this.close();
     this.emit(reason);
   }
@@ -411,7 +456,10 @@ class Controller implements CookieConsentInstance {
   }
   reset(): void {
     this.assertAlive();
-    try { this.storage?.removeItem(this.key); } catch { this.storageFailed = true; }
+    if (this.saved) {
+      this.saved.set(null);
+      if (!forget(this.saved)) this.storageFailed = true;
+    }
     const previous = this.state;
     this.state = this.makeState([], false, null, previous.language);
     this.draft = new Set(this.state.acceptedServices);
@@ -421,9 +469,11 @@ class Controller implements CookieConsentInstance {
     this.emit('reset');
   }
   error(kind: string, error: unknown): void {
+    // Fires when something fails without breaking the page - storage (kind "storage"), a callback, a revoke hook.
     this.root.dispatchEvent(new CustomEvent('cookie-consent:error', { bubbles: true, detail: { kind, error } }));
   }
   emit(reason: ConsentReason): void {
+    // Fires on every decision - the consent state and why (accept, deny, save, service, reset, storage).
     this.root.dispatchEvent(new CustomEvent('cookie-consent:change', { bubbles: true, detail: { state: this.getConsent(), reason } }));
     try { this.config.onChange?.(this.getConsent(), reason); } catch (error) { this.error('callback', error); }
     const callback = reason === 'accept' ? this.config.onAccept : reason === 'deny' ? this.config.onDeny : undefined;
@@ -453,7 +503,8 @@ class Controller implements CookieConsentInstance {
       return url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>` : '';
     }).join('');
   }
-  render(): void {
+  /** Repaint the dialog from the consent state (internal; render() is the State API name) */
+  repaint(): void {
     if (this.destroyed) return;
     const tr = this.messages();
     const preferenceView = this.view === 'preferences' || this.view === 'services';
@@ -567,7 +618,7 @@ class Controller implements CookieConsentInstance {
       }
     } else return;
     const focusKey = service ? `[data-cookie-service="${service}"]` : `[data-cookie-category="${category}"]`;
-    this.render();
+    this.repaint();
     q<HTMLElement>(focusKey, this.dialog)[0]?.focus();
   }
 
@@ -683,6 +734,7 @@ class Controller implements CookieConsentInstance {
     this.close();
     this.observer.disconnect();
     this.off.forEach(off => off());
+    this.saved?.destroy();
     // Destroy revokes active optional integrations; inert placeholders stay.
     const previous = this.state;
     this.state = this.makeState([]);
@@ -700,6 +752,7 @@ class Controller implements CookieConsentInstance {
     q('.cookie-consent-floating', this.root).remove();
     q(this.root).attr('data-init', null).attr('data-cookie-consent-ready', null).attr('data-cookie-keys', null);
     q(this.root).attr('data-cookie-consent-destroyed', '');
+    unbindComponent(this.root);
     delete this.root.api;
     controllers.delete(this.root);
     this.destroyed = true;
@@ -713,18 +766,20 @@ function controllerFor(el: HTMLElement): Controller {
 }
 
 function triggerStateChange(el: HTMLElement, stateName: ConsentView, config: { language?: Language }): void {
-  controllerFor(el).setState(stateName, config);
+  controllerFor(el).applyView(stateName, config);
 }
 
-export const cookieConsentApi = {
-  setState(el: HTMLElement, stateName: ConsentView, config: { language?: Language } = {}): void {
-    if (!cookieConsentStates.includes(stateName)) throw new Error(`cookie-consent: unknown state "${stateName}"`);
-    triggerStateChange(el, stateName, config);
-  },
-  getState(el: HTMLElement) { return controllerFor(el).getState(); },
-};
+export const cookieConsentApi = componentState<HTMLElement>({
+  component: 'cookie-consent',
+  states: cookieConsentStates,
+  apply: (el, state) => triggerStateChange(el, state.name as ConsentView, state.config as { language?: Language }),
+  read: (el) => controllerFor(el).viewState(),
+  // every view lives in the dialog the controller paints and appends at
+  // runtime (data-ce-chrome) - the authored host is the markup of each state
+});
 
 export const cookieConsent = {
+  /** Start a consent manager on root with a config (cookieOrigins, texts, storage …) - returns its instance (also el.api); a second call returns the same one. */
   create(root: HTMLElement, config: CookieConsentConfig): CookieConsentInstance {
     if (controllers.has(root)) return controllers.get(root)!;
     if (!root.isConnected) throw new Error('cookie-consent: root must be connected');
@@ -734,6 +789,7 @@ export const cookieConsent = {
     controllers.set(root, controller);
     return controller;
   },
+  /** The instance a root already has, if any. */
   get(root: HTMLElement): CookieConsentInstance | undefined { return controllers.get(root); },
   init,
 };

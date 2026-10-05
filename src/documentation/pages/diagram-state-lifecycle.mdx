@@ -1,0 +1,377 @@
+---
+title: "Illustrative · State Lifecycle"
+description: "Lifecycle phase maps with the diagram component - primary phases on a rail, waits and recovery above, terminal outcomes below; step by step and as a delta."
+slug: "diagram-state-lifecycle"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-state-lifecycle" title="Illustrative · State Lifecycle" component="diagram">
+  One subject moving through its phases: the primary rail in the middle band, waits and recovery above it, terminal outcomes below - three lanes (<code>data-shape="lane"</code>) spanning the grid. Ports are explicit (<code>sending:top</code>) where the route matters.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Newsletter lifecycle" component="diagram" hint="Lanes are groups spanning all six columns; the first column holds their labels. A back-edge with data-curve=around would route outside the stack."
+<figure class="diagram" id="dg-life" data-type="state-lifecycle" aria-label="Newsletter publication lifecycle">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Lifecycle phase map</span>
+    <span class="diagram-title">A newsletter, from draft to sent</span>
+    <span class="diagram-dek">Primary phases on the rail; waits and recovery above, terminal outcomes below.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:6;grid-template-columns:4.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Wait / recovery</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Primary phases</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Terminal outcomes</span></div>
+    <div class="diagram-node" data-node="draft" style="--col:2;--row:2">
+      <span class="diagram-node-name">Draft</span>
+      <span class="diagram-node-meta">content exists</span>
+    </div>
+    <div class="diagram-node" data-node="edit" style="--col:3;--row:2">
+      <span class="diagram-node-name">Editing</span>
+      <span class="diagram-node-meta">owner revises</span>
+    </div>
+    <div class="diagram-node" data-node="approval" data-tone="muted" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Approval</span>
+      <span class="diagram-node-meta">editor decision</span>
+    </div>
+    <div class="diagram-node" data-node="sched" style="--col:4;--row:2">
+      <span class="diagram-node-name">Scheduled</span>
+      <span class="diagram-node-meta">send time set</span>
+    </div>
+    <div class="diagram-node" data-node="sending" style="--col:5;--row:2">
+      <span class="diagram-node-name">Sending</span>
+      <span class="diagram-node-meta">provider active</span>
+    </div>
+    <div class="diagram-node" data-node="retry" data-tone="warn" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">Recovery</span>
+      <span class="diagram-node-name">Delivery retry</span>
+      <span class="diagram-node-meta">attempt 1 of 3</span>
+    </div>
+    <div class="diagram-node" data-node="sent" data-tone="accent" style="--col:6;--row:2">
+      <span class="diagram-node-name">Sent</span>
+      <span class="diagram-node-meta">delivered</span>
+    </div>
+    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Terminal</span>
+      <span class="diagram-node-name">Cancelled</span>
+      <span class="diagram-node-meta">stopped by owner</span>
+    </div>
+    <div class="diagram-node" data-node="failed" data-tone="danger" style="--col:6;--row:3">
+      <span class="diagram-node-eyebrow">Terminal</span>
+      <span class="diagram-node-name">Failed</span>
+      <span class="diagram-node-meta">retries exhausted</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="draft" data-to="edit">write</li>
+    <li class="diagram-edge" data-from="edit" data-to="approval:bottom">submit</li>
+    <li class="diagram-edge" data-from="approval:right" data-to="sched:top">approve</li>
+    <li class="diagram-edge" data-from="sched" data-to="sending">start</li>
+    <li class="diagram-edge" data-from="sending" data-to="sent" data-tone="accent"></li>
+    <li class="diagram-edge" data-from="sending:top" data-to="retry:bottom" data-line="dashed">error</li>
+    <li class="diagram-edge" data-from="retry:right" data-to="sent:top" data-line="dashed">retry</li>
+    <li class="diagram-edge" data-from="sched:bottom" data-to="cancel:top" data-line="dashed">cancel</li>
+    <li class="diagram-edge" data-from="retry" data-to="failed" data-line="dashed" data-tone="danger">exhausted</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Newsletter lifecycle, step by step" component="diagram" hint="Lanes are step 0 (always shown); phases enter in narrative order, recovery and outcomes last."
+<figure class="diagram" id="dg-life-steps" data-type="state-lifecycle" data-steps data-autoplay aria-label="Newsletter publication lifecycle">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Lifecycle phase map</span>
+    <span class="diagram-title">A newsletter, from draft to sent</span>
+    <span class="diagram-dek">Primary phases on the rail; waits and recovery above, terminal outcomes below.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:6;grid-template-columns:4.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Wait / recovery</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Primary phases</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="0" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Terminal outcomes</span></div>
+    <div class="diagram-node" data-node="draft" data-step="1" style="--col:2;--row:2">
+      <span class="diagram-node-name">Draft</span>
+      <span class="diagram-node-meta">content exists</span>
+    </div>
+    <div class="diagram-node" data-node="edit" data-step="2" style="--col:3;--row:2">
+      <span class="diagram-node-name">Editing</span>
+      <span class="diagram-node-meta">owner revises</span>
+    </div>
+    <div class="diagram-node" data-node="approval" data-tone="muted" data-step="3" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Approval</span>
+      <span class="diagram-node-meta">editor decision</span>
+    </div>
+    <div class="diagram-node" data-node="sched" data-step="4" style="--col:4;--row:2">
+      <span class="diagram-node-name">Scheduled</span>
+      <span class="diagram-node-meta">send time set</span>
+    </div>
+    <div class="diagram-node" data-node="sending" data-step="5" style="--col:5;--row:2">
+      <span class="diagram-node-name">Sending</span>
+      <span class="diagram-node-meta">provider active</span>
+    </div>
+    <div class="diagram-node" data-node="retry" data-tone="warn" data-step="6" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">Recovery</span>
+      <span class="diagram-node-name">Delivery retry</span>
+      <span class="diagram-node-meta">attempt 1 of 3</span>
+    </div>
+    <div class="diagram-node" data-node="sent" data-tone="accent" data-step="7" style="--col:6;--row:2">
+      <span class="diagram-node-name">Sent</span>
+      <span class="diagram-node-meta">delivered</span>
+    </div>
+    <div class="diagram-node" data-node="cancel" data-tone="muted" data-step="8" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Terminal</span>
+      <span class="diagram-node-name">Cancelled</span>
+      <span class="diagram-node-meta">stopped by owner</span>
+    </div>
+    <div class="diagram-node" data-node="failed" data-tone="danger" data-step="8" style="--col:6;--row:3">
+      <span class="diagram-node-eyebrow">Terminal</span>
+      <span class="diagram-node-name">Failed</span>
+      <span class="diagram-node-meta">retries exhausted</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="draft" data-to="edit">write</li>
+    <li class="diagram-edge" data-from="edit" data-to="approval:bottom">submit</li>
+    <li class="diagram-edge" data-from="approval:right" data-to="sched:top">approve</li>
+    <li class="diagram-edge" data-from="sched" data-to="sending">start</li>
+    <li class="diagram-edge" data-from="sending" data-to="sent" data-tone="accent"></li>
+    <li class="diagram-edge" data-from="sending:top" data-to="retry:bottom" data-line="dashed">error</li>
+    <li class="diagram-edge" data-from="retry:right" data-to="sent:top" data-line="dashed">retry</li>
+    <li class="diagram-edge" data-from="sched:bottom" data-to="cancel:top" data-line="dashed">cancel</li>
+    <li class="diagram-edge" data-from="retry" data-to="failed" data-line="dashed" data-tone="danger">exhausted</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="State Lifecycle, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-life-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-life-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-life-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-life-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-life-live" data-interactive data-type="state-lifecycle" aria-label="Newsletter publication lifecycle">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Lifecycle phase map</span>
+    <span class="diagram-title">A newsletter, from draft to sent</span>
+    <span class="diagram-dek">Primary phases on the rail; waits and recovery above, terminal outcomes below.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:6;grid-template-columns:4.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Wait / recovery</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Primary phases</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Terminal outcomes</span></div>
+    <div class="diagram-node" data-node="draft" style="--col:2;--row:2">
+      <span class="diagram-node-name">Draft</span>
+      <span class="diagram-node-meta">content exists</span>
+    </div>
+    <div class="diagram-node" data-node="edit" style="--col:3;--row:2">
+      <span class="diagram-node-name">Editing</span>
+      <span class="diagram-node-meta">owner revises</span>
+    </div>
+    <div class="diagram-node" data-node="approval" data-tone="muted" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Approval</span>
+      <span class="diagram-node-meta">editor decision</span>
+    </div>
+    <div class="diagram-node" data-node="sched" style="--col:4;--row:2">
+      <span class="diagram-node-name">Scheduled</span>
+      <span class="diagram-node-meta">send time set</span>
+    </div>
+    <div class="diagram-node" data-node="sending" style="--col:5;--row:2">
+      <span class="diagram-node-name">Sending</span>
+      <span class="diagram-node-meta">provider active</span>
+    </div>
+    <div class="diagram-node" data-node="retry" data-tone="warn" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">Recovery</span>
+      <span class="diagram-node-name">Delivery retry</span>
+      <span class="diagram-node-meta">attempt 1 of 3</span>
+    </div>
+    <div class="diagram-node" data-node="sent" data-tone="accent" style="--col:6;--row:2">
+      <span class="diagram-node-name">Sent</span>
+      <span class="diagram-node-meta">delivered</span>
+    </div>
+    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Terminal</span>
+      <span class="diagram-node-name">Cancelled</span>
+      <span class="diagram-node-meta">stopped by owner</span>
+    </div>
+    <div class="diagram-node" data-node="failed" data-tone="danger" style="--col:6;--row:3">
+      <span class="diagram-node-eyebrow">Terminal</span>
+      <span class="diagram-node-name">Failed</span>
+      <span class="diagram-node-meta">retries exhausted</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="draft" data-to="edit">write</li>
+    <li class="diagram-edge" data-from="edit" data-to="approval:bottom">submit</li>
+    <li class="diagram-edge" data-from="approval:right" data-to="sched:top">approve</li>
+    <li class="diagram-edge" data-from="sched" data-to="sending">start</li>
+    <li class="diagram-edge" data-from="sending" data-to="sent" data-tone="accent"></li>
+    <li class="diagram-edge" data-from="sending:top" data-to="retry:bottom" data-line="dashed">error</li>
+    <li class="diagram-edge" data-from="retry:right" data-to="sent:top" data-line="dashed">retry</li>
+    <li class="diagram-edge" data-from="sched:bottom" data-to="cancel:top" data-line="dashed">cancel</li>
+    <li class="diagram-edge" data-from="retry" data-to="failed" data-line="dashed" data-tone="danger">exhausted</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="State Lifecycle, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-life-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-life-edit" data-interactive data-type="state-lifecycle" aria-label="Newsletter publication lifecycle">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Lifecycle phase map</span>
+        <span class="diagram-title">A newsletter, from draft to sent</span>
+        <span class="diagram-dek">Primary phases on the rail; waits and recovery above, terminal outcomes below.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:6;grid-template-columns:4.5rem repeat(5,minmax(6.5rem,1fr));--diagram-node-w:7.5rem">
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:6"><span class="diagram-group-label">Wait / recovery</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:6"><span class="diagram-group-label">Primary phases</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:6"><span class="diagram-group-label">Terminal outcomes</span></div>
+        <div class="diagram-node" data-node="draft" style="--col:2;--row:2">
+          <span class="diagram-node-name">Draft</span>
+          <span class="diagram-node-meta">content exists</span>
+        </div>
+        <div class="diagram-node" data-node="edit" style="--col:3;--row:2">
+          <span class="diagram-node-name">Editing</span>
+          <span class="diagram-node-meta">owner revises</span>
+        </div>
+        <div class="diagram-node" data-node="approval" data-tone="muted" style="--col:3;--row:1">
+          <span class="diagram-node-eyebrow">Wait</span>
+          <span class="diagram-node-name">Approval</span>
+          <span class="diagram-node-meta">editor decision</span>
+        </div>
+        <div class="diagram-node" data-node="sched" style="--col:4;--row:2">
+          <span class="diagram-node-name">Scheduled</span>
+          <span class="diagram-node-meta">send time set</span>
+        </div>
+        <div class="diagram-node" data-node="sending" style="--col:5;--row:2">
+          <span class="diagram-node-name">Sending</span>
+          <span class="diagram-node-meta">provider active</span>
+        </div>
+        <div class="diagram-node" data-node="retry" data-tone="warn" style="--col:5;--row:1">
+          <span class="diagram-node-eyebrow">Recovery</span>
+          <span class="diagram-node-name">Delivery retry</span>
+          <span class="diagram-node-meta">attempt 1 of 3</span>
+        </div>
+        <div class="diagram-node" data-node="sent" data-tone="accent" style="--col:6;--row:2">
+          <span class="diagram-node-name">Sent</span>
+          <span class="diagram-node-meta">delivered</span>
+        </div>
+        <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col:4;--row:3">
+          <span class="diagram-node-eyebrow">Terminal</span>
+          <span class="diagram-node-name">Cancelled</span>
+          <span class="diagram-node-meta">stopped by owner</span>
+        </div>
+        <div class="diagram-node" data-node="failed" data-tone="danger" style="--col:6;--row:3">
+          <span class="diagram-node-eyebrow">Terminal</span>
+          <span class="diagram-node-name">Failed</span>
+          <span class="diagram-node-meta">retries exhausted</span>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="draft" data-to="edit">write</li>
+        <li class="diagram-edge" data-from="edit" data-to="approval:bottom">submit</li>
+        <li class="diagram-edge" data-from="approval:right" data-to="sched:top">approve</li>
+        <li class="diagram-edge" data-from="sched" data-to="sending">start</li>
+        <li class="diagram-edge" data-from="sending" data-to="sent" data-tone="accent"></li>
+        <li class="diagram-edge" data-from="sending:top" data-to="retry:bottom" data-line="dashed">error</li>
+        <li class="diagram-edge" data-from="retry:right" data-to="sent:top" data-line="dashed">retry</li>
+        <li class="diagram-edge" data-from="sched:bottom" data-to="cancel:top" data-line="dashed">cancel</li>
+        <li class="diagram-edge" data-from="retry" data-to="failed" data-line="dashed" data-tone="danger">exhausted</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-life-edit-panel" aria-labelledby="dg-life-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-life-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-life-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-life-edit');
+    const grid = document.getElementById('dg-life-edit-grid');
+    const title = document.getElementById('dg-life-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Legal review added" component="diagram" hint="A new wait state and the transition that now passes through it."
+<figure class="diagram" id="dg-life-delta" data-type="state-lifecycle" data-delta aria-label="Lifecycle with legal review">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Policy change</span>
+    <span class="diagram-title">Legal review before scheduling</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:1;--span:4"><span class="diagram-group-label">Wait</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:4"><span class="diagram-group-label">Primary</span></div>
+    <div class="diagram-node" data-node="edit" style="--col:2;--row:2"><span class="diagram-node-name">Editing</span></div>
+    <div class="diagram-node" data-node="approval" data-tone="muted" data-change="changed" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Approval</span>
+      <span class="diagram-node-meta" data-before="editor or owner">editor</span>
+    </div>
+    <div class="diagram-node" data-node="legal" data-tone="accent" data-change="added" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Legal review</span>
+      <span class="diagram-node-meta">48h SLA</span>
+    </div>
+    <div class="diagram-node" data-node="sched" style="--col:4;--row:2"><span class="diagram-node-name">Scheduled</span></div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="edit" data-to="approval">submit</li>
+    <li class="diagram-edge" data-from="approval" data-to="legal" data-change="added">approve</li>
+    <li class="diagram-edge" data-from="legal" data-to="sched" data-change="added">clear</li>
+    <li class="diagram-edge" data-from="approval" data-to="sched" data-change="removed">approve</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

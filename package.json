@@ -21,12 +21,14 @@
   "scripts": {
     "dev": "vite",
     "build": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/verify.ts",
-    "build:docs": "node --max-old-space-size=14336 scripts/build-docs.ts",
+    "build:docs": "node --max-old-space-size=2048 scripts/build-docs.ts",
     "docs": "bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts",
     "minify": "bun scripts/minify.ts",
     "stats": "bun scripts/stats.ts",
     "lint": "oxlint src tests scripts",
     "verify": "bun scripts/verify.ts",
+    "figures": "bun scripts/stat-figures.ts",
+    "time-verify": "bun scripts/time-verify.ts",
     "screenshots": "bun scripts/create-screenshots.ts",
     "test": "vitest",
     "test:run": "vitest run",
@@ -41,7 +43,8 @@
     "deploy:major": "./scripts/deploy.sh major",
     "deploy:beta": "./scripts/deploy.sh patch beta",
     "deploy:rc": "./scripts/deploy.sh patch rc",
-    "deploy:release": "./scripts/deploy.sh patch release"
+    "deploy:release": "./scripts/deploy.sh patch release",
+    "api-docs": "bun scripts/api-docs.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.4.1",
@@ -65,7 +68,9 @@
     "vitest": "^5.0.0"
   },
   "dependencies": {
-    "defuss-morph": "0.1.1",
-    "defuss-query": "0.1.0"
+    "defuss-morph": "0.2.0",
+    "defuss-query": "0.2.0",
+    "defuss-dataview": "0.4.0",
+    "defuss-store": "0.1.0"
   }
 }

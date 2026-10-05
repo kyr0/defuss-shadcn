@@ -101,25 +101,205 @@ working, to a viewer that can tell."
 
 ## The proof loop
 
-```mermaid
-flowchart TD
-    A["AGENTS.md<br/>philosophy + conventions (how / what / why)<br/>⤷ defers to verifier output as authoritative"] --> B["Coding agent<br/>edits src/"]
-
-    B --> C["make build"]
-    subgraph GATES["mechanical quality gates (no human in the loop)"]
-        direction LR
-        L["oxlint<br/>typecheck"] --> P["compile src → dist<br/>1:1 build"] --> SS["screenshots<br/>every state × light/dark<br/>fingerprint-fresh"] --> V["verify.ts<br/>41 consistency gates<br/>incl. 'working tree committed'"] --> Q["Vitest UI tests<br/>56 Playwright e2e"]
-    end
-    C --> GATES
-
-    Q --> W{"all gates pass?"}
-    W -- "no: ✗ + fix: instructions" --> X["verifier output is<br/>the work order"] --> B
-
-    W -- "yes" --> E["visual evidence on disk:<br/>byte-verified PNG per state<br/>(manifest-hashed, drift-checked)"]
-    E --> M{"VLM multimodal reasoning<br/>/ human review:<br/>does each state look correct?"}
-    M -- "no: visual defect" --> B
-    M -- yes --> G["✓ provably done<br/>committed · built · mirrored to docs/"]
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "The proof loop",
+  "title": "Trapped in the loop until the work is actually good",
+  "steps": true,
+  "interactive": true,
+  "autoplay": true,
+  "cols": 5,
+  "nodes": [
+    {
+      "id": "agents",
+      "name": "AGENTS.md",
+      "meta": "conventions · defers to the verifier",
+      "col": 1,
+      "row": 1,
+      "step": 1
+    },
+    {
+      "id": "agent",
+      "name": "Coding agent",
+      "meta": "edits src/",
+      "col": 2,
+      "row": 1,
+      "tone": "accent",
+      "step": 2
+    },
+    {
+      "id": "build",
+      "name": "make build",
+      "meta": "the whole pipeline",
+      "col": 3,
+      "row": 1,
+      "shape": "pill",
+      "step": 3
+    },
+    {
+      "id": "lint",
+      "name": "oxlint · typecheck",
+      "col": 1,
+      "row": 2,
+      "step": 4,
+      "eyebrow": "Gate"
+    },
+    {
+      "id": "compile",
+      "name": "compile src → dist",
+      "meta": "1:1 build",
+      "col": 2,
+      "row": 2,
+      "step": 4,
+      "eyebrow": "Gate"
+    },
+    {
+      "id": "shots",
+      "name": "Screenshots",
+      "meta": "every state × light/dark",
+      "col": 3,
+      "row": 2,
+      "step": 4,
+      "eyebrow": "Gate"
+    },
+    {
+      "id": "verify",
+      "name": "verify.ts",
+      "meta": "consistency gates · fix: lines",
+      "col": 4,
+      "row": 2,
+      "step": 4,
+      "eyebrow": "Gate"
+    },
+    {
+      "id": "tests",
+      "name": "Vitest · e2e",
+      "meta": "real pages, real Chromium",
+      "col": 5,
+      "row": 2,
+      "step": 4,
+      "eyebrow": "Gate"
+    },
+    {
+      "id": "pass",
+      "name": "All gates pass?",
+      "col": 5,
+      "row": 3,
+      "shape": "diamond",
+      "step": 5
+    },
+    {
+      "id": "order",
+      "name": "Verifier output is the work order",
+      "col": 4,
+      "row": 3,
+      "tone": "warn",
+      "step": 6
+    },
+    {
+      "id": "evidence",
+      "name": "Visual evidence",
+      "meta": "byte-verified PNG per state",
+      "col": 5,
+      "row": 4,
+      "step": 7
+    },
+    {
+      "id": "review",
+      "name": "Looks right?",
+      "meta": "VLM / human review",
+      "col": 4,
+      "row": 4,
+      "shape": "diamond",
+      "step": 8
+    },
+    {
+      "id": "done",
+      "name": "Provably done",
+      "meta": "committed · built · mirrored",
+      "col": 3,
+      "row": 4,
+      "shape": "pill",
+      "tone": "ok",
+      "step": 9
+    }
+  ],
+  "edges": [
+    {
+      "from": "agents",
+      "to": "agent",
+      "label": "rules"
+    },
+    {
+      "from": "agent",
+      "to": "build",
+      "label": "runs"
+    },
+    {
+      "from": "build",
+      "to": "lint"
+    },
+    {
+      "from": "lint",
+      "to": "compile"
+    },
+    {
+      "from": "compile",
+      "to": "shots"
+    },
+    {
+      "from": "shots",
+      "to": "verify"
+    },
+    {
+      "from": "verify",
+      "to": "tests"
+    },
+    {
+      "from": "tests",
+      "to": "pass"
+    },
+    {
+      "from": "pass",
+      "to": "order",
+      "label": "no",
+      "line": "dashed"
+    },
+    {
+      "from": "order",
+      "to": "agent",
+      "label": "fix",
+      "line": "dashed",
+      "tone": "accent"
+    },
+    {
+      "from": "pass",
+      "to": "evidence",
+      "label": "yes"
+    },
+    {
+      "from": "evidence",
+      "to": "review"
+    },
+    {
+      "from": "review",
+      "to": "agent",
+      "label": "visual defect",
+      "line": "dashed"
+    },
+    {
+      "from": "review",
+      "to": "done",
+      "label": "yes",
+      "tone": "accent"
+    }
+  ],
+  "style": "--diagram-col-min:6.5rem;--diagram-node-w:9rem;--diagram-gap-x:2.75rem"
+}
 ```
+
+(The diagram is a JSON spec for the illustrative diagram component - on the docs site it plays step by step and every box and arrow can be clicked.)
 
 (Mechanically-enforced gates end at "all gates pass"; the screenshot set is
 the loop's guarantee of *evidence of appearance*. VLM reasoning over those

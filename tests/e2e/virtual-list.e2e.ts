@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: the whole point of this component is that the DOM stays small while the
@@ -271,6 +272,79 @@ try {
       `taller rows must produce a taller sizer, got ${m[0].sizerPx} and ${m[1].sizerPx}`,
     );
   });
+  const people = () =>
+    page.$eval('#vl-people', (l: any) => ({
+      state: l.store.value.name,
+      config: l.store.value.config,
+      rows: [...l.querySelectorAll('.virtual-list-row')].slice(0, 3).map((r: any) => r.innerText.replace(/\s+/g, ' ').trim()),
+      setsize: l.querySelector('.virtual-list-row')?.getAttribute('aria-setsize') ?? null,
+    }));
+
+  await check('setSource: 200,000 records through a dataview source; the renderer gets each record', async () => {
+    const s = await people();
+    assert.equal(s.state, 'default');
+    assert.deepEqual(s.rows, ['Ada 1 18', 'Grace 2 25', 'Linus 3 32']);
+    assert.equal(s.setsize, '200000');
+    assert.deepEqual(s.config, { filters: [], sorters: [] });
+  });
+
+  await check('a bound filter input filters every record, case-insensitively; a number filter takes operators; they combine', async () => {
+    await page.fill('#vl-q', 'GRACE');
+    await page.fill('#vl-age', '>= 80');
+    await page.waitForFunction(() => (document.querySelector('#vl-people') as any).store.value.config.filters.length === 2);
+    const s = await people();
+    assert.deepEqual(s.config.filters, [{ field: 'name', op: 'contains', value: 'GRACE' }, { field: 'age', op: 'gte', value: 80 }]);
+    const all = await page.$eval('#vl-people', (l) => (globalThis as any).df$.shadcn.virtualList.rows(l));
+    assert.ok(all.length > 0 && all.every((p: any) => p.name.startsWith('Grace') && p.age >= 80), 'every row matches');
+    assert.equal(s.setsize, String(all.length), 'aria-setsize is the filtered count');
+  });
+
+  await check('a bound sort select orders every record; the query keeps the filter', async () => {
+    await page.selectOption('#vl-sort', 'age:desc');
+    const s = await people();
+    assert.deepEqual(s.config.sorters, [{ field: 'age', direction: 'desc' }]);
+    assert.equal(s.config.filters.length, 2, 'sorting merges into the query');
+    const ages = await page.$eval('#vl-people', (l) => (globalThis as any).df$.shadcn.virtualList.rows(l).map((p: any) => p.age));
+    assert.deepEqual(ages, [...ages].sort((a: number, b: number) => b - a));
+  });
+
+  await check('nothing matches → empty; clearing → default with every record', async () => {
+    await page.fill('#vl-q', 'nobody-at-all');
+    await page.waitForFunction(() => (document.querySelector('#vl-people') as any).store.value.name === 'empty');
+    assert.equal(await page.$eval('#vl-people', (l) => getComputedStyle(l, '::after').content), '"Nobody matches"');
+    await page.fill('#vl-q', '');
+    await page.fill('#vl-age', '');
+    await page.selectOption('#vl-sort', '');
+    await page.waitForFunction(() => (document.querySelector('#vl-people') as any).store.value.config.filters.length === 0);
+    const s = await people();
+    assert.equal(s.state, 'default');
+    assert.equal(s.setsize, '200000');
+  });
+
+  await check('the store is the query: query() / store.set apply it; setState({ index }) keeps it', async () => {
+    const r = await page.$eval('#vl-people', (l: any) => {
+      const vl = (globalThis as any).df$.shadcn.virtualList;
+      const seen: unknown[] = [];
+      const off = l.store.subscribe((v: any) => seen.push(v.config.sorters));
+      vl.query(l, { sorters: [{ field: 'name', direction: 'asc' }] });
+      off();
+      l.api.setState('default', { index: 100 });
+      const kept = l.store.value.config.sorters;
+      l.store.set({ name: 'default', config: { filters: [{ field: 'age', op: 'eq', value: 18 }], sorters: [] } });
+      const ages = new Set(vl.rows(l).map((p: any) => p.age));
+      vl.query(l, { filters: [] });
+      return [seen, kept, [...ages]];
+    });
+    assert.deepEqual(r, [[[{ field: 'name', direction: 'asc' }]], [{ field: 'name', direction: 'asc' }], [18]]);
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    // the virtualizer positions and fills the rows (scroll / data, not state)
+    await assertRenderContract(page, '.virtual-list[id]', ['default', 'loading', 'empty'], {
+      runtimeOwned: '.virtual-list-rows, .virtual-list-rows *',
+    });
+  });
+
 } finally {
   await browser.close();
   server.stop?.();

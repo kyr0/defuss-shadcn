@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: the component's whole bet is that one real <input> under a row of slots
@@ -241,6 +242,11 @@ try {
       return { slots, cover: Math.round(inp.width) === Math.round(w.width) && Math.round(inp.height) === Math.round(w.height) };
     });
     assert.deepEqual(r, { slots: [56, 56, 56, 56], cover: true });
+  });
+
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.otp-input[id]', ['default','filled','invalid']);
   });
 
 } finally {

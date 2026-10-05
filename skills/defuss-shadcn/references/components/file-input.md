@@ -89,6 +89,22 @@ The registry global is `df$.shadcn.fileInputApi` / `df$.shadcn.fileInputStates`.
 
 ---
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.fileInputApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.fileInputStates` = `default`, `dragover`, `selected`, `error`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `file-drop:rejected` | `files`, `message` | Fires when chosen or dropped files are refused (type, size, count) - the files and the message shown. |
+
+---
+
 ## Sizes
 
 | `data-size` | Box height | Font |

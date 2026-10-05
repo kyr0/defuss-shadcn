@@ -57,46 +57,58 @@ export function CssOnlyStat(_props: Props) {
   );
 }
 
-/** Index page: the four headline Statistic cards, generated from stats.json. */
+/** A figure that counts when it scrolls into view (runtime/site.ts): a count
+ *  rises from 0, a size falls from the next power of ten (253.6 ← 1000). The
+ *  final value is the rendered text - without JS, or under reduced motion,
+ *  that is all anyone sees. */
+function CountUp({ value }: { value: number }) {
+  return (
+    <span data-stat-count data-count={String(value)} data-count-from="0" data-count-decimals="0">
+      {String(value)}
+    </span>
+  );
+}
+function CountDown({ bytes }: { bytes: number }) {
+  const kib = Number((bytes / 1024).toFixed(1));
+  const from = 10 ** Math.ceil(Math.log10(Math.max(kib, 1.0001)));
+  return (
+    <span data-stat-count data-count={kib.toFixed(1)} data-count-from={String(from)} data-count-decimals="1">
+      {kib.toFixed(1)}
+    </span>
+  );
+}
+
+/** One boxed statistic: the shipped Statistic inside the shipped Card. */
+function StatCard({ title, children, description }: { title: string; children: unknown; description: unknown }) {
+  return (
+    <div class="card stats-card" data-size="sm">
+      <div class="card-content">
+        <div class="statistic">
+          <p class="statistic-title">{title}</p>
+          <p class="statistic-value">{children}</p>
+          <p class="statistic-description">{description}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Index page: the headline statistics as boxed cards, generated from
+ *  stats.json - counts rise from 0, sizes fall to their measurement. */
 export function StatsCards(_props: Props) {
   const s = loadStats();
+  const gzip = <span class="badge" data-variant="secondary" title="gzip-compressed size">gzip</span>;
   return (
-    <div class="grid gap-4 mb-12" style="grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));">
-      <div class="statistic">
-        <p class="statistic-title">Components</p>
-        <p class="statistic-value">{s.total}</p>
-        <p class="statistic-description">ATM · MOL · ORG · BLK · TPL</p>
-      </div>
-      <div class="statistic">
-        <p class="statistic-title">With JavaScript</p>
-        <p class="statistic-value">{s.withJs}</p>
-        <p class="statistic-description">interactive, State API–driven</p>
-      </div>
-      <div class="statistic">
-        <p class="statistic-title">CSS-only</p>
-        <p class="statistic-value">{s.withoutJs}</p>
-        <p class="statistic-description">zero behavior, pure markup</p>
-      </div>
-      <div class="statistic">
-        <p class="statistic-title">Bundle</p>
-        <p class="statistic-value flex flex-wrap items-center gap-2">
-          {formatKiB(s.bundle.totalSizeGzMinified)}
-          <span class="badge" data-variant="secondary" title="gzip-compressed size">gzip</span>
-        </p>
-        <p class="statistic-description">
-          <code>all.min.css</code> + <code>all.min.js</code>
-        </p>
-      </div>
-      <div class="statistic">
-        <p class="statistic-title">Core runtime</p>
-        <p class="statistic-value flex flex-wrap items-center gap-2">
-          {formatKiB(s.core.totalSizeGzMinified)}
-          <span class="badge" data-variant="secondary" title="gzip-compressed size">gzip</span>
-        </p>
-        <p class="statistic-description">
-          <code>core.min.js</code> + <code>core.min.css</code>
-        </p>
-      </div>
+    <div class="stats-cards grid gap-3 mb-12">
+      <StatCard title="Components" description="ATM · MOL · ORG · BLK · TPL"><CountUp value={s.total} /></StatCard>
+      <StatCard title="With JavaScript" description="interactive, State API–driven"><CountUp value={s.withJs} /></StatCard>
+      <StatCard title="CSS-only" description="zero behavior, pure markup"><CountUp value={s.withoutJs} /></StatCard>
+      <StatCard title="Bundle" description={<><code>all.min.css</code> + <code>all.min.js</code></>}>
+        <CountDown bytes={s.bundle.totalSizeGzMinified} /> <span class="stats-unit">KiB</span> {gzip}
+      </StatCard>
+      <StatCard title="Core runtime" description={<><code>core.min.js</code> + <code>core.min.css</code></>}>
+        <CountDown bytes={s.core.totalSizeGzMinified} /> <span class="stats-unit">KiB</span> {gzip}
+      </StatCard>
     </div>
   );
 }

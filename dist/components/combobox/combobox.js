@@ -20,10 +20,16 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, safeShowPopover } = __df$shared;
+const { defussGlobals, defussQuery, safeShowPopover, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const comboboxStates = ['default', 'open'];
+/**
+ * The markup of a state: none - 'open' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) { }
 /**
  * UI side of setState (per popover): 'default' closes, 'open' shows. The
  * wrapper's own open()/close() (registered at init) keep aria-expanded,
@@ -40,18 +46,12 @@ function triggerStateChange(popover, stateName, _config) {
     }
 }
 /** Registry-level API; pass the popover element explicitly. Unknown names throw. */
-export const comboboxApi = {
-    setState(popover, stateName, config = {}) {
-        if (!comboboxStates.includes(stateName)) {
-            throw new Error(`combobox: unknown state "${stateName}" (supported: ${comboboxStates.join(', ')})`);
-        }
-        triggerStateChange(popover, stateName, config);
-        // state lives on the ELEMENT, not the module (many comboboxes per page)
-        popover.dataset.stateName = stateName;
-        popover._stateConfig = config;
-    },
-    getState(popover) {
-        const selected = Array.from(popover.querySelectorAll('[role="option"][aria-selected="true"]'));
+export const comboboxApi = componentState({
+    component: 'combobox',
+    states: comboboxStates,
+    apply: (popover, state) => triggerStateChange(popover, state.name, state.config),
+    read: (popover, state) => {
+        const selected = Array.from(dfDollar(popover).find('[role="option"][aria-selected="true"]').toArray());
         const labels = selected.map((o) => o.textContent?.trim() ?? '');
         return {
             // reflect reality: trigger clicks and Escape change the UI too
@@ -59,14 +59,15 @@ export const comboboxApi = {
             // value: the chosen label (joined in multi-select); values / labels:
             // every chosen option's data-value / text, in list order
             config: {
-                ...popover._stateConfig,
+                ...state.config,
                 value: labels.join(', '),
                 values: selected.map((o) => o.dataset.value ?? o.textContent?.trim() ?? ''),
                 labels,
             },
         };
     },
-};
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.comboboxApi = comboboxApi;
 df$.comboboxStates = comboboxStates;
 /** Escape text for the tag/hidden-input markup rendered through morph. */
@@ -86,16 +87,16 @@ let comboSeq = 0;
  * like the rest. data-name renders one hidden input per value.
  */
 function initTags(wrapper) {
-    const field = wrapper.querySelector('.combobox-field');
-    const input = wrapper.querySelector('.combobox-field-input');
-    const popover = wrapper.querySelector('.combobox-content');
-    const listbox = wrapper.querySelector('[role="listbox"]');
+    const field = dfDollar(wrapper).find('.combobox-field').get(0);
+    const input = dfDollar(wrapper).find('.combobox-field-input').get(0);
+    const popover = dfDollar(wrapper).find('.combobox-content').get(0);
+    const listbox = dfDollar(wrapper).find('[role="listbox"]').get(0);
     if (!field || !input || !popover || !listbox)
         return;
-    const empty = wrapper.querySelector('.combobox-empty');
+    const empty = dfDollar(wrapper).find('.combobox-empty').get(0);
     const creatable = wrapper.hasAttribute('data-creatable');
     const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
-    const options = () => Array.from(listbox.querySelectorAll('[role="option"]:not(.combobox-create)'));
+    const options = () => Array.from(dfDollar(listbox).find('[role="option"]:not(.combobox-create)').toArray());
     const valueOf = (o) => o.dataset.value ?? o.textContent.trim();
     const labelOf = (o) => o.textContent.trim();
     dfDollar(listbox).attr('aria-multiselectable', 'true');
@@ -149,10 +150,8 @@ function initTags(wrapper) {
     // without this the docs' State "open" switch did nothing on a tag input)
     popover._open = () => { open(); filter(); };
     popover._close = close;
-    popover.api = {
-        setState: (stateName, config) => comboboxApi.setState(popover, stateName, config),
-        getState: () => comboboxApi.getState(popover),
-    };
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(popover, comboboxApi);
     /** Filter by the typed text; auto-highlight the exact match, else the create row. */
     const filter = () => {
         const text = input.value.trim();
@@ -191,6 +190,7 @@ function initTags(wrapper) {
         if (input.dataset.placeholder === undefined)
             input.dataset.placeholder = input.placeholder;
         input.placeholder = labels.length ? '' : input.dataset.placeholder;
+        // Fires when the user changes the selection - the selected values, their labels, and the values created from typed text.
         if (announce)
             wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels, created } }));
     };
@@ -326,7 +326,7 @@ function initTags(wrapper) {
     popover.addEventListener('toggle', () => { dfDollar(input).attr('aria-expanded', String(isOpen())); });
 }
 function init() {
-    document.querySelectorAll('.combobox:not([data-init])').forEach((wrapper) => {
+    dfDollar('.combobox:not([data-init])').toArray().forEach((wrapper) => {
         wrapper.dataset.init = '';
         if (wrapper.hasAttribute('data-tags')) {
             initTags(wrapper);
@@ -381,7 +381,7 @@ function init() {
             tags = document.createElement('div');
             tags.className = 'combobox-tags';
             tags.setAttribute('role', 'list');
-            tags.setAttribute('aria-label', `Selected ${trigger.getAttribute('aria-label') || document.getElementById(trigger.getAttribute('aria-labelledby') || '')?.textContent?.trim() || 'options'}`);
+            tags.setAttribute('aria-label', `Selected ${trigger.getAttribute('aria-label') || dfDollar('#' + CSS.escape(trigger.getAttribute('aria-labelledby') || '')).get(0)?.textContent?.trim() || 'options'}`);
             dfDollar(clearBtn).after(tags);
             // a tag's × removes its option; focus moves to the neighbouring tag
             // (or back to the trigger) so keyboard users never lose their place
@@ -390,12 +390,12 @@ function init() {
                 if (!btn)
                     return;
                 const option = Array.from(allItems).find((o) => (o.dataset.value ?? o.textContent.trim()) === btn.dataset.value);
-                const all = Array.from(tags.querySelectorAll('.combobox-tag-remove'));
+                const all = dfDollar(tags).find('.combobox-tag-remove').toArray();
                 const at = all.indexOf(btn);
                 if (option)
                     dfDollar(option).attr('aria-selected', 'false');
                 renderSelection();
-                const rest = Array.from(tags.querySelectorAll('.combobox-tag-remove'));
+                const rest = dfDollar(tags).find('.combobox-tag-remove').toArray();
                 (rest[Math.min(at, rest.length - 1)] ?? trigger).focus();
             });
         }
@@ -461,10 +461,8 @@ function init() {
         popover._open = open;
         popover._close = close;
         // bind-scope the api per popover: `$('#cb-popover').api.setState('open')`
-        popover.api = {
-            setState: (stateName, config) => comboboxApi.setState(popover, stateName, config),
-            getState: () => comboboxApi.getState(popover),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(popover, comboboxApi);
         const isOpen = () => popover.matches(':popover-open');
         // flag-based filtering: hidden props toggle IN PLACE (nodes are never
         // replaced - identity, focus and caret survive), per §3's no-renderer rule

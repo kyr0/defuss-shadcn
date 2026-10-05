@@ -97,6 +97,8 @@ export function SiteHeader(_props: Props) {
           <span class="theme-popover-title">Theme</span>
           <button class="theme-reset-btn" id="theme-reset-btn">Reset</button>
         </div>
+        {/* the Theme Designer - designed themes come back on top of the grid */}
+        <a class="btn nav-link theme-design-btn" data-variant="outline" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Design your own</a>
         <div class="theme-grid" id="theme-grid"></div>
       </div>
       {/* Docs-wide search palette - the shipped command component, fed by the

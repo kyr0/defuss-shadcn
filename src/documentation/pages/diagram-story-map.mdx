@@ -1,0 +1,330 @@
+---
+title: "Illustrative · Story Map"
+description: "User story maps with the diagram component - a backbone of activities, the walking skeleton, release bands and the release cut, the riskiest story marked; step by step and as a delta."
+slug: "diagram-story-map"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-story-map" title="Illustrative · Story Map" component="diagram">
+  The Jeff Patton story map: activities left to right in narrative order (the backbone), their steps (the walking skeleton), then release bands top to bottom with the story cards. The release cut (<code>.diagram-rule</code>) under the MVP band is the point of the map; the riskiest story gets the accent.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Grocery app" component="diagram" hint="Bands are lanes; the rule sits at the bottom of the MVP rows."
+<figure class="diagram" id="dg-story" data-type="story-map" aria-label="Story map for a grocery app">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">User story map</span>
+    <span class="diagram-title">Grocery app: the whole story, and the first cut</span>
+    <span class="diagram-dek">Narrative left to right, priority top to bottom. Everything above the cut is the MVP.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5;--rspan:2"><span class="diagram-group-label">MVP</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Release 2</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:6;--span:5"><span class="diagram-group-label">Later</span></div>
+    <div class="diagram-node" data-node="find-food" data-shape="activity" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Activity 1</span>
+      <span class="diagram-node-name">Find food</span>
+    </div>
+    <div class="diagram-node" data-node="build-a-basket" data-shape="activity" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Activity 2</span>
+      <span class="diagram-node-name">Build a basket</span>
+    </div>
+    <div class="diagram-node" data-node="pay" data-shape="activity" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Activity 3</span>
+      <span class="diagram-node-name">Pay</span>
+    </div>
+    <div class="diagram-node" data-node="get-it-delivered" data-shape="activity" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">Activity 4</span>
+      <span class="diagram-node-name">Get it delivered</span>
+    </div>
+    <div class="diagram-node" data-node="search" style="--col:2;--row:2"><span class="diagram-node-name">Search</span></div>
+    <div class="diagram-node" data-node="add-to-basket" style="--col:3;--row:2"><span class="diagram-node-name">Add to basket</span></div>
+    <div class="diagram-node" data-node="checkout" style="--col:4;--row:2"><span class="diagram-node-name">Checkout</span></div>
+    <div class="diagram-node" data-node="track" style="--col:5;--row:2"><span class="diagram-node-name">Track</span></div>
+    <div class="diagram-node" data-node="search-by-name" style="--col:2;--row:3"><span class="diagram-node-name">Search by name</span></div>
+    <div class="diagram-node" data-node="browse-aisles" style="--col:2;--row:4"><span class="diagram-node-name">Browse aisles</span></div>
+    <div class="diagram-node" data-node="quantity-stepper" style="--col:3;--row:3"><span class="diagram-node-name">Quantity stepper</span></div>
+    <div class="diagram-node" data-node="card-payment" style="--col:4;--row:3"><span class="diagram-node-name">Card payment</span></div>
+    <div class="diagram-node" data-node="delivery-slot-picker" data-tone="accent" data-badge="risk" style="--col:5;--row:3">
+      <span class="diagram-node-name">Delivery slot picker</span>
+      <span class="diagram-node-meta">courier API unknown</span>
+    </div>
+    <div class="diagram-node" data-node="order-status" style="--col:5;--row:4"><span class="diagram-node-name">Order status</span></div>
+    <div class="diagram-rule" style="--row:4"><span>Release cut</span></div>
+    <div class="diagram-node" data-node="filters" style="--col:2;--row:5"><span class="diagram-node-name">Filters</span></div>
+    <div class="diagram-node" data-node="saved-baskets" style="--col:3;--row:5"><span class="diagram-node-name">Saved baskets</span></div>
+    <div class="diagram-node" data-node="apple-pay" style="--col:4;--row:5"><span class="diagram-node-name">Apple Pay</span></div>
+    <div class="diagram-node" data-node="live-courier-map" style="--col:5;--row:5"><span class="diagram-node-name">Live courier map</span></div>
+    <div class="diagram-node" data-node="recipes" style="--col:2;--row:6"><span class="diagram-node-name">Recipes</span></div>
+    <div class="diagram-node" data-node="split-payment" style="--col:4;--row:6"><span class="diagram-node-name">Split payment</span></div>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="muted">Activity</li>
+    <li data-swatch="accent">Riskiest story</li>
+    <li data-swatch="accent-line">Release cut</li>
+  </ul>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Backbone, skeleton, slices" component="diagram" hint="Activities, steps, the MVP, the cut, then the later releases."
+<figure class="diagram" id="dg-story-steps" data-type="story-map" data-steps data-autoplay aria-label="Story map for a grocery app">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">User story map</span>
+    <span class="diagram-title">Grocery app: the whole story, and the first cut</span>
+    <span class="diagram-dek">Narrative left to right, priority top to bottom. Everything above the cut is the MVP.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-shape="lane" data-step="3" style="--col:1;--row:3;--span:5;--rspan:2"><span class="diagram-group-label">MVP</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="5" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Release 2</span></div>
+    <div class="diagram-group" data-shape="lane" data-step="6" style="--col:1;--row:6;--span:5"><span class="diagram-group-label">Later</span></div>
+    <div class="diagram-node" data-node="find-food" data-shape="activity" data-step="1" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Activity 1</span>
+      <span class="diagram-node-name">Find food</span>
+    </div>
+    <div class="diagram-node" data-node="build-a-basket" data-shape="activity" data-step="1" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Activity 2</span>
+      <span class="diagram-node-name">Build a basket</span>
+    </div>
+    <div class="diagram-node" data-node="pay" data-shape="activity" data-step="1" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Activity 3</span>
+      <span class="diagram-node-name">Pay</span>
+    </div>
+    <div class="diagram-node" data-node="get-it-delivered" data-shape="activity" data-step="1" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">Activity 4</span>
+      <span class="diagram-node-name">Get it delivered</span>
+    </div>
+    <div class="diagram-node" data-node="search" data-step="2" style="--col:2;--row:2"><span class="diagram-node-name">Search</span></div>
+    <div class="diagram-node" data-node="add-to-basket" data-step="2" style="--col:3;--row:2"><span class="diagram-node-name">Add to basket</span></div>
+    <div class="diagram-node" data-node="checkout" data-step="2" style="--col:4;--row:2"><span class="diagram-node-name">Checkout</span></div>
+    <div class="diagram-node" data-node="track" data-step="2" style="--col:5;--row:2"><span class="diagram-node-name">Track</span></div>
+    <div class="diagram-node" data-node="search-by-name" data-step="3" style="--col:2;--row:3"><span class="diagram-node-name">Search by name</span></div>
+    <div class="diagram-node" data-node="browse-aisles" data-step="3" style="--col:2;--row:4"><span class="diagram-node-name">Browse aisles</span></div>
+    <div class="diagram-node" data-node="quantity-stepper" data-step="3" style="--col:3;--row:3"><span class="diagram-node-name">Quantity stepper</span></div>
+    <div class="diagram-node" data-node="card-payment" data-step="3" style="--col:4;--row:3"><span class="diagram-node-name">Card payment</span></div>
+    <div class="diagram-node" data-node="delivery-slot-picker" data-tone="accent" data-badge="risk" data-step="3" style="--col:5;--row:3">
+      <span class="diagram-node-name">Delivery slot picker</span>
+      <span class="diagram-node-meta">courier API unknown</span>
+    </div>
+    <div class="diagram-node" data-node="order-status" data-step="3" style="--col:5;--row:4"><span class="diagram-node-name">Order status</span></div>
+    <div class="diagram-rule" style="--row:4" data-step="4" data-step-label="The release cut"><span>Release cut</span></div>
+    <div class="diagram-node" data-node="filters" data-step="5" style="--col:2;--row:5"><span class="diagram-node-name">Filters</span></div>
+    <div class="diagram-node" data-node="saved-baskets" data-step="5" style="--col:3;--row:5"><span class="diagram-node-name">Saved baskets</span></div>
+    <div class="diagram-node" data-node="apple-pay" data-step="5" style="--col:4;--row:5"><span class="diagram-node-name">Apple Pay</span></div>
+    <div class="diagram-node" data-node="live-courier-map" data-step="5" style="--col:5;--row:5"><span class="diagram-node-name">Live courier map</span></div>
+    <div class="diagram-node" data-node="recipes" data-step="6" style="--col:2;--row:6"><span class="diagram-node-name">Recipes</span></div>
+    <div class="diagram-node" data-node="split-payment" data-step="6" style="--col:4;--row:6"><span class="diagram-node-name">Split payment</span></div>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="muted">Activity</li>
+    <li data-swatch="accent">Riskiest story</li>
+    <li data-swatch="accent-line">Release cut</li>
+  </ul>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Story Map, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-story-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-story-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-story-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-story-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-story-live" data-interactive data-type="story-map" aria-label="Story map for a grocery app">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">User story map</span>
+    <span class="diagram-title">Grocery app: the whole story, and the first cut</span>
+    <span class="diagram-dek">Narrative left to right, priority top to bottom. Everything above the cut is the MVP.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5;--rspan:2"><span class="diagram-group-label">MVP</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Release 2</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:6;--span:5"><span class="diagram-group-label">Later</span></div>
+    <div class="diagram-node" data-node="find-food" data-shape="activity" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Activity 1</span>
+      <span class="diagram-node-name">Find food</span>
+    </div>
+    <div class="diagram-node" data-node="build-a-basket" data-shape="activity" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Activity 2</span>
+      <span class="diagram-node-name">Build a basket</span>
+    </div>
+    <div class="diagram-node" data-node="pay" data-shape="activity" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Activity 3</span>
+      <span class="diagram-node-name">Pay</span>
+    </div>
+    <div class="diagram-node" data-node="get-it-delivered" data-shape="activity" style="--col:5;--row:1">
+      <span class="diagram-node-eyebrow">Activity 4</span>
+      <span class="diagram-node-name">Get it delivered</span>
+    </div>
+    <div class="diagram-node" data-node="search" style="--col:2;--row:2"><span class="diagram-node-name">Search</span></div>
+    <div class="diagram-node" data-node="add-to-basket" style="--col:3;--row:2"><span class="diagram-node-name">Add to basket</span></div>
+    <div class="diagram-node" data-node="checkout" style="--col:4;--row:2"><span class="diagram-node-name">Checkout</span></div>
+    <div class="diagram-node" data-node="track" style="--col:5;--row:2"><span class="diagram-node-name">Track</span></div>
+    <div class="diagram-node" data-node="search-by-name" style="--col:2;--row:3"><span class="diagram-node-name">Search by name</span></div>
+    <div class="diagram-node" data-node="browse-aisles" style="--col:2;--row:4"><span class="diagram-node-name">Browse aisles</span></div>
+    <div class="diagram-node" data-node="quantity-stepper" style="--col:3;--row:3"><span class="diagram-node-name">Quantity stepper</span></div>
+    <div class="diagram-node" data-node="card-payment" style="--col:4;--row:3"><span class="diagram-node-name">Card payment</span></div>
+    <div class="diagram-node" data-node="delivery-slot-picker" data-tone="accent" data-badge="risk" style="--col:5;--row:3">
+      <span class="diagram-node-name">Delivery slot picker</span>
+      <span class="diagram-node-meta">courier API unknown</span>
+    </div>
+    <div class="diagram-node" data-node="order-status" style="--col:5;--row:4"><span class="diagram-node-name">Order status</span></div>
+    <div class="diagram-rule" style="--row:4"><span>Release cut</span></div>
+    <div class="diagram-node" data-node="filters" style="--col:2;--row:5"><span class="diagram-node-name">Filters</span></div>
+    <div class="diagram-node" data-node="saved-baskets" style="--col:3;--row:5"><span class="diagram-node-name">Saved baskets</span></div>
+    <div class="diagram-node" data-node="apple-pay" style="--col:4;--row:5"><span class="diagram-node-name">Apple Pay</span></div>
+    <div class="diagram-node" data-node="live-courier-map" style="--col:5;--row:5"><span class="diagram-node-name">Live courier map</span></div>
+    <div class="diagram-node" data-node="recipes" style="--col:2;--row:6"><span class="diagram-node-name">Recipes</span></div>
+    <div class="diagram-node" data-node="split-payment" style="--col:4;--row:6"><span class="diagram-node-name">Split payment</span></div>
+  </div>
+  <ul class="diagram-legend">
+    <li data-swatch="muted">Activity</li>
+    <li data-swatch="accent">Riskiest story</li>
+    <li data-swatch="accent-line">Release cut</li>
+  </ul>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Story Map, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-story-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-story-edit" data-interactive data-type="story-map" aria-label="Story map for a grocery app">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">User story map</span>
+        <span class="diagram-title">Grocery app: the whole story, and the first cut</span>
+        <span class="diagram-dek">Narrative left to right, priority top to bottom. Everything above the cut is the MVP.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:4">
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:5;--rspan:2"><span class="diagram-group-label">MVP</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:5;--span:5"><span class="diagram-group-label">Release 2</span></div>
+        <div class="diagram-group" data-shape="lane" style="--col:1;--row:6;--span:5"><span class="diagram-group-label">Later</span></div>
+        <div class="diagram-node" data-node="find-food" data-shape="activity" style="--col:2;--row:1">
+          <span class="diagram-node-eyebrow">Activity 1</span>
+          <span class="diagram-node-name">Find food</span>
+        </div>
+        <div class="diagram-node" data-node="build-a-basket" data-shape="activity" style="--col:3;--row:1">
+          <span class="diagram-node-eyebrow">Activity 2</span>
+          <span class="diagram-node-name">Build a basket</span>
+        </div>
+        <div class="diagram-node" data-node="pay" data-shape="activity" style="--col:4;--row:1">
+          <span class="diagram-node-eyebrow">Activity 3</span>
+          <span class="diagram-node-name">Pay</span>
+        </div>
+        <div class="diagram-node" data-node="get-it-delivered" data-shape="activity" style="--col:5;--row:1">
+          <span class="diagram-node-eyebrow">Activity 4</span>
+          <span class="diagram-node-name">Get it delivered</span>
+        </div>
+        <div class="diagram-node" data-node="search" style="--col:2;--row:2"><span class="diagram-node-name">Search</span></div>
+        <div class="diagram-node" data-node="add-to-basket" style="--col:3;--row:2"><span class="diagram-node-name">Add to basket</span></div>
+        <div class="diagram-node" data-node="checkout" style="--col:4;--row:2"><span class="diagram-node-name">Checkout</span></div>
+        <div class="diagram-node" data-node="track" style="--col:5;--row:2"><span class="diagram-node-name">Track</span></div>
+        <div class="diagram-node" data-node="search-by-name" style="--col:2;--row:3"><span class="diagram-node-name">Search by name</span></div>
+        <div class="diagram-node" data-node="browse-aisles" style="--col:2;--row:4"><span class="diagram-node-name">Browse aisles</span></div>
+        <div class="diagram-node" data-node="quantity-stepper" style="--col:3;--row:3"><span class="diagram-node-name">Quantity stepper</span></div>
+        <div class="diagram-node" data-node="card-payment" style="--col:4;--row:3"><span class="diagram-node-name">Card payment</span></div>
+        <div class="diagram-node" data-node="delivery-slot-picker" data-tone="accent" data-badge="risk" style="--col:5;--row:3">
+          <span class="diagram-node-name">Delivery slot picker</span>
+          <span class="diagram-node-meta">courier API unknown</span>
+        </div>
+        <div class="diagram-node" data-node="order-status" style="--col:5;--row:4"><span class="diagram-node-name">Order status</span></div>
+        <div class="diagram-rule" style="--row:4"><span>Release cut</span></div>
+        <div class="diagram-node" data-node="filters" style="--col:2;--row:5"><span class="diagram-node-name">Filters</span></div>
+        <div class="diagram-node" data-node="saved-baskets" style="--col:3;--row:5"><span class="diagram-node-name">Saved baskets</span></div>
+        <div class="diagram-node" data-node="apple-pay" style="--col:4;--row:5"><span class="diagram-node-name">Apple Pay</span></div>
+        <div class="diagram-node" data-node="live-courier-map" style="--col:5;--row:5"><span class="diagram-node-name">Live courier map</span></div>
+        <div class="diagram-node" data-node="recipes" style="--col:2;--row:6"><span class="diagram-node-name">Recipes</span></div>
+        <div class="diagram-node" data-node="split-payment" style="--col:4;--row:6"><span class="diagram-node-name">Split payment</span></div>
+      </div>
+      <ul class="diagram-legend">
+        <li data-swatch="muted">Activity</li>
+        <li data-swatch="accent">Riskiest story</li>
+        <li data-swatch="accent-line">Release cut</li>
+      </ul>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-story-edit-panel" aria-labelledby="dg-story-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-story-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-story-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-story-edit');
+    const grid = document.getElementById('dg-story-edit-grid');
+    const title = document.getElementById('dg-story-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="The cut moves" component="diagram" hint="A de-risked story (renamed), one pulled into the MVP, one pushed to Release 2 (moved)."
+<figure class="diagram" id="dg-story-delta" data-type="story-map" data-delta aria-label="Story map after the MVP review">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">MVP review</span>
+    <span class="diagram-title">The cut moves</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:2;--span:4"><span class="diagram-group-label">MVP</span></div>
+    <div class="diagram-group" data-shape="lane" style="--col:1;--row:3;--span:4"><span class="diagram-group-label">Release 2</span></div>
+    <div class="diagram-node" data-node="find-food" data-shape="activity" style="--col:2;--row:1"><span class="diagram-node-name">Find food</span></div>
+    <div class="diagram-node" data-node="pay" data-shape="activity" style="--col:3;--row:1"><span class="diagram-node-name">Pay</span></div>
+    <div class="diagram-node" data-node="get-it-delivered" data-shape="activity" style="--col:4;--row:1"><span class="diagram-node-name">Get it delivered</span></div>
+    <div class="diagram-node" data-node="search" style="--col:2;--row:2"><span class="diagram-node-name">Search by name</span></div>
+    <div class="diagram-node" data-node="card" style="--col:3;--row:2"><span class="diagram-node-name">Card payment</span></div>
+    <div class="diagram-node" data-node="slot" data-tone="accent" data-change="changed" data-change-note="de-risked: no courier API needed" style="--col:4;--row:2">
+      <span class="diagram-node-name" data-before="Delivery slot picker">Fixed 2h windows</span>
+    </div>
+    <div class="diagram-node" data-node="apple" data-change="added" data-change-note="pulled into the MVP" style="--col:3;--row:2;margin-top:3.25rem"><span class="diagram-node-name">Apple Pay</span></div>
+    <div class="diagram-node" data-node="browse" data-change="moved" data-change-note="MVP → Release 2" data-before-style="--col:2;--row:2;margin-top:3.25rem" style="--col:2;--row:3"><span class="diagram-node-name">Browse aisles</span></div>
+    <div class="diagram-rule" style="--row:2"><span>Release cut</span></div>
+  </div>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped sidebar component. Loads the fixture
@@ -124,7 +125,12 @@ try {
       await page.waitForTimeout(250); // slide-in transition
       await page.click('.sidebar-mobile-close');
       await page.waitForFunction(() => !document.querySelector('#demo-mobile')!.matches(':open'));
-    } finally {
+      // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.app-sidebar[id]', ['default','collapsed']);
+  });
+
+} finally {
       await page.setViewportSize({ width: 1280, height: 720 }); // restore, even on failure
     }
   });
@@ -187,9 +193,14 @@ try {
 
   // -- Auto-collapse (documented: row < 24rem → rail, ≥ 28rem → restored) ---
   await check('auto-collapse: sidebar in a 18rem row docks to the rail on load', async () => {
+    // a fresh page: Cmd+B above toggled (and so pinned) the first sidebar
+    await page.reload();
+    await page.waitForFunction(() => !document.querySelector('.app-sidebar:not([data-init])'));
     await page.waitForFunction(
       () => (document.querySelector('#demo-auto') as HTMLElement).dataset.state === 'collapsed',
     );
+    // width animates (200ms ease) - wait for the settle, don't race the transition
+    await page.waitForFunction(() => document.querySelector('#demo-auto')!.getBoundingClientRect().width < 100).catch(() => {});
     const w = await page.$eval('#demo-auto', (el) => el.getBoundingClientRect().width);
     assert.ok(w < 100, `narrow-row sidebar is rail-width (${w}px)`);
   });

@@ -70,6 +70,20 @@ document.querySelector('#panel').api.getState(); // { name: 'default', config: {
 Actions (schema contract): `reset` dispatches `resizer-reset` on the wrapper —
 equivalent to `setState('default')`.
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.resizerApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.resizerStates` = `default`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `resizer-resize` | `axis`, `width`, `height` | Fires while the divider moves (pointer or keys) - the axis and the new width / height. |
+
 ## ARIA
 
 | Aspect | Handling |

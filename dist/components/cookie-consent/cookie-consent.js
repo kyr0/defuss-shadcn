@@ -10,7 +10,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent, persisted, reload, forget, persistOk } = __df$shared;
 const df$ = defussGlobals();
 const q = defussQuery();
 const cookieConsentStates = ['default', 'open', 'preferences', 'services'];
@@ -132,6 +132,9 @@ class Controller {
     key;
     revision;
     storage;
+    /** the stored decision (AGENTS.md "State through stores"): a persisted
+     *  store on the configured storage - null when storage is off or blocked */
+    saved;
     gates = new Map();
     off = [];
     id;
@@ -163,6 +166,15 @@ class Controller {
             }
         }
         this.storage = storage;
+        // the record is the store's value; its own checks (revision, age, …) run
+        // in readStored - the store only guarantees an object or null
+        this.saved = storage
+            ? persisted(this.key, null, {
+                storage,
+                validate: (v) => v === null || (typeof v === 'object' && !Array.isArray(v)),
+                onError: () => { this.storageFailed = true; },
+            })
+            : null;
         this.state = this.readStored();
         this.draft = new Set(this.state.acceptedServices);
         const authoredView = q(root).attr('data-state-name');
@@ -172,8 +184,15 @@ class Controller {
         // .cookie-consent-dialog and data-init keeps any other claimant away.
         q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
         this.dialog = q('.cookie-consent-dialog', root)[0];
+        // el.store (AGENTS.md "State through stores"); the controller stays
+        // el.api - its open() / acceptAll() / … are the documented surface, and
+        // its setState / getState run through the store
+        // registered before the first state: the store's apply reaches the
+        // controller through the registry (create() sets the same entry again)
+        controllers.set(root, this);
+        bindComponent(root, cookieConsentApi);
         root.api = this;
-        this.render();
+        this.repaint();
         this.listen(root, 'click', event => this.onClick(event));
         this.listen(root, 'change', event => this.onChange(event));
         this.listen(this.dialog, 'cancel', () => this.close());
@@ -193,11 +212,13 @@ class Controller {
                 const e = event;
                 if ((e.key === this.key || e.key === null) && e.storageArea === this.storage) {
                     const previous = this.state;
+                    if (this.saved)
+                        reload(this.saved);
                     this.state = this.readStored();
                     this.draft = new Set(this.state.acceptedServices);
                     this.revoke(previous);
                     this.updateTagsActivation();
-                    this.render();
+                    this.repaint();
                     this.emit('storage');
                     if (!this.state.decisionMade && this.config.autoShow !== false)
                         this.open();
@@ -248,42 +269,26 @@ class Controller {
     }
     readStored() {
         const fallback = this.makeState([]);
-        if (!this.storage)
+        const s = this.saved?.value;
+        if (!s)
             return fallback;
-        try {
-            const raw = this.storage.getItem(this.key);
-            if (!raw)
-                return fallback;
-            const saved = JSON.parse(raw);
-            if (!saved || typeof saved !== 'object')
-                return fallback;
-            const s = saved;
-            const age = Date.now() - (s.updatedAt ?? 0);
-            if (s.schemaVersion !== 1 || s.revision !== this.revision || s.decisionMade !== true
-                || !languagesOf(this.config).includes(s.language ?? '') || !Array.isArray(s.acceptedServices)
-                || !s.acceptedServices.every(id => typeof id === 'string') || typeof s.updatedAt !== 'number'
-                || !Number.isFinite(s.updatedAt) || age < 0 || age > (this.config.maxAgeDays ?? 180) * 86400000)
-                return fallback;
-            return this.makeState(s.acceptedServices, true, s.updatedAt, s.language);
-        }
-        catch {
-            this.storageFailed = true;
+        const age = Date.now() - (s.updatedAt ?? 0);
+        if (s.schemaVersion !== 1 || s.revision !== this.revision || s.decisionMade !== true
+            || !languagesOf(this.config).includes(s.language ?? '') || !Array.isArray(s.acceptedServices)
+            || !s.acceptedServices.every(id => typeof id === 'string') || typeof s.updatedAt !== 'number'
+            || !Number.isFinite(s.updatedAt) || age < 0 || age > (this.config.maxAgeDays ?? 180) * 86400000)
             return fallback;
-        }
+        return this.makeState(s.acceptedServices, true, s.updatedAt, s.language);
     }
     persist() {
-        if (!this.storage) {
+        if (!this.saved) {
             this.storageFailed = this.config.storage !== null;
             return;
         }
-        try {
-            const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
-            this.storage.setItem(this.key, JSON.stringify({ schemaVersion: 1, revision, decisionMade, language, acceptedServices, updatedAt }));
-            this.storageFailed = false;
-        }
-        catch {
-            this.storageFailed = true;
-        }
+        const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
+        this.storageFailed = false;
+        this.saved.set({ schemaVersion: 1, revision, decisionMade, language, acceptedServices: [...acceptedServices], updatedAt });
+        this.storageFailed ||= !persistOk(this.saved);
     }
     getConsent() {
         return { ...this.state, acceptedServices: [...this.state.acceptedServices], acceptedCategories: [...this.state.acceptedCategories] };
@@ -294,9 +299,22 @@ class Controller {
         return this.state.acceptedServices.includes(id);
     }
     getState() {
+        return cookieConsentApi.getState(this.root);
+    }
+    /** the state the dialog shows (the store's read-back) */
+    viewState() {
         return { name: this.dialog.open ? this.view : 'default', config: { language: this.state.language } };
     }
+    /** The markup of a state (default: the current one) - AGENTS.md "State API"
+     *  → render: the authored host; the dialog the views paint is runtime chrome. */
+    render(state) {
+        return cookieConsentApi.render(state ?? this.getState());
+    }
     setState(name, config = {}) {
+        cookieConsentApi.setState(this.root, name, config);
+    }
+    /** the DOM side of a state - the store's apply */
+    applyView(name, config = {}) {
         this.assertAlive();
         if (!cookieConsentStates.includes(name))
             throw new Error(`cookie-consent: unknown state "${name}"`);
@@ -312,7 +330,7 @@ class Controller {
         }
         this.view = name;
         q(this.root).attr('data-state-name', name);
-        this.render();
+        this.repaint();
         // banner: the first-visit view is a NON-modal bar along the bottom of the
         // page (show()) - the page stays usable; the settings views need focus,
         // so they reopen as the modal dialog (showModal()). Switching closes and
@@ -352,7 +370,7 @@ class Controller {
         this.state.language = language;
         if (this.state.decisionMade)
             this.persist();
-        this.render();
+        this.repaint();
         this.refreshOverlays();
     }
     commit(ids, reason, close = true) {
@@ -363,7 +381,7 @@ class Controller {
         this.persist();
         this.revoke(previous);
         this.updateTagsActivation();
-        this.render();
+        this.repaint();
         if (close)
             this.close();
         this.emit(reason);
@@ -384,11 +402,10 @@ class Controller {
     }
     reset() {
         this.assertAlive();
-        try {
-            this.storage?.removeItem(this.key);
-        }
-        catch {
-            this.storageFailed = true;
+        if (this.saved) {
+            this.saved.set(null);
+            if (!forget(this.saved))
+                this.storageFailed = true;
         }
         const previous = this.state;
         this.state = this.makeState([], false, null, previous.language);
@@ -399,9 +416,11 @@ class Controller {
         this.emit('reset');
     }
     error(kind, error) {
+        // Fires when something fails without breaking the page - storage (kind "storage"), a callback, a revoke hook.
         this.root.dispatchEvent(new CustomEvent('cookie-consent:error', { bubbles: true, detail: { kind, error } }));
     }
     emit(reason) {
+        // Fires on every decision - the consent state and why (accept, deny, save, service, reset, storage).
         this.root.dispatchEvent(new CustomEvent('cookie-consent:change', { bubbles: true, detail: { state: this.getConsent(), reason } }));
         try {
             this.config.onChange?.(this.getConsent(), reason);
@@ -448,7 +467,8 @@ class Controller {
             return url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>` : '';
         }).join('');
     }
-    render() {
+    /** Repaint the dialog from the consent state (internal; render() is the State API name) */
+    repaint() {
         if (this.destroyed)
             return;
         const tr = this.messages();
@@ -593,7 +613,7 @@ class Controller {
         else
             return;
         const focusKey = service ? `[data-cookie-service="${service}"]` : `[data-cookie-category="${category}"]`;
-        this.render();
+        this.repaint();
         q(focusKey, this.dialog)[0]?.focus();
     }
     updateTagsActivation() {
@@ -740,6 +760,7 @@ class Controller {
         this.close();
         this.observer.disconnect();
         this.off.forEach(off => off());
+        this.saved?.destroy();
         // Destroy revokes active optional integrations; inert placeholders stay.
         const previous = this.state;
         this.state = this.makeState([]);
@@ -761,6 +782,7 @@ class Controller {
         q('.cookie-consent-floating', this.root).remove();
         q(this.root).attr('data-init', null).attr('data-cookie-consent-ready', null).attr('data-cookie-keys', null);
         q(this.root).attr('data-cookie-consent-destroyed', '');
+        unbindComponent(this.root);
         delete this.root.api;
         controllers.delete(this.root);
         this.destroyed = true;
@@ -773,17 +795,18 @@ function controllerFor(el) {
     return instance;
 }
 function triggerStateChange(el, stateName, config) {
-    controllerFor(el).setState(stateName, config);
+    controllerFor(el).applyView(stateName, config);
 }
-export const cookieConsentApi = {
-    setState(el, stateName, config = {}) {
-        if (!cookieConsentStates.includes(stateName))
-            throw new Error(`cookie-consent: unknown state "${stateName}"`);
-        triggerStateChange(el, stateName, config);
-    },
-    getState(el) { return controllerFor(el).getState(); },
-};
+export const cookieConsentApi = componentState({
+    component: 'cookie-consent',
+    states: cookieConsentStates,
+    apply: (el, state) => triggerStateChange(el, state.name, state.config),
+    read: (el) => controllerFor(el).viewState(),
+    // every view lives in the dialog the controller paints and appends at
+    // runtime (data-ce-chrome) - the authored host is the markup of each state
+});
 export const cookieConsent = {
+    /** Start a consent manager on root with a config (cookieOrigins, texts, storage …) - returns its instance (also el.api); a second call returns the same one. */
     create(root, config) {
         if (controllers.has(root))
             return controllers.get(root);
@@ -796,6 +819,7 @@ export const cookieConsent = {
         controllers.set(root, controller);
         return controller;
     },
+    /** The instance a root already has, if any. */
     get(root) { return controllers.get(root); },
     init,
 };

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "name": "property-grid",
+  "states": {
+    "editing": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".property-grid"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "editing",
+        "args": {
+          "editing": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-editing"
+      },
+      "editor": {
+        "component": "text"
+      }
+    }
+  },
+  "actions": {}
+}

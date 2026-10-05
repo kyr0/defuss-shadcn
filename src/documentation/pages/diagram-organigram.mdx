@@ -1,0 +1,392 @@
+---
+title: "Illustrative · Organigram"
+description: "Organigrams (org charts) with the diagram component - owners, how to reach them and what they own, bus connectors per parent; step by step and as a re-org delta."
+slug: "diagram-organigram"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-organigram" title="Illustrative · Organigram" component="diagram">
+  Who owns what: each node answers name, how to invoke (a handle, a channel) and scope. The organigram type routes as a bus - one shared trunk per parent, vertical drops to the children. Open roles stay visible, dashed; the front door that takes unowned work gets the accent.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Engineering organization" component="diagram" hint="data-type=organigram shares the parent port (bus routing); --span centers a parent over its children."
+<figure class="diagram" id="dg-org" data-type="organigram" aria-label="Engineering organization and routing">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Organigram</span>
+    <span class="diagram-title">Who owns what - and where to ask</span>
+    <span class="diagram-dek">Name, how to reach them, what they own. The front door takes everything that has no owner yet.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <div class="diagram-node" data-node="cto" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Executive</span>
+      <span class="diagram-node-name">CTO</span>
+      <span class="diagram-node-meta">@cto · strategy</span>
+    </div>
+    <div class="diagram-node" data-node="platform" style="--col:1;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Platform</span>
+      <span class="diagram-node-meta">@platform</span>
+    </div>
+    <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Product eng</span>
+      <span class="diagram-node-meta">@product</span>
+    </div>
+    <div class="diagram-node" data-node="front" data-tone="accent" data-step-label="Front door" style="--col:4;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Rotation</span>
+      <span class="diagram-node-name">Eng front door</span>
+      <span class="diagram-node-meta">#eng-help · triage</span>
+    </div>
+    <div class="diagram-node" data-node="infra" style="--col:1;--row:3">
+      <span class="diagram-node-name">Infra</span>
+      <span class="diagram-node-meta">K8s · network</span>
+    </div>
+    <div class="diagram-node" data-node="dx" style="--col:2;--row:3">
+      <span class="diagram-node-name">Dev experience</span>
+      <span class="diagram-node-meta">CI · tooling</span>
+    </div>
+    <div class="diagram-node" data-node="web" style="--col:3;--row:3">
+      <span class="diagram-node-name">Web</span>
+      <span class="diagram-node-meta">app · design sys</span>
+    </div>
+    <div class="diagram-node" data-node="sec" data-tone="external" style="--col:4;--row:3">
+      <span class="diagram-node-name">Security</span>
+      <span class="diagram-node-meta">not hired yet</span>
+    </div>
+    <div class="diagram-node" data-node="oncall" style="--col:5;--row:3">
+      <span class="diagram-node-name">On-call</span>
+      <span class="diagram-node-meta">PagerDuty</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="cto" data-to="platform"></li>
+    <li class="diagram-edge" data-from="cto" data-to="product"></li>
+    <li class="diagram-edge" data-from="cto" data-to="front"></li>
+    <li class="diagram-edge" data-from="platform" data-to="infra"></li>
+    <li class="diagram-edge" data-from="platform" data-to="dx"></li>
+    <li class="diagram-edge" data-from="product" data-to="web"></li>
+    <li class="diagram-edge" data-from="front" data-to="sec" data-line="dashed"></li>
+    <li class="diagram-edge" data-from="front" data-to="oncall"></li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Front door</li>
+    <li data-swatch="external">Open role</li>
+  </ul>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Organization, step by step" component="diagram" hint="Tier by tier: data-step on each level."
+<figure class="diagram" id="dg-org-steps" data-type="organigram" data-steps data-autoplay aria-label="Engineering organization and routing">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Organigram</span>
+    <span class="diagram-title">Who owns what - and where to ask</span>
+    <span class="diagram-dek">Name, how to reach them, what they own. The front door takes everything that has no owner yet.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <div class="diagram-node" data-node="cto" data-step="1" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Executive</span>
+      <span class="diagram-node-name">CTO</span>
+      <span class="diagram-node-meta">@cto · strategy</span>
+    </div>
+    <div class="diagram-node" data-node="platform" data-step="2" style="--col:1;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Platform</span>
+      <span class="diagram-node-meta">@platform</span>
+    </div>
+    <div class="diagram-node" data-node="product" data-step="2" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Product eng</span>
+      <span class="diagram-node-meta">@product</span>
+    </div>
+    <div class="diagram-node" data-node="front" data-tone="accent" data-step="2" data-step-label="Front door" style="--col:4;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Rotation</span>
+      <span class="diagram-node-name">Eng front door</span>
+      <span class="diagram-node-meta">#eng-help · triage</span>
+    </div>
+    <div class="diagram-node" data-node="infra" data-step="3" style="--col:1;--row:3">
+      <span class="diagram-node-name">Infra</span>
+      <span class="diagram-node-meta">K8s · network</span>
+    </div>
+    <div class="diagram-node" data-node="dx" data-step="3" style="--col:2;--row:3">
+      <span class="diagram-node-name">Dev experience</span>
+      <span class="diagram-node-meta">CI · tooling</span>
+    </div>
+    <div class="diagram-node" data-node="web" data-step="3" style="--col:3;--row:3">
+      <span class="diagram-node-name">Web</span>
+      <span class="diagram-node-meta">app · design sys</span>
+    </div>
+    <div class="diagram-node" data-node="sec" data-tone="external" data-step="3" style="--col:4;--row:3">
+      <span class="diagram-node-name">Security</span>
+      <span class="diagram-node-meta">not hired yet</span>
+    </div>
+    <div class="diagram-node" data-node="oncall" data-step="3" style="--col:5;--row:3">
+      <span class="diagram-node-name">On-call</span>
+      <span class="diagram-node-meta">PagerDuty</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="cto" data-to="platform"></li>
+    <li class="diagram-edge" data-from="cto" data-to="product"></li>
+    <li class="diagram-edge" data-from="cto" data-to="front"></li>
+    <li class="diagram-edge" data-from="platform" data-to="infra"></li>
+    <li class="diagram-edge" data-from="platform" data-to="dx"></li>
+    <li class="diagram-edge" data-from="product" data-to="web"></li>
+    <li class="diagram-edge" data-from="front" data-to="sec" data-line="dashed"></li>
+    <li class="diagram-edge" data-from="front" data-to="oncall"></li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Front door</li>
+    <li data-swatch="external">Open role</li>
+  </ul>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Organigram, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-org-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-org-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-org-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-org-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-org-live" data-interactive data-type="organigram" aria-label="Engineering organization and routing">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Organigram</span>
+    <span class="diagram-title">Who owns what - and where to ask</span>
+    <span class="diagram-dek">Name, how to reach them, what they own. The front door takes everything that has no owner yet.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+    <div class="diagram-node" data-node="cto" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Executive</span>
+      <span class="diagram-node-name">CTO</span>
+      <span class="diagram-node-meta">@cto · strategy</span>
+    </div>
+    <div class="diagram-node" data-node="platform" style="--col:1;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Platform</span>
+      <span class="diagram-node-meta">@platform</span>
+    </div>
+    <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Product eng</span>
+      <span class="diagram-node-meta">@product</span>
+    </div>
+    <div class="diagram-node" data-node="front" data-tone="accent" data-step-label="Front door" style="--col:4;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Rotation</span>
+      <span class="diagram-node-name">Eng front door</span>
+      <span class="diagram-node-meta">#eng-help · triage</span>
+    </div>
+    <div class="diagram-node" data-node="infra" style="--col:1;--row:3">
+      <span class="diagram-node-name">Infra</span>
+      <span class="diagram-node-meta">K8s · network</span>
+    </div>
+    <div class="diagram-node" data-node="dx" style="--col:2;--row:3">
+      <span class="diagram-node-name">Dev experience</span>
+      <span class="diagram-node-meta">CI · tooling</span>
+    </div>
+    <div class="diagram-node" data-node="web" style="--col:3;--row:3">
+      <span class="diagram-node-name">Web</span>
+      <span class="diagram-node-meta">app · design sys</span>
+    </div>
+    <div class="diagram-node" data-node="sec" data-tone="external" style="--col:4;--row:3">
+      <span class="diagram-node-name">Security</span>
+      <span class="diagram-node-meta">not hired yet</span>
+    </div>
+    <div class="diagram-node" data-node="oncall" style="--col:5;--row:3">
+      <span class="diagram-node-name">On-call</span>
+      <span class="diagram-node-meta">PagerDuty</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="cto" data-to="platform"></li>
+    <li class="diagram-edge" data-from="cto" data-to="product"></li>
+    <li class="diagram-edge" data-from="cto" data-to="front"></li>
+    <li class="diagram-edge" data-from="platform" data-to="infra"></li>
+    <li class="diagram-edge" data-from="platform" data-to="dx"></li>
+    <li class="diagram-edge" data-from="product" data-to="web"></li>
+    <li class="diagram-edge" data-from="front" data-to="sec" data-line="dashed"></li>
+    <li class="diagram-edge" data-from="front" data-to="oncall"></li>
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Front door</li>
+    <li data-swatch="external">Open role</li>
+  </ul>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Organigram, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-org-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-org-edit" data-interactive data-type="organigram" aria-label="Engineering organization and routing">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Organigram</span>
+        <span class="diagram-title">Who owns what - and where to ask</span>
+        <span class="diagram-dek">Name, how to reach them, what they own. The front door takes everything that has no owner yet.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
+        <div class="diagram-node" data-node="cto" style="--col:3;--row:1">
+          <span class="diagram-node-eyebrow">Executive</span>
+          <span class="diagram-node-name">CTO</span>
+          <span class="diagram-node-meta">@cto · strategy</span>
+        </div>
+        <div class="diagram-node" data-node="platform" style="--col:1;--row:2;--span:2">
+          <span class="diagram-node-eyebrow">Director</span>
+          <span class="diagram-node-name">Platform</span>
+          <span class="diagram-node-meta">@platform</span>
+        </div>
+        <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+          <span class="diagram-node-eyebrow">Director</span>
+          <span class="diagram-node-name">Product eng</span>
+          <span class="diagram-node-meta">@product</span>
+        </div>
+        <div class="diagram-node" data-node="front" data-tone="accent" data-step-label="Front door" style="--col:4;--row:2;--span:2">
+          <span class="diagram-node-eyebrow">Rotation</span>
+          <span class="diagram-node-name">Eng front door</span>
+          <span class="diagram-node-meta">#eng-help · triage</span>
+        </div>
+        <div class="diagram-node" data-node="infra" style="--col:1;--row:3">
+          <span class="diagram-node-name">Infra</span>
+          <span class="diagram-node-meta">K8s · network</span>
+        </div>
+        <div class="diagram-node" data-node="dx" style="--col:2;--row:3">
+          <span class="diagram-node-name">Dev experience</span>
+          <span class="diagram-node-meta">CI · tooling</span>
+        </div>
+        <div class="diagram-node" data-node="web" style="--col:3;--row:3">
+          <span class="diagram-node-name">Web</span>
+          <span class="diagram-node-meta">app · design sys</span>
+        </div>
+        <div class="diagram-node" data-node="sec" data-tone="external" style="--col:4;--row:3">
+          <span class="diagram-node-name">Security</span>
+          <span class="diagram-node-meta">not hired yet</span>
+        </div>
+        <div class="diagram-node" data-node="oncall" style="--col:5;--row:3">
+          <span class="diagram-node-name">On-call</span>
+          <span class="diagram-node-meta">PagerDuty</span>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="cto" data-to="platform"></li>
+        <li class="diagram-edge" data-from="cto" data-to="product"></li>
+        <li class="diagram-edge" data-from="cto" data-to="front"></li>
+        <li class="diagram-edge" data-from="platform" data-to="infra"></li>
+        <li class="diagram-edge" data-from="platform" data-to="dx"></li>
+        <li class="diagram-edge" data-from="product" data-to="web"></li>
+        <li class="diagram-edge" data-from="front" data-to="sec" data-line="dashed"></li>
+        <li class="diagram-edge" data-from="front" data-to="oncall"></li>
+      </ol>
+      <ul class="diagram-legend">
+        <li data-swatch="accent">Front door</li>
+        <li data-swatch="external">Open role</li>
+      </ul>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-org-edit-panel" aria-labelledby="dg-org-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-org-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-org-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-org-edit');
+    const grid = document.getElementById('dg-org-edit-grid');
+    const title = document.getElementById('dg-org-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Data joins Platform" component="diagram" hint="A moved team (data-before-style) whose reporting line is rewired (data-before-from)."
+<figure class="diagram" id="dg-org-delta" data-type="organigram" data-delta aria-label="Re-org: data moves to platform">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Re-org</span>
+    <span class="diagram-title">Data joins Platform</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:5;--diagram-node-w:8.5rem">
+    <div class="diagram-node" data-node="cto" style="--col:2;--row:1;--span:3">
+      <span class="diagram-node-eyebrow">Executive</span>
+      <span class="diagram-node-name">CTO</span>
+    </div>
+    <div class="diagram-node" data-node="platform" style="--col:1;--row:2;--span:2">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Platform</span>
+    </div>
+    <div class="diagram-node" data-node="product" style="--col:3;--row:2;--span:3">
+      <span class="diagram-node-eyebrow">Director</span>
+      <span class="diagram-node-name">Product eng</span>
+    </div>
+    <div class="diagram-node" data-node="infra" style="--col:1;--row:3"><span class="diagram-node-name">Infra</span></div>
+    <div class="diagram-node" data-node="data" data-change="moved" data-change-note="from Product eng to Platform" data-before-style="--col:4;--row:3" style="--col:2;--row:3">
+      <span class="diagram-node-name">Data</span>
+      <span class="diagram-node-meta">pipelines · BI</span>
+    </div>
+    <div class="diagram-node" data-node="web" style="--col:3;--row:3"><span class="diagram-node-name">Web</span></div>
+    <div class="diagram-node" data-node="sec" data-tone="accent" data-change="added" style="--col:4;--row:3">
+      <span class="diagram-node-name">Security</span>
+      <span class="diagram-node-meta">hired</span>
+    </div>
+    <div class="diagram-node" data-node="qa" data-change="removed" style="--col:5;--row:3">
+      <span class="diagram-node-name">QA</span>
+      <span class="diagram-node-meta">merged into teams</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="cto" data-to="platform"></li>
+    <li class="diagram-edge" data-from="cto" data-to="product"></li>
+    <li class="diagram-edge" data-from="platform" data-to="infra"></li>
+    <li class="diagram-edge" data-from="platform" data-to="data" data-change="rewired" data-before-from="product"></li>
+    <li class="diagram-edge" data-from="product" data-to="web"></li>
+    <li class="diagram-edge" data-from="product" data-to="sec" data-change="added"></li>
+    <li class="diagram-edge" data-from="product" data-to="qa" data-change="removed"></li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

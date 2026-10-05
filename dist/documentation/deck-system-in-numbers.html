@@ -17,14 +17,13 @@
 <style>html, body { margin: 0; background: transparent; } body { overflow: hidden; }</style>
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <style>
   /* ---- The System in Numbers: bespoke deck layer (two-colour discipline +
      five taxonomy data colours) - all scoped to #sys-deck: slide textures,
-     mini-route, typewriter, offset-path movers, tanks, radar, stopwatch. The
-     slide transition itself is the df$.anim curtain declared on the deck.
-     The .is-on class (set by the observer below) re-arms the CSS set-pieces
-     on every activation of a slide. */
+     mini-route, typewriter, offset-path movers, tanks, bars, donut,
+     diagrams, stopwatch. The slide transition itself is the df$.anim curtain
+     declared on the deck. The .is-on class (set by the observer below)
+     re-arms the CSS set-pieces on every activation of a slide. */
   #sys-deck { font-variant-numeric: tabular-nums; }
   #sys-deck [data-slide] { padding: 0; }
   /* ink = grid texture, paper = dot grid */
@@ -46,6 +45,7 @@
   #sys-deck [data-slide]:not([data-active]) * { transition: none !important; animation: none !important; }
   #sys-deck .abs { position: absolute; }
   #sys-deck svg.sys-fx { position: absolute; inset: 0; width: 1600px; height: 900px; overflow: visible; }
+  #sys-deck a { color: inherit; }
 
   /* Montserrat hierarchy on the system fallback stack */
   #sys-deck .sys-eyebrow { font-size: 20px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; margin: 0; }
@@ -54,6 +54,7 @@
   #sys-deck .sys-h-m { font-size: 62px; font-weight: 900; line-height: 1.02; letter-spacing: -.025em; margin: 0; }
   #sys-deck .sys-num { font-weight: 900; letter-spacing: -.04em; line-height: .9; }
   #sys-deck .sys-lead { font-size: 34px; font-weight: 500; line-height: 1.25; margin: 0; }
+  #sys-deck .sys-foot { font-size: 22px; font-weight: 500; line-height: 1.4; margin: 0; opacity: .8; }
 
   /* deck chrome: mini-route + brand (artboard coordinates, same scale as the
      slides) */
@@ -66,7 +67,7 @@
   #sys-deck .sys-mini circle.cur { fill: currentColor; r: 8px; }
   #sys-deck .sys-brand { position: absolute; left: 120px; bottom: 34px; font-size: 18px; font-weight: 800; letter-spacing: .12em; }
 
-  /* S1 cover: self-drawing df$ glyphs, typewriter, stamp, 219-tick ruler */
+  /* S1 cover: self-drawing df$ glyphs, typewriter, stamp, one tick per component */
   #sys-cover .sys-glyph { font-weight: 900; font-size: 640px; letter-spacing: -.04em; fill: transparent; stroke: rgba(255,255,255,.5); stroke-width: 2.5; stroke-dasharray: 2600; stroke-dashoffset: 2600; }
   #sys-cover.is-on .sys-glyph { animation: sys-draw-txt 3.4s var(--presentation-out) .15s forwards, sys-fill-txt 2s ease 2.6s forwards; }
   #sys-cover .sys-q { transform-box: fill-box; transform-origin: 50% 90%; }
@@ -74,24 +75,27 @@
   @keyframes sys-draw-txt { to { stroke-dashoffset: 0; } }
   @keyframes sys-fill-txt { to { fill: rgba(255,255,255,.05); } }
   @keyframes sys-rock { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(9deg); } 60% { transform: rotate(-6deg); } }
-  #sys-cover .sys-copy { left: 120px; top: 170px; width: 860px; }
-  #sys-cover .sys-type { font-size: 92px; font-weight: 900; line-height: .98; letter-spacing: -.03em; margin: 26px 0 0; min-height: 280px; }
+  #sys-cover .sys-copy { left: 120px; top: 150px; width: 860px; }
+  #sys-cover .sys-type { font-size: 80px; font-weight: 900; line-height: .98; letter-spacing: -.03em; margin: 26px 0 0; min-height: 240px; }
+  #sys-cover .sys-claim { margin: 24px 0 0; max-width: 820px; font-size: 32px; font-weight: 500; line-height: 1.3; }
   #sys-cover .sys-ch { opacity: 0; }
   #sys-cover.is-on .sys-ch { animation: sys-ch-in .05s step-start forwards; animation-delay: calc(var(--i) * 42ms + .7s); }
   @keyframes sys-ch-in { from, to { opacity: 1; } }
   #sys-cover .sys-type::after { content: ""; display: inline-block; width: .09em; height: .78em; background: currentColor; margin-left: .06em; vertical-align: -.04em; opacity: 0; }
   #sys-cover.is-on .sys-type::after { animation: sys-blink 1s steps(1) 2.3s infinite; }
   @keyframes sys-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-  #sys-cover .sys-sub { margin: 26px 0 0; display: flex; gap: 28px; align-items: baseline; font-size: 34px; font-weight: 300; }
+  /* the line, then the count on a line of its own */
+  #sys-cover .sys-sub { margin: 22px 0 0; display: grid; gap: 4px; font-size: 34px; font-weight: 300; line-height: 1.15; }
   #sys-cover .sys-sub b { font-weight: 800; }
   #sys-cover .sys-stamp { border: 5px solid #FFFFFF; padding: 10px 26px 8px; font-size: 34px; font-weight: 900; letter-spacing: .22em; text-transform: uppercase; }
   #sys-cover .sys-tick { stroke: #FFFFFF; stroke-width: 2.2; transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); }
   #sys-cover.is-on .sys-tick { animation: sys-tick-up .35s var(--presentation-spring) forwards; animation-delay: calc(var(--i) * 16ms + 1.2s); }
   @keyframes sys-tick-up { to { transform: scaleY(1); } }
 
-  /* S2 numbers: 271 unit dots in five taxonomy columns (62/22/128/5/54) */
+  /* S2 numbers: one unit dot per building block in five taxonomy columns -
+     the dot pitch is computed so the tallest column fits the slide */
   #sys-zahlen .sys-dots { position: absolute; inset: 0; }
-  #sys-zahlen .sys-dot { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: #0A1E4A; opacity: 0; transform: translateY(-340px); }
+  #sys-zahlen .sys-dot { position: absolute; width: var(--dot, 24px); height: var(--dot, 24px); border-radius: 50%; background: #0A1E4A; opacity: 0; transform: translateY(-340px); }
   #sys-zahlen .sys-dot.atm { background: #06B6D4; }
   #sys-zahlen .sys-dot.mol { background: #3B82F6; }
   #sys-zahlen .sys-dot.blk { background: #F59E0B; }
@@ -108,29 +112,52 @@
   #sys-zahlen .sys-fact span { font-size: 22px; font-weight: 600; }
   #sys-zahlen .sys-axlab { font-size: 18px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; opacity: .6; }
 
-  /* S3 route: zigzag + stations + looping train (offset-path) */
-  #sys-route .sys-route-path { fill: none; stroke: #FFFFFF; stroke-width: 16; stroke-linejoin: round; stroke-linecap: round; }
-  #sys-route .sys-route-ghost { fill: none; stroke: rgba(255,255,255,.09); stroke-width: 16; stroke-linejoin: round; }
-  #sys-route .sys-stn { fill: var(--presentation-ink); stroke: #FFFFFF; stroke-width: 8; transform-box: fill-box; transform-origin: center; }
-  #sys-route .sys-stn-lab { font-weight: 800; font-size: 20px; letter-spacing: .05em; text-transform: uppercase; fill: #FFFFFF; }
+  /* S3 route: zigzag + stations + section icons + looping train (offset-path) */
+  #sys-route .sys-route-path { fill: none; stroke: #FFFFFF; stroke-width: 14; stroke-linejoin: round; stroke-linecap: round; }
+  #sys-route .sys-route-ghost { fill: none; stroke: rgba(255,255,255,.09); stroke-width: 14; stroke-linejoin: round; }
+  #sys-route .sys-stn { fill: var(--presentation-ink); stroke: #FFFFFF; stroke-width: 7; transform-box: fill-box; transform-origin: center; }
+  #sys-route .sys-stn-lab { font-weight: 800; font-size: 17px; letter-spacing: .05em; text-transform: uppercase; fill: #FFFFFF; }
+  #sys-route .sys-ico { fill: none; stroke: #FFFFFF; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
   #sys-route .sys-train { position: absolute; left: 0; top: 0; width: 58px; height: 26px; border-radius: 13px; background: #FFFFFF; offset-rotate: auto; offset-anchor: center; offset-distance: 0%; opacity: 0; box-shadow: inset 10px 0 0 -4px #FFFFFF, inset 0 0 0 5px #FFFFFF, inset 0 0 0 9px var(--presentation-ink); }
-  #sys-route.is-on .sys-train { animation: sys-ride 7s cubic-bezier(.45,0,.55,1) 2.2s infinite; }
+  #sys-route.is-on .sys-train { animation: sys-ride 9s cubic-bezier(.45,0,.55,1) 2.6s infinite; }
   @keyframes sys-ride { 0% { offset-distance: 0%; opacity: 0; } 6% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
 
-  /* S4 gauge: two segments (CSS-only vs with JS), needle at 76.71% */
-  #sys-barometer .sys-num small { font-size: .42em; font-weight: 800; margin-left: .08em; }
-  #sys-barometer .sys-aside { display: flex; align-items: center; gap: 18px; font-size: 30px; font-weight: 400; }
-  #sys-barometer .sys-aside::before { content: ""; width: 60px; height: 3px; background: #0A1E4A; }
-  #sys-barometer .sys-gseg { fill: none; stroke: #0A1E4A; }
-  #sys-barometer .sys-gseg.js { stroke: rgba(10,30,74,.3); }
-  #sys-barometer .sys-gtick { stroke: rgba(10,30,74,.45); stroke-width: 2; }
-  #sys-barometer .sys-glab { font-size: 22px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; fill: #0A1E4A; }
-  #sys-barometer .sys-gpct { font-size: 26px; font-weight: 800; fill: #0A1E4A; }
-  #sys-barometer .sys-needle-o { transform-box: view-box; transform-origin: 1100px 640px; transform: rotate(-90deg); transition: transform 2.4s cubic-bezier(.2,1.45,.45,1) .7s; }
-  #sys-barometer.is-on .sys-needle-o { transform: rotate(48.1deg); }
-  #sys-barometer .sys-needle-i { transform-box: view-box; transform-origin: 1100px 640px; }
-  #sys-barometer.is-on .sys-needle-i { animation: sys-jitter 2.8s ease-in-out 3.2s infinite; }
-  @keyframes sys-jitter { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(1.6deg); } 70% { transform: rotate(-1deg); } }
+  /* S4 + S6 bars: a file / an app per row, the bar scaled to the row's figure */
+  #sys-deck .sys-bars { display: grid; gap: 16px; }
+  #sys-deck .sys-bar { display: grid; grid-template-columns: var(--sys-bar-label, 330px) 1fr 190px; align-items: center; gap: 24px; min-height: 64px; font-size: 28px; font-weight: 700; text-decoration: none; }
+  #sys-deck .sys-bar code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 26px; font-weight: 600; }
+  #sys-deck .sys-bar small { display: block; font-size: 18px; font-weight: 500; opacity: .7; margin-top: 2px; }
+  #sys-deck .sys-bar i { display: block; height: 30px; width: var(--w, 0%); background: #0A1E4A; transform: scaleX(0); transform-origin: left; transition: transform 1.1s var(--presentation-out) var(--d, 0s); }
+  #sys-deck .is-on .sys-bar i { transform: scaleX(1); }
+  #sys-deck .sys-bar > b { text-align: right; font-size: 34px; font-weight: 900; white-space: nowrap; }
+  #sys-deck .sys-bar > b span + span { font-size: .55em; font-weight: 700; margin-left: .2em; }
+  #sys-deck .sys-bar.ref i { background: rgba(10,30,74,.28); }
+  #sys-deck a.sys-bar { border-radius: 10px; margin: 0 -14px; padding: 4px 14px; transition: background-color .2s; }
+  #sys-deck a.sys-bar:hover, #sys-deck a.sys-bar:focus-visible { background: rgba(10,30,74,.08); outline: none; }
+  #sys-deck a.sys-bar:focus-visible { box-shadow: 0 0 0 3px #0A1E4A; }
+  #sys-deck a.sys-bar .sys-go { font-size: 20px; margin-left: 8px; opacity: .6; }
+  /* the app rows: one line each - name, then its component count */
+  #sys-apps .sys-bar { min-height: 52px; font-size: 27px; }
+  #sys-apps .sys-bar small { display: inline; margin: 0 0 0 14px; font-size: 19px; }
+  #sys-apps .sys-bar > b { font-size: 30px; }
+
+  /* S4 splits: one small card per file - its gzip size and a mini chart of
+     source → minified → gzip (the bars scaled to the card's source size) */
+  #sys-bundles .sys-splits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  #sys-bundles .sys-split { display: grid; gap: 10px; align-content: start; padding: 26px 28px 28px; border: 2px solid #0A1E4A; border-radius: 18px; background: #FFFFFF; box-shadow: 0 10px 0 -4px rgba(10,30,74,.12); }
+  #sys-bundles .sys-split-kind { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; }
+  #sys-bundles .sys-split-kind b { font-weight: 900; }
+  #sys-bundles .sys-split-kind span { padding: 2px 10px; border-radius: 999px; background: #0A1E4A; color: #FFFFFF; font-size: 16px; font-weight: 800; letter-spacing: .1em; }
+  #sys-bundles .sys-split code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 18px; font-weight: 600; opacity: .75; }
+  #sys-bundles .sys-split-num { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 0; font-size: 64px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  #sys-bundles .sys-split-num small { font-size: 18px; font-weight: 700; letter-spacing: .04em; opacity: .7; }
+  #sys-bundles .sys-split-what { margin: 0 0 8px; font-size: 18px; font-weight: 500; line-height: 1.35; opacity: .75; min-height: 2.7em; }
+  #sys-bundles .sys-split-chart { display: grid; gap: 10px; padding-top: 16px; border-top: 2px solid rgba(10,30,74,.14); }
+  #sys-bundles .sys-split-chart > div { display: grid; grid-template-columns: 80px 1fr 64px; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
+  #sys-bundles .sys-split-chart i { display: block; height: 14px; width: var(--w, 0%); background: rgba(10,30,74,.3); transform: scaleX(0); transform-origin: left; transition: transform 1s var(--presentation-out) var(--d, 0s); }
+  #sys-bundles .sys-split-chart .gz i { background: #0A1E4A; }
+  #sys-bundles.is-on .sys-split-chart i { transform: scaleX(1); }
+  #sys-bundles .sys-split-chart b { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
 
   /* S5 ratio: liquid tanks with wave caps + dimension arrows */
   #sys-tanks .sys-tank { position: absolute; top: 200px; width: 220px; height: 520px; border: 3px solid currentColor; border-top: 0; border-radius: 0 0 20px 20px; box-sizing: border-box; overflow: hidden; }
@@ -144,81 +171,75 @@
   @keyframes sys-wave { to { background-position: 80px 0; } }
   #sys-tanks .sys-liq b { position: absolute; left: 0; right: 0; top: 34px; text-align: center; color: var(--presentation-ink); font-size: 70px; font-weight: 900; letter-spacing: -.03em; }
   #sys-tanks .sys-tlab { position: absolute; top: 742px; width: 220px; text-align: center; font-size: 24px; font-weight: 600; line-height: 1.2; }
-  #sys-tanks .sys-dim { stroke: #FFFFFF; stroke-width: 2.5; fill: none; }
-  #sys-tanks .sys-dimdash { stroke: rgba(255,255,255,.45); stroke-width: 2; stroke-dasharray: 8 8; fill: none; }
-  #sys-tanks .sys-dimg { opacity: 0; transition: opacity .8s ease 2.6s; }
-  #sys-tanks.is-on .sys-dimg { opacity: 1; }
+  #sys-tanks .sys-tlab b { display: block; font-size: 30px; font-weight: 900; }
   #sys-tanks .sys-gapnum b { display: block; font-size: 76px; font-weight: 900; letter-spacing: -.04em; }
   #sys-tanks .sys-gapnum span { font-size: 20px; font-weight: 700; letter-spacing: .04em; }
 
-  /* S6 staircase: bouncing ball over the chart bars (offset-path) */
-  #sys-treppe .sys-ball { position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; background: #FFFFFF; border: 6px solid #0A1E4A; box-sizing: border-box; offset-anchor: center; offset-rotate: 0deg; offset-distance: 0%; opacity: 0; }
-  #sys-treppe.is-on .sys-ball { animation: sys-bounce 3.6s linear 1.5s forwards; }
-  @keyframes sys-bounce { 0% { opacity: 0; offset-distance: 0%; } 3% { opacity: 1; } 100% { opacity: 1; offset-distance: 100%; } }
+  /* S7 RAD: the templates by kind - donut in four data colours */
+  #sys-rad .sys-seg { fill: none; stroke-width: 320; stroke-dasharray: 0 1005.31; transition: stroke-dasharray 1.1s var(--presentation-out) var(--d, 0s); }
+  #sys-rad.is-on .sys-seg { stroke-dasharray: var(--f) 1005.31; }
+  #sys-rad .sys-ringl { fill: none; stroke: rgba(255,255,255,.2); stroke-width: 1.5; }
+  #sys-rad .sys-rim { fill: none; stroke: #FFFFFF; stroke-width: 3; }
+  #sys-rad .sys-hub { fill: var(--presentation-ink); stroke: #FFFFFF; stroke-width: 3; }
+  #sys-rad .sys-hub-num { font-size: 76px; font-weight: 900; fill: #FFFFFF; letter-spacing: -2px; }
+  #sys-rad .sys-hub-lab { font-size: 18px; font-weight: 800; fill: #FFFFFF; letter-spacing: 3px; text-transform: uppercase; }
+  #sys-rad .sys-leg { position: absolute; left: 120px; top: 500px; display: grid; gap: 16px; }
+  #sys-rad .sys-leg > div { display: grid; grid-template-columns: 36px 330px 90px; align-items: center; gap: 16px; font-size: 26px; font-weight: 600; }
+  #sys-rad .sys-leg b { font-size: 34px; font-weight: 900; text-align: right; }
+  #sys-rad .sys-leg i { width: 32px; height: 32px; border: 2px solid #FFFFFF; box-sizing: border-box; }
+  #sys-rad .sw-app { background: #06B6D4; }
+  #sys-rad .sw-deck { background: #3B82F6; }
+  #sys-rad .sw-web { background: #F59E0B; }
+  #sys-rad .sw-tpl { background: #8B5CF6; }
 
-  /* S7 taxonomy: donut radar in the five taxonomy colours */
-  #sys-radar .sys-seg { fill: none; stroke-width: 320; stroke-dasharray: 0 1005.31; transition: stroke-dasharray 1.1s var(--presentation-out) var(--d, 0s); }
-  #sys-radar.is-on .sys-seg { stroke-dasharray: var(--f) 1005.31; }
-  #sys-radar .sys-ringl { fill: none; stroke: rgba(255,255,255,.2); stroke-width: 1.5; }
-  #sys-radar .sys-rim { fill: none; stroke: #FFFFFF; stroke-width: 3; }
-  #sys-radar .sys-cross { stroke: rgba(255,255,255,.2); stroke-width: 1.5; }
-  #sys-radar .sys-sweep { position: absolute; left: 830px; top: 180px; width: 640px; height: 640px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, transparent 290deg, rgba(255,255,255,.34) 360deg); opacity: 0; mix-blend-mode: screen; pointer-events: none; }
-  #sys-radar.is-on .sys-sweep { animation: sys-sweep 4s linear .2s infinite, sys-fade-in .8s ease .2s forwards; }
-  @keyframes sys-sweep { to { transform: rotate(360deg); } }
-  @keyframes sys-fade-in { to { opacity: 1; } }
-  /* sweep + blips sit ABOVE the donut segments: the radar scans the data */
-  #sys-radar .sys-blip { fill: #FFFFFF; stroke: #051232; stroke-width: 4; opacity: 0; transform-box: fill-box; transform-origin: center; }
-  #sys-radar .sys-blip-halo { fill: none; stroke: #FFFFFF; stroke-width: 3; opacity: 0; transform-box: fill-box; transform-origin: center; }
-  #sys-radar.is-on .sys-blip-halo { animation: sys-halo 4s ease-out infinite; animation-delay: var(--d); }
-  @keyframes sys-halo { 0% { opacity: 0; transform: scale(.4); } 5% { opacity: .9; transform: scale(1); } 40% { opacity: 0; transform: scale(2.4); } 100% { opacity: 0; } }
-  #sys-radar.is-on .sys-blip { animation: sys-blip 4s ease-out infinite; animation-delay: var(--d); }
-  @keyframes sys-blip { 0%, 100% { opacity: 0; } 5% { opacity: 1; } 40% { opacity: 0; } }
-  #sys-radar .sys-leg { position: absolute; left: 120px; top: 480px; display: grid; gap: 18px; }
-  #sys-radar .sys-leg > div { display: grid; grid-template-columns: 40px 220px 110px; align-items: center; gap: 16px; font-size: 26px; font-weight: 600; }
-  #sys-radar .sys-leg b { font-size: 34px; font-weight: 900; text-align: right; }
-  #sys-radar .sys-leg i { width: 36px; height: 36px; border: 2px solid #FFFFFF; box-sizing: border-box; }
-  #sys-radar .sw-atm { background: #06B6D4; }
-  #sys-radar .sw-mol { background: #3B82F6; }
-  #sys-radar .sw-blk { background: #F59E0B; }
-  #sys-radar .sw-org { background: #8B5CF6; }
-  #sys-radar .sw-tpl { background: #64748B; }
+  /* S8 VAE: two Illustrative Diagrams, scaled to the artboard - the loop,
+     then (when it has played) what the gate checks */
+  #sys-vae .sys-dg { position: absolute; left: 120px; transform-origin: 0 0; }
+  #sys-vae .sys-dg .diagram { margin: 0; }
+  #sys-vae .sys-dg .diagram-controls { display: none; }
+  #sys-vae .sys-dglab { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; opacity: .65; }
+  #sys-vae .sys-proof { font-size: 26px; font-weight: 800; line-height: 1.3; margin: 0; }
+  #sys-vae .sys-credit { font-size: 19px; font-weight: 500; line-height: 1.45; margin: 0; opacity: .85; }
+  #sys-vae .sys-credit a { font-weight: 700; text-underline-offset: 3px; }
 
-  /* S8 verification: stopwatch (one full run) + ranking */
-  #sys-watch .sys-face { transform-box: view-box; transform-origin: 430px 560px; }
-  #sys-watch .sys-wring { fill: none; stroke: #0A1E4A; stroke-width: 14; }
-  #sys-watch .sys-wt { stroke: #0A1E4A; stroke-width: 2; }
+  /* S9 verifier: stopwatch on a one-minute dial + the record */
+  #sys-watch .sys-face { transform-box: view-box; transform-origin: 430px 540px; }
+  #sys-watch .sys-wring { fill: none; stroke: #FFFFFF; stroke-width: 14; }
+  #sys-watch .sys-wt { stroke: #FFFFFF; stroke-width: 2; }
   #sys-watch .sys-wt.m { stroke-width: 4; }
-  #sys-watch .sys-arc { fill: none; stroke: #0A1E4A; stroke-width: 44; stroke-dasharray: 0 1100; transition: stroke-dasharray 2.2s cubic-bezier(.3,0,.2,1) .6s; }
-  #sys-watch.is-on .sys-arc { stroke-dasharray: 1068 1100; }
-  #sys-watch .sys-hand { transform-box: view-box; transform-origin: 430px 560px; }
-  #sys-watch.is-on .sys-hand { animation: sys-tick-hand 2.4s steps(60) .6s forwards; }
-  @keyframes sys-tick-hand { to { transform: rotate(360deg); } }
-  #sys-watch .sys-wnum { font-weight: 900; font-size: 64px; fill: #0A1E4A; text-anchor: middle; letter-spacing: -2px; }
-  #sys-watch .sys-wlab { font-weight: 800; font-size: 22px; fill: #0A1E4A; text-anchor: middle; letter-spacing: 3px; text-transform: uppercase; }
-  #sys-watch .sys-rows { position: absolute; left: 780px; top: 292px; width: 700px; display: grid; gap: 10px; }
-  #sys-watch .sys-row { display: grid; grid-template-columns: 230px 1fr 90px; align-items: center; gap: 16px; height: 46px; font-size: 24px; font-weight: 600; padding: 0 12px; box-sizing: border-box; }
-  #sys-watch .sys-row i { display: block; height: 14px; background: #0A1E4A; transform: scaleX(0); transform-origin: left; transition: transform 1.1s var(--presentation-out) var(--d, 0s); }
-  #sys-watch.is-on .sys-row i { transform: scaleX(1); }
-  #sys-watch .sys-row b { text-align: right; font-weight: 900; font-size: 26px; }
-  #sys-watch .sys-row.top { font-weight: 800; }
-  #sys-watch .sys-row.hot { background: #0A1E4A; color: #FFFFFF; }
-  #sys-watch .sys-row.hot i { background: #FFFFFF; }
+  #sys-watch .sys-arc { fill: none; stroke: #FFFFFF; stroke-width: 44; stroke-dasharray: 0 1100; transition: stroke-dasharray 2.2s cubic-bezier(.3,0,.2,1) .6s; }
+  #sys-watch.is-on .sys-arc { stroke-dasharray: var(--arc, 0) 1100; }
+  #sys-watch .sys-hand { transform-box: view-box; transform-origin: 430px 540px; }
+  #sys-watch.is-on .sys-hand { animation: sys-tick-hand 2.2s cubic-bezier(.3,0,.2,1) .6s forwards; }
+  @keyframes sys-tick-hand { to { transform: rotate(var(--hand, 0deg)); } }
+  #sys-watch .sys-wnum { position: absolute; left: 230px; top: 586px; width: 400px; text-align: center; font-size: 66px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+  #sys-watch .sys-wlab { position: absolute; left: 280px; top: 656px; width: 300px; text-align: center; font-size: 16px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
+  #sys-watch .sys-rows { position: absolute; left: 780px; top: 250px; width: 700px; display: grid; gap: 10px; }
+  #sys-watch .sys-row { display: grid; grid-template-columns: 300px 1fr 110px; align-items: center; gap: 16px; height: 50px; font-size: 26px; font-weight: 600; padding: 0 12px; box-sizing: border-box; }
+  #sys-watch .sys-row b { text-align: right; font-weight: 900; font-size: 30px; }
+  #sys-watch .sys-row.hot { background: #FFFFFF; color: var(--presentation-ink); }
+  #sys-watch .sys-rec { position: absolute; left: 792px; top: 470px; width: 690px; margin: 0; font-size: 22px; font-weight: 500; line-height: 1.5; }
+  #sys-watch .sys-rec code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 20px; }
 
-  /* S9 four ways in: branching route + 4 trains */
-  #sys-wege .sys-br { fill: none; stroke: #FFFFFF; stroke-width: 14; stroke-linejoin: round; stroke-linecap: round; }
-  #sys-wege .sys-term { fill: var(--presentation-ink); stroke: #FFFFFF; stroke-width: 7; transform-box: fill-box; transform-origin: center; }
-  #sys-wege .sys-tl { position: absolute; left: 950px; width: 540px; font-size: 36px; font-weight: 800; line-height: 1.1; transform: translateY(-50%); }
-  #sys-wege .sys-trn { position: absolute; left: 0; top: 0; width: 46px; height: 22px; border-radius: 11px; background: #FFFFFF; offset-anchor: center; offset-rotate: auto; offset-distance: 0%; opacity: 0; box-shadow: inset 0 0 0 5px #FFFFFF, inset 0 0 0 8px var(--presentation-ink); }
+  /* S10 how to use: branching route + 4 trains */
+  #sys-wege .sys-br { fill: none; stroke: #0A1E4A; stroke-width: 14; stroke-linejoin: round; stroke-linecap: round; }
+  #sys-wege .sys-term { fill: #FFFFFF; stroke: #0A1E4A; stroke-width: 7; transform-box: fill-box; transform-origin: center; }
+  #sys-wege .sys-tl { position: absolute; left: 950px; width: 560px; font-size: 36px; font-weight: 800; line-height: 1.1; transform: translateY(-50%); }
+  #sys-wege .sys-tl small { display: block; margin-top: 6px; font-size: 20px; font-weight: 500; opacity: .75; }
+  #sys-wege .sys-tl a { text-decoration-thickness: 3px; text-underline-offset: 6px; }
+  #sys-wege .sys-trn { position: absolute; left: 0; top: 0; width: 46px; height: 22px; border-radius: 11px; background: #0A1E4A; offset-anchor: center; offset-rotate: auto; offset-distance: 0%; opacity: 0; box-shadow: inset 0 0 0 5px #0A1E4A, inset 0 0 0 8px #FFFFFF; }
   #sys-wege.is-on .sys-trn { animation: sys-ride 4.6s cubic-bezier(.45,0,.55,1) infinite; animation-delay: var(--d); }
 
-  /* S10 discussion: outlined ? with a rotateY loop + 219-tick ring */
-  #sys-frage .sys-qm { position: absolute; left: 880px; top: 30px; width: 540px; height: 840px; line-height: 840px; text-align: center; font-size: 760px; font-weight: 900; color: transparent; -webkit-text-stroke: 3px #0A1E4A; }
+  /* S11 discussion: outlined ? with a rotateY loop + one tick per component */
+  #sys-frage .sys-qm { position: absolute; left: 880px; top: 30px; width: 540px; height: 840px; line-height: 840px; text-align: center; font-size: 760px; font-weight: 900; color: transparent; -webkit-text-stroke: 3px #FFFFFF; }
   #sys-frage.is-on .sys-qm { animation: sys-spin-y 9s ease-in-out .6s infinite; }
   @keyframes sys-spin-y { 0% { transform: perspective(1400px) rotateY(0); } 50% { transform: perspective(1400px) rotateY(180deg); } 100% { transform: perspective(1400px) rotateY(360deg); } }
   #sys-frage .sys-ring { transform-box: view-box; transform-origin: 1150px 450px; }
   #sys-frage.is-on .sys-ring { animation: sys-spin 80s linear infinite; }
   @keyframes sys-spin { to { transform: rotate(360deg); } }
-  #sys-frage .sys-ringtick { stroke: rgba(10,30,74,.45); stroke-width: 2.5; }
+  #sys-frage .sys-ringtick { stroke: rgba(255,255,255,.45); stroke-width: 2.5; }
+  #sys-frage .sys-bench { font-size: 30px; font-weight: 500; line-height: 1.4; margin: 0; }
+  #sys-frage .sys-bench b { display: block; font-size: 64px; font-weight: 900; letter-spacing: -.03em; line-height: 1.05; }
 
   /* reduced motion: every bespoke animation collapses (the df$.anim
      curtain collapses itself to 1ms) */
@@ -230,10 +251,13 @@
       transition-delay: 0s !important;
     }
   }
+  @media (forced-colors: active) {
+    #sys-deck .sys-bar i, #sys-deck .sys-dot { forced-color-adjust: none; }
+  }
 </style>
 <section class="presentation" id="sys-deck" data-anim-in="blocksIn" data-anim-in-blocks="14" data-anim-in-stagger="20" data-anim-in-direction="north" data-anim-in-color="#3B82F6" tabindex="-1" aria-label="defuss-shadcn - The System in Numbers" style="--presentation-ink:#051232;--presentation-ink-foreground:#ffffff;--presentation-paper:#ffffff;--presentation-paper-foreground:#0A1E4A;--presentation-accent:#0A1E4A;font-family:Montserrat,'Segoe UI',Arial,sans-serif;">
-  <!-- 1 · Opening - cover: self-drawing df$, typewriter title, stamp, 219-tick ruler -->
-  <section class="slide" data-slide id="sys-cover" data-theme="ink" data-sec="0" aria-label="Cover: a design system without a framework">
+  <!-- 1 · Opening - cover: self-drawing df$, typewriter title, stamp, one tick per component -->
+  <section class="slide" data-slide id="sys-cover" data-theme="ink" data-sec="0" aria-label="Cover: a powerful standalone HTML component system">
     <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true">
       <text class="sys-glyph" x="600" y="770">df</text>
       <text class="sys-glyph sys-q" x="1240" y="770">$</text>
@@ -241,178 +265,240 @@
     </svg>
     <div class="abs sys-copy">
       <p class="sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.2s">defuss-shadcn · v0.9.4</p>
-      <h1 class="sys-type" id="sys-type">A design system without a framework.</h1>
-      <p class="sys-sub" data-df-entrance="up" style="--df-motion-delay:2.3s"><span>The system in numbers</span><b>219 components</b></p>
+      <h1 class="sys-type" id="sys-type">Powerful Standalone HTML Component System.</h1>
+      <p class="sys-claim" data-df-entrance="up" style="--df-motion-delay:2.5s">No compilation. Stateful components. Fully themable. AI&nbsp;Agent-native.</p>
+      <p class="sys-sub" data-df-entrance="up" style="--df-motion-delay:2.8s"><span>The system in numbers</span><b><span data-stat="stats.total">228</span> components</b></p>
     </div>
-    <div class="abs sys-stamp" data-df-entrance="pop" style="--df-motion-delay:2.9s; left:760px; top:600px; transform:rotate(-9deg)">0 Dependencies</div>
-    <p class="presentation-note">Opening: the system presents itself - 219 components, every tick along the bottom edge is one of them.</p>
+    <div class="abs sys-stamp" data-df-entrance="pop" style="--df-motion-delay:3.2s; left:1040px; top:640px; transform:rotate(-9deg)">0 Dependencies</div>
+    <p class="presentation-note">Opening: the system presents itself - every tick along the bottom edge is one of its components.</p>
   </section>
-  <!-- 2 · Opening - the system in numbers: 271 unit dots in five columns -->
+  <!-- 2 · Opening - the system in numbers: one unit dot per building block in five columns -->
   <section class="slide" data-slide id="sys-zahlen" data-theme="paper" data-sec="0" aria-label="The system in numbers">
-    <div class="abs sys-num" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:120px; font-size:300px"><span data-count="219">219</span></div>
+    <div class="abs sys-num" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:120px; font-size:300px"><span data-count="" data-stat="stats.total">228</span></div>
     <div class="abs" data-df-entrance="up" style="--df-motion-delay:.5s; left:124px; top:400px; font-size:40px; font-weight:300; letter-spacing:.02em">components</div>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.8s; left:120px; top:500px; width:520px; font-size:50px">From <span class="type-badge" data-type="ATM" title="Atom">ATM</span> to <span class="type-badge" data-type="TPL" title="Template">TPL</span></h2>
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:610px"><b>0</b><span>runtime dependencies</span></div>
-    <div class="abs sys-fact" data-fact="tok" data-df-entrance="up" style="--df-motion-delay:1.35s; left:120px; top:680px"><b>50</b><span>design tokens</span></div>
-    <div class="abs sys-fact" data-fact="exl" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b>1,312</b><span>live examples</span></div>
+    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.35s; left:120px; top:680px"><b data-stat="stats.tokens">50</b><span>design tokens</span></div>
+    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b data-stat="stats.examples">1,551</b><span>live examples</span></div>
     <div class="sys-dots" id="sys-dots"></div>
-    <div class="sys-collab" style="left:620px"><b>62</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div>
-    <div class="sys-collab" style="left:795px"><b>22</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div>
-    <div class="sys-collab" style="left:970px"><b>128</b><span class="type-badge" data-type="BLK" title="Blocks">BLK</span></div>
-    <div class="sys-collab" style="left:1145px"><b>5</b><span class="type-badge" data-type="ORG" title="Organisms">ORG</span></div>
-    <div class="sys-collab" style="left:1320px"><b>54</b><span class="type-badge" data-type="TPL" title="Templates">TPL</span></div>
+    <div class="sys-collab" data-col="atm" style="left:620px"><b data-stat="stats.byType.ATM">67</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div>
+    <div class="sys-collab" data-col="mol" style="left:795px"><b data-stat="stats.byType.MOL">25</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div>
+    <div class="sys-collab" data-col="blk" style="left:970px"><b data-stat="stats.byType.BLK">128</b><span class="type-badge" data-type="BLK" title="Blocks">BLK</span></div>
+    <div class="sys-collab" data-col="org" style="left:1145px"><b data-stat="stats.byType.ORG">5</b><span class="type-badge" data-type="ORG" title="Organisms">ORG</span></div>
+    <div class="sys-collab" data-col="tpl" style="left:1320px"><b data-stat="stats.templates">55</b><span class="type-badge" data-type="TPL" title="Templates">TPL</span></div>
     <div class="abs sys-axlab" style="left:620px; top:866px">Taxonomy</div>
-    <p class="presentation-note">Every dot is one building block: 62 atoms, 22 molecules, 128 blocks, five organisms and 54 templates (two template components + 52 template pages - the decks and the website templates). Behind them: 50 design tokens and 1,312 live examples in the docs.</p>
+    <p class="presentation-note">Every dot is one building block - atoms, molecules, blocks, organisms and templates (the template components plus the template pages: the decks, the website templates and the app scaffolds). Behind them: the design tokens and the live examples in the docs.</p>
   </section>
-  <!-- 3 · Features - the sidebar's top-level sections (Primitives on) as one line map with a looping train -->
-  <section class="slide" data-slide id="sys-route" data-theme="ink" data-sec="0" aria-label="Features">
+  <!-- 3 · Features - the sidebar's sections (Primitives on) as one line map: each station wears its section icon, a train loops -->
+  <section class="slide" data-slide id="sys-route" data-theme="ink" data-sec="1" aria-label="Features">
     <h2 class="abs sys-h-l" data-df-entrance="left" style="--df-motion-delay:.1s; left:120px; top:110px">Features</h2>
-    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Line map of the 11 feature areas: Primitives, Actions, Forms & Inputs, Data Display, Charts, Feedback & Status, Overlays, Navigation, Application, Presentations, Marketing">
-      <path class="sys-route-ghost" d="M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540"></path>
-      <path class="sys-route-path" data-df-draw pathLength="1" style="--df-motion-delay:.3s; --df-motion-duration:2.6s" d="M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540"></path>
-      <circle class="sys-stn" cx="150" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:0.46s"></circle>
-      <circle class="sys-stn" cx="280" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:0.66s"></circle>
-      <circle class="sys-stn" cx="410" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:0.86s"></circle>
-      <circle class="sys-stn" cx="540" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:1.06s"></circle>
-      <circle class="sys-stn" cx="670" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:1.26s"></circle>
-      <circle class="sys-stn" cx="800" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:1.46s"></circle>
-      <circle class="sys-stn" cx="930" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:1.66s"></circle>
-      <circle class="sys-stn" cx="1060" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:1.86s"></circle>
-      <circle class="sys-stn" cx="1190" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:2.06s"></circle>
-      <circle class="sys-stn" cx="1320" cy="400" r="20" data-df-entrance="pop" style="--df-motion-delay:2.26s"></circle>
-      <circle class="sys-stn" cx="1450" cy="540" r="20" data-df-entrance="pop" style="--df-motion-delay:2.46s"></circle>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.46s"><tspan x="150" y="602">Primitives</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.66s"><tspan x="280" y="354">Actions</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.86s"><tspan x="410" y="602">Forms &amp;</tspan><tspan x="410" y="628">Inputs</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.06s"><tspan x="540" y="328">Data</tspan><tspan x="540" y="354">Display</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.26s"><tspan x="670" y="602">Charts</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.46s"><tspan x="800" y="328">Feedback &amp;</tspan><tspan x="800" y="354">Status</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.66s"><tspan x="930" y="602">Overlays</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.86s"><tspan x="1060" y="354">Navigation</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.06s"><tspan x="1190" y="602">Application</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.26s"><tspan x="1320" y="354">Presentations</tspan></text>
-      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.46s"><tspan x="1450" y="602">Marketing</tspan></text>
+    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Line map of the 18 feature areas: Primitives, Actions, Forms &amp; Inputs, WYSIWYG Editors, Questionnaire, Data Display, Big Data, Charts, Diagrams, Feedback &amp; Status, Overlays, Navigation, Application, Chat, Mockup, Presentations, Papers, Website">
+      <path class="sys-route-ghost" d="M 40 560 L 110 560 L 191 420 L 272 560 L 354 420 L 435 560 L 516 420 L 597 560 L 678 420 L 759 560 L 841 420 L 922 560 L 1003 420 L 1084 560 L 1165 420 L 1246 560 L 1328 420 L 1409 560 L 1490 420 L 1560 420"></path>
+      <path class="sys-route-path" data-df-draw pathLength="1" style="--df-motion-delay:.3s; --df-motion-duration:2.6s" d="M 40 560 L 110 560 L 191 420 L 272 560 L 354 420 L 435 560 L 516 420 L 597 560 L 678 420 L 759 560 L 841 420 L 922 560 L 1003 420 L 1084 560 L 1165 420 L 1246 560 L 1328 420 L 1409 560 L 1490 420 L 1560 420"></path>
+      <circle class="sys-stn" cx="110" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:0.46s"></circle>
+      <circle class="sys-stn" cx="191" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:0.60s"></circle>
+      <circle class="sys-stn" cx="272" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:0.74s"></circle>
+      <circle class="sys-stn" cx="354" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:0.88s"></circle>
+      <circle class="sys-stn" cx="435" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:1.02s"></circle>
+      <circle class="sys-stn" cx="516" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:1.16s"></circle>
+      <circle class="sys-stn" cx="597" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:1.30s"></circle>
+      <circle class="sys-stn" cx="678" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:1.44s"></circle>
+      <circle class="sys-stn" cx="759" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:1.58s"></circle>
+      <circle class="sys-stn" cx="841" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:1.72s"></circle>
+      <circle class="sys-stn" cx="922" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:1.86s"></circle>
+      <circle class="sys-stn" cx="1003" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:2.00s"></circle>
+      <circle class="sys-stn" cx="1084" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:2.14s"></circle>
+      <circle class="sys-stn" cx="1165" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:2.28s"></circle>
+      <circle class="sys-stn" cx="1246" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:2.42s"></circle>
+      <circle class="sys-stn" cx="1328" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:2.56s"></circle>
+      <circle class="sys-stn" cx="1409" cy="560" r="17" data-df-entrance="pop" style="--df-motion-delay:2.70s"></circle>
+      <circle class="sys-stn" cx="1490" cy="420" r="17" data-df-entrance="pop" style="--df-motion-delay:2.84s"></circle>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.46s"><tspan x="110" y="612">Primitives</tspan></text>
+      <svg class="sys-ico" x="90" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:0.46s"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z" /><rect x="3" y="14" width="7" height="7" rx="1" /><circle cx="17.5" cy="17.5" r="3.5" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.60s"><tspan x="191" y="380">Actions</tspan></text>
+      <svg class="sys-ico" x="171" y="316" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:0.60s"><path d="M14 4.1 12 6" /><path d="m5.1 8-2.9-.8" /><path d="m6 12-1.9 2" /><path d="M7.2 2.2 8 5.1" /><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.74s"><tspan x="272" y="612">Forms &amp;</tspan><tspan x="272" y="636">Inputs</tspan></text>
+      <svg class="sys-ico" x="252" y="658" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:0.74s"><path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1" /><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5" /><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1" /><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7" /><path d="M9 7v10" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:0.88s"><tspan x="354" y="356">WYSIWYG</tspan><tspan x="354" y="380">Editors</tspan></text>
+      <svg class="sys-ico" x="334" y="292" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:0.88s"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.02s"><tspan x="435" y="612">Questionnaire</tspan></text>
+      <svg class="sys-ico" x="415" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.02s"><path d="m3 17 2 2 4-4" /><path d="m3 7 2 2 4-4" /><path d="M13 6h8" /><path d="M13 12h8" /><path d="M13 18h8" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.16s"><tspan x="516" y="356">Data</tspan><tspan x="516" y="380">Display</tspan></text>
+      <svg class="sys-ico" x="496" y="292" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.16s"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.30s"><tspan x="597" y="612">Big</tspan><tspan x="597" y="636">Data</tspan></text>
+      <svg class="sys-ico" x="577" y="658" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.30s"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.44s"><tspan x="678" y="380">Charts</tspan></text>
+      <svg class="sys-ico" x="658" y="316" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.44s"><path d="M3 3v16a2 2 0 0 0 2 2h16" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.58s"><tspan x="759" y="612">Diagrams</tspan></text>
+      <svg class="sys-ico" x="739" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.58s"><rect width="8" height="8" x="3" y="3" rx="2" /><path d="M7 11v4a2 2 0 0 0 2 2h4" /><rect width="8" height="8" x="13" y="13" rx="2" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.72s"><tspan x="841" y="356">Feedback &amp;</tspan><tspan x="841" y="380">Status</tspan></text>
+      <svg class="sys-ico" x="821" y="292" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.72s"><path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M22 8c0-2.3-.8-4.3-2-6" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /><path d="M4 2C2.8 3.7 2 5.7 2 8" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.86s"><tspan x="922" y="612">Overlays</tspan></text>
+      <svg class="sys-ico" x="902" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:1.86s"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" /><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.00s"><tspan x="1003" y="380">Navigation</tspan></text>
+      <svg class="sys-ico" x="983" y="316" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.00s"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.14s"><tspan x="1084" y="612">Application</tspan></text>
+      <svg class="sys-ico" x="1064" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.14s"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M10 4v4" /><path d="M2 8h20" /><path d="M6 4v4" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.28s"><tspan x="1165" y="380">Chat</tspan></text>
+      <svg class="sys-ico" x="1145" y="316" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.28s"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z" /><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.42s"><tspan x="1246" y="612">Mockup</tspan></text>
+      <svg class="sys-ico" x="1226" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.42s"><polyline points="4 17 10 11 4 5" /><line x1="12" x2="20" y1="19" y2="19" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.56s"><tspan x="1328" y="380">Presentations</tspan></text>
+      <svg class="sys-ico" x="1308" y="316" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.56s"><path d="M2 3h20" /><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3" /><path d="m7 21 5-5 5 5" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.70s"><tspan x="1409" y="612">Papers</tspan></text>
+      <svg class="sys-ico" x="1389" y="634" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.70s"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
+      <text class="sys-stn-lab" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:2.84s"><tspan x="1490" y="380">Website</tspan></text>
+      <svg class="sys-ico" x="1470" y="316" width="40" height="40" viewBox="0 0 24 24" data-df-entrance="up" style="--df-motion-delay:2.84s"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>
     </svg>
-    <div class="sys-train" style="offset-path:path('M 80 540 L 128 540 H 172 L 258 400 H 302 L 388 540 H 432 L 518 400 H 562 L 648 540 H 692 L 778 400 H 822 L 908 540 H 952 L 1038 400 H 1082 L 1168 540 H 1212 L 1298 400 H 1342 L 1428 540 H 1472 L 1520 540')"></div>
-    <p class="presentation-note">The feature areas, in sidebar order: Primitives, Actions, Forms & Inputs, Data Display, Charts, Feedback & Status, Overlays, Navigation, Application, Presentations, Marketing.</p>
+    <div class="sys-train" style="offset-path:path('M 40 560 L 110 560 L 191 420 L 272 560 L 354 420 L 435 560 L 516 420 L 597 560 L 678 420 L 759 560 L 841 420 L 922 560 L 1003 420 L 1084 560 L 1165 420 L 1246 560 L 1328 420 L 1409 560 L 1490 420 L 1560 420')"></div>
+    <p class="presentation-note">The feature areas, in sidebar order, each with its sidebar icon: Primitives, Actions, Forms &amp; Inputs, WYSIWYG Editors, Questionnaire, Data Display, Big Data, Charts, Diagrams, Feedback &amp; Status, Overlays, Navigation, Application, Chat, Mockup, Presentations, Papers, Website.</p>
   </section>
-  <!-- 4 · System - gauge: 77% CSS-only, needle at 76.71% -->
-  <section class="slide" data-slide id="sys-barometer" data-theme="paper" data-sec="1" aria-label="Gauge: CSS-only share">
-    <div class="abs sys-num" data-df-entrance="up" style="--df-motion-delay:.2s; left:108px; top:190px; font-size:250px"><span data-count="77" data-count-delay="300">77</span><small>%</small></div>
-    <p class="abs sys-lead" data-df-entrance="up" style="--df-motion-delay:.5s; left:120px; top:440px; width:520px; font-weight:700; font-size:44px; line-height:1.12">of the components need no JavaScript at all.</p>
-    <div class="abs sys-aside" data-df-entrance="left" style="--df-motion-delay:2.6s; left:120px; top:730px">51 use JS - only where HTML and CSS end.</div>
-    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Gauge: 77 percent of the components are CSS-only, 23 percent use JavaScript">
-      <g id="sys-gticks"></g>
-      <path class="sys-gseg js" data-df-draw pathLength="1" stroke-width="80.7" style="--df-motion-delay:.3s; --df-motion-duration:1s" d="M 740.1 632.5 A 360 360 0 0 1 827.1 405.2"></path>
-      <path class="sys-gseg" data-df-draw pathLength="1" stroke-width="107.3" style="--df-motion-delay:.48s; --df-motion-duration:1s" d="M 837.2 393.9 A 360 360 0 0 1 1459.9 632.5"></path>
-      <text class="sys-glab" x="740" y="700" text-anchor="middle">with JavaScript</text>
-      <text class="sys-glab" x="1460" y="700" text-anchor="middle">CSS-only</text>
-      <text class="sys-gpct" x="685" y="481" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.2s">23%</text>
-      <text class="sys-gpct" x="1259" y="225" text-anchor="middle" data-df-entrance="fade" style="--df-motion-delay:1.38s">77%</text>
-      <g class="sys-needle-o"><g class="sys-needle-i">
-        <path d="M 1092 640 L 1100 300 L 1108 640 Z" fill="#0A1E4A"></path>
-      </g></g>
-      <circle cx="1100" cy="640" r="30" fill="#0A1E4A"></circle>
-      <circle cx="1100" cy="640" r="10" fill="#FFFFFF"></circle>
-      <text class="sys-glab" x="1100" y="800" text-anchor="middle">168 of 219 components need no JavaScript</text>
-    </svg>
-    <p class="presentation-note">77% of the components need no JavaScript - 168 of 219 run as plain HTML and CSS.</p>
+  <!-- 4 · Size - the bundles: every file gzipped on its own, as a CDN serves it -->
+  <section class="slide" data-slide id="sys-bundles" data-theme="paper" data-sec="2" aria-label="The bundles and their sizes">
+    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:110px">Bundles · minified + gzip</p>
+    <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:146px">One bundle - or only what you use.</h2>
+    <div class="abs sys-splits" style="left:120px; top:264px; width:1360px">
+      <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.50s">
+        <p class="sys-split-kind"><b>all</b><span>JS</span></p>
+        <code>all.min.js</code>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">135.9</span><small>KiB gzip</small></p>
+        <p class="sys-split-what">every component's script + the core</p>
+        <div class="sys-split-chart" role="img" aria-label="all.min.js: source, minified and gzip size">
+          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib">774.1</b></div>
+          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib">446.9</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">135.9</b></div>
+        </div>
+      </div>
+      <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.65s">
+        <p class="sys-split-kind"><b>all</b><span>CSS</span></p>
+        <code>all.min.css</code>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">125.5</span><small>KiB gzip</small></p>
+        <p class="sys-split-what">every component's stylesheet</p>
+        <div class="sys-split-chart" role="img" aria-label="all.min.css: source, minified and gzip size">
+          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib">1193.6</b></div>
+          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib">730.4</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">125.5</b></div>
+        </div>
+      </div>
+      <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.80s">
+        <p class="sys-split-kind"><b>core</b><span>JS</span></p>
+        <code>core.min.js</code>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1000" data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib">24.7</span><small>KiB gzip</small></p>
+        <p class="sys-split-what">df$ - query, morph, state, stores</p>
+        <div class="sys-split-chart" role="img" aria-label="core.min.js: source, minified and gzip size">
+          <div><span>source</span><i style="--d:1.00s"></i><b data-stat="stats.core.jsSize" data-stat-format="kib">140.6</b></div>
+          <div><span>minified</span><i style="--d:1.10s"></i><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib">71.9</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.20s"></i><b data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib">24.7</b></div>
+        </div>
+      </div>
+      <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.95s">
+        <p class="sys-split-kind"><b>core</b><span>CSS</span></p>
+        <code>core.min.css</code>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1150" data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib">9.7</span><small>KiB gzip</small></p>
+        <p class="sys-split-what">tokens + sizing, layout, a11y</p>
+        <div class="sys-split-chart" role="img" aria-label="core.min.css: source, minified and gzip size">
+          <div><span>source</span><i style="--d:1.15s"></i><b data-stat="stats.core.cssSize" data-stat-format="kib">124.9</b></div>
+          <div><span>minified</span><i style="--d:1.25s"></i><b data-stat="stats.core.cssSizeMinified" data-stat-format="kib">106.7</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.35s"></i><b data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib">9.7</b></div>
+        </div>
+      </div>
+    </div>
+    <p class="abs sys-foot" data-df-entrance="fade" style="--df-motion-delay:1.4s; left:120px; top:712px; width:1360px">Each file minified, then gzipped on its own - as a CDN serves it. Two requests carry the whole system; the core plus the components you pick is the modular path.</p>
+    <p class="presentation-note">The bundles, minified and gzipped file by file - the way a CDN serves them: all.min.js and all.min.css carry everything; the core pair is what a pick-what-you-need page pays once.</p>
   </section>
-  <!-- 5 · System - the ratio: liquid tanks 77% vs 23% -->
-  <section class="slide" data-slide id="sys-tanks" data-theme="ink" data-sec="1" aria-label="The ratio">
+  <!-- 5 · Size - the ratio: liquid tanks, CSS-only vs with JavaScript -->
+  <section class="slide" data-slide id="sys-tanks" data-theme="ink" data-sec="2" aria-label="The ratio">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:118px; opacity:.7">CSS-only vs JavaScript</p>
     <h2 class="abs sys-h-xl" data-df-entrance="skew" style="--df-motion-delay:.2s; left:112px; top:150px">The<br>ratio</h2>
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:3s; left:120px; top:560px; width:500px; font-size:40px; font-weight:600; line-height:1.2; margin:0">As little JavaScript as possible - as much as necessary.</p>
-    <div class="sys-tank" style="left:720px"><div class="sys-liq" style="--h:76.71%; --d:.4s"><b><span data-count="77" data-count-delay="400">77</span>%</b></div></div>
-    <div class="sys-tank" style="left:1040px"><div class="sys-liq" style="--h:23.29%; --d:1s"><b><span data-count="23" data-count-delay="1000">23</span>%</b></div></div>
-    <div class="sys-tlab" style="left:720px">CSS-only</div>
-    <div class="sys-tlab" style="left:1040px">with JavaScript</div>
-    <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true">
-      <g class="sys-dimg">
-        <path class="sys-dimdash" d="M 940 413.4 H 1300"></path>
-        <path class="sys-dimdash" d="M 1260 504.6 H 1300"></path>
-        <path class="sys-dim" d="M 1290 419.4 V 498.6"></path>
-        <path class="sys-dim" d="M 1280 431.4 L 1290 417.4 L 1300 431.4 M 1280 486.6 L 1290 500.6 L 1300 486.6"></path>
-      </g>
-    </svg>
-    <div class="abs sys-gapnum" data-df-entrance="left" style="--df-motion-delay:2.7s; left:1316px; top:390px"><b>+19</b><span>more components without JS</span></div>
-    <p class="presentation-note">The ratio: 77% CSS-only against 23% with JavaScript - 117 more components without than with.</p>
+    <div class="sys-tank" style="left:720px"><div class="sys-liq" data-share="css" style="--d:.4s"><b><span data-count="" data-count-delay="400">0</span>%</b></div></div>
+    <div class="sys-tank" style="left:1040px"><div class="sys-liq" data-share="js" style="--d:1s"><b><span data-count="" data-count-delay="1000">0</span>%</b></div></div>
+    <div class="sys-tlab" style="left:720px"><b data-stat="stats.withoutJs">169</b>CSS-only</div>
+    <div class="sys-tlab" style="left:1040px"><b data-stat="stats.withJs">59</b>with JavaScript</div>
+    <p class="presentation-note">The ratio: three of four components are plain HTML and CSS - JavaScript only where HTML and CSS end (keyboard patterns, focus, state).</p>
   </section>
-  <!-- 6 · System - staircase: the shipped chart component + bouncing ball -->
-  <section class="slide" data-slide id="sys-treppe" data-theme="paper" data-sec="1" aria-label="Shipped sizes">
-    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:106px">The whole system:<br>307.9 KiB.</h2>
-    <p class="abs" data-df-entrance="up" style="--df-motion-delay:.4s; left:124px; top:318px; font-size:28px; font-weight:500; margin:0">Minified + gzip - measured from dist/stats.json</p>
-    <div class="chart" id="sys-treppe-chart" role="img" aria-label="Bar chart of shipped sizes: total 307.9 KiB, bundle 190.3 KiB, core 24.2 KiB, 1.4 KiB per component on average" style="position:absolute; left:120px; top:340px; width:1360px; height:440px"></div>
-    <div class="sys-ball" style="offset-path:path('M 320 200 L 320 390 Q 480 290 640 490 Q 800 400 960 615 Q 1120 540 1280 686')"></div>
-    <p class="presentation-note">The whole system weighs 307.9 KiB minified and gzipped - the bundle 190.3, the core 24.2, 1.4 KiB per component on average.</p>
-  </section>
-  <!-- 7 · Components - taxonomy donut in the five class colours -->
-  <section class="slide" data-slide id="sys-radar" data-theme="ink" data-sec="3" aria-label="What the system is made of">
-    <h2 class="abs sys-h-l" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:120px; font-size:88px">What the system<br>is made of</h2>
-    <p class="abs" data-df-entrance="up" style="--df-motion-delay:.5s; left:120px; top:330px; width:560px; font-size:38px; font-weight:600; line-height:1.2; margin:0">219 components and 52 template pages in five taxonomy classes.</p>
-    <div class="sys-leg">
-      <div data-df-entrance="left" style="--df-motion-delay:1.1s"><i class="sw-atm"></i><span>Atoms</span><b>62</b></div>
-      <div data-df-entrance="left" style="--df-motion-delay:1.3s"><i class="sw-mol"></i><span>Molecules</span><b>22</b></div>
-      <div data-df-entrance="left" style="--df-motion-delay:1.5s"><i class="sw-blk"></i><span>Blocks</span><b>128</b></div>
-      <div data-df-entrance="left" style="--df-motion-delay:1.7s"><i class="sw-org"></i><span>Organisms</span><b>5</b></div>
-      <div data-df-entrance="left" style="--df-motion-delay:1.9s"><i class="sw-tpl"></i><span>Templates</span><b>54</b></div>
+  <!-- 6 · Size - real apps: each Application Scaffold built on its own, linked full screen -->
+  <section class="slide" data-slide id="sys-apps" data-theme="paper" data-sec="2" aria-label="Real apps and their sizes">
+    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:96px">Use cases · Application Scaffolds</p>
+    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:132px">Real apps ship a fraction.</h2>
+    <div class="abs sys-bars" style="left:120px; top:268px; width:1360px; gap:8px; --sys-bar-label:520px">
+      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">228</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">261.4</span><span>KiB</span></b></div>
+      <a class="sys-bar" href="app-admin-dashboard.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.60s"><span>Admin Dashboard<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.admin-dashboard.components.length">30</span> components</small></span><i style="--d:0.70s"></i><b><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">73.4</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-messenger.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.72s"><span>Messenger<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.messenger.components.length">16</span> components</small></span><i style="--d:0.82s"></i><b><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">54.0</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-issue-tracker.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.84s"><span>Issue Tracker<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.issue-tracker.components.length">24</span> components</small></span><i style="--d:0.94s"></i><b><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">65.6</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-notes.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.96s"><span>Notes &amp; Docs<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.notes.components.length">24</span> components</small></span><i style="--d:1.06s"></i><b><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">58.0</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-status-page.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.08s"><span>Status Page<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.status-page.components.length">19</span> components</small></span><i style="--d:1.18s"></i><b><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">56.0</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-desktop.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.20s"><span>Desktop<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.desktop.components.length">33</span> components</small></span><i style="--d:1.30s"></i><b><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">71.9</span><span>KiB</span></b></a>
     </div>
-    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Donut: taxonomy of the 271 building blocks - 62 atoms, 22 molecules, 128 blocks, 5 organisms, 54 templates">
-      <g transform="rotate(-90 1150 500)">
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#06B6D4" stroke-dashoffset="0" style="--f:230.0; --d:.6s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#3B82F6" stroke-dashoffset="-230.0" style="--f:81.6; --d:.95s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#F59E0B" stroke-dashoffset="-311.6" style="--f:474.8; --d:1.3s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#8B5CF6" stroke-dashoffset="-786.4" style="--f:18.5; --d:1.65s"></circle>
-        <circle class="sys-seg" cx="1150" cy="500" r="160" stroke="#64748B" stroke-dashoffset="-805.0" style="--f:200.3; --d:2s"></circle>
-      </g>
-      <circle class="sys-ringl" cx="1150" cy="500" r="80"></circle>
-      <circle class="sys-ringl" cx="1150" cy="500" r="160"></circle>
+    <p class="abs sys-foot" data-df-entrance="fade" style="--df-motion-delay:1.7s; left:120px; top:752px; width:1360px">Each app is built on its own: the core plus only the components its markup uses (dist/apps/) - an e2e test proves it renders exactly as on the full bundle. Click one to open it full screen.</p>
+    <p class="presentation-note">Real-world applications never load every component: each scaffold is bundled on its own and measured - a fraction of the whole system, and the e2e proof shows it renders exactly as on the full bundle.</p>
+  </section>
+  <!-- 7 · Method - Rapid Agentic Development: the templates by kind -->
+  <section class="slide" data-slide id="sys-rad" data-theme="ink" data-sec="3" aria-label="Rapid Agentic Development">
+    <h2 class="abs sys-h-l" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:110px; font-size:78px">Rapid Agentic<br>Development (RAD)</h2>
+    <p class="abs" data-df-entrance="up" style="--df-motion-delay:.5s; left:120px; top:300px; width:620px; font-size:34px; font-weight:600; line-height:1.25; margin:0">Available as a skill so any agent harnesses can adapt best practices.</p>
+    <div class="sys-leg">
+      <div data-df-entrance="left" style="--df-motion-delay:1.1s"><i class="sw-app"></i><span>App Scaffolds</span><b data-stat="stats.templateGroups.Application">7</b></div>
+      <div data-df-entrance="left" style="--df-motion-delay:1.3s"><i class="sw-deck"></i><span>Presentation Decks</span><b data-stat="stats.templateGroups.Presentations">33</b></div>
+      <div data-df-entrance="left" style="--df-motion-delay:1.5s"><i class="sw-web"></i><span>Website Templates</span><b data-stat="stats.templateGroups.Website">12</b></div>
+      <div data-df-entrance="left" style="--df-motion-delay:1.7s"><i class="sw-tpl"></i><span>Template Components</span><b data-stat="stats.byType.TPL">3</b></div>
+    </div>
+    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Donut: the templates by kind - app scaffolds, presentation decks, website templates and template components">
+      <g transform="rotate(-90 1150 500)" id="sys-rad-segs"></g>
       <circle class="sys-ringl" cx="1150" cy="500" r="240"></circle>
       <circle class="sys-rim" cx="1150" cy="500" r="320"></circle>
-      <line class="sys-cross" x1="810" y1="500" x2="1490" y2="500"></line>
-      <line class="sys-cross" x1="1150" y1="160" x2="1150" y2="840"></line>
+      <circle class="sys-hub" cx="1150" cy="500" r="96"></circle>
+      <text class="sys-hub-num" x="1150" y="512" text-anchor="middle" data-stat="stats.templates">55</text>
+      <text class="sys-hub-lab" x="1150" y="548" text-anchor="middle">templates</text>
     </svg>
-    <div class="sys-sweep"></div>
-    <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true">
-      <circle class="sys-blip-halo" cx="1210" cy="330" r="16" style="--d:.25s"></circle>
-      <circle class="sys-blip-halo" cx="1250" cy="420" r="14" style="--d:.45s"></circle>
-      <circle class="sys-blip-halo" cx="1330" cy="330" r="13" style="--d:.55s"></circle>
-      <circle class="sys-blip" cx="1210" cy="330" r="12" style="--d:.25s"></circle>
-      <circle class="sys-blip" cx="1250" cy="420" r="10" style="--d:.45s"></circle>
-      <circle class="sys-blip" cx="1330" cy="330" r="9" style="--d:.55s"></circle>
-    </svg>
-    <p class="presentation-note">What the system is made of: 62 atoms, 22 molecules, 128 blocks, 5 organisms, 54 templates - 219 components plus 52 template pages; underneath, 50 design tokens and 1,312 live examples.</p>
+    <p class="presentation-note">Rapid Agentic Development: the whole system ships as an agent skill, so any harness picks up the conventions - and the templates show what that builds: app scaffolds, presentation decks, website templates and the template components they run on.</p>
   </section>
-  <!-- 8 · Quality - stopwatch (one full run) + verification ranking -->
-  <section class="slide" data-slide id="sys-watch" data-theme="paper" data-sec="5" aria-label="The verification">
-    <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:96px">The verification</h2>
-    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Stopwatch: the complete verification takes about four minutes">
+  <!-- 8 · Method - Verified Agentic Engineering: two auto-playing diagrams -->
+  <section class="slide" data-slide id="sys-vae" data-theme="paper" data-sec="4" aria-label="Verified Agentic Engineering">
+    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Verified Agentic Engineering (VAE)</p>
+    <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:96px; font-size:54px">Every change, proven.</h2>
+    <p class="abs sys-dglab" style="left:120px; top:176px">The loop</p>
+    <div class="sys-dg" style="top:200px; width:944px; transform:scale(1.25)">
+      <figure class="diagram" id="sys-vae-loop" aria-label="The VAE loop: plan, implement, gate, finalize, human review, release" style="--diagram-node-w:8rem;--diagram-col-min:6rem;--diagram-gap-x:1.5rem"><script type="application/json" class="diagram-spec">{"type":"flow","steps":true,"interactive":true,"cols":6,"nodes":[{"id":"plan","name":"Plan","meta":"user prompt · agentic research · refinement · spec","col":1,"row":1,"step":1},{"id":"implement","name":"Implement","meta":"fully agentic","col":2,"row":1,"step":2,"tone":"accent"},{"id":"gate","name":"Gate","meta":"verify → review → docs","col":3,"row":1,"step":3,"tone":"warn"},{"id":"finalize","name":"Finalize","meta":"conventional commits · changelog · agent memory reconcile · add/change verifier · add/change AGENTS.md","col":4,"row":1,"step":4},{"id":"human","name":"Human review","meta":"a person signs off","col":5,"row":1,"step":5,"tone":"link"},{"id":"release","name":"Release","meta":"CI · CD · package managers · …","col":6,"row":1,"step":6,"shape":"pill","tone":"ok"}],"edges":[{"from":"plan","to":"implement"},{"from":"implement","to":"gate"},{"from":"gate","to":"finalize","label":"green"},{"from":"finalize","to":"human"},{"from":"human","to":"release"},{"from":"gate","to":"implement","label":"fix","tone":"warn"}]}</script></figure>
+    </div>
+    <p class="abs sys-dglab" style="left:120px; top:486px">Inside the gate - what the verifier checks</p>
+    <div class="sys-dg" style="top:510px; width:1040px; transform:scale(1.2)">
+      <figure class="diagram" id="sys-vae-gate" aria-label="Inside the gate: the verifier's most important checks" style="--diagram-node-w:7.5rem;--diagram-col-min:6rem;--diagram-gap-x:1.5rem"><script type="application/json" class="diagram-spec">{"type":"flow","steps":true,"interactive":true,"cols":7,"nodes":[{"id":"lint","name":"Lint · types","meta":"oxlint · tsc","col":1,"row":1,"step":1},{"id":"dist","name":"dist 1:1","meta":"compile · minify twins","col":2,"row":1,"step":2},{"id":"contracts","name":"Contracts","meta":"State API · store · render()","col":3,"row":1,"step":3},{"id":"schemas","name":"Schemas ↔ docs","meta":"states table · examples","col":4,"row":1,"step":4},{"id":"dom","name":"DOM via df$","meta":"no native queries · no HTML sinks","col":5,"row":1,"step":5},{"id":"figures","name":"Figures fresh","meta":"stats.json · claims · this slide","col":6,"row":1,"step":6},{"id":"evidence","name":"Evidence","meta":"a screenshot per state · an e2e per component","col":7,"row":1,"step":7,"tone":"ok"}],"edges":[{"from":"lint","to":"dist"},{"from":"dist","to":"contracts"},{"from":"contracts","to":"schemas"},{"from":"schemas","to":"dom"},{"from":"dom","to":"figures"},{"from":"figures","to":"evidence"}]}</script></figure>
+    </div>
+    <p class="abs sys-proof" data-df-entrance="up" style="--df-motion-delay:.6s; left:120px; top:706px; width:1360px">The proof: defuss-shadcn scaled from 20 to <span data-stat="stats.total">228</span> components with this method - and still passes every gate.</p>
+    <p class="abs sys-credit" data-df-entrance="fade" style="--df-motion-delay:.9s; left:120px; top:752px; width:1360px">This method has been designed by Aron Homberg (kyr0) and is general purpose. It scales with any agentic engineering project and can be adapted in any project. Skill release: <a href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener">github.com/kyr0/defuss-vae</a></p>
+    <p class="presentation-note">Verified Agentic Engineering: plan, implement (fully agentic), the gate (verify, review, docs), finalize (conventional commits, changelog, agent memory, verifier and AGENTS.md updates), human review, release. The second diagram plays when the first is done: what the verifier itself checks.</p>
+  </section>
+  <!-- 9 · Method - the verifier, timed: stopwatch + the recorded run -->
+  <section class="slide" data-slide id="sys-watch" data-theme="ink" data-sec="4" aria-label="The verifier, timed">
+    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:74px">The verifier, timed</p>
+    <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.15s; left:120px; top:106px">One command. Every gate.</h2>
+    <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Stopwatch on a one-minute dial: one verify run">
       <g class="sys-face" data-df-entrance="zoom" style="--df-motion-delay:.2s">
-        <rect x="412" y="300" width="36" height="30" fill="#0A1E4A"></rect>
-        <rect x="392" y="286" width="76" height="18" rx="6" fill="#0A1E4A"></rect>
-        <rect x="585" y="360" width="30" height="22" rx="4" fill="#0A1E4A" transform="rotate(45 600 371)"></rect>
-        <circle class="sys-wring" cx="430" cy="560" r="222"></circle>
+        <rect x="412" y="280" width="36" height="30" fill="#FFFFFF"></rect>
+        <rect x="392" y="266" width="76" height="18" rx="6" fill="#FFFFFF"></rect>
+        <rect x="585" y="340" width="30" height="22" rx="4" fill="#FFFFFF" transform="rotate(45 600 351)"></rect>
+        <circle class="sys-wring" cx="430" cy="540" r="222"></circle>
         <g id="sys-wticks"></g>
-        <circle class="sys-arc" cx="430" cy="560" r="170" transform="rotate(-90 430 560)"></circle>
-        <text class="sys-wnum" x="430" y="500">≈ 4 min</text>
-        <text class="sys-wlab" x="430" y="532">for everything</text>
-        <g class="sys-hand"><path d="M 426 560 L 430 356 L 434 560 Z" fill="#0A1E4A"></path></g>
-        <circle cx="430" cy="560" r="16" fill="#0A1E4A"></circle>
-        <circle cx="430" cy="560" r="6" fill="#FFFFFF"></circle>
+        <circle class="sys-arc" cx="430" cy="540" r="170" transform="rotate(-90 430 540)"></circle>
+        <g class="sys-hand"><path d="M 426 540 L 430 336 L 434 540 Z" fill="#FFFFFF"></path></g>
+        <circle cx="430" cy="540" r="16" fill="#FFFFFF"></circle>
+        <circle cx="430" cy="540" r="6" fill="#051232"></circle>
       </g>
     </svg>
+    <div class="sys-wnum" data-df-entrance="fade" style="--df-motion-delay:2.6s"><span data-stat="verify.seconds" data-stat-format="s">10.2</span> s</div>
+    <div class="sys-wlab" data-df-entrance="fade" style="--df-motion-delay:2.7s">verify alone</div>
     <div class="sys-rows">
-      <div class="sys-row top" data-df-entrance="left" style="--df-motion-delay:.7s"><span>Tests</span><i style="width:100%; --d:.7s"></i><b>281</b></div>
-      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>Screenshots</span><i style="width:76.2%; --d:.82s"></i><b>204</b></div>
-      <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.94s"><span>E2E files</span><i style="width:29.5%; --d:.94s"></i><b>83</b></div>
-      <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:1.06s"><span>Verify gates</span><i style="width:24.9%; --d:1.06s"></i><b>70</b></div>
+      <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.7s"><span>Verify gates</span><span></span><b data-stat="verify.gates">78</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>E2E test files</span><span></span><b data-stat="verify.e2eFiles">242</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"><span>Components covered</span><span></span><b data-stat="stats.total">228</b></div>
     </div>
-    <p class="abs" data-df-entrance="fade" style="--df-motion-delay:1.5s; left:792px; top:590px; width:680px; margin:0; font-size:28px; font-weight:500; line-height:1.4; text-wrap:balance">The agent runs all of them itself, in an automated verification loop - a human reviews the result at the end.</p>
-    <p class="presentation-note">The full verification runs in about four minutes: 281 tests, 204 screenshots, 83 e2e files, around 70 verify gates - all executed by the agent in an automated verification loop; the human reviews the result at the end.</p>
+    <p class="sys-rec" data-df-entrance="fade" style="--df-motion-delay:1.4s"><code>bun scripts/verify.ts</code> - <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s on a <span data-stat="verify.machine" data-stat-format="text">MacBook Air</span> · <span data-stat="verify.chip" data-stat-format="text">Apple M4</span> (<span data-stat="verify.memoryGB">24</span> GB, <span data-stat="verify.os" data-stat-format="text">macOS 15.7.3</span>, Bun <span data-stat="verify.bun" data-stat-format="text">1.4.2</span>), run by <span data-stat="verify.agent" data-stat-format="text">Claude Code · Opus 5.5 (high effort)</span> on <span data-stat="verify.date" data-stat-format="text">2026-10-05</span>. Recorded by scripts/time-verify.ts - and this slide is checked against the record.</p>
+    <p class="presentation-note">How long the verifier alone takes, measured: one verify run, recorded with the machine and the agent that drove it - the slide's figures are gated against that record.</p>
   </section>
-  <!-- 9 · Outlook - four ways in: branching route with 4 trains -->
-  <section class="slide" data-slide id="sys-wege" data-theme="ink" data-sec="6" aria-label="Four ways in">
-    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:100px">Four<br>setup variants</h2>
+  <!-- 10 · Use - how to use: branching route with 4 trains -->
+  <section class="slide" data-slide id="sys-wege" data-theme="paper" data-sec="5" aria-label="How to use">
+    <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:100px">How to use?</h2>
     <svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Branching route: four ways to use defuss-shadcn">
       <path class="sys-br" data-df-draw pathLength="1" style="--df-motion-delay:.2s; --df-motion-duration:.8s" d="M -20 540 H 600"></path>
       <path class="sys-br" data-df-draw pathLength="1" style="--df-motion-delay:.9s; --df-motion-duration:.9s" d="M 600 540 L 820 320 H 900"></path>
@@ -425,56 +511,56 @@
       <circle class="sys-term" cx="900" cy="610" r="20" data-df-entrance="pop" style="--df-motion-delay:1.9s"></circle>
       <circle class="sys-term" cx="900" cy="760" r="20" data-df-entrance="pop" style="--df-motion-delay:2s"></circle>
     </svg>
-    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:1.8s; top:320px">CDN (jsDelivr)</div>
-    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:1.95s; top:470px">Self-Hosting (dist/)</div>
-    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:2.1s; top:610px">npm</div>
-    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:2.25s; top:760px">Agents (SKILL.md)</div>
+    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:1.8s; top:320px"><a href="vibe-coding.html" target="_blank" rel="noopener">SKILL.md / Vibe Coding</a><small>one skill - your agent builds with it</small></div>
+    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:1.95s; top:470px">Simple &lt;link&gt; / &lt;script&gt;<small>all.css + all.js from the CDN</small></div>
+    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:2.1s; top:610px">npm install<small>npm install defuss-shadcn</small></div>
+    <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:2.25s; top:760px">Vendoring (classic shadcn/ui)<small>copy a component folder into your repo</small></div>
     <div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 820 320 H 900'); --d:2.4s"></div>
     <div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 670 470 H 900'); --d:3.5s"></div>
     <div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 670 610 H 900'); --d:4.6s"></div>
     <div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 820 760 H 900'); --d:5.7s"></div>
-    <p class="presentation-note">Four ways in: via the jsDelivr CDN, self-hosted from dist/, via npm - or straight through SKILL.md for agents.</p>
+    <p class="presentation-note">How to use it: hand SKILL.md to your agent (vibe coding), add one &lt;link&gt; and one &lt;script&gt;, npm install - or vendor the component folders into your repo, the classic shadcn/ui way.</p>
   </section>
-  <!-- 10 · Outlook - discussion: outlined ? with a 219-tick ring -->
-  <section class="slide" data-slide id="sys-frage" data-theme="paper" data-sec="6" aria-label="Discussion">
-    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:250px">Discussion</p>
-    <h2 class="abs sys-h-l" data-df-entrance="skew" style="--df-motion-delay:.3s; left:120px; top:300px; width:720px; font-size:96px">What will you build with it?</h2>
-    <p class="abs" data-df-entrance="fade" style="--df-motion-delay:1.4s; left:124px; top:560px; width:680px; margin:0; font-size:32px; font-weight:500; line-height:1.35">Start building a prototype now.</p>
-    <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true"><g class="sys-ring" id="sys-ring76"></g></svg>
+  <!-- 11 · Outlook - discussion: outlined ? with one tick per component -->
+  <section class="slide" data-slide id="sys-frage" data-theme="ink" data-sec="6" aria-label="Discussion">
+    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:230px">Discussion</p>
+    <h2 class="abs sys-h-l" data-df-entrance="skew" style="--df-motion-delay:.3s; left:120px; top:280px; width:760px; font-size:96px">What will you build?</h2>
+    <p class="abs sys-bench" data-df-entrance="fade" style="--df-motion-delay:1.4s; left:124px; top:520px; width:700px">Average NON-SLOP prototype creation time: <b>15 mins</b>benchmarked with Claude Code, Opus 5.5 high</p>
+    <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true"><g class="sys-ring" id="sys-ring"></g></svg>
     <div class="sys-qm" aria-hidden="true">?</div>
-    <p class="presentation-note">Open discussion: what will you build with it? Start building a prototype now.</p>
+    <p class="presentation-note">Open discussion: what will you build? An average non-slop prototype takes 15 minutes - benchmarked with Claude Code on Opus 5.5 (high effort).</p>
   </section>
-  <!-- deck chrome: mini-route (7 stations; the 10-slide edit skips
-       tokens/charts) + brand - the slide transition is the engine curtain -->
+  <!-- deck chrome: mini-route (7 sections: opening, features, size, RAD,
+       VAE, use, outlook) + brand - the slide transition is the engine curtain -->
   <div class="sys-chrome" aria-hidden="true">
     <svg class="sys-mini" viewBox="0 0 200 20">
       <line x1="8" y1="10" x2="192" y2="10"></line>
       <circle cx="8" cy="10" r="5"></circle>
-      <circle cx="38.6" cy="10" r="5"></circle>
+      <circle cx="38.7" cy="10" r="5"></circle>
       <circle cx="69.3" cy="10" r="5"></circle>
-      <circle cx="99.9" cy="10" r="5"></circle>
-      <circle cx="130.5" cy="10" r="5"></circle>
-      <circle cx="168.1" cy="10" r="5"></circle>
-      <circle cx="191.6" cy="10" r="5"></circle>
+      <circle cx="100" cy="10" r="5"></circle>
+      <circle cx="130.7" cy="10" r="5"></circle>
+      <circle cx="161.3" cy="10" r="5"></circle>
+      <circle cx="192" cy="10" r="5"></circle>
     </svg>
     <div class="sys-brand">defuss-shadcn</div>
   </div>
   <div class="presentation-controls">
     <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
-    <span class="presentation-counter" aria-live="polite">1 / 10</span>
+    <span class="presentation-counter" aria-live="polite">1 / 11</span>
     <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
   </div>
-  <progress class="presentation-progress" max="10" value="1"></progress>
+  <progress class="presentation-progress" max="11" value="1"></progress>
 </section>
 <script>
   // all.js (df$) boots AFTER example scripts in the sandbox - every df$ touch
   // lives inside this load handler. The deck runtime (presentation.js) owns
   // activation, the df$.anim curtain between slides, entrance/draw replays
-  // and the data-count counters; this script adds the bespoke layer:
-  // generated unit textures (219 components), the chart staircase, the section
-  // mini-route and the .is-on class that re-arms the CSS set-pieces (gauge
-  // needle, tanks, radar, watch) on every activation. All numbers are real
-  // (dist/stats.json).
+  // and the data-count counters; this script adds the bespoke layer. Every
+  // figure is a data-stat element (written from dist/stats.json and the
+  // verify-timing record, checked by verify) - the geometry below (dots,
+  // ticks, bars, tanks, donut, dial) is derived from those figures, never
+  // typed twice.
   window.addEventListener('load', () => {
     const deck = document.getElementById('sys-deck');
     const slides = Array.from(deck.querySelectorAll(':scope > [data-slide]'));
@@ -487,8 +573,19 @@
       parent.appendChild(el);
       return el;
     };
+    const num = (el) => Number(el.textContent.replace(/[^\d.]/g, ''));
+    const stat = (path, scope = deck) => num(scope.querySelector(`[data-stat="${path}"]`));
+    const total = stat('stats.total');
+    // counters count up to their own figure
+    deck.querySelectorAll('[data-count][data-stat]').forEach((el) => { el.dataset.count = String(num(el)); });
+    // a size counts DOWN from the next power of ten (253.6 → from 1000, 34.3 → from 100)
+    deck.querySelectorAll('[data-count-down]').forEach((el) => {
+      const v = num(el);
+      el.dataset.countFrom = String(10 ** Math.ceil(Math.log10(Math.max(v, 1.0001))));
+      el.dataset.countDecimals = '1';
+    });
 
-    // S1: the headline types itself (one span per character) + the 219-tick ruler
+    // S1: the headline types itself (one span per character) + one ruler tick per component
     const type = document.getElementById('sys-type');
     const text = type.textContent;
     type.textContent = '';
@@ -501,86 +598,119 @@
     });
     const ruler = document.getElementById('sys-ruler');
     sv('line', { x1: 120, y1: 836, x2: 1480, y2: 836, stroke: 'rgba(255,255,255,.35)', 'stroke-width': 2 }, ruler);
-    for (let i = 0; i < 219; i++) {
-      const x = (120 + i * (1360 / 120)).toFixed(1);
-      const long = (i + 1) % 10 === 0 || i === 0 || i === 120;
+    for (let i = 0; i < total; i++) {
+      const x = (120 + i * (1360 / Math.max(1, total - 1))).toFixed(1);
+      const long = (i + 1) % 10 === 0 || i === 0;
       const tick = sv('line', { x1: x, x2: x, y1: long ? 796 : 814, y2: 836, class: 'sys-tick' }, ruler);
       tick.style.setProperty('--i', i);
     }
 
-    // S2: 271 unit dots raining into the five taxonomy columns (62/22/128/5/54)
+    // S2: one unit dot per building block raining into the five taxonomy
+    // columns - the pitch shrinks until the tallest column fits (top 150 → 720)
     const dots = document.getElementById('sys-dots');
-    const columns = [[62, 'atm'], [22, 'mol'], [128, 'blk'], [5, 'org'], [54, 'tpl']];
+    const columns = Array.from(deck.querySelectorAll('#sys-zahlen .sys-collab')).map((c) => [num(c.querySelector('b')), c.dataset.col]);
+    const PER_ROW = 5;
+    const rows = Math.max(...columns.map(([n]) => Math.ceil(n / PER_ROW)));
+    const pitch = Math.min(32, Math.floor(570 / rows));
+    const size = Math.max(6, Math.round(pitch * 0.75));
+    dots.style.setProperty('--dot', size + 'px');
     columns.forEach(([n, cls], k) => {
+      const x0 = 620 + k * 175 + 80 - (PER_ROW * pitch) / 2;
       for (let j = 0; j < n; j++) {
-        const row = Math.floor(j / 5), col = j % 5;
+        const row = Math.floor(j / PER_ROW), col = j % PER_ROW;
         const dot = document.createElement('i');
         dot.className = 'sys-dot ' + cls;
-        dot.style.left = (620 + k * 175 + col * 32 + 4) + 'px';
-        dot.style.top = (720 - row * 32 - 12) + 'px';
-        dot.style.setProperty('--dl', (row * 90 + k * 45 + col * 18 + 300) + 'ms');
+        dot.style.left = (x0 + col * pitch + (pitch - size) / 2) + 'px';
+        dot.style.top = (720 - row * pitch - size / 2) + 'px';
+        dot.style.setProperty('--dl', (row * 60 + k * 45 + col * 18 + 300) + 'ms');
         dots.appendChild(dot);
       }
     });
 
-    // S4: gauge tick ring (minor every 6°, major every 36°)
-    const gticks = document.getElementById('sys-gticks');
-    const gpt = (r, a) => [1100 + r * Math.cos(a * Math.PI / 180), 640 - r * Math.sin(a * Math.PI / 180)];
-    for (let a = 180; a >= 0; a -= 6) {
-      const p0 = gpt(294, a), p1 = gpt(a % 36 === 0 ? 268 : 282, a);
-      sv('line', { x1: p0[0].toFixed(1), y1: p0[1].toFixed(1), x2: p1[0].toFixed(1), y2: p1[1].toFixed(1), class: 'sys-gtick' }, gticks);
-    }
+    // S4 + S6: every bar is its row's figure against the slide's largest
+    deck.querySelectorAll('.sys-bars').forEach((list) => {
+      const bars = Array.from(list.querySelectorAll('.sys-bar'));
+      const values = bars.map((b) => num(b.querySelector(':scope > b [data-stat]')));
+      const max = Math.max(...values);
+      bars.forEach((b, i) => b.querySelector('i').style.setProperty('--w', (100 * values[i] / max).toFixed(2) + '%'));
+    });
 
-    // S8: 60 stopwatch ticks (major every fifth)
+    // S4: each mini chart is scaled to its card's source size
+    deck.querySelectorAll('#sys-bundles .sys-split-chart').forEach((chart) => {
+      const rows = Array.from(chart.children);
+      const values = rows.map((r) => num(r.querySelector('b')));
+      rows.forEach((r, i) => r.querySelector('i').style.setProperty('--w', (100 * values[i] / values[0]).toFixed(2) + '%'));
+    });
+
+    // S5: the tanks fill to the shares of the two counts
+    const css = stat('stats.withoutJs'), js = stat('stats.withJs');
+    deck.querySelectorAll('#sys-tanks .sys-liq').forEach((liq) => {
+      const share = (liq.dataset.share === 'css' ? css : js) / (css + js);
+      liq.style.setProperty('--h', (share * 100).toFixed(2) + '%');
+      const pct = Math.round(share * 100);
+      const counter = liq.querySelector('[data-count]');
+      counter.dataset.count = String(pct);
+      counter.textContent = String(pct);
+    });
+
+    // S7: the donut - one segment per legend row, in the row's colour
+    const segs = document.getElementById('sys-rad-segs');
+    const legend = Array.from(deck.querySelectorAll('#sys-rad .sys-leg > div'));
+    const parts = legend.map((row) => num(row.querySelector('b')));
+    const sum = parts.reduce((a, b) => a + b, 0);
+    const C = 2 * Math.PI * 160;
+    let off = 0;
+    legend.forEach((row, i) => {
+      const len = (parts[i] / sum) * C;
+      const seg = sv('circle', { class: 'sys-seg', cx: 1150, cy: 500, r: 160, stroke: getComputedStyle(row.querySelector('i')).backgroundColor, 'stroke-dashoffset': (-off).toFixed(1) }, segs);
+      seg.style.setProperty('--f', len.toFixed(1));
+      seg.style.setProperty('--d', (0.6 + i * 0.35) + 's');
+      off += len;
+    });
+
+    // S9: a one-minute dial (a tick per second, a major one every five) -
+    // the arc and the hand stop at the recorded run
     const wticks = document.getElementById('sys-wticks');
     for (let k = 0; k < 60; k++) {
       const a = k * 6 * Math.PI / 180, major = k % 5 === 0;
-      const r0 = 206, r1 = major ? 188 : 197;
-      sv('line', { x1: (430 + r0 * Math.sin(a)).toFixed(1), y1: (560 - r0 * Math.cos(a)).toFixed(1), x2: (430 + r1 * Math.sin(a)).toFixed(1), y2: (560 - r1 * Math.cos(a)).toFixed(1), class: 'sys-wt' + (major ? ' m' : '') }, wticks);
+      const r0 = 206, r1 = major ? 184 : 197;
+      sv('line', { x1: (430 + r0 * Math.sin(a)).toFixed(1), y1: (540 - r0 * Math.cos(a)).toFixed(1), x2: (430 + r1 * Math.sin(a)).toFixed(1), y2: (540 - r1 * Math.cos(a)).toFixed(1), class: 'sys-wt' + (major ? ' m' : '') }, wticks);
     }
+    const run = Math.min(1, stat('verify.seconds', document.getElementById('sys-watch').querySelector('.sys-rec')) / 60);
+    const watch = document.getElementById('sys-watch');
+    watch.style.setProperty('--arc', (2 * Math.PI * 170 * run).toFixed(1));
+    watch.style.setProperty('--hand', (run * 360).toFixed(1) + 'deg');
 
-    // S10: the closing 219-tick ring (rotates slowly while on stage)
-    const ring = document.getElementById('sys-ring76');
-    for (let i = 0; i < 219; i++) {
-      const a = (i / 219) * 2 * Math.PI;
+    // S11: the closing ring - one tick per component (rotates slowly while on stage)
+    const ring = document.getElementById('sys-ring');
+    for (let i = 0; i < total; i++) {
+      const a = (i / total) * 2 * Math.PI;
       const r0 = 395, r1 = i % 10 === 0 ? 370 : 382;
       sv('line', { x1: (1150 + r0 * Math.cos(a)).toFixed(1), y1: (450 + r0 * Math.sin(a)).toFixed(1), x2: (1150 + r1 * Math.cos(a)).toFixed(1), y2: (450 + r1 * Math.sin(a)).toFixed(1), class: 'sys-ringtick' }, ring);
     }
 
-    // S6: the staircase is the shipped chart component - navy bars on paper.
-    // Text runs at artboard scale (24–30px) like every other slide.
-    const treppeOption = {
-      aria: { enabled: true },
-      animation: !reduce,
-      animationDuration: 1100,
-      animationDelay: (i) => 300 + i * 120,
-      textStyle: { fontFamily: "Montserrat, 'Segoe UI', Arial, sans-serif" },
-      grid: { left: 40, right: 40, top: 60, bottom: 70 },
-      xAxis: {
-        type: 'category',
-        data: ['Total', 'Bundle (all)', 'Core', 'Ø per component'],
-        axisLine: { lineStyle: { color: '#0A1E4A', width: 3 } },
-        axisTick: { show: false },
-        axisLabel: { color: '#0A1E4A', fontSize: 24, fontWeight: 700, interval: 0, width: 280, overflow: 'break' },
-      },
-      yAxis: { show: false, max: 100 },
-      series: [{
-        type: 'bar',
-        barWidth: 240,
-        barMaxWidth: 240, // the artboard theme caps bars narrower - the ball needs landing room
-        data: [307.9, 190.3, 24.2, {
-          value: 1.4,
-          // above the ball's final resting place on this tiny bar
-          label: { position: 'top', distance: 52, color: '#0A1E4A' },
-        }],
-        itemStyle: { color: '#0A1E4A' },
-        label: {
-          show: true, position: 'insideTop', distance: 20, color: '#FFFFFF', fontSize: 30, fontWeight: 900,
-          formatter: (p) => p.value + ' KiB',
-        },
-      }],
+    // S8: the two diagrams play on their own - the loop a second after the
+    // slide arrives, the gate's checks when the loop has played through
+    const loop = document.getElementById('sys-vae-loop');
+    const gate = document.getElementById('sys-vae-gate');
+    let vaeTimer = 0;
+    const vae = (on) => {
+      clearTimeout(vaeTimer);
+      if (!loop.api || !gate.api) return;
+      if (!on || reduce) {
+        loop.api.setState('default');
+        gate.api.setState('default');
+        return;
+      }
+      loop.api.setState('paused', { step: 0 });
+      gate.api.setState('paused', { step: 0 });
+      vaeTimer = setTimeout(() => loop.api.setState('playing', { step: 1 }), 1000);
     };
-    const treppe = df$.shadcn.chart.mount(document.getElementById('sys-treppe-chart'), treppeOption);
+    loop.addEventListener('diagram-step', (e) => {
+      if (e.detail.state === 'paused' && e.detail.step === e.detail.max && e.detail.max > 0 && gate.api.getState().name !== 'playing') {
+        vaeTimer = setTimeout(() => gate.api.setState('playing', { step: 1 }), 400);
+      }
+    });
 
     // Activation sync. The observer fires on every data-active change - the
     // runtime plays the curtain and swaps the slide, we layer the rest on.
@@ -596,6 +726,12 @@
       slides.forEach((s) => s.classList.remove('is-on'));
       void slide.offsetWidth;
       slide.classList.add('is-on');
+      // counters show where they start while the slide's entrance delay runs
+      slide.querySelectorAll('[data-count]').forEach((el) => {
+        if (el.dataset.countFrom) el.textContent = Number(el.dataset.countFrom).toFixed(Number(el.dataset.countDecimals || 0));
+        else if (el.dataset.count) el.textContent = '0';
+      });
+      vae(slide.id === 'sys-vae');
 
       // (b) section mini-route: current station enlarged, passed ones filled
       const sec = parseInt(slide.dataset.sec, 10);

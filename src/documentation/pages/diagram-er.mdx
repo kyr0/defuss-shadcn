@@ -1,0 +1,558 @@
+---
+title: "Illustrative · ER"
+description: "Entity-relationship diagrams with the diagram component - entities with field lists, crow's-foot cardinality, relationship labels; plus physical database schemas with column-to-column foreign keys; step by step and as deltas."
+slug: "diagram-er"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-er" title="Illustrative · ER" component="diagram">
+  Entities and cardinality: each entity a box with its fields (<code>.diagram-node-fields</code>), relationships with crow's-foot ends (<code>data-head</code> / <code>data-tail</code>: <code>one</code>, <code>many</code>, <code>one-many</code>, <code>zero-many</code>, <code>zero-one</code>) and optional end labels. Further down, the physical <em>database schema</em>: real tables, SQL types, key chips, foreign keys anchored column to column.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Commerce domain model" component="diagram" hint="Fields: # marks an identifier, → a reference. data-from-label / data-to-label print the cardinality beside each end."
+<figure class="diagram" id="dg-er" data-type="er" aria-label="Commerce domain model">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">ER · domain model</span>
+    <span class="diagram-title">Customers, orders, products</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3;--diagram-gap-y:4rem">
+    <div class="diagram-node" data-node="customer" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Customer</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>name</li>
+        <li>email</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="order" data-tone="accent" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>→ customer</li>
+        <li>placed at</li>
+        <li>status</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="line" style="--col:2;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order line</span>
+      <ul class="diagram-node-fields">
+        <li>→ order</li>
+        <li>→ product</li>
+        <li>quantity</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Product</span>
+      <ul class="diagram-node-fields">
+        <li># sku</li>
+        <li>title</li>
+        <li>price</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="address" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Value</span>
+      <span class="diagram-node-name">Address</span>
+      <ul class="diagram-node-fields">
+        <li>street</li>
+        <li>city</li>
+        <li>country</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-head="zero-many" data-tail="one" data-from-label="1" data-to-label="0..*">places</li>
+    <li class="diagram-edge" data-from="order" data-to="line" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="1..*">contains</li>
+    <li class="diagram-edge" data-from="line" data-to="product" data-head="one" data-tail="zero-many" data-from-label="0..*" data-to-label="1">refers to</li>
+    <li class="diagram-edge" data-from="customer" data-to="address" data-head="one-many" data-tail="one">ships to</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Domain model, step by step" component="diagram" hint="Automatic order: entities one by one, each relationship with its later entity."
+<figure class="diagram" id="dg-er-steps" data-type="er" data-steps data-autoplay aria-label="Commerce domain model">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">ER · domain model</span>
+    <span class="diagram-title">Customers, orders, products</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3;--diagram-gap-y:4rem">
+    <div class="diagram-node" data-node="customer" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Customer</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>name</li>
+        <li>email</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="order" data-tone="accent" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>→ customer</li>
+        <li>placed at</li>
+        <li>status</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="line" style="--col:2;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order line</span>
+      <ul class="diagram-node-fields">
+        <li>→ order</li>
+        <li>→ product</li>
+        <li>quantity</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Product</span>
+      <ul class="diagram-node-fields">
+        <li># sku</li>
+        <li>title</li>
+        <li>price</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="address" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Value</span>
+      <span class="diagram-node-name">Address</span>
+      <ul class="diagram-node-fields">
+        <li>street</li>
+        <li>city</li>
+        <li>country</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-head="zero-many" data-tail="one" data-from-label="1" data-to-label="0..*">places</li>
+    <li class="diagram-edge" data-from="order" data-to="line" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="1..*">contains</li>
+    <li class="diagram-edge" data-from="line" data-to="product" data-head="one" data-tail="zero-many" data-from-label="0..*" data-to-label="1">refers to</li>
+    <li class="diagram-edge" data-from="customer" data-to="address" data-head="one-many" data-tail="one">ships to</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="ER, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-er-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-er-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-er-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-er-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-er-live" data-interactive data-type="er" aria-label="Commerce domain model">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">ER · domain model</span>
+    <span class="diagram-title">Customers, orders, products</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3;--diagram-gap-y:4rem">
+    <div class="diagram-node" data-node="customer" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Customer</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>name</li>
+        <li>email</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="order" data-tone="accent" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>→ customer</li>
+        <li>placed at</li>
+        <li>status</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="line" style="--col:2;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order line</span>
+      <ul class="diagram-node-fields">
+        <li>→ order</li>
+        <li>→ product</li>
+        <li>quantity</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Product</span>
+      <ul class="diagram-node-fields">
+        <li># sku</li>
+        <li>title</li>
+        <li>price</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="address" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Value</span>
+      <span class="diagram-node-name">Address</span>
+      <ul class="diagram-node-fields">
+        <li>street</li>
+        <li>city</li>
+        <li>country</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-head="zero-many" data-tail="one" data-from-label="1" data-to-label="0..*">places</li>
+    <li class="diagram-edge" data-from="order" data-to="line" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="1..*">contains</li>
+    <li class="diagram-edge" data-from="line" data-to="product" data-head="one" data-tail="zero-many" data-from-label="0..*" data-to-label="1">refers to</li>
+    <li class="diagram-edge" data-from="customer" data-to="address" data-head="one-many" data-tail="one">ships to</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="ER, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-er-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex gap-3 items-start">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-er-edit" data-interactive data-type="er" aria-label="Commerce domain model">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">ER · domain model</span>
+        <span class="diagram-title">Customers, orders, products</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:3;--diagram-gap-y:4rem">
+        <div class="diagram-node" data-node="customer" style="--col:1;--row:1">
+          <span class="diagram-node-eyebrow">Entity</span>
+          <span class="diagram-node-name">Customer</span>
+          <ul class="diagram-node-fields">
+            <li># id</li>
+            <li>name</li>
+            <li>email</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="order" data-tone="accent" style="--col:2;--row:1">
+          <span class="diagram-node-eyebrow">Entity</span>
+          <span class="diagram-node-name">Order</span>
+          <ul class="diagram-node-fields">
+            <li># id</li>
+            <li>→ customer</li>
+            <li>placed at</li>
+            <li>status</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="line" style="--col:2;--row:2">
+          <span class="diagram-node-eyebrow">Entity</span>
+          <span class="diagram-node-name">Order line</span>
+          <ul class="diagram-node-fields">
+            <li>→ order</li>
+            <li>→ product</li>
+            <li>quantity</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="product" style="--col:3;--row:2">
+          <span class="diagram-node-eyebrow">Entity</span>
+          <span class="diagram-node-name">Product</span>
+          <ul class="diagram-node-fields">
+            <li># sku</li>
+            <li>title</li>
+            <li>price</li>
+          </ul>
+        </div>
+        <div class="diagram-node" data-node="address" style="--col:1;--row:2">
+          <span class="diagram-node-eyebrow">Value</span>
+          <span class="diagram-node-name">Address</span>
+          <ul class="diagram-node-fields">
+            <li>street</li>
+            <li>city</li>
+            <li>country</li>
+          </ul>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="customer" data-to="order" data-head="zero-many" data-tail="one" data-from-label="1" data-to-label="0..*">places</li>
+        <li class="diagram-edge" data-from="order" data-to="line" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="1..*">contains</li>
+        <li class="diagram-edge" data-from="line" data-to="product" data-head="one" data-tail="zero-many" data-from-label="0..*" data-to-label="1">refers to</li>
+        <li class="diagram-edge" data-from="customer" data-to="address" data-head="one-many" data-tail="one">ships to</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-er-edit-panel" aria-labelledby="dg-er-edit-title" style="flex:0 0 17rem">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-er-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-er-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-er-edit');
+    const grid = document.getElementById('dg-er-edit-grid');
+    const title = document.getElementById('dg-er-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Subscriptions join the model" component="diagram" hint="Field rows carry data-change too - an added reference, a renamed field (data-before), a removed entity."
+<figure class="diagram" id="dg-er-delta" data-type="er" data-delta aria-label="Domain model with subscriptions">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Model change</span>
+    <span class="diagram-title">Subscriptions join the model</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-node" data-node="customer" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Customer</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>name</li>
+        <li data-change="changed" data-before="mail">email</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="order" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Order</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>→ customer</li>
+        <li data-change="added">→ subscription</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="sub" data-tone="accent" data-change="added" style="--col:2;--row:2">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Subscription</span>
+      <ul class="diagram-node-fields">
+        <li># id</li>
+        <li>plan</li>
+        <li>renews at</li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="coupon" data-change="removed" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Entity</span>
+      <span class="diagram-node-name">Coupon</span>
+      <ul class="diagram-node-fields">
+        <li># code</li>
+        <li>discount</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="customer" data-to="order" data-head="zero-many" data-tail="one">places</li>
+    <li class="diagram-edge" data-from="customer" data-to="sub" data-head="zero-many" data-tail="one" data-change="added">holds</li>
+    <li class="diagram-edge" data-from="sub" data-to="order" data-head="zero-many" data-tail="zero-one" data-change="added">renews into</li>
+    <li class="diagram-edge" data-from="order" data-to="coupon" data-head="zero-one" data-tail="zero-many" data-change="removed">applies</li>
+  </ol>
+</figure>
+```
+
+<H2 id="database-schema">Database schema</H2>
+
+<DocText>The DDL made legible: <code>schema.table</code> headers, SQL types right-aligned, <code>data-key="pk|fk|uq"</code> chips, and foreign keys from <code>orders#customer_id</code> to <code>customers#id</code> - the wire leaves and enters at the column rows.</DocText>
+
+```html example label="Orders schema" component="diagram" hint="An endpoint name#field anchors to the row <li data-field=field>; the side is picked toward the other table."
+<figure class="diagram" id="dg-schema" data-type="db-schema" aria-label="Orders database schema">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Database schema</span>
+    <span class="diagram-title">public schema · orders</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-node" data-node="customers" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.customers</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="email" data-key="uq"><span>email</span><span>text</span></li>
+        <li data-field="name"><span>name</span><span>text</span></li>
+        <li data-field="created_at"><span>created_at</span><span>timestamptz</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="orders" data-tone="accent" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.orders</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="customer_id" data-key="fk"><span>customer_id</span><span>uuid</span></li>
+        <li data-field="total"><span>total</span><span>numeric(12,2)</span></li>
+        <li data-field="status"><span>status</span><span>order_status</span></li>
+        <li data-field="placed_at"><span>placed_at</span><span>timestamptz</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="items" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.order_items</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="order_id" data-key="fk"><span>order_id</span><span>uuid</span></li>
+        <li data-field="product_id" data-key="fk"><span>product_id</span><span>uuid</span></li>
+        <li data-field="qty"><span>qty</span><span>int</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="products" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.products</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="sku" data-key="uq"><span>sku</span><span>text</span></li>
+        <li data-field="price"><span>price</span><span>numeric(10,2)</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="payments" style="--col:2;--row:2">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.payments</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="order_id" data-key="fk"><span>order_id</span><span>uuid</span></li>
+        <li data-field="amount"><span>amount</span><span>numeric(12,2)</span></li>
+        <li data-field="captured_at"><span>captured_at</span><span>timestamptz</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="orders#customer_id" data-to="customers#id" data-head="one" data-tail="zero-many"></li>
+    <li class="diagram-edge" data-from="items#order_id" data-to="orders#id" data-head="one" data-tail="one-many"></li>
+    <li class="diagram-edge" data-from="items#product_id" data-to="products#id" data-head="one" data-tail="zero-many"></li>
+    <li class="diagram-edge" data-from="payments#order_id" data-to="orders#id" data-head="one" data-tail="zero-many"></li>
+  </ol>
+</figure>
+```
+
+```html example label="Orders schema, step by step" component="diagram" hint="Tables one by one; each foreign key appears with the table that closes it."
+<figure class="diagram" id="dg-schema-steps" data-type="db-schema" data-steps data-autoplay aria-label="Orders database schema">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Database schema</span>
+    <span class="diagram-title">public schema · orders</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3">
+    <div class="diagram-node" data-node="customers" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.customers</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="email" data-key="uq"><span>email</span><span>text</span></li>
+        <li data-field="name"><span>name</span><span>text</span></li>
+        <li data-field="created_at"><span>created_at</span><span>timestamptz</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="orders" data-tone="accent" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.orders</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="customer_id" data-key="fk"><span>customer_id</span><span>uuid</span></li>
+        <li data-field="total"><span>total</span><span>numeric(12,2)</span></li>
+        <li data-field="status"><span>status</span><span>order_status</span></li>
+        <li data-field="placed_at"><span>placed_at</span><span>timestamptz</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="items" style="--col:3;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.order_items</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="order_id" data-key="fk"><span>order_id</span><span>uuid</span></li>
+        <li data-field="product_id" data-key="fk"><span>product_id</span><span>uuid</span></li>
+        <li data-field="qty"><span>qty</span><span>int</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="products" style="--col:3;--row:2">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.products</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="sku" data-key="uq"><span>sku</span><span>text</span></li>
+        <li data-field="price"><span>price</span><span>numeric(10,2)</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="payments" style="--col:2;--row:2">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.payments</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="order_id" data-key="fk"><span>order_id</span><span>uuid</span></li>
+        <li data-field="amount"><span>amount</span><span>numeric(12,2)</span></li>
+        <li data-field="captured_at"><span>captured_at</span><span>timestamptz</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="orders#customer_id" data-to="customers#id" data-head="one" data-tail="zero-many"></li>
+    <li class="diagram-edge" data-from="items#order_id" data-to="orders#id" data-head="one" data-tail="one-many"></li>
+    <li class="diagram-edge" data-from="items#product_id" data-to="products#id" data-head="one" data-tail="zero-many"></li>
+    <li class="diagram-edge" data-from="payments#order_id" data-to="orders#id" data-head="one" data-tail="zero-many"></li>
+  </ol>
+</figure>
+```
+
+```html example label="Migration 0042" component="diagram" hint="A column added, one renamed (data-before on its name), one dropped, a new table with its foreign key."
+<figure class="diagram" id="dg-schema-delta" data-type="db-schema" data-delta aria-label="Migration 0042">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Migration 0042</span>
+    <span class="diagram-title">Soft deletes, a refunds table, one rename</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:2">
+    <div class="diagram-node" data-node="orders" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.orders</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="customer_id" data-key="fk"><span>customer_id</span><span>uuid</span></li>
+        <li data-field="total_amount" data-change="changed"><span data-before="total">total_amount</span><span>numeric(12,2)</span></li>
+        <li data-field="deleted_at" data-change="added"><span>deleted_at</span><span>timestamptz</span></li>
+        <li data-field="legacy_ref" data-change="removed"><span>legacy_ref</span><span>text</span></li>
+      </ul>
+    </div>
+    <div class="diagram-node" data-node="refunds" data-tone="accent" data-change="added" style="--col:2;--row:1">
+      <span class="diagram-node-eyebrow">Table</span>
+      <span class="diagram-node-name">public.refunds</span>
+      <ul class="diagram-node-fields">
+        <li data-field="id" data-key="pk"><span>id</span><span>uuid</span></li>
+        <li data-field="order_id" data-key="fk"><span>order_id</span><span>uuid</span></li>
+        <li data-field="amount"><span>amount</span><span>numeric(12,2)</span></li>
+      </ul>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="refunds#order_id" data-to="orders#id" data-head="one" data-tail="zero-many" data-change="added"></li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

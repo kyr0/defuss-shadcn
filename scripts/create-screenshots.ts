@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
-import { chromium, type Page } from 'playwright';
+import { chromium, type Locator, type Page } from 'playwright';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { availableParallelism } from 'node:os';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
 
 /**
@@ -32,8 +33,11 @@ const SETTLE_MS = 250; // settle time for CSS enter animations
 /** Both color schemes the system supports; each gets its own subfolder. */
 const MODES = ['light', 'dark'] as const;
 
-/** Pages rendered concurrently - Chromium handles ~8 easily; more just queues. */
-const CONCURRENCY = 8;
+/** Pages rendered concurrently. Each doc page boots one sandbox iframe (a
+ *  renderer running the whole bundle) per example - a page can hold 20 - so
+ *  8 pages at once meant 100+ renderers and froze a 10-core laptop. A quarter
+ *  of the cores (1-4); SCREENSHOT_CONCURRENCY overrides. */
+const CONCURRENCY = Math.max(1, Number(process.env.SCREENSHOT_CONCURRENCY) || Math.min(4, Math.floor(availableParallelism() / 4)));
 /** Hard ceiling per page so a slow network/CDN can never hang the run. */
 const PAGE_TIMEOUT_MS = 20_000;
 
@@ -134,6 +138,7 @@ async function shoot(
       )
       .catch(() => undefined);
     await page.waitForTimeout(SETTLE_MS);
+    await fitLiveExample(page, preview);
     await preview.screenshot({ path: join(OUT, mode, `${name}.png`), timeout: PAGE_TIMEOUT_MS });
     console.log(`  ✓ ${mode}/${name}.png`);
 
@@ -143,21 +148,24 @@ async function shoot(
     for (const state of stateNames(name)) {
       const anchor = page.locator('[data-state-demo]').first();
       if ((await anchor.count()) === 0) continue; // verify.ts reports the missing anchor
-      // the anchor is typically a CodeExample card now: its host .api appears
-      // only after the sandbox bridge reports ready - wait for it before driving
+      // the anchor is typically a live example (the code-example card): it
+      // drives the component it previews through el.preview, which appears
+      // once the sandbox bridge reports ready - wait for it before driving
       await page.waitForFunction(
         () => {
-          const el = document.querySelector('[data-state-demo]') as (HTMLElement & { api?: unknown }) | null;
-          return !!el?.api;
+          const el = document.querySelector('[data-state-demo]') as (HTMLElement & { api?: unknown; preview?: unknown }) | null;
+          return el?.classList.contains('code-example') ? !!el.preview : !!el?.api;
         },
         undefined,
         { timeout: PAGE_TIMEOUT_MS },
       );
       await anchor.evaluate((el, s) => {
         // structural type (page context can't import the repo's .d.ts)
-        const target = el as HTMLElement & { api?: { setState(name: string, config?: Record<string, unknown>): void } };
-        if (!target.api) throw new Error('[data-state-demo] element has no .api - component failed to init?');
-        target.api.setState(s);
+        type Driver = { setState(name: string, config?: Record<string, unknown>): void };
+        const target = el as HTMLElement & { api?: Driver; preview?: Driver };
+        const driver = target.classList.contains('code-example') ? target.preview : target.api;
+        if (!driver) throw new Error('[data-state-demo] element has no .api / .preview - component failed to init?');
+        driver.setState(s);
       }, state);
       await page.waitForTimeout(SETTLE_MS);
       // fixed/anchored popovers render in the viewport's top layer - a demo
@@ -168,12 +176,36 @@ async function shoot(
         if (r.bottom > innerHeight || r.top < 0) window.scrollBy(0, r.top - innerHeight / 2);
       });
       await page.waitForTimeout(SETTLE_MS / 2); // let anchor re-positioning settle
+      await fitLiveExample(page, anchor);
       await anchor.screenshot({ path: join(OUT, mode, `${name}-${state}.png`), timeout: PAGE_TIMEOUT_MS });
       console.log(`  ✓ ${mode}/${name}-${state}.png`);
     }
   } finally {
     await page.close();
   }
+}
+
+/**
+ * A live example (the code-example card, or its stage) previews in a
+ * sandboxed iframe - an out-of-process frame that rasterizes only what is on
+ * screen, so a capture of a card reaching past the viewport came out blank
+ * below the fold. Bring such a target fully into view first: the viewport
+ * grows to fit a taller card, then the frame gets a moment to paint.
+ */
+async function fitLiveExample(page: Page, target: Locator): Promise<void> {
+  const live = await target.evaluate((el) => !!el.closest('.code-example')).catch(() => false);
+  if (!live) return;
+  const height = Math.ceil(await target.evaluate((el) => el.getBoundingClientRect().height));
+  const vp = page.viewportSize();
+  const pad = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 72);
+  if (vp && height + pad + 40 > vp.height) await page.setViewportSize({ width: vp.width, height: Math.ceil(height + pad + 40) });
+  // the target lands right below the fixed site header and the sticky page
+  // header - the docs keep their height in scroll-padding-top
+  await target.evaluate((el) => {
+    const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 72;
+    window.scrollTo({ top: scrollY + el.getBoundingClientRect().top - pad - 8, behavior: 'instant' });
+  });
+  await page.waitForTimeout(SETTLE_MS * 2);
 }
 
 type Manifest = {

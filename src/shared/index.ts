@@ -12,6 +12,15 @@
 export { debounce, type Debounced } from './debounce.js';
 export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 export { defussGlobals, safeShowPopover } from './state-api.js';
+// the State API on a defuss-store store per element + the one store /
+// persistence primitive (df$.store)
+export { componentState, bindComponent, unbindComponent, type ComponentApi, type ComponentState, type StateSpec } from './component-state.js';
+export { computed, createStore, forget, jsonEquals, persistOk, persisted, reload, sameShape, storageAvailable, viewPersistence, type PersistOptions, type ViewPersistence } from './store.js';
+// the big-data layer (df$.dataview): cached queries + windowing maths
+export { addRows, createDataview, cycleSort, dataSource, evaluateDataview, filterText, parseFilter, removeRows, setParent, updateRows, type DataQuery, type DataResult, type DataSource, type TreeFields } from './dataview.js';
+export { MAX_SIZER_PX, OVERSCAN, scrollIntoViewTop, scrollTopFor, sizerHeight, virtualWindow, type VirtualWindow } from './virtual.js';
+// render() machinery: every JS component reproduces its markup from state
+export { captureAuthored, elementModel, renderModel, RUNTIME_ATTRS, type ElementModel } from './render.js';
 export { defussQuery, RUNTIME_INCOMPLETE, type HostQuery } from './query.js';
 export { SHARED_ABI } from './version.js';
 // presentation machinery - the shared-library helpers core also publishes

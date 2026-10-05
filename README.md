@@ -9,10 +9,10 @@
 [![TypeScript definitions](https://img.shields.io/npm/types/defuss-shadcn.svg)](https://www.npmjs.com/package/defuss-shadcn)
 [![Socket Badge](https://badge.socket.dev/npm/package/defuss-shadcn/latest)](https://socket.dev/npm/package/defuss-shadcn)
 
-**A UI component system that scales with _(local)_ AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
+**A UI component system that scales with AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**219 components - 51 with JavaScript, 168 CSS-only - 307.9 KiB minified + compressed - 190.3 KiB as the all.css/all.js bundle.**
-168 of 219 components need no JavaScript - native HTML and modern CSS cover them entirely.
+**228 components - 59 with JavaScript, 169 CSS-only - 390.0 KiB minified + compressed - 261.4 KiB as the all.css/all.js bundle.**
+169 of 228 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
 [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -54,11 +54,15 @@ A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) t
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
+
+<!-- 4. Only with the HTML Preview Editor: the extra bundle, after 3a or 3b -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
 ```
 
 Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** The core pair is `core.css` (tokens + sizing + layout + accessibility utilities) + `core.js` (the `df$` runtime: defuss-query + defuss-morph); documentation code is separate. No framework or jQuery dependency.
 
-`core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). The per-component files stay available - include only what you use; their stylesheets are independent of each other.
+`core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. `all.css` / `all.js` bundle the core runtime plus every component (minified twins: `core.min.js`, `all.min.css` + `all.min.css.map`, `all.min.js` + `all.min.js.map`). Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). The per-component files stay available - include only what you use; their stylesheets are independent of each other. One component is kept out of `all.*`: the HTML Preview Editor (`code-example` - editable source + sandboxed live preview, the card every docs example renders in) ships as the extra bundle `wysiwyg.css` / `wysiwyg.js` (+ min twins and maps), loaded after `all.*` or core; it binds to the installed runtime and carries nothing else.
 
 ### Via npm
 

@@ -1,6 +1,6 @@
 ---
 title: "Sankey — Presentation"
-description: "Industrial Schematic design language presenting a year of a city’s waste as a 12-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart."
+description: "Industrial Schematic design language presenting a year of a city’s waste as a 13-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart."
 slug: "sankey"
 ---
 
@@ -11,7 +11,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   Industrial Schematic: grey drafting paper, condensed labels, rails and a warning orange — where 412,000 tonnes of a city’s waste go in one year, from doorstep to furnace, compost heap or new bottle.
 </PageHeader>
 
-```html example label="Industrial Schematic" schema="none" height="26" hint="Slides run in and out like a conveyor (df$.anim slideIn / slideOut, declared on the deck); orange curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the Sankey isolates plastics, then gives way to outcome bars that morph into the recovery rate per stream. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
+```html example label="Industrial Schematic" schema="none" height="26" hint="Slides run in and out like a conveyor (df$.anim slideIn / slideOut, declared on the deck); orange curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the Sankey isolates plastics, then gives way to outcome bars that morph into the recovery rate per stream. Use ← / → inside the deck. One interactive diagram slide (an Illustrative Diagram in the deck's palette) plays step by step on arrival - click its boxes." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <section class="presentation" id="deck-sankey" data-anim-in="slideIn" data-anim-in-distance="140px" data-anim-out="slideOut" data-anim-out-distance="140px" style="--presentation-ink:#222A2F;--presentation-ink-foreground:#E7E2D7;--presentation-paper:#E7E2D7;--presentation-paper-foreground:#222A2F;--presentation-accent:#E0582D;font-family:Arial Narrow, Arial, sans-serif;" tabindex="-1" aria-label="Where a city’s waste goes — one year of material flows">
   <!-- ONE chart for the whole deck: slides name the state they show via
@@ -148,6 +148,54 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">The residual bin question is the policy.</p>
   </section>
+  <section class="slide" data-slide data-dg-slide data-theme="paper" style="justify-content:flex-start;" aria-label="Where a bin goes">
+    <header class="presentation-header"><span>Process</span><span>Where a bin goes</span></header>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:4.5rem 1.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">From the kerb to its outcome</h2>
+    <div style="width:960px; transform:scale(1.4); transform-origin:0 0;">
+      <figure class="diagram" id="waste-flow" data-type="flow" data-steps data-interactive data-autoplay="900" aria-label="The path of household and business waste through the city">
+        <div class="diagram-canvas" style="--cols:4;--diagram-col-min:7.5rem;--diagram-node-w:9rem;--diagram-gap-x:3.5rem;--diagram-gap-y:1.5rem">
+          <div class="diagram-node" data-node="homes" data-step="1" style="--col:1;--row:1">
+            <span class="diagram-node-name">Households</span>
+            <span class="diagram-node-meta">bins · bags</span>
+          </div>
+          <div class="diagram-node" data-node="business" data-step="1" style="--col:1;--row:3">
+            <span class="diagram-node-name">Businesses</span>
+            <span class="diagram-node-meta">containers</span>
+          </div>
+          <div class="diagram-node" data-node="collect" data-step="2" style="--col:2;--row:2">
+            <span class="diagram-node-name">Collection</span>
+            <span class="diagram-node-meta">trucks · depots</span>
+          </div>
+          <div class="diagram-node" data-node="sort" data-tone="accent" data-step="3" style="--col:3;--row:2">
+            <span class="diagram-node-name">Sorting plant</span>
+            <span class="diagram-node-meta">optical · manual</span>
+          </div>
+          <div class="diagram-node" data-node="recycle" data-tone="ok" data-step="4" style="--col:4;--row:1">
+            <span class="diagram-node-name">Recycling</span>
+            <span class="diagram-node-meta">paper · glass · metal</span>
+          </div>
+          <div class="diagram-node" data-node="energy" data-step="4" style="--col:4;--row:2">
+            <span class="diagram-node-name">Energy from waste</span>
+            <span class="diagram-node-meta">heat · power</span>
+          </div>
+          <div class="diagram-node" data-node="landfill" data-tone="warn" data-step="4" style="--col:4;--row:3">
+            <span class="diagram-node-name">Landfill</span>
+            <span class="diagram-node-meta">residue</span>
+          </div>
+        </div>
+        <ol class="diagram-edges">
+          <li class="diagram-edge" data-from="homes" data-to="collect" data-flow></li>
+          <li class="diagram-edge" data-from="business" data-to="collect" data-flow></li>
+          <li class="diagram-edge" data-from="collect" data-to="sort" data-flow>mixed</li>
+          <li class="diagram-edge" data-from="sort" data-to="recycle" data-flow></li>
+          <li class="diagram-edge" data-from="sort" data-to="energy" data-flow></li>
+          <li class="diagram-edge" data-from="sort" data-to="landfill" data-flow></li>
+        </ol>
+      </figure>
+    </div>
+    <span class="presentation-slide-number"></span>
+    <p class="presentation-note">The flow behind the Sankey as a process: collection, sorting, three outcomes - the tokens run the material through.</p>
+  </section>
   <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
     <header class="presentation-header"><span>Takeaways</span><span>For the waste plan</span></header>
     <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
@@ -183,10 +231,10 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <div class="presentation-controls">
     <button class="presentation-control" data-presentation-action="prev" aria-label="Previous slide">←</button>
-    <span class="presentation-counter" aria-live="polite">1 / 12</span>
+    <span class="presentation-counter" aria-live="polite">1 / 13</span>
     <button class="presentation-control" data-presentation-action="next" aria-label="Next slide">→</button>
   </div>
-  <progress class="presentation-progress" max="12" value="1"></progress>
+  <progress class="presentation-progress" max="13" value="1"></progress>
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the

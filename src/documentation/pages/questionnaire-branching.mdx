@@ -1,0 +1,164 @@
+---
+title: "Questionnaire: Branching"
+description: "Branching questionnaires - the flow graph: an option's data-goto, conditional rules over earlier answers (all / any, numbers, field references), a step's data-next, the markup order; the walk shown as it happens."
+slug: "questionnaire-branching"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="questionnaire-branching" title="Branching" component="questionnaire">
+  A questionnaire is a graph, not a list. Where a step leads is decided, in order, by the chosen option's <code>data-goto</code>, the first conditional rule whose conditions hold, the step's <code>data-next</code>, and otherwise the next step in the markup. Rules read any earlier answer - numbers, choices, several answers at once, one answer compared with another - so the same form asks a developer, a designer and a team lead different questions.
+</PageHeader>
+
+<H2 id="choice-branches">Choice branches</H2>
+
+<DocText>The simplest branch is the answer itself: <code>data-goto</code> on a radio, a checkbox or an <code>&lt;option&gt;</code> sends the walk to that step. When every option of a required single choice jumps, the step has no default way at all - the graph knows that, too.</DocText>
+
+```html example label="Support triage" schema="none" hint="Billing, a bug or the account each open their own questions (data-goto); every branch meets again at 'contact' (data-next). The trail beside the form is the branch history: the steps actually taken."
+<div class="flex flex-wrap gap-6">
+  <form class="questionnaire" id="q-triage" aria-label="Support triage" data-persist="none" style="flex:1 1 20rem;">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="topic">
+      <legend class="questionnaire-title">What do you need help with?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="topic" value="billing" required data-goto="invoice"><span class="questionnaire-choice-label">Billing</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="topic" value="bug" data-goto="where"><span class="questionnaire-choice-label">Something is broken</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="topic" value="account" data-goto="account"><span class="questionnaire-choice-label">My account</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="invoice" data-next="contact">
+      <legend class="questionnaire-title">Which invoice?</legend>
+      <input class="input" name="invoice" required pattern="INV-[0-9]{4}" placeholder="INV-1234" aria-label="Invoice number">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="where">
+      <legend class="questionnaire-title">Where does it break?</legend>
+      <select class="select" name="where" required aria-label="Where">
+        <option value="">Choose…</option>
+        <option value="login" data-goto="contact">Signing in</option>
+        <option value="export">Exporting</option>
+      </select>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="format" data-next="contact">
+      <legend class="questionnaire-title">Which export format?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="format" value="csv" required><span class="questionnaire-choice-label">CSV</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="format" value="pdf"><span class="questionnaire-choice-label">PDF</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="account" data-next="contact">
+      <legend class="questionnaire-title">What about your account?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="account" value="email" required><span class="questionnaire-choice-label">Change my email</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="account" value="delete"><span class="questionnaire-choice-label">Delete it</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="contact">
+      <legend class="questionnaire-title">How do we reach you?</legend>
+      <input class="input" name="email" type="email" required aria-label="Email" autocomplete="email">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="review" data-end>
+      <legend class="questionnaire-title">Open the ticket?</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Open ticket</button>
+    </div>
+    <div class="questionnaire-complete"><p>Ticket opened.</p></div>
+  </form>
+  <nav class="questionnaire-trail" data-for="q-triage" aria-label="Steps taken" style="flex:0 1 14rem;"></nav>
+</div>
+```
+
+<H2 id="rule-branches">Rule branches</H2>
+
+<DocText>Rules live in a <code>&lt;script type="application/json" class="questionnaire-rules"&gt;</code> inside the form (or come from <code>configure(form, \{ branches \})</code>). For each step a list of <code>\{ when, goto \}</code> - the first rule whose <code>when</code> holds wins. A <code>when</code> is a list of conditions that must all hold, or <code>\{ "any": [...] \}</code>. A condition is <code>\{ field, op, value \}</code> with dataview's operators plus <code>answered</code>, <code>empty</code> and <code>includes</code>; a <code>value</code> of <code>\{ "field": "x" \}</code> compares with another answer.</DocText>
+
+```html example label="Car insurance quote" schema="none" hint="Young drivers (age < 25) or many claims (≥ 3) need the risk questions - an 'any' rule; a car worth more than the driver's yearly income (a field reference) asks about financing; everyone else goes straight to the cover. The line below asks the graph where the current answers lead next (nextOf)."
+<div class="flex flex-col gap-3" style="max-width:34rem;">
+  <form class="questionnaire" id="q-quote" aria-label="Insurance quote" data-persist="none">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="driver">
+      <legend class="questionnaire-title">About the driver</legend>
+      <div class="questionnaire-field"><label class="label" for="q-age">Age</label><input class="input" id="q-age" name="age" type="number" min="17" max="99" required></div>
+      <div class="questionnaire-field"><label class="label" for="q-claims">Claims in the last 5 years</label><input class="input" id="q-claims" name="claims" type="number" min="0" max="20" required></div>
+      <div class="questionnaire-field"><label class="label" for="q-income">Yearly income (EUR)</label><input class="input" id="q-income" name="income" type="number" min="0" required></div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="car">
+      <legend class="questionnaire-title">About the car</legend>
+      <div class="questionnaire-field"><label class="label" for="q-value">Value (EUR)</label><input class="input" id="q-value" name="value" type="number" min="500" required></div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="risk" data-next="cover">
+      <legend class="questionnaire-title">A few more questions</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="checkbox" name="risk" value="night"><span class="questionnaire-choice-label">I mostly drive at night</span></label>
+        <label class="questionnaire-choice"><input type="checkbox" name="risk" value="course"><span class="questionnaire-choice-label">I took an advanced driving course</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="finance" data-next="cover">
+      <legend class="questionnaire-title">Is the car financed?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="finance" value="loan" required><span class="questionnaire-choice-label">A loan</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="finance" value="lease"><span class="questionnaire-choice-label">A lease</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="finance" value="no"><span class="questionnaire-choice-label">No</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="cover">
+      <legend class="questionnaire-title">Which cover?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="cover" value="basic" required><span class="questionnaire-choice-label">Third party</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="cover" value="full"><span class="questionnaire-choice-label">Fully comprehensive</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="quote" data-end>
+      <legend class="questionnaire-title">Your quote is ready</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Get the quote</button>
+    </div>
+    <div class="questionnaire-complete"><p>Quote sent to your inbox.</p></div>
+    <script type="application/json" class="questionnaire-rules">
+      {
+        "branches": {
+          "car": [
+            { "when": { "any": [{ "field": "age", "op": "lt", "value": 25 }, { "field": "claims", "op": "gte", "value": 3 }] }, "goto": "risk" },
+            { "when": [{ "field": "value", "op": "gt", "value": { "field": "income" } }], "goto": "finance" },
+            { "when": [], "goto": "cover" }
+          ]
+        }
+      }
+    </script>
+  </form>
+  <p class="text-sm text-muted-foreground m-0" id="q-quote-next" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('q-quote');
+    const line = document.getElementById('q-quote-next');
+    const { questionnaire } = df$.shadcn;
+    // the store follows every keystroke: ask the graph where these answers lead
+    form.store.subscribe(({ config }) => {
+      const to = questionnaire.nextOf(form, config.step, config.answers);
+      line.textContent = to ? 'From "' + config.step + '" these answers lead to "' + to + '".' : 'This is an end.';
+    }, { immediate: true });
+  });
+</script>
+```
+
+<H2 id="order">The order of precedence</H2>
+
+<DocText>For the step being left: (1) the picked option's <code>data-goto</code>; (2) the first rule in <code>branches[step]</code> whose <code>when</code> holds (an empty <code>when</code> always does - a catch-all); (3) <code>data-next</code>; (4) the next <code>.questionnaire-step</code> in the markup. Skipping an optional step takes (3) or (4) - a skipped answer cannot choose a branch. <code>df$.shadcn.questionnaire.nextOf(form, step, answers)</code> evaluates the same order for any answers, and <a href="questionnaire-graph.html">the flow graph page</a> draws every possible edge.</DocText>
+
+<SourceFiles component="questionnaire" section="css">
+  <SourceNote for="css">Branching is behavior - the stylesheet is the questionnaire's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="questionnaire" section="js" jsTitle="JS" />
+
+</DocPage>

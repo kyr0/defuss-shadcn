@@ -1,0 +1,537 @@
+---
+title: "Illustrative · Topology"
+description: "Integration topology diagrams with the diagram component - sources and consumer surfaces around a platform boundary, protocols on every connection; step by step and as a delta."
+slug: "diagram-topology"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-topology" title="Illustrative · Topology" component="diagram">
+  Which surfaces a platform exposes and over which wire: sources on the left, consumers on the right, the platform boundary in the middle with its query engine as a bar. Every connection is labelled with its protocol; a federated (bypassing) path is dashed in the link color.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Data platform integration" component="diagram" hint="Fan-in and fan-out spread over the node sides; the bar spans the platform’s two columns."
+<figure class="diagram" id="dg-topo" data-type="topology" aria-label="Data platform integration topology">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Topology</span>
+    <span class="diagram-title">What plugs in, what plugs out - and over which wire</span>
+    <span class="diagram-dek">Hub and spoke: sources on the left, consumer surfaces on the right, the platform boundary in between.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-node="dp" data-tone="solid" style="--col:2;--row:1;--span:2;--rspan:4"><span class="diagram-group-label">Data platform</span></div>
+    <div class="diagram-node" data-node="db" data-tone="external" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Databases</span>
+      <span class="diagram-node-meta">MariaDB · SQL Server</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">SFTP drops</span>
+      <span class="diagram-node-meta">scheduled pulls</span>
+    </div>
+    <div class="diagram-node" data-node="mail" data-tone="external" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Email</span>
+      <span class="diagram-node-meta">IMAP attachments</span>
+    </div>
+    <div class="diagram-node" data-node="mf" data-tone="external" style="--col:1;--row:4">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">IBM legacy</span>
+      <span class="diagram-node-meta">file export</span>
+    </div>
+    <div class="diagram-node" data-node="trino" data-shape="bar" data-tone="accent" data-step-label="The platform" style="--col:2;--row:1;--span:2">
+      <span class="diagram-node-eyebrow">Query</span>
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">federated · push-down</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:3">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">ingest</span>
+    </div>
+    <div class="diagram-node" data-node="minio" data-shape="store" style="--col:3;--row:3">
+      <span class="diagram-node-name">MinIO</span>
+      <span class="diagram-node-meta">Iceberg</span>
+    </div>
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:2;--row:4;--span:2">
+      <span class="diagram-node-eyebrow">Identity</span>
+      <span class="diagram-node-name">Keycloak</span>
+      <span class="diagram-node-meta">OIDC · groups</span>
+    </div>
+    <div class="diagram-node" data-node="bi" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" style="--col:4;--row:2">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">JupyterHub</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+    <div class="diagram-node" data-node="xl" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Excel</span>
+      <span class="diagram-node-meta">ODBC</span>
+    </div>
+    <div class="diagram-node" data-node="api" style="--col:4;--row:4">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Open data API</span>
+      <span class="diagram-node-meta">REST · public</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="db" data-to="trino" data-line="dashed" data-tone="link">federate</li>
+    <li class="diagram-edge" data-from="db" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+    <li class="diagram-edge" data-from="mail" data-to="nifi">IMAP</li>
+    <li class="diagram-edge" data-from="mf" data-to="nifi">FILE</li>
+    <li class="diagram-edge" data-from="nifi" data-to="minio">write</li>
+    <li class="diagram-edge" data-from="minio" data-to="trino">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi" data-tone="accent">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="xl">ODBC</li>
+    <li class="diagram-edge" data-from="trino" data-to="api">REST</li>
+  </ol>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="Sources, platform, consumers" component="diagram" hint="Three steps: what plugs in, the platform, what plugs out."
+<figure class="diagram" id="dg-topo-steps" data-type="topology" data-steps data-autoplay aria-label="Data platform integration topology">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Topology</span>
+    <span class="diagram-title">What plugs in, what plugs out - and over which wire</span>
+    <span class="diagram-dek">Hub and spoke: sources on the left, consumer surfaces on the right, the platform boundary in between.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-node="dp" data-tone="solid" data-step="2" style="--col:2;--row:1;--span:2;--rspan:4"><span class="diagram-group-label">Data platform</span></div>
+    <div class="diagram-node" data-node="db" data-tone="external" data-step="1" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Databases</span>
+      <span class="diagram-node-meta">MariaDB · SQL Server</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" data-step="1" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">SFTP drops</span>
+      <span class="diagram-node-meta">scheduled pulls</span>
+    </div>
+    <div class="diagram-node" data-node="mail" data-tone="external" data-step="1" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Email</span>
+      <span class="diagram-node-meta">IMAP attachments</span>
+    </div>
+    <div class="diagram-node" data-node="mf" data-tone="external" data-step="1" style="--col:1;--row:4">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">IBM legacy</span>
+      <span class="diagram-node-meta">file export</span>
+    </div>
+    <div class="diagram-node" data-node="trino" data-shape="bar" data-tone="accent" data-step="2" data-step-label="The platform" style="--col:2;--row:1;--span:2">
+      <span class="diagram-node-eyebrow">Query</span>
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">federated · push-down</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" data-step="2" style="--col:2;--row:3">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">ingest</span>
+    </div>
+    <div class="diagram-node" data-node="minio" data-shape="store" data-step="2" style="--col:3;--row:3">
+      <span class="diagram-node-name">MinIO</span>
+      <span class="diagram-node-meta">Iceberg</span>
+    </div>
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" data-step="2" style="--col:2;--row:4;--span:2">
+      <span class="diagram-node-eyebrow">Identity</span>
+      <span class="diagram-node-name">Keycloak</span>
+      <span class="diagram-node-meta">OIDC · groups</span>
+    </div>
+    <div class="diagram-node" data-node="bi" data-step="3" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" data-step="3" style="--col:4;--row:2">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">JupyterHub</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+    <div class="diagram-node" data-node="xl" data-step="3" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Excel</span>
+      <span class="diagram-node-meta">ODBC</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-step="3" style="--col:4;--row:4">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Open data API</span>
+      <span class="diagram-node-meta">REST · public</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="db" data-to="trino" data-line="dashed" data-tone="link">federate</li>
+    <li class="diagram-edge" data-from="db" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+    <li class="diagram-edge" data-from="mail" data-to="nifi">IMAP</li>
+    <li class="diagram-edge" data-from="mf" data-to="nifi">FILE</li>
+    <li class="diagram-edge" data-from="nifi" data-to="minio">write</li>
+    <li class="diagram-edge" data-from="minio" data-to="trino">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi" data-tone="accent">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="xl">ODBC</li>
+    <li class="diagram-edge" data-from="trino" data-to="api">REST</li>
+  </ol>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Topology, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-topo-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-topo-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-topo-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-topo-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-topo-live" data-interactive data-type="topology" aria-label="Data platform integration topology">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Topology</span>
+    <span class="diagram-title">What plugs in, what plugs out - and over which wire</span>
+    <span class="diagram-dek">Hub and spoke: sources on the left, consumer surfaces on the right, the platform boundary in between.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-node="dp" data-tone="solid" style="--col:2;--row:1;--span:2;--rspan:4"><span class="diagram-group-label">Data platform</span></div>
+    <div class="diagram-node" data-node="db" data-tone="external" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Databases</span>
+      <span class="diagram-node-meta">MariaDB · SQL Server</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">SFTP drops</span>
+      <span class="diagram-node-meta">scheduled pulls</span>
+    </div>
+    <div class="diagram-node" data-node="mail" data-tone="external" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Email</span>
+      <span class="diagram-node-meta">IMAP attachments</span>
+    </div>
+    <div class="diagram-node" data-node="mf" data-tone="external" style="--col:1;--row:4">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">IBM legacy</span>
+      <span class="diagram-node-meta">file export</span>
+    </div>
+    <div class="diagram-node" data-node="trino" data-shape="bar" data-tone="accent" data-step-label="The platform" style="--col:2;--row:1;--span:2">
+      <span class="diagram-node-eyebrow">Query</span>
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">federated · push-down</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:3">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">ingest</span>
+    </div>
+    <div class="diagram-node" data-node="minio" data-shape="store" style="--col:3;--row:3">
+      <span class="diagram-node-name">MinIO</span>
+      <span class="diagram-node-meta">Iceberg</span>
+    </div>
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:2;--row:4;--span:2">
+      <span class="diagram-node-eyebrow">Identity</span>
+      <span class="diagram-node-name">Keycloak</span>
+      <span class="diagram-node-meta">OIDC · groups</span>
+    </div>
+    <div class="diagram-node" data-node="bi" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" style="--col:4;--row:2">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">JupyterHub</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+    <div class="diagram-node" data-node="xl" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Excel</span>
+      <span class="diagram-node-meta">ODBC</span>
+    </div>
+    <div class="diagram-node" data-node="api" style="--col:4;--row:4">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Open data API</span>
+      <span class="diagram-node-meta">REST · public</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="db" data-to="trino" data-line="dashed" data-tone="link">federate</li>
+    <li class="diagram-edge" data-from="db" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+    <li class="diagram-edge" data-from="mail" data-to="nifi">IMAP</li>
+    <li class="diagram-edge" data-from="mf" data-to="nifi">FILE</li>
+    <li class="diagram-edge" data-from="nifi" data-to="minio">write</li>
+    <li class="diagram-edge" data-from="minio" data-to="trino">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi" data-tone="accent">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="xl">ODBC</li>
+    <li class="diagram-edge" data-from="trino" data-to="api">REST</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Topology, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-topo-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-topo-edit" data-interactive data-type="topology" aria-label="Data platform integration topology">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Topology</span>
+        <span class="diagram-title">What plugs in, what plugs out - and over which wire</span>
+        <span class="diagram-dek">Hub and spoke: sources on the left, consumer surfaces on the right, the platform boundary in between.</span>
+      </figcaption>
+      <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
+        <div class="diagram-group" data-node="dp" data-tone="solid" style="--col:2;--row:1;--span:2;--rspan:4"><span class="diagram-group-label">Data platform</span></div>
+        <div class="diagram-node" data-node="db" data-tone="external" style="--col:1;--row:1">
+          <span class="diagram-node-eyebrow">Source</span>
+          <span class="diagram-node-name">Databases</span>
+          <span class="diagram-node-meta">MariaDB · SQL Server</span>
+        </div>
+        <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:2">
+          <span class="diagram-node-eyebrow">Source</span>
+          <span class="diagram-node-name">SFTP drops</span>
+          <span class="diagram-node-meta">scheduled pulls</span>
+        </div>
+        <div class="diagram-node" data-node="mail" data-tone="external" style="--col:1;--row:3">
+          <span class="diagram-node-eyebrow">Source</span>
+          <span class="diagram-node-name">Email</span>
+          <span class="diagram-node-meta">IMAP attachments</span>
+        </div>
+        <div class="diagram-node" data-node="mf" data-tone="external" style="--col:1;--row:4">
+          <span class="diagram-node-eyebrow">Source</span>
+          <span class="diagram-node-name">IBM legacy</span>
+          <span class="diagram-node-meta">file export</span>
+        </div>
+        <div class="diagram-node" data-node="trino" data-shape="bar" data-tone="accent" data-step-label="The platform" style="--col:2;--row:1;--span:2">
+          <span class="diagram-node-eyebrow">Query</span>
+          <span class="diagram-node-name">Trino</span>
+          <span class="diagram-node-meta">federated · push-down</span>
+        </div>
+        <div class="diagram-node" data-node="nifi" style="--col:2;--row:3">
+          <span class="diagram-node-name">NiFi</span>
+          <span class="diagram-node-meta">ingest</span>
+        </div>
+        <div class="diagram-node" data-node="minio" data-shape="store" style="--col:3;--row:3">
+          <span class="diagram-node-name">MinIO</span>
+          <span class="diagram-node-meta">Iceberg</span>
+        </div>
+        <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:2;--row:4;--span:2">
+          <span class="diagram-node-eyebrow">Identity</span>
+          <span class="diagram-node-name">Keycloak</span>
+          <span class="diagram-node-meta">OIDC · groups</span>
+        </div>
+        <div class="diagram-node" data-node="bi" style="--col:4;--row:1">
+          <span class="diagram-node-eyebrow">Consumer</span>
+          <span class="diagram-node-name">Superset</span>
+          <span class="diagram-node-meta">dashboards</span>
+        </div>
+        <div class="diagram-node" data-node="nb" style="--col:4;--row:2">
+          <span class="diagram-node-eyebrow">Consumer</span>
+          <span class="diagram-node-name">JupyterHub</span>
+          <span class="diagram-node-meta">notebooks</span>
+        </div>
+        <div class="diagram-node" data-node="xl" style="--col:4;--row:3">
+          <span class="diagram-node-eyebrow">Consumer</span>
+          <span class="diagram-node-name">Excel</span>
+          <span class="diagram-node-meta">ODBC</span>
+        </div>
+        <div class="diagram-node" data-node="api" style="--col:4;--row:4">
+          <span class="diagram-node-eyebrow">Consumer</span>
+          <span class="diagram-node-name">Open data API</span>
+          <span class="diagram-node-meta">REST · public</span>
+        </div>
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="db" data-to="trino" data-line="dashed" data-tone="link">federate</li>
+        <li class="diagram-edge" data-from="db" data-to="nifi">JDBC</li>
+        <li class="diagram-edge" data-from="sftp" data-to="nifi">SFTP</li>
+        <li class="diagram-edge" data-from="mail" data-to="nifi">IMAP</li>
+        <li class="diagram-edge" data-from="mf" data-to="nifi">FILE</li>
+        <li class="diagram-edge" data-from="nifi" data-to="minio">write</li>
+        <li class="diagram-edge" data-from="minio" data-to="trino">Iceberg</li>
+        <li class="diagram-edge" data-from="trino" data-to="bi" data-tone="accent">SQL</li>
+        <li class="diagram-edge" data-from="trino" data-to="nb">SQL</li>
+        <li class="diagram-edge" data-from="trino" data-to="xl">ODBC</li>
+        <li class="diagram-edge" data-from="trino" data-to="api">REST</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-topo-edit-panel" aria-labelledby="dg-topo-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-topo-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-topo-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-topo-edit');
+    const grid = document.getElementById('dg-topo-edit-grid');
+    const title = document.getElementById('dg-topo-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="flow">Flow</H2>
+
+<DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
+
+```html example label="Topology, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-topo-flow" data-type="topology" aria-label="Data platform integration topology">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Topology</span>
+    <span class="diagram-title">What plugs in, what plugs out - and over which wire</span>
+    <span class="diagram-dek">Hub and spoke: sources on the left, consumer surfaces on the right, the platform boundary in between.</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-node="dp" data-tone="solid" style="--col:2;--row:1;--span:2;--rspan:4"><span class="diagram-group-label">Data platform</span></div>
+    <div class="diagram-node" data-node="db" data-tone="external" style="--col:1;--row:1">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Databases</span>
+      <span class="diagram-node-meta">MariaDB · SQL Server</span>
+    </div>
+    <div class="diagram-node" data-node="sftp" data-tone="external" style="--col:1;--row:2">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">SFTP drops</span>
+      <span class="diagram-node-meta">scheduled pulls</span>
+    </div>
+    <div class="diagram-node" data-node="mail" data-tone="external" style="--col:1;--row:3">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">Email</span>
+      <span class="diagram-node-meta">IMAP attachments</span>
+    </div>
+    <div class="diagram-node" data-node="mf" data-tone="external" style="--col:1;--row:4">
+      <span class="diagram-node-eyebrow">Source</span>
+      <span class="diagram-node-name">IBM legacy</span>
+      <span class="diagram-node-meta">file export</span>
+    </div>
+    <div class="diagram-node" data-node="trino" data-shape="bar" data-tone="accent" data-step-label="The platform" style="--col:2;--row:1;--span:2">
+      <span class="diagram-node-eyebrow">Query</span>
+      <span class="diagram-node-name">Trino</span>
+      <span class="diagram-node-meta">federated · push-down</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:3">
+      <span class="diagram-node-name">NiFi</span>
+      <span class="diagram-node-meta">ingest</span>
+    </div>
+    <div class="diagram-node" data-node="minio" data-shape="store" style="--col:3;--row:3">
+      <span class="diagram-node-name">MinIO</span>
+      <span class="diagram-node-meta">Iceberg</span>
+    </div>
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:2;--row:4;--span:2">
+      <span class="diagram-node-eyebrow">Identity</span>
+      <span class="diagram-node-name">Keycloak</span>
+      <span class="diagram-node-meta">OIDC · groups</span>
+    </div>
+    <div class="diagram-node" data-node="bi" style="--col:4;--row:1">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Superset</span>
+      <span class="diagram-node-meta">dashboards</span>
+    </div>
+    <div class="diagram-node" data-node="nb" style="--col:4;--row:2">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">JupyterHub</span>
+      <span class="diagram-node-meta">notebooks</span>
+    </div>
+    <div class="diagram-node" data-node="xl" style="--col:4;--row:3">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Excel</span>
+      <span class="diagram-node-meta">ODBC</span>
+    </div>
+    <div class="diagram-node" data-node="api" style="--col:4;--row:4">
+      <span class="diagram-node-eyebrow">Consumer</span>
+      <span class="diagram-node-name">Open data API</span>
+      <span class="diagram-node-meta">REST · public</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="db" data-to="trino" data-line="dashed" data-tone="link" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">federate</li>
+    <li class="diagram-edge" data-from="db" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">JDBC</li>
+    <li class="diagram-edge" data-from="sftp" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">SFTP</li>
+    <li class="diagram-edge" data-from="mail" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100">IMAP</li>
+    <li class="diagram-edge" data-from="mf" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800">FILE</li>
+    <li class="diagram-edge" data-from="nifi" data-to="minio" data-flow="2600" data-flow-tokens="2" data-flow-delay="3500">write</li>
+    <li class="diagram-edge" data-from="minio" data-to="trino" data-flow="2600" data-flow-tokens="2" data-flow-delay="4200">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="bi" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="4900">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="nb" data-flow="2600" data-flow-tokens="2" data-flow-delay="5600">SQL</li>
+    <li class="diagram-edge" data-from="trino" data-to="xl" data-flow="2600" data-flow-tokens="2" data-flow-delay="6300">ODBC</li>
+    <li class="diagram-edge" data-from="trino" data-to="api" data-flow="2600" data-flow-tokens="2" data-flow-delay="7000">REST</li>
+  </ol>
+</figure>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="The mainframe leaves" component="diagram" hint="A changed protocol is a changed edge (data-change on the li) - the ledger names both ends."
+<figure class="diagram" id="dg-topo-delta" data-type="topology" data-delta aria-label="Topology after the mainframe exit">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Integration change</span>
+    <span class="diagram-title">The mainframe leaves, an API arrives</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:9.5rem">
+    <div class="diagram-group" data-node="dp" data-tone="solid" style="--col:2;--row:1;--rspan:3"><span class="diagram-group-label">Data platform</span></div>
+    <div class="diagram-node" data-node="db" data-tone="external" style="--col:1;--row:1"><span class="diagram-node-name">Databases</span></div>
+    <div class="diagram-node" data-node="mf" data-tone="external" data-change="removed" style="--col:1;--row:2"><span class="diagram-node-name">IBM legacy</span></div>
+    <div class="diagram-node" data-node="saas" data-tone="external" data-change="added" style="--col:1;--row:3">
+      <span class="diagram-node-name">SaaS CRM</span>
+      <span class="diagram-node-meta">REST · OAuth</span>
+    </div>
+    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2"><span class="diagram-node-name">NiFi</span></div>
+    <div class="diagram-node" data-node="trino" data-tone="accent" style="--col:2;--row:1"><span class="diagram-node-name">Trino</span></div>
+    <div class="diagram-node" data-node="api" data-change="changed" style="--col:3;--row:1">
+      <span class="diagram-node-name">Open data API</span>
+      <span class="diagram-node-meta" data-before="REST">GraphQL</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="db" data-to="nifi">JDBC</li>
+    <li class="diagram-edge" data-from="mf" data-to="nifi" data-change="removed">FILE</li>
+    <li class="diagram-edge" data-from="saas" data-to="nifi" data-change="added">REST</li>
+    <li class="diagram-edge" data-from="nifi" data-to="trino">Iceberg</li>
+    <li class="diagram-edge" data-from="trino" data-to="api" data-change="changed">GraphQL</li>
+  </ol>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

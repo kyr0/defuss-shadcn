@@ -93,6 +93,13 @@ describe('CodeExample (input page)', () => {
     expect(frames.length).toBeGreaterThan(3);
   });
 
+  it('sandbox="links" lets exactly its own card open new tabs - popups only, never same-origin', async () => {
+    const { doc } = await openDocPage('system-in-numbers.html');
+    const frame = doc.querySelector('.code-example .code-example-frame');
+    expect(frame?.getAttribute('sandbox')).toBe('allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox');
+    expect(frame?.getAttribute('allow')).toBe('clipboard-write');
+  });
+
   it('displayed source === executed source (§4: one source, verbatim)', async () => {
     const { doc } = await openDocPage('input.html');
     const card = firstCard(doc);
@@ -210,7 +217,7 @@ describe('CodeExample (input page)', () => {
     await waitForSandboxReady(card);
     // drive the sandbox through the per-instance State API handle the host
     // binds on the card (§11: the bridge reads the DOM and echoes it back)
-    await (card as HTMLElement & { api: { setState(n: string, c?: unknown): void } }).api.setState('value', {
+    await (card as HTMLElement & { preview: { setState(n: string, c?: unknown): void } }).preview.setState('value', {
       value: 'typed-by-user',
     });
     await waitForObserved(card, 'value', 'typed-by-user');
@@ -353,7 +360,7 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     const w = vp('.code-example-vp-w') as HTMLInputElement;
     const h = vp('.code-example-vp-h') as HTMLInputElement;
     const btn = (mode: string) => card.querySelector(`.code-example-vp[data-vp="${mode}"]`) as HTMLButtonElement;
-    const device = vp('.ce-device');
+    const device = vp('.code-example-device');
 
     // default: Full - height field inert, placeholder "Full"
     expect(h.disabled).toBe(true);
@@ -362,8 +369,8 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
 
     // phone: standard preset lands in the fields, chrome flags the device;
     // the SIZE lives on the resizer wrapper now (the toolbar writes it, the
-    // .ce-resizer around .ce-device carries the handles and the inline box)
-    const rz = () => vp('.ce-resizer');
+    // .code-example-resizer around .code-example-device carries the handles and the inline box)
+    const rz = () => vp('.code-example-resizer');
     btn('phone').click();
     expect(card.dataset.vpMode).toBe('phone');
     expect(w.value).toBe('390');
@@ -373,17 +380,17 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
     expect(rz().style.width).toBe('390px');
     expect(rz().style.height).toBe('844px');
     expect(device.style.width).toBe(''); // fills the wrapper (CSS), not inline
-    expect(vp('.ce-screen').dataset.mode).toBe('phone');
+    expect(vp('.code-example-screen').dataset.mode).toBe('phone');
 
     // rotate swaps the box (landscape holding) and flags the screen
     btn('rotate').click();
     expect(w.value).toBe('844');
     expect(h.value).toBe('390');
     expect(rz().style.width).toBe('844px');
-    expect(vp('.ce-screen').dataset.landscape).toBe('1');
+    expect(vp('.code-example-screen').dataset.landscape).toBe('1');
     btn('rotate').click(); // back to portrait
     expect(rz().style.width).toBe('390px');
-    expect(vp('.ce-screen').dataset.landscape).toBeUndefined();
+    expect(vp('.code-example-screen').dataset.landscape).toBeUndefined();
 
     // desktop: width preset, height field inert again with the Full placeholder
     btn('desktop').click();
@@ -408,7 +415,7 @@ describe('CodeExample viewport toolbar (device emulation)', () => {
   it('resizer handles appear on every side of the preview (dogfooded resizer)', async () => {
     const { doc } = await openDocPage('badge.html');
     const card = firstCard(doc);
-    await waitFor(() => card.querySelector('.ce-resizer .resizer-handle'), 'handles placed');
+    await waitFor(() => card.querySelector('.code-example-resizer .resizer-handle'), 'handles placed');
     const sides = [...card.querySelectorAll('.resizer-handle')].map((h) => h.getAttribute('data-handle'));
     // device modes carry the full 8; full mode drops n/s (width axis only)
     for (const want of ['e', 'se', 'sw', 'ne', 'nw', 'w']) expect(sides).toContain(want);

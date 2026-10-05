@@ -4,7 +4,7 @@ description: "Avatar component - circular user images with fallback initials."
 slug: "avatar"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -286,6 +286,8 @@ Machine contract - verified against <a href="../schemas/avatar.schema.json"><cod
 ```
 
 </StatesSection>
+
+<ApiSection component="avatar" />
 
 <SourceFiles component="avatar" section="css">
   <SourceNote for="css">Hide fallback when image is loaded</SourceNote>

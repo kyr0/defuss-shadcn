@@ -5,6 +5,8 @@
  * dedup, 404 = no resources) is pinned here, plus a real round-trip against
  * the generated src/theme/kodama-grove.json the docs theme uses.
  */
+// the df$ runtime core installs in production (shared code selects through it)
+import './lib/df-runtime.ts';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   applyThemeLinks,

@@ -1,0 +1,266 @@
+---
+title: "Illustrative · Layers"
+description: "Layer stack diagrams with the diagram component - full-width bands with index, name and note, one focal layer; built bottom-up step by step and as a delta."
+slug: "diagram-layers"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="diagram-layers" title="Illustrative · Layers" component="diagram">
+  Abstraction layers, tech stacks, protocol stacks: full-width bands, each with an index eyebrow, the layer name and a note on the right. One focal layer carries the accent - the bottleneck or the one under discussion.
+</PageHeader>
+
+<H2 id="example">Example</H2>
+
+```html example label="Web platform stack" component="diagram" hint="Layers are nodes on a one-column canvas; the eyebrow, name and meta become the three columns of the band."
+<figure class="diagram" id="dg-layers" data-type="layers" aria-label="Web platform stack">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Layer stack</span>
+    <span class="diagram-title">The stack, top to bottom</span>
+    <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="ux">
+      <span class="diagram-node-eyebrow">L5 · Experience</span>
+      <span class="diagram-node-name">Web, iOS, Android</span>
+      <span class="diagram-node-meta">design system · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-tone="accent" data-step-label="The contract">
+      <span class="diagram-node-eyebrow">L4 · API</span>
+      <span class="diagram-node-name">GraphQL gateway</span>
+      <span class="diagram-node-meta">schema = the contract</span>
+    </div>
+    <div class="diagram-node" data-node="svc">
+      <span class="diagram-node-eyebrow">L3 · Services</span>
+      <span class="diagram-node-name">Domain services</span>
+      <span class="diagram-node-meta">14 services · gRPC</span>
+    </div>
+    <div class="diagram-node" data-node="data">
+      <span class="diagram-node-eyebrow">L2 · Data</span>
+      <span class="diagram-node-name">Postgres, Redis, S3</span>
+      <span class="diagram-node-meta">per-service ownership</span>
+    </div>
+    <div class="diagram-node" data-node="infra" data-step-label="Foundation">
+      <span class="diagram-node-eyebrow">L1 · Infrastructure</span>
+      <span class="diagram-node-name">Kubernetes on 3 AZs</span>
+      <span class="diagram-node-meta">Terraform · GitOps</span>
+    </div>
+  </div>
+</figure>
+```
+
+<H2 id="step-by-step">Step by step</H2>
+
+```html example label="The stack, built bottom-up" component="diagram" hint="Explicit steps run against the markup order: infrastructure first."
+<figure class="diagram" id="dg-layers-steps" data-type="layers" data-steps data-autoplay aria-label="Web platform stack">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Layer stack</span>
+    <span class="diagram-title">The stack, top to bottom</span>
+    <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="ux" data-step="5">
+      <span class="diagram-node-eyebrow">L5 · Experience</span>
+      <span class="diagram-node-name">Web, iOS, Android</span>
+      <span class="diagram-node-meta">design system · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-tone="accent" data-step="4" data-step-label="The contract">
+      <span class="diagram-node-eyebrow">L4 · API</span>
+      <span class="diagram-node-name">GraphQL gateway</span>
+      <span class="diagram-node-meta">schema = the contract</span>
+    </div>
+    <div class="diagram-node" data-node="svc" data-step="3">
+      <span class="diagram-node-eyebrow">L3 · Services</span>
+      <span class="diagram-node-name">Domain services</span>
+      <span class="diagram-node-meta">14 services · gRPC</span>
+    </div>
+    <div class="diagram-node" data-node="data" data-step="2">
+      <span class="diagram-node-eyebrow">L2 · Data</span>
+      <span class="diagram-node-name">Postgres, Redis, S3</span>
+      <span class="diagram-node-meta">per-service ownership</span>
+    </div>
+    <div class="diagram-node" data-node="infra" data-step="1" data-step-label="Foundation">
+      <span class="diagram-node-eyebrow">L1 · Infrastructure</span>
+      <span class="diagram-node-name">Kubernetes on 3 AZs</span>
+      <span class="diagram-node-meta">Terraform · GitOps</span>
+    </div>
+  </div>
+</figure>
+```
+
+<H2 id="interactive">Interactive</H2>
+
+<DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
+
+```html example label="Layers, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="prev">Previous</button>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="next">Next</button>
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="clear">Clear</button>
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-layers-live">Click a box or an arrow - or press Next.</output>
+</div>
+<figure class="diagram" id="dg-layers-live" data-interactive data-type="layers" aria-label="Web platform stack">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Layer stack</span>
+    <span class="diagram-title">The stack, top to bottom</span>
+    <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="ux">
+      <span class="diagram-node-eyebrow">L5 · Experience</span>
+      <span class="diagram-node-name">Web, iOS, Android</span>
+      <span class="diagram-node-meta">design system · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="api" data-tone="accent" data-step-label="The contract">
+      <span class="diagram-node-eyebrow">L4 · API</span>
+      <span class="diagram-node-name">GraphQL gateway</span>
+      <span class="diagram-node-meta">schema = the contract</span>
+    </div>
+    <div class="diagram-node" data-node="svc">
+      <span class="diagram-node-eyebrow">L3 · Services</span>
+      <span class="diagram-node-name">Domain services</span>
+      <span class="diagram-node-meta">14 services · gRPC</span>
+    </div>
+    <div class="diagram-node" data-node="data">
+      <span class="diagram-node-eyebrow">L2 · Data</span>
+      <span class="diagram-node-name">Postgres, Redis, S3</span>
+      <span class="diagram-node-meta">per-service ownership</span>
+    </div>
+    <div class="diagram-node" data-node="infra" data-step-label="Foundation">
+      <span class="diagram-node-eyebrow">L1 · Infrastructure</span>
+      <span class="diagram-node-name">Kubernetes on 3 AZs</span>
+      <span class="diagram-node-meta">Terraform · GitOps</span>
+    </div>
+  </div>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a href="property-grid.html">Property Grid</a> in a closable <a href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="Layers, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-layers-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex:1 1 0;min-width:0">
+    <figure class="diagram" id="dg-layers-edit" data-interactive data-type="layers" aria-label="Web platform stack">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">Layer stack</span>
+        <span class="diagram-title">The stack, top to bottom</span>
+        <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+      </figcaption>
+      <div class="diagram-canvas">
+        <div class="diagram-node" data-node="ux">
+          <span class="diagram-node-eyebrow">L5 · Experience</span>
+          <span class="diagram-node-name">Web, iOS, Android</span>
+          <span class="diagram-node-meta">design system · SSR</span>
+        </div>
+        <div class="diagram-node" data-node="api" data-tone="accent" data-step-label="The contract">
+          <span class="diagram-node-eyebrow">L4 · API</span>
+          <span class="diagram-node-name">GraphQL gateway</span>
+          <span class="diagram-node-meta">schema = the contract</span>
+        </div>
+        <div class="diagram-node" data-node="svc">
+          <span class="diagram-node-eyebrow">L3 · Services</span>
+          <span class="diagram-node-name">Domain services</span>
+          <span class="diagram-node-meta">14 services · gRPC</span>
+        </div>
+        <div class="diagram-node" data-node="data">
+          <span class="diagram-node-eyebrow">L2 · Data</span>
+          <span class="diagram-node-name">Postgres, Redis, S3</span>
+          <span class="diagram-node-meta">per-service ownership</span>
+        </div>
+        <div class="diagram-node" data-node="infra" data-step-label="Foundation">
+          <span class="diagram-node-eyebrow">L1 · Infrastructure</span>
+          <span class="diagram-node-name">Kubernetes on 3 AZs</span>
+          <span class="diagram-node-meta">Terraform · GitOps</span>
+        </div>
+      </div>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-layers-edit-panel" aria-labelledby="dg-layers-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-layers-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div class="property-grid" id="dg-layers-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-layers-edit');
+    const grid = document.getElementById('dg-layers-edit-grid');
+    const title = document.getElementById('dg-layers-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+```html example label="Rendering moves to the edge" component="diagram" hint="Renumbered layers keep their identity: the old index is data-before on the eyebrow."
+<figure class="diagram" id="dg-layers-delta" data-type="layers" data-delta aria-label="An edge layer is added">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Stack change</span>
+    <span class="diagram-title">Rendering moves to the edge</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="ux" data-change="changed">
+      <span class="diagram-node-eyebrow" data-before="L5 · Experience">L6 · Experience</span>
+      <span class="diagram-node-name">Web, iOS, Android</span>
+      <span class="diagram-node-meta" data-before="design system · SSR">thin clients</span>
+    </div>
+    <div class="diagram-node" data-node="edge" data-tone="accent" data-change="added">
+      <span class="diagram-node-eyebrow">L5 · Edge</span>
+      <span class="diagram-node-name">Edge workers</span>
+      <span class="diagram-node-meta">SSR · cache · A/B</span>
+    </div>
+    <div class="diagram-node" data-node="api">
+      <span class="diagram-node-eyebrow">L4 · API</span>
+      <span class="diagram-node-name">GraphQL gateway</span>
+      <span class="diagram-node-meta">schema = the contract</span>
+    </div>
+    <div class="diagram-node" data-node="bff" data-change="removed">
+      <span class="diagram-node-eyebrow">L3½ · BFF</span>
+      <span class="diagram-node-name">Backend for frontend</span>
+      <span class="diagram-node-meta">one per client</span>
+    </div>
+    <div class="diagram-node" data-node="svc">
+      <span class="diagram-node-eyebrow">L3 · Services</span>
+      <span class="diagram-node-name">Domain services</span>
+      <span class="diagram-node-meta">14 services · gRPC</span>
+    </div>
+  </div>
+</figure>
+```
+
+<p class="text-sm text-muted-foreground">Rendered by the <a href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
+
+<SourceFiles component="diagram">
+  <SourceNote for="css">The diagram stylesheet - every type on this page is a preset in it.</SourceNote>
+  <SourceNote for="js">The engine every example converges on: wire routing, steps, delta panels, specs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

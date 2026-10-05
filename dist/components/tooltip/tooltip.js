@@ -16,9 +16,16 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 const tooltipStates = ['default', 'visible'];
+/**
+ * The markup of a state: none - 'visible' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) { }
 /**
  * UI side of setState: 'default' hides, 'visible' shows immediately
  * (bypasses the hover delay - a declared state is imperative, not hover-sim).
@@ -40,20 +47,12 @@ function triggerStateChange(tip, stateName, _config) {
     }
 }
 /** Registry-level API; pass the tooltip element explicitly. Unknown names throw. */
-export const tooltipApi = {
-    setState(tip, stateName, config = {}) {
-        if (!tooltipStates.includes(stateName)) {
-            throw new Error(`tooltip: unknown state "${stateName}" (supported: ${tooltipStates.join(', ')})`);
-        }
-        triggerStateChange(tip, stateName, config);
-        // state lives on the ELEMENT, not the module (many tooltips per page)
-        tip.dataset.stateName = stateName;
-        tip._stateConfig = config;
-    },
-    getState(tip) {
-        return { name: tip.dataset.stateName || 'default', config: tip._stateConfig ?? {} };
-    },
-};
+export const tooltipApi = componentState({
+    component: 'tooltip',
+    states: tooltipStates,
+    apply: (tip, state) => triggerStateChange(tip, state.name, state.config),
+    markup: (el, state) => applyMarkup(el, state.name),
+});
 df$.tooltipApi = tooltipApi;
 df$.tooltipStates = tooltipStates;
 const DELAY_DEFAULT = 700; // ms before first tooltip opens
@@ -70,9 +69,9 @@ function scheduleGroupReset() {
     groupTimer = setTimeout(() => { groupOpen = false; }, GROUP_TIMEOUT);
 }
 function init() {
-    document.querySelectorAll('[data-tooltip-trigger]:not([data-init])').forEach((trigger) => {
+    dfDollar('[data-tooltip-trigger]:not([data-init])').toArray().forEach((trigger) => {
         trigger.dataset.init = '';
-        const tip = document.getElementById(trigger.dataset.tooltipTrigger);
+        const tip = dfDollar('#' + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
         if (!tip)
             return;
         // CSS anchor positioning - unique name per trigger-tooltip pair
@@ -114,12 +113,10 @@ function init() {
         trigger.addEventListener('blur', hide);
     });
     // bind-scope the api per tooltip instance: `$('#tip').api.setState('visible')`
-    document.querySelectorAll('.tooltip[popover]:not([data-init])').forEach((tip) => {
+    dfDollar('.tooltip[popover]:not([data-init])').toArray().forEach((tip) => {
         tip.dataset.init = '';
-        tip.api = {
-            setState: (stateName, config) => tooltipApi.setState(tip, stateName, config),
-            getState: () => tooltipApi.getState(tip),
-        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(tip, tooltipApi);
     });
 }
 init();
@@ -129,7 +126,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 if (!document.__tooltipScrollInit) {
     document.__tooltipScrollInit = true;
     document.addEventListener('scroll', () => {
-        document.querySelectorAll('.tooltip:popover-open').forEach((tip) => {
+        dfDollar('.tooltip:popover-open').toArray().forEach((tip) => {
             try {
                 tip.hidePopover();
             }

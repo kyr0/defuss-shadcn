@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 import { icbRect } from './lib/viewport.ts';
 
 /**
@@ -269,6 +270,11 @@ try {
     assert.ok(scrolled > before, 'page is scrollable again after close');
     await page.evaluate(() => window.scrollTo(0, 0)); // leave a clean viewport
   });
+  // LAST (AGENTS.md "State API" → render): the contract reloads the page
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, 'dialog.sheet[id]', ['default','open']);
+  });
+
 } finally {
   await browser.close();
   server.stop();

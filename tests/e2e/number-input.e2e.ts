@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped number-input component. Loads the
@@ -328,6 +329,10 @@ try {
     }));
     assert.notEqual(r.select, 'none');
     assert.match(r.text, /€/);
+  });
+
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.number-input[id]', ['default']);
   });
 
 } finally {

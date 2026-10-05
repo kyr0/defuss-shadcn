@@ -29,7 +29,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 // id prefix source for calendars without their own #id (unique per element,
@@ -45,6 +45,24 @@ const calendarStates = ['default'];
  * read live from state in renderGrid, so attribute-style control via the
  * State API takes effect on the very next render.
  */
+/**
+ * The markup of the state, for render(), on a detached copy of the authored
+ * calendar: the month the config names, rendered by the same renderCalendar()
+ * the live calendar runs - header, grid, the selected day, the min / max
+ * bounds. (A range picker's shared range belongs to its owner - the copy has
+ * none.)
+ */
+function applyMarkup(el, config) {
+    const now = new Date();
+    el._calState = {
+        year: config?.year ?? now.getFullYear(),
+        month: config?.month ?? now.getMonth(),
+        selected: config?.selected ?? config?.day ?? null,
+        minDate: config?.minDate ?? null,
+        maxDate: config?.maxDate ?? null,
+    };
+    renderCalendar(el, el._calState.year, el._calState.month, el._calState.selected);
+}
 function triggerStateChange(cal, stateName, config) {
     const state = cal._calState;
     if (!state || stateName !== 'default')
@@ -82,7 +100,8 @@ function triggerStateChange(cal, stateName, config) {
     else {
         state.year = config?.year ?? now.getFullYear();
         state.month = config?.month ?? now.getMonth();
-        state.selected = config?.day ?? null;
+        // { day } - or getState()'s { selected }: setState(getState()) keeps the pick
+        state.selected = config?.day ?? config?.selected ?? null;
     }
     renderCalendar(cal, state.year, state.month, state.selected);
 }
@@ -90,16 +109,30 @@ function triggerStateChange(cal, stateName, config) {
 // month) - the morph key basis: identity, not filtered position (§3/guide)
 const isoDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 /** Registry-level API; pass the calendar element explicitly. Unknown names throw. */
-export const calendarApi = {
-    setState(cal, stateName, config = {}) {
-        if (!calendarStates.includes(stateName)) {
-            throw new Error(`calendar: unknown state "${stateName}" (supported: ${calendarStates.join(', ')})`);
-        }
-        triggerStateChange(cal, stateName, config);
-        // state lives on the ELEMENT, not the module (many calendars per page)
-        cal.dataset.stateName = stateName;
-        cal._stateConfig = config;
+export const calendarApi = Object.assign(componentState({
+    component: 'calendar',
+    states: calendarStates,
+    apply: (cal, state) => triggerStateChange(cal, state.name, state.config),
+    read: (cal, current) => {
+        const view = cal._calState ?? {};
+        return {
+            name: cal.dataset.stateName || 'default',
+            // live view - reflects nav clicks and day selection, not just setState
+            config: {
+                ...current.config,
+                year: view.year,
+                month: view.month,
+                selected: view.selected,
+                minDate: view.minDate ?? null,
+                maxDate: view.maxDate ?? null,
+                view: cal.dataset.view || 'days',
+                // range mode: the shared range of the calendar's owner (ISO or null)
+                ...(rangeOwnerOf(cal) ? { rangeStart: rangeState(rangeOwnerOf(cal)).start, rangeEnd: rangeState(rangeOwnerOf(cal)).end } : {}),
+            },
+        };
     },
+    markup: (el, state) => applyMarkup(el, state.config),
+}), {
     /**
      * Day data for this calendar (a range picker: for its whole .calendar-range):
      * { 'YYYY-MM-DD': { mark?, note?, label?, disabled? } }. Replaces the map
@@ -110,25 +143,7 @@ export const calendarApi = {
         holder._calDays = options.merge ? { ...holder._calDays, ...days } : { ...days };
         rerender(cal);
     },
-    getState(cal) {
-        const state = cal._calState ?? {};
-        return {
-            name: cal.dataset.stateName || 'default',
-            // live view - reflects nav clicks and day selection, not just setState
-            config: {
-                ...cal._stateConfig,
-                year: state.year,
-                month: state.month,
-                selected: state.selected,
-                minDate: state.minDate ?? null,
-                maxDate: state.maxDate ?? null,
-                view: cal.dataset.view || 'days',
-                // range mode: the shared range of the calendar's owner (ISO or null)
-                ...(rangeOwnerOf(cal) ? { rangeStart: rangeState(rangeOwnerOf(cal)).start, rangeEnd: rangeState(rangeOwnerOf(cal)).end } : {}),
-            },
-        };
-    },
-};
+});
 df$.calendarApi = calendarApi;
 df$.calendarStates = calendarStates;
 const DAYS = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(new Date(2024, 0, i)));
@@ -162,7 +177,7 @@ function rangeOwnerOf(cal) {
 function calendarsOf(owner) {
     if (!owner.classList.contains('calendar-range'))
         return [owner];
-    return Array.from(owner.querySelectorAll('.calendar')).filter((c) => c.closest('.calendar-range') === owner);
+    return Array.from(dfDollar(owner).find('.calendar').toArray()).filter((c) => c.closest('.calendar-range') === owner);
 }
 /** Lazily created range state on the owner (authored attributes seed it). */
 function rangeState(owner) {
@@ -215,7 +230,7 @@ function syncRange(owner) {
         else
             delete owner.dataset[key];
     }
-    owner.querySelectorAll('input[data-range-input]').forEach((input) => {
+    dfDollar(owner).find('input[data-range-input]').toArray().forEach((input) => {
         const value = (input.dataset.rangeInput === 'end' ? r.end : r.start) ?? '';
         if (input.value === value)
             return;
@@ -239,7 +254,7 @@ function daysOf(cal) {
     const holder = dayHolderOf(cal);
     if (holder._calDays)
         return holder._calDays;
-    const script = Array.from(holder.querySelectorAll('script.calendar-days')).find((el) => el.parentElement === holder);
+    const script = Array.from(dfDollar(holder).find('script.calendar-days').toArray()).find((el) => el.parentElement === holder);
     let days = {};
     if (script) {
         try {
@@ -292,7 +307,7 @@ const monthOff = (y, m, min, max) => !isoInRange(`${y}-${pad2(m + 1)}-${pad2(day
 const yearOff = (y, min, max) => !isoInRange(`${y}-12-31`, min, null) || !isoInRange(`${y}-01-01`, null, max);
 function renderPicker(el) {
     const st = el._calState;
-    const panel = el.querySelector('.calendar-picker');
+    const panel = dfDollar(el).find('.calendar-picker').get(0);
     if (!st || !panel)
         return;
     const now = new Date();
@@ -323,7 +338,7 @@ function renderHeader(el) {
     if (!st)
         return;
     const view = el.dataset.view || 'days';
-    const heading = el.querySelector('.calendar-heading');
+    const heading = dfDollar(el).find('.calendar-heading').get(0);
     if (heading) {
         const text = view === 'months' ? String(st.pickYear)
             : view === 'years' ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}`
@@ -340,8 +355,8 @@ function renderHeader(el) {
     dfDollar(el).find('.calendar-nav[data-action="prev-month"]').attr('aria-label', labels[0]);
     dfDollar(el).find('.calendar-nav[data-action="next-month"]').attr('aria-label', labels[1]);
     // dropdown caption: reflect the view into the two selects
-    const monthSel = el.querySelector('.calendar-select[data-part="month"]');
-    const yearSel = el.querySelector('.calendar-select[data-part="year"]');
+    const monthSel = dfDollar(el).find('.calendar-select[data-part="month"]').get(0);
+    const yearSel = dfDollar(el).find('.calendar-select[data-part="year"]').get(0);
     if (yearSel) {
         if (!Array.from(yearSel.options).some((o) => Number(o.value) === st.year))
             fillYears(el, yearSel);
@@ -392,8 +407,8 @@ function jumpTo(el, year, month) {
 /** Switch view; focus follows into the new view (current month/year, else the first live button). */
 function setView(el, view) {
     const st = el._calState;
-    const grid = el.querySelector('.calendar-grid');
-    const panel = el.querySelector('.calendar-picker');
+    const grid = dfDollar(el).find('.calendar-grid').get(0);
+    const panel = dfDollar(el).find('.calendar-picker').get(0);
     if (!st || !panel)
         return;
     if (view !== 'days' && (el.dataset.view || 'days') === 'days' && grid) {
@@ -414,15 +429,16 @@ function setView(el, view) {
         renderPicker(el);
     renderHeader(el);
     if (view === 'days') {
-        const pick = el.querySelector('.calendar-day[data-selected] button') ??
-            el.querySelector('.calendar-day[data-today]:not([data-outside]) button') ??
-            el.querySelector('.calendar-day:not([data-outside]):not([data-disabled]) button');
+        const pick = dfDollar(el).find('.calendar-day[data-selected] button').get(0) ??
+            dfDollar(el).find('.calendar-day[data-today]:not([data-outside]) button').get(0) ??
+            dfDollar(el).find('.calendar-day:not([data-outside]):not([data-disabled]) button').get(0);
         pick?.focus();
     }
     else {
-        const pick = panel.querySelector('.calendar-pick[aria-current]:not([disabled])') ?? panel.querySelector('.calendar-pick:not([disabled])');
+        const pick = dfDollar(panel).find('.calendar-pick[aria-current]:not([disabled])').get(0) ?? dfDollar(panel).find('.calendar-pick:not([disabled])').get(0);
         pick?.focus();
     }
+    // Fires when the panel changes - the view (days, months, years) and the year and month it shows.
     el.dispatchEvent(new CustomEvent('calendar:view', { bubbles: true, detail: { view, year: st.year, month: st.month } }));
 }
 const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days) => {
@@ -510,7 +526,7 @@ const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, da
  * stable place to read it.
  */
 const renderCalendar = (el, year, month, selectedDay) => {
-    const grid = el.querySelector('.calendar-grid');
+    const grid = dfDollar(el).find('.calendar-grid').get(0);
     if (!grid)
         return;
     const st = el._calState ?? {};
@@ -554,9 +570,9 @@ const renderCalendar = (el, year, month, selectedDay) => {
     // refocus the cell's button (the td itself isn't focusable) - morph usually
     // kept it, but after a month change the old cell is gone; stay put then
     if (focusKey)
-        grid.querySelector(`[data-cal-date="${focusKey}"] button`)?.focus();
+        dfDollar(grid).find(`[data-cal-date="${focusKey}"] button`).get(0)?.focus();
     // selection mirrors onto the grid so it survives node reuse/replacement
-    const selDate = el.querySelector('.calendar-day[data-selected]')?.getAttribute('data-cal-date');
+    const selDate = dfDollar(el).find('.calendar-day[data-selected]').get(0)?.getAttribute('data-cal-date');
     if (selDate)
         grid.setAttribute('data-selected-date', selDate);
     else
@@ -569,7 +585,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
     }
 };
 function init() {
-    document.querySelectorAll('.calendar:not([data-init])').forEach((cal) => {
+    dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
         cal.dataset.init = '';
         // stable id prefix for the grid's day-cell morph keys (§3) - the
         // generated fallback uses a dfsc- prefix so it can't collide with any
@@ -593,15 +609,14 @@ function init() {
             state.month = (m ?? now.getMonth() + 1) - 1;
             state.selected = d ?? null;
         }
-        // bind-scope the api per instance: `$('#my-calendar').api.setState('default', { year: 2024, month: 0, day: 15 })`
-        cal.api = {
-            setState: (stateName, config) => calendarApi.setState(cal, stateName, config),
-            getState: () => calendarApi.getState(cal),
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(cal, calendarApi);
+        Object.assign(cal.api, {
             setDays: (days, options) => calendarApi.setDays(cal, days, options),
-        };
+        });
         // -- caption: a heading button (month / year picker) or native dropdowns --
-        const header = cal.querySelector('.calendar-header');
-        let heading = cal.querySelector('.calendar-heading');
+        const header = dfDollar(cal).find('.calendar-header').get(0);
+        let heading = dfDollar(cal).find('.calendar-heading').get(0);
         if (cal.dataset.caption === 'dropdown' && header) {
             // two native selects between the arrows; the heading stays for
             // assistive tech only (the selects already show the month and year)
@@ -615,11 +630,11 @@ function init() {
                 dfDollar(heading).after(caption);
             else
                 dfDollar(header).append(caption);
-            fillYears(cal, caption.querySelector('[data-part="year"]'));
+            fillYears(cal, dfDollar(caption).find('[data-part="year"]').get(0));
             caption.addEventListener('change', (e) => {
                 const sel = e.target;
-                const m = Number(caption.querySelector('[data-part="month"]').value);
-                const y = Number(caption.querySelector('[data-part="year"]').value);
+                const m = Number(dfDollar(caption).find('[data-part="month"]').get(0).value);
+                const y = Number(dfDollar(caption).find('[data-part="year"]').get(0).value);
                 jumpTo(cal, y, m);
                 sel.focus();
             });
@@ -636,11 +651,11 @@ function init() {
         }
         if (heading && heading.tagName === 'BUTTON') {
             dfDollar(heading).attr('aria-haspopup', 'grid');
-            if (!cal.querySelector('.calendar-picker')) {
+            if (!dfDollar(cal).find('.calendar-picker').get(0)) {
                 const panel = document.createElement('div');
                 panel.className = 'calendar-picker';
                 panel.setAttribute('role', 'group');
-                const grid = cal.querySelector('.calendar-grid');
+                const grid = dfDollar(cal).find('.calendar-grid').get(0);
                 if (grid)
                     dfDollar(grid).after(panel);
                 else
@@ -749,6 +764,7 @@ function init() {
                 }
                 rs.hover = null;
                 syncRange(rangeOwner);
+                // Fires when a range is complete (its second date) - start and end as Dates and as ISO dates.
                 rangeOwner.dispatchEvent(new CustomEvent('calendar:range', {
                     detail: {
                         start: rs.start ? isoToDate(rs.start) : null,
@@ -826,7 +842,7 @@ function init() {
                 const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 4, ArrowUp: -4 }[e.key];
                 if (pickBtn && step) {
                     e.preventDefault();
-                    const picks = Array.from(cal.querySelectorAll('.calendar-pick'));
+                    const picks = Array.from(dfDollar(cal).find('.calendar-pick').toArray());
                     picks[picks.indexOf(pickBtn) + step]?.focus();
                 }
                 return;
@@ -842,11 +858,11 @@ function init() {
                 e.preventDefault();
                 const from = isoToDate(dayBtn.closest('.calendar-day').getAttribute('data-cal-date'));
                 from.setDate(from.getDate() + step);
-                const target = keyOwner.querySelector(`.calendar-day:not([data-outside])[data-cal-date="${isoDate(from)}"] button`);
+                const target = dfDollar(keyOwner).find(`.calendar-day:not([data-outside])[data-cal-date="${isoDate(from)}"] button`).get(0);
                 target?.focus();
                 return;
             }
-            const allBtns = Array.from(cal.querySelectorAll('.calendar-day button'));
+            const allBtns = Array.from(dfDollar(cal).find('.calendar-day button').toArray());
             const idx = allBtns.indexOf(dayBtn);
             let next = null;
             switch (e.key) {

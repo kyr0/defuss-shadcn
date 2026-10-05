@@ -178,6 +178,23 @@ tweens there over 600 ms through the registered `--_rp-value`.
 
 ---
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.radialProgressApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.radialProgressStates` = `default`, `indeterminate`, `complete`.
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `progress:change` | `value`, `max`, `percent` | Fires when the value changes - value, max and the fraction done (0 to 1). |
+| `progress:completed` | - | Fires once when the value reaches max. |
+
+---
+
 ## Notes
 
 - **`--value` itself is never registered** - only the private `--_rp-value`

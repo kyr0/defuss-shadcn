@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped anim-canvas component. Loads the fixture
@@ -199,6 +200,10 @@ try {
     await page.waitForFunction(() => document.getElementById('b')?.hasAttribute('data-active'));
     assert.equal(await page.$eval('#board', (el) => el.getAttribute('data-current-slide')), 's2', 'board untouched');
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.anim-canvas[id]', ['default','overview'], { runtimeAttrs: ['style'] });
+  });
+
 } finally {
   await browser.close();
   server.stop();

@@ -86,6 +86,31 @@ try {
     assert.equal(await page.getAttribute('[data-pm-stat="ring"]', 'aria-valuenow'), '27');
   });
 
+  await check('the table: every issue in a data grid - sorted by priority, filtered per column, edits follow, a row opens its issue', async () => {
+    await page.click('.pm-layout .toggle[value="table"]');
+    assert.deepEqual([await shown('.pm-table'), await shown('.pm-list')], [true, false]);
+    const grid = () => page.$eval('#pm-grid', (g: any) => ({
+      config: g.store.value.config,
+      rows: (globalThis as any).df$.shadcn.dataGrid.rows(g).map((r: any) => [r.id, r.status, r.priority]) as string[][],
+    }));
+    let g = await grid();
+    assert.equal(g.rows.length, await page.$$eval('.pm-list [data-issue]', (n) => n.length), 'one record per issue of the list');
+    assert.deepEqual(g.config.sorters, [{ field: 'prioRank', direction: 'asc' }], 'data-sort + data-sort-field: priority rank, urgent first');
+    assert.equal(g.rows[0][2], 'Urgent');
+    assert.equal(g.rows.find((r) => r[0] === 'ENG-133')![1], 'Done', 'the move to Done above shows in the table');
+    await page.selectOption('#pm-grid .data-grid-filter[data-field="status"]', 'Done');
+    await page.waitForFunction(() => (document.querySelector('#pm-grid') as any).store.value.config.filters.length === 1);
+    g = await grid();
+    assert.ok(g.rows.length === 4 && g.rows.every((r) => r[1] === 'Done'), JSON.stringify(g.rows));
+    const key = Object.keys(await page.evaluate(() => ({ ...sessionStorage }))).find((k) => k.endsWith(':data-grid:pm-grid'));
+    assert.ok(key, 'the view is kept for the session');
+    await page.click('#pm-grid .data-grid-rows > .data-grid-row:nth-child(1) .data-grid-cell:nth-child(2)');
+    assert.match(new URL(page.url()).hash, /^#ENG-/);
+    await page.goBack();
+    await page.selectOption('#pm-grid .data-grid-filter[data-field="status"]', '');
+    await page.click('.pm-layout .toggle[value="list"]');
+  });
+
   await check('an issue page edits priority and assignee; the row and the activity follow', async () => {
     await page.click('.pm-list .pm-row-link[href="#ENG-136"]');
     await page.waitForTimeout(150);

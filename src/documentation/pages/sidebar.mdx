@@ -4,7 +4,7 @@ description: "Sidebar component - collapsible side navigation panel."
 slug: "sidebar"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -319,6 +319,8 @@ Machine contract - verified against <a href="../schemas/sidebar.schema.json"><co
 ```
 
 </StatesSection>
+
+<ApiSection component="sidebar" />
 
 <SourceFiles component="sidebar" section="css">
   <SourceNote for="css">Full sidebar layout with collapsible state, mobile dialog overlay, collapsible groups, submenus, badges, and responsive behavior.</SourceNote>

@@ -85,6 +85,14 @@ document.querySelector('#theme-color').api.getState(); // { name: 'default', con
 The api is bound per wrapper; the registry global is
 `df$.shadcn.colorPickerApi` / `df$.shadcn.colorPickerStates` (camelCase).
 
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.colorPickerApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.colorPickerStates` = `default`.
+
 ## Notes
 
 - The native color picker renders a full-featured dialog - no JS needed.

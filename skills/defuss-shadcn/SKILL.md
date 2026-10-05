@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.4 - Agent Skill
 
-219 components (168 CSS-only, 51 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+228 components (169 CSS-only, 59 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -21,6 +21,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
    2. `components/all.css` - every component's styles,
    3. `components/all.js` as an ES module - the `df$` runtime + every component's behavior.
    (`all.css` holds component styles only: without `core.css` there are no tokens and no utilities.)
+   The HTML Preview Editor (`code-example`) alone needs a fourth pair after them: `components/wysiwyg.css` + `components/wysiwyg.js` - the extra bundle it ships in.
 3. **For each component you use:** open its skill (index in §4), copy the **Structure** markup verbatim, then pick variants/sizes via `data-variant` / `data-size`. Never invent class names.
 4. **Need a state** (open dialog, expanded tree, selected tab)? Author it in markup, or call `el.api.setState('<state>')` - never toggle classes.
 5. **Serve over HTTP** (`npx serve .` or the project's dev server). ES modules do not run from `file://`.
@@ -126,7 +127,8 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 
 ### Guides
 
-- [Theming](../../src/documentation/pages/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Drop in any tweakcn.com theme for instant restyling.
+- [Theming](../../src/documentation/pages/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme.
+  - [Theme Designer](../../src/documentation/pages/theme-designer.mdx) - Design your own theme, the tweakcn way, right in the docs: every colour token for light and dark, Google Fonts for sans, serif and mono, radius, letter spacing and shadows - with a live preview of each section's components. Save it by name: it stays in your browser and appears on top of the theme menu; export the CSS to use it anywhere.
 - [Dark Mode](../../src/documentation/pages/dark-mode.mdx) - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.
 - [Data Attribute API](../../src/documentation/pages/data-attribute-api.mdx) - Use data attributes to configure component variants, sizes, and states directly in HTML markup.
 - [State API](../../src/documentation/pages/state-api.mdx) - Every interactive component declares its UI states by name and exposes them per element - el.api.setState('open') / el.api.getState() - for agents, tests, and code.
@@ -162,9 +164,21 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Shapes](../../src/documentation/pages/shapes.mdx) - A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, shape-* silhouettes, section edges, shadows, frames and patterns - one opt-in stylesheet.
 - [Accessibility](../../src/documentation/pages/accessibility.mdx) - Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.
 
+### Questionnaire
+
+- [Branching](../../src/documentation/pages/questionnaire-branching.mdx) - Branching questionnaires - the flow graph: an option's data-goto, conditional rules over earlier answers (all / any, numbers, field references), a step's data-next, the markup order; the walk shown as it happens.
+- [Validation](../../src/documentation/pages/questionnaire-validation.mdx) - Validating a questionnaire step by step - native constraints (required, min, pattern, type=email), choice counts (data-min / data-max), cross-field assertions over earlier answers, and validator functions in code; the reason shown in role=alert, the field focused.
+- [Drafts & History](../../src/documentation/pages/questionnaire-drafts.mdx) - Questionnaire drafts and branch history - every keystroke kept in session storage (or local, or nowhere) and restored on load, back navigation along the steps actually taken, jumping back from the trail or the review, forward again without losing the way, start over.
+- [Dependent Answers](../../src/documentation/pages/questionnaire-dependencies.mdx) - Dependent-answer invalidation in a branching questionnaire - answers on a branch the walk abandoned are cleared (reachability over the flow graph), answers that declare data-depends-on a changed field are cleared, the user is told, and only answers on the path are submitted.
+- [Flow Graph](../../src/documentation/pages/questionnaire-graph.mdx) - The questionnaire as a graph - analyze() checks a flow for missing targets, cycles, dead ends, unreachable steps and fields a rule may read unanswered (dominators); toMermaid() draws it with the walked path, live.
+
 ### Data Display
 
 - [Image Gallery](../../src/documentation/pages/image-gallery.mdx) - Auto-advancing image gallery composed from figure.image slides - per-slide data-duration dwell times, an abortable setTimeout chain, and every DOM touch routed through defuss-query (df$).
+
+### Big Data
+
+- [Tree Grid](../../src/documentation/pages/tree-grid.mdx) - Tree Grid - the Data Grid with parents: every row may have a parent, so it pages, filters, multisorts and locks columns like a grid and opens and closes like a tree. 111,000 rows, ARIA treegrid, keyboard, store-driven.
 
 ### Charts
 
@@ -174,6 +188,39 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Composition](../../src/documentation/pages/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
 - [Election](../../src/documentation/pages/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
 - [Narrative](../../src/documentation/pages/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
+
+### Diagrams
+
+- [Architecture](../../src/documentation/pages/diagram-architecture.mdx) - Architecture diagrams with the diagram component - services, stores and external systems on a grid, zones behind them, labelled rounded-elbow connectors; step by step and as a before/changes/after delta.
+- [Flow](../../src/documentation/pages/diagram-flow.mdx) - Flowcharts with the diagram component - pills for start and end, diamonds for decisions, labelled exits; animated step by step and as a before/changes/after delta.
+- [State](../../src/documentation/pages/diagram-state.mdx) - State machines with the diagram component - start and end dots, labelled transitions (event [guard] / action), self loops; plus a complex current-state landscape; step by step and as deltas.
+- [State Lifecycle](../../src/documentation/pages/diagram-state-lifecycle.mdx) - Lifecycle phase maps with the diagram component - primary phases on a rail, waits and recovery above, terminal outcomes below; step by step and as a delta.
+- [ER](../../src/documentation/pages/diagram-er.mdx) - Entity-relationship diagrams with the diagram component - entities with field lists, crow's-foot cardinality, relationship labels; plus physical database schemas with column-to-column foreign keys; step by step and as deltas.
+- [Timeline](../../src/documentation/pages/diagram-timeline.mdx) - Timelines with the diagram component - one honest axis, events at their dates above and below, ticks and ranges; step by step and as a delta with moved events.
+- [Swimlane](../../src/documentation/pages/diagram-swimlane.mdx) - Swimlane diagrams with the diagram component - one lane per team, steps in the lane of who does them, handoffs across lanes; step by step and as a delta.
+- [Nested](../../src/documentation/pages/diagram-nested.mdx) - Nested containment diagrams with the diagram component - trust zones, scopes and blast radius as groups inside groups; step by step and as a delta.
+- [Organigram](../../src/documentation/pages/diagram-organigram.mdx) - Organigrams (org charts) with the diagram component - owners, how to reach them and what they own, bus connectors per parent; step by step and as a re-org delta.
+- [Layers](../../src/documentation/pages/diagram-layers.mdx) - Layer stack diagrams with the diagram component - full-width bands with index, name and note, one focal layer; built bottom-up step by step and as a delta.
+- [Loop](../../src/documentation/pages/diagram-loop.mdx) - Loop and flywheel diagrams with the diagram component - stations on a ring around a hub that accumulates state, curved arcs and dashed write-backs, a flow token; step by step and as a delta.
+- [Data Lake](../../src/documentation/pages/diagram-data-lake.mdx) - Data lake architecture diagrams with the diagram component - a phase banner over sources, ingest, lake zones, query engine and consumers; step by step and as a delta.
+- [Medallion](../../src/documentation/pages/diagram-medallion.mdx) - Medallion architecture diagrams with the diagram component - bronze, silver and gold tiers with tool, format and writer, an archive; step by step and as a delta.
+- [High-level](../../src/documentation/pages/diagram-high-level.mdx) - High-level stack diagrams with the diagram component - a phase banner, external sources, the cluster boundary, orchestration and identity bars; step by step and as a delta.
+- [High-level Parametric](../../src/documentation/pages/diagram-high-level-parametric.mdx) - Parametric diagrams - a JSON spec renders into the same markup (script.diagram-spec or df$.shadcn.diagram.build), two specs diff into a delta, inputs regenerate the picture.
+- [Process](../../src/documentation/pages/diagram-process.mdx) - Process diagrams with the diagram component - responsible lanes, numbered steps with tools and IN/OUT payload chips; step by step and as a delta.
+- [Data Flow](../../src/documentation/pages/diagram-data-flow.mdx) - Data flow diagrams with the diagram component - phases as columns, platform roles as lanes, typed payloads on every arrow; step by step and as a delta.
+- [Topology](../../src/documentation/pages/diagram-topology.mdx) - Integration topology diagrams with the diagram component - sources and consumer surfaces around a platform boundary, protocols on every connection; step by step and as a delta.
+- [Matrix](../../src/documentation/pages/diagram-matrix.mdx) - Matrix diagrams with the diagram component - access/security matrices, Bayesian update and base-rate tables, RACI, risk, weighted decision and traceability matrices; a Bayesian update step by step and an access-review delta.
+- [Fishbone](../../src/documentation/pages/diagram-fishbone.mdx) - Fishbone (Ishikawa) diagrams with the diagram component - categories on 60° bones above and below a spine into the effect, the confirmed root cause in the accent; step by step and as a delta.
+- [Wardley Map](../../src/documentation/pages/diagram-wardley.mdx) - Wardley maps with the diagram component - a value chain against evolution, four bands, dependency lines and a movement arrow; step by step and as a delta.
+- [Kanban](../../src/documentation/pages/diagram-kanban.mdx) - Kanban board snapshots with the diagram component - columns with WIP chips, card states blocked / waiting / done, a breached limit; column by column and as a week-over-week delta.
+- [User Journey](../../src/documentation/pages/diagram-journey.mdx) - User journey maps with the diagram component - stages, a sentiment curve on a high/neutral/low band, actions, touchpoints and pain points; stage by stage and as a delta.
+- [Deployment](../../src/documentation/pages/diagram-deployment.mdx) - Deployment diagrams with the diagram component - network zones, hosts and managed services with artifact chips and replica badges, protocol:port paths; step by step and as a release delta.
+- [Dependency Graph](../../src/documentation/pages/diagram-dependency.mdx) - Dependency graphs with the diagram component - packages ranked by depth, fan-in badges, external and leaf treatments, one cycle routed around the stack; step by step and as a delta.
+- [UML Class](../../src/documentation/pages/diagram-uml-class.mdx) - UML class diagrams with the diagram component - name, attribute and operation compartments, stereotypes, abstract classes, and the typed relationship ends; step by step and as a delta.
+- [Story Map](../../src/documentation/pages/diagram-story-map.mdx) - User story maps with the diagram component - a backbone of activities, the walking skeleton, release bands and the release cut, the riskiest story marked; step by step and as a delta.
+- [Sequence](../../src/documentation/pages/diagram-sequence.mdx) - Sequence diagrams with the diagram component - participants, lifelines, calls and dashed returns, self messages, a flow token; message by message and as a protocol delta.
+- [Quadrant](../../src/documentation/pages/diagram-quadrant.mdx) - Consultant-style 2×2 scenario matrices with the diagram component - two driver ranges, four named scenarios, the bet in the accent; step by step and as a delta.
+- [Policy Trace](../../src/documentation/pages/diagram-policy-trace.mdx) - Animated policy evaluation traces with the diagram component - ordered rules, two requests side by side, pass / fail / skipped / not reached, the first divergence; played rule by rule and as a policy delta.
 
 ### Application
 
@@ -188,7 +235,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Presentations
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship 10-slide deck with the system's real numbers (219 components, 77% CSS-only, 307.9 KiB min+gz): glyph cover, unit dots, gauge, tanks, chart staircase, taxonomy donut, stopwatch, branching route.
+  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship deck with the system's real, measured numbers: glyph cover, unit dots, the feature line map, bundle and app sizes, the method (RAD + VAE) as live diagrams, the timed verifier and the four ways in.
   - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
   - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
@@ -196,7 +243,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Diverging Bars](../../src/documentation/pages/diverging-bars.mdx) - Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart.
   - [Waterfall](../../src/documentation/pages/waterfall.mdx) - Art Deco Night design language presenting a cinema chain’s revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
   - [Normalized Stack](../../src/documentation/pages/normalized-stack.mdx) - Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart.
-  - [Bump Ranking](../../src/documentation/pages/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 12-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
+  - [Bump Ranking](../../src/documentation/pages/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 13-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
   - [Bar Race](../../src/documentation/pages/bar-race.mdx) - Sports Broadcast design language presenting a fictional league’s golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
   - [Confidence Band](../../src/documentation/pages/confidence-band.mdx) - Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart.
   - [Annotated Time Series](../../src/documentation/pages/annotated-timeseries.mdx) - Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart.
@@ -208,10 +255,10 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Theme River](../../src/documentation/pages/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck — a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
   - [Treemap](../../src/documentation/pages/treemap.mdx) - Mondrian Composition design language presenting a city’s €2.4 billion budget as a 12-slide deck — a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
   - [Sunburst](../../src/documentation/pages/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck — a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
-  - [Sankey](../../src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city’s waste as a 12-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
+  - [Sankey](../../src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city’s waste as a 13-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
   - [Chord](../../src/documentation/pages/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck — a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
   - [Editorial Gauge](../../src/documentation/pages/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport’s on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
-  - [Parliament Hemicycle](../../src/documentation/pages/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 12-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
+  - [Parliament Hemicycle](../../src/documentation/pages/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 13-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
   - [Election Majority Bar](../../src/documentation/pages/election-majority-bar.mdx) - Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats.
   - [Election Hex Cartogram](../../src/documentation/pages/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county’s rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
   - [Election Shift Arrows](../../src/documentation/pages/election-shift-arrows.mdx) - Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart.
@@ -220,7 +267,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Boxplot](../../src/documentation/pages/boxplot.mdx) - Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart.
   - [Violin - Custom Series](../../src/documentation/pages/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
   - [Custom Wind Vectors](../../src/documentation/pages/custom-wind-vectors.mdx) - Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations.
-  - [Story State Machine](../../src/documentation/pages/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 12-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
+  - [Story State Machine](../../src/documentation/pages/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 13-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
 
 ### Website
 
@@ -453,6 +500,22 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Composing multiple inputs into one labeled, validated submit.
 - **States:** `default` · **Skill:** [references/components/form.md](references/components/form.md) · **Examples:** [src/documentation/pages/form.mdx](../../src/documentation/pages/form.mdx)
 
+### WYSIWYG Editors
+
+#### HTML Preview Editor · MOL · JS
+
+- **Why:** One source, two views - the `<textarea>` you edit is the srcdoc the sandboxed `<iframe>` runs, so the code shown and the code run cannot differ; the preview runs in an opaque origin, device emulation is CSS zoom over a real viewport, highlighting is Shiki.
+- **When:** Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea.
+- **States:** `default`, `code`, `state`, `fullscreen` · **Skill:** [references/components/code-example.md](references/components/code-example.md) · **Examples:** [src/documentation/pages/code-example.mdx](../../src/documentation/pages/code-example.mdx)
+
+### Questionnaire
+
+#### Questionnaire · MOL · JS
+
+- **Why:** One native `<form>`, one `<fieldset>` per step - the controller walks a flow graph (option data-goto, conditional rules, data-next, markup order) one validated step at a time, keeps a branch history and a session draft, and invalidates answers a changed answer cut off. Without JavaScript it is a plain long form.
+- **When:** Multi-step forms that ask different people different questions - intake, onboarding, surveys, quotes, triage - where the next question depends on the answers. A plain Form for one screen of fields; Steps for a fixed, linear progress indicator.
+- **States:** `default`, `answering`, `review`, `submitted` · **Skill:** [references/components/questionnaire.md](references/components/questionnaire.md) · **Examples:** [src/documentation/pages/questionnaire.mdx](../../src/documentation/pages/questionnaire.mdx)
+
 ### Data Display
 
 #### Badge · ATM · CSS
@@ -515,12 +578,6 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids.
 - **States:** `default`, `sorted`, `selected` · **Skill:** [references/components/table.md](references/components/table.md) · **Examples:** [src/documentation/pages/table.mdx](../../src/documentation/pages/table.mdx)
 
-#### Virtual List · ATM · JS
-
-- **Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same.
-- **When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once.
-- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/virtual-list.md](references/components/virtual-list.md) · **Examples:** [src/documentation/pages/virtual-list.mdx](../../src/documentation/pages/virtual-list.mdx)
-
 #### Collapsible · ATM · CSS
 
 - **Why:** A single `<details>` disclosure with smooth height animation via interpolate-size.
@@ -563,6 +620,32 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Lists whose order the user controls - todo lists, table row ordering.
 - **States:** `default` · **Skill:** [references/components/sortable.md](references/components/sortable.md) · **Examples:** [src/documentation/pages/sortable.mdx](../../src/documentation/pages/sortable.mdx)
 
+### Big Data
+
+#### Virtual List · ATM · JS
+
+- **Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same; records behind a defuss-dataview source filter and sort locally.
+- **When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/virtual-list.md](references/components/virtual-list.md) · **Examples:** [src/documentation/pages/virtual-list.mdx](../../src/documentation/pages/virtual-list.mdx)
+
+#### Data Tree · ATM · JS
+
+- **Why:** A windowed ARIA tree - only the items on screen exist and focus stays on the tree (aria-activedescendant) - over records that name their parent; hierarchy, filtering and sorting run locally over every node through defuss-dataview.
+- **When:** Hierarchies too big for nested markup - catalogs, file systems, org charts, taxonomies - that people filter and walk with the keyboard. Tree View for a small tree written as markup; Tree Grid when each node has columns.
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-tree.md](references/components/data-tree.md) · **Examples:** [src/documentation/pages/data-tree.mdx](../../src/documentation/pages/data-tree.mdx)
+
+#### Data Grid · ATM · JS
+
+- **Why:** One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
+- **When:** Tables of thousands to millions of records that people sort, filter, lock columns of, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-grid.md](references/components/data-grid.md) · **Examples:** [src/documentation/pages/data-grid.mdx](../../src/documentation/pages/data-grid.mdx)
+
+#### Autocomplete · MOL · JS
+
+- **Why:** An input with a manual popover listbox anchored under it (CSS anchor positioning, APG combobox) - suggestions from local records, a URL or your own network client, every request a defuss-dataview request; debounced, the in-flight request aborted by the next keystroke, pages loaded as the list scrolls.
+- **When:** Searching data too big or too remote to put in a select - places, people, products, tickets - as the user types. A Combobox for a short fixed list of options; a Select when typing adds nothing.
+- **States:** `default`, `open`, `loading`, `empty`, `error` · **Skill:** [references/components/autocomplete.md](references/components/autocomplete.md) · **Examples:** [src/documentation/pages/autocomplete.mdx](../../src/documentation/pages/autocomplete.mdx)
+
 ### Charts
 
 #### Chart · MOL · JS
@@ -572,6 +655,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **States:** `default` · **Skill:** [references/components/chart.md](references/components/chart.md) · **Examples:** [src/documentation/pages/chart.mdx](../../src/documentation/pages/chart.mdx)
 
 ### Diagrams
+
+#### Diagram · ATM · JS
+
+- **Why:** Illustrative diagrams an agent can write as plain HTML - nodes on a CSS grid, relationships as an ordered list (readable without JavaScript), wires drawn into an SVG layer from the measured layout, labels kept clear of every box, wire and text. The theme's colors (chart colors for accents and changes), radius and monospace; the only state is the picture's - step-by-step reveal, an activated box or arrow (click, keyboard or outside controls) and a before / changes / after delta from one annotated source. No Mermaid, no dependency.
+- **When:** Architecture, flows, state machines, ER and schema, sequences, org charts, swimlanes, layers, containment, loops, data platforms, matrices, fishbones, Wardley maps, journeys, kanban, story maps, quadrants, policy traces. Data charts (values on axes) are chart; text-defined diagrams you already have in Mermaid syntax are mermaid.
+- **States:** `default`, `playing`, `paused`, `active` · **Skill:** [references/components/diagram.md](references/components/diagram.md) · **Examples:** [src/documentation/pages/diagram.mdx](../../src/documentation/pages/diagram.mdx)
 
 #### Mermaid · ATM · JS
 
@@ -759,7 +848,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A titled .card whose minimize / maximize tools are Swaps - a native checkbox each, so the face and the keyboard are the browser's; the runtime keeps the state in step and makes the panel a border-layout region that folds to its title bar (a vertical tab in west / east) like the ExtJS 4 border layout.
 - **When:** Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window.
-- **States:** `default`, `minimized`, `maximized` · **Skill:** [references/components/panel.md](references/components/panel.md) · **Examples:** [src/documentation/pages/panel.mdx](../../src/documentation/pages/panel.mdx)
+- **States:** `default`, `minimized`, `maximized`, `closed` · **Skill:** [references/components/panel.md](references/components/panel.md) · **Examples:** [src/documentation/pages/panel.mdx](../../src/documentation/pages/panel.mdx)
+
+#### Property Grid · ATM · JS
+
+- **Why:** The ExtJS property grid as a native table - one JSON object as two dense columns (key, value), nested objects and arrays as folding groups, in-place editors chosen by type (or by getEditorFn), keyRenderFn / valueRenderFn for the cells; the object is the store's state, replaced on every committed edit.
+- **When:** Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form.
+- **States:** `default`, `editing` · **Skill:** [references/components/property-grid.md](references/components/property-grid.md) · **Examples:** [src/documentation/pages/property-grid.mdx](../../src/documentation/pages/property-grid.mdx)
 
 #### Window · ATM · JS
 
@@ -808,6 +903,20 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Fixed artboard slides + df$.anim slide transitions + the shared Motion entrance vocabulary + native `<progress>` - the deck engine needs no presentation library.
 - **When:** Slide decks and keynotes on a fixed coordinate canvas (1600×900 default) - not scrollable content (that is a page, use blocks).
 - **States:** `default`, `notes`, `fullscreen` · **Skill:** [references/components/presentation.md](references/components/presentation.md) · **Examples:** [src/documentation/pages/presentation.mdx](../../src/documentation/pages/presentation.mdx)
+
+### Papers
+
+#### Modern Paper · TPL · CSS
+
+- **Why:** A research-paper project page as one `<article>` on a named grid - a centered reading column, a wider track for the title block and figures, all type and color from the theme tokens; CSS-only.
+- **When:** The web page of a paper, a technical report or a project write-up - title, authors, resources, abstract, sections, figures, results and the citation. A product landing page is the Landing Page template; long documentation is Docs Content.
+- **States:** `default` · **Skill:** [references/components/paper.md](references/components/paper.md) · **Examples:** [src/documentation/pages/paper.mdx](../../src/documentation/pages/paper.mdx)
+
+#### BibTeX · ATM · JS
+
+- **Why:** The authored BibTeX stays the one source - parsed once, shown as BibTeX (normalized, aligned, highlighted) or as an APA, MLA, Chicago, Harvard or IEEE reference, copied with the Clipboard API exactly as shown; without JS the source is still readable.
+- **When:** Wherever a reader should cite something - a paper page, a dataset, a release, a references section (several entries become a list). A terminal transcript is mockup-code; source code is a code block.
+- **States:** `default`, `copied` · **Skill:** [references/components/bibtex.md](references/components/bibtex.md) · **Examples:** [src/documentation/pages/bibtex.mdx](../../src/documentation/pages/bibtex.mdx)
 
 ### Website
 

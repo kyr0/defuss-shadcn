@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: E2E smoke test for the shipped navigation-menu component. Loads the
@@ -210,6 +211,12 @@ try {
     await page.setViewportSize({ width: 600, height: 900 });
     assert.equal(await dir(), 'column');
     await page.setViewportSize({ width: 1280, height: 900 });
+  });
+
+  // LAST (AGENTS.md "State API" → render): it reloads the page, and its quick
+  // open / close of every panel must not leave one mid-exit for later clicks
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.nav-menu-content[popover][id]', ['default','open'], { runtimeAttrs: ['style'] });
   });
 
 } finally {

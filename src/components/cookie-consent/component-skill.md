@@ -211,3 +211,48 @@ custom storage. The returned instance / `root.api` also exposes `open`,
 `df$.shadcn.cookieConsent.get(root)`; call `init()` after a synchronous host
 render if initialization must finish before the next microtask.
 - `data-variant="banner"` is the classic first-visit footer: with `autoShow` it opens as a bar (not a modal, no inert page), copy beside the buttons on wide screens; choosing Settings switches it to the modal dialog, a decision closes it. Pair it with `showFloatingButton` (or a footer "Cookie settings" link with `data-cookie-consent-open`) so people can come back.
+
+## API
+
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+
+**Every element:** `el.api` is the instance (`CookieConsentInstance`, below) - its `setState(name, config?)` / `getState()` / `render(state?)` run through `el.store`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+
+**Registry:** `df$.shadcn.cookieConsentApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.cookieConsentStates` = `default`, `open`, `preferences`, `services`.
+
+### `df$.shadcn.cookieConsent`
+
+| Member | Description |
+|---|---|
+| `create(root, config)` | Start a consent manager on root with a config (cookieOrigins, texts, storage …) - returns its instance (also el.api); a second call returns the same one. |
+| `get(root)` | The instance a root already has, if any. |
+| `init()` | Declarative configuration: direct child script[type=application/json]. |
+
+### The instance (`CookieConsentInstance`)
+
+| Member | Description |
+|---|---|
+| `setState(name, config?)` | Show a view by name (default, open, preferences, services); { language } switches the texts. |
+| `getState()` | The view shown now and the language. |
+| `render(state?)` | The markup of a state (the render() contract). |
+| `open()` | Open the consent dialog. |
+| `close()` | Close the dialog. |
+| `acceptAll()` | Accept every optional service and close. |
+| `denyAll()` | Reject every optional service and close. |
+| `save()` | Keep the services ticked in the settings and close. |
+| `acceptService(id)` | Accept one service (also what a gated element's Allow does). |
+| `revokeService(id)` | Revoke one optional service - its scripts and frames unload, its cookies are removed. |
+| `isServiceAccepted(id)` | Whether a service is accepted now. |
+| `getConsent()` | The decision: services, categories, acceptAll / denyAll, language, revision, date. |
+| `getDraft()` | The services ticked in the settings, not saved yet. |
+| `setLanguage(language)` | Switch the texts (a built-in or a translated language). |
+| `reset()` | Forget the decision (in storage too) and open the notice again. |
+| `updateTagsActivation()` | Scan the page again for gated scripts and frames (after adding markup). |
+| `destroy()` | Stop: listeners off, optional integrations revoked, the dialog removed. |
+
+### Events
+
+| Event | `detail` | Description |
+|---|---|---|
+| `cookie-consent:change` | `state`, `reason` | Fires on every decision - the consent state and why (accept, deny, save, service, reset, storage). |
+| `cookie-consent:error` | `kind`, `error` | Fires when something fails without breaking the page - storage (kind "storage"), a callback, a revoke hook. |

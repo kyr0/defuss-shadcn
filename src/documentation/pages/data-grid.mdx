@@ -1,0 +1,341 @@
+---
+title: "Data Grid"
+description: "Data Grid component - a grid over hundreds of thousands of records: windowed rows, multisort, column filters, locked (sticky) columns, pagination, infinite scrolling and selection, every query run locally by defuss-dataview and kept in the grid's store."
+slug: "data-grid"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="data-grid" title="Data Grid" component="data-grid">
+  A table for data no table can hold. Only the rows on screen exist in the DOM, and every query runs locally over all of them through <a href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a>: sort by several columns at once, filter each column, lock columns that stay put while the rest scroll, page through, or load more as you reach the end. The query is the grid's state - <code>el.store</code> - so any code can follow it, drive it or keep it. Give rows a parent and it is a <a href="tree-grid.html">tree grid</a>.
+</PageHeader>
+
+<SkillPanel component="data-grid">
+  <SkillField label="Native basis">
+<SkillText>An ARIA <code>grid</code> of divs: ONE scroll container holds a <code>position: sticky</code> head and a windowed body; head and rows share one CSS grid track template, so locked columns are sticky cells and nothing scrolls in JS. <code>df$.shadcn.dataGrid.setSource(el, records)</code> hands it the data.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky" title="head and locked columns stay put"><code>position: sticky</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" title="one track template for head and rows"><code>CSS Grid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="currency / number cells"><code>Intl.NumberFormat</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="cell-by-cell keyboard, aria-rowindex against the real length"><code>ARIA grid</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.data-grid</code>
+    <code>.data-grid-viewport</code>
+    <code>.data-grid-head</code>
+    <code>.data-grid-row</code>
+    <code>.data-grid-header</code>
+    <code>.data-grid-body</code>
+    <code>.data-grid-cell</code>
+    <code>.data-grid-footer</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>Grid: <code>data-paging</code> (<code>virtual</code> · <code>pages</code> · <code>infinite</code>), <code>data-page-size</code>, <code>data-select</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>. Header: <code>data-field</code>, <code>data-sort</code>, <code>data-sort-field</code>, <code>data-type</code>, <code>data-format</code>, <code>data-width</code>, <code>data-filter</code>, <code>data-options</code>, <code>data-locked</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="100,000 orders" hint="Click a header to sort, Shift+click to add a column to the sort. Type in the filter row - every filter runs over all 100,000 rows (text anywhere, case-insensitive; numbers take > 500, <= 20 …). The pin in a header locks the column: it moves into the sticky group and stays while the rest scrolls sideways. Click / Shift+click / Ctrl+click select rows; arrows move cell by cell. The line under the grid subscribes to the grid's store."
+<div class="flex flex-col gap-2">
+  <div class="data-grid" id="dg-orders" aria-label="Orders" data-select="multiple" data-empty-text="No orders match." style="height:24rem;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem" data-filter="number" data-locked>Order</div>
+          <div class="data-grid-header" data-field="customer" data-width="11rem" data-filter="text">Customer</div>
+          <div class="data-grid-header" data-field="country" data-width="9rem" data-filter="select">Country</div>
+          <div class="data-grid-header" data-field="product" data-width="10rem" data-filter="text">Product</div>
+          <div class="data-grid-header" data-field="quantity" data-type="number" data-width="6rem" data-filter="number">Qty</div>
+          <div class="data-grid-header" data-field="total" data-type="number" data-format="currency:EUR" data-width="8rem" data-filter="number">Total</div>
+          <div class="data-grid-header" data-field="status" data-width="8rem" data-filter="select">Status</div>
+          <div class="data-grid-header" data-field="date" data-format="date" data-width="8rem">Date</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <p class="text-sm text-muted-foreground m-0" id="dg-orders-query" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = ['Sofia', 'Jackson', 'Isabella', 'William', 'Olivia', 'Liam', 'Mia', 'Noah', 'Emma', 'Lucas'];
+    const countries = ['Germany', 'Portugal', 'Japan', 'Canada', 'Kenya', 'Peru', 'France', 'India'];
+    const products = ['Desk lamp', 'Notebook', 'Headphones', 'Backpack', 'Mug', 'Keyboard', 'Monitor arm', 'Plant pot'];
+    const statuses = ['open', 'paid', 'shipped', 'delivered', 'refunded'];
+    const day = 86_400_000;
+    const start = Date.UTC(2025, 0, 1);
+    // deterministic synthetic data: order i always reads the same
+    const orders = Array.from({ length: 100_000 }, (_, i) => {
+      const quantity = 1 + ((i * 7) % 9);
+      return {
+        id: 100_001 + i,
+        customer: first[i % 10] + ' ' + String.fromCharCode(65 + ((i * 11) % 26)) + '.',
+        country: countries[(i * 3) % 8],
+        product: products[(i * 5) % 8],
+        quantity,
+        total: Math.round(quantity * (4 + ((i * 7919) % 9600) / 100) * 100) / 100,
+        status: statuses[(i * 13) % 5],
+        date: start + ((i * 37) % 640) * day,
+      };
+    });
+    const grid = document.getElementById('dg-orders');
+    df$.shadcn.dataGrid.setSource(grid, orders);
+    // the query IS the store: follow it
+    const line = document.getElementById('dg-orders-query');
+    const describe = ({ config }) => {
+      const sort = config.sorters.map((s) => s.field + ' ' + s.direction).join(', ') || 'none';
+      line.textContent = 'Sorted by: ' + sort + ' · filters: ' + config.filters.length + ' · locked: ' + config.locked.join(', ') + ' · selected: ' + config.selected.length;
+    };
+    grid.store.subscribe(describe);
+    describe(grid.store.value);
+  });
+</script>
+```
+
+```html example label="Pages" schema="none" hint="data-paging='pages' shows data-page-size rows a page and a pager below; the page is config.page (0-based), so sorting or filtering starts again at page 1."
+<div class="data-grid" id="dg-pages" aria-label="Paged customers" data-paging="pages" data-page-size="20" style="height:24rem;max-width:36rem;">
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="5rem">#</div>
+        <div class="data-grid-header" data-field="name" data-width="minmax(10rem, 1fr)" data-filter="text">Name</div>
+        <div class="data-grid-header" data-field="plan" data-width="7rem" data-filter="select" data-options="Free,Pro,Team">Plan</div>
+        <div class="data-grid-header" data-field="seats" data-type="number" data-width="6rem">Seats</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const plans = ['Free', 'Pro', 'Team'];
+    const customers = Array.from({ length: 5000 }, (_, i) => ({ id: i + 1, name: 'Customer ' + (i + 1), plan: plans[(i * 7) % 3], seats: 1 + ((i * 13) % 250) }));
+    df$.shadcn.dataGrid.setSource(document.getElementById('dg-pages'), customers);
+  });
+</script>
+```
+
+```html example label="Infinite scrolling" schema="none" hint="data-paging='infinite' adds a page as you near the end: first from the records it has, then from load(offset, size) - an async function (here a fake 400 ms network) that returns the next records, or none when there are no more. The grid waits in 'loading' for the first page."
+<div class="data-grid" id="dg-feed" aria-label="Event log" data-paging="infinite" data-page-size="50" style="height:20rem;max-width:36rem;">
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="5rem" data-sortable="false">#</div>
+        <div class="data-grid-header" data-field="level" data-width="6rem" data-sortable="false">Level</div>
+        <div class="data-grid-header" data-field="message" data-width="minmax(14rem, 1fr)" data-sortable="false">Message</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const levels = ['info', 'info', 'info', 'warn', 'error'];
+    const messages = ['User signed in', 'Cache warmed', 'Job queued', 'Slow query (812 ms)', 'Payment declined'];
+    // a remote source: 1,000 events in pages, 400 ms per request
+    const load = (offset, size) => new Promise((resolve) => setTimeout(() => {
+      if (offset >= 1000) return resolve([]);
+      resolve(Array.from({ length: Math.min(size, 1000 - offset) }, (_, i) => {
+        const n = offset + i;
+        return { id: n + 1, level: levels[(n * 7) % 5], message: messages[(n * 7) % 5] };
+      }));
+    }, 400));
+    df$.shadcn.dataGrid.setSource(document.getElementById('dg-feed'), [], { load });
+  });
+</script>
+```
+
+```html example label="The store is the query" schema="none" hint="Everything the grid shows is el.store.value.config - plain JSON. These buttons only write the query (df$.shadcn.dataGrid.query merges into it); the panel below only subscribes to the store. The grid does the rest."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-q="top">Top revenue</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-q="eu">EU only</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-q="lock">Lock name + region</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" data-q="reset">Reset</button>
+  </div>
+  <div class="data-grid" id="dg-driven" aria-label="Accounts" style="height:16rem;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-width="11rem">Account</div>
+          <div class="data-grid-header" data-field="region" data-width="7rem">Region</div>
+          <div class="data-grid-header" data-field="revenue" data-type="number" data-format="currency:USD" data-width="9rem">Revenue</div>
+          <div class="data-grid-header" data-field="growth" data-type="number" data-format="percent" data-width="7rem">Growth</div>
+          <div class="data-grid-header" data-field="owner" data-width="9rem">Owner</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <pre class="text-xs m-0 overflow-x-auto" id="dg-driven-json" style="padding:0.75rem;border-radius:var(--radius-md);background:var(--muted);"></pre>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const regions = ['EU', 'NA', 'APAC', 'LATAM'];
+    const owners = ['Ana', 'Ben', 'Chen', 'Dara'];
+    const accounts = Array.from({ length: 20_000 }, (_, i) => ({ id: i + 1, name: 'Account ' + (i + 1), region: regions[(i * 3) % 4], revenue: (i * 7919) % 2_000_000, growth: (((i * 37) % 80) - 20) / 100, owner: owners[(i * 5) % 4] }));
+    const grid = document.getElementById('dg-driven');
+    const { dataGrid } = df$.shadcn;
+    dataGrid.setSource(grid, accounts);
+    const queries = {
+      top: { sorters: [{ field: 'revenue', direction: 'desc' }] },
+      eu: { filters: [{ field: 'region', op: 'eq', value: 'EU' }] },
+      lock: { locked: ['name', 'region'] },
+      reset: { sorters: [], filters: [], locked: [] },
+    };
+    document.querySelectorAll('[data-q]').forEach((button) =>
+      button.addEventListener('click', () => dataGrid.query(grid, queries[button.dataset.q])));
+    const json = document.getElementById('dg-driven-json');
+    grid.store.subscribe(({ config }) => {
+      json.textContent = JSON.stringify({ sorters: config.sorters, filters: config.filters, locked: config.locked }, null, 1);
+    }, { immediate: true });
+  });
+</script>
+```
+
+```html example label="Custom cells" schema="none" hint="cells: { field: (el, record) } fills a column with anything - a badge, a meter. Cells are recycled with their rows; the function gets a fresh .data-grid-content element each time."
+<div class="data-grid" id="dg-cells" aria-label="Deployments" style="height:16rem;max-width:40rem;">
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="service" data-width="minmax(9rem, 1fr)">Service</div>
+        <div class="data-grid-header" data-field="status" data-width="8rem">Status</div>
+        <div class="data-grid-header" data-field="coverage" data-type="number" data-width="10rem">Coverage</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const states = [['healthy', 'default'], ['degraded', 'secondary'], ['down', 'destructive']];
+    const rows = Array.from({ length: 2000 }, (_, i) => ({ id: i + 1, service: 'service-' + String(i + 1).padStart(4, '0'), status: (i * 7) % 11 === 0 ? 2 : (i * 3) % 7 === 0 ? 1 : 0, coverage: 40 + ((i * 13) % 60) }));
+    df$.shadcn.dataGrid.setSource(document.getElementById('dg-cells'), rows, {
+      cells: {
+        status: (el, record) => {
+          const [label, variant] = states[record.status];
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.dataset.variant = variant;
+          badge.textContent = label;
+          el.append(badge);
+        },
+        coverage: (el, record) => {
+          const meter = document.createElement('meter');
+          meter.min = 0;
+          meter.max = 100;
+          meter.value = record.coverage;
+          meter.style.width = '5rem';
+          const text = document.createElement('span');
+          text.textContent = ' ' + record.coverage + '%';
+          el.append(meter, text);
+        },
+      },
+    });
+  });
+</script>
+```
+
+```html example label="A kept view" schema="none" hint="Every grid keeps its sort, filters, locked columns and open rows - in session storage by default, under a generated key (data-persist-prefix sets its start, data-persist-key the whole key). data-persist='local' keeps them across visits, 'none' keeps nothing; setSource's persist option does the same from code. data-sort on a header is the starting sort. This sandboxed example has no storage (the store falls back to memory), so instead of reloading: sort, filter or lock a column, then mount a fresh grid - it comes back as you left it."
+<div class="flex flex-col gap-3" style="max-width:36rem;">
+  <button class="btn" data-variant="outline" data-size="sm" type="button" id="dg-remount" style="align-self:flex-start;">Mount a fresh grid</button>
+  <div id="dg-kept-host"></div>
+</div>
+<template id="dg-kept-template">
+  <div class="data-grid" id="dg-kept" aria-label="Cities" data-persist="local" data-persist-key="docs:cities-grid" style="height:14rem;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="city" data-width="minmax(9rem, 1fr)" data-filter="text">City</div>
+          <div class="data-grid-header" data-field="country" data-width="8rem" data-filter="select">Country</div>
+          <div class="data-grid-header" data-field="population" data-type="number" data-width="9rem" data-sort="desc">Population</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+</template>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const countries = ['Germany', 'Japan', 'Brazil', 'Kenya', 'Canada'];
+    const cities = Array.from({ length: 10_000 }, (_, i) => ({ id: i + 1, city: 'City ' + (i + 1), country: countries[(i * 3) % 5], population: 10_000 + ((i * 7919) % 5_000_000) }));
+    const host = document.getElementById('dg-kept-host');
+    // a new instance of the same markup reads the kept view on init
+    const mount = () => {
+      host.replaceChildren(document.getElementById('dg-kept-template').content.cloneNode(true));
+      df$.shadcn.dataGrid.setSource(host.querySelector('.data-grid'), cities);
+    };
+    document.getElementById('dg-remount').addEventListener('click', mount);
+    mount();
+  });
+</script>
+```
+
+```html example label="Loading and empty" schema="none" hint="A grid without records waits in 'loading' (skeleton rows, aria-busy); a query nothing matches lands in 'empty' with data-empty-text."
+<div class="flex flex-wrap gap-4">
+  <div class="data-grid" aria-label="Waiting for data" style="height:11rem;flex:1;min-width:14rem;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-width="minmax(8rem, 1fr)">Name</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <div class="data-grid" id="dg-empty" aria-label="No matches" data-empty-text="Nothing matches 'zebra'." style="height:11rem;flex:1;min-width:14rem;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-width="minmax(8rem, 1fr)">Name</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('dg-empty');
+    df$.shadcn.dataGrid.setSource(grid, [{ id: 1, name: 'Lion' }, { id: 2, name: 'Tiger' }]);
+    df$.shadcn.dataGrid.query(grid, { filters: [{ field: 'name', op: 'contains', value: 'zebra' }] });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>; the config of every state is the query (<code>filters</code>, <code>sorters</code>, <code>locked</code>, <code>page</code>, <code>expanded</code>, <code>collapsed</code>, <code>selected</code>), merged on each <code>setState</code> and observable as <code>el.store</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the rows of the query; a query nothing matches lands in <code>empty</code></li>
+    <li><code>loading</code> - <code>aria-busy="true"</code> and skeleton rows; a grid without records starts here</li>
+    <li><code>empty</code> - no rows: the <code>data-empty-text</code> message</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/data-grid-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/data-grid.schema.json"><code>data-grid.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `loading` | `boolean` | `true`, `false` | `false` | aria-busy with skeleton rows (`setState('loading')`). |
+| `empty` | `boolean` | `true`, `false` | `false` | No rows - shows data-empty-text (`setState('empty')`). |
+```
+
+</StatesSection>
+
+<ApiSection component="data-grid" />
+
+<SourceFiles component="data-grid" section="css" />
+
+<SourceFiles component="data-grid" section="js" jsTitle="JS" />
+
+</DocPage>

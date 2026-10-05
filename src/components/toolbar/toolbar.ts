@@ -8,11 +8,23 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
+const dfDollar = defussQuery();
 
 const toolbarStates = ['default'];
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state, and it writes no markup: the roving tabindex the runtime
+  // keeps on the items is runtime-owned (see the e2e)
+}
 
 /**
  * UI side of setState: 'default' restores the roving tabindex to the first
@@ -28,44 +40,38 @@ function triggerStateChange(toolbar, items, stateName, config) {
 }
 
 /** Registry-level API; pass the toolbar element explicitly. Unknown names throw. */
-export const toolbarApi = {
-  setState(toolbar, stateName, config = {}) {
-    if (!toolbarStates.includes(stateName)) {
-      throw new Error(`toolbar: unknown state "${stateName}" (supported: ${toolbarStates.join(', ')})`);
-    }
+export const toolbarApi = componentState({
+  component: 'toolbar',
+  states: toolbarStates,
+  apply: (toolbar, state) => {
     const items = toolbarItems(toolbar);
-    triggerStateChange(toolbar, items, stateName, config);
-    // state lives on the ELEMENT, not the module (many toolbars per page)
-    toolbar.dataset.stateName = stateName;
-    toolbar._stateConfig = config;
+    triggerStateChange(toolbar, items, state.name, state.config);
   },
-  getState(toolbar) {
+  read: (toolbar, state) => {
     const items = toolbarItems(toolbar);
     const idx = items.findIndex((item) => item.getAttribute('tabindex') === '0');
     return {
       name: toolbar.dataset.stateName || 'default',
       // observable roving position - reflects arrow-key movement too
-      config: { ...toolbar._stateConfig, rovingIndex: idx },
+      config: { ...state.config, rovingIndex: idx },
     };
   },
-};
+  markup: (el, state) => applyMarkup(el, state.name),
+});
 
 df$.toolbarApi = toolbarApi;
 df$.toolbarStates = toolbarStates;
 
 const toolbarItems = (toolbar) =>
   Array.from(
-    toolbar.querySelectorAll('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])')
+    dfDollar(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray()
   );
 
 function init() {
-  document.querySelectorAll('.toolbar[role="toolbar"]:not([data-init])').forEach((toolbar) => {
+  dfDollar('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
   toolbar.dataset.init = '';
-  // bind-scope the api per instance: `$('#fmt').api.setState('default')`
-  toolbar.api = {
-    setState: (stateName, config) => toolbarApi.setState(toolbar, stateName, config),
-    getState: () => toolbarApi.getState(toolbar),
-  };
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(toolbar, toolbarApi);
   const items = toolbarItems(toolbar);
   if (items.length === 0) return;
 

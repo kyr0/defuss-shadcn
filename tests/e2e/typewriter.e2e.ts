@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from './server.ts';
+import { assertRenderContract } from './lib/render-contract.ts';
 
 /**
  * Why: the typewriter's promise is a line that types, holds, deletes and
@@ -146,7 +147,7 @@ try {
     await page.evaluate(() => (document.getElementById('tw-ctl') as any).api.setState('done', { index: 2 }));
     assert.equal(await text('tw-ctl'), 'Or finish on me.');
     assert.equal(await attr('tw-ctl', 'data-index'), '2');
-    assert.deepEqual(await page.evaluate(() => (document.getElementById('tw-ctl') as any).api.getState()), { name: 'done', config: { index: 2 } });
+    assert.deepEqual(await page.evaluate(() => { const { name, config } = (document.getElementById('tw-ctl') as any).api.getState(); return { name, config }; }), { name: 'done', config: { index: 2 } });
     const threw = await page.evaluate(() => { try { (document.getElementById('tw-ctl') as any).api.setState('nope'); return false; } catch { return true; } });
     assert.equal(threw, true);
   });
@@ -196,6 +197,10 @@ try {
     assert.deepEqual(r, ['inline', 'none', 'none']);
     await ctx.close();
   });
+  await check('render(): reproduces the authored markup 1:1 and every state', async () => {
+    await assertRenderContract(page, '.typewriter[id]', ['default','paused','done'], { runtimeAttrs: ['data-index','data-phase'], runtimeOwned: '.typewriter-text' });
+  });
+
 } finally {
   await browser.close();
   server.stop?.();
