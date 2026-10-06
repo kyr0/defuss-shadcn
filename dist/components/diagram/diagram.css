@@ -96,14 +96,22 @@
 
   /* -- canvas: a grid by default --------------------------------------------- */
   .diagram-canvas {
+    /* the horizontal gap and the column minimum give in a narrow figure
+       (cqi = the figure's width): --diagram-gap-x / --diagram-col-min are the
+       preferred sizes, 3rem / 5rem the floors - a four- or five-column
+       diagram fits a docs column with even whitespace on both sides instead
+       of running into (and past) its right border; a column never gets
+       narrower than its content */
+    --_diagram-gap-x: clamp(min(3rem, var(--diagram-gap-x)), 6cqi, var(--diagram-gap-x));
+    --_diagram-col-min: clamp(min(5rem, var(--diagram-col-min)), 12cqi, var(--diagram-col-min));
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: repeat(var(--cols, 4), minmax(var(--diagram-col-min), 1fr));
+    grid-template-columns: repeat(var(--cols, 4), minmax(var(--_diagram-col-min), 1fr));
     grid-auto-rows: minmax(3.25rem, auto);
-    gap: var(--diagram-gap-y) var(--diagram-gap-x);
+    gap: var(--diagram-gap-y) var(--_diagram-gap-x);
     min-width: min-content;
-    padding: 1.75rem;
+    padding: 2rem;
     background-color: var(--diagram-paper);
     background-image: radial-gradient(color-mix(in oklab, var(--diagram-ink) 9%, transparent) 1px, transparent 1.2px);
     background-size: 1rem 1rem;
@@ -507,7 +515,7 @@
   }
   /* a zone drawn behind nodes placed on the same cells reaches into the gaps */
   .diagram-group:not(:has(.diagram-node, .diagram-group)) {
-    margin: calc(var(--diagram-gap-y) * -0.55) calc(var(--diagram-gap-x) * -0.42);
+    margin: calc(var(--diagram-gap-y) * -0.55) calc(var(--_diagram-gap-x) * -0.42);
   }
   .diagram-group-label {
     position: absolute;
@@ -555,7 +563,7 @@
       translate: 0 -50%;
       background: none;
       white-space: normal;
-      max-width: calc(var(--diagram-col-min) - 1rem);
+      max-width: calc(var(--_diagram-col-min) - 1rem);
     }
   }
 
@@ -664,7 +672,7 @@
       display: grid;
       place-items: center;
       min-block-size: 1.75rem;
-      margin-inline-end: calc(var(--diagram-gap-x) * -1 + 0.25rem);
+      margin-inline-end: calc(var(--_diagram-gap-x) * -1 + 0.25rem);
       padding: 0 1.25rem;
       background: var(--diagram-soft);
       border: 0;

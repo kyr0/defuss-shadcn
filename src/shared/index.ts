@@ -10,6 +10,7 @@
  * enforces the membership).
  */
 export { debounce, type Debounced } from './debounce.js';
+export { textLocale, DEFAULT_LOCALE } from './locale.js';
 export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 export { defussGlobals, safeShowPopover } from './state-api.js';
 // the State API on a defuss-store store per element + the one store /

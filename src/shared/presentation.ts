@@ -12,6 +12,7 @@
  * unit-tested in tests/presentation.test.ts.
  */
 import { defussQuery } from './query.js';
+import { textLocale } from './locale.js';
 
 // The entrance vocabulary + its attribute helper live in the shared motion
 // module now (src/shared/motion.ts + src/components/motion/motion.css) - they
@@ -48,7 +49,7 @@ export interface CountOptions {
   delay?: number;
   /** fixed decimals (default: data-count-decimals, else decimals of `to`) */
   decimals?: number;
-  /** format override (default: Intl.NumberFormat with the decimal count) */
+  /** format override (default: Intl.NumberFormat in the text's locale - textLocale(el) - with the decimal count) */
   format?: (n: number) => string;
 }
 
@@ -77,7 +78,7 @@ export function animateCount(el: HTMLElement, opts: CountOptions = {}): () => vo
   const fmt =
     opts.format ??
     ((n: number) =>
-      new Intl.NumberFormat(undefined, {
+      new Intl.NumberFormat(textLocale(el), {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       }).format(n));
@@ -99,9 +100,14 @@ export function animateCount(el: HTMLElement, opts: CountOptions = {}): () => vo
       settle();
       return;
     }
-    const t0 = performance.now();
+    // the clock starts at the first frame: a frame's timestamp is when the
+    // frame BEGAN - earlier than a performance.now() read before it - so a
+    // start taken outside the frame made the first progress negative (a count
+    // up showed -4, a count down 1013.5 before falling); clamped as well
+    let t0 = -1;
     const tick = (now: number): void => {
-      const p = Math.min(1, (now - t0) / duration);
+      if (t0 < 0) t0 = now;
+      const p = Math.min(1, Math.max(0, (now - t0) / duration));
       // ease-out cubic - decelerating finish in the spirit of --presentation-out
       const eased = 1 - (1 - p) ** 3;
       el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);

@@ -115,6 +115,28 @@ await cssSmoke('separator', [
     },
   },
   {
+    label: 'decorative: an ornament sits centered between two lines (gap lg), the fleuron on accent 2px lines',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const el = document.getElementById('sep-ornament')!;
+        const box = el.getBoundingClientRect();
+        const range = document.createRange(); range.selectNodeContents(el);
+        const t = range.getBoundingClientRect();
+        const f = getComputedStyle(document.getElementById('sep-fleuron')!, '::before');
+        return { left: t.left - box.left, right: box.right - t.right, gap: getComputedStyle(el).columnGap, hidden: el.getAttribute('aria-hidden'), fleuronLine: f.height };
+      });
+      assert.ok(Math.abs(r.left - r.right) <= 2, `ornament centered (${r.left} vs ${r.right})`);
+      assert.equal(r.gap, '24px');
+      assert.equal(r.hidden, 'true');
+      assert.equal(r.fleuronLine, '2px');
+    },
+  },
+  {
+    label: 'decorative: the accent rule is a 3rem, 4px primary bar with role="none"',
+    selector: '#sep-accent-rule',
+    css: { width: '48px', height: '4px' },
+  },
+  {
     label: 'label text is 12px/500 uppercase',
     selector: '#sep-labelled span',
     css: { 'font-size': '12px', 'font-weight': '500', 'text-transform': 'uppercase' },

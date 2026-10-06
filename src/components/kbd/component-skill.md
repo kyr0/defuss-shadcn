@@ -75,6 +75,7 @@ label.
 | Attribute | Element | Behaviour |
 |-----------|---------|-----------|
 | `data-separator` | `.kbd-group` | Draws a `+` in the gap between keys |
+| `data-pressed` | `.kbd` | The key is down - its heavy bottom edge collapses and the face drops 1px. Set it while a shortcut runs (`df$.shadcn.shared.bindGlobalKeys`), so the reader sees the key was heard |
 
 ## Sizes
 
@@ -95,6 +96,16 @@ label.
 ## States
 
 Kbd is CSS-only and has no scripted state: `default` is its only state.
+`data-pressed` is a visual flag a page sets while it performs the shortcut:
+mark the keys (e.g. `<kbd class="kbd" data-shortcut="s">⌘S</kbd>`), and the
+handler registered with `df$.shadcn.shared.bindGlobalKeys` - one shared,
+typing-safe listener; check `metaKey || ctrlKey` so ⌘ works on macOS and
+Ctrl elsewhere - sets `data-pressed` on them for ~160 ms, calls
+`preventDefault()` (⌘S would save the page) and returns `true`. The Kbd
+documentation page wires every shortcut it shows this way.
+
+A shortcut a page shows should work: show the key and wire it through the
+global key API - a key that does nothing reads as broken.
 
 ---
 

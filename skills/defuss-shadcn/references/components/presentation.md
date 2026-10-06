@@ -31,7 +31,7 @@ fullscreen.
 - [`Element.requestFullscreen()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen) - native presentation fullscreen on the mount element
 - [`hashchange`](https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event) - `#slide-id` deep links drive the deck
 - [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) - animated counters (the one effect CSS cannot express)
-- [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - locale-correct counter formatting
+- [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - counters formatted in the locale of the text (nearest `[lang]`, else `en`)
 - [`zoom`](https://developer.mozilla.org/en-US/docs/Web/CSS/zoom) - the uniform 1600×900 → viewport mapping of the slides (their `transform` stays free for the transitions)
 - [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) via `df$.anim` - slide in/out transitions and the blocks curtain
 - [`clip-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path) - the wipe/wipe-up/iris entrances (inset/circle interpolation, no JS)

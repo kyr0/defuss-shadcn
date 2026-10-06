@@ -98,7 +98,7 @@ bun scripts/changelog-entry.ts add "${NEW_VERSION}" "${DATE}" ${COMMIT_LINES[@]+
 echo "✅ Changelog entry for ${TAG} (${#COMMIT_LINES[@]} commits since ${LAST_TAG:-the first commit})"
 
 # 3. the full pipeline from the bumped sources (same gates as CI)
-make build
+E2E_ALL=1 make build # a release runs every e2e file, changed or not
 
 # 4a. first commit: the entry alone, while the COMMITTED version is still the
 # old one - every commit on main stays verify-green. docs/ is NOT part of it:

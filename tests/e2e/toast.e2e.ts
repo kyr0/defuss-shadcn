@@ -255,7 +255,7 @@ try {
     assert.deepEqual(r.map((x) => x.op), ['0', '0', '1']);
     assert.equal(new Set(r.map((x) => x.stack0)).size, 1, 'all at the corner (stack offset 0)');
     const shadow = await page.$eval('.toast.stack-top', (e) => getComputedStyle(e).boxShadow);
-    assert.ok((shadow.match(/rgb|oklch|color\(/g) || []).length >= 6, 'six sheet shadows (shapes.css stack-top)');
+    assert.ok((shadow.match(/rgb|okl(?:ch|ab)|color\(/g) || []).length >= 6, 'six sheet shadows (shapes.css stack-top)');
     assert.equal(await page.$eval('.toast.stack-top', (e) => getComputedStyle(e, '::after').content), '"+2"', 'the +n badge');
   });
 

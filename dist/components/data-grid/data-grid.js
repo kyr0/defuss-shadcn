@@ -26,30 +26,31 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence, dataSource, parseFilter, filterText, cycleSort, virtualWindow, sizerHeight, scrollIntoViewTop, } = __df$shared;
+const { defussGlobals, defussQuery, textLocale, componentState, bindComponent, persisted, viewPersistence, dataSource, parseFilter, filterText, cycleSort, virtualWindow, sizerHeight, scrollIntoViewTop, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const dataGridStates = ['default', 'loading', 'empty'];
 /** the part that is persisted (selection and the open page are per visit) */
 const SAVED_KEYS = ['filters', 'sorters', 'locked', 'expanded'];
 const numberFormat = new Map();
-/** a cell value as text: data-format="number" | "currency:EUR" | "percent" | "date" */
-function format(value, spec) {
+/** a cell value as text: data-format="number" | "currency:EUR" | "percent" | "date" - in the text's locale (the grid's nearest [lang], else 'en') */
+function format(value, spec, el) {
     if (value == null)
         return '';
     if (!spec)
         return String(value);
+    const locale = textLocale(el);
     if (spec === 'date') {
         const date = value instanceof Date ? value : new Date(value);
-        return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+        return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString(locale);
     }
-    if (!numberFormat.has(spec)) {
+    const key = `${locale}|${spec}`;
+    if (!numberFormat.has(key)) {
         const [style, currency] = spec.split(':');
-        numberFormat.set(spec, new Intl.NumberFormat(undefined, style === 'currency' ? { style, currency: currency || 'USD' } : style === 'percent' ? { style, maximumFractionDigits: 1 } : {}));
+        numberFormat.set(key, new Intl.NumberFormat(locale, style === 'currency' ? { style, currency: currency || 'USD' } : style === 'percent' ? { style, maximumFractionDigits: 1 } : {}));
     }
-    return typeof value === 'number' ? numberFormat.get(spec).format(value) : String(value);
+    return typeof value === 'number' ? numberFormat.get(key).format(value) : String(value);
 }
-const count = (n) => format(n, 'number');
 /** the header row: the first row of the head */
 const headerRowOf = (root) => dfDollar(root).find('.data-grid-head > .data-grid-row').get(0);
 /** the authored column headers of a grid (or of a detached copy), in DOM order */
@@ -306,7 +307,7 @@ function fillCell(grid, cell, column, entry, first) {
     else {
         const text = document.createElement('span');
         text.className = 'data-grid-content';
-        text.textContent = format(record[column.field], column.format);
+        text.textContent = format(record[column.field], column.format, grid);
         cell.append(text);
     }
 }
@@ -377,6 +378,7 @@ function renderRows(grid) {
 }
 /** the counts and the pager below the rows */
 function renderFooter(grid, config) {
+    const count = (n) => format(n, 'number', grid);
     const footer = grid._parts.footer;
     if (!footer)
         return;

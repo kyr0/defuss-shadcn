@@ -455,6 +455,30 @@ describe('fenceAttrs (fence meta → CodeExample props)', () => {
   });
 });
 
+describe('```diagram fences (docs MDX) → the Illustrative Diagram component', () => {
+  it('a diagram fence becomes <SpecDiagram> with its JSON spec (and an optional label), imported once', () => {
+    const spec = JSON.stringify({ type: 'flow', title: 'Ships', steps: true, interactive: true, nodes: [{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }], edges: [{ from: 'a', to: 'b' }] });
+    const tree = {
+      type: 'root',
+      children: [
+        { type: 'code', lang: 'diagram', meta: '', value: spec },
+        { type: 'code', lang: 'diagram', meta: 'label="Override"', value: spec },
+      ],
+    } as unknown as Parameters<ReturnType<typeof remarkDocExamples>>[0];
+    remarkDocExamples()(tree, { basename: 'guide.mdx' });
+    const kids = (tree as unknown as { children: Array<Record<string, unknown>> }).children;
+    expect(kids.filter((k) => k.type === 'mdxjsEsm').map((k) => String(k.value))).toEqual(["import { SpecDiagram } from '../lib/components/spec-diagram';"]);
+    const diagrams = kids.filter((k) => k.name === 'SpecDiagram');
+    expect(diagrams).toHaveLength(2);
+    const attr = (node: Record<string, unknown>, name: string) =>
+      (node.attributes as Array<{ name: string; value: { data: { estree: { body: Array<{ expression: { value: unknown } }> } } } }>)
+        .find((a) => a.name === name)?.value.data.estree.body[0].expression.value;
+    expect(attr(diagrams[0], 'source')).toBe(spec);
+    expect(attr(diagrams[0], 'label')).toBeUndefined();
+    expect(attr(diagrams[1], 'label')).toBe('Override');
+  });
+});
+
 describe('```mermaid fences (docs MDX + ARCH.md) → the Mermaid component', () => {
   it('an MDX mermaid fence becomes <MermaidDiagram> with its label / caption, imported once', () => {
     const source = 'flowchart LR\n  A["a<br/>b"] --> B';

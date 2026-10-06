@@ -15,6 +15,7 @@
 import * as morph from 'defuss-morph';
 import { createDf$ } from 'defuss-query/core';
 import {
+  textLocale,
   animateCount,
   anim,
   bindGlobalKeys,
@@ -69,6 +70,7 @@ type ShadcnNamespace = {
     safeShowPopover: (el: HTMLElement) => void;
     defussQuery: () => unknown;
     debounce: (fn: (...args: unknown[]) => void, wait: number) => unknown;
+    textLocale: typeof textLocale;
     animateCount: typeof animateCount;
     clampIndex: typeof clampIndex;
     coerceIndex: typeof coerceIndex;
@@ -137,6 +139,8 @@ shadcn.shared = {
   safeShowPopover,
   defussQuery,
   debounce,
+  // the locale numbers and dates are formatted in: the text's (nearest [lang]), else 'en'
+  textLocale,
   // presentation machinery - the same functions ddf$ publishes below; the
   // emitted component binding (component-shared-binding.js) reads exactly
   // these names off this object.

@@ -20,7 +20,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, textLocale } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 /** default = empty; dragover = files hover the zone; selected = files
@@ -36,7 +36,7 @@ function accepts(input, file) {
     const type = (file.type || '').toLowerCase();
     return list.some((a) => (a.startsWith('.') ? name.endsWith(a) : a.endsWith('/*') ? type.startsWith(a.slice(0, -1)) : type === a));
 }
-const lang = (el) => el.closest('[lang]')?.lang || undefined;
+const lang = (el) => textLocale(el);
 /** 1536 → "1.5 kB" (Intl unit formatting, the locale's own). */
 function formatSize(el, bytes) {
     const units = ['byte', 'kilobyte', 'megabyte', 'gigabyte'];

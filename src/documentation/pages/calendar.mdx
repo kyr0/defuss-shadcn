@@ -93,7 +93,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 <p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Date of birth: <output id="dob-out">not chosen</output></p>
 <script>
-  const dob = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' });
+  const dob = new Intl.DateTimeFormat('en', { dateStyle: 'long' });
   document.getElementById('dob').addEventListener('calendar:select', (e) => {
     document.getElementById('dob-out').textContent = dob.format(e.detail.date);
   });
@@ -140,7 +140,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Stay: <output id="nightly-out">pick arrival and departure</output></p>
 <script type="module">
   const cal = document.getElementById('nightly');
-  const money = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const money = new Intl.NumberFormat('en', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
   const priceOf = (d) => (d.getDay() === 5 || d.getDay() === 6 ? 149 : 119) + (d.getMonth() === 11 ? 40 : 0);
   const booked = (d) => [3, 4, 5, 17, 18].includes(d.getDate());
   // one month's day data - in an app this is a fetch
@@ -180,7 +180,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 <p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Report period: <output id="report-range-out">12 Oct – 16 Oct 2026</output></p>
 <script>
-  const fmt = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  const fmt = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric' });
   document.getElementById('report-range').addEventListener('calendar:range', (e) => {
     const { start, end } = e.detail;
     document.getElementById('report-range-out').textContent = end ? fmt.formatRange(start, end) : fmt.format(start) + ' – pick an end date';
@@ -215,7 +215,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 <script>
   const stay = document.getElementById('stay');
-  const day = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
+  const day = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short' });
   stay.addEventListener('calendar:range', (e) => {
     const { start, end } = e.detail;
     const nights = end ? Math.round((end - start) / 86400000) : 0;

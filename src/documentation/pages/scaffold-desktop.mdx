@@ -990,8 +990,8 @@ Things to try:
       const d = new Date();
       const t = d.toLocaleTimeString([], S.seconds ? { hour: '2-digit', minute: '2-digit', second: '2-digit' } : { hour: '2-digit', minute: '2-digit' });
       app.querySelector('[data-os-time]').textContent = t;
-      app.querySelector('[data-os-date]').textContent = d.toLocaleDateString();
-      app.querySelector('[data-os-bigtime]').textContent = d.toLocaleTimeString();
+      app.querySelector('[data-os-date]').textContent = d.toLocaleDateString('en');
+      app.querySelector('[data-os-bigtime]').textContent = d.toLocaleTimeString('en');
       app.querySelector('[data-os-longdate]').textContent = d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
       app.querySelector('[data-os-locktime]').textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       app.querySelector('[data-os-lockdate]').textContent = d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
@@ -1145,7 +1145,7 @@ Things to try:
       if (act === 'close') w.querySelector('.window-close').click();
       if (act === 'undo') { t.focus(); document.execCommand('undo'); }
       if (act === 'all') { t.focus(); t.select(); }
-      if (act === 'time') { t.focus(); t.setRangeText(new Date().toLocaleString(), t.selectionStart, t.selectionEnd, 'end'); t.dispatchEvent(new Event('input', { bubbles: true })); }
+      if (act === 'time') { t.focus(); t.setRangeText(new Date().toLocaleString('en'), t.selectionStart, t.selectionEnd, 'end'); t.dispatchEvent(new Event('input', { bubbles: true })); }
       if (act === 'zoomin') zoom(w, Number(w.dataset.zoom || 1) + 0.1);
       if (act === 'zoomout') zoom(w, Number(w.dataset.zoom || 1) - 0.1);
       if (act === 'zoomreset') zoom(w, 1);

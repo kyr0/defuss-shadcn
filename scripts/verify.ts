@@ -38,7 +38,7 @@ import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
-import { versionDrift } from './lib/version-sites.ts';
+import { versionDrift, PIN_GLOBS, PIN_IGNORE, pinDrift } from './lib/version-sites.ts';
 import { apiGaps, apiMarkdown, apiSectionOf, readComponentApi } from '../src/documentation/lib/component-api.ts';
 import { DF_ADOPTION_LEGACY, QUERY_BASELINE, QUERY_RE, RENDER_LEGACY, SINK_BASELINE, SINK_RE, hasRender, ratchet, scan } from './lib/dom-discipline.ts';
 import {
@@ -661,6 +661,23 @@ check(
     'version sites',
     versionDrift((file) => readFileSync(join(ROOT, file), 'utf8'), pkgVersion),
     'run `bun scripts/bump-version.ts <version>` (moves every site in scripts/lib/version-sites.ts); releases do this via `bun run deploy`',
+  );
+}
+
+// 10j. pinned versions: a CDN pin in the docs (defuss-shadcn@vX.Y.Z - the
+// installation page's "Pinning a version") is copied by readers, so it names
+// the CURRENT release; one stayed at v0.1.1 through 0.9.4. Every pin in the
+// authored text (PIN_GLOBS) must equal package.json's version.
+{
+  const pkgVersion = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version as string;
+  const pinProblems: string[] = [];
+  for (const pattern of PIN_GLOBS)
+    for (const file of new Bun.Glob(pattern).scanSync({ cwd: ROOT }))
+      if (!PIN_IGNORE.test(file)) pinProblems.push(...pinDrift(file, readFileSync(join(ROOT, file), 'utf8'), pkgVersion));
+  check(
+    'pinned versions',
+    [...new Set(pinProblems)],
+    `pin the current release - defuss-shadcn@v${pkgVersion}: run \`bun scripts/bump-version.ts ${pkgVersion}\` (it moves every pin in PIN_GLOBS, scripts/lib/version-sites.ts); releases do this via \`bun run deploy\``,
   );
 }
 

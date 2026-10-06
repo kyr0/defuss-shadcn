@@ -18,7 +18,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, textLocale } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const sliderStates = ['default', 'disabled'];
@@ -40,7 +40,7 @@ function formatterOf(el) {
         Object.assign(opts, { style: 'currency', currency: d.currency });
     else if (d.unit)
         Object.assign(opts, { style: 'unit', unit: d.unit, unitDisplay: d.unitDisplay || 'short' });
-    const lang = el.closest('[lang]')?.lang || undefined;
+    const lang = textLocale(el);
     try {
         return new Intl.NumberFormat(lang, opts);
     }

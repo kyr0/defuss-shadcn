@@ -7,7 +7,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, textLocale } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -31,7 +31,7 @@ function formatterOf(el) {
   const opts = { maximumFractionDigits: digits, minimumFractionDigits: 0 };
   if (d.currency) Object.assign(opts, { style: 'currency', currency: d.currency });
   else if (d.unit) Object.assign(opts, { style: 'unit', unit: d.unit, unitDisplay: d.unitDisplay || 'short' });
-  const lang = el.closest('[lang]')?.lang || undefined;
+  const lang = textLocale(el);
   try {
     return new Intl.NumberFormat(lang, opts);
   } catch {

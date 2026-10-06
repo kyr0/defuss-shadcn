@@ -54,7 +54,7 @@ try {
   await check('calendar.js rendered a grid for the current month', async () => {
     await page.waitForFunction(() => document.querySelectorAll('#cal-default .calendar-day').length > 0);
     const now = new Date();
-    const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(now);
+    const monthName = new Intl.DateTimeFormat('en', { month: 'long' }).format(now);
     assert.equal(await heading(page), `${monthName} ${now.getFullYear()}`);
     // cells per day of the month (not day-of-month!): days-in-month for view
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -89,7 +89,7 @@ try {
     await page.click('#cal-default [data-action="next-month"]');
     const next = new Date();
     next.setMonth(next.getMonth() + 1);
-    const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(next);
+    const monthName = new Intl.DateTimeFormat('en', { month: 'long' }).format(next);
     assert.equal(await heading(page), `${monthName} ${next.getFullYear()}`);
     assert.equal(
       await dayCount(page),
@@ -98,7 +98,7 @@ try {
     );
     await page.click('#cal-default [data-action="prev-month"]');
     const now = new Date();
-    const cur = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(now);
+    const cur = new Intl.DateTimeFormat('en', { month: 'long' }).format(now);
     assert.equal(await heading(page), `${cur} ${now.getFullYear()}`, 'back to today');
   });
 
@@ -188,7 +188,7 @@ try {
     await page.$eval('#cal-default', (el) =>
       (el as HTMLElement).api!.setState('default', { year: 2025, month: 0, day: 15 }),
     );
-    const jan = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(new Date(2025, 0));
+    const jan = new Intl.DateTimeFormat('en', { month: 'long' }).format(new Date(2025, 0));
     assert.equal(await heading(page), `${jan} 2025`);
     assert.equal(await selectedDay(page), '15');
     const state = await page.$eval('#cal-default', (el) => (el as HTMLElement).api!.getState());
@@ -200,7 +200,7 @@ try {
   await check("state API: setState('default') with no config resets to today", async () => {
     await page.$eval('#cal-default', (el) => (el as HTMLElement).api!.setState('default'));
     const now = new Date();
-    const monthName = new Intl.DateTimeFormat(undefined, { month: 'long' }).format(now);
+    const monthName = new Intl.DateTimeFormat('en', { month: 'long' }).format(now);
     assert.equal(await heading(page), `${monthName} ${now.getFullYear()}`);
     assert.equal(await selectedDay(page), null, 'selection cleared');
   });

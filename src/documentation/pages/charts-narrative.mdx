@@ -64,16 +64,13 @@ import { DocPage, PageHeader, DocLink, SourceFiles, SourceNote } from "../lib/co
 </script>
 ```
 
-```text
-The story contract - why the morph works:
-
-  state 1  series: [{ id: 'main', type: 'bar', universalTransition: true, data: [{ name: 'Alpha', value: 54 }, …] }]
-  state 2  + series 'then' (comparison bars)        - same id 'main', same data names → bars resize, no redraw
-  state 3  series: [{ id: 'main', type: 'pie', … }] - same id + names → bars morph into slices
-
-Each chartStory step applies its state with notMerge, so every state is a
-complete surface - axes and legends from a previous step never leak through.
-```
+<p class="text-sm text-muted-foreground mb-2">The story contract - why the morph works:</p>
+<ol class="text-sm text-muted-foreground mb-3 ps-5">
+  <li><strong>State 1</strong> - one bar series, <code>id: 'main'</code> with <code>universalTransition: true</code>, its data named (<code>Alpha</code>, …).</li>
+  <li><strong>State 2</strong> - a second series <code>then</code> joins for the comparison; <code>main</code> keeps its id and its data names, so the bars resize instead of being redrawn.</li>
+  <li><strong>State 3</strong> - <code>main</code> becomes a pie; the same id and names let the bars morph into slices.</li>
+</ol>
+<p class="text-sm text-muted-foreground mb-6">Each <code>chartStory</code> step applies its state with <code>notMerge</code>, so every state is a complete surface - axes and legends from a previous step never leak through.</p>
 
 ```html example label="Morph: bar → donut → scatter" schema="none" height="30" hint="universalTransition preserves object identity across radically different chart forms: the same five data points morph between bar, donut and scatter instead of cutting away. The cycler steps every 2.4s; the buttons jump directly." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>

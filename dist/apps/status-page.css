@@ -3625,6 +3625,26 @@
   .table-actions > .btn[popovertarget] { anchor-name: --table-row-menu; }
 
   /* -- Text in cells ------------------------------------------------------- */
+  /* a plain link in a cell (a name, an id) speaks the tokens, not the UA's
+     blue: the text colour, a soft underline that firms up on hover, the
+     ring on keyboard focus. Classed links (.btn, a badge) keep their own. */
+  .table-cell a:not([class]) {
+    color: var(--foreground);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, currentColor 30%, transparent);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms ease;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
   .table-sub {
     display: block;
     margin-top: 0.125rem;

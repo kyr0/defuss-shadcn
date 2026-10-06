@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/dist/components/label/label.css">
   <link rel="stylesheet" href="/dist/components/rating/rating.css">
   <link rel="stylesheet" href="/dist/components/questionnaire/questionnaire.css">
+  <link rel="stylesheet" href="/dist/components/diagram/diagram.css">
   <style>
     /* spacing only - never properties the checks assert */
     body { font-family: system-ui, sans-serif; padding: 1.5rem; display: grid; gap: 2.5rem; max-width: 40rem; }
@@ -151,6 +152,9 @@
     </script>
   </form>
 
+  <!-- the flow as an Illustrative Diagram, linked both ways (linkDiagram) -->
+  <figure class="diagram" id="q-dom-graph" aria-label="Dominators flow" style="max-width:24rem;"></figure>
+
   <!-- quick poll: digits as shortcuts, auto-advance, local persistence under its own key -->
   <form class="questionnaire" id="q-poll" aria-label="Poll" data-shortcuts="digits" data-auto-advance data-persist="local" data-persist-key="fixture-poll">
     <fieldset class="questionnaire-step" data-step="mood">
@@ -183,7 +187,9 @@
 
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/questionnaire/questionnaire.js"></script>
+  <script type="module" src="/dist/components/diagram/diagram.js"></script>
   <script type="module">
+    globalThis.df$.shadcn.questionnaire.linkDiagram('#q-dom', '#q-dom-graph');
     globalThis.__fixtureReady = true;
   </script>
 </body>

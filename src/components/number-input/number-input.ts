@@ -6,7 +6,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, textLocale } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -23,12 +23,12 @@ const getInput = (wrapper) => dfDollar(wrapper).find('input:not([type="hidden"])
 // "decimal"> masked through Intl.NumberFormat: the LOCALE decides decimal and
 // group separators, the symbol, its side and the fraction digits (EUR 2,
 // JPY 0, …). data-locale picks it (else the nearest [lang], else the
-// browser's); data-currency-display = symbol | narrowSymbol | code | name.
+// document's lang, else 'en' - never the browser's); data-currency-display = symbol | narrowSymbol | code | name.
 
 /** Everything the mask needs to know about a (currency, locale) pair. */
 function currencyConfig(wrapper) {
   const currency = String(wrapper.dataset.currency || 'USD').toUpperCase();
-  const locale = wrapper.dataset.locale || wrapper.closest('[lang]')?.getAttribute('lang') || navigator.language;
+  const locale = wrapper.dataset.locale || textLocale(wrapper);
   const currencyDisplay = wrapper.dataset.currencyDisplay || 'symbol';
   const money = new Intl.NumberFormat(locale, { style: 'currency', currency, currencyDisplay });
   const parts = money.formatToParts(1234567.5);

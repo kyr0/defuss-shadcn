@@ -1,6 +1,6 @@
 ---
 title: "Questionnaire: Flow Graph"
-description: "The questionnaire as a graph - analyze() checks a flow for missing targets, cycles, dead ends, unreachable steps and fields a rule may read unanswered (dominators); toMermaid() draws it with the walked path, live."
+description: "The questionnaire as a graph - analyze() checks a flow for missing targets, cycles, dead ends, unreachable steps and fields a rule may read unanswered (dominators); toDiagram() / linkDiagram() draw it as an interactive diagram that also drives the form; toMermaid() exports it as a Mermaid flowchart."
 slug: "questionnaire-graph"
 ---
 
@@ -9,12 +9,12 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../li
 <DocPage meta={meta}>
 
 <PageHeader slug="questionnaire-graph" title="Flow Graph" component="questionnaire">
-  Every questionnaire is a directed graph: steps are nodes, and each <code>data-goto</code>, rule and <code>data-next</code> is an edge. The controller walks it - and it can also check it before anyone fills it in, and draw it. <code>analyze(form)</code> runs on every form at load (a broken one gets <code>data-flow-invalid</code> and a console warning); <code>toMermaid(form)</code> turns the graph into a <a href="mermaid.html">Mermaid</a> flowchart with the path taken so far marked.
+  Every questionnaire is a directed graph: steps are nodes, and each <code>data-goto</code>, rule and <code>data-next</code> is an edge. The controller walks it - and it can also check it before anyone fills it in, and draw it. <code>analyze(form)</code> runs on every form at load (a broken one gets <code>data-flow-invalid</code> and a console warning); <code>toDiagram(form)</code> turns the graph into an <a href="diagram.html">Illustrative Diagram</a> spec with the path taken so far marked, and <code>linkDiagram(form, figure)</code> keeps one in step with the form - both ways. <code>toMermaid(form)</code> exports the same graph as a <a href="mermaid.html">Mermaid</a> flowchart (live on the Mermaid page).
 </PageHeader>
 
 <H2 id="live">The graph, live</H2>
 
-```html example label="Onboarding, drawn as you answer" schema="none" height="44" hint="Answer on the left; the flowchart on the right is toMermaid(form), re-rendered on every move (the form's store is subscribed): every possible edge with its choice or rule as the label, the steps taken bold, the current one dashed. Change an early answer and watch the path move."
+```html example label="Onboarding, drawn and driven both ways" schema="none" height="46" hint="The flow is linkDiagram(form, figure): an Illustrative Diagram built from toDiagram(form) - every possible edge with its choice or rule as the label - redrawn on every move: the steps taken grey out as done, the edges walked turn solid, the current step is the accent node and the edge just walked carries a flow token. It drives the form too: click a step you took to go back to it, or the next step once the current one is answered. A step further on is refused - the form says what to answer first."
 <div class="flex flex-wrap gap-6 items-start">
   <form class="questionnaire" id="q-onboard" aria-label="Onboarding" data-persist="none" style="flex:1 1 18rem;">
     <div class="questionnaire-progress"></div>
@@ -57,25 +57,11 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../li
       { "branches": { "size": [{ "when": [{ "field": "size", "op": "gte", "value": 20 }], "goto": "sales" }, { "when": [], "goto": "done" }] } }
     </script>
   </form>
-  <figure class="mermaid-diagram" id="q-onboard-graph" aria-label="The onboarding flow" style="flex:1 1 18rem;margin:0;">
-    <pre class="mermaid">flowchart TD
-  start["…"]</pre>
-  </figure>
+  <figure class="diagram" id="q-onboard-graph" aria-label="The onboarding flow" style="flex:1 1 20rem;margin:0;"></figure>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('q-onboard');
-    const fig = document.getElementById('q-onboard-graph');
-    const draw = () => {
-      fig.querySelector('pre.mermaid').textContent = df$.shadcn.questionnaire.toMermaid(form);
-      fig.api?.setState('rendered');
-    };
-    // a move (not every keystroke) redraws: the step or the history changed
-    let last = '';
-    form.store.subscribe(({ config }) => {
-      const key = config.step + '|' + config.history.join(',') + '|' + config.index;
-      if (key !== last) { last = key; draw(); }
-    }, { immediate: true });
+    df$.shadcn.questionnaire.linkDiagram('#q-onboard', '#q-onboard-graph');
   });
 </script>
 ```
@@ -125,7 +111,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../li
 <DocText>A rule on step <em>S</em> that reads the answer <em>f</em> is only safe if every way to <em>S</em> asked <em>f</em> - otherwise some users reach <em>S</em> without it, the condition sees nothing, and the branch quietly goes the other way. A step <em>D</em> dominates <em>S</em> when every path from the start to <em>S</em> passes <em>D</em>; the fields that are required on <em>S</em>'s dominators are exactly the fields guaranteed at <em>S</em>. In the broken flow above, <code>coupon</code> is asked only on the B branch, so the rule on <code>details</code> gets a warning. In the onboarding flow the rule on <code>size</code> reads <code>size</code> itself - always safe.</DocText>
 
 <SourceFiles component="questionnaire" section="css">
-  <SourceNote for="css">The graph is computed by the questionnaire's script (<code>analyze</code>, <code>toMermaid</code>); the drawing is the <a href="mermaid.html">Mermaid</a> component.</SourceNote>
+  <SourceNote for="css">The graph is computed by the questionnaire's script (<code>analyze</code>, <code>toDiagram</code>, <code>linkDiagram</code>, <code>toMermaid</code>); the drawing is the <a href="diagram.html">Illustrative Diagram</a> component (or <a href="mermaid.html">Mermaid</a>).</SourceNote>
 </SourceFiles>
 
 <SourceFiles component="questionnaire" section="js" jsTitle="JS" />

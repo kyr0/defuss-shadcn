@@ -1706,6 +1706,21 @@ function debounce(fn, wait) {
   };
   return wrapped;
 }
+// src/shared/locale.ts
+var DEFAULT_LOCALE = "en";
+function valid(tag) {
+  const t = tag?.trim();
+  if (!t)
+    return null;
+  try {
+    return Intl.getCanonicalLocales(t)[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+function textLocale(el) {
+  return valid(el?.closest?.("[lang]")?.getAttribute("lang")) ?? valid(typeof document !== "undefined" ? document.documentElement?.getAttribute("lang") : null) ?? DEFAULT_LOCALE;
+}
 // src/shared/keys.ts
 var handlers = new Map;
 var listening = false;
@@ -1854,7 +1869,7 @@ function animateCount(el, opts = {}) {
   const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
   const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
   const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split(".")[1]?.length ?? 0);
-  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(undefined, {
+  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(textLocale(el), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   }).format(n));
@@ -1872,9 +1887,11 @@ function animateCount(el, opts = {}) {
       settle();
       return;
     }
-    const t0 = performance.now();
+    let t0 = -1;
     const tick = (now) => {
-      const p = Math.min(1, (now - t0) / duration);
+      if (t0 < 0)
+        t0 = now;
+      const p = Math.min(1, Math.max(0, (now - t0) / duration));
       const eased = 1 - (1 - p) ** 3;
       el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);
       if (p < 1)
@@ -4070,6 +4087,7 @@ shadcn.shared = {
   safeShowPopover,
   defussQuery,
   debounce,
+  textLocale,
   animateCount,
   clampIndex,
   coerceIndex,
@@ -4151,6 +4169,6 @@ installDdf({
   coerceIndex
 });
 
-//# debugId=1C8805BE8A5465D264756E2164756E21
+//# debugId=23123C13C40F943F64756E2164756E21
 /* defuss-shadcn v0.9.4 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

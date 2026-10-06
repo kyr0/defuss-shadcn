@@ -207,8 +207,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Decorative" hint="A purely visual divider hidden from assistive technology using role='none'."
-<hr class="separator" role="none">
+```html example label="Decorative" hint="Ornamental section breaks in running text - a text separator with a glyph (✦ ✦ ✦, ❦) and aria-hidden, so assistive technology never reads the ornament - and a short accent rule closing the chapter, an <hr> with role='none' (no separator semantics)."
+<article style="max-width:30rem;margin-inline:auto;display:grid;gap:1rem;font-size:0.875rem;line-height:1.6;">
+  <p>The tide came in slower than the forecast promised, and the harbour lights were already on when the last boat tied up.</p>
+  <!-- an ornamental section break: hidden from assistive technology, so the glyphs are never read out -->
+  <div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
+  <p>By morning the fog had lifted. Someone had chalked the new times on the board outside the ferry office.</p>
+  <div class="separator" aria-hidden="true" data-variant="accent" data-size="md" data-gap="md" style="font-size:1.125rem;">❦</div>
+  <p>Nobody read them. Everyone already knew.</p>
+  <!-- a short accent rule to close the chapter: role="none" drops the <hr>'s separator semantics -->
+  <hr class="separator" role="none" data-variant="primary" data-size="lg" style="width:3rem;margin-inline:auto;border-radius:999px;">
+  <p style="text-align:center;color:var(--muted-foreground);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;">End of chapter one</p>
+</article>
 ```
 
 <SourceFiles component="separator" section="css" />

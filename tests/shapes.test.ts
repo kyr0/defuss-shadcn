@@ -211,12 +211,22 @@ describe('shape utilities', () => {
     const filled = colors('stack-bottom-right stack-filled');
     expect(filled[0]).toBe(filled[1]); // solid sheet, no edge
     expect(colors('stack-bottom-right stack-outline')[1]).not.toBe(card[1]); // a stronger edge
-    // --shape-ink recolors (color-mix serializes in oklch: pure red is oklch(0.628 0.258 29.23))
-    expect(colors('stack-bottom-right stack-filled', '--shape-ink: rgb(255, 0, 0);')[0]).toMatch(/^oklch\(0\.62\d+ 0\.25\d+ 29\./);
-    // fade: the three fills step toward the background; without it they match
-    const faded = colors('stack-bottom-right stack-filled stack-fade');
-    expect(new Set([faded[0], faded[2], faded[4]]).size).toBe(3);
-    expect(new Set([filled[0], filled[2], filled[4]]).size).toBe(1);
+    // --shape-ink recolors (the mix serializes in oklab: red stays red - a > 0, b > 0)
+    const ab = (c: string) => /^oklab\(([\d.]+) (-?[\d.]+) (-?[\d.]+)/.exec(c)!.slice(1).map(Number);
+    const [, ra, rb] = ab(colors('stack-bottom-right stack-filled', '--shape-ink: rgb(255, 0, 0);')[0]);
+    expect(ra).toBeGreaterThan(0.1);
+    expect(rb).toBeGreaterThan(0.05);
+    // filled sheets step toward the background on their own (one solid colour
+    // would merge into a block); stack-fade does the same for card sheets
+    expect(new Set([filled[0], filled[2], filled[4]]).size).toBe(3);
+    const lightness = (c: string) => ab(c)[0];
+    const red = colors('stack-bottom-right stack-filled', '--shape-ink: rgb(255, 0, 0);');
+    expect(lightness(red[0])).toBeLessThan(lightness(red[2]));
+    expect(lightness(red[2])).toBeLessThan(lightness(red[4])); // light theme: toward the white background
+    // (card sheets fill with --card, which can equal the background - their edges show the fade)
+    const faded = colors('stack-bottom-right stack-fade');
+    expect(new Set([faded[1], faded[3], faded[5]]).size).toBe(3);
+    expect(new Set([card[1], card[3], card[5]]).size).toBe(1);
   });
 
   it('extrude through stacked drop-shadows', () => {

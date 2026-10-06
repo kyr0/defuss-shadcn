@@ -1049,6 +1049,155 @@ function toMermaid(root) {
         lines.push(`  linkStyle ${styled.join(',')} stroke-width:3px;`);
     return lines.join('\n');
 }
+/**
+ * The flow as an Illustrative Diagram spec (df$.shadcn.diagram.build): steps
+ * ranked top-down by their longest path from the start, the steps taken
+ * marked (done 'muted', the current one 'accent'), the walked edges solid accent and the rest
+ * dashed, the edge just walked carrying a flow token. An edge that skips a
+ * rank in the same column is routed around the stack, never under a box.
+ */
+function toDiagram(root, { title = '' } = {}) {
+    const { nodes, edges } = analyze(root);
+    const walk = cfgOf(root);
+    const start = root._flow.start;
+    // rank = the longest path from the start (a valid questionnaire is acyclic; the pass cap guards a broken one)
+    const rank = new Map([[start, 0]]);
+    for (let pass = 0; pass <= nodes.length; pass++) {
+        let moved = false;
+        for (const e of edges) {
+            if (!rank.has(e.from))
+                continue;
+            const r = rank.get(e.from) + 1;
+            if ((rank.get(e.to) ?? -1) < r) {
+                rank.set(e.to, r);
+                moved = true;
+            }
+        }
+        if (!moved)
+            break;
+    }
+    let bottom = Math.max(0, ...rank.values());
+    for (const n of nodes)
+        if (!rank.has(n.id))
+            rank.set(n.id, ++bottom); // unreachable steps sit below
+    const rows = new Map();
+    for (const n of nodes) {
+        const r = rank.get(n.id);
+        if (!rows.has(r))
+            rows.set(r, []);
+        rows.get(r).push(n.id);
+    }
+    const cols = Math.max(1, ...[...rows.values()].map((ids) => ids.length));
+    const col = new Map();
+    for (const ids of rows.values())
+        ids.forEach((id, i) => col.set(id, Math.floor((cols - ids.length) / 2) + i + 1));
+    const taken = walk ? walk.history.slice(0, walk.index + 1) : [];
+    const walked = new Set(taken.slice(1).map((to, i) => `${taken[i]}->${to}`));
+    const last = taken.length > 1 ? `${taken[taken.length - 2]}->${taken[taken.length - 1]}` : '';
+    return {
+        type: 'flow',
+        ...(title ? { title } : {}),
+        cols,
+        interactive: true,
+        nodes: nodes.map((n) => ({
+            id: n.id,
+            name: n.title || n.id,
+            ...(n.id === start ? { eyebrow: 'Start' } : n.end ? { eyebrow: 'End' } : {}),
+            col: col.get(n.id),
+            row: rank.get(n.id) + 1,
+            ...(n.end ? { shape: 'pill' } : {}),
+            ...(walk && n.id === walk.step ? { tone: 'accent' } : taken.includes(n.id) ? { tone: 'muted' } : {}),
+        })),
+        edges: edges.map((e) => {
+            const ref = `${e.from}->${e.to}`;
+            return {
+                from: e.from,
+                to: e.to,
+                ...(e.label ? { label: e.label } : {}),
+                ...(rank.get(e.to) - rank.get(e.from) > 1 && col.get(e.to) === col.get(e.from) ? { curve: 'around' } : {}),
+                ...(walked.has(ref) ? { tone: 'accent' } : { line: 'dashed' }),
+                ...(ref === last ? { flow: true } : {}),
+            };
+        }),
+    };
+}
+/**
+ * A diagram figure drawn from the form and driving it back: every move
+ * redraws it (the walk marked, the current step the accent node), and a click on a
+ * step moves the form - back to any step taken, forward only to the step the
+ * current answers lead to (validated, like Continue). A step further on is
+ * refused: the figure stays on the walk, the form says what to answer first
+ * and questionnaire-jump-refused fires. Returns the unlink function.
+ */
+function linkDiagram(root, figure) {
+    const diagram = df$.diagram;
+    if (!diagram?.build)
+        throw new Error('questionnaire.linkDiagram: the diagram component is not loaded (df$.shadcn.diagram)');
+    figure._questionnaireUnlink?.();
+    let syncing = false;
+    let drawn = '';
+    // at rest the figure shows the whole walk - no activation dimming the path
+    // taken; the current step is the accent node (toDiagram's tones)
+    const focus = () => {
+        syncing = true;
+        try {
+            if (figure.api?.getState().name === 'active')
+                figure.api.setState('default');
+        }
+        finally {
+            syncing = false;
+        }
+    };
+    const draw = () => {
+        const walk = cfgOf(root);
+        if (!walk)
+            return;
+        const key = `${walk.step}|${walk.history.join(',')}|${walk.index}`;
+        if (key === drawn)
+            return;
+        drawn = key;
+        diagram.build(figure, toDiagram(root, { title: figure.getAttribute('aria-label') || '' }));
+        focus();
+    };
+    const refuse = (to, reason) => {
+        const walk = cfgOf(root);
+        focus();
+        const step = stepById(root, walk.step);
+        const target = stepById(root, to);
+        if (reason === 'unreached')
+            notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
+        // Fires when a click on the linked diagram asks for a step the walk cannot reach yet - the step asked for, the current step and why: 'unreached' (further on) or 'invalid' (the current step does not validate).
+        root.dispatchEvent(new CustomEvent('questionnaire-jump-refused', { bubbles: true, detail: { to, step: walk.step, reason } }));
+    };
+    const onActivate = (e) => {
+        if (syncing)
+            return;
+        const walk = cfgOf(root);
+        const to = e.detail?.kind === 'node' ? e.detail.ref : null;
+        if (!walk || !to || to === walk.step)
+            return void focus();
+        if (walk.history.includes(to))
+            return void goTo(root, to);
+        const step = stepById(root, walk.step);
+        const answers = step && !isEnd(step) ? mergeAnswers(walk.answers, readStep(step)) : walk.answers;
+        if (to === nextOf(root, walk.step, answers)) {
+            if (!advance(root))
+                refuse(to, 'invalid');
+            return;
+        }
+        refuse(to, 'unreached');
+    };
+    dfDollar(figure).on('diagram-activate', onActivate);
+    const off = root.store.subscribe(draw);
+    draw();
+    const unlink = () => {
+        off?.();
+        dfDollar(figure).off('diagram-activate', onActivate);
+        delete figure._questionnaireUnlink;
+    };
+    figure._questionnaireUnlink = unlink;
+    return unlink;
+}
 // -- df$.shadcn.questionnaire: the imperative surface --------------------------------------
 const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
 df$.questionnaire = {
@@ -1092,6 +1241,10 @@ df$.questionnaire = {
     analyze: (target) => analyze(resolve(target)),
     /** The flow as a Mermaid flowchart, the walked path marked. */
     toMermaid: (target) => toMermaid(resolve(target)),
+    /** The flow as an Illustrative Diagram spec for df$.shadcn.diagram.build - steps ranked top-down, the walked path marked, the edge just walked flowing; { title } names it. */
+    toDiagram: (target, options) => toDiagram(resolve(target), options),
+    /** Link a .diagram figure both ways: it redraws on every move with the current step active, and a click moves the form - back to a step taken, forward only to the step the answers lead to; further on is refused (questionnaire-jump-refused). Returns the unlink function. */
+    linkDiagram: (target, figure) => linkDiagram(resolve(target), resolve(figure)),
 };
 /** where the draft is kept (viewPersistence: data-persist / -prefix / -key, or the config) */
 function attachDraft(root, config) {

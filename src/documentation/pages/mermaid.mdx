@@ -110,6 +110,72 @@ stateDiagram-v2
 </div>
 ```
 
+```html example label="Live from a questionnaire" schema="none" height="44" hint="toMermaid(form) - the questionnaire's flow as a Mermaid flowchart, re-rendered on every move (the form's store is subscribed): every possible edge with its choice or rule as the label, the steps taken bold, the current one dashed. Answer on the left and watch the path move. (The Flow Graph page draws the same flow as an interactive Illustrative Diagram, linked both ways.)"
+<div class="flex flex-wrap gap-6 items-start">
+  <form class="questionnaire" id="q-onboard" aria-label="Onboarding" data-persist="none" style="flex:1 1 18rem;">
+    <div class="questionnaire-progress"></div>
+    <fieldset class="questionnaire-step" data-step="role">
+      <legend class="questionnaire-title">Your role?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="role" value="dev" required data-goto="repo"><span class="questionnaire-choice-label">Engineer</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="role" value="pm" data-goto="size"><span class="questionnaire-choice-label">Manager</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="repo" data-next="size">
+      <legend class="questionnaire-title">Connect a repository?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="repo" value="github" required><span class="questionnaire-choice-label">GitHub</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="repo" value="later"><span class="questionnaire-choice-label">Later</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="size">
+      <legend class="questionnaire-title">Team size?</legend>
+      <input class="input" name="size" type="number" min="1" required aria-label="Team size" style="max-width:8rem;">
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="sales" data-next="done">
+      <legend class="questionnaire-title">Talk to sales?</legend>
+      <div class="questionnaire-choices">
+        <label class="questionnaire-choice"><input type="radio" name="sales" value="yes" required><span class="questionnaire-choice-label">Yes please</span></label>
+        <label class="questionnaire-choice"><input type="radio" name="sales" value="no"><span class="questionnaire-choice-label">No thanks</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="questionnaire-step" data-step="done" data-end>
+      <legend class="questionnaire-title">You're set</legend>
+      <div class="questionnaire-summary"></div>
+    </fieldset>
+    <div class="questionnaire-actions">
+      <button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button>
+      <button class="btn" type="submit" data-questionnaire="next">Continue</button>
+      <button class="btn" type="submit" data-questionnaire="submit">Finish</button>
+    </div>
+    <div class="questionnaire-complete"><p>Welcome!</p></div>
+    <script type="application/json" class="questionnaire-rules">
+      { "branches": { "size": [{ "when": [{ "field": "size", "op": "gte", "value": 20 }], "goto": "sales" }, { "when": [], "goto": "done" }] } }
+    </script>
+  </form>
+  <figure class="mermaid-diagram" id="q-onboard-graph" aria-label="The onboarding flow" style="flex:1 1 18rem;margin:0;">
+    <pre class="mermaid">flowchart TD
+  start["…"]</pre>
+  </figure>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('q-onboard');
+    const fig = document.getElementById('q-onboard-graph');
+    const draw = () => {
+      fig.querySelector('pre.mermaid').textContent = df$.shadcn.questionnaire.toMermaid(form);
+      fig.api?.setState('rendered');
+    };
+    // a move (not every keystroke) redraws: the step or the history changed
+    let last = '';
+    form.store.subscribe(({ config }) => {
+      const key = config.step + '|' + config.history.join(',') + '|' + config.index;
+      if (key !== last) { last = key; draw(); }
+    }, { immediate: true });
+  });
+</script>
+```
+
 ```html example label="Added at runtime" hint="Diagrams inserted later - SPA navigation, streamed content, a click - render on their own: a MutationObserver finds them. No init call."
 <button class="btn" data-variant="outline" id="mm-add">Add a diagram</button>
 <div id="mm-host" class="stack gap-4 mt-4"></div>

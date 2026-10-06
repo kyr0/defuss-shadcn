@@ -629,6 +629,24 @@ function measure(canvas) {
     return { nodes, rectOf };
 }
 /**
+ * A figure narrower than its diagram scales the canvas down to fit - never
+ * below 0.7 (narrower still, the figure scrolls as before); data-fit="none"
+ * keeps it 1:1. measure() already reads through a zoom, so the wires follow.
+ */
+const FIT_MIN = 0.7;
+function fit(root, canvas) {
+    if (canvas.parentElement !== root)
+        return;
+    canvas.style.zoom = '';
+    if (root.dataset.fit === 'none')
+        return;
+    const natural = canvas.offsetWidth; // min-width: min-content - the diagram's own width
+    const avail = root.clientWidth;
+    const z = natural > avail + 1 ? Math.max(FIT_MIN, Math.floor((avail / natural) * 1000) / 1000) : 1;
+    if (z < 1)
+        canvas.style.zoom = String(z);
+}
+/**
  * Draw a canvas's wires: an SVG layer behind the nodes (z-index between groups
  * and nodes) and an HTML label layer above them. Re-run on every resize - the
  * layers are absolutely positioned, so drawing never changes the layout.
@@ -636,6 +654,7 @@ function measure(canvas) {
 function draw(root, canvas) {
     if (!canvas.isConnected || !canvas.getClientRects().length)
         return;
+    fit(root, canvas);
     const { nodes, rectOf } = measure(canvas);
     const panel = panelOf(canvas);
     const wires = layer(canvas, 'diagram-wires', () => {

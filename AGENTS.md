@@ -146,10 +146,11 @@ defuss-shadcn/
 │   ├── lib/links.ts                   ← markdown link checker (verify markdown link integrity gate; pure)
 │   ├── lib/minify.ts                  ← derived-artifact recognition (verify 1:1 allow-list + min-twin gate; pure)
 │   ├── lib/schema.ts                  ← component schema contract: validator + ## States table parser + CodeExample rules (pure)
+│   ├── lib/e2e-select.ts              ← which inputs an e2e file exercises (its fixtures, the dist files they load, the sources behind them - all.js via the apps.ts markup analysis; docs tests: all of src/ + scripts/) - pure, tests/e2e-select.test.ts
 │   ├── push.sh                        ← non-release: commit everything on main + push (SSH, else HTTPS via gh - lib/git-push.sh)
 │   ├── deploy.sh                      ← release, on main: bump every version site, changelog entry, make build, two-commit rule, tag v<version>, push, GitHub release, purge-cdn
 │   ├── bump-version.ts                ← moves every version site (lib/version-sites.ts) to a new version
-│   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks
+│   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks; plus every CDN pin `defuss-shadcn@vX.Y.Z` in the authored docs (PIN_GLOBS - the installation page's "Pinning a version"): bump-version moves them, verify's `pinned versions` gate requires the current release
 │   ├── lib/git-push.sh                ← push_ref: push to origin, falling back to HTTPS with gh credentials when SSH is unavailable
 │   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (README quick start; run by deploy.sh - the docs snapshot is pinned to the tag)
 ├── tests/                             ← UI tests (Vitest browser mode + Playwright)
@@ -158,7 +159,7 @@ defuss-shadcn/
 │   ├── component-schema.test.ts       ← schema contract tests (validator, States parity, fence rules, real files)
 │   ├── code-example.test.ts           ← CodeExample browser tests (sandbox round-trips, editors, isolation)
 │   └── e2e/                           ← per-component smoke tests (plain Playwright)
-│       ├── run.ts                    ← `bun run e2e` runner: every *.e2e.ts file
+│       ├── run.ts                    ← `bun run e2e` runner: the *.e2e.ts files whose inputs changed since they last passed (`--all` / E2E_ALL=1: every file; `--list`: what would run; names: just those) - fingerprints in .cache/e2e-manifest.json
 │       ├── server.ts                 ← Bun static server exposing /dist and /tests/e2e
 │       └── accordion.e2e-{fixture.html,ts}  ← fixture + test for one component
 ├── vitest.config.ts                   ← browser-mode test config (root = repo root)
@@ -1372,7 +1373,16 @@ Per-component smoke tests live in `tests/e2e/` and run with **plain Playwright**
   applied CSS (via computed styles), each interaction, and keyboard behavior.
   `accordion.e2e.ts` is the reference template.
 
-`tests/e2e/run.ts` globs and runs every `*.e2e.ts` in isolated child processes.
+`tests/e2e/run.ts` runs the `*.e2e.ts` files in isolated child processes - **only
+those whose inputs changed since they last passed** (`scripts/lib/e2e-select.ts`
+derives a file's inputs from what it loads: its fixtures, the `/dist/…` files they
+link and the sources behind them - a component's folder, core + shared + theme,
+for `all.js` the components the fixture markup uses; a test of the documentation
+site depends on all of `src/` and `scripts/`; anything unrecognised on everything).
+Their content is fingerprinted into `.cache/e2e-manifest.json` on a pass; a failed
+or new file always runs. `bun run e2e --all` (`make e2e-all`, `E2E_ALL=1` -
+`deploy.sh` sets it, so a release runs everything) ignores the fingerprints;
+`bun run e2e --list` shows what would run; `bun run e2e accordion diff` runs those.
 When adding a component, add both files. Interactive components follow the
 `accordion.e2e.{ts,fixture.html}` template (drive `api.setState` + interactions);
 CSS-only components use the shared `tests/e2e/lib/css-smoke.ts` runner - the
@@ -1528,7 +1538,7 @@ demos bind no contract via `schema="none"`, code-only snippets are plain fences
 rendered as static code cards, media-query demos boot via `mode="…"`). The demo
 CONTENT helpers (`.demo-tile` / `.demo-label` / `.demo-outline` / `.demo-stripes`
 / `.demo-box`) live in `docs-utilities.css` (the sandbox mirrors that sheet);
-`css/layout.css` is site chrome only. Remaining `<Demo>` usage: `accessibility.mdx`.
+`css/layout.css` is site chrome only. No page uses `<Demo>` any more - a live demo is an example fence, a code-only snippet a plain fence (the Code Mockup window).
 Component-page demos as `<Example>` / `<ExampleLabel>` /
 `<ExampleHint>` / `<ExampleCode>`. Without an `<ExampleCode>`/`<DemoCode>` child
 the code sample is **auto-serialized from the demo children** - demo ↔ code

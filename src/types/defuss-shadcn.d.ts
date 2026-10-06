@@ -85,6 +85,8 @@ interface DefussShadcnShared {
     fn: (...args: A) => void,
     wait: number,
   ): ((...args: A) => void) & { flush(): void; cancel(): void };
+  /** the locale to format numbers / dates for an element: its nearest [lang], else the document's, else 'en' (src/shared/locale.ts) */
+  textLocale(el?: Element | null): string;
   /** presentation machinery (src/shared/presentation.ts) - same functions ddf$ publishes */
   presentationScope: typeof import('../shared/presentation.js').presentationScope;
   animateCount: typeof import('../shared/presentation.js').animateCount;

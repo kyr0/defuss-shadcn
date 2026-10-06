@@ -1706,6 +1706,21 @@ function debounce(fn, wait) {
   };
   return wrapped;
 }
+// src/shared/locale.ts
+var DEFAULT_LOCALE = "en";
+function valid(tag) {
+  const t = tag?.trim();
+  if (!t)
+    return null;
+  try {
+    return Intl.getCanonicalLocales(t)[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+function textLocale(el) {
+  return valid(el?.closest?.("[lang]")?.getAttribute("lang")) ?? valid(typeof document !== "undefined" ? document.documentElement?.getAttribute("lang") : null) ?? DEFAULT_LOCALE;
+}
 // src/shared/keys.ts
 var handlers = new Map;
 var listening = false;
@@ -1854,7 +1869,7 @@ function animateCount(el, opts = {}) {
   const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
   const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
   const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split(".")[1]?.length ?? 0);
-  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(undefined, {
+  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(textLocale(el), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   }).format(n));
@@ -1872,9 +1887,11 @@ function animateCount(el, opts = {}) {
       settle();
       return;
     }
-    const t0 = performance.now();
+    let t0 = -1;
     const tick = (now) => {
-      const p = Math.min(1, (now - t0) / duration);
+      if (t0 < 0)
+        t0 = now;
+      const p = Math.min(1, Math.max(0, (now - t0) / duration));
       const eased = 1 - (1 - p) ** 3;
       el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);
       if (p < 1)
@@ -4070,6 +4087,7 @@ shadcn.shared = {
   safeShowPopover,
   defussQuery,
   debounce,
+  textLocale,
   animateCount,
   clampIndex,
   coerceIndex,
@@ -4882,8 +4900,9 @@ function describe(root) {
   const n = run.records.length;
   if (!n)
     return;
-  const total = run.total !== undefined ? ` of ${run.total.toLocaleString()}` : "";
-  setStatus(root, run.loadingMore ? `${n.toLocaleString()}${total} · loading more…` : `${n.toLocaleString()}${total}${run.hasMore ? " · scroll for more" : ""}`);
+  const num = (v) => v.toLocaleString(textLocale(root));
+  const total = run.total !== undefined ? ` of ${num(run.total)}` : "";
+  setStatus(root, run.loadingMore ? `${num(n)}${total} · loading more…` : `${num(n)}${total}${run.hasMore ? " · scroll for more" : ""}`);
 }
 function activate2(root, index) {
   const run = root._run;
@@ -6140,8 +6159,18 @@ var calendarApi = Object.assign(componentState({
 });
 df$8.calendarApi = calendarApi;
 df$8.calendarStates = calendarStates;
-var DAYS = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(new Date(2024, 0, i)));
-var MONTHS2 = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(undefined, { month: "long" }).format(new Date(2024, i, 1)));
+var nameSets = new Map;
+function names2(el) {
+  const locale = textLocale(el);
+  if (!nameSets.has(locale)) {
+    nameSets.set(locale, {
+      days: Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 0, i))),
+      months: Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2024, i, 1))),
+      full: new Intl.DateTimeFormat(locale, { dateStyle: "full" })
+    });
+  }
+  return nameSets.get(locale);
+}
 var daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
 var firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 var isToday = (year, month, day) => {
@@ -6210,7 +6239,6 @@ function syncRange(owner) {
 }
 var esc2 = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 var MARK = /^[a-z][a-z0-9-]*$/;
-var FULL_DATE = new Intl.DateTimeFormat(undefined, { dateStyle: "full" });
 function dayHolderOf(cal) {
   const owner = rangeOwnerOf(cal);
   return owner && owner.classList.contains("calendar-range") ? owner : cal;
@@ -6241,7 +6269,7 @@ function rerender(cal) {
       renderCalendar(cal, st.year, st.month, st.selected);
   }
 }
-function dayData(days, iso) {
+function dayData(days, iso, full) {
   const d = days?.[iso];
   if (!d || typeof d !== "object")
     return { attrs: "", note: "", aria: "", blocked: false };
@@ -6253,7 +6281,7 @@ function dayData(days, iso) {
     attrs += " data-note";
   if (d.label)
     attrs += ` title="${esc2(d.label)}"`;
-  const aria = ` aria-label="${esc2([FULL_DATE.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
+  const aria = ` aria-label="${esc2([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
   return { attrs, note: note ? `<span class="calendar-day-note">${esc2(note)}</span>` : "", aria, blocked: d.disabled === true };
 }
 var YEARS_PER_PAGE = 12;
@@ -6270,7 +6298,7 @@ function renderPicker(el) {
   let html = "";
   if (el.dataset.view === "months") {
     const y = st.pickYear;
-    html = MONTHS2.map((name, m) => {
+    html = names2(el).months.map((name, m) => {
       const current = y === st.year && m === st.month ? ' aria-current="true"' : "";
       const today = y === now.getFullYear() && m === now.getMonth() ? " data-today" : "";
       const off = monthOff(y, m, st.minDate, st.maxDate) ? " disabled" : "";
@@ -6294,7 +6322,7 @@ function renderHeader(el) {
   const view = el.dataset.view || "days";
   const heading = dfDollar8(el).find(".calendar-heading").get(0);
   if (heading) {
-    const text = view === "months" ? String(st.pickYear) : view === "years" ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}` : `${MONTHS2[st.month]} ${st.year}`;
+    const text = view === "months" ? String(st.pickYear) : view === "years" ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}` : `${names2(el).months[st.month]} ${st.year}`;
     dfDollar8(heading).text(text);
     if (heading.tagName === "BUTTON") {
       dfDollar8(heading).attr("aria-label", view === "months" ? `${text}, choose a year` : view === "years" ? `Years ${text}, back to the days` : `${text}, choose a month and year`);
@@ -6383,7 +6411,8 @@ function setView(el, view) {
   }
   el.dispatchEvent(new CustomEvent("calendar:view", { bubbles: true, detail: { view, year: st.year, month: st.month } }));
 }
-var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days) => {
+var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names2(null)) => {
+  const full = locale.full;
   const rangeAttrs = (iso) => {
     if (!range || !range.start)
       return "";
@@ -6407,7 +6436,7 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
   const prevTotal = daysInMonth(year, month - 1);
   let html = "<thead><tr>";
   for (let d = 0;d < 7; d++) {
-    html += `<th class="calendar-day-label" scope="col">${DAYS[d]}</th>`;
+    html += `<th class="calendar-day-label" scope="col">${locale.days[d]}</th>`;
   }
   html += "</tr></thead><tbody>";
   let dayNum = 1;
@@ -6420,12 +6449,12 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
       if (cellIndex < startDay) {
         const prevDay = prevTotal - startDay + cellIndex + 1;
         const iso = isoDate(new Date(year, month - 1, prevDay));
-        const dd = dayData(days, iso);
+        const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? " data-disabled" : "";
         html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev"${dd.aria}>${prevDay}${dd.note}</button></td>`;
       } else if (dayNum > total) {
         const iso = isoDate(new Date(year, month + 1, nextDayNum));
-        const dd = dayData(days, iso);
+        const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? " data-disabled" : "";
         html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
         nextDayNum++;
@@ -6436,7 +6465,7 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
         if (dayNum === selectedDay)
           attrs += ' data-selected aria-selected="true"';
         const iso = isoDate(new Date(year, month, dayNum));
-        const dd = dayData(days, iso);
+        const dd = dayData(days, iso, full);
         if (!isoInRange(iso, minDate, maxDate) || dd.blocked)
           attrs += " data-disabled";
         attrs += rangeAttrs(iso) + dd.attrs;
@@ -6477,7 +6506,7 @@ var renderCalendar = (el, year, month, selectedDay) => {
   const range = r ? { start: r.start, end: r.end, preview: !r.end && r.start && r.hover && r.hover >= r.start ? r.hover : null } : null;
   const days = daysOf(el);
   el.toggleAttribute("data-notes", Object.values(days).some((d) => d && d.note != null && d.note !== ""));
-  dfDollar8(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days));
+  dfDollar8(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days, names2(el)));
   if (focusKey)
     dfDollar8(grid).find(`[data-cal-date="${focusKey}"] button`).get(0)?.focus();
   const selDate = dfDollar8(el).find(".calendar-day[data-selected]").get(0)?.getAttribute("data-cal-date");
@@ -6520,7 +6549,7 @@ function init8() {
         dfDollar8(heading).attr("hidden", "");
       const caption = document.createElement("span");
       caption.className = "calendar-caption";
-      dfDollar8(caption).html(`<select class="calendar-select" data-part="month" aria-label="Month">${MONTHS2.map((n, m) => `<option value="${m}">${esc2(n)}</option>`).join("")}</select>` + `<select class="calendar-select" data-part="year" aria-label="Year"></select>`);
+      dfDollar8(caption).html(`<select class="calendar-select" data-part="month" aria-label="Month">${names2(cal).months.map((n, m) => `<option value="${m}">${esc2(n)}</option>`).join("")}</select>` + `<select class="calendar-select" data-part="year" aria-label="Year"></select>`);
       if (heading)
         dfDollar8(heading).after(caption);
       else
@@ -8104,26 +8133,23 @@ var commandApi = componentState({
 });
 df$13.commandApi = commandApi;
 df$13.commandStates = commandStates;
-var commandKeydownAdded = false;
-if (!commandKeydownAdded) {
-  commandKeydownAdded = true;
-  document.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      const dialog = dfDollar13("dialog.command").get(0);
-      if (!dialog)
-        return;
-      e.preventDefault();
-      if (dialog.open) {
-        dialog.close();
-      } else {
-        dialog.showModal();
-        const input = dfDollar13(dialog).find(".command-input").get(0);
-        if (input)
-          input.focus();
-      }
-    }
-  });
-}
+bindGlobalKeys((e) => {
+  if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== "k")
+    return;
+  const dialog = dfDollar13("dialog.command").get(0);
+  if (!dialog)
+    return;
+  e.preventDefault();
+  if (dialog.open)
+    dialog.close();
+  else {
+    dialog.showModal();
+    const input = dfDollar13(dialog).find(".command-input").get(0);
+    if (input)
+      input.focus();
+  }
+  return true;
+}, { editable: true });
 function getVisibleItems(list) {
   return Array.from(dfDollar13(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
 }
@@ -9339,22 +9365,23 @@ var dfDollar16 = defussQuery();
 var dataGridStates = ["default", "loading", "empty"];
 var SAVED_KEYS = ["filters", "sorters", "locked", "expanded"];
 var numberFormat = new Map;
-function format3(value, spec) {
+function format3(value, spec, el) {
   if (value == null)
     return "";
   if (!spec)
     return String(value);
+  const locale = textLocale(el);
   if (spec === "date") {
     const date = value instanceof Date ? value : new Date(value);
-    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString(locale);
   }
-  if (!numberFormat.has(spec)) {
+  const key = `${locale}|${spec}`;
+  if (!numberFormat.has(key)) {
     const [style, currency] = spec.split(":");
-    numberFormat.set(spec, new Intl.NumberFormat(undefined, style === "currency" ? { style, currency: currency || "USD" } : style === "percent" ? { style, maximumFractionDigits: 1 } : {}));
+    numberFormat.set(key, new Intl.NumberFormat(locale, style === "currency" ? { style, currency: currency || "USD" } : style === "percent" ? { style, maximumFractionDigits: 1 } : {}));
   }
-  return typeof value === "number" ? numberFormat.get(spec).format(value) : String(value);
+  return typeof value === "number" ? numberFormat.get(key).format(value) : String(value);
 }
-var count = (n) => format3(n, "number");
 var headerRowOf = (root) => dfDollar16(root).find(".data-grid-head > .data-grid-row").get(0);
 var headersOf = (root) => {
   const row = headerRowOf(root);
@@ -9568,7 +9595,7 @@ function fillCell(grid, cell, column, entry, first) {
   } else {
     const text = document.createElement("span");
     text.className = "data-grid-content";
-    text.textContent = format3(record[column.field], column.format);
+    text.textContent = format3(record[column.field], column.format, grid);
     cell.append(text);
   }
 }
@@ -9637,6 +9664,7 @@ function renderRows(grid) {
   }
 }
 function renderFooter(grid, config) {
+  const count = (n) => format3(n, "number", grid);
   const footer = grid._parts.footer;
   if (!footer)
     return;
@@ -10945,9 +10973,23 @@ function measure(canvas) {
   }
   return { nodes, rectOf };
 }
+var FIT_MIN = 0.7;
+function fit(root, canvas) {
+  if (canvas.parentElement !== root)
+    return;
+  canvas.style.zoom = "";
+  if (root.dataset.fit === "none")
+    return;
+  const natural = canvas.offsetWidth;
+  const avail = root.clientWidth;
+  const z = natural > avail + 1 ? Math.max(FIT_MIN, Math.floor(avail / natural * 1000) / 1000) : 1;
+  if (z < 1)
+    canvas.style.zoom = String(z);
+}
 function draw2(root, canvas) {
   if (!canvas.isConnected || !canvas.getClientRects().length)
     return;
+  fit(root, canvas);
   const { nodes, rectOf } = measure(canvas);
   const panel = panelOf(canvas);
   const wires = layer(canvas, "diagram-wires", () => {
@@ -12693,7 +12735,7 @@ function accepts(input, file) {
   const type = (file.type || "").toLowerCase();
   return list.some((a) => a.startsWith(".") ? name.endsWith(a) : a.endsWith("/*") ? type.startsWith(a.slice(0, -1)) : type === a);
 }
-var lang = (el) => el.closest("[lang]")?.lang || undefined;
+var lang = (el) => textLocale(el);
 function formatSize(el, bytes) {
   const units = ["byte", "kilobyte", "megabyte", "gigabyte"];
   let i = 0;
@@ -13637,7 +13679,7 @@ var numberInputStates = ["default"];
 var getInput2 = (wrapper) => dfDollar27(wrapper).find('input:not([type="hidden"])').get(0);
 function currencyConfig(wrapper) {
   const currency = String(wrapper.dataset.currency || "USD").toUpperCase();
-  const locale = wrapper.dataset.locale || wrapper.closest("[lang]")?.getAttribute("lang") || navigator.language;
+  const locale = wrapper.dataset.locale || textLocale(wrapper);
   const currencyDisplay = wrapper.dataset.currencyDisplay || "symbol";
   const money = new Intl.NumberFormat(locale, { style: "currency", currency, currencyDisplay });
   const parts = money.formatToParts(1234567.5);
@@ -14892,9 +14934,19 @@ var reducedMotion5 = () => globalThis.matchMedia?.("(prefers-reduced-motion: red
 var maxOf = (el) => el.max || 1;
 var clamp2 = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
 var round = (v) => Math.round(v * 10) / 10;
-var pctFmt = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
-var numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+var formats = new Map;
+var fmtFor = (node) => {
+  const locale = textLocale(node);
+  if (!formats.has(locale)) {
+    formats.set(locale, {
+      pct: new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }),
+      num: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+    });
+  }
+  return formats.get(locale);
+};
 function text(out, el) {
+  const { pct: pctFmt, num: numFmt } = fmtFor(out);
   const v = el.position < 0 ? null : el.value;
   const max = maxOf(el);
   if (v == null)
@@ -16680,6 +16732,135 @@ function toMermaid(root) {
   return lines.join(`
 `);
 }
+function toDiagram(root, { title = "" } = {}) {
+  const { nodes, edges } = analyze(root);
+  const walk = cfgOf(root);
+  const start = root._flow.start;
+  const rank = new Map([[start, 0]]);
+  for (let pass = 0;pass <= nodes.length; pass++) {
+    let moved = false;
+    for (const e of edges) {
+      if (!rank.has(e.from))
+        continue;
+      const r = rank.get(e.from) + 1;
+      if ((rank.get(e.to) ?? -1) < r) {
+        rank.set(e.to, r);
+        moved = true;
+      }
+    }
+    if (!moved)
+      break;
+  }
+  let bottom = Math.max(0, ...rank.values());
+  for (const n of nodes)
+    if (!rank.has(n.id))
+      rank.set(n.id, ++bottom);
+  const rows = new Map;
+  for (const n of nodes) {
+    const r = rank.get(n.id);
+    if (!rows.has(r))
+      rows.set(r, []);
+    rows.get(r).push(n.id);
+  }
+  const cols = Math.max(1, ...[...rows.values()].map((ids) => ids.length));
+  const col = new Map;
+  for (const ids of rows.values())
+    ids.forEach((id, i) => col.set(id, Math.floor((cols - ids.length) / 2) + i + 1));
+  const taken = walk ? walk.history.slice(0, walk.index + 1) : [];
+  const walked = new Set(taken.slice(1).map((to, i) => `${taken[i]}->${to}`));
+  const last = taken.length > 1 ? `${taken[taken.length - 2]}->${taken[taken.length - 1]}` : "";
+  return {
+    type: "flow",
+    ...title ? { title } : {},
+    cols,
+    interactive: true,
+    nodes: nodes.map((n) => ({
+      id: n.id,
+      name: n.title || n.id,
+      ...n.id === start ? { eyebrow: "Start" } : n.end ? { eyebrow: "End" } : {},
+      col: col.get(n.id),
+      row: rank.get(n.id) + 1,
+      ...n.end ? { shape: "pill" } : {},
+      ...walk && n.id === walk.step ? { tone: "accent" } : taken.includes(n.id) ? { tone: "muted" } : {}
+    })),
+    edges: edges.map((e) => {
+      const ref = `${e.from}->${e.to}`;
+      return {
+        from: e.from,
+        to: e.to,
+        ...e.label ? { label: e.label } : {},
+        ...rank.get(e.to) - rank.get(e.from) > 1 && col.get(e.to) === col.get(e.from) ? { curve: "around" } : {},
+        ...walked.has(ref) ? { tone: "accent" } : { line: "dashed" },
+        ...ref === last ? { flow: true } : {}
+      };
+    })
+  };
+}
+function linkDiagram(root, figure) {
+  const diagram = df$37.diagram;
+  if (!diagram?.build)
+    throw new Error("questionnaire.linkDiagram: the diagram component is not loaded (df$.shadcn.diagram)");
+  figure._questionnaireUnlink?.();
+  let syncing = false;
+  let drawn = "";
+  const focus = () => {
+    syncing = true;
+    try {
+      if (figure.api?.getState().name === "active")
+        figure.api.setState("default");
+    } finally {
+      syncing = false;
+    }
+  };
+  const draw = () => {
+    const walk = cfgOf(root);
+    if (!walk)
+      return;
+    const key = `${walk.step}|${walk.history.join(",")}|${walk.index}`;
+    if (key === drawn)
+      return;
+    drawn = key;
+    diagram.build(figure, toDiagram(root, { title: figure.getAttribute("aria-label") || "" }));
+    focus();
+  };
+  const refuse = (to, reason) => {
+    const walk = cfgOf(root);
+    focus();
+    const step = stepById(root, walk.step);
+    const target = stepById(root, to);
+    if (reason === "unreached")
+      notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
+    root.dispatchEvent(new CustomEvent("questionnaire-jump-refused", { bubbles: true, detail: { to, step: walk.step, reason } }));
+  };
+  const onActivate = (e) => {
+    if (syncing)
+      return;
+    const walk = cfgOf(root);
+    const to = e.detail?.kind === "node" ? e.detail.ref : null;
+    if (!walk || !to || to === walk.step)
+      return void focus();
+    if (walk.history.includes(to))
+      return void goTo2(root, to);
+    const step = stepById(root, walk.step);
+    const answers = step && !isEnd(step) ? mergeAnswers(walk.answers, readStep(step)) : walk.answers;
+    if (to === nextOf(root, walk.step, answers)) {
+      if (!advance(root))
+        refuse(to, "invalid");
+      return;
+    }
+    refuse(to, "unreached");
+  };
+  dfDollar36(figure).on("diagram-activate", onActivate);
+  const off = root.store.subscribe(draw);
+  draw();
+  const unlink = () => {
+    off?.();
+    dfDollar36(figure).off("diagram-activate", onActivate);
+    delete figure._questionnaireUnlink;
+  };
+  figure._questionnaireUnlink = unlink;
+  return unlink;
+}
 var resolve9 = (target) => typeof target === "string" ? dfDollar36(target).get(0) : target;
 df$37.questionnaire = {
   configure(target, config = {}) {
@@ -16703,7 +16884,9 @@ df$37.questionnaire = {
   },
   nextOf: (target, stepId, answers) => nextOf(resolve9(target), stepId, answers ?? cfgOf(resolve9(target)).answers),
   analyze: (target) => analyze(resolve9(target)),
-  toMermaid: (target) => toMermaid(resolve9(target))
+  toMermaid: (target) => toMermaid(resolve9(target)),
+  toDiagram: (target, options) => toDiagram(resolve9(target), options),
+  linkDiagram: (target, figure) => linkDiagram(resolve9(target), resolve9(figure))
 };
 function attachDraft(root, config) {
   root._draft?.destroy();
@@ -16861,24 +17044,34 @@ var maxOf2 = (el) => parseFloat(el.getAttribute("aria-valuemax") || "") || 100;
 var valueOf2 = (el) => el.hasAttribute("aria-valuenow") ? parseFloat(el.getAttribute("aria-valuenow")) || 0 : null;
 var clamp3 = (el, v) => Math.max(0, Math.min(maxOf2(el), Number(v) || 0));
 var round2 = (v) => Math.round(v * 10) / 10;
-var pctFmt2 = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
-var numFmt2 = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+var formats2 = new Map;
+var fmtFor2 = (node) => {
+  const locale = textLocale(node);
+  if (!formats2.has(locale)) {
+    formats2.set(locale, {
+      pct: new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }),
+      num: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+    });
+  }
+  return formats2.get(locale);
+};
 function text2(el) {
+  const { pct: pctFmt, num: numFmt } = fmtFor2(el);
   const v = valueOf2(el);
   const max = maxOf2(el);
   if (v == null)
     return el.dataset.indeterminate ?? "…";
   const tpl = el.dataset.template;
   if (tpl) {
-    return tpl.replaceAll("{value}", numFmt2.format(Math.round(v))).replaceAll("{max}", numFmt2.format(max)).replaceAll("{percent}", pctFmt2.format(v / max));
+    return tpl.replaceAll("{value}", numFmt.format(Math.round(v))).replaceAll("{max}", numFmt.format(max)).replaceAll("{percent}", pctFmt.format(v / max));
   }
   switch (el.dataset.format) {
     case "fraction":
-      return `${numFmt2.format(Math.round(v))} / ${numFmt2.format(max)}`;
+      return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
     case "value":
-      return numFmt2.format(Math.round(v));
+      return numFmt.format(Math.round(v));
     default:
-      return pctFmt2.format(v / max);
+      return pctFmt.format(v / max);
   }
 }
 function labelTarget(el) {
@@ -18034,7 +18227,7 @@ function formatterOf(el) {
     Object.assign(opts, { style: "currency", currency: d.currency });
   else if (d.unit)
     Object.assign(opts, { style: "unit", unit: d.unit, unitDisplay: d.unitDisplay || "short" });
-  const lang = el.closest("[lang]")?.lang || undefined;
+  const lang = textLocale(el);
   try {
     return new Intl.NumberFormat(lang, opts);
   } catch {
@@ -18632,7 +18825,7 @@ function sortBy(table, col, direction) {
   const body = bodyOf(table);
   if (!body)
     return;
-  const lang = table.closest("[lang]")?.lang || undefined;
+  const lang = textLocale(table);
   const collator = new Intl.Collator(lang, { numeric: true, sensitivity: "base" });
   const dir = direction === "descending" ? -1 : 1;
   const rows = bodyRows(table);
@@ -21027,6 +21220,6 @@ df$58.win = {
 init58();
 new MutationObserver(init58).observe(document, { childList: true, subtree: true });
 
-//# debugId=DB0BE39C6E5A070364756E2164756E21
+//# debugId=E99DBEE249F2913F64756E2164756E21
 /* defuss-shadcn v0.9.4 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -79,37 +79,163 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="In a control" schema="none" hint="Inside a button the key drops its own surface and borrows the button's text colour through color-mix - one rule for every variant, legible on the dark primary button and the outline one alike."
+```html example label="In a control" schema="none" hint="Inside a button the key drops its own surface and borrows the button's text colour through color-mix - legible on the dark primary button and the outline one alike. The shortcuts work: click into the preview, then press ⌘K, ⌘S or ⌘Z (Ctrl on Windows / Linux) - the page registers them with the shared global key API (df$.shadcn.shared.bindGlobalKeys), the key goes down (data-pressed) and the button's action runs."
 <div class="flex flex-wrap items-center gap-3">
-  <button class="btn" data-variant="outline">Search <kbd class="kbd" data-size="sm">⌘K</kbd></button>
-  <button class="btn" data-variant="default">Save <kbd class="kbd" data-size="sm">⌘S</kbd></button>
-  <button class="btn" data-variant="ghost">Undo <kbd class="kbd" data-size="sm">⌘Z</kbd></button>
+  <button class="btn" data-variant="outline" data-action="k">Search <kbd class="kbd" data-size="sm" data-shortcut="k">⌘K</kbd></button>
+  <button class="btn" data-variant="default" data-action="s">Save <kbd class="kbd" data-size="sm" data-shortcut="s">⌘S</kbd></button>
+  <button class="btn" data-variant="ghost" data-action="z">Undo <kbd class="kbd" data-size="sm" data-shortcut="z">⌘Z</kbd></button>
 </div>
+<output id="kbd-control-log" class="text-sm text-muted-foreground" style="display:block;margin-top:0.75rem;">Click into the preview, then press ⌘K, ⌘S or ⌘Z.</output>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const actions = {
+      k: 'Search opened',
+      s: 'Saved',
+      z: 'Last change undone',
+    };
+    const run = (key) => {
+      // the key goes down while the action runs - the reader sees it was heard
+      const keys = df$('[data-shortcut="' + key + '"]').attr('data-pressed', '');
+      setTimeout(() => keys.attr('data-pressed', null), 160);
+      df$('#kbd-control-log').text(actions[key] + ' at ' + new Date().toLocaleTimeString('en'));
+    };
+    df$('[data-action]').on('click', (e) => run(e.currentTarget.dataset.action));
+    // one shared, typing-safe listener for the whole page; ⌘ on macOS, Ctrl elsewhere
+    df$.shadcn.shared.bindGlobalKeys((e) => {
+      const key = e.key.toLowerCase();
+      if (!(e.metaKey || e.ctrlKey) || e.shiftKey || e.altKey || !(key in actions)) return;
+      e.preventDefault(); // ⌘S would save the page, ⌘K focus the address bar
+      run(key);
+      return true;
+    });
+  });
+</script>
 ```
 
-```html example label="In prose" schema="none" hint="Keys sit on the text baseline, so they read inside a sentence."
+```html example label="In prose" schema="none" height="26" hint="Keys sit on the text baseline, so they read inside a sentence. And the sentence is true: click into the preview and press ⌘K (Ctrl+K) - the command palette registers that key with the shared global key API - then Esc to dismiss it."
 <p class="p" style="max-width:28rem;">
-  Press <kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd></kbd> to open the command palette, or <kbd class="kbd">Esc</kbd> to dismiss it.
+  Press <kbd class="kbd-group"><kbd class="kbd" data-shortcut="k">⌘</kbd><kbd class="kbd" data-shortcut="k">K</kbd></kbd> to open the command palette, or <kbd class="kbd" data-shortcut="escape">Esc</kbd> to dismiss it.
 </p>
+<dialog id="kbd-prose-palette" class="command" aria-label="Command palette">
+  <div class="command-content">
+    <div class="command-input-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <input class="command-input" type="text" placeholder="Type a command…" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="command-list">
+      <div class="command-group">
+        <p class="command-group-heading">Suggestions</p>
+        <button class="command-item">New document</button>
+        <button class="command-item">Search files</button>
+        <button class="command-item">Settings</button>
+      </div>
+    </div>
+    <div class="command-empty" hidden>No results found.</div>
+  </div>
+</dialog>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // the palette's ⌘K runs through df$.shadcn.shared.bindGlobalKeys (the command
+    // component registers it); the keys in the sentence go down as they are pressed
+    const press = (key) => {
+      const keys = df$('[data-shortcut="' + key + '"]').attr('data-pressed', '');
+      setTimeout(() => keys.attr('data-pressed', null), 160);
+    };
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') press('k');
+      if (e.key === 'Escape') press('escape');
+    }, true);
+  });
+</script>
 ```
 
-```html example label="In a menu" schema="none" hint="Shortcuts in dropdown items blend in the same way - the key takes the item's colour, including the highlighted and destructive states." height="22"
-<button class="btn" data-variant="outline" data-dropdown-trigger="kbd-menu">Edit</button>
-<div id="kbd-menu" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:13rem;">
-  <button role="menuitem" class="dropdown-item" tabindex="-1">Undo <span class="dropdown-shortcut"><kbd class="kbd-group"><kbd class="kbd" data-size="sm">⌘</kbd><kbd class="kbd" data-size="sm">Z</kbd></kbd></span></button>
-  <button role="menuitem" class="dropdown-item" tabindex="-1">Redo <span class="dropdown-shortcut"><kbd class="kbd-group"><kbd class="kbd" data-size="sm">⌘</kbd><kbd class="kbd" data-size="sm">⇧</kbd><kbd class="kbd" data-size="sm">Z</kbd></kbd></span></button>
-  <div class="dropdown-separator" role="separator"></div>
-  <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">Delete <span class="dropdown-shortcut"><kbd class="kbd" data-size="sm">⌫</kbd></span></button>
+```html example label="In a menu" schema="none" hint="Shortcuts in dropdown items blend in the same way - the key takes the item's colour, including the highlighted and destructive states. They work as written: click into the preview, then ⌫ deletes the last tag, ⌘Z brings it back, ⌘⇧Z deletes it again - the same actions the menu items run." height="24"
+<div class="flex flex-wrap items-center gap-3">
+  <button class="btn" data-variant="outline" data-dropdown-trigger="kbd-menu">Edit</button>
+  <span id="kbd-tags" class="flex flex-wrap gap-2"></span>
 </div>
+<div id="kbd-menu" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:13rem;">
+  <button role="menuitem" class="dropdown-item" tabindex="-1" data-edit="undo">Undo <span class="dropdown-shortcut"><kbd class="kbd-group"><kbd class="kbd" data-size="sm" data-shortcut="undo">⌘</kbd><kbd class="kbd" data-size="sm" data-shortcut="undo">Z</kbd></kbd></span></button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1" data-edit="redo">Redo <span class="dropdown-shortcut"><kbd class="kbd-group"><kbd class="kbd" data-size="sm" data-shortcut="redo">⌘</kbd><kbd class="kbd" data-size="sm" data-shortcut="redo">⇧</kbd><kbd class="kbd" data-size="sm" data-shortcut="redo">Z</kbd></kbd></span></button>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-edit="delete">Delete <span class="dropdown-shortcut"><kbd class="kbd" data-size="sm" data-shortcut="delete">⌫</kbd></span></button>
+</div>
+<output id="kbd-menu-log" class="text-sm text-muted-foreground" style="display:block;margin-top:0.75rem;">Click into the preview, then press ⌫, ⌘Z or ⌘⇧Z.</output>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tags = ['design', 'review', 'ship'];
+    const removed = [];
+    const render = () => df$('#kbd-tags').html(tags.map((t) => '<span class="badge" data-variant="secondary">' + t + '</span>').join(''));
+    const edits = {
+      delete: () => { if (tags.length) removed.push(tags.pop()); return 'Deleted the last tag'; },
+      undo: () => { if (removed.length) tags.push(removed.pop()); return 'Undone'; },
+      redo: () => { if (tags.length) removed.push(tags.pop()); return 'Redone'; },
+    };
+    const run = (name) => {
+      const keys = df$('[data-shortcut="' + name + '"]').attr('data-pressed', '');
+      setTimeout(() => keys.attr('data-pressed', null), 160);
+      df$('#kbd-menu-log').text(edits[name]() + ' - ' + tags.length + ' of 3 tags left');
+      render();
+    };
+    render();
+    df$('[data-edit]').on('click', (e) => run(e.currentTarget.dataset.edit));
+    df$.shadcn.shared.bindGlobalKeys((e) => {
+      const mod = e.metaKey || e.ctrlKey;
+      const name = mod && e.key.toLowerCase() === 'z' ? (e.shiftKey ? 'redo' : 'undo') : !mod && (e.key === 'Backspace' || e.key === 'Delete') ? 'delete' : null;
+      if (!name) return;
+      e.preventDefault();
+      run(name);
+      return true;
+    });
+  });
+</script>
 ```
 
-```html example label="In a tooltip" schema="none" hint="On a tooltip's inverted surface the key borrows the tooltip's colours too - hover or focus the button."
-<button class="btn" data-variant="outline" data-tooltip-trigger="kbd-tip">Bold</button>
-<div class="tooltip" id="kbd-tip" popover="hint" role="tooltip">Bold <kbd class="kbd-group"><kbd class="kbd" data-size="sm">⌘</kbd><kbd class="kbd" data-size="sm">B</kbd></kbd></div>
+```html example label="In a tooltip" schema="none" hint="On a tooltip's inverted surface the key borrows the tooltip's colours too - hover or focus the button. And ⌘B (Ctrl+B) does what the tooltip says: click into the preview and press it - registered with the shared global key API, the button and the text follow."
+<div class="flex flex-wrap items-center gap-3">
+  <button class="btn" data-variant="outline" data-tooltip-trigger="kbd-tip" aria-pressed="false" id="kbd-bold">Bold</button>
+  <p class="p" id="kbd-bold-text" style="margin:0;">The quick brown fox jumps over the lazy dog.</p>
+</div>
+<div class="tooltip" id="kbd-tip" popover="hint" role="tooltip">Bold <kbd class="kbd-group"><kbd class="kbd" data-size="sm" data-shortcut="b">⌘</kbd><kbd class="kbd" data-size="sm" data-shortcut="b">B</kbd></kbd></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = () => {
+      const on = df$('#kbd-bold').attr('aria-pressed') !== 'true';
+      df$('#kbd-bold').attr('aria-pressed', String(on));
+      df$('#kbd-bold-text').get(0).style.fontWeight = on ? '700' : '';
+      const keys = df$('[data-shortcut="b"]').attr('data-pressed', '');
+      setTimeout(() => keys.attr('data-pressed', null), 160);
+    };
+    df$('#kbd-bold').on('click', toggle);
+    df$.shadcn.shared.bindGlobalKeys((e) => {
+      if (!(e.metaKey || e.ctrlKey) || e.shiftKey || e.altKey || e.key.toLowerCase() !== 'b') return;
+      e.preventDefault();
+      toggle();
+      return true;
+    });
+  });
+</script>
 ```
 
-```html example label="Decorative shortcuts" schema="none" hint="No ARIA: <kbd> carries the meaning and its text is the label. When the shortcut only decorates a control that already names its action, hide it with aria-hidden."
-<button class="btn" data-variant="secondary">Open command palette <kbd class="kbd" data-size="sm" aria-hidden="true">⌘K</kbd></button>
+```html example label="Decorative shortcuts" schema="none" height="26" hint="No ARIA: <kbd> carries the meaning and its text is the label. When the shortcut only decorates a control that already names its action, hide it with aria-hidden. It still works - the button opens the palette, and so does ⌘K (Ctrl+K) once the preview has the focus: the command component registers it with the shared global key API."
+<button class="btn" data-variant="secondary" data-command-trigger="kbd-palette">Open command palette <kbd class="kbd" data-size="sm" aria-hidden="true">⌘K</kbd></button>
+<dialog id="kbd-palette" class="command" aria-label="Command palette">
+  <div class="command-content">
+    <div class="command-input-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <input class="command-input" type="text" placeholder="Type a command…" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="command-list">
+      <div class="command-group">
+        <p class="command-group-heading">Suggestions</p>
+        <button class="command-item">New document</button>
+        <button class="command-item">Search files</button>
+        <button class="command-item">Settings</button>
+      </div>
+    </div>
+    <div class="command-empty" hidden>No results found.</div>
+  </div>
+</dialog>
 ```
 
 <SourceFiles component="kbd" section="css" />

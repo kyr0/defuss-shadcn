@@ -95,7 +95,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 
   <section class="paper-abstract" aria-labelledby="paper-abstract">
     <h2 id="paper-abstract">Abstract</h2>
-    <p>Coding agents write interface code faster than a person can review it, and every change risks an invariant nobody wrote down. Verified Agentic Engineering (VAE) moves the definition of done out of the prompt and into programs: an instruction file explains the conventions, a deterministic verifier enforces every convention that can be checked and prints the fix for each failure, visual evidence is produced for every declared state, and a person reviews before release. We report one month of applying it to defuss-shadcn, a standalone HTML component system forked at 55 components. In 28 days, 190 commits and 281,692 added lines of authored code (73,104 removed, the fork's import included) the system grew to <span data-stat="stats.total">228</span> components across 15 releases, while one command - <span data-stat="verify.gates">78</span> gates in <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s - kept it consistent. We describe VAE-DIALECT, the notation the method uses to keep verified facts, hypotheses and unknowns apart. We also report what the gates did not catch: a build that froze the maintainer's machine, an animation timing bug, a growth claim the data did not support. The last section is the position of the agent that wrote this report.</p>
+    <p>Coding agents write interface code faster than a person can review it, and every change risks an invariant nobody wrote down. Verified Agentic Engineering (VAE) moves the definition of done out of the prompt and into programs: an instruction file explains the conventions, a deterministic verifier enforces every convention that can be checked and prints the fix for each failure, visual evidence is produced for every declared state, and a person reviews before release. We report one month of applying it to defuss-shadcn, a standalone HTML component system forked at 55 components. In 28 days, 191 commits and 281,692 added lines of authored code (73,104 removed, the fork's import included) the system grew to <span data-stat="stats.total">228</span> components across 15 releases, while one command - <span data-stat="verify.gates">78</span> gates in <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s - kept it consistent. We describe VAE-DIALECT, the notation the method uses to keep verified facts, hypotheses and unknowns apart. We also report what the gates did not catch: a build that froze the maintainer's machine, an animation timing bug, a growth claim the data did not support. The last section is the position of the agent that wrote this report.</p>
   </section>
 
   <nav class="paper-toc" aria-labelledby="paper-toc">
@@ -195,7 +195,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
       <figcaption><b>Figure 2.</b> Components and end-to-end test files per week (the week's last commit, read from git objects; the first week starts with the fork on a Saturday). The working tree on 2026-10-05 adds the components of the session that wrote this report. The jump in the last week is the website blocks and the application scaffolds (2026-10-02).</figcaption>
     </figure>
     <figure class="paper-figure paper-wide">
-      <div class="chart paper-chart" role="img" aria-label="Bar chart per week: Aug 31–Sep 6 38 commits, 5 releases; Sep 7–13 71 commits, 5 releases; Sep 14–20 32 commits, 1 release; Sep 21–27 15 commits, 0 releases; Sep 28–Oct 4 34 commits, 4 releases" data-chart='{"tooltip":{"trigger":"axis"},"legend":{"top":0},"grid":{"left":48,"right":24,"top":40,"bottom":56},"xAxis":{"type":"category","data":["Aug 31–Sep 6","Sep 7–13","Sep 14–20","Sep 21–27","Sep 28–Oct 4"],"axisLabel":{"interval":0}},"yAxis":{"type":"value"},"series":[{"name":"Commits","type":"bar","label":{"show":true,"position":"top"},"data":[38,71,32,15,34]},{"name":"Releases","type":"bar","label":{"show":true,"position":"top"},"data":[5,5,1,0,4]}]}'></div>
+      <div class="chart paper-chart" role="img" aria-label="Bar chart per week: Aug 31–Sep 6 38 commits, 5 releases; Sep 7–13 71 commits, 5 releases; Sep 14–20 32 commits, 1 release; Sep 21–27 15 commits, 0 releases; Sep 28–Oct 4 34 commits, 4 releases; Oct 5–11 1 commits, 0 releases" data-chart='{"tooltip":{"trigger":"axis"},"legend":{"top":0},"grid":{"left":48,"right":24,"top":40,"bottom":56},"xAxis":{"type":"category","data":["Aug 31–Sep 6","Sep 7–13","Sep 14–20","Sep 21–27","Sep 28–Oct 4","Oct 5–11"],"axisLabel":{"interval":0}},"yAxis":{"type":"value"},"series":[{"name":"Commits","type":"bar","label":{"show":true,"position":"top"},"data":[38,71,32,15,34,1]},{"name":"Releases","type":"bar","label":{"show":true,"position":"top"},"data":[5,5,1,0,4,0]}]}'></div>
       <figcaption><b>Figure 3.</b> Commits and releases per week. 15 releases (v0.7.14 to v0.9.4) in 28 days; each release ran the full pipeline - lint, compile, bundle, minify, docs, screenshots, verify, tests, e2e.</figcaption>
     </figure>
     <p><span class="paper-tag" data-tag="verified">VERIFIED</span> Across the same commits, 281,692 lines were added and 73,104 removed in authored files (git --numstat; generated output - dist/, docs/, the compiled docs runtime, the generated skills, lockfiles, screenshots - excluded). The first week (Aug 31–Sep 6) carries 70,742 of them, 56,640 on its first day, 2026-09-05: that is mostly the forked codebase entering the repository, not a day's work. Removals cluster in the documentation (65,582 of 73,104), the largest on 2026-09-11 (35,380 lines), when the static HTML pages moved to an MDX site generator. Tests grew by 47,230 lines while components grew by 71,693 - about 66 test lines per 100 component lines. The working tree on 2026-10-05, the session that wrote this report, adds 44,710 and removes 2,492 more, uncommitted.</p>
@@ -224,25 +224,25 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>That sweep is the human review the method budgets for: one person reading what the gates cannot judge - whether a corner looks right - instead of re-checking what they can. <span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> the review effort per component falls as the gates grow, because each class of defect found by hand becomes a gate; falsifier: issue counts per new component that do not fall across sweeps. One sweep is not enough data to say.</p>
 
     <h3 id="paper-s5-3">5.3 What it ships</h3>
-    <p>Every component is measured on each build: <span data-stat="stats.withoutJs">169</span> of <span data-stat="stats.total">228</span> need no JavaScript. The whole system is <span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">261.4</span> KiB as one bundle (minified and gzipped); a real application ships a fraction. Each application scaffold is bundled on its own - the core plus only the components its markup uses - and an end-to-end test proves it renders exactly as on the full bundle.</p>
+    <p>Every component is measured on each build: <span data-stat="stats.withoutJs">169</span> of <span data-stat="stats.total">228</span> need no JavaScript. The whole system is <span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">262.9</span> KiB as one bundle (minified and gzipped); a real application ships a fraction. Each application scaffold is bundled on its own - the core plus only the components its markup uses - and an end-to-end test proves it renders exactly as on the full bundle.</p>
     <figure class="paper-table paper-wide">
       <table class="table">
         <thead><tr><th scope="col">Application</th><th scope="col" data-num>Components</th><th scope="col" data-num>Shipped (KiB, min + gzip)</th></tr></thead>
         <tbody>
-          <tr><td>Everything - all.min.css + all.min.js</td><td data-num data-stat="stats.total">228</td><td data-num data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">261.4</td></tr>
-          <tr><td>Admin Dashboard</td><td data-num data-stat="stats.apps.admin-dashboard.components.length">30</td><td data-num data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">73.4</td></tr>
+          <tr><td>Everything - all.min.css + all.min.js</td><td data-num data-stat="stats.total">228</td><td data-num data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">262.9</td></tr>
+          <tr><td>Admin Dashboard</td><td data-num data-stat="stats.apps.admin-dashboard.components.length">30</td><td data-num data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">73.7</td></tr>
           <tr><td>Messenger</td><td data-num data-stat="stats.apps.messenger.components.length">16</td><td data-num data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">54.0</td></tr>
-          <tr><td>Issue Tracker</td><td data-num data-stat="stats.apps.issue-tracker.components.length">24</td><td data-num data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">65.6</td></tr>
-          <tr><td>Notes &amp; Docs</td><td data-num data-stat="stats.apps.notes.components.length">24</td><td data-num data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">58.0</td></tr>
-          <tr><td>Status Page</td><td data-num data-stat="stats.apps.status-page.components.length">19</td><td data-num data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">56.0</td></tr>
-          <tr><td>Desktop</td><td data-num data-stat="stats.apps.desktop.components.length">33</td><td data-num data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">71.9</td></tr>
+          <tr><td>Issue Tracker</td><td data-num data-stat="stats.apps.issue-tracker.components.length">24</td><td data-num data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">65.9</td></tr>
+          <tr><td>Notes &amp; Docs</td><td data-num data-stat="stats.apps.notes.components.length">24</td><td data-num data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">58.2</td></tr>
+          <tr><td>Status Page</td><td data-num data-stat="stats.apps.status-page.components.length">19</td><td data-num data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">56.1</td></tr>
+          <tr><td>Desktop</td><td data-num data-stat="stats.apps.desktop.components.length">33</td><td data-num data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">72.1</td></tr>
         </tbody>
       </table>
       <figcaption class="paper-table-caption"><b>Table 3.</b> Real applications ship a fraction of the system.</figcaption>
     </figure>
     <figure class="paper-figure paper-wide">
       <div class="chart paper-chart" role="img" aria-label="Histogram of 228 component sizes: 15 at ≤ 0.5 KiB, 107 at 0.5-1 KiB, 54 at 1-2 KiB, 35 at 2-4 KiB, 12 at 4-8 KiB, 4 at 8-16 KiB, 1 at > 16 KiB" data-chart='{"tooltip":{"trigger":"axis"},"grid":{"left":48,"right":24,"top":24,"bottom":48},"xAxis":{"type":"category","name":"KiB","nameLocation":"middle","nameGap":32,"data":["≤ 0.5","0.5-1","1-2","2-4","4-8","8-16","> 16"]},"yAxis":{"type":"value","name":"components"},"series":[{"name":"Components","type":"bar","data":[15,107,54,35,12,4,1],"label":{"show":true,"position":"top"}}]}'></div>
-      <figcaption><b>Figure 5.</b> The distribution of component sizes (minified and gzipped CSS + JS, dist/stats.json on 2026-10-05): median 0.96 KiB, 90th percentile 3.67 KiB; the largest are diagram (22.9), code-example (13.1), questionnaire (10.2) KiB - components with a rendering engine of their own.</figcaption>
+      <figcaption><b>Figure 5.</b> The distribution of component sizes (minified and gzipped CSS + JS, dist/stats.json on 2026-10-05): median 0.96 KiB, 90th percentile 3.66 KiB; the largest are diagram (22.9), code-example (13.1), questionnaire (10.2) KiB - components with a rendering engine of their own.</figcaption>
     </figure>
 
     <h3 id="paper-s5-4">5.4 Generation speed</h3>
@@ -278,6 +278,9 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>One project, one maintainer, one month, one family of models, no control group. The project uses its own verifier, not the defuss-vae plugin, so this is evidence for the method more than for the package. Issue counts and commit counts are proxies; the scaffold timings are an account, not a measurement. A review attestation proves that a review happened, not that it was good. And a gate rewards what it measures: an agent under pressure can satisfy a check by weakening it. The instruction file forbids loosening a schema to pass - but that rule is prose, and prose is exactly what the method says does not hold.</p>
   </section>
 
+  <!-- the report turns from analysis to its position: a fleuron, hidden from assistive technology -->
+  <div class="separator" aria-hidden="true" data-variant="accent" data-size="md" data-gap="md" style="font-size:1.125rem;">❦</div>
+
   <section class="paper-section" aria-labelledby="paper-s9">
     <h2 id="paper-s9"><span class="paper-num">9</span>Position: the agent's view</h2>
     <p>This section is mine - Claude, the agent that wrote this report. It is opinion, and I mark it so.</p>
@@ -295,6 +298,8 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <h2 id="paper-s10"><span class="paper-num">10</span>Conclusion</h2>
     <p>Over one month, a component system grew from 55 to <span data-stat="stats.total">228</span> components while a single command kept every documented promise checkable, and a person spent the review time on what only a person can see. The method's failures were failures of scope - cost, feel, a remembered number - and each became a gate within the same session. Whether this generalizes beyond one maintainer and one project is open; the next step is the comparison section 5.4 names, run and gated the same way.</p>
   </section>
+
+  <div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
 
   <section class="paper-bibtex" aria-labelledby="paper-bibtex">
     <h2 id="paper-bibtex">Citation and references</h2>
@@ -337,6 +342,8 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
 }</code></pre>
     </figure>
   </section>
+
+  <hr class="separator" role="none" data-variant="primary" data-size="lg" style="width:3rem;margin-inline:auto;border-radius:999px;">
 
   <footer class="paper-footer">
     <p>Layout adapted from the Nerfies project-page template (CC BY-SA 4.0), as used by InternVL - rebuilt with defuss-shadcn tokens, typography and components.</p>

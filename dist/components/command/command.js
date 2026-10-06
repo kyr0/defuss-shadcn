@@ -20,7 +20,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, bindGlobalKeys } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const commandStates = ['default', 'open'];
@@ -63,28 +63,26 @@ export const commandApi = componentState({
 });
 df$.commandApi = commandApi;
 df$.commandStates = commandStates;
-/* Cmd/Ctrl+K handler - added once at module level */
-let commandKeydownAdded = false;
-if (!commandKeydownAdded) {
-    commandKeydownAdded = true;
-    document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-            const dialog = dfDollar('dialog.command').get(0);
-            if (!dialog)
-                return;
-            e.preventDefault();
-            if (dialog.open) {
-                dialog.close();
-            }
-            else {
-                dialog.showModal();
-                const input = dfDollar(dialog).find('.command-input').get(0);
-                if (input)
-                    input.focus();
-            }
-        }
-    });
-}
+/* Cmd/Ctrl+K toggles the palette - through the shared global-key listener
+   (src/shared/keys.ts), opted in for editable targets: ⌘K must work while
+   typing in a field (the palette's own input included, where it closes it). */
+bindGlobalKeys((e) => {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== 'k')
+        return;
+    const dialog = dfDollar('dialog.command').get(0);
+    if (!dialog)
+        return;
+    e.preventDefault();
+    if (dialog.open)
+        dialog.close();
+    else {
+        dialog.showModal();
+        const input = dfDollar(dialog).find('.command-input').get(0);
+        if (input)
+            input.focus();
+    }
+    return true;
+}, { editable: true });
 function getVisibleItems(list) {
     return Array.from(dfDollar(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
 }

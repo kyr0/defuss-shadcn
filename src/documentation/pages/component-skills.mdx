@@ -26,24 +26,138 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"><code>dist/SKILL.md</code> is the generated entry point of the whole system - integration instructions, the library's philosophy, a map of the <code>dist/</code> layout, and one index entry per component (its taxonomy type, why to use it, when to reach for it, which files ship it, and which states it supports). It is built on every build from <code>SKILL\_tpl.md</code> plus each skill's frontmatter, so it can never drift from the skills it indexes.</p>
 
-```mermaid label="How a component skill ships" caption="Every build regenerates both indexes from the skills; verify fails the build when a skill's frontmatter is missing or an index lags behind it."
-flowchart LR
-    Skill["src/components/{name}/<br/>component-skill.md"]
-    Tpl["src/SKILL_tpl.md"]
-    Build["scripts/build.ts"]
-    Dist["dist/components/{name}/<br/>component-skill.md"]
-    Index["dist/SKILL.md"]
-    Root["skills/defuss-shadcn/SKILL.md<br/>+ references/"]
-    Verify{"scripts/verify.ts"}
-
-    Skill --> Build
-    Tpl --> Build
-    Build --> Dist
-    Build --> Index
-    Build --> Root
-    Verify -. "frontmatter" .-> Skill
-    Verify -. "index fresh" .-> Index
-    Verify -. "sources fresh" .-> Root
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "How a component skill ships",
+  "title": "Every build regenerates the indexes from the skills",
+  "caption": "verify fails the build when a skill’s frontmatter is missing or an index lags behind it. Play it, or click a node to see what feeds it and what checks it.",
+  "steps": true,
+  "autoplay": true,
+  "interactive": true,
+  "cols": 3,
+  "nodes": [
+    {
+      "id": "verify",
+      "name": "verify.ts",
+      "col": 1,
+      "row": 1,
+      "step": 4,
+      "shape": "diamond",
+      "tone": "warn"
+    },
+    {
+      "id": "skill",
+      "eyebrow": "Source",
+      "name": "component-skill.md",
+      "meta": "src/components/{name}/",
+      "col": 1,
+      "row": 2,
+      "step": 1
+    },
+    {
+      "id": "tpl",
+      "eyebrow": "Source",
+      "name": "SKILL_tpl.md",
+      "meta": "src/",
+      "col": 1,
+      "row": 4,
+      "step": 1
+    },
+    {
+      "id": "build",
+      "name": "scripts/build.ts",
+      "meta": "every build",
+      "col": 2,
+      "row": 3,
+      "step": 2,
+      "shape": "pill",
+      "tone": "accent"
+    },
+    {
+      "id": "dist",
+      "eyebrow": "Ships",
+      "name": "component-skill.md",
+      "meta": "dist/components/{name}/",
+      "col": 3,
+      "row": 2,
+      "step": 3
+    },
+    {
+      "id": "index",
+      "eyebrow": "Generated",
+      "name": "dist/SKILL.md",
+      "meta": "one entry per component",
+      "col": 3,
+      "row": 3,
+      "step": 3
+    },
+    {
+      "id": "root",
+      "eyebrow": "Generated",
+      "name": "skills/…/SKILL.md",
+      "meta": "the Agent Skill + references/",
+      "col": 3,
+      "row": 4,
+      "step": 3
+    }
+  ],
+  "edges": [
+    {
+      "from": "skill",
+      "to": "build",
+      "step": 2,
+      "flow": true
+    },
+    {
+      "from": "tpl",
+      "to": "build",
+      "step": 2,
+      "flow": true
+    },
+    {
+      "from": "build",
+      "to": "dist",
+      "step": 3,
+      "flow": true
+    },
+    {
+      "from": "build",
+      "to": "index",
+      "step": 3,
+      "flow": true
+    },
+    {
+      "from": "build",
+      "to": "root",
+      "step": 3,
+      "flow": true
+    },
+    {
+      "from": "verify",
+      "to": "skill",
+      "label": "frontmatter",
+      "line": "dashed",
+      "step": 4
+    },
+    {
+      "from": "verify",
+      "to": "index",
+      "label": "index fresh",
+      "line": "dashed",
+      "curve": "around",
+      "step": 4
+    },
+    {
+      "from": "verify",
+      "to": "root",
+      "label": "sources fresh",
+      "line": "dashed",
+      "curve": "around",
+      "step": 4
+    }
+  ]
+}
 ```
 
 <p class="text-sm text-muted-foreground mb-5"><strong>If you are an agent wiring this library into a project, point yourself at <a href="https://github.com/kyr0/defuss-shadcn/blob/main/dist/SKILL.md"><code>dist/SKILL.md</code></a> first</strong> - it tells you what to include, which skill to read next, and where the state screenshots live (<code>screenshots/\{light,dark\}/\{name\}-\{state\}.png</code> in the source repo), so you can look up exactly what an "open modal" or "collapsed sidebar" should look like before you build it.</p>

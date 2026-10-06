@@ -51,10 +51,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     const renderRow = (row, index) => {
       row.textContent = '';
       const label = document.createElement('span');
-      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      label.textContent = 'Item ' + (index + 1).toLocaleString('en');
       const meta = document.createElement('span');
       meta.className = 'virtual-list-row-meta';
-      meta.textContent = '#' + (index + 1).toLocaleString();
+      meta.textContent = '#' + (index + 1).toLocaleString('en');
       row.append(label, meta);
     };
     virtualList.setData(document.getElementById('vl-main'), 10_000_000, renderRow);
@@ -103,7 +103,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     });
     const count = document.getElementById('vl-records-count');
     const show = () => {
-      count.textContent = virtualList.rows(list).length.toLocaleString() + ' of 250,000 people';
+      count.textContent = virtualList.rows(list).length.toLocaleString('en') + ' of 250,000 people';
     };
     list.store.subscribe(show);
     show();
@@ -123,10 +123,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     const renderRow = (row, index) => {
       row.textContent = '';
       const label = document.createElement('span');
-      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      label.textContent = 'Item ' + (index + 1).toLocaleString('en');
       const meta = document.createElement('span');
       meta.className = 'virtual-list-row-meta';
-      meta.textContent = '#' + (index + 1).toLocaleString();
+      meta.textContent = '#' + (index + 1).toLocaleString('en');
       row.append(label, meta);
     };
     virtualList.setData(document.getElementById('vl-sm'), 1000, renderRow);
@@ -151,10 +151,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     const renderRow = (row, index) => {
       row.textContent = '';
       const label = document.createElement('span');
-      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      label.textContent = 'Item ' + (index + 1).toLocaleString('en');
       const meta = document.createElement('span');
       meta.className = 'virtual-list-row-meta';
-      meta.textContent = '#' + (index + 1).toLocaleString();
+      meta.textContent = '#' + (index + 1).toLocaleString('en');
       row.append(label, meta);
     };
     const list = document.getElementById('vl-jump');
@@ -182,7 +182,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       img.alt = '';
       figure.append(img);
       const label = document.createElement('span');
-      label.textContent = 'Photo ' + (index + 1).toLocaleString();
+      label.textContent = 'Photo ' + (index + 1).toLocaleString('en');
       cell.append(figure, label);
     });
   });
@@ -218,7 +218,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     });
     list.addEventListener('click', (e) => {
       const row = e.target.closest('.virtual-list-row');
-      if (row) document.getElementById('vl-picked').textContent = 'Picked contact #' + (Number(row.dataset.index) + 1).toLocaleString();
+      if (row) document.getElementById('vl-picked').textContent = 'Picked contact #' + (Number(row.dataset.index) + 1).toLocaleString('en');
     });
   });
 </script>
@@ -236,10 +236,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     const renderRow = (row, index) => {
       row.textContent = '';
       const label = document.createElement('span');
-      label.textContent = 'Item ' + (index + 1).toLocaleString();
+      label.textContent = 'Item ' + (index + 1).toLocaleString('en');
       const meta = document.createElement('span');
       meta.className = 'virtual-list-row-meta';
-      meta.textContent = '#' + (index + 1).toLocaleString();
+      meta.textContent = '#' + (index + 1).toLocaleString('en');
       row.append(label, meta);
     };
     const list = document.getElementById('vl-loading');

@@ -46,3 +46,40 @@ export function versionDrift(read: (file: string) => string, version: string): s
     return found === version ? [] : [`${s.file} says ${found} (${s.what}), package.json says ${version}`];
   });
 }
+
+/**
+ * Why: a CDN pin in the docs (`…/gh/kyr0/defuss-shadcn@v0.1.1/…` on the
+ * installation page) is a version site too - a reader copies it, so it must
+ * name the CURRENT release. Every `defuss-shadcn@vX.Y.Z` in the authored
+ * text listed by PIN_GLOBS is checked by verify's `pinned versions` gate and
+ * moved by scripts/bump-version.ts with the others. The docs/ release
+ * snapshot pins its own tag (scripts/lib/mirror.ts) and is not listed;
+ * changelog data quoting old releases is JSON, not listed either.
+ */
+export const PIN_RE = /defuss-shadcn@v(\d+\.\d+\.\d+(?:-[\w.]+)?)/g;
+
+/** repo-relative globs of the authored text whose CDN pins must name the release */
+export const PIN_GLOBS = [
+  'README.md',
+  'AGENTS.md',
+  'ARCH.md',
+  'src/**/*.{md,mdx,ts,tsx,html,css}',
+  'skills/**/*.md',
+  'dist/SKILL.md',
+  'dist/components/*/component-skill.md',
+];
+/** generated output inside PIN_GLOBS that is rebuilt from the sources above */
+export const PIN_IGNORE = /^src\/documentation\/(public\/js|dist)\//;
+
+/** Every pin in `text` that is not `version`, as "file:line pins vA, the release is vB". */
+export function pinDrift(file: string, text: string, version: string): string[] {
+  const out: string[] = [];
+  text.split('\n').forEach((line, i) => {
+    for (const m of line.matchAll(PIN_RE))
+      if (m[1] !== version) out.push(`${file}:${i + 1} pins defuss-shadcn@v${m[1]}, the release is v${version}`);
+  });
+  return out;
+}
+
+/** `text` with every pin moved to `version`. */
+export const rewritePins = (text: string, version: string): string => text.replace(PIN_RE, `defuss-shadcn@v${version}`);

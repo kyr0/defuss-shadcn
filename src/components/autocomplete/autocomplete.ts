@@ -12,7 +12,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent, dataSource, safeShowPopover } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, dataSource, safeShowPopover, textLocale } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -184,8 +184,9 @@ function describe(root) {
   const run = root._run;
   const n = run.records.length;
   if (!n) return;
-  const total = run.total !== undefined ? ` of ${run.total.toLocaleString()}` : '';
-  setStatus(root, run.loadingMore ? `${n.toLocaleString()}${total} · loading more…` : `${n.toLocaleString()}${total}${run.hasMore ? ' · scroll for more' : ''}`);
+  const num = (v) => v.toLocaleString(textLocale(root)); // the text's locale, never the browser's
+  const total = run.total !== undefined ? ` of ${num(run.total)}` : '';
+  setStatus(root, run.loadingMore ? `${num(n)}${total} · loading more…` : `${num(n)}${total}${run.hasMore ? ' · scroll for more' : ''}`);
 }
 
 /** move the active option (keyboard / pointer), keep it in view */

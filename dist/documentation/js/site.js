@@ -349,10 +349,9 @@
                     return;
                 io.unobserve(en.target);
                 var decimals = Number(en.target.dataset.countDecimals || 0);
-                shared.animateCount(en.target, {
-                    duration: 1600,
-                    format: function (n) { return n.toFixed(decimals); },
-                });
+                // the shared counter formats in the text's language (English here,
+                // like every other number on the page) - never the browser's
+                shared.animateCount(en.target, { duration: 1600, decimals: decimals });
             });
         }, { threshold: 0.6 });
         $('[data-stat-count]:not([data-counted])').each(function (_i, el) {

@@ -165,9 +165,15 @@ form.addEventListener('questionnaire-invalidate', (e) => console.log(e.detail.cl
 
 Registry: `df$.shadcn.questionnaireApi` / `df$.shadcn.questionnaireStates`;
 `df$.shadcn.questionnaire` has `configure`, `next`, `back`, `skip`, `goTo`,
-`restart`, `submit`, `answers`, `history`, `nextOf`, `analyze`, `toMermaid`.
+`restart`, `submit`, `answers`, `history`, `nextOf`, `analyze`, `toMermaid`,
+`toDiagram`, `linkDiagram`.
 Events: `questionnaire-step`, `questionnaire-invalid`,
-`questionnaire-invalidate`, `questionnaire-submit`.
+`questionnaire-invalidate`, `questionnaire-submit`, `questionnaire-jump-refused`.
+
+`linkDiagram(form, figure)` draws the flow into a `.diagram` figure (the
+Illustrative Diagram component must be loaded) and keeps it in step both
+ways: every move redraws it, and a click on a step moves the form - back to
+a step taken, forward only to the step the current answers lead to.
 
 ---
 
@@ -195,6 +201,8 @@ Events: `questionnaire-step`, `questionnaire-invalid`,
 | `nextOf(target, stepId, answers)` | where the answers lead from a step (the graph, evaluated) |
 | `analyze(target)` | Check the flow graph - { ok, errors, warnings, nodes, edges }. |
 | `toMermaid(target)` | The flow as a Mermaid flowchart, the walked path marked. |
+| `toDiagram(target, options)` | The flow as an Illustrative Diagram spec for df$.shadcn.diagram.build - steps ranked top-down, the walked path marked, the edge just walked flowing; { title } names it. |
+| `linkDiagram(target, figure)` | Link a .diagram figure both ways: it redraws on every move with the current step active, and a click moves the form - back to a step taken, forward only to the step the answers lead to; further on is refused (questionnaire-jump-refused). Returns the unlink function. |
 
 ### Events
 
@@ -202,6 +210,7 @@ Events: `questionnaire-step`, `questionnaire-invalid`,
 |---|---|---|
 | `questionnaire-invalid` | `step`, `message` | Fires when a step cannot be left - the step and the message shown. |
 | `questionnaire-invalidate` | `cause`, `changed`, `cleared` | Fires when a changed answer clears later answers - the step that changed, the fields that changed, the steps cleared. |
+| `questionnaire-jump-refused` | `to`, `step`, `reason` | Fires when a click on the linked diagram asks for a step the walk cannot reach yet - the step asked for, the current step and why: 'unreached' (further on) or 'invalid' (the current step does not validate). |
 | `questionnaire-step` | `step`, `from`, `answers` | Fires on every move forward - the new step, the one left, the answers. |
 | `questionnaire-submit` | `answers`, `history` | Fires when sent - the answers on the path and the steps taken. |
 

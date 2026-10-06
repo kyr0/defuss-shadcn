@@ -623,8 +623,10 @@
      stack-top-left / -top-right / -bottom-left / -bottom-right offset
      diagonally. Modifiers: stack-tight / stack-loose (step 4 / 14px,
      default 8px), stack-outline (hollow sheets, strong edge) /
-     stack-filled (solid sheets, no edge; the default is card sheets with a
-     border), stack-fade (each sheet further out fades toward --background -
+     stack-filled (solid sheets, no edge, each one a quarter closer to
+     --background than the one before - same-coloured sheets would merge
+     into one block; the default is card sheets with a border), stack-fade
+     (each sheet further out fades toward --background -
      opaque, so the pile never shows through itself). --shape-ink colors the
      edge (outline) or the sheets (filled). A stack IS the box-shadow: it
      replaces a shadow-* on the same element; leave room around it. Not to
@@ -638,13 +640,15 @@
     --_sf: var(--card);
     --_se: var(--shape-ink, var(--border));
     --_sa: 0%;
+    /* oklab: a straight line to the background - an oklch mix drifts the hue
+       (a violet ink faded into pink) */
     box-shadow:
-      calc(var(--_sx) * var(--_sk) * var(--_sd) * 1) calc(var(--_sy) * var(--_sk) * var(--_sd) * 1) 0 calc(calc(var(--_st) * var(--_sd) * -1) - 1px) color-mix(in oklch, var(--_sf) calc(100% - var(--_sa) * 1), var(--background)),
-      calc(var(--_sx) * var(--_sk) * var(--_sd) * 1) calc(var(--_sy) * var(--_sk) * var(--_sd) * 1) 0 calc(var(--_st) * var(--_sd) * -1) color-mix(in oklch, var(--_se) calc(100% - var(--_sa) * 1), var(--background)),
-      calc(var(--_sx) * var(--_sk) * var(--_sd) * 2) calc(var(--_sy) * var(--_sk) * var(--_sd) * 2) 0 calc(calc(var(--_st) * var(--_sd) * -2) - 1px) color-mix(in oklch, var(--_sf) calc(100% - var(--_sa) * 2), var(--background)),
-      calc(var(--_sx) * var(--_sk) * var(--_sd) * 2) calc(var(--_sy) * var(--_sk) * var(--_sd) * 2) 0 calc(var(--_st) * var(--_sd) * -2) color-mix(in oklch, var(--_se) calc(100% - var(--_sa) * 2), var(--background)),
-      calc(var(--_sx) * var(--_sk) * var(--_sd) * 3) calc(var(--_sy) * var(--_sk) * var(--_sd) * 3) 0 calc(calc(var(--_st) * var(--_sd) * -3) - 1px) color-mix(in oklch, var(--_sf) calc(100% - var(--_sa) * 3), var(--background)),
-      calc(var(--_sx) * var(--_sk) * var(--_sd) * 3) calc(var(--_sy) * var(--_sk) * var(--_sd) * 3) 0 calc(var(--_st) * var(--_sd) * -3) color-mix(in oklch, var(--_se) calc(100% - var(--_sa) * 3), var(--background));
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 1) calc(var(--_sy) * var(--_sk) * var(--_sd) * 1) 0 calc(calc(var(--_st) * var(--_sd) * -1) - 1px) color-mix(in oklab, var(--_sf) calc(100% - var(--_sa) * 1), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 1) calc(var(--_sy) * var(--_sk) * var(--_sd) * 1) 0 calc(var(--_st) * var(--_sd) * -1) color-mix(in oklab, var(--_se) calc(100% - var(--_sa) * 1), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 2) calc(var(--_sy) * var(--_sk) * var(--_sd) * 2) 0 calc(calc(var(--_st) * var(--_sd) * -2) - 1px) color-mix(in oklab, var(--_sf) calc(100% - var(--_sa) * 2), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 2) calc(var(--_sy) * var(--_sk) * var(--_sd) * 2) 0 calc(var(--_st) * var(--_sd) * -2) color-mix(in oklab, var(--_se) calc(100% - var(--_sa) * 2), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 3) calc(var(--_sy) * var(--_sk) * var(--_sd) * 3) 0 calc(calc(var(--_st) * var(--_sd) * -3) - 1px) color-mix(in oklab, var(--_sf) calc(100% - var(--_sa) * 3), var(--background)),
+      calc(var(--_sx) * var(--_sk) * var(--_sd) * 3) calc(var(--_sy) * var(--_sk) * var(--_sd) * 3) 0 calc(var(--_st) * var(--_sd) * -3) color-mix(in oklab, var(--_se) calc(100% - var(--_sa) * 3), var(--background));
   }
   /* centered + tapered: every sheet shrinks by half a step per side and
      moves 1.5 steps out - so it still peeks out one full step */
@@ -662,7 +666,9 @@
   :where(.stack-loose) { --_sd: 14px; }
   /* fill */
   :where(.stack-outline) { --_sf: var(--background); --_se: var(--shape-ink, var(--foreground)); }
-  :where(.stack-filled) { --_sf: var(--shape-ink, var(--muted-foreground)); --_se: var(--shape-ink, var(--muted-foreground)); }
+  /* filled sheets step toward the background (75 / 50 / 25 % ink) - sheets of
+     one solid colour would read as a single block, not a pile */
+  :where(.stack-filled) { --_sf: var(--shape-ink, var(--muted-foreground)); --_se: var(--shape-ink, var(--muted-foreground)); --_sa: 25%; }
   /* diminishing toward the outside: 28% more background per sheet */
   :where(.stack-fade) { --_sa: 28%; }
 

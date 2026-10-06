@@ -269,6 +269,49 @@ try {
     assert.match(src, /class q_tools current;/);
   });
 
+  await check('toDiagram: the flow as an Illustrative Diagram spec - ranked top-down, a skipping edge routed around, the walk marked', async () => {
+    const spec = await page.$eval('#q-dom', (el) => (globalThis as any).df$.shadcn.questionnaire.toDiagram(el, { title: 'Flow' }));
+    assert.equal(spec.type, 'flow');
+    assert.equal(spec.title, 'Flow');
+    assert.equal(spec.interactive, true);
+    assert.deepEqual(spec.nodes.map((n: any) => [n.id, n.row, n.col]), [['pick', 1, 1], ['x', 2, 1], ['y', 3, 1], ['end', 4, 1]]);
+    assert.equal(spec.nodes[0].eyebrow, 'Start');
+    assert.equal(spec.nodes[0].tone, 'accent', 'the current step');
+    assert.equal(spec.nodes[3].shape, 'pill');
+    const edge = (from: string, to: string) => spec.edges.find((e: any) => e.from === from && e.to === to);
+    assert.equal(edge('pick', 'y').curve, 'around', 'skips a rank in the same column: around the stack');
+    assert.equal(edge('pick', 'x').line, 'dashed', 'not walked yet');
+  });
+
+  await check('linkDiagram: the figure follows the form, a click moves it - back, the next step, never further', async () => {
+    const G = '#q-dom-graph';
+    const step = () => page.$eval('#q-dom', (el: any) => el.store.value.config.step);
+    const tone = (id: string) => page.$eval(`${G} .diagram-node[data-node="${id}"]`, (n) => (n as HTMLElement).dataset.tone ?? '');
+    await page.waitForSelector(`${G} .diagram-node[data-node="end"]`);
+    assert.equal(await tone('pick'), 'accent');
+    await page.$eval('#q-dom', (el) => { (globalThis as any).__refused = []; el.addEventListener('questionnaire-jump-refused', (e) => (globalThis as any).__refused.push((e as CustomEvent).detail)); });
+    // further on: refused, the form stays and says why
+    await page.click(`${G} .diagram-node[data-node="end"]`);
+    assert.equal(await step(), 'pick');
+    assert.deepEqual(await page.evaluate(() => (globalThis as any).__refused), [{ to: 'end', step: 'pick', reason: 'unreached' }]);
+    assert.match(await page.$eval('#q-dom', (el) => el.textContent ?? ''), /"End" is not reachable yet - answer "Pick" first\./);
+    // the next step, answered: the click moves on like Continue
+    await page.click('#q-dom input[value="a"]');
+    await page.click(`${G} .diagram-node[data-node="x"]`);
+    await page.waitForFunction(() => (document.querySelector('#q-dom') as any).store.value.config.step === 'x');
+    assert.equal(await tone('pick'), 'muted', 'a step taken');
+    assert.equal(await tone('x'), 'accent', 'the current step');
+    assert.equal(await page.$eval(`${G} .diagram-edge[data-from="pick"][data-to="x"]`, (e) => [(e as HTMLElement).dataset.tone, e.hasAttribute('data-flow')].join(',')), 'accent,true', 'the edge just walked: solid accent, a flow token');
+    // the next step, not answered: refused as invalid (the form shows its own message)
+    await page.click(`${G} .diagram-node[data-node="y"]`);
+    assert.equal(await step(), 'x');
+    assert.equal((await page.evaluate(() => (globalThis as any).__refused)).at(-1).reason, 'invalid');
+    // back to a step taken
+    await page.click(`${G} .diagram-node[data-node="pick"]`);
+    await page.waitForFunction(() => (document.querySelector('#q-dom') as any).store.value.config.step === 'pick');
+    assert.equal(await tone('pick'), 'accent');
+  });
+
   await check('keys from the page: with nothing focused, the questionnaire last worked in takes them - digits, auto-advance, a star rating, Enter', async () => {
     await page.click('#q-poll .questionnaire-title'); // work in the poll …
     await page.evaluate(() => (document.activeElement as HTMLElement)?.blur()); // … focus back on the page

@@ -93,7 +93,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         label.textContent = place.name;
         const meta = document.createElement('span');
         meta.className = 'autocomplete-meta';
-        meta.textContent = place.country + ' · ' + place.population.toLocaleString();
+        meta.textContent = place.country + ' · ' + place.population.toLocaleString('en');
         option.append(label, meta);
       },
     });

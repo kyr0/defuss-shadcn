@@ -9,7 +9,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, textLocale } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -29,7 +29,7 @@ function accepts(input, file) {
   return list.some((a) => (a.startsWith('.') ? name.endsWith(a) : a.endsWith('/*') ? type.startsWith(a.slice(0, -1)) : type === a));
 }
 
-const lang = (el) => el.closest('[lang]')?.lang || undefined;
+const lang = (el) => textLocale(el);
 
 /** 1536 → "1.5 kB" (Intl unit formatting, the locale's own). */
 function formatSize(el, bytes) {

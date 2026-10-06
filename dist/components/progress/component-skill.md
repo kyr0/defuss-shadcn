@@ -22,7 +22,7 @@ readouts just keep their authored text.
 - [`<progress>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress) - native progress indicator (implicit `progressbar` role, value / max)
 - [`<output for>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output) - the live readout, bound to the bar by id
 - [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) - `commandfor` + custom `command="--reset"` buttons drive the bar without script (a click fallback covers older browsers)
-- [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - locale-aware percent and numbers
+- [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - percent and numbers in the locale of the text (nearest `[lang]`, else `en`)
 - [`::-webkit-progress-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-bar) / [`::-webkit-progress-value`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-progress-value) - track and fill (WebKit)
 - [`::-moz-progress-bar`](https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-progress-bar) - fill (Firefox)
 - [`clip-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path) - the two-color label inside the bar

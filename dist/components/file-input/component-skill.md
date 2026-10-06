@@ -20,7 +20,7 @@ supportedStates: default, dragover, selected, error
 - [`DataTransfer`](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer) - rebuilds `input.files` (append, remove, filter)
 - [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) - `dragenter` / `dragleave` for the highlight
 - [`URL.createObjectURL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static) - image previews without reading the file
-- [`Intl.NumberFormat` units](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - "1.5 MB" in the reader's locale
+- [`Intl.NumberFormat` units](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - "1.5 MB" in the locale of the text (nearest `[lang]`, else `en`)
 
 ---
 

@@ -225,6 +225,7 @@ One annotated source → three panels: **Before** (added things hidden,
 | `data-before-style="--col:1;--row:2"` | node | Its placement in Before (moved) |
 | `data-before-from` / `data-before-to` | edge | Its ends in Before (rewired) |
 | `data-change-note` / `data-change-label` | changed element | Ledger text / name |
+| `data-fit="none"` | figure | Keep the canvas 1:1 - by default a figure narrower than its diagram scales the canvas down to fit (to 0.7; narrower still, it scrolls), and the column gaps give before that |
 | `data-delta="columns\|rows"` | figure | Force side by side / stacked (default: side by side from a 96rem container) |
 | `data-delta-labels="Then\|Delta\|Now"` | figure | Panel titles |
 

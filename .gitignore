@@ -26,3 +26,6 @@ issues/
 src/documentation/.ssg-temp/
 src/documentation/dist/
 src/documentation/public/js/
+
+# e2e fingerprints of the last passing runs (tests/e2e/run.ts)
+.cache/

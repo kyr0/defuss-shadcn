@@ -29,7 +29,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, textLocale } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 // id prefix source for calendars without their own #id (unique per element,
@@ -146,8 +146,19 @@ export const calendarApi = Object.assign(componentState({
 });
 df$.calendarApi = calendarApi;
 df$.calendarStates = calendarStates;
-const DAYS = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(new Date(2024, 0, i)));
-const MONTHS = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(undefined, { month: 'long' }).format(new Date(2024, i, 1)));
+/** weekday / month names and the full date, in the text's locale (the calendar's nearest [lang], else 'en') - one set per locale */
+const nameSets = new Map();
+function names(el) {
+    const locale = textLocale(el);
+    if (!nameSets.has(locale)) {
+        nameSets.set(locale, {
+            days: Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, i))),
+            months: Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2024, i, 1))),
+            full: new Intl.DateTimeFormat(locale, { dateStyle: 'full' }),
+        });
+    }
+    return nameSets.get(locale);
+}
 const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
 const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 const isToday = (year, month, day) => {
@@ -244,7 +255,6 @@ function syncRange(owner) {
 // them for all its calendars, otherwise the calendar itself.
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const MARK = /^[a-z][a-z0-9-]*$/;
-const FULL_DATE = new Intl.DateTimeFormat(undefined, { dateStyle: 'full' });
 function dayHolderOf(cal) {
     const owner = rangeOwnerOf(cal);
     return owner && owner.classList.contains('calendar-range') ? owner : cal;
@@ -279,7 +289,7 @@ function rerender(cal) {
     }
 }
 /** Attributes + button content for one day from the day map. */
-function dayData(days, iso) {
+function dayData(days, iso, full) {
     const d = days?.[iso];
     if (!d || typeof d !== 'object')
         return { attrs: '', note: '', aria: '', blocked: false };
@@ -293,7 +303,7 @@ function dayData(days, iso) {
         attrs += ` title="${esc(d.label)}"`;
     // the button names the full date plus the extras - a screen reader hears
     // "Friday, 25 December 2026, Christmas Day, €129", not just "25"
-    const aria = ` aria-label="${esc([FULL_DATE.format(isoToDate(iso)), d.label, note].filter(Boolean).join(', '))}"`;
+    const aria = ` aria-label="${esc([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(', '))}"`;
     return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : '', aria, blocked: d.disabled === true };
 }
 // -- Month / year picker ------------------------------------------------------------
@@ -314,7 +324,7 @@ function renderPicker(el) {
     let html = '';
     if (el.dataset.view === 'months') {
         const y = st.pickYear;
-        html = MONTHS.map((name, m) => {
+        html = names(el).months.map((name, m) => {
             const current = y === st.year && m === st.month ? ' aria-current="true"' : '';
             const today = y === now.getFullYear() && m === now.getMonth() ? ' data-today' : '';
             const off = monthOff(y, m, st.minDate, st.maxDate) ? ' disabled' : '';
@@ -342,7 +352,7 @@ function renderHeader(el) {
     if (heading) {
         const text = view === 'months' ? String(st.pickYear)
             : view === 'years' ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}`
-                : `${MONTHS[st.month]} ${st.year}`;
+                : `${names(el).months[st.month]} ${st.year}`;
         dfDollar(heading).text(text);
         if (heading.tagName === 'BUTTON') {
             dfDollar(heading).attr('aria-label', view === 'months' ? `${text}, choose a year`
@@ -441,7 +451,8 @@ function setView(el, view) {
     // Fires when the panel changes - the view (days, months, years) and the year and month it shows.
     el.dispatchEvent(new CustomEvent('calendar:view', { bubbles: true, detail: { view, year: st.year, month: st.month } }));
 }
-const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days) => {
+const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null)) => {
+    const full = locale.full;
     // range marks: endpoints + the span between them; while only the start is
     // chosen, the hovered/focused day previews the span (data-range-preview).
     // aria-selected marks the committed range for assistive tech.
@@ -470,7 +481,7 @@ const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, da
     const prevTotal = daysInMonth(year, month - 1);
     let html = '<thead><tr>';
     for (let d = 0; d < 7; d++) {
-        html += `<th class="calendar-day-label" scope="col">${DAYS[d]}</th>`;
+        html += `<th class="calendar-day-label" scope="col">${locale.days[d]}</th>`;
     }
     html += '</tr></thead><tbody>';
     let dayNum = 1;
@@ -483,7 +494,7 @@ const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, da
             if (cellIndex < startDay) {
                 const prevDay = prevTotal - startDay + cellIndex + 1;
                 const iso = isoDate(new Date(year, month - 1, prevDay));
-                const dd = dayData(days, iso);
+                const dd = dayData(days, iso, full);
                 // outside days honor the range too: clicking one selects there, so an
                 // out-of-range preview day must be disabled exactly like an in-month one
                 const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? ' data-disabled' : '';
@@ -491,7 +502,7 @@ const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, da
             }
             else if (dayNum > total) {
                 const iso = isoDate(new Date(year, month + 1, nextDayNum));
-                const dd = dayData(days, iso);
+                const dd = dayData(days, iso, full);
                 const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? ' data-disabled' : '';
                 html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
                 nextDayNum++;
@@ -503,7 +514,7 @@ const renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, da
                 if (dayNum === selectedDay)
                     attrs += ' data-selected aria-selected="true"';
                 const iso = isoDate(new Date(year, month, dayNum));
-                const dd = dayData(days, iso);
+                const dd = dayData(days, iso, full);
                 // a blocked day (disabled in the day data) is unselectable like one outside min/max
                 if (!isoInRange(iso, minDate, maxDate) || dd.blocked)
                     attrs += ' data-disabled';
@@ -566,7 +577,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
     const days = daysOf(el);
     // cells grow a second line when any day carries a note
     el.toggleAttribute('data-notes', Object.values(days).some((d) => d && d.note != null && d.note !== ''));
-    dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate, range, days));
+    dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate, range, days, names(el)));
     // refocus the cell's button (the td itself isn't focusable) - morph usually
     // kept it, but after a month change the old cell is gone; stay put then
     if (focusKey)
@@ -624,7 +635,7 @@ function init() {
                 dfDollar(heading).attr('hidden', '');
             const caption = document.createElement('span');
             caption.className = 'calendar-caption';
-            dfDollar(caption).html(`<select class="calendar-select" data-part="month" aria-label="Month">${MONTHS.map((n, m) => `<option value="${m}">${esc(n)}</option>`).join('')}</select>` +
+            dfDollar(caption).html(`<select class="calendar-select" data-part="month" aria-label="Month">${names(cal).months.map((n, m) => `<option value="${m}">${esc(n)}</option>`).join('')}</select>` +
                 `<select class="calendar-select" data-part="year" aria-label="Year"></select>`);
             if (heading)
                 dfDollar(heading).after(caption);

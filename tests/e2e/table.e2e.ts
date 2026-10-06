@@ -222,6 +222,17 @@ await cssSmoke('table', [
     },
   },
   {
+    label: 'a plain link in a cell takes the text colour with a soft underline - not the browser blue',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const a = getComputedStyle(document.getElementById('cell-link')!);
+        const cell = getComputedStyle(document.getElementById('cell-link')!.closest('.table-cell')!);
+        return { color: a.color === cell.color, line: a.textDecorationLine, weight: a.fontWeight, deco: a.textDecorationColor !== a.color };
+      });
+      assert.deepEqual(r, { color: true, line: 'underline', weight: '500', deco: true });
+    },
+  },
+  {
     label: "state API: setState('sorted' | 'selected' | 'default'), getState, unknown throws, registry",
     run: async (page) => {
       const r = await page.evaluate(() => {

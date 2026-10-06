@@ -12,6 +12,8 @@
 import { defussQuery } from './query.js';
 
 export { defussQuery } from './query.js';
+// numbers and dates follow the language of the text (the nearest [lang]), never the browser
+export { textLocale } from './locale.js';
 // the shared global-key API - components register document-level keyboard
 // handlers through one flag-guarded listener instead of hand-rolling their own
 export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';

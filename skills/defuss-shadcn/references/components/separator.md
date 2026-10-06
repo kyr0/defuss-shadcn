@@ -57,8 +57,17 @@ a text separator (`:not(:empty)`). `<hr>` is void, so text separators are a
 
 ### Decorative (hidden from screen readers)
 ```html
-<hr class="separator" role="none">
+<!-- an ornamental section break: the glyph is decoration, never read out -->
+<div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
+<div class="separator" aria-hidden="true" data-variant="accent" data-size="md" style="font-size:1.125rem;">❦</div>
+<!-- a short accent rule: role="none" drops the <hr>'s separator semantics -->
+<hr class="separator" role="none" data-variant="primary" data-size="lg" style="width:3rem;margin-inline:auto;">
 ```
+
+Hide a separator that only decorates - an ornament between sections of the
+same text, a flourish under a title - with `aria-hidden="true"` (a text
+separator: its glyphs would otherwise be read) or `role="none"` (an `<hr>`);
+a separator that divides content keeps its semantics.
 
 ### In a list
 ```html

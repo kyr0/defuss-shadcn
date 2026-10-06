@@ -602,7 +602,7 @@
             return;
         }
         dfDollar(box).html('<ul class="td-saved-list">' + mine.map(function (t) {
-            return '<li class="td-saved-item"' + (t.id === active ? ' data-active' : '') + ' data-id="' + esc(t.id) + '"><span><strong>' + esc(t.label) + '</strong><small>' + (t.id === active ? 'In use · ' : '') + (t.updated ? new Date(t.updated).toLocaleString() : '') + '</small></span>' +
+            return '<li class="td-saved-item"' + (t.id === active ? ' data-active' : '') + ' data-id="' + esc(t.id) + '"><span><strong>' + esc(t.label) + '</strong><small>' + (t.id === active ? 'In use · ' : '') + (t.updated ? new Date(t.updated).toLocaleString('en') : '') + '</small></span>' +
                 '<span class="td-saved-actions"><button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-edit>Edit</button><button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-use>Use</button><button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-delete>Delete</button></span></li>';
         }).join('') + '</ul>');
     }

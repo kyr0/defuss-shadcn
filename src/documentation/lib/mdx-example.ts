@@ -168,6 +168,14 @@ function mermaidNode(node: CodeNode): unknown {
   return { type: 'mdxJsxFlowElement', name: 'MermaidDiagram', attributes, children: [] };
 }
 
+/** A ```diagram fence → <SpecDiagram>: the JSON spec of an Illustrative Diagram (animated steps, interactive nodes). Meta: label="…" overrides the spec title as the accessible name. */
+function specDiagramNode(node: CodeNode): unknown {
+  const attrs = fenceAttrs(node.meta ?? '');
+  const attributes = [jsxAttr('source', node.value)];
+  if (attrs.label) attributes.push(jsxAttr('label', attrs.label));
+  return { type: 'mdxJsxFlowElement', name: 'SpecDiagram', attributes, children: [] };
+}
+
 /**
  * A plain code fence (```html / ```css / ```js … - no `example`) → the docs'
  * <CodeWindow>: the shipped mockup-code window, numbered, Shiki-coloured,
@@ -207,6 +215,7 @@ function fenceWindowImport(): unknown {
 function transform(tree: MdastParent, pageComponent: string): boolean {
   let used = false;
   let mermaid = false;
+  let diagram = false;
   let windows = false;
   const visit = (node: MdastParent) => {
     if (!Array.isArray(node.children)) return;
@@ -230,6 +239,11 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
           mermaid = true;
           continue;
         }
+        if (lang === 'diagram') {
+          node.children[i] = specDiagramNode(child);
+          diagram = true;
+          continue;
+        }
         node.children[i] = codeWindowNode(child);
         windows = true;
         continue;
@@ -241,11 +255,12 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
   visit(tree);
   if (used) tree.children.unshift(importNode());
   if (mermaid) tree.children.unshift(importNode(['MermaidDiagram'], '../lib/components/mermaid-diagram'));
+  if (diagram) tree.children.unshift(importNode(['SpecDiagram'], '../lib/components/spec-diagram'));
   if (windows) tree.children.unshift(fenceWindowImport());
-  return used || mermaid || windows;
+  return used || mermaid || diagram || windows;
 }
 
-/** remark plugin: ```… example / ```states / ```mermaid / plain fences → CodeExample / StatesTable / MermaidDiagram / CodeWindow. */
+/** remark plugin: ```… example / ```states / ```mermaid / ```diagram / plain fences → CodeExample / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
 export function remarkDocExamples() {
   return (tree: MdastParent, file: { basename?: string }) => {
     // pages/{name}.mdx → the page's own component (plan §23)

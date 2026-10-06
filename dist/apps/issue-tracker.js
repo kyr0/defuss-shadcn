@@ -1706,6 +1706,21 @@ function debounce(fn, wait) {
   };
   return wrapped;
 }
+// src/shared/locale.ts
+var DEFAULT_LOCALE = "en";
+function valid(tag) {
+  const t = tag?.trim();
+  if (!t)
+    return null;
+  try {
+    return Intl.getCanonicalLocales(t)[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+function textLocale(el) {
+  return valid(el?.closest?.("[lang]")?.getAttribute("lang")) ?? valid(typeof document !== "undefined" ? document.documentElement?.getAttribute("lang") : null) ?? DEFAULT_LOCALE;
+}
 // src/shared/keys.ts
 var handlers = new Map;
 var listening = false;
@@ -1854,7 +1869,7 @@ function animateCount(el, opts = {}) {
   const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
   const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
   const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split(".")[1]?.length ?? 0);
-  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(undefined, {
+  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(textLocale(el), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   }).format(n));
@@ -1872,9 +1887,11 @@ function animateCount(el, opts = {}) {
       settle();
       return;
     }
-    const t0 = performance.now();
+    let t0 = -1;
     const tick = (now) => {
-      const p = Math.min(1, (now - t0) / duration);
+      if (t0 < 0)
+        t0 = now;
+      const p = Math.min(1, Math.max(0, (now - t0) / duration));
       const eased = 1 - (1 - p) ** 3;
       el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);
       if (p < 1)
@@ -4070,6 +4087,7 @@ shadcn.shared = {
   safeShowPopover,
   defussQuery,
   debounce,
+  textLocale,
   animateCount,
   clampIndex,
   coerceIndex,
@@ -4246,26 +4264,23 @@ var commandApi = componentState({
 });
 df$2.commandApi = commandApi;
 df$2.commandStates = commandStates;
-var commandKeydownAdded = false;
-if (!commandKeydownAdded) {
-  commandKeydownAdded = true;
-  document.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      const dialog = dfDollar2("dialog.command").get(0);
-      if (!dialog)
-        return;
-      e.preventDefault();
-      if (dialog.open) {
-        dialog.close();
-      } else {
-        dialog.showModal();
-        const input = dfDollar2(dialog).find(".command-input").get(0);
-        if (input)
-          input.focus();
-      }
-    }
-  });
-}
+bindGlobalKeys((e) => {
+  if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== "k")
+    return;
+  const dialog = dfDollar2("dialog.command").get(0);
+  if (!dialog)
+    return;
+  e.preventDefault();
+  if (dialog.open)
+    dialog.close();
+  else {
+    dialog.showModal();
+    const input = dfDollar2(dialog).find(".command-input").get(0);
+    if (input)
+      input.focus();
+  }
+  return true;
+}, { editable: true });
 function getVisibleItems(list) {
   return Array.from(dfDollar2(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
 }
@@ -4482,22 +4497,23 @@ var dfDollar4 = defussQuery();
 var dataGridStates = ["default", "loading", "empty"];
 var SAVED_KEYS = ["filters", "sorters", "locked", "expanded"];
 var numberFormat = new Map;
-function format2(value, spec) {
+function format2(value, spec, el) {
   if (value == null)
     return "";
   if (!spec)
     return String(value);
+  const locale = textLocale(el);
   if (spec === "date") {
     const date = value instanceof Date ? value : new Date(value);
-    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString(locale);
   }
-  if (!numberFormat.has(spec)) {
+  const key = `${locale}|${spec}`;
+  if (!numberFormat.has(key)) {
     const [style, currency] = spec.split(":");
-    numberFormat.set(spec, new Intl.NumberFormat(undefined, style === "currency" ? { style, currency: currency || "USD" } : style === "percent" ? { style, maximumFractionDigits: 1 } : {}));
+    numberFormat.set(key, new Intl.NumberFormat(locale, style === "currency" ? { style, currency: currency || "USD" } : style === "percent" ? { style, maximumFractionDigits: 1 } : {}));
   }
-  return typeof value === "number" ? numberFormat.get(spec).format(value) : String(value);
+  return typeof value === "number" ? numberFormat.get(key).format(value) : String(value);
 }
-var count = (n) => format2(n, "number");
 var headerRowOf = (root) => dfDollar4(root).find(".data-grid-head > .data-grid-row").get(0);
 var headersOf = (root) => {
   const row = headerRowOf(root);
@@ -4711,7 +4727,7 @@ function fillCell(grid, cell, column, entry, first) {
   } else {
     const text = document.createElement("span");
     text.className = "data-grid-content";
-    text.textContent = format2(record[column.field], column.format);
+    text.textContent = format2(record[column.field], column.format, grid);
     cell.append(text);
   }
 }
@@ -4780,6 +4796,7 @@ function renderRows(grid) {
   }
 }
 function renderFooter(grid, config) {
+  const count = (n) => format2(n, "number", grid);
   const footer = grid._parts.footer;
   if (!footer)
     return;
@@ -5613,9 +5630,19 @@ var reducedMotion2 = () => globalThis.matchMedia?.("(prefers-reduced-motion: red
 var maxOf = (el) => el.max || 1;
 var clamp = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
 var round = (v) => Math.round(v * 10) / 10;
-var pctFmt = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
-var numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+var formats = new Map;
+var fmtFor = (node) => {
+  const locale = textLocale(node);
+  if (!formats.has(locale)) {
+    formats.set(locale, {
+      pct: new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }),
+      num: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+    });
+  }
+  return formats.get(locale);
+};
 function text(out, el) {
+  const { pct: pctFmt, num: numFmt } = fmtFor(out);
   const v = el.position < 0 ? null : el.value;
   const max = maxOf(el);
   if (v == null)
@@ -5850,24 +5877,34 @@ var maxOf2 = (el) => parseFloat(el.getAttribute("aria-valuemax") || "") || 100;
 var valueOf = (el) => el.hasAttribute("aria-valuenow") ? parseFloat(el.getAttribute("aria-valuenow")) || 0 : null;
 var clamp2 = (el, v) => Math.max(0, Math.min(maxOf2(el), Number(v) || 0));
 var round2 = (v) => Math.round(v * 10) / 10;
-var pctFmt2 = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 0 });
-var numFmt2 = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+var formats2 = new Map;
+var fmtFor2 = (node) => {
+  const locale = textLocale(node);
+  if (!formats2.has(locale)) {
+    formats2.set(locale, {
+      pct: new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }),
+      num: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+    });
+  }
+  return formats2.get(locale);
+};
 function text2(el) {
+  const { pct: pctFmt, num: numFmt } = fmtFor2(el);
   const v = valueOf(el);
   const max = maxOf2(el);
   if (v == null)
     return el.dataset.indeterminate ?? "…";
   const tpl = el.dataset.template;
   if (tpl) {
-    return tpl.replaceAll("{value}", numFmt2.format(Math.round(v))).replaceAll("{max}", numFmt2.format(max)).replaceAll("{percent}", pctFmt2.format(v / max));
+    return tpl.replaceAll("{value}", numFmt.format(Math.round(v))).replaceAll("{max}", numFmt.format(max)).replaceAll("{percent}", pctFmt.format(v / max));
   }
   switch (el.dataset.format) {
     case "fraction":
-      return `${numFmt2.format(Math.round(v))} / ${numFmt2.format(max)}`;
+      return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
     case "value":
-      return numFmt2.format(Math.round(v));
+      return numFmt.format(Math.round(v));
     default:
-      return pctFmt2.format(v / max);
+      return pctFmt.format(v / max);
   }
 }
 function labelTarget(el) {
@@ -6213,7 +6250,7 @@ function sortBy(table, col, direction) {
   const body = bodyOf(table);
   if (!body)
     return;
-  const lang = table.closest("[lang]")?.lang || undefined;
+  const lang = textLocale(table);
   const collator = new Intl.Collator(lang, { numeric: true, sensitivity: "base" });
   const dir = direction === "descending" ? -1 : 1;
   const rows = bodyRows(table);
@@ -6856,6 +6893,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=881CC6E37988F88364756E2164756E21
+//# debugId=4F2614B9B73023D364756E2164756E21
 /* defuss-shadcn v0.9.4 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

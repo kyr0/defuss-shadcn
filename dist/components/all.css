@@ -9707,14 +9707,22 @@
 
   /* -- canvas: a grid by default --------------------------------------------- */
   .diagram-canvas {
+    /* the horizontal gap and the column minimum give in a narrow figure
+       (cqi = the figure's width): --diagram-gap-x / --diagram-col-min are the
+       preferred sizes, 3rem / 5rem the floors - a four- or five-column
+       diagram fits a docs column with even whitespace on both sides instead
+       of running into (and past) its right border; a column never gets
+       narrower than its content */
+    --_diagram-gap-x: clamp(min(3rem, var(--diagram-gap-x)), 6cqi, var(--diagram-gap-x));
+    --_diagram-col-min: clamp(min(5rem, var(--diagram-col-min)), 12cqi, var(--diagram-col-min));
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: repeat(var(--cols, 4), minmax(var(--diagram-col-min), 1fr));
+    grid-template-columns: repeat(var(--cols, 4), minmax(var(--_diagram-col-min), 1fr));
     grid-auto-rows: minmax(3.25rem, auto);
-    gap: var(--diagram-gap-y) var(--diagram-gap-x);
+    gap: var(--diagram-gap-y) var(--_diagram-gap-x);
     min-width: min-content;
-    padding: 1.75rem;
+    padding: 2rem;
     background-color: var(--diagram-paper);
     background-image: radial-gradient(color-mix(in oklab, var(--diagram-ink) 9%, transparent) 1px, transparent 1.2px);
     background-size: 1rem 1rem;
@@ -10118,7 +10126,7 @@
   }
   /* a zone drawn behind nodes placed on the same cells reaches into the gaps */
   .diagram-group:not(:has(.diagram-node, .diagram-group)) {
-    margin: calc(var(--diagram-gap-y) * -0.55) calc(var(--diagram-gap-x) * -0.42);
+    margin: calc(var(--diagram-gap-y) * -0.55) calc(var(--_diagram-gap-x) * -0.42);
   }
   .diagram-group-label {
     position: absolute;
@@ -10166,7 +10174,7 @@
       translate: 0 -50%;
       background: none;
       white-space: normal;
-      max-width: calc(var(--diagram-col-min) - 1rem);
+      max-width: calc(var(--_diagram-col-min) - 1rem);
     }
   }
 
@@ -10275,7 +10283,7 @@
       display: grid;
       place-items: center;
       min-block-size: 1.75rem;
-      margin-inline-end: calc(var(--diagram-gap-x) * -1 + 0.25rem);
+      margin-inline-end: calc(var(--_diagram-gap-x) * -1 + 0.25rem);
       padding: 0 1.25rem;
       background: var(--diagram-soft);
       border: 0;
@@ -16078,6 +16086,7 @@
     line-height: 1;
     white-space: nowrap;
     vertical-align: middle;
+    transition: translate 0.08s ease-out, border-bottom-width 0.08s ease-out, background-color 0.08s ease-out;
 
     &[data-size="sm"] {
       --kbd-size: 1.125rem;
@@ -16089,6 +16098,17 @@
       --kbd-size: 1.75rem;
       padding-inline: 0.5rem;
       font-size: 0.875rem;
+    }
+
+    /* pressed: the key goes down - the heavy bottom edge collapses and the
+       face drops by the same pixel, so the key's outer box never moves.
+       A page sets data-pressed while its shortcut runs (the global-keys
+       handler that performs it), so the key shows it was heard. */
+    &[data-pressed] {
+      translate: 0 1px;
+      border-bottom-width: 1px;
+      background: color-mix(in oklch, var(--muted) 80%, var(--foreground));
+      color: var(--foreground);
     }
   }
 
@@ -16137,6 +16157,11 @@
     border-color: color-mix(in oklch, currentColor 25%, transparent);
     color: inherit;
     opacity: 0.75;
+
+    &[data-pressed] {
+      background: color-mix(in oklch, currentColor 18%, transparent);
+      opacity: 1;
+    }
   }
 }
 
@@ -16172,6 +16197,12 @@
       border-color: ButtonText;
       color: ButtonText;
       background: ButtonFace;
+    }
+
+    .kbd[data-pressed] {
+      border-color: Highlight;
+      color: HighlightText;
+      background: Highlight;
     }
 
     .kbd-group[data-separator] > .kbd + .kbd::before {
@@ -29911,6 +29942,26 @@
   .table-actions > .btn[popovertarget] { anchor-name: --table-row-menu; }
 
   /* -- Text in cells ------------------------------------------------------- */
+  /* a plain link in a cell (a name, an id) speaks the tokens, not the UA's
+     blue: the text colour, a soft underline that firms up on hover, the
+     ring on keyboard focus. Classed links (.btn, a badge) keep their own. */
+  .table-cell a:not([class]) {
+    color: var(--foreground);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, currentColor 30%, transparent);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms ease;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
   .table-sub {
     display: block;
     margin-top: 0.125rem;

@@ -433,12 +433,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   Some text belongs to the accessibility tree but not to the visual design: an extra word of context on a link, the unit a <code>{"<meter>"}</code> omits, the label an icon-only control needs. <code>.sr-only</code> ships in the optional <a href="#install"><code>theme/utils/accessibility.css</code></a> module and clips content to a 1px box - CSS the browser still hands to assistive technology (unlike <code>display:none</code> or <code>visibility:hidden</code>, which hide it from screen readers too). <code>.not-sr-only</code> reverses it - the classic skip-link pattern. This very page links the module, so the demo below is the real utility, not a replica.
 </p>
 
-<Demo>
-  <div class="demo-tile" data-variant="outline" style="gap:0.5rem;padding:0.75rem 1rem;">
-    <a class="btn" data-variant="link" href="#">Read the changelog<span class="sr-only"> (opens the release history)</span></a>
-  </div>
-  <DemoCode>{"<a class=\"btn\" data-variant=\"link\" href=\"#\">\n  Read the changelog<span class=\"sr-only\"> (opens the release history)</span>\n</a>"}</DemoCode>
-</Demo>
+```html example schema="none" label="Extra context for a screen reader" hint="The link reads 'Read the changelog' on screen; a screen reader announces 'Read the changelog (opens the release history)'. The preview loads the real module - the phrase is in the accessibility tree, clipped to a 1px box."
+<a class="btn" data-variant="link" href="#">Read the changelog<span class="sr-only"> (opens the release history)</span></a>
+```
 
 <p class="text-xs text-muted-foreground mt-3 mb-8">
   The link reads identically on screen - a screen reader announces the extra phrase. Never put the <em>only</em> accessible name of a focusable control inside <code>.sr-only</code>; use <code>aria-label</code> for that.
@@ -446,9 +443,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="install" class="h2-display">Load the accessibility module</h2>
 
-<Demo>
-  <DemoCode>{"<link rel=\"stylesheet\" href=\"../theme/utils/default-semantic-tokens.css\">\n<!-- optional module: .sr-only / .not-sr-only -->\n<link rel=\"stylesheet\" href=\"../theme/utils/accessibility.css\">"}</DemoCode>
-</Demo>
+```html title="index.html · head"
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
+<!-- optional module: .sr-only / .not-sr-only -->
+<link rel="stylesheet" href="../theme/utils/accessibility.css">
+```
 
 <p class="text-sm text-muted-foreground mt-8 mb-8"> Each component's <code>component-skill.md</code> includes a dedicated ARIA section listing the exact attributes required for that component. See the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA APG</a> for the full specifications these patterns implement. </p>
 

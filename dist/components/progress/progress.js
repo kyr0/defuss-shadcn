@@ -19,7 +19,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.4') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, textLocale } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 /** default = determinate at a value (as authored, or config.value);
@@ -31,10 +31,21 @@ const maxOf = (el) => el.max || 1;
 const clamp = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
 /** Whole numbers stay whole; fractions keep one decimal (a tween passes 42.7). */
 const round = (v) => Math.round(v * 10) / 10;
-const pctFmt = new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 });
-const numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+/** formatters in the text's locale (nearest [lang], else 'en') - never the browser's; one pair per locale */
+const formats = new Map();
+const fmtFor = (node) => {
+    const locale = textLocale(node);
+    if (!formats.has(locale)) {
+        formats.set(locale, {
+            pct: new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }),
+            num: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }),
+        });
+    }
+    return formats.get(locale);
+};
 /** The readout text for one output (data-format / data-template on the output). */
 function text(out, el) {
+    const { pct: pctFmt, num: numFmt } = fmtFor(out);
     const v = el.position < 0 ? null : el.value;
     const max = maxOf(el);
     if (v == null)

@@ -9,7 +9,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, textLocale } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -41,7 +41,7 @@ function cellValue(row, col) {
 function sortBy(table, col, direction) {
   const body = bodyOf(table);
   if (!body) return;
-  const lang = table.closest('[lang]')?.lang || undefined;
+  const lang = textLocale(table);
   const collator = new Intl.Collator(lang, { numeric: true, sensitivity: 'base' });
   const dir = direction === 'descending' ? -1 : 1;
   const rows = bodyRows(table);

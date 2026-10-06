@@ -8,7 +8,7 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent } from '../../shared/state-api.js';
+import { defussGlobals, defussQuery, componentState, bindComponent, textLocale } from '../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -25,11 +25,22 @@ const clamp = (el, v) => Math.max(0, Math.min(maxOf(el), Number(v) || 0));
 /** Whole numbers stay whole; fractions keep one decimal (a tween passes 42.7). */
 const round = (v) => Math.round(v * 10) / 10;
 
-const pctFmt = new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 });
-const numFmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+/** formatters in the text's locale (nearest [lang], else 'en') - never the browser's; one pair per locale */
+const formats = new Map();
+const fmtFor = (node) => {
+  const locale = textLocale(node);
+  if (!formats.has(locale)) {
+    formats.set(locale, {
+      pct: new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }),
+      num: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }),
+    });
+  }
+  return formats.get(locale);
+};
 
 /** The readout text for one output (data-format / data-template on the output). */
 function text(out, el) {
+  const { pct: pctFmt, num: numFmt } = fmtFor(out);
   const v = el.position < 0 ? null : el.value;
   const max = maxOf(el);
   if (v == null) return out.dataset.indeterminate ?? '…';

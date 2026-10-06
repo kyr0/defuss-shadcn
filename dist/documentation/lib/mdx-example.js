@@ -154,6 +154,14 @@ function mermaidNode(node) {
         attributes.push(jsxAttr('caption', attrs.caption));
     return { type: 'mdxJsxFlowElement', name: 'MermaidDiagram', attributes, children: [] };
 }
+/** A ```diagram fence → <SpecDiagram>: the JSON spec of an Illustrative Diagram (animated steps, interactive nodes). Meta: label="…" overrides the spec title as the accessible name. */
+function specDiagramNode(node) {
+    const attrs = fenceAttrs(node.meta ?? '');
+    const attributes = [jsxAttr('source', node.value)];
+    if (attrs.label)
+        attributes.push(jsxAttr('label', attrs.label));
+    return { type: 'mdxJsxFlowElement', name: 'SpecDiagram', attributes, children: [] };
+}
 /**
  * A plain code fence (```html / ```css / ```js … - no `example`) → the docs'
  * <CodeWindow>: the shipped mockup-code window, numbered, Shiki-coloured,
@@ -194,6 +202,7 @@ function fenceWindowImport() {
 function transform(tree, pageComponent) {
     let used = false;
     let mermaid = false;
+    let diagram = false;
     let windows = false;
     const visit = (node) => {
         if (!Array.isArray(node.children))
@@ -218,6 +227,11 @@ function transform(tree, pageComponent) {
                     mermaid = true;
                     continue;
                 }
+                if (lang === 'diagram') {
+                    node.children[i] = specDiagramNode(child);
+                    diagram = true;
+                    continue;
+                }
                 node.children[i] = codeWindowNode(child);
                 windows = true;
                 continue;
@@ -232,11 +246,13 @@ function transform(tree, pageComponent) {
         tree.children.unshift(importNode());
     if (mermaid)
         tree.children.unshift(importNode(['MermaidDiagram'], '../lib/components/mermaid-diagram'));
+    if (diagram)
+        tree.children.unshift(importNode(['SpecDiagram'], '../lib/components/spec-diagram'));
     if (windows)
         tree.children.unshift(fenceWindowImport());
-    return used || mermaid || windows;
+    return used || mermaid || diagram || windows;
 }
-/** remark plugin: ```… example / ```states / ```mermaid / plain fences → CodeExample / StatesTable / MermaidDiagram / CodeWindow. */
+/** remark plugin: ```… example / ```states / ```mermaid / ```diagram / plain fences → CodeExample / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
 export function remarkDocExamples() {
     return (tree, file) => {
         // pages/{name}.mdx → the page's own component (plan §23)

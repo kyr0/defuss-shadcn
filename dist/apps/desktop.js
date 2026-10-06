@@ -1706,6 +1706,21 @@ function debounce(fn, wait) {
   };
   return wrapped;
 }
+// src/shared/locale.ts
+var DEFAULT_LOCALE = "en";
+function valid(tag) {
+  const t = tag?.trim();
+  if (!t)
+    return null;
+  try {
+    return Intl.getCanonicalLocales(t)[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+function textLocale(el) {
+  return valid(el?.closest?.("[lang]")?.getAttribute("lang")) ?? valid(typeof document !== "undefined" ? document.documentElement?.getAttribute("lang") : null) ?? DEFAULT_LOCALE;
+}
 // src/shared/keys.ts
 var handlers = new Map;
 var listening = false;
@@ -1854,7 +1869,7 @@ function animateCount(el, opts = {}) {
   const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
   const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
   const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split(".")[1]?.length ?? 0);
-  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(undefined, {
+  const fmt = opts.format ?? ((n) => new Intl.NumberFormat(textLocale(el), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   }).format(n));
@@ -1872,9 +1887,11 @@ function animateCount(el, opts = {}) {
       settle();
       return;
     }
-    const t0 = performance.now();
+    let t0 = -1;
     const tick = (now) => {
-      const p = Math.min(1, (now - t0) / duration);
+      if (t0 < 0)
+        t0 = now;
+      const p = Math.min(1, Math.max(0, (now - t0) / duration));
       const eased = 1 - (1 - p) ** 3;
       el.textContent = p >= 1 ? fmt(to) : fmt(from + (to - from) * eased);
       if (p < 1)
@@ -4070,6 +4087,7 @@ shadcn.shared = {
   safeShowPopover,
   defussQuery,
   debounce,
+  textLocale,
   animateCount,
   clampIndex,
   coerceIndex,
@@ -4360,8 +4378,18 @@ var calendarApi = Object.assign(componentState({
 });
 df$3.calendarApi = calendarApi;
 df$3.calendarStates = calendarStates;
-var DAYS = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(new Date(2024, 0, i)));
-var MONTHS = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(undefined, { month: "long" }).format(new Date(2024, i, 1)));
+var nameSets = new Map;
+function names(el) {
+  const locale = textLocale(el);
+  if (!nameSets.has(locale)) {
+    nameSets.set(locale, {
+      days: Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 0, i))),
+      months: Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2024, i, 1))),
+      full: new Intl.DateTimeFormat(locale, { dateStyle: "full" })
+    });
+  }
+  return nameSets.get(locale);
+}
 var daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
 var firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 var isToday = (year, month, day) => {
@@ -4430,7 +4458,6 @@ function syncRange(owner) {
 }
 var esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 var MARK = /^[a-z][a-z0-9-]*$/;
-var FULL_DATE = new Intl.DateTimeFormat(undefined, { dateStyle: "full" });
 function dayHolderOf(cal) {
   const owner = rangeOwnerOf(cal);
   return owner && owner.classList.contains("calendar-range") ? owner : cal;
@@ -4461,7 +4488,7 @@ function rerender(cal) {
       renderCalendar(cal, st.year, st.month, st.selected);
   }
 }
-function dayData(days, iso) {
+function dayData(days, iso, full) {
   const d = days?.[iso];
   if (!d || typeof d !== "object")
     return { attrs: "", note: "", aria: "", blocked: false };
@@ -4473,7 +4500,7 @@ function dayData(days, iso) {
     attrs += " data-note";
   if (d.label)
     attrs += ` title="${esc(d.label)}"`;
-  const aria = ` aria-label="${esc([FULL_DATE.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
+  const aria = ` aria-label="${esc([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
   return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "", aria, blocked: d.disabled === true };
 }
 var YEARS_PER_PAGE = 12;
@@ -4490,7 +4517,7 @@ function renderPicker(el) {
   let html = "";
   if (el.dataset.view === "months") {
     const y = st.pickYear;
-    html = MONTHS.map((name, m) => {
+    html = names(el).months.map((name, m) => {
       const current = y === st.year && m === st.month ? ' aria-current="true"' : "";
       const today = y === now.getFullYear() && m === now.getMonth() ? " data-today" : "";
       const off = monthOff(y, m, st.minDate, st.maxDate) ? " disabled" : "";
@@ -4514,7 +4541,7 @@ function renderHeader(el) {
   const view = el.dataset.view || "days";
   const heading = dfDollar3(el).find(".calendar-heading").get(0);
   if (heading) {
-    const text = view === "months" ? String(st.pickYear) : view === "years" ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}` : `${MONTHS[st.month]} ${st.year}`;
+    const text = view === "months" ? String(st.pickYear) : view === "years" ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}` : `${names(el).months[st.month]} ${st.year}`;
     dfDollar3(heading).text(text);
     if (heading.tagName === "BUTTON") {
       dfDollar3(heading).attr("aria-label", view === "months" ? `${text}, choose a year` : view === "years" ? `Years ${text}, back to the days` : `${text}, choose a month and year`);
@@ -4603,7 +4630,8 @@ function setView(el, view) {
   }
   el.dispatchEvent(new CustomEvent("calendar:view", { bubbles: true, detail: { view, year: st.year, month: st.month } }));
 }
-var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days) => {
+var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null)) => {
+  const full = locale.full;
   const rangeAttrs = (iso) => {
     if (!range || !range.start)
       return "";
@@ -4627,7 +4655,7 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
   const prevTotal = daysInMonth(year, month - 1);
   let html = "<thead><tr>";
   for (let d = 0;d < 7; d++) {
-    html += `<th class="calendar-day-label" scope="col">${DAYS[d]}</th>`;
+    html += `<th class="calendar-day-label" scope="col">${locale.days[d]}</th>`;
   }
   html += "</tr></thead><tbody>";
   let dayNum = 1;
@@ -4640,12 +4668,12 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
       if (cellIndex < startDay) {
         const prevDay = prevTotal - startDay + cellIndex + 1;
         const iso = isoDate(new Date(year, month - 1, prevDay));
-        const dd = dayData(days, iso);
+        const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? " data-disabled" : "";
         html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev"${dd.aria}>${prevDay}${dd.note}</button></td>`;
       } else if (dayNum > total) {
         const iso = isoDate(new Date(year, month + 1, nextDayNum));
-        const dd = dayData(days, iso);
+        const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? " data-disabled" : "";
         html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
         nextDayNum++;
@@ -4656,7 +4684,7 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
         if (dayNum === selectedDay)
           attrs += ' data-selected aria-selected="true"';
         const iso = isoDate(new Date(year, month, dayNum));
-        const dd = dayData(days, iso);
+        const dd = dayData(days, iso, full);
         if (!isoInRange(iso, minDate, maxDate) || dd.blocked)
           attrs += " data-disabled";
         attrs += rangeAttrs(iso) + dd.attrs;
@@ -4697,7 +4725,7 @@ var renderCalendar = (el, year, month, selectedDay) => {
   const range = r ? { start: r.start, end: r.end, preview: !r.end && r.start && r.hover && r.hover >= r.start ? r.hover : null } : null;
   const days = daysOf(el);
   el.toggleAttribute("data-notes", Object.values(days).some((d) => d && d.note != null && d.note !== ""));
-  dfDollar3(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days));
+  dfDollar3(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days, names(el)));
   if (focusKey)
     dfDollar3(grid).find(`[data-cal-date="${focusKey}"] button`).get(0)?.focus();
   const selDate = dfDollar3(el).find(".calendar-day[data-selected]").get(0)?.getAttribute("data-cal-date");
@@ -4740,7 +4768,7 @@ function init3() {
         dfDollar3(heading).attr("hidden", "");
       const caption = document.createElement("span");
       caption.className = "calendar-caption";
-      dfDollar3(caption).html(`<select class="calendar-select" data-part="month" aria-label="Month">${MONTHS.map((n, m) => `<option value="${m}">${esc(n)}</option>`).join("")}</select>` + `<select class="calendar-select" data-part="year" aria-label="Year"></select>`);
+      dfDollar3(caption).html(`<select class="calendar-select" data-part="month" aria-label="Month">${names(cal).months.map((n, m) => `<option value="${m}">${esc(n)}</option>`).join("")}</select>` + `<select class="calendar-select" data-part="year" aria-label="Year"></select>`);
       if (heading)
         dfDollar3(heading).after(caption);
       else
@@ -5803,7 +5831,7 @@ function formatterOf(el) {
     Object.assign(opts, { style: "currency", currency: d.currency });
   else if (d.unit)
     Object.assign(opts, { style: "unit", unit: d.unit, unitDisplay: d.unitDisplay || "short" });
-  const lang = el.closest("[lang]")?.lang || undefined;
+  const lang = textLocale(el);
   try {
     return new Intl.NumberFormat(lang, opts);
   } catch {
@@ -6898,6 +6926,6 @@ df$15.win = {
 init15();
 new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
-//# debugId=146381486397301A64756E2164756E21
+//# debugId=BFDD38B0DF7E16C164756E2164756E21
 /* defuss-shadcn v0.9.4 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

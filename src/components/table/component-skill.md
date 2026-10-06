@@ -21,7 +21,7 @@ supportedStates: default, sorted, selected
 - [`<tfoot>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot) - table footer group
 - [`<caption>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption) - table caption
 - [`aria-sort`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-sort) - the sorted column and direction
-- [`Intl.Collator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator) - locale-aware, numeric sorting
+- [`Intl.Collator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator) - numeric sorting in the locale of the text (nearest `[lang]`, else `en`)
 - [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) - row reordering
 - [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky) - locked columns and header
 - [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - re-measures locked-column offsets
@@ -110,6 +110,7 @@ order clears the sort. Fires `table-reorder` (`{ row, index }`).
 | `.table-actions-inline` + `.table-actions-menu` + `.table-menu[popover]` | Mobile: under 40rem the inline buttons give way to one ⋯ button opening a native popover menu of `.table-menu-item`s (add `popovertarget="…" popovertargetaction="hide"` so a pick closes it); touch screens get 44px targets |
 | `.table-actions > .btn[popovertarget]` + `.table-menu[popover]` | A dropdown button in the actions cell (e.g. "Actions ▾") - the menu anchors under it |
 | `.table-empty` (+ `.table-empty-icon`) | The one cell of an empty table (`colspan` = all columns): icon, text, optional button - centered, muted |
+| `<a>` (no class) in a `.table-cell` | A link in the text colour with a soft underline (firm on hover), the ring on focus - never the browser's blue; classed links (`.btn`) keep their own style |
 | `.table-sub` | A muted second line |
 | `.table-truncate` | One line with an ellipsis (`--table-truncate`, 14rem) - put the full text in `title` |
 | `.table-clamp` | Two lines, then an ellipsis |

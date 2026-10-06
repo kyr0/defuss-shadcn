@@ -48,6 +48,28 @@ try {
     assert.equal(wired, true);
   });
 
+  await check('fit: a figure narrower than its diagram scales the canvas into it (wires follow); data-fit="none" keeps it 1:1', async () => {
+    const box = () => page.$eval('#dg-arch', (fig) => {
+      const c = fig.querySelector(':scope > .diagram-canvas') as HTMLElement;
+      const f = fig.getBoundingClientRect(), r = c.getBoundingClientRect();
+      const wire = c.querySelector('.diagram-wires') as SVGElement;
+      return { zoom: Number(c.style.zoom || 1), inside: r.right <= f.right + 1, wire: Math.round(wire.getBoundingClientRect().width - r.width) };
+    });
+    assert.equal((await box()).zoom, 1, 'wide enough: 1:1');
+    await page.$eval('#dg-arch', (fig) => { (fig as HTMLElement).style.maxWidth = '30rem'; });
+    await page.waitForFunction(() => Number((document.querySelector('#dg-arch > .diagram-canvas') as HTMLElement).style.zoom || 1) < 1);
+    await page.waitForTimeout(150);
+    const narrow = await box();
+    assert.ok(narrow.zoom >= 0.7 && narrow.zoom < 1, `scaled into the figure (${narrow.zoom})`);
+    assert.ok(narrow.inside, 'the canvas ends inside the figure');
+    assert.ok(Math.abs(narrow.wire) <= 2, 'the wire layer spans the scaled canvas');
+    await page.$eval('#dg-arch', (fig) => { fig.setAttribute('data-fit', 'none'); });
+    await page.$eval('#dg-arch', (fig) => (globalThis as any).df$.shadcn.diagram.redraw(fig));
+    assert.equal((await box()).zoom, 1, 'data-fit="none": 1:1, the figure scrolls');
+    await page.$eval('#dg-arch', (fig) => { fig.removeAttribute('data-fit'); (fig as HTMLElement).style.maxWidth = ''; });
+    await page.$eval('#dg-arch', (fig) => (globalThis as any).df$.shadcn.diagram.redraw(fig));
+  });
+
   await check('one wire per edge; labels from the edge text; the layers are aria-hidden', async () => {
     const r = await page.$eval('#dg-arch', (el) => ({
       edges: el.querySelectorAll('.diagram-edges .diagram-edge').length,

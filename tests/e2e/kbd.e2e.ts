@@ -10,6 +10,11 @@ import { cssSmoke } from './lib/css-smoke.ts';
  */
 await cssSmoke('kbd', [
   {
+    label: 'data-pressed: the key goes down - the bottom edge collapses, the face drops 1px',
+    selector: '#k-pressed',
+    css: { 'border-bottom-width': '1px', translate: '0px 1px' },
+  },
+  {
     label: 'kbd.css applies the key geometry',
     selector: '#k-default',
     css: {

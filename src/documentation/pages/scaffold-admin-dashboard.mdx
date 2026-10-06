@@ -697,7 +697,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
       grid.store.subscribe(({ config }) => {
         const n = config.selected.length;
         bulk.hidden = n === 0;
-        app.querySelector('.dash-bulk-count').textContent = n.toLocaleString() + (n === 1 ? ' order' : ' orders') + ' selected';
+        app.querySelector('.dash-bulk-count').textContent = n.toLocaleString('en') + (n === 1 ? ' order' : ' orders') + ' selected';
       }, { immediate: true });
       bulk.addEventListener('click', (e) => {
         const act = e.target.closest('[data-dash-bulk]')?.dataset.dashBulk;
@@ -709,7 +709,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
           orders = df$.dataview.updateRows(orders, ids, ids.map(() => ({ status: 'Shipped' })));
           dataGrid.setSource(grid, orders, { cells });
           dataGrid.clearSelection(grid);
-          toast(ids.length.toLocaleString() + (ids.length === 1 ? ' order' : ' orders') + ' marked as shipped');
+          toast(ids.length.toLocaleString('en') + (ids.length === 1 ? ' order' : ' orders') + ' marked as shipped');
         }
       });
       grid.addEventListener('data-grid-activate', (e) => toast('Order ' + e.detail.record.order, e.detail.record.customer + ' · ' + e.detail.record.product));

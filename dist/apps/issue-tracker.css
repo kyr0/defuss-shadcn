@@ -3645,6 +3645,7 @@
     line-height: 1;
     white-space: nowrap;
     vertical-align: middle;
+    transition: translate 0.08s ease-out, border-bottom-width 0.08s ease-out, background-color 0.08s ease-out;
 
     &[data-size="sm"] {
       --kbd-size: 1.125rem;
@@ -3656,6 +3657,17 @@
       --kbd-size: 1.75rem;
       padding-inline: 0.5rem;
       font-size: 0.875rem;
+    }
+
+    /* pressed: the key goes down - the heavy bottom edge collapses and the
+       face drops by the same pixel, so the key's outer box never moves.
+       A page sets data-pressed while its shortcut runs (the global-keys
+       handler that performs it), so the key shows it was heard. */
+    &[data-pressed] {
+      translate: 0 1px;
+      border-bottom-width: 1px;
+      background: color-mix(in oklch, var(--muted) 80%, var(--foreground));
+      color: var(--foreground);
     }
   }
 
@@ -3704,6 +3716,11 @@
     border-color: color-mix(in oklch, currentColor 25%, transparent);
     color: inherit;
     opacity: 0.75;
+
+    &[data-pressed] {
+      background: color-mix(in oklch, currentColor 18%, transparent);
+      opacity: 1;
+    }
   }
 }
 
@@ -3739,6 +3756,12 @@
       border-color: ButtonText;
       color: ButtonText;
       background: ButtonFace;
+    }
+
+    .kbd[data-pressed] {
+      border-color: Highlight;
+      color: HighlightText;
+      background: Highlight;
     }
 
     .kbd-group[data-separator] > .kbd + .kbd::before {
@@ -5347,6 +5370,26 @@
   .table-actions > .btn[popovertarget] { anchor-name: --table-row-menu; }
 
   /* -- Text in cells ------------------------------------------------------- */
+  /* a plain link in a cell (a name, an id) speaks the tokens, not the UA's
+     blue: the text colour, a soft underline that firms up on hover, the
+     ring on keyboard focus. Classed links (.btn, a badge) keep their own. */
+  .table-cell a:not([class]) {
+    color: var(--foreground);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, currentColor 30%, transparent);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms ease;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
   .table-sub {
     display: block;
     margin-top: 0.125rem;

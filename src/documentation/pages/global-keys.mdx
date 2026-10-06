@@ -98,7 +98,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   ['Sidebar', '⌘B / Ctrl+B - dock / undock the first .app-sidebar', 'shared (bindGlobalKeys)'],
   ['Presentation', '→ PageDown Space next · ← PageUp previous · Home End first / last · N notes · F fullscreen', 'shared (bindGlobalKeys)'],
   ['Animation Canvas', '← → ↑ ↓ to the neighbouring slide · O / Esc overview', 'shared (bindGlobalKeys)'],
-  ['Command', '⌘K / Ctrl+K - open / close the command palette', 'its own document listener - on purpose: ⌘K must work while typing in a field'],
+  ['Command', '⌘K / Ctrl+K - open / close the command palette', 'shared, { editable: true } - ⌘K must work while typing in a field (the palette input too)'],
 ]} />
 
 <p class="text-sm text-muted-foreground mb-5"> Components only take a key when it is theirs - the sidebar only claims <kbd>⌘B</kbd> when the page has a sidebar, a deck only claims arrow keys when it has a slide to go to - so the browser's own shortcuts keep working everywhere else. </p>

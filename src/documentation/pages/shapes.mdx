@@ -454,7 +454,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h2 id="stacks" class="h2-display">Stacks</h2>
 
-<DocText>A pile of sheets behind an element - three box-shadows, so they follow its radius and need no extra markup. The direction picks where the sheets peek out: <code>stack-top</code>, <code>stack-bottom</code>, <code>stack-left</code> and <code>stack-right</code> are centered and taper - every sheet a little narrower and one full step further out, like a pile of notifications - while <code>stack-top-left</code>, <code>stack-top-right</code>, <code>stack-bottom-left</code> and <code>stack-bottom-right</code> offset full-size sheets toward the corner. Modifiers set the step (<code>stack-tight</code> 4px, default 8px, <code>stack-loose</code> 14px), the fill (card sheets with a border by default, <code>stack-outline</code> hollow, <code>stack-filled</code> solid) and <code>stack-fade</code>, which fades every sheet further out. <code>--shape-ink</code> colors the outline edge or the filled sheets. A stack is the element's box-shadow, so it replaces a <code>shadow-*</code> class - and leave room around it. (Not the layout module's <code>.stack</code>, which is a flex column.)</DocText>
+<DocText>A pile of sheets behind an element - three box-shadows, so they follow its radius and need no extra markup. The direction picks where the sheets peek out: <code>stack-top</code>, <code>stack-bottom</code>, <code>stack-left</code> and <code>stack-right</code> are centered and taper - every sheet a little narrower and one full step further out, like a pile of notifications - while <code>stack-top-left</code>, <code>stack-top-right</code>, <code>stack-bottom-left</code> and <code>stack-bottom-right</code> offset full-size sheets toward the corner. Modifiers set the step (<code>stack-tight</code> 4px, default 8px, <code>stack-loose</code> 14px), the fill (card sheets with a border by default, <code>stack-outline</code> hollow, <code>stack-filled</code> solid, each sheet a step closer to the background so the pile reads as sheets) and <code>stack-fade</code>, which fades every sheet further out. <code>--shape-ink</code> colors the outline edge or the filled sheets. A stack is the element's box-shadow, so it replaces a <code>shadow-*</code> class - and leave room around it. (Not the layout module's <code>.stack</code>, which is a flex column.)</DocText>
 
 ```html example schema="none" label="Directions" hint="Four centered, tapering piles (top, bottom, left, right) and four diagonal ones (the corners)."
 <div class="grid grid-cols-auto gap-12 p-10" style="--layout-min:10rem;">
@@ -493,7 +493,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
-```html example schema="none" label="Filled and outline" hint="Card sheets with a border (default), stack-outline - hollow sheets with a strong edge - and stack-filled - solid sheets without an edge. --shape-ink recolors the edge or the fill."
+```html example schema="none" label="Filled and outline" hint="Card sheets with a border (default), stack-outline - hollow sheets with a strong edge - and stack-filled - solid sheets without an edge, each a step closer to the background (75, 50, 25 % ink). --shape-ink recolors the edge or the fill."
 <div class="grid grid-cols-auto gap-12 p-8" style="--layout-min:11rem;">
   <div class="card stack-bottom-right flex items-center justify-center text-center h-20 p-3 text-sm font-medium">default</div>
   <div class="card stack-bottom-right stack-outline flex items-center justify-center text-center h-20 p-3 text-sm font-medium">stack-outline</div>
@@ -564,7 +564,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText>Background textures drawn with CSS gradients - dots, grid, lines (diagonal, horizontal, vertical, crosshatch), bold stripes, checker, zigzag, triangles, diamonds, chevrons, half-moon rings, ripples, polka dots, plaid, bricks, a blueprint grid and sunburst rays. <code>pattern-mesh</code> is a soft chart-color gradient backdrop for heroes, <code>pattern-grain</code> an SVG film grain. They default to a faint tint of the text color (<code>currentColor</code>), so they work on any surface in light and dark mode. <code>--shape-ink</code> sets the color and <code>--shape-pattern</code> (default 16px) the tile size.</DocText>
 
 ```html example schema="none"
-<style>.pattern-demo { display: grid; place-items: center; min-height: 7rem; font: 500 0.75rem var(--font-mono); }</style>
+<style>.pattern-demo { display: grid; place-items: center; min-height: 7rem; padding: 0.5rem; text-align: center; text-wrap: balance; font: 500 0.75rem var(--font-mono); }</style>
 <div class="grid grid-cols-auto gap-4" style="--layout-min:10rem;">
   <div class="pattern-demo pattern-dots rounded-lg frame-dashed">pattern-dots</div>
   <div class="pattern-demo pattern-grid rounded-lg frame-dashed">pattern-grid</div>
