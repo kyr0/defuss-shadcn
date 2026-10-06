@@ -1,6 +1,7 @@
 ---
 name: Comparison Table
 type: BLK
+section: website
 why: A <table> with row and column headers is the accessible way to compare; position: sticky keeps the criteria in view while the table scrolls sideways.
 when: Product vs. competitors, plan vs. plan, before vs. after. Plan prices with buy buttons use pricing.
 where: dist/components/comparison-table/comparison-table.css

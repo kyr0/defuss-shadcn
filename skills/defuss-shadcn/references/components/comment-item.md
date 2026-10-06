@@ -1,6 +1,7 @@
 ---
 name: Comment Item
 type: BLK
+section: website
 why: An <article> with an Avatar, an author link, a <time> permalink to the comment's own id, the text and ghost Buttons - replies nest in an <ol>; :target highlights the comment a permalink opens.
 when: Comment threads, reviews, discussion boards. Chat messages take message / bubble.
 where: dist/components/comment-item/comment-item.css

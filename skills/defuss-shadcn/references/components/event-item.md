@@ -1,6 +1,7 @@
 ---
 name: Event Item
 type: BLK
+section: website
 why: A <time> tile, a stretched title link and a separately labelled register link - two targets, no script.
 when: Event listings, meetups, webinars. The event page itself starts with event-header.
 where: dist/components/event-item/event-item.css

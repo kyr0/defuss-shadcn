@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { codeExampleProblems } from '../code-example-contract';
-import { repoFile } from '../repo';
+import { componentPath } from '../repo';
 
 /**
  * Why: THE documentation rendering mechanism for executable examples
@@ -81,7 +81,7 @@ export interface CodeExampleProps {
 /** Read + lightly shape-check a sidecar schema (deep validation is verify's `component schemas` gate; failing loud here too so a broken contract never ships a silent page). */
 function readSchema(component: string | undefined): string | null {
   if (!component || !/^[a-z0-9-]+$/.test(component)) return null;
-  const file = repoFile('src', 'components', component, `${component}.schema.json`);
+  const file = componentPath(component, `${component}.schema.json`);
   if (!existsSync(file)) return null;
   const text = readFileSync(file, 'utf8');
   let schema: unknown;
@@ -113,7 +113,7 @@ function showsStateTab(schemaText: string | null): boolean {
 /** The component's own icons (lucide, inline) - read from its source at build
  * time, so the server-rendered shell and the runtime-built one are the same. */
 const ICONS: Record<string, string> = (() => {
-  const src = readFileSync(repoFile('src', 'components', 'code-example', 'code-example.ts'), 'utf8');
+  const src = readFileSync(componentPath('code-example', 'code-example.ts'), 'utf8');
   const block = /const ICONS = \{([\s\S]*?)\n\};/.exec(src)?.[1] ?? '';
   const out: Record<string, string> = {};
   for (const m of block.matchAll(/'([a-z-]+)': '([^']*)'/g)) out[m[1]] = m[2];

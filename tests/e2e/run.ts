@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, sep } from 'node:path';
+import { componentDirs } from '../../src/documentation/lib/component-dirs.ts';
 import { appResolver } from '../../scripts/lib/apps.ts';
 import { componentSources } from '../../scripts/lib/apps-files.ts';
 import { e2eInputs, fixturesNamed } from '../../scripts/lib/e2e-select.ts';
@@ -78,7 +79,11 @@ const fingerprint = (inputs: string[]): string => {
 };
 
 const resolve = appResolver(componentSources());
-const isComponent = (name: string) => existsSync(join(ROOT, 'src', 'components', name));
+// a component's repo-relative folder (src/components/<section>/<name>/), from its section folder
+const componentDir = (name: string): string | undefined => {
+  const c = componentDirs(join(ROOT, 'src', 'components')).find((x) => x.name === name);
+  return c ? `${relative(ROOT, c.dir).split(sep).join('/')}/` : undefined;
+};
 const plan = files.map((file) => {
   const name = file.replace(/\.e2e\.ts$/, '');
   const test = readFileSync(join(dir, file), 'utf8');
@@ -86,7 +91,7 @@ const plan = files.map((file) => {
   for (const fx of fixturesNamed(test)) if (existsSync(join(dir, fx))) fixtures[fx] = readFileSync(join(dir, fx), 'utf8');
   const own = `${name}.e2e-fixture.html`;
   if (!fixtures[own] && existsSync(join(dir, own))) fixtures[own] = readFileSync(join(dir, own), 'utf8');
-  const inputs = e2eInputs({ name, test, fixtures, componentsOf: resolve, isComponent });
+  const inputs = e2eInputs({ name, test, fixtures, componentsOf: resolve, componentDir });
   return { file, name, print: fingerprint(inputs) };
 });
 

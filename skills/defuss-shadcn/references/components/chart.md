@@ -1,6 +1,7 @@
 ---
 name: Chart
 type: MOL
+section: charts
 why: Apache ECharts does the drawing; the component is the thin token bridge - the tokens become an ECharts theme (resolved to sRGB), options may name tokens as var(--x), and theme or dark-mode switches re-theme live.
 when: Any data visualization (bar/line/pie/scatter...) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
 where: dist/components/chart/chart.css + dist/components/chart/chart.js

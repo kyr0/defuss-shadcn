@@ -1,6 +1,7 @@
 ---
 name: Author List
 type: BLK
+section: website
 why: A list of Avatars with name links and roles; the stack variant overlaps them and hides the names visually - they stay in the accessibility tree and the tab order.
 when: Article contributors, a publication's masthead, an authors page. One author takes author-bio.
 where: dist/components/author-list/author-list.css

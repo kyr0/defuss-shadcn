@@ -1,6 +1,7 @@
 ---
 name: Indicator
 type: MOL
+section: data-display
 why: A positioned wrapper - pins badges, status dots or buttons to any of nine points of an element with CSS only.
 when: A count on a button or tab, a status dot on an avatar or card, a "New" / "Required" tag on a box or input - for presence ON an avatar prefer .avatar-badge.
 where: dist/components/indicator/indicator.css

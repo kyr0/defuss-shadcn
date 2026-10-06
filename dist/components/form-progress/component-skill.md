@@ -1,6 +1,7 @@
 ---
 name: Form Progress
 type: BLK
+section: website
 why: A native <progress> for the fraction and an ordered list with aria-current="step" for the stages - no script.
 when: Multi-step forms: checkout, onboarding, applications. A workflow explanation is process-step; shipment progress is tracking-status.
 where: dist/components/form-progress/form-progress.css

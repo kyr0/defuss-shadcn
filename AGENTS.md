@@ -91,6 +91,7 @@ defuss-shadcn/
 │       ├── css/ fonts/ images/ videos/  ← copied verbatim from src/documentation/public/
 │       └── js/                        ← compiled docs runtime + generated search index
 │
+├── src/components/<section>/<name>/   ← component SOURCES, each in its sidebar section's folder (actions/button/, forms-inputs/input/ …) - the folders read like the docs sidebar; the skill's front matter says `section: <section>`; verify's `component sections` gate keeps both equal to nav.ts. dist/components/<name>/ stays flat (the consumers' CDN paths; build.ts flattens). Every script asks src/documentation/lib/component-dirs.ts where a component lives
 ├── src/documentation/                 ← the defuss-ssg project (docs authoring)
 │   ├── config.ts                      ← SSG config: pages → ../../dist/documentation, plugins, no-math remark set
 │   ├── pages/*.mdx                    ← one page per component + overview pages (frontmatter + <DocPage> shell)
@@ -510,6 +511,20 @@ morph can reconcile it and every component can reproduce its markup
 
 ### Each component is a self-contained folder
 
+A component's sources live in its sidebar section: `src/components/<section>/{name}/`,
+`<section>` the slug of the sidebar section that lists `{name}.html` in `lib/nav.ts`
+(`Forms & Inputs` → `forms-inputs`), and its skill's front matter repeats it
+(`section: forms-inputs`) - so the files on disk sit where the docs show them. verify's
+`component sections` gate fails a component in no section folder, in another section than the
+sidebar's, or without the matching `section:` line, and names the `git mv` that fixes it; a
+component that moves in the sidebar moves on disk in the same commit. Never build the path
+yourself - `src/documentation/lib/component-dirs.ts` (`componentDirs`, `componentFile`) is the
+layout's one owner. Skills link siblings through their section
+(`../../data-display/badge/component-skill.md`); `dist/` stays flat
+(`dist/components/{name}/`, the consumers' CDN paths) - build.ts moves each folder up and
+flattens those links (`flattenComponentLinks`, src/documentation/lib/component-links.ts), and the `dist 1:1` gate compares through the same
+transform.
+
 Each component at `dist/components/{name}/` contains:
 - `component-skill.md` - component skill: HTML structure, attributes, ARIA, and usage notes
 - `{name}.css` - the component stylesheet (edit directly)
@@ -786,7 +801,7 @@ same) so e2e checks can name exact cells.
 
 ### Component schemas (machine contracts, REQUIRED)
 
-Every documented component owns a `src/components/{name}/{name}.schema.json`,
+Every documented component owns a `src/components/<section>/{name}/{name}.schema.json`,
 the machine-readable twin of its State API: `states` (name → type
 `string|number|boolean|enum`, optional `values`/`default`, how to `mutate` and
 `observe` the DOM, which `target`, which `editor` hint) and `actions` (named
@@ -1066,17 +1081,18 @@ support status of newer APIs (`popover`, anchor positioning, `@starting-style`, 
 
 ### Steps
 
-1. **Create the component folder** → `dist/components/{name}/`
+1. **Create the component folder** → `src/components/<section>/{name}/` - `<section>` is the
+   slug of the sidebar section you add it to in step 6 (`component sections` gate)
 
-2. **Write the component skill** → `dist/components/{name}/component-skill.md`
+2. **Write the component skill** → `src/components/<section>/{name}/component-skill.md`
    - Follow the template: Native basis → Native Web APIs → Structure → Variants → Sizes → ARIA → Notes
    - Documents the HTML pattern, not CSS/JS (those are the actual files)
    - Cross-check variants, sizes, and states against the reference sites above
 
-3. **Write the CSS** → `dist/components/{name}/{name}.css`
+3. **Write the CSS** → `src/components/<section>/{name}/{name}.css`
    - Edit directly - no build step
 
-4. **Write the JS** (if interactive) → `dist/components/{name}/{name}.js`
+4. **Write the JS** (if interactive) → `src/components/<section>/{name}/{name}.ts`
    - Plain ES module - wrap initialization in an `init()` function
    - Call `init()` immediately, then add `new MutationObserver(init).observe(document, { childList: true, subtree: true });`
    - This auto-initializes new elements after SPA navigation or dynamic DOM changes
@@ -1170,6 +1186,7 @@ index lags (rebuild with `bun run build`):
 ---
 name: Dialog
 type: MOL
+section: overlays
 why: Native <dialog> + showModal(): focus trap, Escape, ::backdrop, and inert background are browser-provided.
 when: Modals for forms, detail views, or previews - unless the answer is mandatory (then alert-dialog).
 where: dist/components/dialog/dialog.css + dist/components/dialog/dialog.js
@@ -1178,6 +1195,7 @@ supportedStates: default, open
 ```
 
 - **name** - display name (Title Case) · **type** - its taxonomy class (see "Component taxonomy")
+  · **section** - the slug of its sidebar section, equal to its folder (`src/components/<section>/`)
   · **why** - what its native basis buys · **when** - which
   use it for, and when to pick a sibling instead · **where** - the shipped files
   (`dist/components/{name}/{name}.css` + `.js` if interactive) · **supportedStates** - the exact
@@ -1185,7 +1203,7 @@ supportedStates: default, open
 
 Every component skill must include these sections in order:
 
-0. **Frontmatter** - `name` / `type` / `why` / `when` / `where` / `supportedStates` (see above - REQUIRED)
+0. **Frontmatter** - `name` / `type` / `section` / `why` / `when` / `where` / `supportedStates` (see above - REQUIRED)
 1. **Native basis** - which HTML element/API it builds on
 2. **Native Web APIs** - bulleted list of significant platform APIs with MDN links (see format below)
 3. **Structure** - complete HTML markup with all attributes

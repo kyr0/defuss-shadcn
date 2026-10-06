@@ -1,6 +1,7 @@
 ---
 name: Playlist Item
 type: BLK
+section: website
 why: Each item is a radio input in a label: one selection, arrow keys move it, :has(:checked) highlights it and animates the bars - no script.
 when: Track lists, episode lists, lesson lists. The player itself is audio-player or video-player.
 where: dist/components/playlist-item/playlist-item.css

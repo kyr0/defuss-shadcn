@@ -4169,7 +4169,7 @@ installDdf({
   coerceIndex
 });
 
-// src/components/avatar/avatar.ts
+// src/components/data-display/avatar/avatar.ts
 var df$ = defussGlobals();
 var dfDollar = defussQuery();
 var avatarStates = ["default", "error"];
@@ -4232,7 +4232,7 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-// src/components/command/command.ts
+// src/components/overlays/command/command.ts
 var df$2 = defussGlobals();
 var dfDollar2 = defussQuery();
 var commandStates = ["default", "open"];
@@ -4378,7 +4378,7 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-// src/components/context-menu/context-menu.ts
+// src/components/overlays/context-menu/context-menu.ts
 var df$3 = defussGlobals();
 var dfDollar3 = defussQuery();
 var contextMenuStates = ["default", "open"];
@@ -4491,7 +4491,7 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/data-grid/data-grid.ts
+// src/components/big-data/data-grid/data-grid.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
 var dataGridStates = ["default", "loading", "empty"];
@@ -5255,7 +5255,7 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-// src/components/dialog/dialog.ts
+// src/components/overlays/dialog/dialog.ts
 var df$5 = defussGlobals();
 var dfDollar5 = defussQuery();
 var dialogStates = ["default", "open"];
@@ -5317,7 +5317,7 @@ function init5() {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// src/components/dropdown/dropdown.ts
+// src/components/navigation/dropdown/dropdown.ts
 var df$6 = defussGlobals();
 var dfDollar6 = defussQuery();
 var dropdownStates = ["default", "open"];
@@ -5625,7 +5625,7 @@ function init6() {
 init6();
 new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
-// src/components/progress/progress.ts
+// src/components/feedback-status/progress/progress.ts
 var df$7 = defussGlobals();
 var dfDollar7 = defussQuery();
 var progressStates = ["default", "indeterminate", "complete"];
@@ -5871,7 +5871,7 @@ new MutationObserver((records) => {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-// src/components/radial-progress/radial-progress.ts
+// src/components/feedback-status/radial-progress/radial-progress.ts
 var df$8 = defussGlobals();
 var dfDollar8 = defussQuery();
 var radialProgressStates = ["default", "indeterminate", "complete"];
@@ -6117,7 +6117,7 @@ new MutationObserver((records) => {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-// src/components/sidebar/sidebar.ts
+// src/components/application/sidebar/sidebar.ts
 var df$9 = defussGlobals();
 var dfDollar9 = defussQuery();
 var sidebarStates = ["default", "collapsed"];
@@ -6229,7 +6229,7 @@ if (!document.__sidebarKbInit) {
   });
 }
 
-// src/components/table/table.ts
+// src/components/data-display/table/table.ts
 var df$10 = defussGlobals();
 var dfDollar10 = defussQuery();
 var tableStates = ["default", "sorted", "selected"];
@@ -6510,7 +6510,7 @@ function init10() {
 init10();
 new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
-// src/components/toast/toast.ts
+// src/components/feedback-status/toast/toast.ts
 var df$11 = defussGlobals();
 var dfDollar11 = defussQuery();
 var toastStates = ["default"];
@@ -6764,7 +6764,7 @@ var toastActions = {
 };
 df$11.toast = toastActions;
 
-// src/components/toggle/toggle.ts
+// src/components/actions/toggle/toggle.ts
 var df$12 = defussGlobals();
 var dfDollar12 = defussQuery();
 var toggleStates = ["default", "pressed"];
@@ -6799,7 +6799,7 @@ function init12() {
 init12();
 new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
-// src/components/toggle-group/toggle-group.ts
+// src/components/actions/toggle-group/toggle-group.ts
 var df$13 = defussGlobals();
 var dfDollar13 = defussQuery();
 var toggleGroupStates = ["default", "disabled"];
@@ -6898,6 +6898,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=8CC709F196A6400164756E2164756E21
+//# debugId=B7219B9D9C02A36564756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

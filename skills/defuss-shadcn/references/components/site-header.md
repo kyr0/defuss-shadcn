@@ -1,6 +1,7 @@
 ---
 name: Site Header
 type: BLK
+section: website
 why: A marketing page header is pure layout - flexbox + a container query replace any JS show/hide of the nav.
 when: Top of a marketing/landing page - for the doc site's own chrome use <site-header> instead.
 where: dist/components/site-header/site-header.css

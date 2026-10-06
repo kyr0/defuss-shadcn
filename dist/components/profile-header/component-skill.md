@@ -1,6 +1,7 @@
 ---
 name: Profile Header
 type: BLK
+section: website
 why: A header with an <h1>, a <dl> for the counts and real links / buttons - the overlap is a negative margin, no script.
 when: Public profile pages, community members, creators. Your own team pages use team-member; article bylines use author-bio.
 where: dist/components/profile-header/profile-header.css

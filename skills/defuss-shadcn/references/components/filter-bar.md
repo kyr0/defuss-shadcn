@@ -1,6 +1,7 @@
 ---
 name: Filter Bar
 type: BLK
+section: website
 why: A GET form of native selects and checkbox chips (:has(:checked) fills them) - filters are shareable URLs; the row scrolls sideways when narrow.
 when: Above product grids, listings and tables with a few filters. Many filters belong in filter-sidebar; applied ones show in active-filters.
 where: dist/components/filter-bar/filter-bar.css

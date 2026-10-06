@@ -1,6 +1,7 @@
 ---
 name: Popover
 type: ATM
+section: overlays
 why: Native Popover API with CSS anchor positioning - show, dismiss, and placement owned by the browser.
 when: Lightweight panel anchored to a trigger - info, mini-forms, menus.
 where: dist/components/popover/popover.css + dist/components/popover/popover.js

@@ -1,6 +1,7 @@
 ---
 name: Toolbar
 type: ORG
+section: actions
 why: role=toolbar with arrow-key focus management across a button cluster.
 when: Editor-style action bars above a content region.
 where: dist/components/toolbar/toolbar.css + dist/components/toolbar/toolbar.js

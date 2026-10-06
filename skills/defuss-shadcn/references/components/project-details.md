@@ -1,6 +1,7 @@
 ---
 name: Project Details
 type: BLK
+section: website
 why: A header, a <dl> of facts, a list of deliverables and a grid of figures - the gallery mixes wide and tall pictures with CSS grid only.
 when: The page behind a project-item. A client result story is case-study.
 where: dist/components/project-details/project-details.css

@@ -1,6 +1,7 @@
 ---
 name: Order Summary
 type: BLK
+section: website
 why: A list and a <dl>; the mobile version is a <details> whose summary shows the total - opens and closes natively, no script.
 when: Beside the checkout steps and on the confirmation page. In the cart use cart-item + cart-summary.
 where: dist/components/order-summary/order-summary.css

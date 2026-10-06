@@ -1,6 +1,7 @@
 ---
 name: Countdown
 type: ATM
+section: data-display
 why: Numbers that roll to a new value with CSS alone - set --value, the digits turn like an odometer (mod() / round() pick each digit column); the optional script makes it a live, accessible timer.
 when: Launch / sale / event countdowns, timers, clocks, animated counters (0-999 per value). For a progress fraction use progress; for a static figure use statistic.
 where: dist/components/countdown/countdown.css + dist/components/countdown/countdown.js

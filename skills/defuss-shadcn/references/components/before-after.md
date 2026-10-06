@@ -1,6 +1,7 @@
 ---
 name: Before After
 type: BLK
+section: website
 why: One custom property (--mk-ba-pos) drives a clip-path; the slider is a native range input (keyboard-operable); the toggle variant is a checkbox read by :has() - CSS-only.
 when: Edits, renovations, redesigns, restorations. Two unrelated pictures belong in a gallery.
 where: dist/components/before-after/before-after.css

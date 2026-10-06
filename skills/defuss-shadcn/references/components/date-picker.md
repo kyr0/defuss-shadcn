@@ -1,6 +1,7 @@
 ---
 name: Date Picker
 type: ATM
+section: forms-inputs
 why: Text field plus calendar in a popover, wired declaratively with command/commandfor attributes.
 when: A form field where users type or pick a date - for a start-end date RANGE use the calendar's range mode (one span, one answer) instead of two separate fields.
 where: dist/components/date-picker/date-picker.css

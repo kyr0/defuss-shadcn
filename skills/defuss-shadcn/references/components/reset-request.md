@@ -1,6 +1,7 @@
 ---
 name: Reset Request
 type: BLK
+section: website
 why: One field and a submit; the sent state is plain markup with role="status" - no script.
 when: Linked from login-form. Setting the new password is password-reset.
 where: dist/components/reset-request/reset-request.css

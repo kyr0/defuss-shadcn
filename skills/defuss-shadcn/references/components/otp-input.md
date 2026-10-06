@@ -1,6 +1,7 @@
 ---
 name: OTP Input
 type: MOL
+section: forms-inputs
 why: One real input under a row of slots, so paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
 when: Short codes typed once (SMS verification, email confirmation, a PIN). Use input for anything longer or free-form.
 where: dist/components/otp-input/otp-input.css + dist/components/otp-input/otp-input.js

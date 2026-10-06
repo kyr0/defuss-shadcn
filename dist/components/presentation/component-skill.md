@@ -1,6 +1,7 @@
 ---
 name: Presentation
 type: TPL
+section: presentations
 why: Fixed artboard slides + df$.anim slide transitions + the shared Motion entrance vocabulary + native <progress> - the deck engine needs no presentation library.
 when: Slide decks and keynotes on a fixed coordinate canvas (1600×900 default) - not scrollable content (that is a page, use blocks).
 where: dist/components/presentation/presentation.css + dist/components/presentation/presentation.js (+ dist/components/motion/motion.css for the entrances)

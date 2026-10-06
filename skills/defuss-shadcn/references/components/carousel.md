@@ -1,6 +1,7 @@
 ---
 name: Carousel
 type: ATM
+section: data-display
 why: Native scroll-snap track with prev/next controls - scrolling, swiping, and snapping stay browser features.
 when: Presenting a finite set of large items (hero slides, galleries) one or a few at a time.
 where: dist/components/carousel/carousel.css + dist/components/carousel/carousel.js

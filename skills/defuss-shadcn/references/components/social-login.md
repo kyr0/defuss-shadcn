@@ -1,6 +1,7 @@
 ---
 name: Social Login
 type: BLK
+section: website
 why: Links to each provider's sign-in flow (OAuth / OpenID Connect redirects) - no SDK, no script in the page; brand marks are inline SVG.
 when: Above or below a login-form or signup-form. Single sign-on for companies is usually one "Continue with SSO" button.
 where: dist/components/social-login/social-login.css

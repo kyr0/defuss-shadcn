@@ -1,6 +1,7 @@
 ---
 name: Diff
 type: ATM
+section: data-display
 why: Two stacked layers split by a native <input type="range"> - drag anywhere, arrow keys, touch and a screen-reader value come from the platform; a clip-path does the reveal.
 when: Before / after comparisons - photo edits, redesigns, old vs new screenshots, rendered vs source text. For side-by-side panels the user resizes use resizer.
 where: dist/components/diff/diff.css + dist/components/diff/diff.js

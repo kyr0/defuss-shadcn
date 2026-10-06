@@ -1,6 +1,7 @@
 ---
 name: Author Bio
 type: BLK
+section: website
 why: An Avatar, a heading with the author link, a role, a paragraph and a list of icon Buttons - semantic HTML, no script.
 when: Under an article, on an author page, in a sidebar. Several contributors take author-list.
 where: dist/components/author-bio/author-bio.css

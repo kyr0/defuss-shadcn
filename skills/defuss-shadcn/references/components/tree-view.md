@@ -1,6 +1,7 @@
 ---
 name: Tree View
 type: ATM
+section: data-display
 why: role=tree with expandable nodes and the full arrow-key interaction model.
 when: Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection, checkboxes (tri-state cascade), drag & drop reordering and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
 where: dist/components/tree-view/tree-view.css + dist/components/tree-view/tree-view.js

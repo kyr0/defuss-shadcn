@@ -1,6 +1,7 @@
 ---
 name: Table of Contents
 type: MOL
+section: navigation
 why: A section-nav block of heading links with active-section tracking classes - pure markup, the observer is the host's.
 when: Docs/blog/spec pages with in-page sections that deserve a persistent rail.
 where: dist/components/toc/toc.css

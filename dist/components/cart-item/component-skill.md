@@ -1,6 +1,7 @@
 ---
 name: Cart Item
 type: BLK
+section: website
 why: The Number Input component steps the quantity; the line total is an <output>; remove is a labelled button - all native controls.
 when: Cart pages and mini carts. The totals go in cart-summary; checkout recap uses order-summary.
 where: dist/components/cart-item/cart-item.css

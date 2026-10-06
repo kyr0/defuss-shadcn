@@ -1,6 +1,6 @@
 import type { Props } from 'defuss';
-import { existsSync, readdirSync, statSync } from 'node:fs';
-import { componentHasJs, readSkillMeta, repoFile } from '../repo';
+import { existsSync } from 'node:fs';
+import { componentHasJs, componentNames, readSkillMeta, repoFile } from '../repo';
 import { DocLink } from './doc-blocks';
 
 /**
@@ -11,8 +11,8 @@ import { DocLink } from './doc-blocks';
  * components with states were missing and every cell carried a stray '>'.
  */
 export function DeclaredStatesTable(_props: Props) {
-  const rows = readdirSync(repoFile('src', 'components'))
-    .filter((d) => statSync(repoFile('src', 'components', d)).isDirectory() && componentHasJs(d))
+  const rows = componentNames()
+    .filter((d) => componentHasJs(d))
     .map((d) => ({ folder: d, meta: readSkillMeta(d) }))
     .filter((r): r is { folder: string; meta: NonNullable<typeof r.meta> } => !!r.meta && r.meta.supportedStates.length > 1)
     .sort((a, b) => a.meta.name.localeCompare(b.meta.name));

@@ -1,6 +1,7 @@
 ---
 name: Statistic
 type: ATM
+section: data-display
 why: Labelled metric with a delta indicator - tokens and plain text only.
 when: Dashboards showing one value and its trend.
 where: dist/components/statistic/statistic.css

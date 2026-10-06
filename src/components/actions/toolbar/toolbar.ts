@@ -1,0 +1,128 @@
+// -- Toolbar --------------------------------------------------
+// Roving tabindex for role="toolbar" containers.
+// Arrow keys move focus between focusable children, plus the named-state API
+// so agents/tests can reset the roving position by name (AGENTS.md
+// "State API"). The toolbar's only observable state is *which item holds the
+// roving tabindex*, so 'default' means "back to the authored position" and
+// getState() reports where the roving stop currently is.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+const toolbarStates = ['default'];
+
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the roving focus). */
+export interface ToolbarStateConfigs {
+  /** The toolbar with one item in the tab order (roving tabindex). */
+  default: {
+    /** the item to focus and put in the tab order, 0-based (default 0) */
+    focus?: number;
+    /** reported by getState(): the index of the item in the tab order */
+    rovingIndex?: number;
+  };
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state, and it writes no markup: the roving tabindex the runtime
+  // keeps on the items is runtime-owned (see the e2e)
+}
+
+/**
+ * UI side of setState: 'default' restores the roving tabindex to the first
+ * enabled item (the authored position); optional { focus: n } config parks
+ * the roving stop on the nth item instead - focus is only moved there if the
+ * toolbar already contains the focus, matching native roving semantics.
+ */
+function triggerStateChange(toolbar, items, stateName, config) {
+  if (stateName !== 'default' || items.length === 0) return;
+  const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
+  items.forEach((item) => item.setAttribute('tabindex', item === target ? '0' : '-1'));
+  if (toolbar.contains(document.activeElement)) target.focus();
+}
+
+/** Registry-level API; pass the toolbar element explicitly. Unknown names throw. */
+export const toolbarApi = componentState({
+  component: 'toolbar',
+  states: toolbarStates,
+  apply: (toolbar, state) => {
+    const items = toolbarItems(toolbar);
+    triggerStateChange(toolbar, items, state.name, state.config);
+  },
+  read: (toolbar, state) => {
+    const items = toolbarItems(toolbar);
+    const idx = items.findIndex((item) => item.getAttribute('tabindex') === '0');
+    return {
+      name: toolbar.dataset.stateName || 'default',
+      // observable roving position - reflects arrow-key movement too
+      config: { ...state.config, rovingIndex: idx },
+    };
+  },
+  markup: (el, state) => applyMarkup(el, state.name),
+});
+
+df$.toolbarApi = toolbarApi;
+df$.toolbarStates = toolbarStates;
+
+const toolbarItems = (toolbar) =>
+  Array.from(
+    dfDollar(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray()
+  );
+
+function init() {
+  dfDollar('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
+  toolbar.dataset.init = '';
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(toolbar, toolbarApi);
+  const items = toolbarItems(toolbar);
+  if (items.length === 0) return;
+
+  items.forEach((item, i) => {
+    item.setAttribute('tabindex', i === 0 ? '0' : '-1');
+  });
+
+  toolbar.addEventListener('keydown', (e) => {
+    const current = items.indexOf(document.activeElement);
+    if (current === -1) return;
+
+    const vertical = toolbar.getAttribute('aria-orientation') === 'vertical';
+    const fwd = vertical ? 'ArrowDown' : 'ArrowRight';
+    const bwd = vertical ? 'ArrowUp' : 'ArrowLeft';
+    let next;
+
+    if (e.key === fwd) {
+      e.preventDefault();
+      next = (current + 1) % items.length;
+    } else if (e.key === bwd) {
+      e.preventDefault();
+      next = (current - 1 + items.length) % items.length;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      next = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      next = items.length - 1;
+    }
+
+    if (next !== undefined) {
+      items[current].setAttribute('tabindex', '-1');
+      items[next].setAttribute('tabindex', '0');
+      items[next].focus();
+    }
+  });
+});
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

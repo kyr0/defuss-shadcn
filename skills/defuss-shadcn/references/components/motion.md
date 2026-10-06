@@ -1,6 +1,7 @@
 ---
 name: Motion
 type: ATM
+section: guides
 why: CSS @keyframes are the single source of truth for the entrance vocabulary; animation-composition:add keeps pre-existing transforms intact, and animations (unlike transitions) fire deterministically on first application.
 when: Entrance/draw-in animations for ANY element - decks (presentation), cards, lists, dialogs - not just slides. Reach for it before writing bespoke keyframes.
 where: dist/components/motion/motion.css (keyframes + [data-df-entrance]) + the JS controller in core (df$.shadcn.entrance / ddf$.entrance, src/shared/motion.ts)

@@ -1,6 +1,7 @@
 ---
 name: Event Countdown
 type: BLK
+section: website
 why: The Countdown component ticks from one data-until date and announces itself as a timer; the block only lays out the date, the units and the action.
 when: Launches, sales deadlines, event openings. A static date is enough for most events - use event-header; for a page before launch use coming-soon.
 where: dist/components/event-countdown/event-countdown.css

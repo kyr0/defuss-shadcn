@@ -1,6 +1,7 @@
 ---
 name: Event Header
 type: BLK
+section: website
 why: A header with a <time> range, the venue in <address> and two links - registration and an .ics calendar file - no script.
 when: The top of an event or conference page. A list of events uses event-item; the details below are event-description.
 where: dist/components/event-header/event-header.css

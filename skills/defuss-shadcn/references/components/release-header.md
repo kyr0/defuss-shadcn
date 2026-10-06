@@ -1,6 +1,7 @@
 ---
 name: Release Header
 type: BLK
+section: website
 why: A header with a <time>, badges and links - nothing to run.
 when: The top of a changelog entry or release page. The individual changes are release-item; plans are roadmap-item.
 where: dist/components/release-header/release-header.css

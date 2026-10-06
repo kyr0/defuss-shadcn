@@ -1,6 +1,7 @@
 ---
 name: Locator Search
 type: BLK
+section: website
 why: A <search> landmark and a GET form work without script; the "use my location" button is the one progressive addition (Geolocation API, on request only).
 when: Store finders and venue locators with many places. A handful of places fit on location-map.
 where: dist/components/locator-search/locator-search.css

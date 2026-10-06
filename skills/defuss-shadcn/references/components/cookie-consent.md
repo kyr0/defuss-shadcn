@@ -1,6 +1,7 @@
 ---
 name: Cookie Consent
 type: ORG
+section: website
 why: Built from the library - a Dialog (native modal, focus, Escape, backdrop) holding Buttons, a Select, Tabs, Checkbox rows and Badges; defuss-query owns querying and DOM writes, so consent logic is the only new code.
 when: Collect, persist, reopen, or withdraw service-specific privacy choices and gate optional scripts or embeds.
 where: dist/components/cookie-consent/cookie-consent.css + dist/components/cookie-consent/cookie-consent.js (+ dialog, button, select, tabs, checkbox, badge CSS - all.css has them)

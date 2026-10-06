@@ -1,0 +1,98 @@
+// -- Dialog ---------------------------------------------------
+// Wires [data-dialog-trigger] buttons to <dialog> elements, plus the
+// named-state API so agents/tests can drive states by name (AGENTS.md "State API").
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+const dialogStates = ['default', 'open'];
+
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the dialog's states take none. */
+export interface DialogStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open as a modal (showModal()) - Escape and a backdrop click close it. */
+  open: {};
+}
+
+/**
+ * The markup of a state: an open dialog carries `open`. render() applies it
+ * to a detached copy; on the live dialog showModal()/close() (the native
+ * protocol: top layer, focus, inert background) produce exactly this
+ * attribute - the e2e render round trip proves they agree.
+ */
+function applyMarkup(dialog, stateName) {
+  dfDollar(dialog).attr('open', stateName === 'open' ? '' : null);
+}
+
+/**
+ * UI side of setState: 'default' closes, 'open' opens modally. Native
+ * <dialog> can't animate to a declared state it's not in, so this is a
+ * direct showModal()/close() dispatch; unknown names are rejected upstream.
+ */
+function triggerStateChange(dialog, stateName, _config) {
+  switch (stateName) {
+    case 'default':
+      if (dialog.open) dialog.close();
+      break;
+    case 'open':
+      if (!dialog.open) dialog.showModal();
+      break;
+  }
+}
+
+/** Registry-level API; pass the dialog element explicitly. Unknown names throw. */
+export const dialogApi = componentState({
+  component: 'dialog',
+  states: dialogStates,
+  apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+  markup: (el, state) => applyMarkup(el, state.name),
+});
+
+df$.dialogApi = dialogApi;
+df$.dialogStates = dialogStates;
+
+function init() {
+  dfDollar('[data-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    trigger.dataset.init = '';
+    const dialog = dfDollar('#' + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    if (!dialog) return;
+    trigger.addEventListener('click', () => {
+      dialog._trigger = trigger;
+      dialog.showModal();
+    });
+  });
+  /* .command excluded: the command component owns its dialogs (own backdrop
+     close, filtering, focus). Without this, dialog.js - which loads first —
+     claims them via data-init and command.js's init silently skips them. */
+  dfDollar('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])').toArray().forEach((dialog) => {
+    dfDollar(dialog).data('init', '');
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(dialog, dialogApi);
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    dfDollar(dialog).find('[data-dialog-close]').toArray().forEach((btn) => {
+      btn.addEventListener('click', () => { dialog.close(); });
+    });
+    dialog.addEventListener('close', () => {
+      // `close` fires AFTER the exit transition (display allow-discrete), so a
+      // fast re-open can beat it - a stale event must not downgrade an open
+      // dialog back to 'default' or yank focus out of it while it's showing.
+      if (dialog.open) return;
+      // reflect the actual UI state: any close path (Escape, backdrop, close
+      // button) returns the dialog to 'default', even when it wasn't setState'd
+      dialog.dataset.stateName = 'default';
+      if (dialog._trigger) dialog._trigger.focus();
+    });
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

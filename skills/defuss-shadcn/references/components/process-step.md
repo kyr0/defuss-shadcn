@@ -1,6 +1,7 @@
 ---
 name: Process Step
 type: BLK
+section: website
 why: An ordered list (<ol>) carries the sequence; the connector line and numbers are pure CSS - no script.
 when: How-we-work, onboarding or "how it works" sections. For dated history use timeline-item; for a form wizard use form-progress.
 where: dist/components/process-step/process-step.css

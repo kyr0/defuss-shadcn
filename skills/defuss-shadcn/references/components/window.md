@@ -1,6 +1,7 @@
 ---
 name: Window
 type: ATM
+section: application
 why: A non-modal <dialog> - open / close, the close event and the × (a <form method="dialog"> submit) are the browser's, and resizing is native CSS resize; the runtime only moves windows by their title bar, raises the clicked one to the front and maximizes / minimizes.
 when: Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer.
 where: dist/components/window/window.css + dist/components/window/window.js

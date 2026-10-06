@@ -1,6 +1,7 @@
 ---
 name: Type Badge
 type: ATM
+section: data-display
 why: A mono chip marking a component's atomic-design type - one color identity per type, in both schemes.
 when: Tag components by taxonomy in docs, inventories, or design reviews (ATM/MOL/ORG/BLK/TPL).
 where: dist/components/type-badge/type-badge.css

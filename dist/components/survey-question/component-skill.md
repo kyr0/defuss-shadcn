@@ -1,6 +1,7 @@
 ---
 name: Survey Question
 type: BLK
+section: website
 why: Each question is a <fieldset> with its <legend>; responses are native radios, checkboxes or a textarea; :has(:checked) styles the choice. No script.
 when: Surveys, onboarding questionnaires, research screeners. A single quick rating is feedback-form.
 where: dist/components/survey-question/survey-question.css

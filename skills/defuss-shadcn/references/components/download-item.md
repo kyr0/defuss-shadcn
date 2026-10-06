@@ -1,6 +1,7 @@
 ---
 name: Download Item
 type: BLK
+section: website
 why: An <a download> link with the format and size in its name; the checksum is a <details> - no script.
 when: Download pages, release assets, press kits. A resource to read online is resource-item.
 where: dist/components/download-item/download-item.css

@@ -1,6 +1,7 @@
 ---
 name: Resizer
 type: ATM
+section: application
 why: Pointer capture + box geometry give edge/corner drag handles for any single container - with a classes mode that keeps sizing declarative (the sizing.css ladder stays the source of truth).
 when: When a demo surface, canvas, or panel must be user-resizable on more than the native CSS `resize` corner - or when the size should stay expressed as w-/h- classes instead of inline px.
 where: dist/components/resizer/resizer.css + dist/components/resizer/resizer.js

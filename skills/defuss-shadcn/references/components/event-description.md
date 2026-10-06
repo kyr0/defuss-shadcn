@@ -1,6 +1,7 @@
 ---
 name: Event Description
 type: BLK
+section: website
 why: Sections and lists for the story, a <dl> for the facts and a <meter> for the seats left - all native, no script.
 when: Below an event-header. Times and talks go in session-item; the people in speaker-item.
 where: dist/components/event-description/event-description.css

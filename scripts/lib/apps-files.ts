@@ -1,5 +1,6 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentDirs } from '../../src/documentation/lib/component-dirs.ts';
 import { appResolver, type AppComponentSource } from './apps.ts';
 import { appName, exampleFence, STANDALONE_APPS } from './docs-ssg.ts';
 
@@ -18,11 +19,7 @@ const read = (file: string): string => (existsSync(file) ? readFileSync(file, 'u
 
 /** Every component's stylesheet + script source, alphabetical. */
 export function componentSources(): AppComponentSource[] {
-  return readdirSync(SRC_COMPONENTS, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .sort()
-    .map((name) => ({ name, css: read(join(SRC_COMPONENTS, name, `${name}.css`)), ts: read(join(SRC_COMPONENTS, name, `${name}.ts`)) }));
+  return componentDirs(SRC_COMPONENTS).map(({ name, dir }) => ({ name, css: read(join(dir, `${name}.css`)), ts: read(join(dir, `${name}.ts`)) }));
 }
 
 export type AppPlan = { slug: string; name: string; components: string[] };

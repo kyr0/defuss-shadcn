@@ -1,6 +1,7 @@
 ---
 name: Command Palette
 type: ATM
+section: overlays
 why: A <dialog class="command"> palette - filtering and keyboard navigation are the only JS; the modal is native.
 when: ⌘K-style search or command surface across app features or documentation pages.
 where: dist/components/command/command.css + dist/components/command/command.js

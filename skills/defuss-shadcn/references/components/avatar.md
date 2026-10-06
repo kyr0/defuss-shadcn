@@ -1,6 +1,7 @@
 ---
 name: Avatar
 type: ATM
+section: data-display
 why: Circular image with an initials fallback and an error state exposed through the State API.
 when: Representing a person or entity - alone, stacked in a group, or beside a name.
 where: dist/components/avatar/avatar.css + dist/components/avatar/avatar.js

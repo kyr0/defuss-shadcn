@@ -1,6 +1,7 @@
 ---
 name: Collection Pagination
 type: BLK
+section: website
 why: Links, not buttons - every page has a URL; the per-page choice is a GET Select. No script.
 when: Under search results, tables and catalogs. An endless list uses load-more.
 where: dist/components/collection-pagination/collection-pagination.css

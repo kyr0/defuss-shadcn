@@ -1,6 +1,7 @@
 ---
 name: Slider
 type: ATM
+section: forms-inputs
 why: Native range input with styled track and thumb - keyboard and announcement are built in.
 when: Continuous numeric values or ranges - volume, price bounds.
 where: dist/components/slider/slider.css + dist/components/slider/slider.js

@@ -1,6 +1,7 @@
 ---
 name: Parallax
 type: ATM
+section: guides
 why: Scroll-driven animations - a view timeline on the scene drives each layer's translate, animation-timeline view() drives the reveals; the compositor runs it, no scroll listener or IntersectionObserver.
 when: Depth in heroes and illustrations, a photo drifting behind copy, sections and cards that rise into view on a long page. Entrance animations that play once on load take motion; animations that play on demand take anim-canvas / the df$.anim engine.
 where: dist/components/parallax/parallax.css

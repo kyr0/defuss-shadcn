@@ -1,6 +1,7 @@
 ---
 name: File Input
 type: ATM
+section: forms-inputs
 why: The native file input - styled, and as a drag & drop card whose invisible input takes the click AND the drop natively; the script filters, appends and lists the files.
 when: Uploads - a compact field in forms, a drop zone card when files are the main task. Filter by type with accept, by size / count with data-max-size / data-max-files.
 where: dist/components/file-input/file-input.css + dist/components/file-input/file-input.js

@@ -1,6 +1,7 @@
 ---
 name: Autocomplete
 type: MOL
+section: big-data
 why: An input with a manual popover listbox anchored under it (CSS anchor positioning, APG combobox) - suggestions from local records, a URL or your own network client, every request a defuss-dataview request; debounced, the in-flight request aborted by the next keystroke, pages loaded as the list scrolls.
 when: Searching data too big or too remote to put in a select - places, people, products, tickets - as the user types. A Combobox for a short fixed list of options; a Select when typing adds nothing.
 where: dist/components/autocomplete/autocomplete.css + dist/components/autocomplete/autocomplete.js

@@ -1,6 +1,7 @@
 ---
 name: Roadmap Item
 type: BLK
+section: website
 why: Status is one data attribute, progress a native <progress>, the vote a checkbox read by :has() - no script.
 when: Public roadmaps and feature boards. Shipped changes belong in release-item.
 where: dist/components/roadmap-item/roadmap-item.css

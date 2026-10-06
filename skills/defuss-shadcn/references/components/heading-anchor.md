@@ -1,6 +1,7 @@
 ---
 name: Heading Anchor
 type: ATM
+section: primitives
 why: A quiet § permalink on any heading - a visible, copyable deep link with zero JavaScript.
 when: Section permalinks in docs/blogs/specs - before or after the heading text.
 where: dist/components/heading-anchor/heading-anchor.css

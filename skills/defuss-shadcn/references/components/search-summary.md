@@ -1,6 +1,7 @@
 ---
 name: Search Summary
 type: BLK
+section: website
 why: A polite live region (role="status") announces new counts as filters change - a sentence, not a widget.
 when: At the top of search results and filtered collections. The query field itself is search-box.
 where: dist/components/search-summary/search-summary.css

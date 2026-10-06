@@ -1,6 +1,7 @@
 ---
 name: Announcement
 type: BLK
+section: website
 why: A non-modal <dialog open>: a <form method="dialog"> button dismisses it natively - no script, and Escape-free so it never steals focus.
 when: Releases, outages, policy changes, events. Promotions with a code are offer-banner; transient feedback is the toast component.
 where: dist/components/announcement/announcement.css

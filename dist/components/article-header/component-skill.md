@@ -1,6 +1,7 @@
 ---
 name: Article Header
 type: BLK
+section: website
 why: An h1, a subtitle, a byline from Avatar + <time>, and a <figure> with <figcaption> - the cover variant layers the copy over the figure with a gradient, all CSS.
 when: The top of a single article or post. A blog or news front takes blog-header / news-header.
 where: dist/components/article-header/article-header.css

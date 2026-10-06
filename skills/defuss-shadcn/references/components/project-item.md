@@ -1,6 +1,7 @@
 ---
 name: Project Item
 type: BLK
+section: website
 why: A figure and a stretched heading link; the caption reveal and zoom are CSS transitions keyed to :hover and :focus-within - no script.
 when: Portfolio and work grids. The full project page is project-details; client results are case-preview.
 where: dist/components/project-item/project-item.css

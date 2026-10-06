@@ -1,6 +1,7 @@
 ---
 name: Resource Item
 type: BLK
+section: website
 why: A card whose title link covers it; the type label and the action cue change with the resource - no script.
 when: Resource libraries, learning centers, "further reading". A file with format and size is download-item; a help topic is help-category.
 where: dist/components/resource-item/resource-item.css

@@ -1,6 +1,7 @@
 ---
 name: Docs Content
 type: BLK
+section: website
 why: Long-form HTML - headings, paragraphs, <pre><code>, tables, notes - styled for reading in one class scope; no script.
 when: A page of documentation. The surrounding nav is docs-navigation; a how-to answer is help-article; code with tabs and copy is code-block.
 where: dist/components/docs-content/docs-content.css

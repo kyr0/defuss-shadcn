@@ -1,6 +1,7 @@
 ---
 name: Breadcrumbs
 type: BLK
+section: website
 why: The Breadcrumb component in a <nav>; a container query swaps the trail for a back link when narrow; the collapsed levels are a popover - no script.
 when: Above the title of nested pages: docs, help, shop categories. Sibling sections are category-menu.
 where: dist/components/breadcrumbs/breadcrumbs.css

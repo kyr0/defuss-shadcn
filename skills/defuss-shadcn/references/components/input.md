@@ -1,6 +1,7 @@
 ---
 name: Input
 type: ATM
+section: forms-inputs
 why: Native text inputs - validation via :user-invalid, autofill and keyboards via inputmode/autocomplete.
 when: Short single-line text; multi-line text takes textarea instead.
 where: dist/components/input/input.css

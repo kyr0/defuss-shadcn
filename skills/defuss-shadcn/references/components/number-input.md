@@ -1,6 +1,7 @@
 ---
 name: Number Input
 type: ATM
+section: forms-inputs
 why: Input plus stepper buttons bound to native min/max/step and arrow-key behavior.
 when: Numeric values where nudging, a bounded range, a unit or fixed decimals matter - quantity, temperature (19.0 °C), percent, weight, duration - and money with a locale-aware currency mask (data-currency + data-locale: separators, symbol side, minor unit via Intl). For a free-form range pick use slider.
 where: dist/components/number-input/number-input.css + dist/components/number-input/number-input.js

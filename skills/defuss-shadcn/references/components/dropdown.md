@@ -1,6 +1,7 @@
 ---
 name: Dropdown Menu
 type: ATM
+section: navigation
 why: Button-triggered menu as a Popover positioned by CSS anchor positioning - dismiss and placement are browser-owned.
 when: The go-to menu of actions or options anchored to a trigger button.
 where: dist/components/dropdown/dropdown.css + dist/components/dropdown/dropdown.js

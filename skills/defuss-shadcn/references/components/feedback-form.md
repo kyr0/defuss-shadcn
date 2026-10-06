@@ -1,6 +1,7 @@
 ---
 name: Feedback Form
 type: BLK
+section: website
 why: Ratings are radio inputs; :has(:checked) highlights the choice and - in the inline variant - swaps the question for a thank-you. No script.
 when: After a task, at the end of a help article, in a periodic survey. Bug reports go through support-form; multi-question surveys use survey-question.
 where: dist/components/feedback-form/feedback-form.css

@@ -1,6 +1,7 @@
 ---
 name: Tag List
 type: BLK
+section: website
 why: A labelled list of links; colors come from one custom property per tag. No script.
 when: Under a post title, on a card, in a task. All tags of a site are tag-cloud.
 where: dist/components/tag-list/tag-list.css

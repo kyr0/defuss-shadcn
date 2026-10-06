@@ -1,6 +1,7 @@
 ---
 name: 404 Page
 type: BLK
+section: website
 why: A heading, a GET search form and a list of links - the page works fully without script, as an error page must.
 when: The 404 page of a site. Server failures are error-state (data-variant="page").
 where: dist/components/page-not-found/page-not-found.css

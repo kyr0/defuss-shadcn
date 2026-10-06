@@ -1,5 +1,6 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentDirs, componentFile } from '../../src/documentation/lib/component-dirs.ts';
 import {
   SKILL_REFERENCES_DIR,
   referenceSkillText,
@@ -27,13 +28,13 @@ import {
  */
 export function skillEntries(compsDir: string): SkillEntry[] {
   const entries: SkillEntry[] = [];
-  for (const folder of readdirSync(compsDir).sort()) {
-    const skill = join(compsDir, folder, 'component-skill.md');
-    if (!existsSync(skill)) continue; // "component skills" gate reports that
+  // folder = the component's name (dist/ is flat); the source sits in its section folder
+  for (const { name: folder, section } of componentDirs(compsDir)) {
+    const skill = componentFile(compsDir, folder, 'component-skill.md');
     const meta = parseSkillFrontmatter(readFileSync(skill, 'utf8'));
     if (!meta)
       throw new Error(
-        `src/components/${folder}/component-skill.md is missing valid frontmatter (${SKILL_FRONTMATTER_KEYS.join('/')}) - see AGENTS.md "Component skill template"`,
+        `src/components/${section}/${folder}/component-skill.md is missing valid frontmatter (${SKILL_FRONTMATTER_KEYS.join('/')}) - see AGENTS.md "Component skill template"`,
       );
     entries.push({ folder, ...meta });
   }
@@ -74,7 +75,7 @@ export async function buildRootSkillText(root: string): Promise<string> {
   const compsDir = join(src, 'components');
   const components = skillEntries(compsDir).map((e) => ({
     ...e,
-    hasJs: existsSync(join(compsDir, e.folder, `${e.folder}.ts`)),
+    hasJs: existsSync(componentFile(compsDir, e.folder, `${e.folder}.ts`)),
   }));
   const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
   const version = pkg.version as string;
@@ -104,7 +105,7 @@ export function buildSkillReferences(root: string): Map<string, string> {
   const compsDir = join(root, 'src', 'components');
   const out = new Map<string, string>();
   for (const e of skillEntries(compsDir)) {
-    const text = readFileSync(join(compsDir, e.folder, 'component-skill.md'), 'utf8');
+    const text = readFileSync(componentFile(compsDir, e.folder, 'component-skill.md'), 'utf8');
     out.set(`${SKILL_REFERENCES_DIR}/${e.folder}.md`, referenceSkillText(text));
   }
   return out;

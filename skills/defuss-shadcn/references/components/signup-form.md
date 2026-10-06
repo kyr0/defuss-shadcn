@@ -1,6 +1,7 @@
 ---
 name: Signup Form
 type: BLK
+section: website
 why: autocomplete="new-password" lets the browser suggest a strong password; minlength and pattern check it; :user-valid confirms each field - no script.
 when: Account creation. Existing users sign in with login-form; providers are social-login.
 where: dist/components/signup-form/signup-form.css

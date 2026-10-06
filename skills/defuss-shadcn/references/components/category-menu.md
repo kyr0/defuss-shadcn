@@ -1,6 +1,7 @@
 ---
 name: Category Menu
 type: BLK
+section: website
 why: A <nav> of links with aria-current - each category has its own URL; the variants are layout only. No script.
 when: Blog, shop and help-center category navigation. Facets that combine are filter-bar; page sections are contents.
 where: dist/components/category-menu/category-menu.css

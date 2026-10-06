@@ -1,6 +1,7 @@
 ---
 name: Collection Item
 type: BLK
+section: website
 why: A picture and a heading link stretched over the card; the zoom and arrow are CSS transitions - no script.
 when: Shop home pages and category overviews. A single product is product-item; editorial categories are category-menu.
 where: dist/components/collection-item/collection-item.css

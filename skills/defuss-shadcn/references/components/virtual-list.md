@@ -1,6 +1,7 @@
 ---
 name: Virtual List
 type: ATM
+section: big-data
 why: Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same; records behind a defuss-dataview source filter and sort locally.
 when: Lists too long to render, such as search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
 where: dist/components/virtual-list/virtual-list.css + dist/components/virtual-list/virtual-list.js

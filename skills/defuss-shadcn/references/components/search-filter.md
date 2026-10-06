@@ -1,6 +1,7 @@
 ---
 name: Search & Filter
 type: ATM
+section: forms-inputs
 why: A native type="search" field and native radios / checkboxes - the value, the form submission, the radio group's arrow keys and the reset button stay the browser's; CSS draws the chips and hides the unchosen ones, JS only clears the box.
 when: Narrowing a list - a search box with a clear (×) button for free text, filter chips for categories (one with radios, several with checkboxes). Use combobox when the text picks one item from suggestions, command for a command palette.
 where: dist/components/search-filter/search-filter.css + dist/components/search-filter/search-filter.js

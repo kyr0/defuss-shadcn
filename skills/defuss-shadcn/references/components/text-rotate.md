@@ -1,6 +1,7 @@
 ---
 name: Text Rotate
 type: ATM
+section: primitives
 why: One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
 when: A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
 where: dist/components/text-rotate/text-rotate.css

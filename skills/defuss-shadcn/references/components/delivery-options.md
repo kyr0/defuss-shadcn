@@ -1,6 +1,7 @@
 ---
 name: Delivery Options
 type: BLK
+section: website
 why: A radio group is the selection; :has(:checked) highlights the card; arrival dates are <time>s - no script.
 when: Checkout, between address-form and payment-form.
 where: dist/components/delivery-options/delivery-options.css

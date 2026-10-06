@@ -1,6 +1,7 @@
 ---
 name: Docs Navigation
 type: BLK
+section: website
 why: Lists inside a <nav>, groups as <details> - collapsible without script; aria-current="page" marks where you are.
 when: The sidebar of a documentation site or help center. The headings of one page are contents; a trail is breadcrumbs.
 where: dist/components/docs-navigation/docs-navigation.css

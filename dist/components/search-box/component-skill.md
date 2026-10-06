@@ -1,6 +1,7 @@
 ---
 name: Search Box
 type: BLK
+section: website
 why: A <search> landmark around a GET form: it works without script and the URL is shareable; the expanding variant is a :focus-within transition.
 when: Site and app search. Suggestions while typing are search-suggestions; the results page uses search-summary and search-result.
 where: dist/components/search-box/search-box.css

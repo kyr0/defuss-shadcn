@@ -1,6 +1,7 @@
 ---
 name: Profile Form
 type: BLK
+section: website
 why: Native fields with autocomplete and maxlength; the username prefix is an addon beside the input; the form submits like any other - no script.
 when: Account settings. Passwords, two-factor and sessions are security-settings; notifications are notification-settings.
 where: dist/components/profile-form/profile-form.css

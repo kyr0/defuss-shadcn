@@ -1,6 +1,7 @@
 ---
 name: Press Item
 type: BLK
+section: website
 why: An article whose external headline link covers the item, with the outlet and a <time> - and a new-tab hint for screen readers. No script.
 when: Press and "in the news" pages. Your own announcements are news-item; customer quotes are testimonials.
 where: dist/components/press-item/press-item.css

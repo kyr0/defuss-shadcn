@@ -1,6 +1,7 @@
 ---
 name: Border Layout
 type: ORG
+section: application
 why: A CSS grid with named areas places north, south, west and east around a center; each resizable region reuses the Resizer (pointer capture, keyboard, clamps) with its handle redrawn as a full-length divider - the runtime adds the layout rules: the center's minimum, collapsing, remembered sizes.
 when: Application frames - an editor with a file tree and a terminal, a mail client, a dashboard with an inspector; any split that the user should be able to resize: two panes side by side (horizontal split), stacked (vertical split), three columns, nested splits. A single resizable box takes resizer; fixed columns take the grid utilities.
 where: dist/components/border-layout/border-layout.css + dist/components/border-layout/border-layout.js (+ the resizer)

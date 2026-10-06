@@ -1,6 +1,7 @@
 ---
 name: Job Details
 type: BLK
+section: website
 why: Sections with headings, check lists and a <dl> summary; the summary is sticky from 52rem - CSS only.
 when: The page for one vacancy. Lists of vacancies use job-item; the form below uses application-form.
 where: dist/components/job-details/job-details.css

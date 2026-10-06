@@ -1,6 +1,7 @@
 ---
 name: Case Preview
 type: BLK
+section: website
 why: A stretched heading link and a figure; the picture zooms on hover with a CSS transition - no script.
 when: Customer and portfolio grids. The full story is case-study; anonymous scenarios are use-case.
 where: dist/components/case-preview/case-preview.css

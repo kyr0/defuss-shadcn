@@ -1,6 +1,7 @@
 ---
 name: News Header
 type: BLK
+section: website
 why: A header with an h1, a <time> dateline and a nav of topic links (aria-current marks the current one) - the topic row scrolls natively, no tab script.
 when: On a newsroom / press / changelog front. A blog front takes blog-header; a single story takes article-header.
 where: dist/components/news-header/news-header.css

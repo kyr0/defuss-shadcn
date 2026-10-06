@@ -1,6 +1,7 @@
 ---
 name: Contents
 type: BLK
+section: website
 why: A nav of fragment links; nesting shows the outline, aria-current="location" the section in view (set by your scroll observer or server-side) - the links work alone.
 when: Long articles and docs pages. Navigation between pages is docs-navigation; the site-wide trail is breadcrumbs.
 where: dist/components/contents/contents.css

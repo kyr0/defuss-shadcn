@@ -4169,7 +4169,7 @@ installDdf({
   coerceIndex
 });
 
-// src/components/alert-dialog/alert-dialog.ts
+// src/components/feedback-status/alert-dialog/alert-dialog.ts
 var df$ = defussGlobals();
 var dfDollar = defussQuery();
 var alertDialogStates = ["default", "open"];
@@ -4230,7 +4230,7 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-// src/components/avatar/avatar.ts
+// src/components/data-display/avatar/avatar.ts
 var df$2 = defussGlobals();
 var dfDollar2 = defussQuery();
 var avatarStates = ["default", "error"];
@@ -4293,7 +4293,7 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-// src/components/chart/chart.ts
+// src/components/charts/chart/chart.ts
 var df$3 = defussGlobals();
 var dfDollar3 = defussQuery();
 var chartStates = ["default"];
@@ -4770,7 +4770,7 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/command/command.ts
+// src/components/overlays/command/command.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
 var commandStates = ["default", "open"];
@@ -4916,7 +4916,7 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-// src/components/data-grid/data-grid.ts
+// src/components/big-data/data-grid/data-grid.ts
 var df$5 = defussGlobals();
 var dfDollar5 = defussQuery();
 var dataGridStates = ["default", "loading", "empty"];
@@ -5680,7 +5680,7 @@ function init5() {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// src/components/dialog/dialog.ts
+// src/components/overlays/dialog/dialog.ts
 var df$6 = defussGlobals();
 var dfDollar6 = defussQuery();
 var dialogStates = ["default", "open"];
@@ -5742,7 +5742,7 @@ function init6() {
 init6();
 new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
-// src/components/dropdown/dropdown.ts
+// src/components/navigation/dropdown/dropdown.ts
 var df$7 = defussGlobals();
 var dfDollar7 = defussQuery();
 var dropdownStates = ["default", "open"];
@@ -6050,7 +6050,7 @@ function init7() {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-// src/components/number-input/number-input.ts
+// src/components/forms-inputs/number-input/number-input.ts
 var df$8 = defussGlobals();
 var dfDollar8 = defussQuery();
 var numberInputStates = ["default"];
@@ -6289,7 +6289,7 @@ function init8() {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-// src/components/popover/popover.ts
+// src/components/overlays/popover/popover.ts
 var df$9 = defussGlobals();
 var dfDollar9 = defussQuery();
 var popoverStates = ["default", "open"];
@@ -6333,7 +6333,7 @@ function init9() {
 init9();
 new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
-// src/components/progress/progress.ts
+// src/components/feedback-status/progress/progress.ts
 var df$10 = defussGlobals();
 var dfDollar10 = defussQuery();
 var progressStates = ["default", "indeterminate", "complete"];
@@ -6579,7 +6579,7 @@ new MutationObserver((records) => {
 init10();
 new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
-// src/components/sheet/sheet.ts
+// src/components/overlays/sheet/sheet.ts
 var df$11 = defussGlobals();
 var dfDollar11 = defussQuery();
 var sheetStates = ["default", "open"];
@@ -6641,7 +6641,7 @@ function init11() {
 init11();
 new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
-// src/components/sidebar/sidebar.ts
+// src/components/application/sidebar/sidebar.ts
 var df$12 = defussGlobals();
 var dfDollar12 = defussQuery();
 var sidebarStates = ["default", "collapsed"];
@@ -6753,7 +6753,7 @@ if (!document.__sidebarKbInit) {
   });
 }
 
-// src/components/table/table.ts
+// src/components/data-display/table/table.ts
 var df$13 = defussGlobals();
 var dfDollar13 = defussQuery();
 var tableStates = ["default", "sorted", "selected"];
@@ -7034,7 +7034,7 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-// src/components/tabs/tabs.ts
+// src/components/navigation/tabs/tabs.ts
 var df$14 = defussGlobals();
 var dfDollar14 = defussQuery();
 var tabsStates = ["default", "active", "disabled"];
@@ -7318,7 +7318,7 @@ function init14() {
 init14();
 new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
-// src/components/toast/toast.ts
+// src/components/feedback-status/toast/toast.ts
 var df$15 = defussGlobals();
 var dfDollar15 = defussQuery();
 var toastStates = ["default"];
@@ -7572,7 +7572,7 @@ var toastActions = {
 };
 df$15.toast = toastActions;
 
-// src/components/toggle/toggle.ts
+// src/components/actions/toggle/toggle.ts
 var df$16 = defussGlobals();
 var dfDollar16 = defussQuery();
 var toggleStates = ["default", "pressed"];
@@ -7607,7 +7607,7 @@ function init16() {
 init16();
 new MutationObserver(init16).observe(document, { childList: true, subtree: true });
 
-// src/components/toggle-group/toggle-group.ts
+// src/components/actions/toggle-group/toggle-group.ts
 var df$17 = defussGlobals();
 var dfDollar17 = defussQuery();
 var toggleGroupStates = ["default", "disabled"];
@@ -7706,6 +7706,6 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-//# debugId=A402E58620434A9D64756E2164756E21
+//# debugId=99DD99D9FD3A6AF064756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=admin-dashboard.js.map

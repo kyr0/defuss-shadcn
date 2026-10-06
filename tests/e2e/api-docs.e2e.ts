@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentDirs, componentFile } from '../../src/documentation/lib/component-dirs.ts';
 import { startServer } from './server.ts';
 
 /**
@@ -15,11 +16,12 @@ import { startServer } from './server.ts';
  */
 
 const ROOT = join(import.meta.dirname, '..', '..');
-const comps = readdirSync(join(ROOT, 'src', 'components'))
-  .filter((c) => existsSync(join(ROOT, 'src', 'components', c, `${c}.ts`)) && existsSync(join(ROOT, 'src', 'documentation', 'pages', `${c}.mdx`)))
+const COMPONENTS = join(ROOT, 'src', 'components');
+const comps = componentDirs(COMPONENTS).map((c) => c.name)
+  .filter((c) => existsSync(componentFile(COMPONENTS, c, `${c}.ts`)) && existsSync(join(ROOT, 'src', 'documentation', 'pages', `${c}.mdx`)))
   .sort();
 const statesOf = (c: string): string[] =>
-  (/const \w+States = \[([^\]]*)\]/.exec(readFileSync(join(ROOT, 'src', 'components', c, `${c}.ts`), 'utf8'))?.[1] ?? '').match(/'[^']+'/g)?.map((s) => s.slice(1, -1)) ?? [];
+  (/const \w+States = \[([^\]]*)\]/.exec(readFileSync(componentFile(COMPONENTS, c, `${c}.ts`), 'utf8'))?.[1] ?? '').match(/'[^']+'/g)?.map((s) => s.slice(1, -1)) ?? [];
 
 const server = startServer();
 const browser = await chromium.launch();

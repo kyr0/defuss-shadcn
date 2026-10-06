@@ -1,6 +1,7 @@
 ---
 name: Support Form
 type: BLK
+section: website
 why: Native form fields; priority is a radio group styled as a segmented control; attachments are a multiple file input in a drop zone - no script.
 when: Help centers and in-app support. General contact is get-in-touch; product feedback is feedback-form.
 where: dist/components/support-form/support-form.css

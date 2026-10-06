@@ -1,6 +1,7 @@
 ---
 name: Login Form
 type: BLK
+section: website
 why: A real <form> with autocomplete="username" / "current-password" lets password managers fill and save it; validation is the browser's - no script.
 when: The sign-in page or a sign-in dialog. External providers are social-login; creating an account is signup-form.
 where: dist/components/login-form/login-form.css

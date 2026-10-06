@@ -1,6 +1,7 @@
 ---
 name: Booking Form
 type: BLK
+section: website
 why: Radio inputs are the selection state: :has(:checked) highlights the card or chip, disabled marks booked slots, the browser validates - no script.
 when: Appointments, demos, consultations, table reservations. Event tickets use registration-form.
 where: dist/components/booking-form/booking-form.css

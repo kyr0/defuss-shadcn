@@ -1,6 +1,7 @@
 ---
 name: Stats
 type: BLK
+section: website
 why: Metric band = a grid of rule-led numbers; text alignment and tabular-nums do what a chart library would.
 when: "Trusted by teams everywhere" social proof with hard numbers; not a data dashboard.
 where: dist/components/stats/stats.css

@@ -1,6 +1,7 @@
 ---
 name: Mermaid
 type: ATM
+section: diagrams
 why: Mermaid's own <pre class="mermaid"> text becomes a token-themed SVG - the official renderer, lazy-loaded, locked to strict security; readable source without JavaScript.
 when: Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
 where: dist/components/mermaid/mermaid.css + dist/components/mermaid/mermaid.js

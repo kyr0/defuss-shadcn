@@ -1,11 +1,13 @@
 #!/usr/bin/env bun
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { ROOT_SKILL_OUTPUT_FILE, SKILL_OUTPUT_FILE } from './lib/skill.ts';
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { schemaManifestText } from './lib/schema.ts';
+import { componentDirs } from '../src/documentation/lib/component-dirs.ts';
+import { flattenComponentLinks, flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 
 /**
  * Why: the whole build - `bun run build` produces dist/ from src/ 1:1.
@@ -30,7 +32,8 @@ const DIST = join(ROOT, 'dist');
 // `{ defussGlobals, safeShowPopover }` - the binding block carries the exact
 // imported names either way. An import that does NOT match (unsupported
 // shape) stays as a live import and fails verify's `core bindings (dist)` gate.
-const SHARED_IMPORT = /import \{([^}]+)\} from '\.\.\/\.\.\/shared\/state-api\.js';\n/;
+// (components live in src/components/<section>/<name>/, so the shared folder is three levels up)
+const SHARED_IMPORT = /import \{([^}]+)\} from '\.\.\/\.\.\/\.\.\/shared\/state-api\.js';\n/;
 /** the ABI literal core stamps at df$.shadcn.shared.abi (single source) */
 const SHARED_ABI = readFileSync(join(SRC, 'shared', 'version.ts'), 'utf8').match(
   /SHARED_ABI = '([^']+)'/,
@@ -122,6 +125,43 @@ cpSync(SRC, DIST, {
   },
 });
 
+// 2b. the sources sit in their sidebar section (src/components/<section>/<name>/), dist/ stays flat:
+//     dist/components/<name>/ are the consumers' CDN URLs. Each component folder tsc and the copy wrote
+//     under its section moves up one level, and its source maps - one level shallower now - drop one
+//     `../` from their sources. VERIFIED: (verify's dist 1:1 gate maps src → dist the same way; the
+//     minified sizes in stats.json did not change) consumers see the same dist/components/<name>/.
+{
+  const distComponents = join(DIST, 'components');
+  const sectionDirs = new Set(componentDirs(join(SRC, 'components')).map((c) => c.section));
+  for (const section of sectionDirs) {
+    const from = join(distComponents, section);
+    if (!existsSync(from)) continue;
+    for (const name of readdirSync(from)) {
+      const target = join(distComponents, name);
+      if (existsSync(target) && name !== section) throw new Error(`build: dist/components/${name} exists twice`);
+      const dir = join(from, name);
+      for (const file of readdirSync(dir).filter((f) => f.endsWith('.map'))) {
+        const map = JSON.parse(readFileSync(join(dir, file), 'utf8')) as { sources: string[] };
+        map.sources = map.sources.map((src) => src.replace(/^\.\.\//, ''));
+        writeFileSync(join(dir, file), JSON.stringify(map));
+      }
+    }
+    // a section named like one of its components (questionnaire/questionnaire): step aside first
+    const staging = join(distComponents, `.section-${section}`);
+    renameSync(from, staging);
+    for (const name of readdirSync(staging)) renameSync(join(staging, name), join(distComponents, name));
+    rmSync(staging, { recursive: true, force: true });
+  }
+  // dist/SKILL.md links each skill in the flat layout (src/SKILL.md through the sections)
+  const index = join(DIST, 'SKILL.md');
+  if (existsSync(index)) writeFileSync(index, flattenSkillIndex(readFileSync(index, 'utf8'), sectionDirs));
+  // the skills link siblings through their section in src/ - one level shallower in dist/
+  for (const { name } of componentDirs(join(SRC, 'components'))) {
+    const skill = join(distComponents, name, 'component-skill.md');
+    if (existsSync(skill)) writeFileSync(skill, flattenComponentLinks(readFileSync(skill, 'utf8'), sectionDirs));
+  }
+}
+
 // 0c. publish the component schemas (plans/cmp-schemas-and-codeexample.md §24):
 // each src/components/<n>/<n>.schema.json also ships as dist/schemas/<n>.schema.json
 // plus a deterministic manifest, so external agents/tools discover contracts
@@ -132,11 +172,11 @@ cpSync(SRC, DIST, {
   const schemasOut = join(DIST, 'schemas');
   mkdirSync(schemasOut, { recursive: true });
   const names: string[] = [];
-  for (const dir of readdirSync(join(SRC, 'components'))) {
-    const file = join(SRC, 'components', dir, `${dir}.schema.json`);
+  for (const { name, dir } of componentDirs(join(SRC, 'components'))) {
+    const file = join(dir, `${name}.schema.json`);
     if (!existsSync(file)) continue;
-    cpSync(file, join(schemasOut, `${dir}.schema.json`));
-    names.push(dir);
+    cpSync(file, join(schemasOut, `${name}.schema.json`));
+    names.push(name);
   }
   writeFileSync(join(schemasOut, 'manifest.json'), schemaManifestText(names));
   console.log(`schemas: ${names.length} published → dist/schemas/ + manifest`);

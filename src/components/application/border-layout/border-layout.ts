@@ -1,0 +1,384 @@
+// -- Border Layout ----------------------------------------------
+// North, south, west and east around a center, on a CSS grid. The resizing
+// is the Resizer's: every resizable region is a .resizer wrapping its pane,
+// with one handle on its inner edge. This module adds the layout on top:
+// sensible resizer defaults per region, the center never squeezed below its
+// minimum, collapsible regions (double-click or Enter on the divider),
+// sizes remembered across visits (data-save), the window-splitter values
+// on each divider - and the named-state API (AGENTS.md "State API").
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent, persisted } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A region that folds and resizes - the center takes what is left. */
+type BorderLayoutSide = 'north' | 'south' | 'west' | 'east';
+
+/** What border-layout-collapse carries. */
+interface BorderLayoutCollapseDetail {
+  /** the region that folded or came back */
+  region: BorderLayoutSide;
+  /** whether it is collapsed now */
+  collapsed: boolean;
+}
+
+/** default = every region open at its authored size; collapsed = one or
+ *  more regions folded away (their divider stays). */
+const borderLayoutStates = ['default', 'collapsed'];
+
+/** setState() configs per state. */
+export interface BorderLayoutStateConfigs {
+  /** Every region open at its authored size. */
+  default: {};
+  /** One or more regions folded away (their dividers stay). */
+  collapsed: {
+    /** the regions to fold */
+    regions?: BorderLayoutSide[];
+    /** one region to fold (when regions is not given) */
+    region?: BorderLayoutSide;
+  };
+}
+
+const SIDES = {
+  north: { handle: 's', axis: 'h', size: 'height' },
+  south: { handle: 'n', axis: 'h', size: 'height' },
+  west: { handle: 'e', axis: 'w', size: 'width' },
+  east: { handle: 'w', axis: 'w', size: 'width' },
+};
+const REGIONS = Object.keys(SIDES);
+
+const num = (v, fallback) => {
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : fallback;
+};
+const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+
+/** The region element (resizer wrapper or plain pane) for a side. */
+const regionOf = (layout, side) => dfDollar(layout).find(`:scope > .border-layout-${side}`).get(0);
+/** The pane that carries the size: the resizer's wrapped element. */
+const paneOf = (region) => (region.classList.contains('resizer')
+  ? Array.from(region.children).find((c) => !c.classList.contains('resizer-handle'))
+  : region);
+const sizeOf = (region, side) => {
+  if (region.hasAttribute('data-collapsed')) return 0;
+  const box = region.getBoundingClientRect();
+  return Math.round(SIDES[side].axis === 'w' ? box.width : box.height);
+};
+
+/** Sets a region's size through the resizer (one axis, clamped) - or directly
+ *  on the pane before the resizer has initialized. */
+function setSize(region, side, px) {
+  const { size } = SIDES[side];
+  const pane = paneOf(region);
+  if (!pane) return;
+  const value = String(Math.round(px));
+  if (region.hasAttribute('data-init') && region.api) region.dataset[size] = value; // the resizer applies it
+  else pane.style[size] = `${value}px`;
+}
+
+/**
+ * The center keeps at least data-center-min px (default 120): each side's
+ * maximum is what the frame has left after the opposite side and the
+ * center. Recomputed before every drag / key and whenever the frame
+ * resizes; a side already too big is brought back in.
+ */
+function clamp(layout) {
+  const centerMin = num(layout.dataset.centerMin, 120);
+  const style = getComputedStyle(layout);
+  const gapW = num(style.columnGap, 0) * 2;
+  const gapH = num(style.rowGap, 0) * 2;
+  const pad = (a, b) => num(style[a], 0) + num(style[b], 0);
+  const innerW = layout.clientWidth - pad('paddingLeft', 'paddingRight') - gapW;
+  const innerH = layout.clientHeight - pad('paddingTop', 'paddingBottom') - gapH;
+  const OPPOSITE = { north: 'south', south: 'north', west: 'east', east: 'west' };
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    if (!region?.classList.contains('resizer')) continue;
+    const other = regionOf(layout, OPPOSITE[side]);
+    const taken = other ? sizeOf(other, OPPOSITE[side]) : 0;
+    const room = (SIDES[side].axis === 'w' ? innerW : innerH) - taken - centerMin;
+    const authoredMax = num(region.dataset.maxAuthored, Infinity);
+    const max = Math.max(num(region.dataset.min, 48), Math.min(room, authoredMax));
+    region.dataset[SIDES[side].axis === 'w' ? 'maxW' : 'maxH'] = String(Math.round(max));
+    if (!region.hasAttribute('data-collapsed') && sizeOf(region, side) > max + 1) setSize(region, side, max);
+  }
+}
+
+/** The divider speaks the window-splitter pattern: its value is the region size. */
+function aria(layout) {
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const handle = region ? dfDollar(region).children('.resizer-handle').get(0) : null;
+    if (!handle) continue;
+    const pane = paneOf(region);
+    if (pane && !pane.id) pane.id = `${layout.id || 'border-layout'}-${side}-${Math.random().toString(36).slice(2, 7)}`;
+    if (pane) handle.setAttribute('aria-controls', pane.id);
+    const name = region.getAttribute('aria-label') || pane?.getAttribute('aria-label') || side;
+    handle.setAttribute('aria-label', `Resize ${name}`);
+    handle.setAttribute('aria-valuenow', String(sizeOf(region, side)));
+    handle.setAttribute('aria-valuemin', String(region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible') ? 0 : num(region.dataset.min, 48)));
+    handle.setAttribute('aria-valuemax', String(num(region.dataset[SIDES[side].axis === 'w' ? 'maxW' : 'maxH'], 2000)));
+  }
+}
+
+const collapsible = (layout, region) => region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible');
+
+/** Folds a region away (or back); its divider stays in place to bring it back. */
+function collapse(layout, side, collapsed) {
+  const region = regionOf(layout, side);
+  if (!region) return;
+  const was = region.hasAttribute('data-collapsed');
+  if (was === collapsed) return;
+  region.toggleAttribute('data-collapsed', collapsed);
+  aria(layout);
+  save(layout);
+  // Fires when a region folds away or comes back - which region, and whether it is collapsed now.
+  layout.dispatchEvent(new CustomEvent<BorderLayoutCollapseDetail>('border-layout-collapse', { bubbles: true, detail: { region: side, collapsed } }));
+  syncState(layout);
+}
+
+/** The named state follows the regions: any collapsed → 'collapsed'. */
+function syncState(layout) {
+  const folded = REGIONS.filter((s) => regionOf(layout, s)?.hasAttribute('data-collapsed'));
+  const name = folded.length ? 'collapsed' : 'default';
+  // the store records it (once bound - init calls this before binding)
+  if (layout.store) borderLayoutApi.commit(layout, name, folded.length ? { regions: folded } : {});
+  else layout.dataset.stateName = name;
+}
+
+// -- Persistence (data-save="key") ---------------------------------------------
+
+// one persisted store per data-save key (AGENTS.md "State through stores"):
+// { [side]: { size, collapsed } } - memory when storage is blocked, the plain
+// JSON older versions wrote adopted as-is
+const saved = new Map();
+const savedFor = (layout) => {
+  const key = `defuss-shadcn:border-layout:${layout.dataset.save}`;
+  if (!saved.has(key)) {
+    saved.set(key, persisted(key, {}, {
+      validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+    }));
+  }
+  return saved.get(key);
+};
+function save(layout) {
+  if (!layout.dataset.save || layout._restoring) return;
+  const data = {};
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    if (!region?.classList.contains('resizer')) continue;
+    const pane = paneOf(region);
+    const px = Math.round(num(pane?.style[SIDES[side].size], NaN));
+    data[side] = { size: Number.isFinite(px) ? px : null, collapsed: region.hasAttribute('data-collapsed') };
+  }
+  savedFor(layout).set(data);
+}
+function restore(layout) {
+  if (!layout.dataset.save) return;
+  const data = savedFor(layout).value;
+  if (!Object.keys(data).length) return;
+  layout._restoring = true;
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const saved = data[side];
+    if (!region || !saved) continue;
+    if (saved.size) setSize(region, side, saved.size);
+    region.toggleAttribute('data-collapsed', !!saved.collapsed);
+  }
+  layout._restoring = false;
+}
+
+// -- State API -------------------------------------------------------------------
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName, config) {
+  // which regions are collapsed: none in 'default', the config's in
+  // 'collapsed' (sizes are measured pixels - runtime-owned, see the e2e)
+  const want = new Set(stateName === 'collapsed' ? (config?.regions ?? (config?.region ? [config.region] : [])) : []);
+  for (const side of REGIONS) {
+    const region = regionOf(el, side);
+    if (region) dfDollar(region).attr('data-collapsed', want.has(side) ? '' : null);
+  }
+}
+
+/**
+ * UI side of setState. 'default' opens every region at its authored size;
+ * 'collapsed' folds `{ regions: ['west', …] }` (or `{ region: 'west' }`) and
+ * opens the others.
+ */
+function triggerStateChange(layout, stateName, config) {
+  if (stateName === 'default') {
+    for (const side of REGIONS) {
+      const region = regionOf(layout, side);
+      if (!region) continue;
+      region.removeAttribute('data-collapsed');
+      if (!region._authored) continue;
+      // the computed maximum reflects the old layout - lift it, then re-clamp
+      region.dataset[SIDES[side].axis === 'w' ? 'maxW' : 'maxH'] = region.dataset.maxAuthored ?? '2000';
+      setSize(region, side, region._authored);
+    }
+    clamp(layout);
+  } else {
+    const want = new Set(config.regions ?? (config.region ? [config.region] : []));
+    for (const side of REGIONS) {
+      const region = regionOf(layout, side);
+      if (region) region.toggleAttribute('data-collapsed', want.has(side));
+    }
+  }
+  aria(layout);
+  save(layout);
+}
+
+export const borderLayoutApi = componentState({
+  component: 'border-layout',
+  states: borderLayoutStates,
+  apply: (layout, state) => {
+    triggerStateChange(layout, state.name, state.config);
+    syncState(layout);
+  },
+  markup: (el, state) => applyMarkup(el, state.name, state.config),
+});
+
+df$.borderLayoutApi = borderLayoutApi;
+df$.borderLayoutStates = borderLayoutStates;
+
+// -- init --------------------------------------------------------------------------
+
+function init() {
+  dfDollar('.border-layout:not([data-init])').toArray().forEach((layout) => {
+    layout.dataset.init = '';
+
+    for (const side of REGIONS) {
+      const region = regionOf(layout, side);
+      if (!region?.classList.contains('resizer')) continue;
+      // the resizer defaults a border region needs - authored values win
+      const d = region.dataset;
+      d.handles ??= SIDES[side].handle;
+      d.axis ??= SIDES[side].axis;
+      d.keys ??= 'edge';
+      d.min ??= '48';
+      if (d.max) d.maxAuthored = d.max;
+      // a percentage start (width: 30%) is of the layout, not of the region's
+      // own content-sized column (circular - it would collapse): resolve it
+      const pane = paneOf(region);
+      const prop = SIDES[side].size;
+      const authored = pane?.style[prop] ?? '';
+      if (authored.endsWith('%')) {
+        const inner = prop === 'width' ? layout.clientWidth : layout.clientHeight;
+        pane.style[prop] = `${Math.round((parseFloat(authored) / 100) * inner)}px`;
+      }
+      region._authored = sizeOf(region, side) || null;
+    }
+    restore(layout);
+
+    // before any drag or key: recompute the room every side may take; a drag
+    // on a folded region unfolds it first
+    const before = (e) => {
+      const handle = e.target.closest?.('.resizer-handle');
+      if (!handle || handle.parentElement?.parentElement !== layout) return;
+      clamp(layout);
+      const side = REGIONS.find((s) => handle.parentElement.classList.contains(`border-layout-${s}`));
+      if (e.type === 'pointerdown' && side && handle.parentElement.hasAttribute('data-collapsed')) collapse(layout, side, false);
+    };
+    layout.addEventListener('pointerdown', before, true);
+    layout.addEventListener('keydown', before, true);
+    layout.addEventListener('focusin', (e) => { before(e); aria(layout); });
+
+    // double-click or Enter on a divider folds a collapsible region
+    const toggle = (handle) => {
+      const region = handle.parentElement;
+      const side = REGIONS.find((s) => region.classList.contains(`border-layout-${s}`));
+      if (!side || !collapsible(layout, region)) return;
+      collapse(layout, side, !region.hasAttribute('data-collapsed'));
+    };
+    layout.addEventListener('dblclick', (e) => {
+      const handle = e.target.closest('.resizer-handle');
+      if (handle && handle.parentElement?.parentElement === layout) toggle(handle);
+    });
+    layout.addEventListener('keydown', (e) => {
+      const handle = e.target.closest?.('.resizer-handle');
+      if (e.key === 'Enter' && handle && handle.parentElement?.parentElement === layout) {
+        e.preventDefault();
+        toggle(handle);
+      }
+    });
+
+    // every size change: splitter values, persistence
+    layout.addEventListener('resizer-resize', (e) => {
+      if (e.target.parentElement !== layout) return;
+      aria(layout);
+      save(layout);
+    });
+    new ResizeObserver(() => { clamp(layout); aria(layout); }).observe(layout);
+
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(layout, borderLayoutApi);
+    syncState(layout);
+    // the resizers may initialize after this module - label their handles then
+    queueMicrotask(() => { clamp(layout); aria(layout); });
+  });
+}
+
+// -- df$.shadcn.borderLayout: the imperative surface ----------------------------------
+
+df$.borderLayout = {
+  /**
+   * Folds a region away (its divider stays).
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   */
+  collapse: (target: string | HTMLElement, side: BorderLayoutSide): void => { const l = resolve(target); if (l) collapse(l, side, true); },
+  /**
+   * Brings a folded region back.
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   */
+  expand: (target: string | HTMLElement, side: BorderLayoutSide): void => { const l = resolve(target); if (l) collapse(l, side, false); },
+  /**
+   * Folds or unfolds a region.
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   * @returns true when the region is collapsed now (false also when the layout has no such region)
+   */
+  toggle: (target: string | HTMLElement, side: BorderLayoutSide): boolean => {
+    const l = resolve(target);
+    const region = l && regionOf(l, side);
+    if (!region) return false;
+    collapse(l, side, !region.hasAttribute('data-collapsed'));
+    return region.hasAttribute('data-collapsed');
+  },
+  /**
+   * Sets a region's size (clamped by the resizer's limits).
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   * @param px - the width (west / east) or height (north / south) in px
+   */
+  resize: (target: string | HTMLElement, side: BorderLayoutSide, px: number): void => { const l = resolve(target); const r = l && regionOf(l, side); if (r) { clamp(l); setSize(r, side, px); } },
+  /**
+   * The current sizes: { west: 240, east: 0 (collapsed), ... }.
+   * @param target - the .border-layout element, its id or a selector
+   * @returns px per region the layout has - 0 for a collapsed one
+   */
+  sizes: (target: string | HTMLElement): Partial<Record<BorderLayoutSide, number>> => {
+    const l = resolve(target);
+    const out: Partial<Record<BorderLayoutSide, number>> = {};
+    if (l) for (const side of REGIONS) { const r = regionOf(l, side); if (r) out[side] = sizeOf(r, side); }
+    return out;
+  },
+};
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

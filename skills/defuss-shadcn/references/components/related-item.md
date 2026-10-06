@@ -1,6 +1,7 @@
 ---
 name: Related Item
 type: BLK
+section: website
 why: An <article> whose title link stretches over the item - a thumbnail, a kind label and meta; line-clamp keeps titles to two lines.
 when: "Read next" under an article, sidebars, resource lists. A story in a news list takes news-item; a post on a blog front takes blog-item.
 where: dist/components/related-item/related-item.css

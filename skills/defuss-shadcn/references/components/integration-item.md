@@ -1,6 +1,7 @@
 ---
 name: Integration Item
 type: BLK
+section: website
 why: A small article with a labelled action; the logo tile is a text mark tinted by one custom property - no images needed.
 when: Integration directories and "works with your tools" sections. A grid of logos only is brand-logos.
 where: dist/components/integration-item/integration-item.css

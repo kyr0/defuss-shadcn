@@ -1,6 +1,7 @@
 ---
 name: Service Item
 type: BLK
+section: website
 why: One heading link stretched over the card; the hover lift and arrow are CSS transitions - no script.
 when: Agency and consultancy service grids. Product capabilities use feature-details; an applied scenario uses use-case.
 where: dist/components/service-item/service-item.css

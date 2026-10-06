@@ -1,6 +1,7 @@
 ---
 name: Cart Summary
 type: BLK
+section: website
 why: A <dl> for the breakdown, a native <progress> toward free shipping and a polite live region for the total - no script needed to render.
 when: Beside cart-item rows, or in a mini cart. During checkout use order-summary.
 where: dist/components/cart-summary/cart-summary.css

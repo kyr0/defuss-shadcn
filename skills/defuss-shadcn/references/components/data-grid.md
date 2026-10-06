@@ -1,6 +1,7 @@
 ---
 name: Data Grid
 type: ATM
+section: big-data
 why: One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
 when: Tables of thousands to millions of records that people sort, filter, lock columns of, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
 where: dist/components/data-grid/data-grid.css + dist/components/data-grid/data-grid.js

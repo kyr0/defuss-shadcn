@@ -1,6 +1,7 @@
 ---
 name: Password Reset
 type: BLK
+section: website
 why: autocomplete="new-password" on both fields lets the browser generate and fill one strong password; minlength checks it - no script for the form itself.
 when: The page behind the reset link from reset-request. Changing a password while signed in lives in security-settings.
 where: dist/components/password-reset/password-reset.css

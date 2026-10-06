@@ -1,6 +1,7 @@
 ---
 name: Navbar
 type: ORG
+section: navigation
 why: A <nav> app bar with start / center / end regions; the responsive menu is ONE popover shown inline on wide screens and opened by a toggle on narrow ones - no JavaScript.
 when: The top bar of an app or site - brand, primary links, search, account menu. For a marketing page header block use site-header; for mega-menus use navigation-menu.
 where: dist/components/navbar/navbar.css

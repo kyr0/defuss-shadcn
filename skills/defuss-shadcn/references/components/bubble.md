@@ -1,6 +1,7 @@
 ---
 name: Bubble
 type: ATM
+section: chat
 why: A chat bubble is a styled block - variants, alignment, groups with tightened corners, tails, overlapped reactions and typing dots are all CSS; interactive bubbles are real <a>/<button>, collapsible ones a native <details>.
 when: The message surface of a chat, assistant reply or comment thread. Avatars, names, timestamps and message actions belong to the message row around it; a system notice across the thread is an alert.
 where: dist/components/bubble/bubble.css

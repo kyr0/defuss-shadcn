@@ -1,6 +1,7 @@
 ---
 name: Comment Header
 type: BLK
+section: website
 why: A heading with the count (Badge) and a native Select (or links with aria-current) for the order - the page re-renders by the chosen order, no list script.
 when: Above a comment thread or a reviews list. A section intro without sorting takes section-header.
 where: dist/components/comment-header/comment-header.css

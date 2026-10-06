@@ -1,6 +1,7 @@
 ---
 name: Coming Soon
 type: BLK
+section: website
 why: A plain page section: the Countdown component ticks from data-until, the notify form is a real form - and everything reads without script.
 when: A pre-launch page or a feature that is not out yet. A live launch event uses event-countdown; downtime uses maintenance.
 where: dist/components/coming-soon/coming-soon.css

@@ -1,6 +1,7 @@
 ---
 name: Tag Cloud
 type: BLK
+section: website
 why: A list of links; one data attribute sets the size step, the count is text - no script.
 when: Blog and knowledge-base sidebars, archive pages. The tags of one item are tag-list.
 where: dist/components/tag-cloud/tag-cloud.css

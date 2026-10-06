@@ -1,6 +1,7 @@
 ---
 name: Speaker Item
 type: BLK
+section: website
 why: An article with a portrait, a heading and a link to the talk; the duotone-to-color hover is a CSS filter transition - no script.
 when: Conference and event speaker grids. Your own team uses team-member; article authors use author-bio.
 where: dist/components/speaker-item/speaker-item.css

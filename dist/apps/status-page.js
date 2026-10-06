@@ -4169,7 +4169,7 @@ installDdf({
   coerceIndex
 });
 
-// src/components/chart/chart.ts
+// src/components/charts/chart/chart.ts
 var df$ = defussGlobals();
 var dfDollar = defussQuery();
 var chartStates = ["default"];
@@ -4646,7 +4646,7 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-// src/components/countdown/countdown.ts
+// src/components/data-display/countdown/countdown.ts
 var df$2 = defussGlobals();
 var dfDollar2 = defussQuery();
 var countdownStates = ["default", "running", "paused", "finished"];
@@ -4832,7 +4832,7 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-// src/components/dialog/dialog.ts
+// src/components/overlays/dialog/dialog.ts
 var df$3 = defussGlobals();
 var dfDollar3 = defussQuery();
 var dialogStates = ["default", "open"];
@@ -4894,7 +4894,7 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/table/table.ts
+// src/components/data-display/table/table.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
 var tableStates = ["default", "sorted", "selected"];
@@ -5175,7 +5175,7 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-// src/components/tabs/tabs.ts
+// src/components/navigation/tabs/tabs.ts
 var df$5 = defussGlobals();
 var dfDollar5 = defussQuery();
 var tabsStates = ["default", "active", "disabled"];
@@ -5459,7 +5459,7 @@ function init5() {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// src/components/toast/toast.ts
+// src/components/feedback-status/toast/toast.ts
 var df$6 = defussGlobals();
 var dfDollar6 = defussQuery();
 var toastStates = ["default"];
@@ -5713,7 +5713,7 @@ var toastActions = {
 };
 df$6.toast = toastActions;
 
-// src/components/toggle/toggle.ts
+// src/components/actions/toggle/toggle.ts
 var df$7 = defussGlobals();
 var dfDollar7 = defussQuery();
 var toggleStates = ["default", "pressed"];
@@ -5748,7 +5748,7 @@ function init7() {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-// src/components/toggle-group/toggle-group.ts
+// src/components/actions/toggle-group/toggle-group.ts
 var df$8 = defussGlobals();
 var dfDollar8 = defussQuery();
 var toggleGroupStates = ["default", "disabled"];
@@ -5847,6 +5847,6 @@ function init8() {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=F99393F80092475864756E2164756E21
+//# debugId=BC3B0F1DC83552E964756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=status-page.js.map

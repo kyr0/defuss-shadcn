@@ -1,6 +1,6 @@
 import type { Props } from 'defuss';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { readSkillMeta, repoFile } from '../repo';
+import { readFileSync } from 'node:fs';
+import { componentHasJs, componentNames, readSkillMeta, repoFile } from '../repo';
 
 interface StatsDoc {
   total: number;
@@ -44,12 +44,8 @@ export function StatsClaim(_props: Props) {
  *  verify's CSS-only stat gate compares README + the rendered page against
  *  the live tree, so this can never drift. */
 export function CssOnlyStat(_props: Props) {
-  const dirs = readdirSync(repoFile('src', 'components')).filter((d) =>
-    statSync(repoFile('src', 'components', d)).isDirectory(),
-  );
-  const withJs = dirs.filter((d) =>
-    readdirSync(repoFile('src', 'components', d)).some((f) => f === `${d}.ts`),
-  ).length;
+  const dirs = componentNames();
+  const withJs = dirs.filter((d) => componentHasJs(d)).length;
   return (
     <>
       {dirs.length - withJs} of {dirs.length}
@@ -119,10 +115,8 @@ export function StatsCards(_props: Props) {
  *  Avatar were filed as CSS-only). Names come from the skill frontmatter,
  *  each linking to its page. */
 export function ComponentJsSplit(_props: Props) {
-  const dirs = readdirSync(repoFile('src', 'components'))
-    .filter((d) => statSync(repoFile('src', 'components', d)).isDirectory())
-    .sort();
-  const hasJs = (d: string) => readdirSync(repoFile('src', 'components', d)).some((f) => f === `${d}.ts`);
+  const dirs = componentNames();
+  const hasJs = (d: string) => componentHasJs(d);
   const column = (title: string, hint: string, names: string[]) => (
     <div class="code-card-col">
       <div class="code-card-head">

@@ -1,6 +1,7 @@
 ---
 name: Color Picker
 type: ATM
+section: forms-inputs
 why: Native <input type=color> plus a swatch popover - the browser owns the picking itself; the value shows (and submits) in the notation you need - hex, rgb, hsl or oklch.
 when: A form field where the user chooses a color; use the bare native input when a popover is overkill.
 where: dist/components/color-picker/color-picker.css + dist/components/color-picker/color-picker.js

@@ -57,3 +57,8 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T14:15:59Z s=c273a037 FINDING vitest.config.ts / tests/helpers.ts timeouts learn=none: the CI run itself; CI=1 locally passes the diagram test with the scaled limits.
 2026-10-06T14:41:07Z s=c273a037 DONE fp=fd2ca951b1e6 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
 2026-10-06T15:34:51Z s=c273a037 DONE fp=94472c5f6937 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
+2026-10-06T16:16:20Z s=c273a037 FAIL prose,env.example
+2026-10-06T16:43:45Z s=c273a037 DONE fp=14d71d421379 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1480)
+2026-10-06T16:43:45Z s=c273a037 FINDING src/components/<section>/<name>/ (the move) learn=verifier: verify's new component sections gate (scripts/lib/component-sections.ts) fails a component outside its section, in another section or without section:, naming t
+2026-10-06T16:43:45Z s=c273a037 FINDING the move itself (process) learn=test: the link transforms are pinned in tests/skill.test.ts; verify's dist 1:1 gate compares the shipped skills and index through them.
+2026-10-06T16:43:45Z s=c273a037 FINDING scripts/lib/type-baseline.ts (re-keyed) learn=none: the re-key script refused any changed count; the ratchet itself guards the future.

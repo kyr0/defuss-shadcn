@@ -1,6 +1,7 @@
 ---
 name: Theme Switcher
 type: MOL
+section: navigation
 why: Switches the color theme by loading/unloading ONE generated stylesheet (<link id="theme-css">) - tokens stay static, no JS token objects, dark mode needs no re-apply because each theme file carries :root + .dark.
 when: Live theme pickers for docs sites, previews, or settings pages - unless the theme is fixed at deploy time (then just link the file directly).
 where: dist/components/theme-switcher/theme-switcher.css + dist/components/theme-switcher/theme-switcher.js

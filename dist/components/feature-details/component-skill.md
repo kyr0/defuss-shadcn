@@ -1,6 +1,7 @@
 ---
 name: Feature Details
 type: BLK
+section: website
 why: Two-image feature split with a rule between - a grid with an auto-stretched divider column, no JS.
 when: "Benefits" section of a marketing page; for a feature list without imagery use cards instead.
 where: dist/components/feature-details/feature-details.css

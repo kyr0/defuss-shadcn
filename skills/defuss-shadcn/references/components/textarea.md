@@ -1,6 +1,7 @@
 ---
 name: Textarea
 type: ATM
+section: forms-inputs
 why: Native textarea with field-sizing: content - auto-grows with zero JavaScript, between row limits in lh; a .textarea-group turns it into a composer frame.
 when: Multi-line text input - notes, bios, comments; a chat or comment composer with attachments and a send button (.textarea-group). Single-line values take input.
 where: dist/components/textarea/textarea.css

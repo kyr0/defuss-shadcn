@@ -1,6 +1,7 @@
 ---
 name: Label
 type: ATM
+section: forms-inputs
 why: Native <label for> association - click-to-focus and announcement are free.
 when: Every form control, always - never a placeholder standing in for a label.
 where: dist/components/label/label.css

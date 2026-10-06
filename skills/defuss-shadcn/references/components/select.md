@@ -1,6 +1,7 @@
 ---
 name: Select
 type: ATM
+section: forms-inputs
 why: Native <select> - the OS renders the options list, fully accessible on every platform.
 when: Pick one value from a list; prefer it over custom listboxes and comboboxes. Several values from a short fixed list: select[multiple]; tags / people / long lists: combobox data-multiple; a handful of options: checkboxes.
 where: dist/components/select/select.css

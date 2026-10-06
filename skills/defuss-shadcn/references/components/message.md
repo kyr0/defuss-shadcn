@@ -1,6 +1,7 @@
 ---
 name: Message
 type: MOL
+section: chat
 why: A message row is layout - an avatar column beside a header / surface / footer column, start or end - so it is CSS; the avatar lines up with the surface's bottom edge (not the footer's), groups keep one avatar and one header.
 when: Each row of a chat or an assistant thread - sender avatar, name and time, the bubble (or attachment), delivery status and actions. The bare surface is bubble; inline status lines between rows are marker.
 where: dist/components/message/message.css

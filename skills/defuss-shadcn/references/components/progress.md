@@ -1,6 +1,7 @@
 ---
 name: Progress
 type: ATM
+section: feedback-status
 why: Native <progress value max> - semantics and rendering come free; <output for> readouts, tones and a small State API make it a live, resettable, animatable bar.
 when: Completion of a task with a known total (an unknown total: omit the value, or take the spinner). A percentage that must sit inside a ring takes radial-progress.
 where: dist/components/progress/progress.css + dist/components/progress/progress.js

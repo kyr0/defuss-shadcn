@@ -1,6 +1,7 @@
 ---
 name: Sortable
 type: ATM
+section: data-display
 why: Native HTML drag-and-drop reordering with a handle and a drop indicator.
 when: Lists whose order the user controls - todo lists, table row ordering.
 where: dist/components/sortable/sortable.css + dist/components/sortable/sortable.js

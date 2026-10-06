@@ -1,6 +1,7 @@
 ---
 name: Text Media
 type: BLK
+section: website
 why: Copy and a figure in a two-column container-query grid; the overlap is a negative margin - no script.
 when: Explaining one idea with a visual. Product features in a row use feature-details; a whole scenario uses use-case.
 where: dist/components/text-media/text-media.css

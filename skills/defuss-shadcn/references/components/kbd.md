@@ -1,6 +1,7 @@
 ---
 name: Kbd
 type: ATM
+section: primitives
 why: Native <kbd>, and a combination is <kbd> nested inside <kbd> exactly as the HTML spec prescribes, so the markup already says "these keys together".
 when: Showing a shortcut in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
 where: dist/components/kbd/kbd.css

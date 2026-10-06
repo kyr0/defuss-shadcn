@@ -1,6 +1,7 @@
 ---
 name: Combobox
 type: MOL
+section: forms-inputs
 why: Text input filtering an anchored list with the aria-activedescendant keyboard model.
 when: Choosing from a long list the user narrows by typing - states, tags, users; data-multiple picks SEVERAL (tags, countries you ship to, people to invite, filter categories) with checkboxes + removable tags. For one value from a short list use select; for a handful of options checkboxes.
 where: dist/components/combobox/combobox.css + dist/components/combobox/combobox.js

@@ -1,6 +1,7 @@
 ---
 name: Offer Banner
 type: BLK
+section: website
 why: Text, a <code> for the code, <time> for the deadline and <small> for the conditions; the coupon notches are a CSS mask - no images, no script.
 when: Sales, launch discounts, seasonal offers. Plain news is announcement; a plan list is pricing.
 where: dist/components/offer-banner/offer-banner.css

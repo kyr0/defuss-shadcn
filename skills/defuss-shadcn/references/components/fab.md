@@ -1,6 +1,7 @@
 ---
 name: FAB
 type: MOL
+section: actions
 why: A floating action button whose speed dial is a native popover - toggle, Escape, outside-click close and aria-expanded come from the browser; anchor positioning stacks the actions, no JavaScript.
 when: The one primary action of a screen (compose, add, new) that stays in reach while scrolling - with a speed dial when 2-6 related actions share it. For a bar of actions use toolbar; for an ordinary menu use dropdown-menu.
 where: dist/components/fab/fab.css

@@ -1,6 +1,7 @@
 ---
 name: Order Confirmation
 type: BLK
+section: website
 why: Headings, a <dl> of the details and an ordered list of next steps; the check animation is SVG stroke-dashoffset with @starting-style-free CSS keyframes, off under reduced motion.
 when: After payment succeeds. Shipment progress afterwards is tracking-status; a generic success is success-state.
 where: dist/components/order-confirmation/order-confirmation.css

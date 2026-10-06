@@ -1,6 +1,7 @@
 ---
 name: Application Form
 type: BLK
+section: website
 why: Native form fields with autocomplete, required and type checks; a file input styled as a drop zone; :user-invalid shows errors only after trying - no script.
 when: Below a job-details page or on its own page. A general contact form is get-in-touch; support requests use support-form.
 where: dist/components/application-form/application-form.css

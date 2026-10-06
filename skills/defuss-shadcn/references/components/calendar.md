@@ -1,6 +1,7 @@
 ---
 name: Calendar
 type: ATM
+section: data-display
 why: Month grid with keyboard navigation and selection state via the State API - a single date or a start-end range (one span across one or several months).
 when: Picking a day, or a date RANGE as one answer (a stay, a report period, a holiday request, a filter) - data-mode="range" or a two-month .calendar-range; pair with a popover for a full picker. For a plain native date field use date-picker.
 where: dist/components/calendar/calendar.css + dist/components/calendar/calendar.js

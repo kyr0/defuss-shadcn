@@ -1,6 +1,7 @@
 ---
 name: Search Suggestions
 type: BLK
+section: website
 why: The panel follows the ARIA combobox / listbox pattern; matches are <mark>s. The native variant is a <datalist> - zero script.
 when: Under a search-box. The full results page is search-summary + search-result.
 where: dist/components/search-suggestions/search-suggestions.css

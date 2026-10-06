@@ -1,6 +1,7 @@
 ---
 name: Animation Canvas
 type: TPL
+section: guides
 why: One board, slides side by side like a chess board - the viewport pan is one WAAPI transform and only the arriving slide animates, through the shared df$.anim engine (data-attribute declared) plus the shared motion entrances for its content; no canvas-private animation exists.
 when: Spatial slide boards and zoomable story maps with directional navigation + an at-a-glance overview - not linear decks (use Presentation) and not scrollable pages.
 where: dist/components/anim-canvas/anim-canvas.css + dist/components/anim-canvas/anim-canvas.js

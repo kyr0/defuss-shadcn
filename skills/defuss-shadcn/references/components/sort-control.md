@@ -1,6 +1,7 @@
 ---
 name: Sort Control
 type: BLK
+section: website
 why: A native Select, a radio group, or a popover holding radios - each submits with the form; none needs script to render or choose.
 when: Above lists, grids and tables. Narrowing is filter-bar; changing the layout is view-switcher.
 where: dist/components/sort-control/sort-control.css

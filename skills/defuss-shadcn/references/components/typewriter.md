@@ -1,6 +1,7 @@
 ---
 name: Typewriter
 type: ATM
+section: primitives
 why: The strings are authored as elements - readable without script and read once, in full, by assistive tech - while the runtime types an aria-hidden copy behind a CSS cursor that is solid while typing and blinks idle.
 when: A headline or hero line that types itself - cycling taglines ("Build design systems / prototypes / dashboards"), a terminal-style intro, a line that types once when it scrolls into view. For a word that rolls without typing use text-rotate; for a count use countdown.
 where: dist/components/typewriter/typewriter.css + dist/components/typewriter/typewriter.js

@@ -1,6 +1,7 @@
 ---
 name: Timeline
 type: ATM
+section: data-display
 why: Ordered list laid out on a vertical or horizontal rail - the <ol> keeps the chronological semantics.
 when: Event history: activity logs, order tracking, changelog-style lists, roadmaps and release lines (horizontal) - for a process the user moves through, use steps.
 where: dist/components/timeline/timeline.css

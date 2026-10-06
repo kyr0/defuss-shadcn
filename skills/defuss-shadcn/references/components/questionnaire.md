@@ -1,6 +1,7 @@
 ---
 name: Questionnaire
 type: MOL
+section: questionnaire
 why: One native <form>, one <fieldset> per step - the controller walks a flow graph (option data-goto, conditional rules, data-next, markup order) one validated step at a time, keeps a branch history and a session draft, and invalidates answers a changed answer cut off. Without JavaScript it is a plain long form.
 when: Multi-step forms that ask different people different questions - intake, onboarding, surveys, quotes, triage - where the next question depends on the answers. A plain Form for one screen of fields; Steps for a fixed, linear progress indicator.
 where: dist/components/questionnaire/questionnaire.css + dist/components/questionnaire/questionnaire.js

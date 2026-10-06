@@ -1,6 +1,7 @@
 ---
 name: Security Settings
 type: BLK
+section: website
 why: Sections of rows with real buttons; two-factor is a Switch (a checkbox); sessions are a list with labelled actions - no script in the markup.
 when: Account settings. Profile details are profile-form; notifications are notification-settings.
 where: dist/components/security-settings/security-settings.css

@@ -1,6 +1,7 @@
 ---
 name: Team Member
 type: BLK
+section: website
 why: An <article> per person with a real portrait, a heading and labelled links; the reveal is a :hover / :focus-within transition - keyboard users get it too, touch screens always show the links. No script.
 when: Team, leadership and board pages. For an article author use author-bio; for event speakers use speaker-item.
 where: dist/components/team-member/team-member.css

@@ -1,6 +1,7 @@
 ---
 name: Session Item
 type: BLK
+section: website
 why: The toggle is a checkbox in a label - :has(:checked) swaps "Add" for "Added" with no script; times are <time>.
 when: Conference agendas and event schedules. Speakers on their own are speaker-item; a single event is event-item.
 where: dist/components/session-item/session-item.css

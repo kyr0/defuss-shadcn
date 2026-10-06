@@ -1,6 +1,7 @@
 ---
 name: Modern Paper
 type: TPL
+section: papers
 why: A research-paper project page as one <article> on a named grid - a centered reading column, a wider track for the title block and figures, all type and color from the theme tokens; CSS-only.
 when: The web page of a paper, a technical report or a project write-up - title, authors, resources, abstract, sections, figures, results and the citation. A product landing page is the Landing Page template; long documentation is Docs Content.
 where: dist/components/paper/paper.css

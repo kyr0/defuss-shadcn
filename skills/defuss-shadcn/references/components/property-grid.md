@@ -1,6 +1,7 @@
 ---
 name: Property Grid
 type: ATM
+section: application
 why: The ExtJS property grid as a native table - one JSON object as two dense columns (key, value), nested objects and arrays as folding groups, in-place editors chosen by type (or by getEditorFn), keyRenderFn / valueRenderFn for the cells; the object is the store's state, replaced on every committed edit.
 when: Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form.
 where: dist/components/property-grid/property-grid.css + dist/components/property-grid/property-grid.js

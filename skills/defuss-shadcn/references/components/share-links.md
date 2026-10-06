@@ -1,6 +1,7 @@
 ---
 name: Share Links
 type: BLK
+section: website
 why: Share intents are plain <a href> URLs - no third-party scripts, no tracking; copy link and the native share sheet are two lines of page script (navigator.clipboard / navigator.share).
 when: Under or beside an article, on a product page. A single "copy link" action can stay a Button.
 where: dist/components/share-links/share-links.css

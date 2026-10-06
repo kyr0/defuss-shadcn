@@ -1,6 +1,7 @@
 ---
 name: Table
 type: ATM
+section: data-display
 why: Semantic <table> - headers, captions and sort state stay accessible; table.js adds sorting (aria-sort, Intl.Collator), row selection, drag reordering and locked-column offsets on top.
 when: Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids.
 where: dist/components/table/table.css + dist/components/table/table.js

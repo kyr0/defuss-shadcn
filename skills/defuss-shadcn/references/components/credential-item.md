@@ -1,6 +1,7 @@
 ---
 name: Credential Item
 type: BLK
+section: website
 why: An article with a <dl> of dates (<time>) and an external verify link with full context for screen readers - no script.
 when: Trust, security and compliance pages. Customer logos are brand-logos; press coverage is press-item.
 where: dist/components/credential-item/credential-item.css

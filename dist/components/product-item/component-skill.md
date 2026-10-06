@@ -1,6 +1,7 @@
 ---
 name: Product Item
 type: BLK
+section: website
 why: The name link covers the card; the heart is a checkbox read by :has(), the hover picture a CSS crossfade, the stars a clipped background - no script for any of it.
 when: Product grids, carousels and search results. Cart lines are cart-item; saved items are wishlist-item.
 where: dist/components/product-item/product-item.css

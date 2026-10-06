@@ -12,6 +12,7 @@ import {
   SKILL_FRONTMATTER_KEYS,
   type SkillEntry,
 } from '../scripts/lib/skill.ts';
+import { flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 
 /**
  * Why: dist/SKILL.md is the entry point a 3rd-party agent reads first; its
@@ -24,6 +25,7 @@ import {
 const VALID = `---
 name: Dialog
 type: MOL
+section: overlays
 why: Native <dialog> gives focus trap and Escape.
 when: Modals - unless the answer is mandatory.
 where: dist/components/dialog/dialog.css + dist/components/dialog/dialog.js
@@ -37,6 +39,7 @@ const entry = (over: Partial<SkillEntry> = {}): SkillEntry => ({
   folder: 'dialog',
   name: 'Dialog',
   type: 'MOL',
+  section: 'overlays',
   why: 'Native <dialog> gives focus trap and Escape.',
   when: 'Modals - unless the answer is mandatory.',
   where: 'dist/components/dialog/dialog.css + dist/components/dialog/dialog.js',
@@ -93,7 +96,9 @@ describe('renderSkillEntry', () => {
     expect(block).toContain('**When:** Modals');
     expect(block).toContain('**Files:** dist/components/dialog/dialog.css + dist/components/dialog/dialog.js');
     expect(block).toContain('**Supported states:** default, open');
-    expect(block).toContain('[components/dialog/component-skill.md](components/dialog/component-skill.md)');
+    // src/SKILL.md links through the section; dist/SKILL.md ships it flat (flattenSkillIndex)
+    expect(block).toContain('[components/overlays/dialog/component-skill.md](components/overlays/dialog/component-skill.md)');
+    expect(flattenSkillIndex(block, new Set(['overlays']))).toContain('[components/dialog/component-skill.md](components/dialog/component-skill.md)');
   });
 
   it('maps screenshots per state: default = {name}.png, others = {name}-{state}.png', () => {
@@ -113,7 +118,7 @@ describe('assembleSkillText', () => {
   const template = `# defuss-shadcn - Agent Skill\n\ntokens in theme/utils/default-semantic-tokens.css\n\n# Components\n\n${SKILL_COMPONENTS_MARKER}\n`;
 
   it('injects the index in place of the marker, preserving template prose', () => {
-    const text = assembleSkillText(template, [entry(), entry({ folder: 'badge', name: 'Badge', supportedStates: 'default' })]);
+    const text = assembleSkillText(template, [entry(), entry({ folder: 'badge', name: 'Badge', section: 'data-display', supportedStates: 'default' })]);
     expect(text).not.toContain(SKILL_COMPONENTS_MARKER);
     expect(text).toContain('Agent Skill');
     expect(text).toContain('theme/utils/default-semantic-tokens.css');
@@ -122,7 +127,9 @@ describe('assembleSkillText', () => {
     // index blocks render in given order and each link resolves relatively
     expect(text.indexOf('## Dialog')).toBeLessThan(text.indexOf('## Badge'));
     expect((text.match(/^## /gm) ?? []).length).toBe(2); // template headings are h1; ## are only the entries
-    expect(text).toContain('[components/badge/component-skill.md](components/badge/component-skill.md)');
+    expect(text).toContain('[components/data-display/badge/component-skill.md](components/data-display/badge/component-skill.md)');
+    // only skill paths under a known section flatten - the template's CDN paths stay as written
+    expect(flattenSkillIndex('dist/components/button/button.css', new Set(['actions']))).toBe('dist/components/button/button.css');
   });
 
   it('throws when the template lost its marker', () => {
@@ -131,8 +138,8 @@ describe('assembleSkillText', () => {
 });
 
 describe('assembleRootSkillText (repo-root SKILL.md)', () => {
-  const dialog = { folder: 'dialog', name: 'Dialog', type: 'MOL', why: 'Native <dialog> + showModal().', when: 'Modals.', where: 'x', supportedStates: 'default, open', hasJs: true };
-  const badge = { folder: 'badge', name: 'Badge', type: 'ATM', why: 'A span.', when: 'Labels - `df$` free.', where: 'y', supportedStates: 'default', hasJs: false };
+  const dialog = { folder: 'dialog', name: 'Dialog', type: 'MOL', section: 'overlays', why: 'Native <dialog> + showModal().', when: 'Modals.', where: 'x', supportedStates: 'default, open', hasJs: true };
+  const badge = { folder: 'badge', name: 'Badge', type: 'ATM', section: 'data-display', why: 'A span.', when: 'Labels - `df$` free.', where: 'y', supportedStates: 'default', hasJs: false };
   const data = (): RootSkillData => ({
     version: '9.9.9',
     total: 2,

@@ -9,7 +9,9 @@ import { statFigureProblems } from './lib/stat-figures.ts';
 import { statSources } from './stat-figures.ts';
 import { BUNDLE_ARTIFACTS, isBundleDirArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
 import { EXTRA_BUNDLES, extraBundleOf, inAllBundle } from './lib/bundles.ts';
-import { sectionArtifacts } from './lib/sections.ts';
+import { sectionArtifacts, sectionPlans, sectionSlug } from './lib/sections.ts';
+import { sectionProblems, type ComponentPlacement } from './lib/component-sections.ts';
+import { NAV } from '../src/documentation/lib/nav.ts';
 import { zipPlans } from './lib/release-zips.ts';
 import { tscErrorCounts, typeRatchetProblems } from './lib/type-check.ts';
 import { TYPE_BASELINE } from './lib/type-baseline.ts';
@@ -41,6 +43,8 @@ import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from '.
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
+import { componentDirs as componentDirsOf, componentFile } from '../src/documentation/lib/component-dirs.ts';
+import { flattenComponentLinks, flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile, STANDALONE_DOCS, standaloneDocFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 import { versionDrift, PIN_GLOBS, PIN_IGNORE, pinDrift } from './lib/version-sites.ts';
@@ -92,7 +96,10 @@ function check(name: string, problems: string[], fix: string, warnOnly = false):
   console.log(`      fix: ${fix}`);
 }
 
-const componentDirs = readdirSync(COMPS).filter((d) => statSync(join(COMPS, d)).isDirectory());
+// every component, from its section folder (src/components/<section>/<name>/ - the layout's one owner)
+const componentDirs = componentDirsOf(COMPS).map((c) => c.name);
+/** repo-relative path of a component file, as the problems name it (src/components/<section>/<name>/<file>) */
+const srcRel = (c: string, ...file: string[]): string => relative(ROOT, componentFile(COMPS, c, ...file)).split(sep).join('/');
 /** Both color schemes create-screenshots.ts captures; state PNGs need both. */
 const MODES = ['light', 'dark'];
 /** Doc pages are defuss-ssg output: dist/documentation/*.html, rendered from
@@ -106,7 +113,7 @@ const docPages = existsSync(DOCS_DIST)
 // 1. every component folder ships a component skill
 check(
   'component skills',
-  componentDirs.filter((c) => !existsSync(join(COMPS, c, 'component-skill.md'))).map((c) => `src/components/${c}/component-skill.md missing`),
+  componentDirs.filter((c) => !existsSync(componentFile(COMPS, c, 'component-skill.md'))).map((c) => `${srcRel(c, "component-skill.md")} missing`),
   'write the skill (see AGENTS.md "Component skill template")',
 );
 
@@ -180,14 +187,14 @@ for (const [page, html] of docHtml) {
     if (!comp || !ext) continue;
     const expected =
       ext === 'css'
-        ? existsSync(join(COMPS, comp, `${comp}.css`)) && readFileSync(join(COMPS, comp, `${comp}.css`), 'utf8')
-        : existsSync(join(COMPS, comp, `${comp}.ts`)) && readFileSync(join(COMPS, comp, `${comp}.ts`), 'utf8');
+        ? existsSync(componentFile(COMPS, comp, `${comp}.css`)) && readFileSync(componentFile(COMPS, comp, `${comp}.css`), 'utf8')
+        : existsSync(componentFile(COMPS, comp, `${comp}.ts`)) && readFileSync(componentFile(COMPS, comp, `${comp}.ts`), 'utf8');
     if (!expected) continue;
     // the listing is a Code Mockup: one <pre><code> per source line
     const lines = [...section.querySelectorAll('.mockup-code > pre > code')].map((c) => c.textContent ?? '');
     const shown = lines.length ? lines.join('\n') : (section.querySelector('pre > code')?.textContent ?? '');
     if (shown !== expected.replace(/\n+$/, '')) {
-      snippetProblems.push(`${page} - #source-${ext} listing differs from src/components/${comp}/${comp}.${ext === 'css' ? 'css' : 'ts'} (rebuild docs)`);
+      snippetProblems.push(`${page} - #source-${ext} listing differs from ${srcRel(comp, `${comp}.${ext === 'css' ? 'css' : 'ts'}`)} (rebuild docs)`);
     }
   }
 }
@@ -301,7 +308,13 @@ check(
   'fix errors per AGENTS.md "Linting" (unused vars → _ prefix)',
 );
 
-// 10. dist/ is a fresh 1:1 mirror of src/ (types stripped, everything else copied)
+// 10. dist/ is a fresh 1:1 mirror of src/ (types stripped, everything else copied) - except that a
+// component's folder sits in its section in src/ (components/<section>/<name>/) and flat in dist/
+// (components/<name>/, the consumers' CDN paths): build.ts flattens it, this mapping follows
+const toDist = (rel: string): string => {
+  const parts = rel.split(sep);
+  return parts[0] === 'components' && parts.length >= 4 ? [parts[0], ...parts.slice(2)].join(sep) : rel;
+};
 const distProblems: string[] = [];
 if (!existsSync(DIST)) {
   distProblems.push('dist/ does not exist - run `bun run build`');
@@ -316,16 +329,23 @@ if (!existsSync(DIST)) {
     // are consumed by defuss-ssg, never copied 1:1
     if (isDocsSsgAuthoringSrc(rel)) continue;
     if (rel.endsWith('.ts')) {
-      const js = join(DIST, rel.replace(/\.ts$/, '.js'));
-      if (!existsSync(js)) distProblems.push(`dist/${relative(SRC, f).replace(/\.ts$/, '.js')} missing - rebuild`);
+      const js = join(DIST, toDist(rel).replace(/\.ts$/, '.js'));
+      if (!existsSync(js)) distProblems.push(`dist/${toDist(rel).replace(/\.ts$/, '.js')} missing - rebuild`);
       else if (readFileSync(js, 'utf8').trim() === '') distProblems.push(`dist/${relative(SRC, rel)} is empty - rebuild`);
     } else {
-      const mirror = join(DIST, rel);
-      if (!existsSync(mirror)) distProblems.push(`dist/${rel} missing - rebuild`);
-      else if(!readFileSync(mirror).equals(readFileSync(f))) distProblems.push(`dist/${rel} differs from src - rebuild`);
+      const mirror = join(DIST, toDist(rel));
+      // a shipped skill links its siblings flat (build.ts writes it through flattenComponentLinks)
+      const sectionNames = new Set(componentDirsOf(COMPS).map((c) => c.section));
+      const expectedBytes = rel.endsWith(`${sep}component-skill.md`) && toDist(rel) !== rel
+        ? Buffer.from(flattenComponentLinks(readFileSync(f, 'utf8'), sectionNames))
+        : rel === SKILL_OUTPUT_FILE
+          ? Buffer.from(flattenSkillIndex(readFileSync(f, 'utf8'), sectionNames))
+          : readFileSync(f);
+      if (!existsSync(mirror)) distProblems.push(`dist/${toDist(rel)} missing - rebuild`);
+      else if(!readFileSync(mirror).equals(expectedBytes)) distProblems.push(`dist/${toDist(rel)} differs from src - rebuild`);
     }
   }
-  const srcSet = new Set(walk(SRC, ['']).map((f) => relative(SRC, f).replace(/\.ts$/, '.js')));
+  const srcSet = new Set(walk(SRC, ['']).map((f) => toDist(relative(SRC, f)).replace(/\.ts$/, '.js')));
   for (const f of walk(DIST, [''])) {
     const rel = relative(DIST, f);
     // scripts/minify.ts + tsc sourceMap write derived twins, scripts/stats.ts
@@ -468,7 +488,7 @@ const STATE_API_PATTERNS: Array<[string, RegExp]> = [
 const stateApiProblems: string[] = [];
 const stateApiWarnings: string[] = [];
 for (const name of componentDirs) {
-  const jsFile = join(COMPS, name, `${name}.ts`);
+  const jsFile = componentFile(COMPS, name, `${name}.ts`);
   if (!existsSync(jsFile)) continue;
   const src = readFileSync(jsFile, 'utf8');
   const missing = STATE_API_PATTERNS.filter(([, re]) => !re.test(src)).map(([label]) => label);
@@ -535,7 +555,7 @@ function withoutVendorImports(src: string, names: string[], where: string): stri
 
 const inlineProblems: string[] = [];
 for (const name of componentDirs) {
-  const tsFile = join(COMPS, name, `${name}.ts`);
+  const tsFile = componentFile(COMPS, name, `${name}.ts`);
   if (!existsSync(tsFile) || !readFileSync(tsFile, 'utf8').includes('defussGlobals()')) continue;
   const distJs = join(DIST, 'components', name, `${name}.js`);
   if (!existsSync(distJs)) continue; // already reported by dist 1:1
@@ -573,7 +593,7 @@ check(
     for (const marker of ['queryVersion', 'htmlStringToVNodes', 'defussGlobals'])
       if (!coreJs.includes(marker)) artifactProblems.push(`core.js lacks runtime marker "${marker}"`);
     for (const c of componentDirs) {
-      if (!existsSync(join(COMPS, c, `${c}.ts`))) continue;
+      if (!existsSync(componentFile(COMPS, c, `${c}.ts`))) continue;
       const id = camel(c);
       if (new RegExp(`\\b${id}States\\s*=`).test(coreJs))
         artifactProblems.push(`core.js embeds component "${c}" - core must stay component-free`);
@@ -589,7 +609,7 @@ check(
     if (!allJs.includes('queryVersion') || !allJs.includes('htmlStringToVNodes'))
       artifactProblems.push('all.js does not embed the core runtime (morph + query)');
     for (const c of componentDirs) {
-      if (!existsSync(join(COMPS, c, `${c}.ts`))) continue;
+      if (!existsSync(componentFile(COMPS, c, `${c}.ts`))) continue;
       const inAll = new RegExp(`\\b${camel(c)}States\\s*=`).test(allJs);
       if (inAllBundle(c) && !inAll) artifactProblems.push(`all.js is missing component "${c}" (bundle ≠ shipping manifest)`);
       if (!inAllBundle(c) && inAll) artifactProblems.push(`all.js embeds "${c}" - it ships in the ${extraBundleOf(c)} bundle (scripts/lib/bundles.ts), never in all.*`);
@@ -606,10 +626,10 @@ check(
     if (!existsSync(join(DIST, 'components', `${bundle}.css`))) artifactProblems.push(`dist/components/${bundle}.css missing - run \`bun run build\``);
     const js = withoutVendorImports(raw, members.filter((m) => m in VENDOR_IMPORTS), `${bundle}.js`);
     for (const m of members)
-      if (existsSync(join(COMPS, m, `${m}.ts`)) && !new RegExp(`\\b${camel(m)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js is missing its component "${m}"`);
+      if (existsSync(componentFile(COMPS, m, `${m}.ts`)) && !new RegExp(`\\b${camel(m)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js is missing its component "${m}"`);
     if (js.includes('queryVersion') || js.includes('htmlStringToVNodes')) artifactProblems.push(`${bundle}.js embeds the core runtime - an extra bundle carries only its components`);
     for (const c of componentDirs)
-      if (!members.includes(c) && existsSync(join(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js embeds "${c}", which is not one of its members`);
+      if (!members.includes(c) && existsSync(componentFile(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js embeds "${c}", which is not one of its members`);
     if (/(^|\n)\s*import[\s({]|import\(/.test(js)) artifactProblems.push(`${bundle}.js contains a runtime import - the payload must be self-contained`);
   }
   // the section bundles (scripts/lib/sections.ts): the same members-only
@@ -633,10 +653,10 @@ check(
     if (!raw) { artifactProblems.push(`dist/${file}.js missing - run \`bun run build\``); continue; }
     const js = withoutVendorImports(raw, s.members.filter((m) => m in VENDOR_IMPORTS), `${s.name}.js`);
     for (const m of s.members)
-      if (existsSync(join(COMPS, m, `${m}.ts`)) && !new RegExp(`\\b${camel(m)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js is missing its component "${m}"`);
+      if (existsSync(componentFile(COMPS, m, `${m}.ts`)) && !new RegExp(`\\b${camel(m)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js is missing its component "${m}"`);
     if (js.includes('queryVersion') || js.includes('htmlStringToVNodes')) artifactProblems.push(`${file}.js embeds the core runtime - a section bundle carries only its components`);
     for (const c of componentDirs)
-      if (!s.members.includes(c) && existsSync(join(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js embeds "${c}", which is in another section`);
+      if (!s.members.includes(c) && existsSync(componentFile(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js embeds "${c}", which is in another section`);
     if (/(^|\n)\s*import[\s({]|import\(/.test(js)) artifactProblems.push(`${file}.js contains a runtime import - the payload must be self-contained`);
   }
   check(
@@ -788,7 +808,7 @@ check(
 // page (States section + data-state-demo anchor), component skill, e2e test.
 const coverageProblems: string[] = [];
 for (const c of componentDirs) {
-  const tsFile = join(COMPS, c, `${c}.ts`);
+  const tsFile = componentFile(COMPS, c, `${c}.ts`);
   if (!existsSync(tsFile)) continue;
   const states = declaredStates(readFileSync(tsFile, 'utf8'));
   if (states.length === 0) continue;
@@ -796,8 +816,8 @@ for (const c of componentDirs) {
   const doc = existsSync(join(DOCS_DIST, `${c}.html`)) ? readFileSync(join(DOCS_DIST, `${c}.html`), 'utf8') : '';
   if (!doc.includes('data-state-demo')) coverageProblems.push(`${c}: doc page lacks a [data-state-demo] anchor for state capture`);
 
-  const skill = existsSync(join(COMPS, c, 'component-skill.md'))
-    ? readFileSync(join(COMPS, c, 'component-skill.md'), 'utf8')
+  const skill = existsSync(componentFile(COMPS, c, 'component-skill.md'))
+    ? readFileSync(componentFile(COMPS, c, 'component-skill.md'), 'utf8')
     : '';
   const e2e = existsSync(join(ROOT, 'tests', 'e2e', `${c}.e2e.ts`))
     ? readFileSync(join(ROOT, 'tests', 'e2e', `${c}.e2e.ts`), 'utf8')
@@ -901,8 +921,8 @@ check(
 // forms the skill template and doc markup actually use.
 const skillProblems: string[] = [];
 for (const c of componentDirs) {
-  const cssFile = join(COMPS, c, `${c}.css`);
-  const skillFile = join(COMPS, c, 'component-skill.md');
+  const cssFile = componentFile(COMPS, c, `${c}.css`);
+  const skillFile = componentFile(COMPS, c, 'component-skill.md');
   if (!existsSync(cssFile)) continue;
   const tokens = new Set(
     [...readFileSync(cssFile, 'utf8').matchAll(/data-(?:variant|size|density)="([a-z0-9-]+)"/g)].map((m) => m[1]),
@@ -932,8 +952,8 @@ check(
 const fieldProblems = fieldFeatureProblems(
   componentDirs.map((c) => ({
     name: c,
-    css: existsSync(join(COMPS, c, `${c}.css`)) ? readFileSync(join(COMPS, c, `${c}.css`), 'utf8') : '',
-    skill: existsSync(join(COMPS, c, 'component-skill.md')) ? readFileSync(join(COMPS, c, 'component-skill.md'), 'utf8') : '',
+    css: existsSync(componentFile(COMPS, c, `${c}.css`)) ? readFileSync(componentFile(COMPS, c, `${c}.css`), 'utf8') : '',
+    skill: existsSync(componentFile(COMPS, c, 'component-skill.md')) ? readFileSync(componentFile(COMPS, c, 'component-skill.md'), 'utf8') : '',
     doc: docHtml.find(([p]) => p === `${c}.html`)?.[1] ?? '',
   })),
 );
@@ -1029,7 +1049,7 @@ const REDUCED_MOTION_LEGACY: string[] = [];
 const motionProblems: string[] = [];
 const motionWarnings: string[] = [];
 for (const c of componentDirs) {
-  const cssFile = join(COMPS, c, `${c}.css`);
+  const cssFile = componentFile(COMPS, c, `${c}.css`);
   if (!existsSync(cssFile)) continue;
   const css = readFileSync(cssFile, 'utf8');
   if (!/(transition|animation)\s*:/.test(css)) continue;
@@ -1057,7 +1077,7 @@ const INIT_GUARD_LEGACY: string[] = [];
 const initProblems: string[] = [];
 const initWarnings: string[] = [];
 for (const c of componentDirs) {
-  const tsFile = join(COMPS, c, `${c}.ts`);
+  const tsFile = componentFile(COMPS, c, `${c}.ts`);
   if (!existsSync(tsFile)) continue;
   const src = readFileSync(tsFile, 'utf8');
   if (!src.includes('addEventListener')) continue;
@@ -1241,12 +1261,18 @@ check(
   // there address the SHIPPED surface - mapped back onto the sources:
   // `sibling.html` → the page's .mdx, `../x` → src/x (dist/components ← src/components).
   const pagesDir = relative(ROOT, DOCS_PAGES);
+  // a link into a component folder written for the shipped, flat layout - the pages'
+  // ../components/<name>/ (they render in dist/documentation/) - resolves through the section folder
+  const shippedComponentLink = (relPath: string): boolean => {
+    const m = /^(?:\.\.\/)?components\/([a-z0-9-]+)\/(.+)$/.exec(relPath);
+    return !!m && existsSync(componentFile(COMPS, m[1], m[2]));
+  };
   const mdExists = (from: string, relPath: string): boolean => {
     const abs = join(ROOT, dirname(from), relPath);
     if (abs.startsWith(ROOT + sep) && existsSync(abs)) return true;
     if (!from.startsWith(pagesDir)) return false;
     if (relPath.endsWith('.html') && existsSync(join(DOCS_PAGES, relPath.replace(/\.html$/, '.mdx')))) return true;
-    return existsSync(join(SRC, relPath.replace(/^\.\.\//, '')));
+    return shippedComponentLink(relPath) || existsSync(join(SRC, relPath.replace(/^\.\.\//, '')));
   };
   check(
     'markdown link integrity',
@@ -1259,7 +1285,7 @@ check(
 // must be instantiated in its e2e fixture (docs parity rule, mechanical side).
 const fixtureProblems: string[] = [];
 for (const c of componentDirs) {
-  const cssFile = join(COMPS, c, `${c}.css`);
+  const cssFile = componentFile(COMPS, c, `${c}.css`);
   const fixture = join(ROOT, 'tests', 'e2e', `${c}.e2e-fixture.html`);
   if (!existsSync(cssFile) || !existsSync(fixture)) continue; // missing fixture = check 3
   const tokens = new Set(
@@ -1411,7 +1437,7 @@ check(
   // every page - stamps data-init and the real owner's init() silently skips
   // the element (this exact bug disabled the docs search palette once).
   {
-    const dialogSrc = readFileSync(join(COMPS, 'dialog', 'dialog.ts'), 'utf8');
+    const dialogSrc = readFileSync(componentFile(COMPS, 'dialog', 'dialog.ts'), 'utf8');
     const claim = dialogSrc.match(/(?:querySelectorAll|dfDollar)\((['"])dialog:not\([\s\S]*?\1\)/);
     const owned = ['alert-dialog', 'sheet', 'command', 'window', 'cookie-consent-dialog'].filter(
       (c) => claim && !claim[0].includes(`not(.${c})`),
@@ -1451,7 +1477,7 @@ check(
     const DOM_BOUNDARY_ALLOW: Record<string, string> = {};
     const problems: string[] = [];
     for (const c of componentDirs) {
-      const file = join(COMPS, c, `${c}.ts`);
+      const file = componentFile(COMPS, c, `${c}.ts`);
       if (!existsSync(file)) continue; // CSS-only component
       const src = readFileSync(file, 'utf8');
       if (!MIGRATED_RE.test(src)) continue; // not query-adopted yet (pre-baseline)
@@ -1472,7 +1498,7 @@ check(
       }
       for (const { line, n } of hitLines) {
         const label = BANNED.find(([re]) => re.test(line))![1];
-        problems.push(`src/components/${c}/${c}.ts:${n}: ${label}`);
+        problems.push(`${srcRel(c, `${c}.ts`)}:${n}: ${label}`);
       }
     }
     check(
@@ -1494,7 +1520,7 @@ check(
     const files: string[] = [];
     const jsComponents: string[] = [];
     for (const c of componentDirs) {
-      const file = join(COMPS, c, `${c}.ts`);
+      const file = componentFile(COMPS, c, `${c}.ts`);
       if (existsSync(file)) { files.push(file); jsComponents.push(c); }
     }
     for (const dir of [join(SRC, 'shared'), join(SRC, 'documentation', 'runtime')])
@@ -1548,7 +1574,7 @@ check(
     const renderProblems: string[] = [];
     const renderDebt: string[] = [];
     for (const c of jsComponents) {
-      const src = sources.get(`src/components/${c}/${c}.ts`)!;
+      const src = sources.get(srcRel(c, `${c}.ts`))!;
       const onDf = /\bdefussQuery\b/.test(src);
       if (DF_ADOPTION_LEGACY.includes(c)) {
         if (onDf) adoption.push(`${c}: uses df$ now - remove it from DF_ADOPTION_LEGACY`);
@@ -1569,7 +1595,7 @@ check(
     // (el.store) the component's state lives in; the e2e's
     // assertRenderContract() call proves it (required by `render() contract`)
     const storeProblems = jsComponents.flatMap((c) => {
-      const src = sources.get(`src/components/${c}/${c}.ts`)!;
+      const src = sources.get(srcRel(c, `${c}.ts`))!;
       const miss = [/\bcomponentState\s*(<[^>]*>)?\(/.test(src) ? '' : 'componentState()', /\bbindComponent\(/.test(src) ? '' : 'bindComponent()'].filter(Boolean);
       return miss.length ? [`${c}: no ${miss.join(' / ')} - its state must live in a store`] : [];
     });
@@ -1584,10 +1610,10 @@ check(
     // the shared State API (el.api, the registry): every page documents those members from its JSDoc
     const sharedStateSrc = readFileSync(join(ROOT, 'src', 'shared', 'component-state.ts'), 'utf8');
     const apiProblems = jsComponents.flatMap((c) => {
-      const src = sources.get(`src/components/${c}/${c}.ts`)!;
+      const src = sources.get(srcRel(c, `${c}.ts`))!;
       const api = readComponentApi(c, src, sharedStateSrc);
       const out = apiGaps(api).map((g) => `${c}: ${g}`);
-      const skillFile = join(ROOT, 'src', 'components', c, 'component-skill.md');
+      const skillFile = componentFile(COMPS, c, 'component-skill.md');
       const skill = existsSync(skillFile) ? readFileSync(skillFile, 'utf8') : '';
       const section = apiSectionOf(skill);
       if (!section) out.push(`${c}: component-skill.md has no ## API section`);
@@ -1719,14 +1745,51 @@ check(
   // rebuilt, same drift class as snippets and the search index.
   {
     const fmProblems = componentDirs
-      .filter((c) => existsSync(join(COMPS, c, 'component-skill.md')))
-      .filter((c) => !parseSkillFrontmatter(readFileSync(join(COMPS, c, 'component-skill.md'), 'utf8')))
-      .map((c) => `src/components/${c}/component-skill.md has no valid frontmatter (${SKILL_FRONTMATTER_KEYS.join('/')})`);
+      .filter((c) => existsSync(componentFile(COMPS, c, 'component-skill.md')))
+      .filter((c) => !parseSkillFrontmatter(readFileSync(componentFile(COMPS, c, 'component-skill.md'), 'utf8')))
+      .map((c) => `${srcRel(c, "component-skill.md")} has no valid frontmatter (${SKILL_FRONTMATTER_KEYS.join('/')})`);
     check(
       'skill frontmatter',
       fmProblems,
       `add a --- frontmatter block (${SKILL_FRONTMATTER_KEYS.join(', ')}) to each listed skill - then \`bun run build\` regenerates SKILL.md`,
     );
+    // the folders on disk read like the sidebar: src/components/<section>/<name>/, <section> the slug
+    // of the sidebar section that lists the component, and its skill's `section:` names the same
+    // (scripts/lib/component-sections.ts). Read from disk directly - the layout helper only lists
+    // components that already sit in a section, and this gate must see the ones that do not.
+    {
+      const declaredOf = (file: string): string | null => {
+        const md = readFileSync(file, 'utf8');
+        const front = md.startsWith('---\n') ? md.slice(4, md.indexOf('\n---', 3)) : '';
+        return /^section:\s*(\S+)\s*$/m.exec(front)?.[1] ?? null;
+      };
+      const placements: ComponentPlacement[] = [];
+      const folders: string[] = [];
+      for (const top of readdirSync(COMPS, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name)) {
+        if (existsSync(join(COMPS, top, 'component-skill.md'))) {
+          placements.push({ name: top, folder: null, declared: declaredOf(join(COMPS, top, 'component-skill.md')) });
+          continue;
+        }
+        folders.push(top);
+        for (const c of readdirSync(join(COMPS, top), { withFileTypes: true }))
+          if (c.isDirectory() && existsSync(join(COMPS, top, c.name, 'component-skill.md')))
+            placements.push({ name: c.name, folder: top, declared: declaredOf(join(COMPS, top, c.name, 'component-skill.md')) });
+      }
+      const problems: string[] = [];
+      const expected = new Map<string, string>();
+      try {
+        for (const plan of sectionPlans(NAV, placements.map((p) => ({ name: p.name, hasJs: false })), EXTRA_BUNDLES))
+          for (const m of plan.members) expected.set(m, sectionSlug(plan.heading));
+      } catch (err) {
+        problems.push(err instanceof Error ? err.message : String(err));
+      }
+      problems.push(...sectionProblems(placements, expected, folders));
+      check(
+        'component sections',
+        problems,
+        'every component lives in src/components/<section>/<name>/ - the slug of the sidebar section that lists it - and its component-skill.md says `section: <section>`; move folders with git mv',
+      );
+    }
     let skillProblems: string[] = [];
     try {
       const fresh = buildSkillText(SRC);
@@ -1817,7 +1880,7 @@ check(
   {
     const typeProblems: string[] = [];
     for (const c of componentDirs) {
-      const skill = join(COMPS, c, 'component-skill.md');
+      const skill = componentFile(COMPS, c, 'component-skill.md');
       if (!existsSync(skill)) continue; // reported by "component skills"
       const meta = parseSkillFrontmatter(readFileSync(skill, 'utf8'));
       if (!meta) continue; // reported by "skill frontmatter"
@@ -1848,7 +1911,7 @@ check(
   // (a .ts source in src/components = ships a .js). Same gate for both
   // files so the parity pair can never state different numbers.
   {
-    const withJs = componentDirs.filter((c) => existsSync(join(COMPS, c, `${c}.ts`)));
+    const withJs = componentDirs.filter((c) => existsSync(componentFile(COMPS, c, `${c}.ts`)));
     const actual = { cssOnly: componentDirs.length - withJs.length, total: componentDirs.length };
     const statFix = `update the "**N of M components need no JavaScript**" line in README.md AND src/documentation/pages/index.mdx (within the 15-min parity window) to match the component tree (${actual.cssOnly} of ${actual.total})`;
     check(
@@ -1899,13 +1962,13 @@ check(
   // component folder, and the runtime code that ships it imports none of them
   // (§23: schemas are documentation/tooling data - zero bytes in the bundle).
   const schemaFiles = componentDirs
-    .map((d) => join(COMPS, d, `${d}.schema.json`))
+    .map((d) => componentFile(COMPS, d, `${d}.schema.json`))
     .filter((f) => existsSync(f));
   const schemaByName = new Map<string, ComponentSchema>();
   {
     const problems: string[] = [];
     for (const f of schemaFiles) {
-      const dir = relative(COMPS, f).split(sep)[0];
+      const dir = relative(COMPS, f).split(sep)[1]; // src/components/<section>/<name>/<name>.schema.json
       const rel = relative(ROOT, f);
       const { schema, problems: p } = parseComponentSchemaText(readFileSync(f, 'utf8'), rel);
       problems.push(...p);
@@ -1939,7 +2002,7 @@ check(
     for (const [name] of schemaByName) {
       const published = join(pub, `${name}.schema.json`);
       if (!existsSync(published)) problems.push(`dist/schemas/${name}.schema.json missing - run \`bun run build\``);
-      else if (!readFileSync(published).equals(readFileSync(join(COMPS, name, `${name}.schema.json`))))
+      else if (!readFileSync(published).equals(readFileSync(componentFile(COMPS, name, `${name}.schema.json`))))
         problems.push(`dist/schemas/${name}.schema.json differs from the src sidecar - run \`bun run build\``);
     }
     check('schemas published', problems, 'run `bun run build` (build.ts copies schemas + writes the sorted manifest)');
@@ -1970,7 +2033,7 @@ check(
     );
     // migration ratchet (plan §26 phase 4): interactive components without a
     // schema yet - shrink toward zero, same path STATE_API_LEGACY took
-    const pending = componentDirs.filter((d) => !schemaByName.has(d) && existsSync(join(COMPS, d, `${d}.ts`)));
+    const pending = componentDirs.filter((d) => !schemaByName.has(d) && existsSync(componentFile(COMPS, d, `${d}.ts`)));
     check(
       'component schema coverage',
       pending.map((d) => `${d}: no ${d}.schema.json yet`),
@@ -2002,7 +2065,7 @@ check(
         // demonstrate the optional modules, not a component - no contract to bind
         if (ex.schema === 'none') continue;
         const comp = ex.component ?? page;
-        if (!existsSync(join(COMPS, comp)))
+        if (!existsSync(componentFile(COMPS, comp)))
           problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…"/schema="none" or ship the component)`);
       }
       for (const m of mdx.matchAll(/<CodeExample[^>]*?\s(code|preview|previewSource)=/g))

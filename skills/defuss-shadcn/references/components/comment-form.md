@@ -1,6 +1,7 @@
 ---
 name: Comment Form
 type: BLK
+section: website
 why: A real <form> with a Textarea that grows with field-sizing: content, Inputs for guests and native validation (required, minlength, type=email) - :user-invalid marks fields only after an attempt.
 when: Under a comment thread, inline under a comment (reply). A chat composer takes textarea-group.
 where: dist/components/comment-form/comment-form.css

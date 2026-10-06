@@ -1,6 +1,7 @@
 ---
 name: Search Result
 type: BLK
+section: website
 why: An article with a stretched title link and <mark>ed matches - all text, all native.
 when: Search results pages and command-palette lists. Catalog grids are product-item.
 where: dist/components/search-result/search-result.css

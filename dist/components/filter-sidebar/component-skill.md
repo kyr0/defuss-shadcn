@@ -1,6 +1,7 @@
 ---
 name: Filter Sidebar
 type: BLK
+section: website
 why: Groups are <details>, controls are checkboxes, radios, number inputs and a switch in one GET form - the filter state is the URL. No script.
 when: Catalogs and listings with many facets. A few quick filters fit in filter-bar.
 where: dist/components/filter-sidebar/filter-sidebar.css

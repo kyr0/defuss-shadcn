@@ -1,6 +1,7 @@
 ---
 name: Newsletter
 type: BLK
+section: website
 why: A real <form> with <input type="email"> - native validation, keyboard, and autofill come free.
 when: Sign-up band on a marketing page; for multi-field sign-up use the Form component.
 where: dist/components/newsletter/newsletter.css

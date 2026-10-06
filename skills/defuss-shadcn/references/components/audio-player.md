@@ -1,6 +1,7 @@
 ---
 name: Audio Player
 type: BLK
+section: website
 why: The browser's <audio controls> plays, seeks and handles media keys; the block styles the frame around it - no player library.
 when: Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player.
 where: dist/components/audio-player/audio-player.css

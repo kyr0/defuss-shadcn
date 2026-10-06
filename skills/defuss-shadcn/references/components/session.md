@@ -1,6 +1,7 @@
 ---
 name: Session
 type: ORG
+section: chat
 why: A native scroll region with a role="log" transcript - the keyboard scrolls it, a screen reader hears new messages; the runtime only decides where the scroll goes - follow the live edge, let go when the reader scrolls away, keep the place when history loads, anchor new turns - and turns dropped files into an event.
 when: A whole chat or assistant conversation - messages (message + bubble + marker) in a transcript that scrolls, with a composer (textarea-group) below. A short static exchange takes a plain .message-list; a feed of cards takes a list.
 where: dist/components/session/session.css + dist/components/session/session.js

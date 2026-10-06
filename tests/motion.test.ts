@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import motionCss from '../src/components/motion/motion.css?raw';
+import motionCss from '../src/components/guides/motion/motion.css?raw';
 import { draw, entrance, ENTRANCES } from '../src/shared/motion.js';
 
 /**

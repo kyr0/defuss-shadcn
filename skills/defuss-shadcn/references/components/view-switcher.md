@@ -1,6 +1,7 @@
 ---
 name: View Switcher
 type: BLK
+section: website
 why: Radio inputs read by :has() on the shared parent switch the collection's layout - the choice is keyboard-accessible and survives as a form value.
 when: Above galleries, file lists, products. Ordering is sort-control; narrowing is filter-bar.
 where: dist/components/view-switcher/view-switcher.css

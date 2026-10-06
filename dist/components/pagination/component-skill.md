@@ -1,6 +1,7 @@
 ---
 name: Pagination
 type: MOL
+section: navigation
 why: Numbered page links in a nav > ol with aria-current="page" on the active page - a composition of button atoms (page/prev/next).
 when: Splitting long lists or tables across pages.
 where: dist/components/pagination/pagination.css

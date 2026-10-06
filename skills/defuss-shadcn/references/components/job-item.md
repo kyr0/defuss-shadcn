@@ -1,6 +1,7 @@
 ---
 name: Job Item
 type: BLK
+section: website
 why: A heading link stretched over the row, the facts as a list, a <time> for the posting date - no script.
 when: Careers pages and job boards. The full posting is job-details; the form is application-form.
 where: dist/components/job-item/job-item.css

@@ -1,6 +1,7 @@
 ---
 name: Help Article
 type: BLK
+section: website
 why: An ordered list of steps with counters, a <details> for "still stuck", a CSS-only "was this helpful?" - no script.
 when: Help-center articles and how-tos. Reference documentation is docs-content.
 where: dist/components/help-article/help-article.css

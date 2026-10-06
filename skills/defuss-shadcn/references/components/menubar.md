@@ -1,6 +1,7 @@
 ---
 name: Menubar
 type: MOL
+section: navigation
 why: A row of menu triggers that each open a dropdown menu (Popover API, anchor-positioned, submenus any depth); menubar.js adds the APG menubar keyboard model - one tab stop, arrows between menus, hover switching while one is open.
 when: The persistent command bar of an app-like page - File / Edit / View / Help. One menu of actions takes dropdown; site navigation takes navbar or navigation-menu.
 where: dist/components/menubar/menubar.css + dist/components/menubar/menubar.js (with dist/components/dropdown/dropdown.css + dropdown.js)

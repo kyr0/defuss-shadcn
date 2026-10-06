@@ -1,6 +1,7 @@
 ---
 name: Blog Header
 type: BLK
+section: website
 why: An h1, a description, Buttons and a nav of category links (aria-current marks the current one) - chips are plain links, so filtering is a real URL with no script.
 when: The front of a blog or a category page. A news front takes news-header; a single post takes article-header.
 where: dist/components/blog-header/blog-header.css

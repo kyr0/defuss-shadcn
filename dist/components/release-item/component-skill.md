@@ -1,6 +1,7 @@
 ---
 name: Release Item
 type: BLK
+section: website
 why: An article with a typed label (one data attribute colors it) - the kind is always written, not only colored. No script.
 when: The entries under a release-header. Future work is roadmap-item.
 where: dist/components/release-item/release-item.css

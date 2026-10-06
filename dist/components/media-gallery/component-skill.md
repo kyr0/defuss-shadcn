@@ -1,6 +1,7 @@
 ---
 name: Media Gallery
 type: BLK
+section: website
 why: The layout switch is three radio inputs read by :has() - no script; the slideshow is a modal <dialog> with a scroll-snapped track.
 when: Albums, project galleries, event photos. One picture with a large view is gallery-item; a single hero picture is the image component.
 where: dist/components/media-gallery/media-gallery.css

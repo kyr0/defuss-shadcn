@@ -1,6 +1,7 @@
 ---
 name: HTML Preview Editor
 type: MOL
+section: wysiwyg-editors
 why: One source, two views - the <textarea> you edit is the srcdoc the sandboxed <iframe> runs, so the code shown and the code run cannot differ; the preview runs in an opaque origin, device emulation is CSS zoom over a real viewport, highlighting is Shiki.
 when: Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea.
 where: dist/components/wysiwyg.css + dist/components/wysiwyg.js (the extra bundle - load it after all.css / all.js; per component: dist/components/code-example/code-example.css + code-example.js)

@@ -1,6 +1,7 @@
 ---
 name: Wishlist Item
 type: BLK
+section: website
 why: A list item with real buttons and a stock state in one data attribute - status reads as text, not color alone. No script.
 when: Wishlists and "saved for later" lists. Items in the cart are cart-item; catalog cards are product-item.
 where: dist/components/wishlist-item/wishlist-item.css

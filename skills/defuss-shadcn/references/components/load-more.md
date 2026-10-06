@@ -1,6 +1,7 @@
 ---
 name: Load More
 type: BLK
+section: website
 why: The button is a link to the next page (works without script); aria-busy on it switches the label to a spinner in CSS while your script fetches.
 when: Feeds, galleries and catalogs where page numbers matter less. Exact pages use collection-pagination.
 where: dist/components/load-more/load-more.css

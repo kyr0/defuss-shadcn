@@ -1,6 +1,7 @@
 ---
 name: BibTeX
 type: ATM
+section: papers
 why: The authored BibTeX stays the one source - parsed once, shown as BibTeX (normalized, aligned, highlighted) or as an APA, MLA, Chicago, Harvard or IEEE reference, copied with the Clipboard API exactly as shown; without JS the source is still readable.
 when: Wherever a reader should cite something - a paper page, a dataset, a release, a references section (several entries become a list). A terminal transcript is mockup-code; source code is a code block.
 where: dist/components/bibtex/bibtex.css + dist/components/bibtex/bibtex.js

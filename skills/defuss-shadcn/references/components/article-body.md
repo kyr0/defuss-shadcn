@@ -1,6 +1,7 @@
 ---
 name: Article Body
 type: BLK
+section: website
 why: Styles the plain elements a CMS or Markdown renderer emits - no classes inside - at one readable measure; hanging-punctuation, text-wrap: pretty and ::first-letter do the typography.
 when: The running text of an article, post or docs page. Short UI copy takes typography; a single quote block takes blockquote.
 where: dist/components/article-body/article-body.css

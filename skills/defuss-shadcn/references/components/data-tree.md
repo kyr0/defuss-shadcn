@@ -1,6 +1,7 @@
 ---
 name: Data Tree
 type: ATM
+section: big-data
 why: A windowed ARIA tree - only the items on screen exist and focus stays on the tree (aria-activedescendant) - over records that name their parent; hierarchy, filtering and sorting run locally over every node through defuss-dataview.
 when: Hierarchies too big for nested markup - catalogs, file systems, org charts, taxonomies - that people filter and walk with the keyboard. Tree View for a small tree written as markup; Tree Grid when each node has columns.
 where: dist/components/data-tree/data-tree.css + dist/components/data-tree/data-tree.js

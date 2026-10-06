@@ -1,0 +1,170 @@
+// -- Context Menu ---------------------------------------------
+// Right-click context menu using the Popover API, plus the named-state
+// API bound per menu popover, so agents/tests can open it without a real
+// right-click (AGENTS.md "State API").
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+const contextMenuStates = ['default', 'open'];
+
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state. */
+export interface ContextMenuStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open at a point of the viewport. */
+  open: {
+    /** the menu's left edge, px from the viewport's left (default 8) */
+    x?: number;
+    /** the menu's top edge, px from the viewport's top (default 8) */
+    y?: number;
+  };
+}
+
+/** Like a native menu: where there is no room right of / below the point,
+ * open toward its other side, and never past the viewport. Measured right
+ * after the (usually synchronous) show - else once the deferred show lands. */
+function keepInView(menu, x, y) {
+  const fit = () => {
+    const w = menu.offsetWidth, h = menu.offsetHeight;
+    const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+    if (x + w > vw - 4) menu.style.left = `${Math.max(4, Math.min(x - w, vw - w - 4))}px`;
+    if (y + h > vh - 4) menu.style.top = `${Math.max(4, Math.min(y - h, vh - h - 4))}px`;
+  };
+  if (menu.matches(':popover-open')) fit();
+  else menu.addEventListener('toggle', (e) => { if (e.newState === 'open') fit(); }, { once: true });
+}
+
+/**
+ * The markup of a state: none - 'open' lives in the top layer
+ * (:popover-open), not in an attribute, so every state renders the authored
+ * markup. render() stays the State API's markup function all the same.
+ */
+function applyMarkup(_el, _stateName) {}
+
+/**
+ * UI side of setState (per menu popover): 'open' shows the menu at { x, y }
+ * (falling back to the top-left of the viewport - there is no pointer event
+ * to anchor to); 'default' hides it.
+ */
+function triggerStateChange(menu, stateName, config) {
+  switch (stateName) {
+    case 'default':
+      menu.hidePopover();
+      break;
+    case 'open': {
+      const x = Number(config?.x ?? 8);
+      const y = Number(config?.y ?? 8);
+      menu.style.position = 'fixed';
+      menu.style.top = `${y}px`;
+      menu.style.left = `${x}px`;
+      // deferred show: showPopover() while a previous exit transition is
+      // still running crashes the headless renderer (setState after Escape)
+      safeShowPopover(menu);
+      keepInView(menu, x, y);
+      break;
+    }
+  }
+}
+
+/** Registry-level API; pass the menu popover explicitly. Unknown names throw. */
+export const contextMenuApi = componentState({
+  component: 'context-menu',
+  states: contextMenuStates,
+  apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
+  read: (menu, state) => {
+    // reflect reality: right-clicks and item clicks change the UI too
+    return {
+      name: menu.matches(':popover-open') ? 'open' : 'default',
+      config: state.config,
+    };
+  },
+  markup: (el, state) => applyMarkup(el, state.name),
+});
+
+df$.contextMenuApi = contextMenuApi;
+df$.contextMenuStates = contextMenuStates;
+
+/* One pending open across all triggers: { menu, x, y } captured on the
+   contextmenu event, consumed on the right-button pointerup. */
+let pendingOpen = null;
+/* Timestamp of the last right-button release (0 = never, i.e. page start) —
+   see the contextmenu handler: the gesture normally fires contextmenu at
+   button-DOWN (open must wait for the release), but some engines dispatch it
+   AFTER the pointerup - then the gesture is already over and opening is safe. */
+let lastRightUp = 0;
+
+/* Document-level open-on-release - registered once (AGENTS.md delegation
+   pattern). WHY release and not the contextmenu event itself: macOS fires
+   contextmenu at mouse-DOWN, and an auto popover shown while the right button
+   is still held is light-dismissed by the platform the moment it goes up —
+   the menu flashed open and vanished on mouse-up (verified in Chromium). */
+if (!document.__ctxMenuReleaseInit) {
+  document.__ctxMenuReleaseInit = true;
+  document.addEventListener('pointerup', (e) => {
+    if (e.button !== 2) return;
+    lastRightUp = performance.now();
+    if (!pendingOpen) return;
+    const { menu, x, y } = pendingOpen;
+    pendingOpen = null;
+    openMenuAt(menu, x, y);
+  });
+  document.addEventListener('pointercancel', () => { pendingOpen = null; });
+}
+
+/** Show a context menu fixed at the pointer coords. */
+function openMenuAt(menu, x, y) {
+  menu.style.position = 'fixed';
+  menu.style.top = `${y}px`;
+  menu.style.left = `${x}px`;
+  safeShowPopover(menu);
+  keepInView(menu, x, y);
+  menu.dataset.stateName = 'open';
+}
+
+function init() {
+  dfDollar('[data-context-menu]:not([data-init])').toArray().forEach((trigger) => {
+  trigger.dataset.init = '';
+  const menu = dfDollar('#' + CSS.escape(trigger.dataset.contextMenu)).get(0);
+  if (!menu) return;
+  // bind-scope the api per menu popover: `$('#my-ctx').api.setState('open', { x: 40, y: 40 })`
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(menu, contextMenuApi);
+  trigger.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    // no pointer press (keyboard-synthesized, e.g. a11y tooling) → open next frame
+    if (e.pointerId === undefined || e.pointerId < 0) {
+      requestAnimationFrame(() => openMenuAt(menu, e.clientX, e.clientY));
+      return;
+    }
+    // right-button already released (gesture order: pointerup → contextmenu)
+    // → opening now can't be light-dismissed. lastRightUp===0 (page never saw a
+    // right release) must NOT qualify - otherwise early page loads take this
+    // branch for a still-held button (0 - now is meaningless).
+    if (lastRightUp > 0 && performance.now() - lastRightUp < 100) {
+      openMenuAt(menu, e.clientX, e.clientY);
+      return;
+    }
+    pendingOpen = { menu, x: e.clientX, y: e.clientY };
+  });
+  menu.addEventListener('click', (e) => {
+    if (e.target.closest('.context-menu-item')) {
+      menu.hidePopover();
+      menu.dataset.stateName = 'default';
+    }
+  });
+  // right out of the top layer via Escape: keep the named state honest
+  menu.addEventListener('toggle', (e) => {
+    if (e.newState === 'closed') menu.dataset.stateName = 'default';
+  });
+});
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

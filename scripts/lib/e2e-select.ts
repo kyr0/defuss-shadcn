@@ -34,8 +34,8 @@ export interface E2eSource {
   fixtures: Record<string, string>;
   /** the components a piece of markup uses (scripts/lib/apps.ts resolver) */
   componentsOf: (markup: string) => string[];
-  /** is there a src/components/<name>/ */
-  isComponent: (name: string) => boolean;
+  /** a component's repo-relative folder (src/components/<section>/<name>/), undefined when there is none */
+  componentDir: (name: string) => string | undefined;
 }
 
 /** The fixture files a test text names (`x.e2e-fixture.html`). */
@@ -46,7 +46,8 @@ export function e2eInputs(src: E2eSource): string[] {
   const out = new Set<string>([`tests/e2e/${src.name}.e2e.ts`, ...SHARED_INPUTS]);
   const add = (list: string[]) => list.forEach((p) => out.add(p));
   const component = (c: string) => {
-    if (src.isComponent(c)) out.add(`src/components/${c}/`);
+    const dir = src.componentDir(c);
+    if (dir) out.add(dir);
   };
   for (const f of Object.keys(src.fixtures)) out.add(`tests/e2e/${f}`);
   const texts = [src.test, ...Object.values(src.fixtures)];

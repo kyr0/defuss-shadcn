@@ -1,6 +1,7 @@
 ---
 name: Gallery Item
 type: BLK
+section: website
 why: A button with commandfor / command="show-modal" opens a <dialog> - focus trap, Escape and backdrop are the browser's; a method="dialog" form closes it. No script.
 when: Photo grids, portfolios, product shots. A whole collection with shared controls is media-gallery; a plain responsive picture is the image component.
 where: dist/components/gallery-item/gallery-item.css

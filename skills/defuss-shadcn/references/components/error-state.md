@@ -1,6 +1,7 @@
 ---
 name: Error State
 type: BLK
+section: website
 why: role="alert" announces it; the details are a <details> with the error code in <code> - copyable, no script.
 when: Failed loads, server errors, lost connections. A missing page is page-not-found; a field error belongs next to the field.
 where: dist/components/error-state/error-state.css

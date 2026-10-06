@@ -87,7 +87,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/about-intro/about-intro.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/about-intro.png
-**Skill:** [components/about-intro/component-skill.md](components/about-intro/component-skill.md)
+**Skill:** [components/website/about-intro/component-skill.md](components/website/about-intro/component-skill.md)
 
 ## Accordion
 
@@ -97,7 +97,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/accordion/accordion.css + dist/components/accordion/accordion.js
 **Supported states:** default, all-open, all-closed
 **Screenshots:** screenshots/{light,dark}/accordion.png, screenshots/{light,dark}/accordion-all-open.png, screenshots/{light,dark}/accordion-all-closed.png
-**Skill:** [components/accordion/component-skill.md](components/accordion/component-skill.md)
+**Skill:** [components/overlays/accordion/component-skill.md](components/overlays/accordion/component-skill.md)
 
 ## Active Filters
 
@@ -107,7 +107,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/active-filters/active-filters.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/active-filters.png
-**Skill:** [components/active-filters/component-skill.md](components/active-filters/component-skill.md)
+**Skill:** [components/website/active-filters/component-skill.md](components/website/active-filters/component-skill.md)
 
 ## Address Form
 
@@ -117,7 +117,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/address-form/address-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/address-form.png
-**Skill:** [components/address-form/component-skill.md](components/address-form/component-skill.md)
+**Skill:** [components/website/address-form/component-skill.md](components/website/address-form/component-skill.md)
 
 ## Alert
 
@@ -127,7 +127,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/alert/alert.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/alert.png
-**Skill:** [components/alert/component-skill.md](components/alert/component-skill.md)
+**Skill:** [components/feedback-status/alert/component-skill.md](components/feedback-status/alert/component-skill.md)
 
 ## Alert Dialog
 
@@ -137,7 +137,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/alert-dialog/alert-dialog.css + dist/components/alert-dialog/alert-dialog.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/alert-dialog.png, screenshots/{light,dark}/alert-dialog-open.png
-**Skill:** [components/alert-dialog/component-skill.md](components/alert-dialog/component-skill.md)
+**Skill:** [components/feedback-status/alert-dialog/component-skill.md](components/feedback-status/alert-dialog/component-skill.md)
 
 ## Animation Canvas
 
@@ -147,7 +147,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/anim-canvas/anim-canvas.css + dist/components/anim-canvas/anim-canvas.js
 **Supported states:** default, overview
 **Screenshots:** screenshots/{light,dark}/anim-canvas.png, screenshots/{light,dark}/anim-canvas-overview.png
-**Skill:** [components/anim-canvas/component-skill.md](components/anim-canvas/component-skill.md)
+**Skill:** [components/guides/anim-canvas/component-skill.md](components/guides/anim-canvas/component-skill.md)
 
 ## Announcement
 
@@ -157,7 +157,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/announcement/announcement.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/announcement.png
-**Skill:** [components/announcement/component-skill.md](components/announcement/component-skill.md)
+**Skill:** [components/website/announcement/component-skill.md](components/website/announcement/component-skill.md)
 
 ## Application Form
 
@@ -167,7 +167,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/application-form/application-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/application-form.png
-**Skill:** [components/application-form/component-skill.md](components/application-form/component-skill.md)
+**Skill:** [components/website/application-form/component-skill.md](components/website/application-form/component-skill.md)
 
 ## Archive Index
 
@@ -177,7 +177,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/archive-index/archive-index.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/archive-index.png
-**Skill:** [components/archive-index/component-skill.md](components/archive-index/component-skill.md)
+**Skill:** [components/website/archive-index/component-skill.md](components/website/archive-index/component-skill.md)
 
 ## Article Body
 
@@ -187,7 +187,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/article-body/article-body.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/article-body.png
-**Skill:** [components/article-body/component-skill.md](components/article-body/component-skill.md)
+**Skill:** [components/website/article-body/component-skill.md](components/website/article-body/component-skill.md)
 
 ## Article Header
 
@@ -197,7 +197,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/article-header/article-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/article-header.png
-**Skill:** [components/article-header/component-skill.md](components/article-header/component-skill.md)
+**Skill:** [components/website/article-header/component-skill.md](components/website/article-header/component-skill.md)
 
 ## Article Navigation
 
@@ -207,7 +207,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/article-navigation/article-navigation.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/article-navigation.png
-**Skill:** [components/article-navigation/component-skill.md](components/article-navigation/component-skill.md)
+**Skill:** [components/website/article-navigation/component-skill.md](components/website/article-navigation/component-skill.md)
 
 ## Audio Player
 
@@ -217,7 +217,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/audio-player/audio-player.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/audio-player.png
-**Skill:** [components/audio-player/component-skill.md](components/audio-player/component-skill.md)
+**Skill:** [components/website/audio-player/component-skill.md](components/website/audio-player/component-skill.md)
 
 ## Author Bio
 
@@ -227,7 +227,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/author-bio/author-bio.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/author-bio.png
-**Skill:** [components/author-bio/component-skill.md](components/author-bio/component-skill.md)
+**Skill:** [components/website/author-bio/component-skill.md](components/website/author-bio/component-skill.md)
 
 ## Author List
 
@@ -237,7 +237,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/author-list/author-list.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/author-list.png
-**Skill:** [components/author-list/component-skill.md](components/author-list/component-skill.md)
+**Skill:** [components/website/author-list/component-skill.md](components/website/author-list/component-skill.md)
 
 ## Autocomplete
 
@@ -247,7 +247,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/autocomplete/autocomplete.css + dist/components/autocomplete/autocomplete.js
 **Supported states:** default, open, loading, empty, error
 **Screenshots:** screenshots/{light,dark}/autocomplete.png, screenshots/{light,dark}/autocomplete-open.png, screenshots/{light,dark}/autocomplete-loading.png, screenshots/{light,dark}/autocomplete-empty.png, screenshots/{light,dark}/autocomplete-error.png
-**Skill:** [components/autocomplete/component-skill.md](components/autocomplete/component-skill.md)
+**Skill:** [components/big-data/autocomplete/component-skill.md](components/big-data/autocomplete/component-skill.md)
 
 ## Avatar
 
@@ -257,7 +257,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/avatar/avatar.css + dist/components/avatar/avatar.js
 **Supported states:** default, error
 **Screenshots:** screenshots/{light,dark}/avatar.png, screenshots/{light,dark}/avatar-error.png
-**Skill:** [components/avatar/component-skill.md](components/avatar/component-skill.md)
+**Skill:** [components/data-display/avatar/component-skill.md](components/data-display/avatar/component-skill.md)
 
 ## Badge
 
@@ -267,7 +267,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/badge/badge.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/badge.png
-**Skill:** [components/badge/component-skill.md](components/badge/component-skill.md)
+**Skill:** [components/data-display/badge/component-skill.md](components/data-display/badge/component-skill.md)
 
 ## Before After
 
@@ -277,7 +277,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/before-after/before-after.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/before-after.png
-**Skill:** [components/before-after/component-skill.md](components/before-after/component-skill.md)
+**Skill:** [components/website/before-after/component-skill.md](components/website/before-after/component-skill.md)
 
 ## BibTeX
 
@@ -287,7 +287,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/bibtex/bibtex.css + dist/components/bibtex/bibtex.js
 **Supported states:** default, copied
 **Screenshots:** screenshots/{light,dark}/bibtex.png, screenshots/{light,dark}/bibtex-copied.png
-**Skill:** [components/bibtex/component-skill.md](components/bibtex/component-skill.md)
+**Skill:** [components/papers/bibtex/component-skill.md](components/papers/bibtex/component-skill.md)
 
 ## Blog
 
@@ -297,7 +297,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/blog/blog.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/blog.png
-**Skill:** [components/blog/component-skill.md](components/blog/component-skill.md)
+**Skill:** [components/website/blog/component-skill.md](components/website/blog/component-skill.md)
 
 ## Blog Header
 
@@ -307,7 +307,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/blog-header/blog-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/blog-header.png
-**Skill:** [components/blog-header/component-skill.md](components/blog-header/component-skill.md)
+**Skill:** [components/website/blog-header/component-skill.md](components/website/blog-header/component-skill.md)
 
 ## Blog Item
 
@@ -317,7 +317,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/blog-item/blog-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/blog-item.png
-**Skill:** [components/blog-item/component-skill.md](components/blog-item/component-skill.md)
+**Skill:** [components/website/blog-item/component-skill.md](components/website/blog-item/component-skill.md)
 
 ## Booking Form
 
@@ -327,7 +327,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/booking-form/booking-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/booking-form.png
-**Skill:** [components/booking-form/component-skill.md](components/booking-form/component-skill.md)
+**Skill:** [components/website/booking-form/component-skill.md](components/website/booking-form/component-skill.md)
 
 ## Border Layout
 
@@ -337,7 +337,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/border-layout/border-layout.css + dist/components/border-layout/border-layout.js (+ the resizer)
 **Supported states:** default, collapsed
 **Screenshots:** screenshots/{light,dark}/border-layout.png, screenshots/{light,dark}/border-layout-collapsed.png
-**Skill:** [components/border-layout/component-skill.md](components/border-layout/component-skill.md)
+**Skill:** [components/application/border-layout/component-skill.md](components/application/border-layout/component-skill.md)
 
 ## Brand Logos
 
@@ -347,7 +347,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/brand-logos/brand-logos.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/brand-logos.png
-**Skill:** [components/brand-logos/component-skill.md](components/brand-logos/component-skill.md)
+**Skill:** [components/website/brand-logos/component-skill.md](components/website/brand-logos/component-skill.md)
 
 ## Breadcrumb
 
@@ -357,7 +357,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/breadcrumb/breadcrumb.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/breadcrumb.png
-**Skill:** [components/breadcrumb/component-skill.md](components/breadcrumb/component-skill.md)
+**Skill:** [components/navigation/breadcrumb/component-skill.md](components/navigation/breadcrumb/component-skill.md)
 
 ## Breadcrumbs
 
@@ -367,7 +367,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/breadcrumbs/breadcrumbs.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/breadcrumbs.png
-**Skill:** [components/breadcrumbs/component-skill.md](components/breadcrumbs/component-skill.md)
+**Skill:** [components/website/breadcrumbs/component-skill.md](components/website/breadcrumbs/component-skill.md)
 
 ## Bubble
 
@@ -377,7 +377,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/bubble/bubble.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/bubble.png
-**Skill:** [components/bubble/component-skill.md](components/bubble/component-skill.md)
+**Skill:** [components/chat/bubble/component-skill.md](components/chat/bubble/component-skill.md)
 
 ## Button
 
@@ -387,7 +387,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/button/button.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/button.png
-**Skill:** [components/button/component-skill.md](components/button/component-skill.md)
+**Skill:** [components/actions/button/component-skill.md](components/actions/button/component-skill.md)
 
 ## Button Group
 
@@ -397,7 +397,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/button-group/button-group.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/button-group.png
-**Skill:** [components/button-group/component-skill.md](components/button-group/component-skill.md)
+**Skill:** [components/actions/button-group/component-skill.md](components/actions/button-group/component-skill.md)
 
 ## Calendar
 
@@ -407,7 +407,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/calendar/calendar.css + dist/components/calendar/calendar.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/calendar.png
-**Skill:** [components/calendar/component-skill.md](components/calendar/component-skill.md)
+**Skill:** [components/data-display/calendar/component-skill.md](components/data-display/calendar/component-skill.md)
 
 ## Card
 
@@ -417,7 +417,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/card/card.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/card.png
-**Skill:** [components/card/component-skill.md](components/card/component-skill.md)
+**Skill:** [components/data-display/card/component-skill.md](components/data-display/card/component-skill.md)
 
 ## Carousel
 
@@ -427,7 +427,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/carousel/carousel.css + dist/components/carousel/carousel.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/carousel.png
-**Skill:** [components/carousel/component-skill.md](components/carousel/component-skill.md)
+**Skill:** [components/data-display/carousel/component-skill.md](components/data-display/carousel/component-skill.md)
 
 ## Cart Item
 
@@ -437,7 +437,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/cart-item/cart-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/cart-item.png
-**Skill:** [components/cart-item/component-skill.md](components/cart-item/component-skill.md)
+**Skill:** [components/website/cart-item/component-skill.md](components/website/cart-item/component-skill.md)
 
 ## Cart Summary
 
@@ -447,7 +447,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/cart-summary/cart-summary.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/cart-summary.png
-**Skill:** [components/cart-summary/component-skill.md](components/cart-summary/component-skill.md)
+**Skill:** [components/website/cart-summary/component-skill.md](components/website/cart-summary/component-skill.md)
 
 ## Case Preview
 
@@ -457,7 +457,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/case-preview/case-preview.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/case-preview.png
-**Skill:** [components/case-preview/component-skill.md](components/case-preview/component-skill.md)
+**Skill:** [components/website/case-preview/component-skill.md](components/website/case-preview/component-skill.md)
 
 ## Case Study
 
@@ -467,7 +467,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/case-study/case-study.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/case-study.png
-**Skill:** [components/case-study/component-skill.md](components/case-study/component-skill.md)
+**Skill:** [components/website/case-study/component-skill.md](components/website/case-study/component-skill.md)
 
 ## Category Menu
 
@@ -477,7 +477,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/category-menu/category-menu.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/category-menu.png
-**Skill:** [components/category-menu/component-skill.md](components/category-menu/component-skill.md)
+**Skill:** [components/website/category-menu/component-skill.md](components/website/category-menu/component-skill.md)
 
 ## Chart
 
@@ -487,7 +487,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/chart/chart.css + dist/components/chart/chart.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/chart.png
-**Skill:** [components/chart/component-skill.md](components/chart/component-skill.md)
+**Skill:** [components/charts/chart/component-skill.md](components/charts/chart/component-skill.md)
 
 ## Checkbox
 
@@ -497,7 +497,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/checkbox/checkbox.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/checkbox.png
-**Skill:** [components/checkbox/component-skill.md](components/checkbox/component-skill.md)
+**Skill:** [components/forms-inputs/checkbox/component-skill.md](components/forms-inputs/checkbox/component-skill.md)
 
 ## Code Example
 
@@ -507,7 +507,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/code-block/code-block.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/code-block.png
-**Skill:** [components/code-block/component-skill.md](components/code-block/component-skill.md)
+**Skill:** [components/website/code-block/component-skill.md](components/website/code-block/component-skill.md)
 
 ## HTML Preview Editor
 
@@ -517,7 +517,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/wysiwyg.css + dist/components/wysiwyg.js (the extra bundle - load it after all.css / all.js; per component: dist/components/code-example/code-example.css + code-example.js)
 **Supported states:** default, code, state, fullscreen
 **Screenshots:** screenshots/{light,dark}/code-example.png, screenshots/{light,dark}/code-example-code.png, screenshots/{light,dark}/code-example-state.png, screenshots/{light,dark}/code-example-fullscreen.png
-**Skill:** [components/code-example/component-skill.md](components/code-example/component-skill.md)
+**Skill:** [components/wysiwyg-editors/code-example/component-skill.md](components/wysiwyg-editors/code-example/component-skill.md)
 
 ## Collapsible
 
@@ -527,7 +527,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/collapsible/collapsible.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/collapsible.png
-**Skill:** [components/collapsible/component-skill.md](components/collapsible/component-skill.md)
+**Skill:** [components/data-display/collapsible/component-skill.md](components/data-display/collapsible/component-skill.md)
 
 ## Collection Item
 
@@ -537,7 +537,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/collection-item/collection-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/collection-item.png
-**Skill:** [components/collection-item/component-skill.md](components/collection-item/component-skill.md)
+**Skill:** [components/website/collection-item/component-skill.md](components/website/collection-item/component-skill.md)
 
 ## Collection Pagination
 
@@ -547,7 +547,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/collection-pagination/collection-pagination.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/collection-pagination.png
-**Skill:** [components/collection-pagination/component-skill.md](components/collection-pagination/component-skill.md)
+**Skill:** [components/website/collection-pagination/component-skill.md](components/website/collection-pagination/component-skill.md)
 
 ## Color Picker
 
@@ -557,7 +557,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/color-picker/color-picker.css + dist/components/color-picker/color-picker.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/color-picker.png
-**Skill:** [components/color-picker/component-skill.md](components/color-picker/component-skill.md)
+**Skill:** [components/forms-inputs/color-picker/component-skill.md](components/forms-inputs/color-picker/component-skill.md)
 
 ## Combobox
 
@@ -567,7 +567,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/combobox/combobox.css + dist/components/combobox/combobox.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/combobox.png, screenshots/{light,dark}/combobox-open.png
-**Skill:** [components/combobox/component-skill.md](components/combobox/component-skill.md)
+**Skill:** [components/forms-inputs/combobox/component-skill.md](components/forms-inputs/combobox/component-skill.md)
 
 ## Coming Soon
 
@@ -577,7 +577,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/coming-soon/coming-soon.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/coming-soon.png
-**Skill:** [components/coming-soon/component-skill.md](components/coming-soon/component-skill.md)
+**Skill:** [components/website/coming-soon/component-skill.md](components/website/coming-soon/component-skill.md)
 
 ## Command Palette
 
@@ -587,7 +587,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/command/command.css + dist/components/command/command.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/command.png, screenshots/{light,dark}/command-open.png
-**Skill:** [components/command/component-skill.md](components/command/component-skill.md)
+**Skill:** [components/overlays/command/component-skill.md](components/overlays/command/component-skill.md)
 
 ## Comment Form
 
@@ -597,7 +597,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/comment-form/comment-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/comment-form.png
-**Skill:** [components/comment-form/component-skill.md](components/comment-form/component-skill.md)
+**Skill:** [components/website/comment-form/component-skill.md](components/website/comment-form/component-skill.md)
 
 ## Comment Header
 
@@ -607,7 +607,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/comment-header/comment-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/comment-header.png
-**Skill:** [components/comment-header/component-skill.md](components/comment-header/component-skill.md)
+**Skill:** [components/website/comment-header/component-skill.md](components/website/comment-header/component-skill.md)
 
 ## Comment Item
 
@@ -617,7 +617,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/comment-item/comment-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/comment-item.png
-**Skill:** [components/comment-item/component-skill.md](components/comment-item/component-skill.md)
+**Skill:** [components/website/comment-item/component-skill.md](components/website/comment-item/component-skill.md)
 
 ## Comparison Table
 
@@ -627,7 +627,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/comparison-table/comparison-table.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/comparison-table.png
-**Skill:** [components/comparison-table/component-skill.md](components/comparison-table/component-skill.md)
+**Skill:** [components/website/comparison-table/component-skill.md](components/website/comparison-table/component-skill.md)
 
 ## Contents
 
@@ -637,7 +637,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/contents/contents.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/contents.png
-**Skill:** [components/contents/component-skill.md](components/contents/component-skill.md)
+**Skill:** [components/website/contents/component-skill.md](components/website/contents/component-skill.md)
 
 ## Context Menu
 
@@ -647,7 +647,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/context-menu/context-menu.css + dist/components/context-menu/context-menu.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/context-menu.png, screenshots/{light,dark}/context-menu-open.png
-**Skill:** [components/context-menu/component-skill.md](components/context-menu/component-skill.md)
+**Skill:** [components/overlays/context-menu/component-skill.md](components/overlays/context-menu/component-skill.md)
 
 ## Cookie Consent
 
@@ -657,7 +657,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/cookie-consent/cookie-consent.css + dist/components/cookie-consent/cookie-consent.js (+ dialog, button, select, tabs, checkbox, badge CSS - all.css has them)
 **Supported states:** default, open, preferences, services
 **Screenshots:** screenshots/{light,dark}/cookie-consent.png, screenshots/{light,dark}/cookie-consent-open.png, screenshots/{light,dark}/cookie-consent-preferences.png, screenshots/{light,dark}/cookie-consent-services.png
-**Skill:** [components/cookie-consent/component-skill.md](components/cookie-consent/component-skill.md)
+**Skill:** [components/website/cookie-consent/component-skill.md](components/website/cookie-consent/component-skill.md)
 
 ## Countdown
 
@@ -667,7 +667,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/countdown/countdown.css + dist/components/countdown/countdown.js
 **Supported states:** default, running, paused, finished
 **Screenshots:** screenshots/{light,dark}/countdown.png, screenshots/{light,dark}/countdown-running.png, screenshots/{light,dark}/countdown-paused.png, screenshots/{light,dark}/countdown-finished.png
-**Skill:** [components/countdown/component-skill.md](components/countdown/component-skill.md)
+**Skill:** [components/data-display/countdown/component-skill.md](components/data-display/countdown/component-skill.md)
 
 ## Credential Item
 
@@ -677,7 +677,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/credential-item/credential-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/credential-item.png
-**Skill:** [components/credential-item/component-skill.md](components/credential-item/component-skill.md)
+**Skill:** [components/website/credential-item/component-skill.md](components/website/credential-item/component-skill.md)
 
 ## CTA
 
@@ -687,7 +687,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/cta/cta.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/cta.png
-**Skill:** [components/cta/component-skill.md](components/cta/component-skill.md)
+**Skill:** [components/website/cta/component-skill.md](components/website/cta/component-skill.md)
 
 ## Data Grid
 
@@ -697,7 +697,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/data-grid/data-grid.css + dist/components/data-grid/data-grid.js
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/data-grid.png, screenshots/{light,dark}/data-grid-loading.png, screenshots/{light,dark}/data-grid-empty.png
-**Skill:** [components/data-grid/component-skill.md](components/data-grid/component-skill.md)
+**Skill:** [components/big-data/data-grid/component-skill.md](components/big-data/data-grid/component-skill.md)
 
 ## Data Tree
 
@@ -707,7 +707,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/data-tree/data-tree.css + dist/components/data-tree/data-tree.js
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/data-tree.png, screenshots/{light,dark}/data-tree-loading.png, screenshots/{light,dark}/data-tree-empty.png
-**Skill:** [components/data-tree/component-skill.md](components/data-tree/component-skill.md)
+**Skill:** [components/big-data/data-tree/component-skill.md](components/big-data/data-tree/component-skill.md)
 
 ## Date Picker
 
@@ -717,7 +717,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/date-picker/date-picker.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/date-picker.png
-**Skill:** [components/date-picker/component-skill.md](components/date-picker/component-skill.md)
+**Skill:** [components/forms-inputs/date-picker/component-skill.md](components/forms-inputs/date-picker/component-skill.md)
 
 ## Delivery Options
 
@@ -727,7 +727,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/delivery-options/delivery-options.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/delivery-options.png
-**Skill:** [components/delivery-options/component-skill.md](components/delivery-options/component-skill.md)
+**Skill:** [components/website/delivery-options/component-skill.md](components/website/delivery-options/component-skill.md)
 
 ## Diagram
 
@@ -737,7 +737,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/diagram/diagram.css + dist/components/diagram/diagram.js
 **Supported states:** default, playing, paused, active
 **Screenshots:** screenshots/{light,dark}/diagram.png, screenshots/{light,dark}/diagram-playing.png, screenshots/{light,dark}/diagram-paused.png, screenshots/{light,dark}/diagram-active.png
-**Skill:** [components/diagram/component-skill.md](components/diagram/component-skill.md)
+**Skill:** [components/diagrams/diagram/component-skill.md](components/diagrams/diagram/component-skill.md)
 
 ## Dialog
 
@@ -747,7 +747,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/dialog/dialog.css + dist/components/dialog/dialog.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/dialog.png, screenshots/{light,dark}/dialog-open.png
-**Skill:** [components/dialog/component-skill.md](components/dialog/component-skill.md)
+**Skill:** [components/overlays/dialog/component-skill.md](components/overlays/dialog/component-skill.md)
 
 ## Diff
 
@@ -757,7 +757,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/diff/diff.css + dist/components/diff/diff.js
 **Supported states:** default, before, after
 **Screenshots:** screenshots/{light,dark}/diff.png, screenshots/{light,dark}/diff-before.png, screenshots/{light,dark}/diff-after.png
-**Skill:** [components/diff/component-skill.md](components/diff/component-skill.md)
+**Skill:** [components/data-display/diff/component-skill.md](components/data-display/diff/component-skill.md)
 
 ## Discount Form
 
@@ -767,7 +767,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/discount-form/discount-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/discount-form.png
-**Skill:** [components/discount-form/component-skill.md](components/discount-form/component-skill.md)
+**Skill:** [components/website/discount-form/component-skill.md](components/website/discount-form/component-skill.md)
 
 ## Dock
 
@@ -777,7 +777,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/dock/dock.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/dock.png
-**Skill:** [components/dock/component-skill.md](components/dock/component-skill.md)
+**Skill:** [components/navigation/dock/component-skill.md](components/navigation/dock/component-skill.md)
 
 ## Docs Content
 
@@ -787,7 +787,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/docs-content/docs-content.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/docs-content.png
-**Skill:** [components/docs-content/component-skill.md](components/docs-content/component-skill.md)
+**Skill:** [components/website/docs-content/component-skill.md](components/website/docs-content/component-skill.md)
 
 ## Docs Navigation
 
@@ -797,7 +797,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/docs-navigation/docs-navigation.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/docs-navigation.png
-**Skill:** [components/docs-navigation/component-skill.md](components/docs-navigation/component-skill.md)
+**Skill:** [components/website/docs-navigation/component-skill.md](components/website/docs-navigation/component-skill.md)
 
 ## Download Item
 
@@ -807,7 +807,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/download-item/download-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/download-item.png
-**Skill:** [components/download-item/component-skill.md](components/download-item/component-skill.md)
+**Skill:** [components/website/download-item/component-skill.md](components/website/download-item/component-skill.md)
 
 ## Dropdown Menu
 
@@ -817,7 +817,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/dropdown/dropdown.css + dist/components/dropdown/dropdown.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/dropdown.png, screenshots/{light,dark}/dropdown-open.png
-**Skill:** [components/dropdown/component-skill.md](components/dropdown/component-skill.md)
+**Skill:** [components/navigation/dropdown/component-skill.md](components/navigation/dropdown/component-skill.md)
 
 ## Empty State
 
@@ -827,7 +827,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/empty-state/empty-state.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/empty-state.png
-**Skill:** [components/empty-state/component-skill.md](components/empty-state/component-skill.md)
+**Skill:** [components/website/empty-state/component-skill.md](components/website/empty-state/component-skill.md)
 
 ## Error State
 
@@ -837,7 +837,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/error-state/error-state.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/error-state.png
-**Skill:** [components/error-state/component-skill.md](components/error-state/component-skill.md)
+**Skill:** [components/website/error-state/component-skill.md](components/website/error-state/component-skill.md)
 
 ## Event Countdown
 
@@ -847,7 +847,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/event-countdown/event-countdown.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/event-countdown.png
-**Skill:** [components/event-countdown/component-skill.md](components/event-countdown/component-skill.md)
+**Skill:** [components/website/event-countdown/component-skill.md](components/website/event-countdown/component-skill.md)
 
 ## Event Description
 
@@ -857,7 +857,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/event-description/event-description.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/event-description.png
-**Skill:** [components/event-description/component-skill.md](components/event-description/component-skill.md)
+**Skill:** [components/website/event-description/component-skill.md](components/website/event-description/component-skill.md)
 
 ## Event Header
 
@@ -867,7 +867,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/event-header/event-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/event-header.png
-**Skill:** [components/event-header/component-skill.md](components/event-header/component-skill.md)
+**Skill:** [components/website/event-header/component-skill.md](components/website/event-header/component-skill.md)
 
 ## Event Item
 
@@ -877,7 +877,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/event-item/event-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/event-item.png
-**Skill:** [components/event-item/component-skill.md](components/event-item/component-skill.md)
+**Skill:** [components/website/event-item/component-skill.md](components/website/event-item/component-skill.md)
 
 ## FAB
 
@@ -887,7 +887,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/fab/fab.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/fab.png
-**Skill:** [components/fab/component-skill.md](components/fab/component-skill.md)
+**Skill:** [components/actions/fab/component-skill.md](components/actions/fab/component-skill.md)
 
 ## FAQ
 
@@ -897,7 +897,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/faq/faq.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/faq.png
-**Skill:** [components/faq/component-skill.md](components/faq/component-skill.md)
+**Skill:** [components/website/faq/component-skill.md](components/website/faq/component-skill.md)
 
 ## Feature Details
 
@@ -907,7 +907,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/feature-details/feature-details.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/feature-details.png
-**Skill:** [components/feature-details/component-skill.md](components/feature-details/component-skill.md)
+**Skill:** [components/website/feature-details/component-skill.md](components/website/feature-details/component-skill.md)
 
 ## Feedback Form
 
@@ -917,7 +917,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/feedback-form/feedback-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/feedback-form.png
-**Skill:** [components/feedback-form/component-skill.md](components/feedback-form/component-skill.md)
+**Skill:** [components/website/feedback-form/component-skill.md](components/website/feedback-form/component-skill.md)
 
 ## File Input
 
@@ -927,7 +927,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/file-input/file-input.css + dist/components/file-input/file-input.js
 **Supported states:** default, dragover, selected, error
 **Screenshots:** screenshots/{light,dark}/file-input.png, screenshots/{light,dark}/file-input-dragover.png, screenshots/{light,dark}/file-input-selected.png, screenshots/{light,dark}/file-input-error.png
-**Skill:** [components/file-input/component-skill.md](components/file-input/component-skill.md)
+**Skill:** [components/forms-inputs/file-input/component-skill.md](components/forms-inputs/file-input/component-skill.md)
 
 ## Filter Bar
 
@@ -937,7 +937,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/filter-bar/filter-bar.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/filter-bar.png
-**Skill:** [components/filter-bar/component-skill.md](components/filter-bar/component-skill.md)
+**Skill:** [components/website/filter-bar/component-skill.md](components/website/filter-bar/component-skill.md)
 
 ## Filter Sidebar
 
@@ -947,7 +947,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/filter-sidebar/filter-sidebar.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/filter-sidebar.png
-**Skill:** [components/filter-sidebar/component-skill.md](components/filter-sidebar/component-skill.md)
+**Skill:** [components/website/filter-sidebar/component-skill.md](components/website/filter-sidebar/component-skill.md)
 
 ## Form
 
@@ -957,7 +957,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/form/form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/form.png
-**Skill:** [components/form/component-skill.md](components/form/component-skill.md)
+**Skill:** [components/forms-inputs/form/component-skill.md](components/forms-inputs/form/component-skill.md)
 
 ## Form Progress
 
@@ -967,7 +967,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/form-progress/form-progress.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/form-progress.png
-**Skill:** [components/form-progress/component-skill.md](components/form-progress/component-skill.md)
+**Skill:** [components/website/form-progress/component-skill.md](components/website/form-progress/component-skill.md)
 
 ## Gallery Item
 
@@ -977,7 +977,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/gallery-item/gallery-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/gallery-item.png
-**Skill:** [components/gallery-item/component-skill.md](components/gallery-item/component-skill.md)
+**Skill:** [components/website/gallery-item/component-skill.md](components/website/gallery-item/component-skill.md)
 
 ## Get In Touch
 
@@ -987,7 +987,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/get-in-touch/get-in-touch.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/get-in-touch.png
-**Skill:** [components/get-in-touch/component-skill.md](components/get-in-touch/component-skill.md)
+**Skill:** [components/website/get-in-touch/component-skill.md](components/website/get-in-touch/component-skill.md)
 
 ## Heading Anchor
 
@@ -997,7 +997,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/heading-anchor/heading-anchor.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/heading-anchor.png
-**Skill:** [components/heading-anchor/component-skill.md](components/heading-anchor/component-skill.md)
+**Skill:** [components/primitives/heading-anchor/component-skill.md](components/primitives/heading-anchor/component-skill.md)
 
 ## Help Article
 
@@ -1007,7 +1007,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/help-article/help-article.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/help-article.png
-**Skill:** [components/help-article/component-skill.md](components/help-article/component-skill.md)
+**Skill:** [components/website/help-article/component-skill.md](components/website/help-article/component-skill.md)
 
 ## Help Category
 
@@ -1017,7 +1017,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/help-category/help-category.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/help-category.png
-**Skill:** [components/help-category/component-skill.md](components/help-category/component-skill.md)
+**Skill:** [components/website/help-category/component-skill.md](components/website/help-category/component-skill.md)
 
 ## Hero
 
@@ -1027,7 +1027,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/hero/hero.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/hero.png
-**Skill:** [components/hero/component-skill.md](components/hero/component-skill.md)
+**Skill:** [components/website/hero/component-skill.md](components/website/hero/component-skill.md)
 
 ## Icon
 
@@ -1037,7 +1037,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/icon/icon.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/icon.png
-**Skill:** [components/icon/component-skill.md](components/icon/component-skill.md)
+**Skill:** [components/primitives/icon/component-skill.md](components/primitives/icon/component-skill.md)
 
 ## Image
 
@@ -1047,7 +1047,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/image/image.css + dist/components/image/image.js
 **Supported states:** default, error
 **Screenshots:** screenshots/{light,dark}/image.png, screenshots/{light,dark}/image-error.png
-**Skill:** [components/image/component-skill.md](components/image/component-skill.md)
+**Skill:** [components/data-display/image/component-skill.md](components/data-display/image/component-skill.md)
 
 ## Indicator
 
@@ -1057,7 +1057,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/indicator/indicator.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/indicator.png
-**Skill:** [components/indicator/component-skill.md](components/indicator/component-skill.md)
+**Skill:** [components/data-display/indicator/component-skill.md](components/data-display/indicator/component-skill.md)
 
 ## Input
 
@@ -1067,7 +1067,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/input/input.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/input.png
-**Skill:** [components/input/component-skill.md](components/input/component-skill.md)
+**Skill:** [components/forms-inputs/input/component-skill.md](components/forms-inputs/input/component-skill.md)
 
 ## Integration Item
 
@@ -1077,7 +1077,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/integration-item/integration-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/integration-item.png
-**Skill:** [components/integration-item/component-skill.md](components/integration-item/component-skill.md)
+**Skill:** [components/website/integration-item/component-skill.md](components/website/integration-item/component-skill.md)
 
 ## Job Details
 
@@ -1087,7 +1087,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/job-details/job-details.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/job-details.png
-**Skill:** [components/job-details/component-skill.md](components/job-details/component-skill.md)
+**Skill:** [components/website/job-details/component-skill.md](components/website/job-details/component-skill.md)
 
 ## Job Item
 
@@ -1097,7 +1097,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/job-item/job-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/job-item.png
-**Skill:** [components/job-item/component-skill.md](components/job-item/component-skill.md)
+**Skill:** [components/website/job-item/component-skill.md](components/website/job-item/component-skill.md)
 
 ## Kbd
 
@@ -1107,7 +1107,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/kbd/kbd.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/kbd.png
-**Skill:** [components/kbd/component-skill.md](components/kbd/component-skill.md)
+**Skill:** [components/primitives/kbd/component-skill.md](components/primitives/kbd/component-skill.md)
 
 ## Label
 
@@ -1117,7 +1117,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/label/label.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/label.png
-**Skill:** [components/label/component-skill.md](components/label/component-skill.md)
+**Skill:** [components/forms-inputs/label/component-skill.md](components/forms-inputs/label/component-skill.md)
 
 ## Load More
 
@@ -1127,7 +1127,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/load-more/load-more.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/load-more.png
-**Skill:** [components/load-more/component-skill.md](components/load-more/component-skill.md)
+**Skill:** [components/website/load-more/component-skill.md](components/website/load-more/component-skill.md)
 
 ## Location Item
 
@@ -1137,7 +1137,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/location-item/location-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/location-item.png
-**Skill:** [components/location-item/component-skill.md](components/location-item/component-skill.md)
+**Skill:** [components/website/location-item/component-skill.md](components/website/location-item/component-skill.md)
 
 ## Location Map
 
@@ -1147,7 +1147,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/location-map/location-map.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/location-map.png
-**Skill:** [components/location-map/component-skill.md](components/location-map/component-skill.md)
+**Skill:** [components/website/location-map/component-skill.md](components/website/location-map/component-skill.md)
 
 ## Locator Search
 
@@ -1157,7 +1157,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/locator-search/locator-search.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/locator-search.png
-**Skill:** [components/locator-search/component-skill.md](components/locator-search/component-skill.md)
+**Skill:** [components/website/locator-search/component-skill.md](components/website/locator-search/component-skill.md)
 
 ## Login Form
 
@@ -1167,7 +1167,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/login-form/login-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/login-form.png
-**Skill:** [components/login-form/component-skill.md](components/login-form/component-skill.md)
+**Skill:** [components/website/login-form/component-skill.md](components/website/login-form/component-skill.md)
 
 ## Maintenance
 
@@ -1177,7 +1177,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/maintenance/maintenance.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/maintenance.png
-**Skill:** [components/maintenance/component-skill.md](components/maintenance/component-skill.md)
+**Skill:** [components/website/maintenance/component-skill.md](components/website/maintenance/component-skill.md)
 
 ## Marker
 
@@ -1187,7 +1187,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/marker/marker.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/marker.png
-**Skill:** [components/marker/component-skill.md](components/marker/component-skill.md)
+**Skill:** [components/chat/marker/component-skill.md](components/chat/marker/component-skill.md)
 
 ## Media Gallery
 
@@ -1197,7 +1197,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/media-gallery/media-gallery.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/media-gallery.png
-**Skill:** [components/media-gallery/component-skill.md](components/media-gallery/component-skill.md)
+**Skill:** [components/website/media-gallery/component-skill.md](components/website/media-gallery/component-skill.md)
 
 ## Menubar
 
@@ -1207,7 +1207,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/menubar/menubar.css + dist/components/menubar/menubar.js (with dist/components/dropdown/dropdown.css + dropdown.js)
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/menubar.png, screenshots/{light,dark}/menubar-open.png
-**Skill:** [components/menubar/component-skill.md](components/menubar/component-skill.md)
+**Skill:** [components/navigation/menubar/component-skill.md](components/navigation/menubar/component-skill.md)
 
 ## Mermaid
 
@@ -1217,7 +1217,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/mermaid/mermaid.css + dist/components/mermaid/mermaid.js
 **Supported states:** default, rendered, error
 **Screenshots:** screenshots/{light,dark}/mermaid.png, screenshots/{light,dark}/mermaid-rendered.png, screenshots/{light,dark}/mermaid-error.png
-**Skill:** [components/mermaid/component-skill.md](components/mermaid/component-skill.md)
+**Skill:** [components/diagrams/mermaid/component-skill.md](components/diagrams/mermaid/component-skill.md)
 
 ## Message
 
@@ -1227,7 +1227,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/message/message.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/message.png
-**Skill:** [components/message/component-skill.md](components/message/component-skill.md)
+**Skill:** [components/chat/message/component-skill.md](components/chat/message/component-skill.md)
 
 ## Code Mockup
 
@@ -1237,7 +1237,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/mockup-code/mockup-code.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/mockup-code.png
-**Skill:** [components/mockup-code/component-skill.md](components/mockup-code/component-skill.md)
+**Skill:** [components/mockup/mockup-code/component-skill.md](components/mockup/mockup-code/component-skill.md)
 
 ## Motion
 
@@ -1247,7 +1247,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/motion/motion.css (keyframes + [data-df-entrance]) + the JS controller in core (df$.shadcn.entrance / ddf$.entrance, src/shared/motion.ts)
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/motion.png
-**Skill:** [components/motion/component-skill.md](components/motion/component-skill.md)
+**Skill:** [components/guides/motion/component-skill.md](components/guides/motion/component-skill.md)
 
 ## Navbar
 
@@ -1257,7 +1257,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/navbar/navbar.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/navbar.png
-**Skill:** [components/navbar/component-skill.md](components/navbar/component-skill.md)
+**Skill:** [components/navigation/navbar/component-skill.md](components/navigation/navbar/component-skill.md)
 
 ## Navigation Menu
 
@@ -1267,7 +1267,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/navigation-menu/navigation-menu.css + dist/components/navigation-menu/navigation-menu.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/navigation-menu.png, screenshots/{light,dark}/navigation-menu-open.png
-**Skill:** [components/navigation-menu/component-skill.md](components/navigation-menu/component-skill.md)
+**Skill:** [components/navigation/navigation-menu/component-skill.md](components/navigation/navigation-menu/component-skill.md)
 
 ## News Header
 
@@ -1277,7 +1277,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/news-header/news-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/news-header.png
-**Skill:** [components/news-header/component-skill.md](components/news-header/component-skill.md)
+**Skill:** [components/website/news-header/component-skill.md](components/website/news-header/component-skill.md)
 
 ## News Item
 
@@ -1287,7 +1287,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/news-item/news-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/news-item.png
-**Skill:** [components/news-item/component-skill.md](components/news-item/component-skill.md)
+**Skill:** [components/website/news-item/component-skill.md](components/website/news-item/component-skill.md)
 
 ## News Ticker
 
@@ -1297,7 +1297,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/news-ticker/news-ticker.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/news-ticker.png
-**Skill:** [components/news-ticker/component-skill.md](components/news-ticker/component-skill.md)
+**Skill:** [components/website/news-ticker/component-skill.md](components/website/news-ticker/component-skill.md)
 
 ## Newsletter
 
@@ -1307,7 +1307,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/newsletter/newsletter.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/newsletter.png
-**Skill:** [components/newsletter/component-skill.md](components/newsletter/component-skill.md)
+**Skill:** [components/website/newsletter/component-skill.md](components/website/newsletter/component-skill.md)
 
 ## Notification Settings
 
@@ -1317,7 +1317,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/notification-settings/notification-settings.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/notification-settings.png
-**Skill:** [components/notification-settings/component-skill.md](components/notification-settings/component-skill.md)
+**Skill:** [components/website/notification-settings/component-skill.md](components/website/notification-settings/component-skill.md)
 
 ## Number Input
 
@@ -1327,7 +1327,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/number-input/number-input.css + dist/components/number-input/number-input.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/number-input.png
-**Skill:** [components/number-input/component-skill.md](components/number-input/component-skill.md)
+**Skill:** [components/forms-inputs/number-input/component-skill.md](components/forms-inputs/number-input/component-skill.md)
 
 ## Offer Banner
 
@@ -1337,7 +1337,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/offer-banner/offer-banner.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/offer-banner.png
-**Skill:** [components/offer-banner/component-skill.md](components/offer-banner/component-skill.md)
+**Skill:** [components/website/offer-banner/component-skill.md](components/website/offer-banner/component-skill.md)
 
 ## Opening Hours
 
@@ -1347,7 +1347,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/opening-hours/opening-hours.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/opening-hours.png
-**Skill:** [components/opening-hours/component-skill.md](components/opening-hours/component-skill.md)
+**Skill:** [components/website/opening-hours/component-skill.md](components/website/opening-hours/component-skill.md)
 
 ## Order Confirmation
 
@@ -1357,7 +1357,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/order-confirmation/order-confirmation.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/order-confirmation.png
-**Skill:** [components/order-confirmation/component-skill.md](components/order-confirmation/component-skill.md)
+**Skill:** [components/website/order-confirmation/component-skill.md](components/website/order-confirmation/component-skill.md)
 
 ## Order Summary
 
@@ -1367,7 +1367,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/order-summary/order-summary.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/order-summary.png
-**Skill:** [components/order-summary/component-skill.md](components/order-summary/component-skill.md)
+**Skill:** [components/website/order-summary/component-skill.md](components/website/order-summary/component-skill.md)
 
 ## OTP Input
 
@@ -1377,7 +1377,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/otp-input/otp-input.css + dist/components/otp-input/otp-input.js
 **Supported states:** default, filled, invalid
 **Screenshots:** screenshots/{light,dark}/otp-input.png, screenshots/{light,dark}/otp-input-filled.png, screenshots/{light,dark}/otp-input-invalid.png
-**Skill:** [components/otp-input/component-skill.md](components/otp-input/component-skill.md)
+**Skill:** [components/forms-inputs/otp-input/component-skill.md](components/forms-inputs/otp-input/component-skill.md)
 
 ## 404 Page
 
@@ -1387,7 +1387,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/page-not-found/page-not-found.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/page-not-found.png
-**Skill:** [components/page-not-found/component-skill.md](components/page-not-found/component-skill.md)
+**Skill:** [components/website/page-not-found/component-skill.md](components/website/page-not-found/component-skill.md)
 
 ## Pagination
 
@@ -1397,7 +1397,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/pagination/pagination.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/pagination.png
-**Skill:** [components/pagination/component-skill.md](components/pagination/component-skill.md)
+**Skill:** [components/navigation/pagination/component-skill.md](components/navigation/pagination/component-skill.md)
 
 ## Panel
 
@@ -1407,7 +1407,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/panel/panel.css + dist/components/panel/panel.js (+ card, swap)
 **Supported states:** default, minimized, maximized, closed
 **Screenshots:** screenshots/{light,dark}/panel.png, screenshots/{light,dark}/panel-minimized.png, screenshots/{light,dark}/panel-maximized.png, screenshots/{light,dark}/panel-closed.png
-**Skill:** [components/panel/component-skill.md](components/panel/component-skill.md)
+**Skill:** [components/application/panel/component-skill.md](components/application/panel/component-skill.md)
 
 ## Modern Paper
 
@@ -1417,7 +1417,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/paper/paper.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/paper.png
-**Skill:** [components/paper/component-skill.md](components/paper/component-skill.md)
+**Skill:** [components/papers/paper/component-skill.md](components/papers/paper/component-skill.md)
 
 ## Parallax
 
@@ -1427,7 +1427,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/parallax/parallax.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/parallax.png
-**Skill:** [components/parallax/component-skill.md](components/parallax/component-skill.md)
+**Skill:** [components/guides/parallax/component-skill.md](components/guides/parallax/component-skill.md)
 
 ## Password Reset
 
@@ -1437,7 +1437,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/password-reset/password-reset.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/password-reset.png
-**Skill:** [components/password-reset/component-skill.md](components/password-reset/component-skill.md)
+**Skill:** [components/website/password-reset/component-skill.md](components/website/password-reset/component-skill.md)
 
 ## Payment Form
 
@@ -1447,7 +1447,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/payment-form/payment-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/payment-form.png
-**Skill:** [components/payment-form/component-skill.md](components/payment-form/component-skill.md)
+**Skill:** [components/website/payment-form/component-skill.md](components/website/payment-form/component-skill.md)
 
 ## Playlist Item
 
@@ -1457,7 +1457,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/playlist-item/playlist-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/playlist-item.png
-**Skill:** [components/playlist-item/component-skill.md](components/playlist-item/component-skill.md)
+**Skill:** [components/website/playlist-item/component-skill.md](components/website/playlist-item/component-skill.md)
 
 ## Popover
 
@@ -1467,7 +1467,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/popover/popover.css + dist/components/popover/popover.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/popover.png, screenshots/{light,dark}/popover-open.png
-**Skill:** [components/popover/component-skill.md](components/popover/component-skill.md)
+**Skill:** [components/overlays/popover/component-skill.md](components/overlays/popover/component-skill.md)
 
 ## Presentation
 
@@ -1477,7 +1477,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/presentation/presentation.css + dist/components/presentation/presentation.js (+ dist/components/motion/motion.css for the entrances)
 **Supported states:** default, notes, fullscreen
 **Screenshots:** screenshots/{light,dark}/presentation.png, screenshots/{light,dark}/presentation-notes.png, screenshots/{light,dark}/presentation-fullscreen.png
-**Skill:** [components/presentation/component-skill.md](components/presentation/component-skill.md)
+**Skill:** [components/presentations/presentation/component-skill.md](components/presentations/presentation/component-skill.md)
 
 ## Press Item
 
@@ -1487,7 +1487,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/press-item/press-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/press-item.png
-**Skill:** [components/press-item/component-skill.md](components/press-item/component-skill.md)
+**Skill:** [components/website/press-item/component-skill.md](components/website/press-item/component-skill.md)
 
 ## Pricing
 
@@ -1497,7 +1497,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/pricing/pricing.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/pricing.png
-**Skill:** [components/pricing/component-skill.md](components/pricing/component-skill.md)
+**Skill:** [components/website/pricing/component-skill.md](components/website/pricing/component-skill.md)
 
 ## Process Step
 
@@ -1507,7 +1507,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/process-step/process-step.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/process-step.png
-**Skill:** [components/process-step/component-skill.md](components/process-step/component-skill.md)
+**Skill:** [components/website/process-step/component-skill.md](components/website/process-step/component-skill.md)
 
 ## Product Item
 
@@ -1517,7 +1517,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/product-item/product-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/product-item.png
-**Skill:** [components/product-item/component-skill.md](components/product-item/component-skill.md)
+**Skill:** [components/website/product-item/component-skill.md](components/website/product-item/component-skill.md)
 
 ## Product Showcase
 
@@ -1527,7 +1527,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/product-showcase/product-showcase.css + dist/components/product-showcase/product-showcase.js
 **Supported states:** default, playing
 **Screenshots:** screenshots/{light,dark}/product-showcase.png, screenshots/{light,dark}/product-showcase-playing.png
-**Skill:** [components/product-showcase/component-skill.md](components/product-showcase/component-skill.md)
+**Skill:** [components/website/product-showcase/component-skill.md](components/website/product-showcase/component-skill.md)
 
 ## Profile Form
 
@@ -1537,7 +1537,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/profile-form/profile-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/profile-form.png
-**Skill:** [components/profile-form/component-skill.md](components/profile-form/component-skill.md)
+**Skill:** [components/website/profile-form/component-skill.md](components/website/profile-form/component-skill.md)
 
 ## Profile Header
 
@@ -1547,7 +1547,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/profile-header/profile-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/profile-header.png
-**Skill:** [components/profile-header/component-skill.md](components/profile-header/component-skill.md)
+**Skill:** [components/website/profile-header/component-skill.md](components/website/profile-header/component-skill.md)
 
 ## Progress
 
@@ -1557,7 +1557,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/progress/progress.css + dist/components/progress/progress.js
 **Supported states:** default, indeterminate, complete
 **Screenshots:** screenshots/{light,dark}/progress.png, screenshots/{light,dark}/progress-indeterminate.png, screenshots/{light,dark}/progress-complete.png
-**Skill:** [components/progress/component-skill.md](components/progress/component-skill.md)
+**Skill:** [components/feedback-status/progress/component-skill.md](components/feedback-status/progress/component-skill.md)
 
 ## Project Details
 
@@ -1567,7 +1567,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/project-details/project-details.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/project-details.png
-**Skill:** [components/project-details/component-skill.md](components/project-details/component-skill.md)
+**Skill:** [components/website/project-details/component-skill.md](components/website/project-details/component-skill.md)
 
 ## Project Item
 
@@ -1577,7 +1577,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/project-item/project-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/project-item.png
-**Skill:** [components/project-item/component-skill.md](components/project-item/component-skill.md)
+**Skill:** [components/website/project-item/component-skill.md](components/website/project-item/component-skill.md)
 
 ## Property Grid
 
@@ -1587,7 +1587,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/property-grid/property-grid.css + dist/components/property-grid/property-grid.js
 **Supported states:** default, editing
 **Screenshots:** screenshots/{light,dark}/property-grid.png, screenshots/{light,dark}/property-grid-editing.png
-**Skill:** [components/property-grid/component-skill.md](components/property-grid/component-skill.md)
+**Skill:** [components/application/property-grid/component-skill.md](components/application/property-grid/component-skill.md)
 
 ## Questionnaire
 
@@ -1597,7 +1597,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/questionnaire/questionnaire.css + dist/components/questionnaire/questionnaire.js
 **Supported states:** default, answering, review, submitted
 **Screenshots:** screenshots/{light,dark}/questionnaire.png, screenshots/{light,dark}/questionnaire-answering.png, screenshots/{light,dark}/questionnaire-review.png, screenshots/{light,dark}/questionnaire-submitted.png
-**Skill:** [components/questionnaire/component-skill.md](components/questionnaire/component-skill.md)
+**Skill:** [components/questionnaire/questionnaire/component-skill.md](components/questionnaire/questionnaire/component-skill.md)
 
 ## Quick Links
 
@@ -1607,7 +1607,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/quick-links/quick-links.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/quick-links.png
-**Skill:** [components/quick-links/component-skill.md](components/quick-links/component-skill.md)
+**Skill:** [components/website/quick-links/component-skill.md](components/website/quick-links/component-skill.md)
 
 ## Radial Progress
 
@@ -1617,7 +1617,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/radial-progress/radial-progress.css + dist/components/radial-progress/radial-progress.js
 **Supported states:** default, indeterminate, complete
 **Screenshots:** screenshots/{light,dark}/radial-progress.png, screenshots/{light,dark}/radial-progress-indeterminate.png, screenshots/{light,dark}/radial-progress-complete.png
-**Skill:** [components/radial-progress/component-skill.md](components/radial-progress/component-skill.md)
+**Skill:** [components/feedback-status/radial-progress/component-skill.md](components/feedback-status/radial-progress/component-skill.md)
 
 ## Radio Group
 
@@ -1627,7 +1627,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/radio/radio.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/radio.png
-**Skill:** [components/radio/component-skill.md](components/radio/component-skill.md)
+**Skill:** [components/forms-inputs/radio/component-skill.md](components/forms-inputs/radio/component-skill.md)
 
 ## Rating
 
@@ -1637,7 +1637,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/rating/rating.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/rating.png
-**Skill:** [components/rating/component-skill.md](components/rating/component-skill.md)
+**Skill:** [components/forms-inputs/rating/component-skill.md](components/forms-inputs/rating/component-skill.md)
 
 ## Registration Form
 
@@ -1647,7 +1647,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/registration-form/registration-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/registration-form.png
-**Skill:** [components/registration-form/component-skill.md](components/registration-form/component-skill.md)
+**Skill:** [components/website/registration-form/component-skill.md](components/website/registration-form/component-skill.md)
 
 ## Related Item
 
@@ -1657,7 +1657,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/related-item/related-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/related-item.png
-**Skill:** [components/related-item/component-skill.md](components/related-item/component-skill.md)
+**Skill:** [components/website/related-item/component-skill.md](components/website/related-item/component-skill.md)
 
 ## Release Header
 
@@ -1667,7 +1667,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/release-header/release-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/release-header.png
-**Skill:** [components/release-header/component-skill.md](components/release-header/component-skill.md)
+**Skill:** [components/website/release-header/component-skill.md](components/website/release-header/component-skill.md)
 
 ## Release Item
 
@@ -1677,7 +1677,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/release-item/release-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/release-item.png
-**Skill:** [components/release-item/component-skill.md](components/release-item/component-skill.md)
+**Skill:** [components/website/release-item/component-skill.md](components/website/release-item/component-skill.md)
 
 ## Reset Request
 
@@ -1687,7 +1687,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/reset-request/reset-request.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/reset-request.png
-**Skill:** [components/reset-request/component-skill.md](components/reset-request/component-skill.md)
+**Skill:** [components/website/reset-request/component-skill.md](components/website/reset-request/component-skill.md)
 
 ## Resizer
 
@@ -1697,7 +1697,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/resizer/resizer.css + dist/components/resizer/resizer.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/resizer.png
-**Skill:** [components/resizer/component-skill.md](components/resizer/component-skill.md)
+**Skill:** [components/application/resizer/component-skill.md](components/application/resizer/component-skill.md)
 
 ## Resource Item
 
@@ -1707,7 +1707,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/resource-item/resource-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/resource-item.png
-**Skill:** [components/resource-item/component-skill.md](components/resource-item/component-skill.md)
+**Skill:** [components/website/resource-item/component-skill.md](components/website/resource-item/component-skill.md)
 
 ## Roadmap Item
 
@@ -1717,7 +1717,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/roadmap-item/roadmap-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/roadmap-item.png
-**Skill:** [components/roadmap-item/component-skill.md](components/roadmap-item/component-skill.md)
+**Skill:** [components/website/roadmap-item/component-skill.md](components/website/roadmap-item/component-skill.md)
 
 ## Scroll Area
 
@@ -1727,7 +1727,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/scroll-area/scroll-area.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/scroll-area.png
-**Skill:** [components/scroll-area/component-skill.md](components/scroll-area/component-skill.md)
+**Skill:** [components/data-display/scroll-area/component-skill.md](components/data-display/scroll-area/component-skill.md)
 
 ## Search Box
 
@@ -1737,7 +1737,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/search-box/search-box.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/search-box.png
-**Skill:** [components/search-box/component-skill.md](components/search-box/component-skill.md)
+**Skill:** [components/website/search-box/component-skill.md](components/website/search-box/component-skill.md)
 
 ## Search & Filter
 
@@ -1747,7 +1747,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/search-filter/search-filter.css + dist/components/search-filter/search-filter.js
 **Supported states:** default, filled, searching
 **Screenshots:** screenshots/{light,dark}/search-filter.png, screenshots/{light,dark}/search-filter-filled.png, screenshots/{light,dark}/search-filter-searching.png
-**Skill:** [components/search-filter/component-skill.md](components/search-filter/component-skill.md)
+**Skill:** [components/forms-inputs/search-filter/component-skill.md](components/forms-inputs/search-filter/component-skill.md)
 
 ## Search Result
 
@@ -1757,7 +1757,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/search-result/search-result.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/search-result.png
-**Skill:** [components/search-result/component-skill.md](components/search-result/component-skill.md)
+**Skill:** [components/website/search-result/component-skill.md](components/website/search-result/component-skill.md)
 
 ## Search Suggestions
 
@@ -1767,7 +1767,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/search-suggestions/search-suggestions.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/search-suggestions.png
-**Skill:** [components/search-suggestions/component-skill.md](components/search-suggestions/component-skill.md)
+**Skill:** [components/website/search-suggestions/component-skill.md](components/website/search-suggestions/component-skill.md)
 
 ## Search Summary
 
@@ -1777,7 +1777,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/search-summary/search-summary.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/search-summary.png
-**Skill:** [components/search-summary/component-skill.md](components/search-summary/component-skill.md)
+**Skill:** [components/website/search-summary/component-skill.md](components/website/search-summary/component-skill.md)
 
 ## Section Header
 
@@ -1787,7 +1787,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/section-header/section-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/section-header.png
-**Skill:** [components/section-header/component-skill.md](components/section-header/component-skill.md)
+**Skill:** [components/website/section-header/component-skill.md](components/website/section-header/component-skill.md)
 
 ## Security Settings
 
@@ -1797,7 +1797,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/security-settings/security-settings.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/security-settings.png
-**Skill:** [components/security-settings/component-skill.md](components/security-settings/component-skill.md)
+**Skill:** [components/website/security-settings/component-skill.md](components/website/security-settings/component-skill.md)
 
 ## Select
 
@@ -1807,7 +1807,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/select/select.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/select.png
-**Skill:** [components/select/component-skill.md](components/select/component-skill.md)
+**Skill:** [components/forms-inputs/select/component-skill.md](components/forms-inputs/select/component-skill.md)
 
 ## Separator
 
@@ -1817,7 +1817,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/separator/separator.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/separator.png
-**Skill:** [components/separator/component-skill.md](components/separator/component-skill.md)
+**Skill:** [components/primitives/separator/component-skill.md](components/primitives/separator/component-skill.md)
 
 ## Service Item
 
@@ -1827,7 +1827,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/service-item/service-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/service-item.png
-**Skill:** [components/service-item/component-skill.md](components/service-item/component-skill.md)
+**Skill:** [components/website/service-item/component-skill.md](components/website/service-item/component-skill.md)
 
 ## Session
 
@@ -1837,7 +1837,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/session/session.css + dist/components/session/session.js
 **Supported states:** default, detached, streaming
 **Screenshots:** screenshots/{light,dark}/session.png, screenshots/{light,dark}/session-detached.png, screenshots/{light,dark}/session-streaming.png
-**Skill:** [components/session/component-skill.md](components/session/component-skill.md)
+**Skill:** [components/chat/session/component-skill.md](components/chat/session/component-skill.md)
 
 ## Session Item
 
@@ -1847,7 +1847,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/session-item/session-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/session-item.png
-**Skill:** [components/session-item/component-skill.md](components/session-item/component-skill.md)
+**Skill:** [components/website/session-item/component-skill.md](components/website/session-item/component-skill.md)
 
 ## Share Links
 
@@ -1857,7 +1857,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/share-links/share-links.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/share-links.png
-**Skill:** [components/share-links/component-skill.md](components/share-links/component-skill.md)
+**Skill:** [components/website/share-links/component-skill.md](components/website/share-links/component-skill.md)
 
 ## Sheet
 
@@ -1867,7 +1867,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/sheet/sheet.css + dist/components/sheet/sheet.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/sheet.png, screenshots/{light,dark}/sheet-open.png
-**Skill:** [components/sheet/component-skill.md](components/sheet/component-skill.md)
+**Skill:** [components/overlays/sheet/component-skill.md](components/overlays/sheet/component-skill.md)
 
 ## Sidebar
 
@@ -1877,7 +1877,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/sidebar/sidebar.css + dist/components/sidebar/sidebar.js
 **Supported states:** default, collapsed
 **Screenshots:** screenshots/{light,dark}/sidebar.png, screenshots/{light,dark}/sidebar-collapsed.png
-**Skill:** [components/sidebar/component-skill.md](components/sidebar/component-skill.md)
+**Skill:** [components/application/sidebar/component-skill.md](components/application/sidebar/component-skill.md)
 
 ## Signup Form
 
@@ -1887,7 +1887,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/signup-form/signup-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/signup-form.png
-**Skill:** [components/signup-form/component-skill.md](components/signup-form/component-skill.md)
+**Skill:** [components/website/signup-form/component-skill.md](components/website/signup-form/component-skill.md)
 
 ## Site Footer
 
@@ -1897,7 +1897,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/site-footer/site-footer.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/site-footer.png
-**Skill:** [components/site-footer/component-skill.md](components/site-footer/component-skill.md)
+**Skill:** [components/website/site-footer/component-skill.md](components/website/site-footer/component-skill.md)
 
 ## Site Header
 
@@ -1907,7 +1907,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/site-header/site-header.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/site-header.png
-**Skill:** [components/site-header/component-skill.md](components/site-header/component-skill.md)
+**Skill:** [components/website/site-header/component-skill.md](components/website/site-header/component-skill.md)
 
 ## Skeleton
 
@@ -1917,7 +1917,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/skeleton/skeleton.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/skeleton.png
-**Skill:** [components/skeleton/component-skill.md](components/skeleton/component-skill.md)
+**Skill:** [components/feedback-status/skeleton/component-skill.md](components/feedback-status/skeleton/component-skill.md)
 
 ## Slider
 
@@ -1927,7 +1927,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/slider/slider.css + dist/components/slider/slider.js
 **Supported states:** default, disabled
 **Screenshots:** screenshots/{light,dark}/slider.png, screenshots/{light,dark}/slider-disabled.png
-**Skill:** [components/slider/component-skill.md](components/slider/component-skill.md)
+**Skill:** [components/forms-inputs/slider/component-skill.md](components/forms-inputs/slider/component-skill.md)
 
 ## Social Login
 
@@ -1937,7 +1937,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/social-login/social-login.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/social-login.png
-**Skill:** [components/social-login/component-skill.md](components/social-login/component-skill.md)
+**Skill:** [components/website/social-login/component-skill.md](components/website/social-login/component-skill.md)
 
 ## Social Post
 
@@ -1947,7 +1947,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/social-post/social-post.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/social-post.png
-**Skill:** [components/social-post/component-skill.md](components/social-post/component-skill.md)
+**Skill:** [components/website/social-post/component-skill.md](components/website/social-post/component-skill.md)
 
 ## Sort Control
 
@@ -1957,7 +1957,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/sort-control/sort-control.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/sort-control.png
-**Skill:** [components/sort-control/component-skill.md](components/sort-control/component-skill.md)
+**Skill:** [components/website/sort-control/component-skill.md](components/website/sort-control/component-skill.md)
 
 ## Sortable
 
@@ -1967,7 +1967,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/sortable/sortable.css + dist/components/sortable/sortable.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/sortable.png
-**Skill:** [components/sortable/component-skill.md](components/sortable/component-skill.md)
+**Skill:** [components/data-display/sortable/component-skill.md](components/data-display/sortable/component-skill.md)
 
 ## Speaker Item
 
@@ -1977,7 +1977,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/speaker-item/speaker-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/speaker-item.png
-**Skill:** [components/speaker-item/component-skill.md](components/speaker-item/component-skill.md)
+**Skill:** [components/website/speaker-item/component-skill.md](components/website/speaker-item/component-skill.md)
 
 ## Spinner
 
@@ -1987,7 +1987,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/spinner/spinner.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/spinner.png
-**Skill:** [components/spinner/component-skill.md](components/spinner/component-skill.md)
+**Skill:** [components/feedback-status/spinner/component-skill.md](components/feedback-status/spinner/component-skill.md)
 
 ## Statistic
 
@@ -1997,7 +1997,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/statistic/statistic.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/statistic.png
-**Skill:** [components/statistic/component-skill.md](components/statistic/component-skill.md)
+**Skill:** [components/data-display/statistic/component-skill.md](components/data-display/statistic/component-skill.md)
 
 ## Stats
 
@@ -2007,7 +2007,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/stats/stats.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/stats.png
-**Skill:** [components/stats/component-skill.md](components/stats/component-skill.md)
+**Skill:** [components/website/stats/component-skill.md](components/website/stats/component-skill.md)
 
 ## Steps
 
@@ -2017,7 +2017,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/steps/steps.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/steps.png
-**Skill:** [components/steps/component-skill.md](components/steps/component-skill.md)
+**Skill:** [components/navigation/steps/component-skill.md](components/navigation/steps/component-skill.md)
 
 ## Success State
 
@@ -2027,7 +2027,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/success-state/success-state.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/success-state.png
-**Skill:** [components/success-state/component-skill.md](components/success-state/component-skill.md)
+**Skill:** [components/website/success-state/component-skill.md](components/website/success-state/component-skill.md)
 
 ## Support Form
 
@@ -2037,7 +2037,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/support-form/support-form.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/support-form.png
-**Skill:** [components/support-form/component-skill.md](components/support-form/component-skill.md)
+**Skill:** [components/website/support-form/component-skill.md](components/website/support-form/component-skill.md)
 
 ## Survey Question
 
@@ -2047,7 +2047,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/survey-question/survey-question.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/survey-question.png
-**Skill:** [components/survey-question/component-skill.md](components/survey-question/component-skill.md)
+**Skill:** [components/website/survey-question/component-skill.md](components/website/survey-question/component-skill.md)
 
 ## Swap
 
@@ -2057,7 +2057,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/swap/swap.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/swap.png
-**Skill:** [components/swap/component-skill.md](components/swap/component-skill.md)
+**Skill:** [components/actions/swap/component-skill.md](components/actions/swap/component-skill.md)
 
 ## Switch
 
@@ -2067,7 +2067,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/switch/switch.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/switch.png
-**Skill:** [components/switch/component-skill.md](components/switch/component-skill.md)
+**Skill:** [components/forms-inputs/switch/component-skill.md](components/forms-inputs/switch/component-skill.md)
 
 ## Table
 
@@ -2077,7 +2077,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/table/table.css + dist/components/table/table.js
 **Supported states:** default, sorted, selected
 **Screenshots:** screenshots/{light,dark}/table.png, screenshots/{light,dark}/table-sorted.png, screenshots/{light,dark}/table-selected.png
-**Skill:** [components/table/component-skill.md](components/table/component-skill.md)
+**Skill:** [components/data-display/table/component-skill.md](components/data-display/table/component-skill.md)
 
 ## Tabs
 
@@ -2087,7 +2087,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/tabs/tabs.css + dist/components/tabs/tabs.js
 **Supported states:** default, active, disabled
 **Screenshots:** screenshots/{light,dark}/tabs.png, screenshots/{light,dark}/tabs-active.png, screenshots/{light,dark}/tabs-disabled.png
-**Skill:** [components/tabs/component-skill.md](components/tabs/component-skill.md)
+**Skill:** [components/navigation/tabs/component-skill.md](components/navigation/tabs/component-skill.md)
 
 ## Tag Cloud
 
@@ -2097,7 +2097,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/tag-cloud/tag-cloud.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/tag-cloud.png
-**Skill:** [components/tag-cloud/component-skill.md](components/tag-cloud/component-skill.md)
+**Skill:** [components/website/tag-cloud/component-skill.md](components/website/tag-cloud/component-skill.md)
 
 ## Tag List
 
@@ -2107,7 +2107,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/tag-list/tag-list.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/tag-list.png
-**Skill:** [components/tag-list/component-skill.md](components/tag-list/component-skill.md)
+**Skill:** [components/website/tag-list/component-skill.md](components/website/tag-list/component-skill.md)
 
 ## Team Member
 
@@ -2117,7 +2117,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/team-member/team-member.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/team-member.png
-**Skill:** [components/team-member/component-skill.md](components/team-member/component-skill.md)
+**Skill:** [components/website/team-member/component-skill.md](components/website/team-member/component-skill.md)
 
 ## Testimonials
 
@@ -2127,7 +2127,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/testimonials/testimonials.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/testimonials.png
-**Skill:** [components/testimonials/component-skill.md](components/testimonials/component-skill.md)
+**Skill:** [components/website/testimonials/component-skill.md](components/website/testimonials/component-skill.md)
 
 ## Text Media
 
@@ -2137,7 +2137,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/text-media/text-media.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/text-media.png
-**Skill:** [components/text-media/component-skill.md](components/text-media/component-skill.md)
+**Skill:** [components/website/text-media/component-skill.md](components/website/text-media/component-skill.md)
 
 ## Text Rotate
 
@@ -2147,7 +2147,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/text-rotate/text-rotate.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/text-rotate.png
-**Skill:** [components/text-rotate/component-skill.md](components/text-rotate/component-skill.md)
+**Skill:** [components/primitives/text-rotate/component-skill.md](components/primitives/text-rotate/component-skill.md)
 
 ## Textarea
 
@@ -2157,7 +2157,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/textarea/textarea.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/textarea.png
-**Skill:** [components/textarea/component-skill.md](components/textarea/component-skill.md)
+**Skill:** [components/forms-inputs/textarea/component-skill.md](components/forms-inputs/textarea/component-skill.md)
 
 ## Theme Switcher
 
@@ -2167,7 +2167,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/theme-switcher/theme-switcher.css + dist/components/theme-switcher/theme-switcher.js
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/theme-switcher.png, screenshots/{light,dark}/theme-switcher-open.png
-**Skill:** [components/theme-switcher/component-skill.md](components/theme-switcher/component-skill.md)
+**Skill:** [components/navigation/theme-switcher/component-skill.md](components/navigation/theme-switcher/component-skill.md)
 
 ## Timeline
 
@@ -2177,7 +2177,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/timeline/timeline.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/timeline.png
-**Skill:** [components/timeline/component-skill.md](components/timeline/component-skill.md)
+**Skill:** [components/data-display/timeline/component-skill.md](components/data-display/timeline/component-skill.md)
 
 ## Timeline Item
 
@@ -2187,7 +2187,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/timeline-item/timeline-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/timeline-item.png
-**Skill:** [components/timeline-item/component-skill.md](components/timeline-item/component-skill.md)
+**Skill:** [components/website/timeline-item/component-skill.md](components/website/timeline-item/component-skill.md)
 
 ## Toast
 
@@ -2197,7 +2197,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/toast/toast.css + dist/components/toast/toast.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/toast.png
-**Skill:** [components/toast/component-skill.md](components/toast/component-skill.md)
+**Skill:** [components/feedback-status/toast/component-skill.md](components/feedback-status/toast/component-skill.md)
 
 ## Table of Contents
 
@@ -2207,7 +2207,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/toc/toc.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/toc.png
-**Skill:** [components/toc/component-skill.md](components/toc/component-skill.md)
+**Skill:** [components/navigation/toc/component-skill.md](components/navigation/toc/component-skill.md)
 
 ## Toggle
 
@@ -2217,7 +2217,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/toggle/toggle.css + dist/components/toggle/toggle.js
 **Supported states:** default, pressed
 **Screenshots:** screenshots/{light,dark}/toggle.png, screenshots/{light,dark}/toggle-pressed.png
-**Skill:** [components/toggle/component-skill.md](components/toggle/component-skill.md)
+**Skill:** [components/actions/toggle/component-skill.md](components/actions/toggle/component-skill.md)
 
 ## Toggle Group
 
@@ -2227,7 +2227,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/toggle-group/toggle-group.css + dist/components/toggle-group/toggle-group.js
 **Supported states:** default, disabled
 **Screenshots:** screenshots/{light,dark}/toggle-group.png, screenshots/{light,dark}/toggle-group-disabled.png
-**Skill:** [components/toggle-group/component-skill.md](components/toggle-group/component-skill.md)
+**Skill:** [components/actions/toggle-group/component-skill.md](components/actions/toggle-group/component-skill.md)
 
 ## Toolbar
 
@@ -2237,7 +2237,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/toolbar/toolbar.css + dist/components/toolbar/toolbar.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/toolbar.png
-**Skill:** [components/toolbar/component-skill.md](components/toolbar/component-skill.md)
+**Skill:** [components/actions/toolbar/component-skill.md](components/actions/toolbar/component-skill.md)
 
 ## Tooltip
 
@@ -2247,7 +2247,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/tooltip/tooltip.css + dist/components/tooltip/tooltip.js
 **Supported states:** default, visible
 **Screenshots:** screenshots/{light,dark}/tooltip.png, screenshots/{light,dark}/tooltip-visible.png
-**Skill:** [components/tooltip/component-skill.md](components/tooltip/component-skill.md)
+**Skill:** [components/overlays/tooltip/component-skill.md](components/overlays/tooltip/component-skill.md)
 
 ## Tracking Status
 
@@ -2257,7 +2257,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/tracking-status/tracking-status.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/tracking-status.png
-**Skill:** [components/tracking-status/component-skill.md](components/tracking-status/component-skill.md)
+**Skill:** [components/website/tracking-status/component-skill.md](components/website/tracking-status/component-skill.md)
 
 ## Tree View
 
@@ -2267,7 +2267,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/tree-view/tree-view.css + dist/components/tree-view/tree-view.js
 **Supported states:** default, expanded
 **Screenshots:** screenshots/{light,dark}/tree-view.png, screenshots/{light,dark}/tree-view-expanded.png
-**Skill:** [components/tree-view/component-skill.md](components/tree-view/component-skill.md)
+**Skill:** [components/data-display/tree-view/component-skill.md](components/data-display/tree-view/component-skill.md)
 
 ## Type Badge
 
@@ -2277,7 +2277,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/type-badge/type-badge.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/type-badge.png
-**Skill:** [components/type-badge/component-skill.md](components/type-badge/component-skill.md)
+**Skill:** [components/data-display/type-badge/component-skill.md](components/data-display/type-badge/component-skill.md)
 
 ## Typewriter
 
@@ -2287,7 +2287,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/typewriter/typewriter.css + dist/components/typewriter/typewriter.js
 **Supported states:** default, paused, done
 **Screenshots:** screenshots/{light,dark}/typewriter.png, screenshots/{light,dark}/typewriter-paused.png, screenshots/{light,dark}/typewriter-done.png
-**Skill:** [components/typewriter/component-skill.md](components/typewriter/component-skill.md)
+**Skill:** [components/primitives/typewriter/component-skill.md](components/primitives/typewriter/component-skill.md)
 
 ## Typography
 
@@ -2297,7 +2297,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/typography/typography.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/typography.png
-**Skill:** [components/typography/component-skill.md](components/typography/component-skill.md)
+**Skill:** [components/primitives/typography/component-skill.md](components/primitives/typography/component-skill.md)
 
 ## Use Case
 
@@ -2307,7 +2307,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/use-case/use-case.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/use-case.png
-**Skill:** [components/use-case/component-skill.md](components/use-case/component-skill.md)
+**Skill:** [components/website/use-case/component-skill.md](components/website/use-case/component-skill.md)
 
 ## Video Player
 
@@ -2317,7 +2317,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/video-player/video-player.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/video-player.png
-**Skill:** [components/video-player/component-skill.md](components/video-player/component-skill.md)
+**Skill:** [components/website/video-player/component-skill.md](components/website/video-player/component-skill.md)
 
 ## View Switcher
 
@@ -2327,7 +2327,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/view-switcher/view-switcher.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/view-switcher.png
-**Skill:** [components/view-switcher/component-skill.md](components/view-switcher/component-skill.md)
+**Skill:** [components/website/view-switcher/component-skill.md](components/website/view-switcher/component-skill.md)
 
 ## Virtual List
 
@@ -2337,7 +2337,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/virtual-list/virtual-list.css + dist/components/virtual-list/virtual-list.js
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/virtual-list.png, screenshots/{light,dark}/virtual-list-loading.png, screenshots/{light,dark}/virtual-list-empty.png
-**Skill:** [components/virtual-list/component-skill.md](components/virtual-list/component-skill.md)
+**Skill:** [components/big-data/virtual-list/component-skill.md](components/big-data/virtual-list/component-skill.md)
 
 ## Window
 
@@ -2347,7 +2347,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/window/window.css + dist/components/window/window.js
 **Supported states:** default, maximized, minimized, closed
 **Screenshots:** screenshots/{light,dark}/window.png, screenshots/{light,dark}/window-maximized.png, screenshots/{light,dark}/window-minimized.png, screenshots/{light,dark}/window-closed.png
-**Skill:** [components/window/component-skill.md](components/window/component-skill.md)
+**Skill:** [components/application/window/component-skill.md](components/application/window/component-skill.md)
 
 ## Wishlist Item
 
@@ -2357,4 +2357,4 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Files:** dist/components/wishlist-item/wishlist-item.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/wishlist-item.png
-**Skill:** [components/wishlist-item/component-skill.md](components/wishlist-item/component-skill.md)
+**Skill:** [components/website/wishlist-item/component-skill.md](components/website/wishlist-item/component-skill.md)

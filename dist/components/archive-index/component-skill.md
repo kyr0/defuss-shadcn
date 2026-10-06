@@ -1,6 +1,7 @@
 ---
 name: Archive Index
 type: BLK
+section: website
 why: Each year is a native <details name="archive"> - exclusive, keyboard-operable, animated with ::details-content and interpolate-size; months are plain links with counts.
 when: A blog or news archive in a sidebar or on its own page. Topic-based navigation takes blog-header categories; deep trees take tree-view.
 where: dist/components/archive-index/archive-index.css

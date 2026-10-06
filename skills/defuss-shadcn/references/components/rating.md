@@ -1,6 +1,7 @@
 ---
 name: Rating
 type: MOL
+section: forms-inputs
 why: Native radio group styled as stars; keyboard, form submission and exclusivity are the browser's, so no JavaScript.
 when: Collecting or displaying a score out of five (reviews, feedback, quality scores). Use radio for a general small choice set.
 where: dist/components/rating/rating.css

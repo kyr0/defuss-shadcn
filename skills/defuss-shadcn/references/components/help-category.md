@@ -1,6 +1,7 @@
 ---
 name: Help Category
 type: BLK
+section: website
 why: The title link covers the card; the popular-article links stay clickable above it - two levels of targets, no script.
 when: Help-center front pages. A single article is help-article; a resource library is resource-item.
 where: dist/components/help-category/help-category.css

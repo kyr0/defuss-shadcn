@@ -1,6 +1,7 @@
 ---
 name: News Ticker
 type: BLK
+section: website
 why: The headline list runs twice in one track (the copy is inert and aria-hidden) sliding by half its width - a seamless loop in pure CSS; :hover / :focus-within pause it, prefers-reduced-motion turns it into a scrolling row.
 when: A strip of latest or breaking headlines above a news front. A list someone should read takes news-item (compact).
 where: dist/components/news-ticker/news-ticker.css

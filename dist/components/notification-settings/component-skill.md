@@ -1,6 +1,7 @@
 ---
 name: Notification Settings
 type: BLK
+section: website
 why: A real <table> of checkboxes - every box labelled "Mentions by email" - or a list of Switches; nothing but form controls.
 when: Account or workspace settings. Marketing email preferences belong in an unsubscribe page; cookie choices in the Cookie Consent component.
 where: dist/components/notification-settings/notification-settings.css

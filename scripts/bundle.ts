@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
-import { mkdirSync, readdirSync, readFileSync, existsSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, existsSync, rmSync, writeFileSync } from 'node:fs';
 import { viteIgnore } from './lib/vite-ignore.ts';
-import { join } from 'node:path';
+import { join, relative, sep } from 'node:path';
+import { componentDirs, componentFile } from '../src/documentation/lib/component-dirs.ts';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { appPlans } from './lib/apps-files.ts';
@@ -65,10 +66,10 @@ function stampProvenance(file: string): void {
   writeFileSync(file, `${src.slice(0, at).trimEnd()}\n${PROVENANCE_POINTER}\n${src.slice(at)}`);
 }
 
-const names = readdirSync(SRC_COMPONENTS, { withFileTypes: true })
-  .filter((d) => d.isDirectory())
-  .map((d) => d.name)
-  .sort();
+// every component, from its section folder (src/components/<section>/<name>/)
+const names = componentDirs(SRC_COMPONENTS).map((c) => c.name);
+/** a component's .ts as an import specifier from an entry file one level below the repo root */
+const entryImport = (n: string): string => `import '../${relative(ROOT, componentFile(SRC_COMPONENTS, n, `${n}.ts`)).split(sep).join('/')}';`
 if (names.length === 0) {
   console.error('bundle: no components found under src/components/');
   process.exit(1);
@@ -115,12 +116,12 @@ stampProvenance(join(DIST_COMPONENTS, 'core.js')); // §6 provenance pointer
 //    one side-effect import per interactive component (each module
 //    self-initializes + registers its own MutationObserver on import).
 // components of an extra bundle (scripts/lib/bundles.ts) stay out of all.*
-const jsNames = names.filter((n) => inAllBundle(n) && existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
+const jsNames = names.filter((n) => inAllBundle(n) && existsSync(componentFile(SRC_COMPONENTS, n, `${n}.ts`)));
 mkdirSync(TMP, { recursive: true });
 const entry = join(TMP, 'all-entry.ts');
 writeFileSync(
   entry,
-  [`import '../src/core/index.ts';`, ...jsNames.map((n) => `import '../src/components/${n}/${n}.ts';`)].join('\n') +
+  [`import '../src/core/index.ts';`, ...jsNames.map(entryImport)].join('\n') +
     '\n',
 );
 
@@ -175,11 +176,11 @@ writeFileSync(join(DIST_COMPONENTS, 'core.css'), `${coreCss}\n`);
 // 2. CSS bundle: every component stylesheet, alphabetical, with a header per
 //    section so the readable file stays navigable.
 const css = names
-  .filter((n) => inAllBundle(n) && existsSync(join(SRC_COMPONENTS, n, `${n}.css`)))
+  .filter((n) => inAllBundle(n) && existsSync(componentFile(SRC_COMPONENTS, n, `${n}.css`)))
   .map(
     (n) =>
       `/* ── components/${n}/${n}.css ── */\n` +
-      readFileSync(join(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd(),
+      readFileSync(componentFile(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd(),
   )
   .join('\n\n');
 writeFileSync(join(DIST_COMPONENTS, 'all.css'), `${css}\n`);
@@ -210,8 +211,8 @@ async function buildMembersBundle(outDir: string, name: string, members: readonl
   writeFileSync(
     join(outDir, `${name}.css`),
     members
-      .filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.css`)))
-      .map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(join(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd())
+      .filter((n) => existsSync(componentFile(SRC_COMPONENTS, n, `${n}.css`)))
+      .map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(componentFile(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd())
       .join('\n\n') + '\n',
   );
 }
@@ -246,8 +247,8 @@ mkdirSync(DIST_APPS, { recursive: true });
 const plans = appPlans();
 for (const app of plans) {
   const appEntry = join(TMP, `app-${app.name}-entry.ts`);
-  const scripts = app.components.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.ts`)));
-  writeFileSync(appEntry, [`import '../src/core/index.ts';`, ...scripts.map((n) => `import '../src/components/${n}/${n}.ts';`)].join('\n') + '\n');
+  const scripts = app.components.filter((n) => existsSync(componentFile(SRC_COMPONENTS, n, `${n}.ts`)));
+  writeFileSync(appEntry, [`import '../src/core/index.ts';`, ...scripts.map(entryImport)].join('\n') + '\n');
   const built = await Bun.build({ entrypoints: [appEntry], outdir: DIST_APPS, naming: `${app.name}.js`, format: 'esm', target: 'browser', sourcemap: 'external', minify: false });
   if (!built.success) {
     console.error(`bundle: app ${app.name} Bun.build failed:`);
@@ -258,11 +259,11 @@ for (const app of plans) {
   restoreViteIgnore(file);
   linkSourceMap(file, `${app.name}.js.map`);
   stampProvenance(file);
-  const sheets = app.components.filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.css`)));
+  const sheets = app.components.filter((n) => existsSync(componentFile(SRC_COMPONENTS, n, `${n}.css`)));
   writeFileSync(
     join(DIST_APPS, `${app.name}.css`),
     `/* ${app.slug}: core.css + the ${app.components.length} components its markup uses (${app.components.join(', ')}) - generated by scripts/bundle.ts */\n${coreCss}\n\n` +
-      sheets.map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(join(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd()).join('\n\n') + '\n',
+      sheets.map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(componentFile(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd()).join('\n\n') + '\n',
   );
 }
 console.log(`bundle: ${plans.length} app bundles → dist/apps/ (${plans.map((p) => `${p.name} ${p.components.length}`).join(', ')})`);

@@ -1,6 +1,7 @@
 ---
 name: Code Mockup
 type: ATM
+section: mockup
 why: A terminal window is a stack of <pre> lines under CSS window chrome; prompts, line numbers, diff signs and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
 when: Showing commands and their output as a terminal - install steps, CLI docs, a session transcript - or a change as a git-style diff (added / removed lines, word changes, an animated reveal). Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
 where: dist/components/mockup-code/mockup-code.css

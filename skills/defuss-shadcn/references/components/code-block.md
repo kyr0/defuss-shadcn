@@ -1,6 +1,7 @@
 ---
 name: Code Example
 type: BLK
+section: website
 why: The tabs are radio inputs read by :has() - no script to switch; line numbers are CSS counters; copying is the one line of page script (Clipboard API).
 when: Install instructions, snippets and examples in docs and blog posts. A full terminal mockup is the Code mockup component.
 where: dist/components/code-block/code-block.css

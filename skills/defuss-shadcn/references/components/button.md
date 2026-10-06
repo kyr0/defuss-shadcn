@@ -1,6 +1,7 @@
 ---
 name: Button
 type: ATM
+section: actions
 why: Native <button> styled through data-variant/data-size - disabled, form submission, and focus are browser-provided.
 when: Every single action trigger - forms, dialogs, toolbars.
 where: dist/components/button/button.css

@@ -1,6 +1,7 @@
 ---
 name: News Item
 type: BLK
+section: website
 why: An <article> whose headline link stretches over the whole item (::after inset 0) - one tab stop, one click target, the headline as its name; line-clamp trims the summary.
 when: News fronts, press pages, "latest updates" lists. A blog post preview with byline takes blog-item; a link under an article takes related-item.
 where: dist/components/news-item/news-item.css

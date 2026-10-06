@@ -14,8 +14,9 @@
  *   bun scripts/api-docs.ts           write every skill's ## API section
  *   bun scripts/api-docs.ts --check   list the stale ones (exit 1)
  */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentDirs, componentFile } from '../src/documentation/lib/component-dirs.ts';
 import { apiMarkdown, apiSectionOf, readComponentApi, withApiSection } from '../src/documentation/lib/component-api.ts';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -25,9 +26,9 @@ const check = process.argv.includes('--check');
 const SHARED = readFileSync(join(ROOT, 'src', 'shared', 'component-state.ts'), 'utf8');
 const stale: string[] = [];
 
-for (const name of readdirSync(COMPONENTS).sort()) {
-  const ts = join(COMPONENTS, name, `${name}.ts`);
-  const md = join(COMPONENTS, name, 'component-skill.md');
+for (const { name } of componentDirs(COMPONENTS)) {
+  const ts = componentFile(COMPONENTS, name, `${name}.ts`);
+  const md = componentFile(COMPONENTS, name, 'component-skill.md');
   if (!existsSync(ts) || !existsSync(md)) continue;
   const section = apiMarkdown(readComponentApi(name, readFileSync(ts, 'utf8'), SHARED));
   const skill = readFileSync(md, 'utf8');

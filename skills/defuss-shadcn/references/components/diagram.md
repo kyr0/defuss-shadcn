@@ -1,6 +1,7 @@
 ---
 name: Diagram
 type: ATM
+section: diagrams
 why: Illustrative diagrams an agent can write as plain HTML - nodes on a CSS grid, relationships as an ordered list (readable without JavaScript), wires drawn into an SVG layer from the measured layout, labels kept clear of every box, wire and text. The theme's colors (chart colors for accents and changes), radius and monospace; the only state is the picture's - step-by-step reveal, an activated box or arrow (click, keyboard or outside controls) and a before / changes / after delta from one annotated source. No Mermaid, no dependency.
 when: Architecture, flows, state machines, ER and schema, sequences, org charts, swimlanes, layers, containment, loops, data platforms, matrices, fishbones, Wardley maps, journeys, kanban, story maps, quadrants, policy traces. Data charts (values on axes) are chart; text-defined diagrams you already have in Mermaid syntax are mermaid.
 where: dist/components/diagram/diagram.css + dist/components/diagram/diagram.js

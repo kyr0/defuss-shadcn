@@ -1,6 +1,7 @@
 ---
 name: Tracking Status
 type: BLK
+section: website
 why: An ordered list with aria-current="step" carries the progress; the line fills by a custom property; the log is a <details> - no script.
 when: Order pages and tracking emails' landing pages. Before shipping, show order-confirmation.
 where: dist/components/tracking-status/tracking-status.css

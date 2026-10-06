@@ -1,6 +1,7 @@
 ---
 name: Case Study
 type: BLK
+section: website
 why: Sections, an ordered list for the approach, a <dl> for the results and a <blockquote> - long-form structure the browser and readers already know.
 when: The full story behind a case-preview. For a short anonymous scenario use use-case.
 where: dist/components/case-study/case-study.css

@@ -1,6 +1,7 @@
 ---
 name: Dock
 type: ATM
+section: navigation
 why: A navigation bar of links / buttons with icons and labels - on the bottom (above the device's safe area), top, left or right edge; the active item is plain ARIA (aria-current / aria-pressed) or a checked radio, so a radio dock switches items AND the card content they own with no JavaScript.
 when: The 3 - 5 top-level destinations of a mobile app or app-like page (Home, Search, Inbox, Profile). For a desktop app bar use navbar, for a side menu use sidebar, for one floating action use fab.
 where: dist/components/dock/dock.css

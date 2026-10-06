@@ -1,6 +1,7 @@
 ---
 name: Card
 type: MOL
+section: data-display
 why: Token-backed surface with header/content/footer slots - one container for anything boxed.
 when: Grouping related content and actions on a page - dashboards, lists, modal bodies.
 where: dist/components/card/card.css

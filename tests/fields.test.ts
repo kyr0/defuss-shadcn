@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 // Vite ?raw imports instead of node:fs - Vitest runs in browser mode where the
 // filesystem isn't available (same pattern as contrast.test.ts).
-import formCss from '../src/components/form/form.css?raw';
-import inputCss from '../src/components/input/input.css?raw';
-import formSkill from '../src/components/form/component-skill.md?raw';
-import inputSkill from '../src/components/input/component-skill.md?raw';
+import formCss from '../src/components/forms-inputs/form/form.css?raw';
+import inputCss from '../src/components/forms-inputs/input/input.css?raw';
+import formSkill from '../src/components/forms-inputs/form/component-skill.md?raw';
+import inputSkill from '../src/components/forms-inputs/input/component-skill.md?raw';
 import formDoc from '../dist/documentation/form.html?raw';
 import inputDoc from '../dist/documentation/input.html?raw';
 import {

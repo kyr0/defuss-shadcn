@@ -14,7 +14,7 @@
 import { COMPONENT_TYPES } from './taxonomy.ts';
 
 /** Required frontmatter keys every component-skill.md must declare (AGENTS.md). */
-export const SKILL_FRONTMATTER_KEYS = ['name', 'type', 'why', 'when', 'where', 'supportedStates'] as const;
+export const SKILL_FRONTMATTER_KEYS = ['name', 'type', 'section', 'why', 'when', 'where', 'supportedStates'] as const;
 
 export type SkillMeta = Record<(typeof SKILL_FRONTMATTER_KEYS)[number], string>;
 
@@ -73,7 +73,7 @@ export function renderSkillEntry(e: SkillEntry): string {
     `**Files:** ${e.where}`,
     `**Supported states:** ${states.join(', ')}`,
     `**Screenshots:** ${shots}`,
-    `**Skill:** [components/${e.folder}/component-skill.md](components/${e.folder}/component-skill.md)`,
+    `**Skill:** [components/${e.section}/${e.folder}/component-skill.md](components/${e.section}/${e.folder}/component-skill.md)`,
     '',
   ].join('\n');
 }
@@ -138,7 +138,7 @@ export const SKILL_REFERENCES_DIR = 'references/components';
  *  skills' sibling links (../button/component-skill.md) become flat
  *  (button.md). Pure. */
 export function referenceSkillText(text: string): string {
-  return text.replace(/\]\(\.\.\/([a-z0-9-]+)\/component-skill\.md(#[^)]*)?\)/g, (_m, name: string, hash = '') => `](${name}.md${hash})`);
+  return text.replace(/\]\(\.\.\/(?:\.\.\/[a-z0-9-]+\/)?([a-z0-9-]+)\/component-skill\.md(#[^)]*)?\)/g, (_m, name: string, hash = '') => `](${name}.md${hash})`);
 }
 
 const pagePath = (slug: string): string => `src/documentation/pages/${slug}.mdx`;

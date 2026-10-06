@@ -1,6 +1,7 @@
 ---
 name: Article Navigation
 type: BLK
+section: website
 why: Two links with rel="prev" / rel="next" in a nav - the relations are machine-readable; a two-column grid keeps a lone next link on its side, a container query stacks them when narrow.
 when: At the end of an article or docs page. Page numbers take pagination; a list of further reading takes related-item.
 where: dist/components/article-navigation/article-navigation.css

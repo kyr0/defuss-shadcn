@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentFile } from '../../src/documentation/lib/component-dirs.ts';
 import { NAV } from '../../src/documentation/lib/nav.ts';
 import { appResolver } from './apps.ts';
 import { componentSources } from './apps-files.ts';
@@ -37,7 +38,7 @@ export function sections(): Section[] {
   const order = plans.map((p) => p.heading);
   const resolve = appResolver(sources);
   return plans.map((plan) => {
-    const markup = plan.members.map((m) => htmlBlocks(readFileSync(join(SRC_COMPONENTS, m, 'component-skill.md'), 'utf8'))).join('\n');
+    const markup = plan.members.map((m) => htmlBlocks(readFileSync(componentFile(SRC_COMPONENTS, m, 'component-skill.md'), 'utf8'))).join('\n');
     return { ...plan, needs: sectionNeeds(plan, resolve(markup), owner, order) };
   });
 }

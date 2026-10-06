@@ -1,6 +1,7 @@
 ---
 name: Success State
 type: BLK
+section: website
 why: role="status" announces it politely; the ripple is a CSS animation that stands still under reduced motion.
 when: After saving, sending, inviting, publishing. A completed purchase is order-confirmation; transient confirmations are toasts.
 where: dist/components/success-state/success-state.css

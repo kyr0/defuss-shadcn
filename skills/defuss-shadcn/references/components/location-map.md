@@ -1,6 +1,7 @@
 ---
 name: Location Map
 type: BLK
+section: website
 why: Pins are buttons with popovertarget; their cards are popovers placed by CSS anchor positioning - interactive, keyboard-accessible, no script and no map library.
 when: A handful of places on a stylized map. Searching many places uses locator-search; a single address is location-item. Swap the SVG for an embedded map provider when you need real streets.
 where: dist/components/location-map/location-map.css

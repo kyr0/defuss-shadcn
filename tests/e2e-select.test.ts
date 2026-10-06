@@ -8,7 +8,12 @@ import { CORE_INPUTS, SITE_INPUTS, coveredBy, e2eInputs, fixturesNamed } from '.
  * docs test depend on.
  */
 const components = new Set(['accordion', 'badge', 'code-example', 'dialog']);
-const base = { componentsOf: (m: string) => [...components].filter((c) => m.includes(`class="${c}`)), isComponent: (n: string) => components.has(n) };
+// each component's section folder, as the repository lays them out (src/components/<section>/<name>/)
+const SECTION: Record<string, string> = { accordion: 'overlays', badge: 'data-display', 'code-example': 'wysiwyg-editors', dialog: 'overlays' };
+const base = {
+  componentsOf: (m: string) => [...components].filter((c) => m.includes(`class="${c}`)),
+  componentDir: (n: string) => (components.has(n) ? `src/components/${SECTION[n]}/${n}/` : undefined),
+};
 
 describe('e2eInputs', () => {
   it('a per-component fixture: its folder, core, the shared helpers - not other components', () => {
@@ -18,11 +23,11 @@ describe('e2eInputs', () => {
       test: "await page.goto(url + '/tests/e2e/accordion.e2e-fixture.html')",
       fixtures: { 'accordion.e2e-fixture.html': '<script type="module" src="/dist/components/core.js"></script><script type="module" src="/dist/components/accordion/accordion.js"></script>' },
     });
-    expect(inputs).toContain('src/components/accordion/');
+    expect(inputs).toContain('src/components/overlays/accordion/');
     expect(inputs).toContain('tests/e2e/accordion.e2e-fixture.html');
     for (const c of CORE_INPUTS) expect(inputs).toContain(c);
     expect(inputs).toContain('tests/e2e/lib/');
-    expect(inputs).not.toContain('src/components/dialog/');
+    expect(inputs).not.toContain('src/components/overlays/dialog/');
     expect(inputs).not.toContain('src/');
   });
 
@@ -33,14 +38,14 @@ describe('e2eInputs', () => {
       test: '',
       fixtures: { 'bundle.e2e-fixture.html': '<script src="/dist/components/all.js"></script><div class="badge">x</div><details class="accordion"></details>' },
     });
-    expect(inputs).toContain('src/components/badge/');
-    expect(inputs).toContain('src/components/accordion/');
-    expect(inputs).not.toContain('src/components/dialog/');
+    expect(inputs).toContain('src/components/data-display/badge/');
+    expect(inputs).toContain('src/components/overlays/accordion/');
+    expect(inputs).not.toContain('src/components/overlays/dialog/');
   });
 
   it('wysiwyg.js brings the code-example component', () => {
     const inputs = e2eInputs({ ...base, name: 'x', test: '', fixtures: { 'x.e2e-fixture.html': '<script src="/dist/components/wysiwyg.js"></script>' } });
-    expect(inputs).toContain('src/components/code-example/');
+    expect(inputs).toContain('src/components/wysiwyg-editors/code-example/');
   });
 
   it('a test of the documentation site depends on everything that renders it', () => {

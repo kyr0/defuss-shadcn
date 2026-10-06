@@ -1,6 +1,7 @@
 ---
 name: Maintenance
 type: BLK
+section: website
 why: Text, a <time> for the expected end and an indeterminate <progress> - honest, readable, no script.
 when: Planned downtime and degraded service. A failed request is error-state; a release in the future is coming-soon.
 where: dist/components/maintenance/maintenance.css

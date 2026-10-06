@@ -2,6 +2,7 @@ import { chromium, type Page } from 'playwright';
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
+import { componentFile } from '../../src/documentation/lib/component-dirs.ts';
 
 /**
  * Why: the section bundles (scripts/lib/sections.ts) and their vendoring ZIPs
@@ -52,7 +53,7 @@ const pages = new Map<string, string>();
 const htmlBlocks = (md: string): string => [...md.matchAll(/```html\n([\s\S]*?)```/g)].map((m) => m[1]).join('\n');
 /** every member's documented markup, without its script tags (the bundles bring the behavior) */
 const markupOf = (members: readonly string[]): string =>
-  members.map((m) => htmlBlocks(readFileSync(join(ROOT, 'src', 'components', m, 'component-skill.md'), 'utf8'))).join('\n').replace(/<script\b[\s\S]*?<\/script>/gi, '');
+  members.map((m) => htmlBlocks(readFileSync(componentFile(join(ROOT, 'src', 'components'), m, 'component-skill.md'), 'utf8'))).join('\n').replace(/<script\b[\s\S]*?<\/script>/gi, '');
 /** the tags the ZIP's README tells a user to copy */
 function readmeTags(folder: string): string {
   const readme = readFileSync(join(OUT, folder, 'README.md'), 'utf8');
@@ -149,7 +150,7 @@ try {
       const full = await render(`${name}-full`, withEverythingElse(readmeTags(folder), name, s), body, `/zip/${folder}/`);
       assert.deepEqual(lean.errors, full.errors, 'the same script errors as on the whole system (ideally none)');
       for (const m of s.members)
-        if (existsSync(join(ROOT, 'src', 'components', m, `${m}.ts`))) assert.ok(lean.apis.includes(`${camel(m)}Api`), `${m} registered its State API from the section bundle`);
+        if (existsSync(componentFile(join(ROOT, 'src', 'components'), m, `${m}.ts`))) assert.ok(lean.apis.includes(`${camel(m)}Api`), `${m} registered its State API from the section bundle`);
       assert.ok(lean.apis.length <= full.apis.length, `the section load is a subset (${lean.apis.length} of ${full.apis.length} State APIs)`);
       const [a, b] = [await snapshot(lean.page), await snapshot(full.page)];
       assert.equal(a.length, b.length, 'same element count');

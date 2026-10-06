@@ -1,6 +1,7 @@
 ---
 name: Payment Form
 type: BLK
+section: website
 why: The method tabs are radio inputs and :has(:checked) shows the matching panel; the card fields use cc-* autocomplete tokens and inputmode - no script.
 when: The last step of checkout. Shipping comes from address-form and delivery-options.
 where: dist/components/payment-form/payment-form.css

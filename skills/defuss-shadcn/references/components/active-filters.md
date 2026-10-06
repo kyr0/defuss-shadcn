@@ -1,6 +1,7 @@
 ---
 name: Active Filters
 type: BLK
+section: website
 why: Each chip is a link to the same results without that filter - removal works without script, and every link says what it removes.
 when: Above filtered results, under filter-bar or beside filter-sidebar.
 where: dist/components/active-filters/active-filters.css

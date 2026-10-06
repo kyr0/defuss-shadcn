@@ -1,6 +1,7 @@
 ---
 name: Registration Form
 type: BLK
+section: website
 why: Radio cards and checkboxes hold every choice (:has(:checked) shows it); fieldsets name the groups; the browser validates - no script.
 when: Conference and event sign-up. Appointments use booking-form; account creation is signup-form.
 where: dist/components/registration-form/registration-form.css

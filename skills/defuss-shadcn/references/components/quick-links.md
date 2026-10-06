@@ -1,6 +1,7 @@
 ---
 name: Quick Links
 type: BLK
+section: website
 why: A nav of plain links - the variants are layout and emphasis only. No script.
 when: Dashboards, help-center fronts, 404 pages, footers of long pages. Content categories are category-menu.
 where: dist/components/quick-links/quick-links.css

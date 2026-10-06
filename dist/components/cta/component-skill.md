@@ -1,6 +1,7 @@
 ---
 name: CTA
 type: BLK
+section: website
 why: A heading, one sentence and links styled as Buttons; container queries switch the split - no script.
 when: Between sections or at the end of a page, whenever one action matters most. A list of choices is pricing; an email field alone is newsletter.
 where: dist/components/cta/cta.css

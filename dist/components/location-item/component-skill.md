@@ -1,6 +1,7 @@
 ---
 name: Location Item
 type: BLK
+section: website
 why: An <address> with real tel: and maps links; the open / closed state is one data attribute - no script.
 when: Store, office and venue lists. Several places on a map use location-map; finding the nearest uses locator-search.
 where: dist/components/location-item/location-item.css

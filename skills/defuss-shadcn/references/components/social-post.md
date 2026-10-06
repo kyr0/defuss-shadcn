@@ -1,6 +1,7 @@
 ---
 name: Social Post
 type: BLK
+section: website
 why: Rendered locally from your own markup: no third-party embed script, no tracking, no layout shift - an article with a <time> and labelled numbers.
 when: Social proof, "what people say" walls, press kits. Curated customer quotes are testimonials; a feed of your own updates is news-item.
 where: dist/components/social-post/social-post.css

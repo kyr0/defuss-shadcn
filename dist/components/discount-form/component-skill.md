@@ -1,6 +1,7 @@
 ---
 name: Discount Form
 type: BLK
+section: website
 why: pattern + required check the format in the browser, :user-invalid and aria-invalid show the error - the applied state is plain markup with a remove button.
 when: Cart and checkout. Gift cards with a balance need their own form; a promotion banner is offer-banner.
 where: dist/components/discount-form/discount-form.css

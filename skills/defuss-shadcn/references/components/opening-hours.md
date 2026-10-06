@@ -1,6 +1,7 @@
 ---
 name: Opening Hours
 type: BLK
+section: website
 why: A <dl> of days; aria-current="date" marks today for assistive technology and styling alike; exceptions are <time>s - no script.
 when: Stores, offices, venues, support desks. Use inside location-item or on its own.
 where: dist/components/opening-hours/opening-hours.css

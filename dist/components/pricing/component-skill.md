@@ -1,6 +1,7 @@
 ---
 name: Pricing
 type: BLK
+section: website
 why: Plan cards are a stretch-aligned grid; the billing toggle is native radios plus :has(), so one checked input flips every plan with zero JS.
 when: Plans/tiers section of a marketing page; a single plan needs no grid - one card suffices.
 where: dist/components/pricing/pricing.css

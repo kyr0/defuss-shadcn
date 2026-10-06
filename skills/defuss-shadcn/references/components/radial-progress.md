@@ -1,6 +1,7 @@
 ---
 name: Radial Progress
 type: ATM
+section: feedback-status
 why: A conic-gradient masked to a ring plus a typed @property draws the arc with no SVG; the optional script makes it state - tones, percent / x of n / template labels, step jumps or a linear glide, and reset / step / play buttons.
 when: A percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, an unknown total can spin (indeterminate) or take spinner.
 where: dist/components/radial-progress/radial-progress.css + dist/components/radial-progress/radial-progress.js

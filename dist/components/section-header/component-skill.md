@@ -1,6 +1,7 @@
 ---
 name: Section Header
 type: BLK
+section: website
 why: Plain heading + paragraph + links; flex-wrap gives the split layout its fallback and a container query scales the title - no breakpoints, no script.
 when: Above any page section (features, pricing, a list of posts). A whole-page opener with media takes hero; a news or blog front takes news-header / blog-header.
 where: dist/components/section-header/section-header.css

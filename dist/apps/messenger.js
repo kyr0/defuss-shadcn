@@ -4169,7 +4169,7 @@ installDdf({
   coerceIndex
 });
 
-// src/components/avatar/avatar.ts
+// src/components/data-display/avatar/avatar.ts
 var df$ = defussGlobals();
 var dfDollar = defussQuery();
 var avatarStates = ["default", "error"];
@@ -4232,7 +4232,7 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-// src/components/dialog/dialog.ts
+// src/components/overlays/dialog/dialog.ts
 var df$2 = defussGlobals();
 var dfDollar2 = defussQuery();
 var dialogStates = ["default", "open"];
@@ -4294,7 +4294,7 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-// src/components/dropdown/dropdown.ts
+// src/components/navigation/dropdown/dropdown.ts
 var df$3 = defussGlobals();
 var dfDollar3 = defussQuery();
 var dropdownStates = ["default", "open"];
@@ -4602,7 +4602,7 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/popover/popover.ts
+// src/components/overlays/popover/popover.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
 var popoverStates = ["default", "open"];
@@ -4646,7 +4646,7 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-// src/components/resizer/resizer.ts
+// src/components/application/resizer/resizer.ts
 var df$5 = defussGlobals();
 var dfDollar5 = defussQuery();
 var resizerStates = ["default"];
@@ -4930,7 +4930,7 @@ function init5() {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// src/components/session/session.ts
+// src/components/chat/session/session.ts
 var df$6 = defussGlobals();
 var dfDollar6 = defussQuery();
 var sessionStates = ["default", "detached", "streaming"];
@@ -5312,7 +5312,7 @@ df$6.session = {
 init6();
 new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
-// src/components/toast/toast.ts
+// src/components/feedback-status/toast/toast.ts
 var df$7 = defussGlobals();
 var dfDollar7 = defussQuery();
 var toastStates = ["default"];
@@ -5566,6 +5566,6 @@ var toastActions = {
 };
 df$7.toast = toastActions;
 
-//# debugId=245BEF9D6E03E99C64756E2164756E21
+//# debugId=369D77871BCCB08964756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=messenger.js.map

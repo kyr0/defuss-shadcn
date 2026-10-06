@@ -1,0 +1,462 @@
+// -- Sortable -------------------------------------------------
+// Drag-and-drop + keyboard reordering for sortable lists.
+// Keyboard: Arrow keys navigate, Alt+Arrow reorders, Home/End jump.
+// Move buttons (.sortable-move[data-move="up|down"]) reorder by tap/click -
+// the path for touch screens, where native drag-and-drop mostly never starts.
+// Connected lists (same data-group) exchange items: drag across, or
+// Alt + the cross-axis arrow moves the focused item to the neighbouring list.
+// Live region announces position changes to screen readers.
+// Named-state API (AGENTS.md "State API"): the list's observable state is
+// its item order + active item, so 'default' restores the authored order
+// (optional { index } activates one item) and getState() reports both live.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+// defussQuery: the callable runtime - order restoration moves existing nodes
+// through query .append(), drops/reorders through query .before()/.after(),
+// and drag/active flags ride query scalar writes (§3 sortable row: native
+// moves already keep identity; the shared adapter is the win, no morph).
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What sortable-change carries - one event per list a move touches. */
+interface SortableChangeDetail {
+  /** the item that moved */
+  item: HTMLElement;
+  /** its index in this list now; -1 on the list it left */
+  index: number;
+  /** a move between lists, on the list it joined: the list it came from */
+  from?: HTMLElement;
+  /** a move between lists, on the list it left: the list it went to */
+  to?: HTMLElement | null;
+}
+
+const sortableStates = ['default'];
+
+/** setState() configs per state (getState() reports the order and the active item). */
+export interface SortableStateConfigs {
+  /** The authored order (setting it restores that order). */
+  default: {
+    /** the item to make active (roving focus), 0-based */
+    index?: number;
+    /** reported by getState(): the items' labels in the current order */
+    order?: string[];
+    /** reported by getState(): the active item's index, -1 for none */
+    activeIndex?: number;
+  };
+}
+
+/**
+ * The one drag in flight on this document: the picked-up item and the list it
+ * left. Transient pointer (set on dragstart, cleared on dragend) - shared at
+ * module level because a drop into a CONNECTED list is handled by that list,
+ * not the one the drag started in. Never state: the State API stays per list.
+ */
+let drag: { item: HTMLElement; from: HTMLElement } | null = null;
+
+const sortableLabels = (list) =>
+  dfDollar(list)
+    .find('.sortable-item')
+    .map((item: HTMLElement) => dfDollar(item).find('span:not(.sortable-handle):not(.sortable-moves)').text().trim());
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(_el, _stateName) {
+  // one state: the authored order - which the authored copy already has;
+  // { index } only moves the roving focus stop (runtime-owned, see the e2e)
+}
+
+/**
+ * UI side of setState: 'default' restores the authored order snapshot (taken
+ * at init) and optionally activates the item at config.index.
+ */
+function triggerStateChange(list, stateName, config) {
+  if (stateName !== 'default') return;
+  // one query move of the existing nodes in snapshot order (§3: .append on
+  // one parent - nodes are MOVED, never re-created, handlers survive)
+  dfDollar(list).append(list._defaultOrder ?? []);
+  list._syncMoves?.();
+  if (config?.index !== undefined) {
+    const item = dfDollar(list).find('.sortable-item')[Number(config.index)];
+    list._setActive?.(item);
+  }
+}
+
+/** Registry-level API; pass the list element explicitly. Unknown names throw. */
+export const sortableApi = componentState({
+  component: 'sortable',
+  states: sortableStates,
+  apply: (list, state) => triggerStateChange(list, state.name, state.config),
+  read: (list, state) => {
+    const items = Array.from(dfDollar(list).find('.sortable-item'));
+    const active = dfDollar(list).find('.sortable-item[data-active]')[0];
+    return {
+      name: list.dataset.stateName || 'default',
+      config: {
+        ...state.config,
+        order: sortableLabels(list),
+        activeIndex: active ? items.indexOf(active) : -1,
+      },
+    };
+  },
+  markup: (el, state) => applyMarkup(el, state.name),
+});
+
+df$.sortableApi = sortableApi;
+df$.sortableStates = sortableStates;
+
+function init() {
+dfDollar('.sortable:not([data-init])').toArray().forEach((list) => {
+  list.dataset.init = '';
+  // el.store + el.api (AGENTS.md "State through stores")
+  bindComponent(list, sortableApi);
+
+  const isHorizontal = list.dataset.orientation === 'horizontal';
+  const NEXT_KEY = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+  const PREV_KEY = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
+  // connected lists sit side by side (vertical) or stacked (horizontal):
+  // the cross-axis arrows step between them
+  const NEXT_LIST_KEY = isHorizontal ? 'ArrowDown' : 'ArrowRight';
+  const PREV_LIST_KEY = isHorizontal ? 'ArrowUp' : 'ArrowLeft';
+
+  // -- Live region for announcements --
+  // Look only at the node directly after the list (where init inserts it): a
+  // parent-wide query would hand sibling lists the same region, so one list
+  // would announce through a region anchored to the other list.
+  let liveRegion = list.nextElementSibling;
+  if (!liveRegion || !liveRegion.classList.contains('sortable-live')) {
+    liveRegion = document.createElement('span');
+    liveRegion.className = 'sortable-live';
+    liveRegion.setAttribute('aria-live', 'assertive');
+    liveRegion.setAttribute('role', 'status');
+    // mount right after the list (§5.1: query's exact .after(), one branch)
+    dfDollar(list).after(liveRegion);
+  }
+
+  function announce(msg) {
+    // double write re-triggers the live region for repeated identical messages
+    dfDollar(liveRegion).text('');
+    requestAnimationFrame(() => { dfDollar(liveRegion).text(msg); });
+  }
+
+  function getItems() {
+    return Array.from(dfDollar(list).find('.sortable-item:not([aria-disabled="true"])'));
+  }
+
+  function getAllItems() {
+    return Array.from(dfDollar(list).find('.sortable-item'));
+  }
+
+  const isLocked = (el) => el.getAttribute('aria-disabled') === 'true';
+  const listName = () => list.getAttribute('aria-label') || 'the list';
+
+  /**
+   * Why: a locked item (aria-disabled="true") is a fixed SLOT, not just an
+   * item you can't pick up - it keeps its position while the others move
+   * around it, so a locked row in the middle stays a stable divider (the
+   * groups above and below keep their size). Moves are therefore expressed
+   * as "take this item to slot t": if t is locked, the item continues to the
+   * next free slot in its direction of travel (or, at the list's edge, the
+   * nearest free slot back); the movable items then refill the free slots in
+   * order around the untouched locked ones. One query .append() of the final
+   * order moves the existing nodes (identity + handlers survive).
+   * Returns the slot the item landed in, or -1 for a no-op.
+   */
+  function place(item, target) {
+    const all = getAllItems();
+    const from = all.indexOf(item);
+    const n = all.length;
+    const fixed = all.map(isLocked);
+    const t = Math.max(0, Math.min(n - 1, target));
+    const dir = t < from ? -1 : 1;
+    let slot = t;
+    while (slot >= 0 && slot < n && fixed[slot]) slot += dir;
+    if (slot < 0 || slot >= n) {
+      slot = t;
+      while (slot >= 0 && slot < n && fixed[slot]) slot -= dir;
+    }
+    if (slot < 0 || slot >= n || slot === from) return -1;
+    const movable = all.filter((el) => !isLocked(el) && el !== item);
+    // the item becomes the k-th free slot; the rest fill the others in order
+    const k = fixed.slice(0, slot).filter((f) => !f).length;
+    movable.splice(k, 0, item);
+    let m = 0;
+    dfDollar(list).append(all.map((el, i) => (fixed[i] ? el : movable[m++])));
+    return slot;
+  }
+
+  /**
+   * Move buttons: Up is disabled where the item has no free slot before it,
+   * Down where it has none after it (locked slots don't count - place() steps
+   * over them). Unlabelled buttons get "Move {item} up/down".
+   */
+  function syncMoves() {
+    const all = getAllItems();
+    const free = all.map((el) => !isLocked(el));
+    all.forEach((item, i) => {
+      const label = getItemLabel(item);
+      dfDollar(item).find('.sortable-move').each(function (this: HTMLButtonElement) {
+        const up = this.dataset.move === 'up';
+        const room = up ? free.slice(0, i).some(Boolean) : free.slice(i + 1).some(Boolean);
+        dfDollar(this).prop('disabled', isLocked(item) || !room);
+        if (!this.hasAttribute('aria-label') || this.dataset.autoLabel !== undefined) {
+          dfDollar(this).attr('aria-label', `Move ${label} ${up ? 'up' : 'down'}`).data('autoLabel', '');
+        }
+      });
+    });
+  }
+  list._syncMoves = syncMoves;
+
+  /** announce + activate + sortable-change after a move (index = slot in the full list). */
+  function moved(item, slot, focus = true) {
+    const n = getAllItems().length;
+    announce(`${getItemLabel(item)}, moved to position ${slot + 1} of ${n}`);
+    setActive(item, focus);
+    syncMoves();
+    // Fires after a move (drag or keyboard) - the item, its new index, and the positions it moved from and to.
+    list.dispatchEvent(new CustomEvent<SortableChangeDetail>('sortable-change', {
+      bubbles: true,
+      detail: { item, index: slot }
+    }));
+  }
+
+  /**
+   * Take an item from a connected list and insert it at `index` (clamped;
+   * past the end = append). The receiving list owns the follow-up: roving
+   * tabindex, move buttons, announcement and both lists' sortable-change
+   * (`detail.from` here, `detail.to` on the list it left).
+   */
+  function receive(item, index, from, focus = true) {
+    const all = getAllItems();
+    const before = all[Math.max(0, index)];
+    if (before) dfDollar(before).before(item);
+    else dfDollar(list).append(item);
+    const slot = getAllItems().indexOf(item);
+    announce(`${getItemLabel(item)}, moved to ${listName()}, position ${slot + 1} of ${getAllItems().length}`);
+    setActive(item, focus);
+    syncMoves();
+    from._released?.(item);
+    list.dispatchEvent(new CustomEvent<SortableChangeDetail>('sortable-change', {
+      bubbles: true,
+      detail: { item, index: slot, from }
+    }));
+  }
+  list._receive = receive;
+
+  /** The list an item just left: repair roving tabindex + buttons, report it. */
+  list._released = (item) => {
+    const items = getItems();
+    if (items.length && !items.some((el) => el.getAttribute('tabindex') === '0')) {
+      dfDollar(items[0]).attr('tabindex', '0');
+    }
+    if (!items.length) list.removeAttribute('data-active-index');
+    syncMoves();
+    list.dispatchEvent(new CustomEvent<SortableChangeDetail>('sortable-change', {
+      bubbles: true,
+      detail: { item, index: -1, to: item.closest('.sortable') }
+    }));
+  };
+
+  /** Lists this one exchanges items with (same data-group), document order. */
+  const groupLists = () => {
+    const group = list.dataset.group;
+    return group
+      ? Array.from(dfDollar('.sortable[data-group]').toArray()).filter((l) => (l as HTMLElement).dataset.group === group)
+      : [list];
+  };
+
+  function getActiveItem() {
+    return dfDollar(list).find('.sortable-item[data-active]')[0];
+  }
+
+  function setActive(item, focus = true) {
+    // active flag + roving tabindex through query scalars
+    getAllItems().forEach((el) => { dfDollar(el).data('active', null).attr('tabindex', '-1'); });
+    if (item) {
+      dfDollar(item).data('active', '').attr('tabindex', '0');
+      // mirror the active position onto the LIST root - the schema's
+      // activeIndex observation reads one stable attribute instead of
+      // scanning children (and survives item reorder/moves)
+      list.dataset.activeIndex = String(getItems().indexOf(item));
+      if (focus) item.focus(); // native focus protocol stays native
+    } else {
+      list.removeAttribute('data-active-index');
+    }
+  }
+  // expose for the State API (element member, not module scope)
+  list._setActive = setActive;
+  // authored-order snapshot for setState('default')
+  list._defaultOrder = getAllItems();
+
+  function getItemLabel(item) {
+    const clone = item.cloneNode(true);
+    dfDollar(clone).find('.sortable-handle, .sortable-moves, .sortable-move').toArray().forEach((el) => el.remove());
+    return clone.textContent.trim();
+  }
+
+  // -- Initialize tabindex + move buttons --
+  const allItems = getAllItems();
+  allItems.forEach((item, i) => {
+    dfDollar(item).attr('tabindex', i === 0 ? '0' : '-1');
+  });
+  syncMoves();
+
+  // -- Drag and drop (delegated on the list, so an item that arrives from a
+  //    connected list is draggable here without re-binding) --
+  const accepts = () =>
+    !!drag && (drag.from === list || (!!list.dataset.group && list.dataset.group === drag.from.dataset.group));
+  const clearOver = () => {
+    dfDollar(list).find('[data-over]').data('over', null);
+    dfDollar(list).data('over', null);
+  };
+
+  list.addEventListener('dragstart', (e) => {
+    const item = (e.target as HTMLElement).closest?.('.sortable-item') as HTMLElement | null;
+    if (!item || !list.contains(item) || isLocked(item)) return;
+    drag = { item, from: list };
+    dfDollar(item).data('dragging', '');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
+  });
+
+  list.addEventListener('dragend', () => {
+    if (drag) dfDollar(drag.item).data('dragging', null);
+    groupLists().forEach((l) => {
+      dfDollar(l).data('over', null);
+      dfDollar(l).find('[data-over]').data('over', null);
+    });
+    drag = null;
+  });
+
+  list.addEventListener('dragover', (e) => {
+    if (!accepts()) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const item = (e.target as HTMLElement).closest?.('.sortable-item') as HTMLElement | null;
+    clearOver();
+    if (item && list.contains(item)) {
+      if (item === drag!.item) return;
+      const rect = item.getBoundingClientRect();
+      const midpoint = isHorizontal ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
+      const pos = isHorizontal ? e.clientX : e.clientY;
+      dfDollar(item).data('over', pos < midpoint ? 'before' : 'after');
+    } else {
+      // over the list's own box (gap, padding, an empty list): drop at the end
+      dfDollar(list).data('over', 'end');
+    }
+  });
+
+  list.addEventListener('dragleave', (e) => {
+    if (!list.contains(e.relatedTarget as Node)) clearOver();
+  });
+
+  list.addEventListener('drop', (e) => {
+    if (!accepts()) return;
+    e.preventDefault();
+    const target = dfDollar(list).find('.sortable-item[data-over]')[0] as HTMLElement | undefined;
+    const position = target ? dfDollar(target).data('over') : 'end';
+    clearOver();
+    const { item: dragged, from } = drag!;
+    const all = getAllItems();
+
+    if (from !== list) {
+      // from a connected list: insert at the drop point
+      const index = target ? all.indexOf(target) + (position === 'before' ? 0 : 1) : all.length;
+      receive(dragged, index, from);
+      return;
+    }
+    if (target === dragged) return;
+    // the drop point as a slot in the full list (the dragged item's own
+    // slot frees up first when it moves down), then a slot-preserving move
+    const fromIndex = all.indexOf(dragged);
+    let slotTarget = target ? all.indexOf(target) + (position === 'before' ? 0 : 1) : all.length;
+    if (fromIndex < slotTarget) slotTarget -= 1;
+    const slot = place(dragged, slotTarget);
+    if (slot >= 0) moved(dragged, slot);
+  });
+
+  // -- Move buttons (tap / click reordering) --
+  list.addEventListener('click', (e) => {
+    const button = (e.target as HTMLElement).closest?.('.sortable-move') as HTMLButtonElement | null;
+    if (!button || button.disabled || !list.contains(button)) return;
+    const item = button.closest('.sortable-item') as HTMLElement;
+    const from = getAllItems().indexOf(item);
+    const slot = place(item, from + (button.dataset.move === 'up' ? -1 : 1));
+    if (slot < 0) return;
+    // keep focus on the pressed button so repeated taps keep moving the item;
+    // at the list's edge the button disables itself - hand focus to its twin
+    moved(item, slot, false);
+    const target = button.disabled
+      ? (dfDollar(item).find(`.sortable-move[data-move="${button.dataset.move === 'up' ? 'down' : 'up'}"]`).get(0) as HTMLElement | null)
+      : button;
+    target?.focus();
+  });
+
+  // -- Keyboard navigation --
+  list.addEventListener('keydown', (e) => {
+    // keys pressed on a move button belong to the button (Enter / Space)
+    if ((e.target as HTMLElement).closest?.('.sortable-move')) return;
+    const active = getActiveItem() || dfDollar(list).find('.sortable-item[tabindex="0"]')[0];
+    if (!active) return;
+    const items = getItems();
+    const idx = items.indexOf(active);
+
+    // Arrow navigation
+    if (e.key === NEXT_KEY && !e.altKey) {
+      e.preventDefault();
+      const next = items[idx + 1];
+      if (next) setActive(next);
+    } else if (e.key === PREV_KEY && !e.altKey) {
+      e.preventDefault();
+      const prev = items[idx - 1];
+      if (prev) setActive(prev);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      if (items.length) setActive(items[0]);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      if (items.length) setActive(items[items.length - 1]);
+
+    // Alt+Arrow reorders by one slot - a locked slot is stepped around, never
+    // displaced (see place())
+    } else if ((e.key === NEXT_KEY || e.key === PREV_KEY) && e.altKey) {
+      e.preventDefault();
+      const from = getAllItems().indexOf(active);
+      const slot = place(active, from + (e.key === NEXT_KEY ? 1 : -1));
+      if (slot >= 0) moved(active, slot);
+
+    // Alt + cross-axis arrow: move the item to the neighbouring connected list,
+    // at the same position (clamped to its length)
+    } else if ((e.key === NEXT_LIST_KEY || e.key === PREV_LIST_KEY) && e.altKey && list.dataset.group) {
+      e.preventDefault();
+      const lists = groupLists();
+      const other = lists[lists.indexOf(list) + (e.key === NEXT_LIST_KEY ? 1 : -1)] as any;
+      if (!other?._receive) return;
+      other._receive(active, getAllItems().indexOf(active), list);
+    }
+  });
+
+  // -- Focus management --
+  list.addEventListener('focusin', (e) => {
+    const target = e.target as HTMLElement;
+    const item = target.closest('.sortable-item');
+    if (!item || !list.contains(item)) return;
+    // focus on a control INSIDE the item (a move button) marks the item
+    // active but must not pull focus off that control
+    setActive(item, target === item);
+  });
+});
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

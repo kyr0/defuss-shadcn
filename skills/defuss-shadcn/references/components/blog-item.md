@@ -1,6 +1,7 @@
 ---
 name: Blog Item
 type: BLK
+section: website
 why: An <article> whose title link stretches over the item - one tab stop and click target; a Badge for the category, an Avatar byline, line-clamp for the excerpt, flex-wrap for the horizontal fallback.
 when: Post lists and grids on a blog front or a category page. A news story takes news-item; a link under an article takes related-item; a landing-page teaser row takes blog.
 where: dist/components/blog-item/blog-item.css

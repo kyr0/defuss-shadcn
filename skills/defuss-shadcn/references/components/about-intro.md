@@ -1,6 +1,7 @@
 ---
 name: About Intro
 type: BLK
+section: website
 why: Headings, paragraphs and a definition list for the facts; container queries switch the split - no script.
 when: The opening of an about or company page. For one person use team-member; for dated history use timeline-item.
 where: dist/components/about-intro/about-intro.css

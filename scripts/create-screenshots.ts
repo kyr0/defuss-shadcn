@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 import { chromium, type Locator, type Page } from 'playwright';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentDirs, componentFile } from '../src/documentation/lib/component-dirs.ts';
 import { availableParallelism } from 'node:os';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
 
@@ -68,7 +69,7 @@ function serveDist() {
 
 /** Non-'default' states declared by the component source (parsed from {name}States). */
 function stateNames(name: string): string[] {
-  const ts = join(COMPS, name, `${name}.ts`);
+  const ts = componentFile(COMPS, name, `${name}.ts`);
   if (!existsSync(ts)) return [];
   return declaredStates(readFileSync(ts, 'utf8')).filter((s) => s !== 'default');
 }
@@ -215,7 +216,7 @@ type Manifest = {
   renders: Record<string, string>;
 };
 
-const components = readdirSync(COMPS).filter((d) => statSync(join(COMPS, d)).isDirectory());
+const components = componentDirs(COMPS).map((c) => c.name);
 if (FORCE) rmSync(OUT, { recursive: true, force: true }); // --force: full recapture
 for (const mode of MODES) mkdirSync(join(OUT, mode), { recursive: true });
 

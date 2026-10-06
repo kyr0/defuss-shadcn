@@ -1,6 +1,7 @@
 ---
 name: Panel
 type: MOL
+section: application
 why: A titled .card whose minimize / maximize tools are Swaps - a native checkbox each, so the face and the keyboard are the browser's; the runtime keeps the state in step and makes the panel a border-layout region that folds to its title bar (a vertical tab in west / east) like the ExtJS 4 border layout.
 when: Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window.
 where: dist/components/panel/panel.css + dist/components/panel/panel.js (+ card, swap)

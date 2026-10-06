@@ -1,6 +1,7 @@
 ---
 name: Timeline Item
 type: BLK
+section: website
 why: A <time> and a heading in a list item; the line and dots are borders and pseudo-elements - no script.
 when: Company history, "our story" and milestone pages. Generic event lists are the timeline component; numbered workflow stages are process-step.
 where: dist/components/timeline-item/timeline-item.css

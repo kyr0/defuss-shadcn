@@ -1,0 +1,500 @@
+// -- Session ----------------------------------------------------
+// A chat transcript that behaves like one: it follows the live edge while
+// the reader is there and lets go the moment they scroll away; a button
+// brings them back; history loaded above keeps their place; a new turn can
+// anchor near the top with a peek at the one before; files dropped on it
+// arrive as an event. The scrolling is native (a focusable region, the
+// keyboard's own keys) - this module only decides where to put it.
+// Plus the named-state API (AGENTS.md "State API") and df$.shadcn.session.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** How an added message is marked. */
+interface SessionItemOptions {
+  /** its data-message-id - what scrollToMessage() and session-visibility name it by */
+  id?: string;
+  /** true: an anchor - a turn the reader lands on and the visibility event reports */
+  anchor?: boolean;
+}
+
+/** How a scroll moves. */
+interface SessionScrollOptions {
+  /** false jumps instead of scrolling smoothly (default true) */
+  smooth?: boolean;
+}
+
+/** What session-visibility carries. */
+interface SessionVisibilityDetail {
+  /** the id of the anchor the reader is in, null when none has an id */
+  currentAnchorId: string | null;
+  /** the ids of the messages in view, in order */
+  visibleMessageIds: string[];
+}
+
+/** What session-drop carries. */
+interface SessionDropDetail {
+  /** the dropped files data-drop accepts */
+  files: File[];
+}
+
+/** default = following the live edge; detached = the reader scrolled away
+ *  (or a turn anchored); streaming = a reply is being written (aria-busy),
+ *  the transcript follows it. */
+const sessionStates = ['default', 'detached', 'streaming'];
+
+/** setState() configs per state. */
+export interface SessionStateConfigs {
+  /** Following the live edge - new messages scroll into view (scrolls to the end). */
+  default: {
+    /** false jumps to the end instead of scrolling smoothly */
+    smooth?: boolean;
+  };
+  /** Not following: the reader scrolled away, or a turn anchored. */
+  detached: {
+    /** where to scroll: 'start', or a message's data-message-id */
+    to?: string;
+  };
+  /** A reply is being written: aria-busy on the log; it follows the reply while the reader is at the end - default ends it. */
+  streaming: {};
+}
+
+const num = (el, key, fallback) => {
+  const v = parseFloat(el.dataset[key]);
+  return Number.isFinite(v) ? v : fallback;
+};
+const reduced = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+
+const parts = (s) => ({
+  viewport: dfDollar(s).find(':scope > .session-viewport').get(0),
+  content: dfDollar(s).find(':scope > .session-viewport > .session-content').get(0),
+});
+
+/** How far from the end the reader is, in px. */
+const fromEnd = (v) => v.scrollHeight - v.scrollTop - v.clientHeight;
+
+/** Scrolls the viewport without the reader's scroll logic reacting to it. */
+function scrollViewport(s, top, smooth) {
+  const { viewport } = s._parts;
+  s.setAttribute('data-autoscrolling', '');
+  viewport.scrollTo({ top, behavior: smooth && !reduced() ? 'smooth' : 'instant' });
+  clearTimeout(s._settle);
+  // scrollend where the browser has it; a timeout covers the rest
+  s._settle = setTimeout(() => settle(s), smooth ? 700 : 50);
+}
+
+function settle(s) {
+  clearTimeout(s._settle);
+  s.removeAttribute('data-autoscrolling');
+  measure(s);
+}
+
+/** Recomputes what lies beyond each edge and the follow flag. */
+function measure(s) {
+  const { viewport } = s._parts;
+  if (!viewport) return;
+  const threshold = num(s, 'threshold', 48);
+  const start = viewport.scrollTop > 1;
+  const end = fromEnd(viewport) > 1;
+  const tokens = [start && 'start', end && 'end'].filter(Boolean).join(' ');
+  if (tokens) s.setAttribute('data-scrollable', tokens);
+  else s.removeAttribute('data-scrollable');
+  dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
+    const active = b.dataset.to === 'start' ? start : end;
+    b.dataset.active = String(active);
+    b.inert = !active;
+  });
+  s._height = viewport.scrollHeight;
+  // only the reader's own scrolling moves the follow flag
+  if (!s.hasAttribute('data-autoscrolling')) {
+    // room reserved under an anchored turn is not a live edge to follow
+    const reserved = parseFloat(s._parts.content.style.paddingBlockEnd) > 0;
+    const stick = fromEnd(viewport) <= threshold && !reserved;
+    setStick(s, stick);
+  }
+  track(s);
+}
+
+function setStick(s, stick) {
+  s.toggleAttribute('data-stick', stick);
+  const name = s.dataset.stateName;
+  if (name === 'streaming') return; // streaming stays the named state
+  const next = stick ? 'default' : 'detached';
+  if (name !== next) sessionApi.commit(s, next, {});
+}
+
+/** Keeps a target position while rows settle - see onResize. */
+function hold(s, target, ms) {
+  s._opening = target;
+  clearTimeout(s._holdTimer);
+  s._holdTimer = setTimeout(() => { s._opening = null; }, ms);
+}
+
+/**
+ * Room under the latest anchored turn: a short reply leaves nothing to
+ * scroll into, so the turn could never reach the top. The content's end
+ * padding is exactly what is missing - it shrinks to 0 as the reply grows
+ * past the window.
+ */
+function anchorSpace(s) {
+  const a = s._anchor;
+  const { viewport, content } = s._parts;
+  if (!a || !content.contains(a)) {
+    if (content.style.paddingBlockEnd) content.style.paddingBlockEnd = '';
+    s._anchor = null;
+    return;
+  }
+  const pad = parseFloat(content.style.paddingBlockEnd) || 0;
+  const vpPad = parseFloat(getComputedStyle(viewport).paddingBlockEnd) || 0;
+  // layout offsets, not rects: a row rising in (data-animate) is translated
+  const below = content.offsetTop + content.offsetHeight - pad - a.offsetTop;
+  const need = Math.max(0, Math.round(viewport.clientHeight - vpPad - num(s, 'peek', 48) - below));
+  if (need !== Math.round(pad)) content.style.paddingBlockEnd = need ? `${need}px` : '';
+  // measure, don't assume: top up whatever the real scroll range still lacks
+  if (need) {
+    const short = anchorTop(s, a) - (viewport.scrollHeight - viewport.clientHeight);
+    if (short > 0) content.style.paddingBlockEnd = `${need + Math.ceil(short)}px`;
+  }
+}
+
+/** Where an anchored item settles: near the top, a peek of the previous one. */
+const anchorTop = (s, item) => item.offsetTop - num(s, 'peek', 48);
+
+// -- Imperative scrolling ----------------------------------------------------
+
+function scrollToEnd(s, { smooth = true } = {}) {
+  s.setAttribute('data-stick', '');
+  scrollViewport(s, s._parts.viewport.scrollHeight, smooth);
+}
+function scrollToStart(s, { smooth = true } = {}) {
+  s.removeAttribute('data-stick');
+  scrollViewport(s, 0, smooth);
+}
+function scrollToMessage(s, id, { smooth = true } = {}) {
+  const item = dfDollar(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
+  if (!item) return false;
+  s.removeAttribute('data-stick');
+  scrollViewport(s, anchorTop(s, item), smooth);
+  // rows it passes may only now render at their real size: keep aiming at
+  // the message for a moment (the reader's own scroll cancels the hold)
+  hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
+  return true;
+}
+
+/**
+ * The markup of a state, for render(): the attributes a state writes, applied
+ * to a detached copy of the authored markup ('default' IS the authored
+ * markup). The live element gets the same markup from triggerStateChange -
+ * the e2e render round trip proves they agree.
+ */
+function applyMarkup(el, stateName) {
+  // the busy log while streaming. Following (data-stick) is the scroll
+  // position's - layout, written by the scroll tracking - runtime-owned
+  const { content } = parts(el);
+  if (content) dfDollar(content).attr('aria-busy', stateName === 'streaming' ? 'true' : null);
+}
+
+/**
+ * UI side of setState. 'default' re-engages following and scrolls to the
+ * end (ends streaming); 'detached' lets go - `{ to: 'start' | messageId }`
+ * scrolls there; 'streaming' marks the log busy and follows the growing
+ * reply while the reader is at the end.
+ */
+function triggerStateChange(s, stateName, config) {
+  const { content } = s._parts;
+  if (stateName === 'streaming') content.setAttribute('aria-busy', 'true');
+  else content.removeAttribute('aria-busy');
+  switch (stateName) {
+    case 'default':
+      scrollToEnd(s, { smooth: config.smooth !== false });
+      break;
+    case 'detached':
+      s.removeAttribute('data-stick');
+      if (config.to === 'start') scrollToStart(s);
+      else if (typeof config.to === 'string') scrollToMessage(s, config.to);
+      break;
+    case 'streaming':
+      if (s.hasAttribute('data-stick')) scrollToEnd(s, { smooth: false });
+      break;
+  }
+}
+
+/** Registry-level API; pass the .session element explicitly. Unknown names throw. */
+export const sessionApi = componentState({
+  component: 'session',
+  states: sessionStates,
+  apply: (s, state) => {
+    s.dataset.stateName = state.name;
+    triggerStateChange(s, state.name, state.config);
+  },
+  markup: (el, state) => applyMarkup(el, state.name),
+});
+
+df$.sessionApi = sessionApi;
+df$.sessionStates = sessionStates;
+
+// -- Reacting to the transcript changing ------------------------------------
+
+/**
+ * Items added: a prepend (history) keeps the reader's place; an append
+ * follows the live edge when the reader is there - or anchors the turn
+ * near the top when it carries data-anchor.
+ */
+function onItems(s, records) {
+  const { viewport } = s._parts;
+  const before = s._height ?? viewport.scrollHeight;
+  let prepended = false;
+  let appended = false;
+  let anchored = null;
+  for (const r of records) {
+    if (!r.addedNodes.length) continue;
+    // nothing after the insertion = an append; nothing before it = a prepend
+    if (r.nextSibling === null) {
+      appended = true;
+      for (const node of r.addedNodes) if (node.nodeType === 1 && node.matches('.session-item[data-anchor]')) anchored = node;
+    } else if (r.previousSibling === null) prepended = true;
+  }
+  if (prepended && !appended) {
+    // history above: shift by exactly what was added, the visible row stays
+    // put. Off-screen rows skip rendering (content-visibility) and count at
+    // an estimate - render the new ones once so the shift is their real
+    // height; 'auto' then remembers it, so nothing moves later.
+    const added = records.flatMap((r) => [...r.addedNodes]).filter((n) => n.nodeType === 1);
+    added.forEach((n) => { n.style.contentVisibility = 'visible'; });
+    s.setAttribute('data-autoscrolling', '');
+    viewport.scrollTop += viewport.scrollHeight - before;
+    added.forEach((n) => { n.style.contentVisibility = ''; });
+    settle(s);
+    return;
+  }
+  if (anchored) {
+    s._anchor = anchored;
+    anchorSpace(s);
+    s.removeAttribute('data-stick');
+    scrollViewport(s, anchorTop(s, anchored), true);
+    // rows above may still settle to their real height - keep aiming at the turn
+    hold(s, () => anchorTop(s, anchored), 900);
+    if (s.dataset.stateName !== 'streaming') sessionApi.commit(s, 'detached', {});
+    return;
+  }
+  if (appended && s.hasAttribute('data-stick')) scrollViewport(s, viewport.scrollHeight, s.dataset.stateName !== 'streaming');
+  else measure(s);
+}
+
+/** Content grew in place (a streaming reply): stay on the live edge. */
+function onResize(s) {
+  const { viewport } = s._parts;
+  anchorSpace(s);
+  // opening at the start / an anchor: rows above render at their real size
+  // after the first frames - hold the opening position until the reader moves
+  if (s._opening) {
+    s.setAttribute('data-autoscrolling', '');
+    viewport.scrollTop = s._opening();
+    settle(s);
+    return;
+  }
+  if (s.hasAttribute('data-stick') && fromEnd(viewport) > 1) {
+    s.setAttribute('data-autoscrolling', '');
+    viewport.scrollTop = viewport.scrollHeight;
+    settle(s);
+  } else measure(s);
+}
+
+// -- Visibility tracking (data-track: pay only when asked) -------------------
+
+function track(s) {
+  if (!s.hasAttribute('data-track')) return;
+  const { viewport, content } = s._parts;
+  const top = viewport.getBoundingClientRect().top;
+  const bottom = top + viewport.clientHeight;
+  const items = Array.from(dfDollar(content).find(':scope > .session-item').toArray());
+  const visible = items.filter((it) => {
+    const r = it.getBoundingClientRect();
+    return r.bottom > top && r.top < bottom;
+  });
+  // the current turn: the last anchor that has reached the upper third
+  const line = top + viewport.clientHeight / 3;
+  let current = null;
+  for (const it of items) {
+    if (!it.hasAttribute('data-anchor')) continue;
+    if (it.getBoundingClientRect().top <= line) current = it;
+    else break;
+  }
+  current ??= items.find((it) => it.hasAttribute('data-anchor')) ?? null;
+  const ids = visible.map((it) => it.dataset.messageId).filter(Boolean);
+  const currentId = current?.dataset.messageId ?? null;
+  if (currentId === s._currentId && ids.join() === s._visibleIds) return;
+  s._currentId = currentId;
+  s._visibleIds = ids.join();
+  items.forEach((it) => it.toggleAttribute('data-current', it === current));
+  // Fires when the messages in view change - the current anchor's id and the ids of the visible messages.
+  s.dispatchEvent(new CustomEvent<SessionVisibilityDetail>('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+}
+
+// -- Drop target (data-drop) ----------------------------------------------------
+
+function bindDrop(s) {
+  const hasFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files');
+  if (!s.dataset.dropLabel) s.dataset.dropLabel = 'Drop files to attach';
+  const accept = (s.dataset.dropAccept || '').split(',').map((a) => a.trim()).filter(Boolean);
+  const ok = (file) => !accept.length || accept.some((a) =>
+    a.endsWith('/*') ? file.type.startsWith(a.slice(0, -1)) : a.startsWith('.') ? file.name.toLowerCase().endsWith(a.toLowerCase()) : file.type === a);
+  s.addEventListener('dragenter', (e) => { if (hasFiles(e)) { e.preventDefault(); s.setAttribute('data-drop-active', ''); } });
+  s.addEventListener('dragover', (e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+  s.addEventListener('dragleave', (e) => { if (!s.contains(e.relatedTarget)) s.removeAttribute('data-drop-active'); });
+  s.addEventListener('drop', (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    s.removeAttribute('data-drop-active');
+    const files = [...e.dataTransfer.files].filter(ok);
+    // Fires when files are dropped on the session (data-drop) - the accepted files.
+    if (files.length) s.dispatchEvent(new CustomEvent<SessionDropDetail>('session-drop', { bubbles: true, detail: { files } }));
+  });
+}
+
+/** Back to the live edge: re-engage following (a streaming reply stays streaming). */
+function follow(s, options = {}) {
+  if (s.dataset.stateName === 'streaming') scrollToEnd(s, options);
+  else sessionApi.setState(s, 'default', options);
+}
+
+// -- init ---------------------------------------------------------------------
+
+function init() {
+  dfDollar('.session:not([data-init])').toArray().forEach((s) => {
+    const p = parts(s);
+    if (!p.viewport || !p.content) return; // not a session yet
+    s.dataset.init = '';
+    s._parts = p;
+    const { viewport, content } = p;
+
+    // accessible defaults, unless authored
+    if (!viewport.hasAttribute('role')) viewport.setAttribute('role', 'region');
+    if (!viewport.hasAttribute('aria-label')) viewport.setAttribute('aria-label', 'Messages');
+    if (!viewport.hasAttribute('tabindex')) viewport.tabIndex = 0;
+    if (!content.hasAttribute('role')) content.setAttribute('role', 'log');
+    if (!content.hasAttribute('aria-relevant')) content.setAttribute('aria-relevant', 'additions');
+
+    viewport.addEventListener('scroll', () => {
+      if (s.hasAttribute('data-autoscrolling')) return track(s);
+      s._opening = null; // the reader moved - the opening position is theirs now
+      measure(s);
+    }, { passive: true });
+    // any reader input ends the opening hold too
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) => viewport.addEventListener(type, () => { s._opening = null; }, { passive: true }));
+    viewport.addEventListener('scrollend', () => settle(s));
+    new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
+    new ResizeObserver(() => onResize(s)).observe(content);
+    new ResizeObserver(() => measure(s)).observe(viewport);
+
+    dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
+      b.addEventListener('click', () => (b.dataset.to === 'start' ? scrollToStart(s) : follow(s)));
+    });
+    if (s.hasAttribute('data-drop')) bindDrop(s);
+
+    // el.store + el.api (AGENTS.md "State through stores")
+
+    bindComponent(s, sessionApi);
+
+    // the opening position - applied once, before anyone reads the thread
+    s.setAttribute('data-pending-scroll', '');
+    s.dataset.stateName = 'default';
+    const where = s.dataset.defaultPosition || 'end';
+    const last = [...dfDollar(content).find(':scope > .session-item[data-anchor]').toArray()].pop();
+    if (where === 'start') s._opening = () => 0;
+    else if (where === 'last-anchor' && last) s._opening = () => anchorTop(s, last);
+    if (s._opening) {
+      scrollViewport(s, s._opening(), false);
+      // rows settle within the first frames; after that the position is free
+      hold(s, s._opening, 1000);
+    } else {
+      s.setAttribute('data-stick', '');
+      scrollViewport(s, viewport.scrollHeight, false);
+    }
+    s.removeAttribute('data-pending-scroll');
+  });
+}
+
+// -- df$.shadcn.session: the imperative surface ---------------------------------
+
+/** Wraps content in a .session-item (unless it is one) with an id / anchor. */
+function toItem(content, { id, anchor } = {}) {
+  let node = content;
+  if (typeof content === 'string') node = document.createRange().createContextualFragment(content);
+  const single = node instanceof Element && node.classList.contains('session-item');
+  const item = single ? node : document.createElement('div');
+  if (!single) {
+    item.className = 'session-item';
+    item.append(node);
+  }
+  if (id) item.dataset.messageId = id;
+  if (anchor) item.setAttribute('data-anchor', '');
+  return item;
+}
+
+df$.session = {
+  /**
+   * Adds a message at the end; follows (or anchors) as the session decides.
+   * @param target - the .session element, its id or a selector
+   * @param content - the message: markup, a node, or a ready .session-item
+   * @param options - its id and whether it is an anchor
+   * @returns the .session-item added
+   */
+  append(target: string | HTMLElement, content: string | Node, options?: SessionItemOptions): HTMLElement {
+    const s = resolve(target);
+    const item = toItem(content, options);
+    s?._parts?.content.append(item);
+    return item;
+  },
+  /**
+   * Adds older messages at the start; the reader's place is kept.
+   * @param target - the .session element, its id or a selector
+   * @param content - one message or several (markup, nodes or .session-items), oldest first
+   * @param options - an id and the anchor flag for every message added
+   * @returns the .session-items added, in order
+   */
+  prepend(target: string | HTMLElement, content: string | Node | Array<string | Node>, options?: SessionItemOptions): HTMLElement[] {
+    const s = resolve(target);
+    const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
+    s?._parts?.content.prepend(...items);
+    return items;
+  },
+  /**
+   * Scroll to the newest message and follow again.
+   * @param target - the .session element, its id or a selector
+   * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+   */
+  scrollToEnd: (target: string | HTMLElement, options?: SessionScrollOptions): void => { const s = resolve(target); if (s) follow(s, options); },
+  /**
+   * Scroll to the oldest message (the session stops following).
+   * @param target - the .session element, its id or a selector
+   * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+   */
+  scrollToStart: (target: string | HTMLElement, options?: SessionScrollOptions): void => { const s = resolve(target); if (s) scrollToStart(s, options); },
+  /**
+   * Bring a message into view by id.
+   * @param target - the .session element, its id or a selector
+   * @param id - the message's data-message-id
+   * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+   * @returns false when the session has no such message
+   */
+  scrollToMessage: (target: string | HTMLElement, id: string, options?: SessionScrollOptions): boolean => { const s = resolve(target); return s ? scrollToMessage(s, id, options) : false; },
+  /**
+   * Whether the reader is at the end (within data-threshold, 48px by default).
+   * @param target - the .session element, its id or a selector
+   * @returns true when following is on - new messages scroll into view
+   */
+  isAtEnd: (target: string | HTMLElement): boolean => { const s = resolve(target); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
+};
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

@@ -1,6 +1,7 @@
 ---
 name: Empty State
 type: BLK
+section: website
 why: A heading, a sentence and one or two real actions - no script, no illustration library.
 when: An empty list, inbox, search, project or dashboard. A failure is error-state; "nothing found" for a query also fits here.
 where: dist/components/empty-state/empty-state.css

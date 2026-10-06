@@ -1,6 +1,7 @@
 ---
 name: Swap
 type: ATM
+section: actions
 why: A hidden <input type="checkbox"> inside a <label> is the whole state machine; :checked, :indeterminate and :has() pick the visible face, and CSS transforms animate it.
 when: Toggling between two (or three) glyphs or words in place (theme icons, play/pause, hamburger/close); use toggle or switch when the control needs a pressed button or form-field appearance.
 where: dist/components/swap/swap.css

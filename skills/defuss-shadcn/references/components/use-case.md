@@ -1,6 +1,7 @@
 ---
 name: Use Case
 type: BLK
+section: website
 why: A heading, lists and one figure; the split layout and the alternating side are container-query CSS - no script.
 when: Solution pages by industry, role or job-to-be-done. A customer story with real numbers is case-preview / case-study.
 where: dist/components/use-case/use-case.css
