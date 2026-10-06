@@ -79,8 +79,8 @@ export interface TableStateConfigs {
 
 const bodyOf = (table) => table.tBodies[0];
 const bodyRows = (table) => [...(bodyOf(table)?.rows ?? [])];
-const rowBox = (row) => dfDollar(row).find(':scope > .table-select input[type="checkbox"]').get(0);
-const headBox = (table) => dfDollar(table.tHead).find('.table-select input[type="checkbox"]').get(0);
+const rowBox = (row) => dfDollar(row).find<HTMLInputElement>(':scope > .table-select input[type="checkbox"]').get(0);
+const headBox = (table) => dfDollar(table.tHead).find<HTMLInputElement>('.table-select input[type="checkbox"]').get(0);
 
 /* -- Sorting --------------------------------------------------------------- */
 /** A sortable column states its (lack of) sort: init's enhancement, which
@@ -288,7 +288,7 @@ df$.tableApi = tableApi;
 df$.tableStates = tableStates;
 
 function init() {
-  dfDollar('table.table:not([data-init])').toArray().forEach((table) => {
+  dfDollar<HTMLTableElement>('table.table:not([data-init])').toArray().forEach((table) => {
     table.dataset.init = '';
     table.dataset.stateName = 'default';
     table._original = bodyRows(table);
@@ -312,14 +312,14 @@ function init() {
       });
     });
     // an authored aria-sort sorts on load
-    const pre = dfDollar(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
+    const pre = dfDollar(table.tHead).find<HTMLTableCellElement>('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
     if (pre) sortBy(table, pre.cellIndex, pre.getAttribute('aria-sort'));
 
     // selection
     if (dfDollar(table).find('.table-select input[type="checkbox"]').get(0)) {
       let last = null;
       table.addEventListener('click', (e) => {
-        const box = e.target.closest?.('.table-select input[type="checkbox"]');
+        const box = (e.target as HTMLElement).closest?.<HTMLInputElement>('.table-select input[type="checkbox"]');
         if (!box) return;
         if (box === headBox(table)) {
           const on = box.checked;

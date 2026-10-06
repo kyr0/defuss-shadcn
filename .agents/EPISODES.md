@@ -63,3 +63,11 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T16:43:45Z s=c273a037 FINDING the move itself (process) learn=test: the link transforms are pinned in tests/skill.test.ts; verify's dist 1:1 gate compares the shipped skills and index through them.
 2026-10-06T16:43:45Z s=c273a037 FINDING scripts/lib/type-baseline.ts (re-keyed) learn=none: the re-key script refused any changed count; the ratchet itself guards the future.
 2026-10-06T16:46:15Z s=c273a037 DONE fp=15aa7f6de847 cov=75.7% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1375)
+2026-10-06T18:26:05Z s=c273a037 DONE fp=a7d10c5d0b08 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1378)
+2026-10-06T18:26:05Z s=c273a037 FINDING src/shared/query.ts HostQuery (type root) learn=verifier: verify's component types (tsc ratchet) gate with an empty TYPE_BASELINE: any new error in any component fails.
+2026-10-06T18:26:05Z s=c273a037 FINDING 45 components + component-state.ts + defuss-shadcn.d.ts (the 440 local errors) learn=verifier: the tsc ratchet (0 baseline) plus the strict typecheck; the byte comparison was a one-off probe for this change.
+2026-10-06T18:26:05Z s=c273a037 FINDING scripts/lib/apps.ts initHooks learn=test: tests/apps.test.ts "sees a typed query the same (a type argument once hid dialog.js from the Notes app bundle)".
+2026-10-06T18:26:05Z s=c273a037 FINDING scripts/verify.ts state API markers + dialog ownership claim learn=verifier: the gates failed by name on the typed source and pass now; verify runs on every build.
+2026-10-06T18:26:05Z s=c273a037 FINDING src/components/data-display/calendar CalendarViewState (self-correction) learn=verifier: the tsc ratchet.
+2026-10-06T18:26:05Z s=c273a037 FINDING src/types/defuss-shadcn.d.ts _defaultOpen learn=none: a shared stash name across components is a latent collision only if one element hosts both; no check looks for it.
+2026-10-06T18:26:05Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.9 learn=none: claim precision is a reading judgment; prose check 0 findings, the figures cite their sources.

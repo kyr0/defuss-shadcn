@@ -154,7 +154,7 @@ function init() {
     pendingOpen = { menu, x: e.clientX, y: e.clientY };
   });
   menu.addEventListener('click', (e) => {
-    if (e.target.closest('.context-menu-item')) {
+    if ((e.target as HTMLElement).closest('.context-menu-item')) {
       menu.hidePopover();
       menu.dataset.stateName = 'default';
     }

@@ -32,7 +32,7 @@ export interface NumberInputStateConfigs {
 
 // the editable field: <input type="number">, or the text field of a
 // currency-masked wrapper (hidden outputs are never the field)
-const getInput = (wrapper) => dfDollar(wrapper).find('input:not([type="hidden"])').get(0);
+const getInput = (wrapper) => dfDollar(wrapper).find<HTMLInputElement>('input:not([type="hidden"])').get(0);
 
 // -- Currency mask (data-currency on the wrapper) -----------------------------
 // A native number input cannot show grouping, a locale's decimal comma or a
@@ -134,7 +134,7 @@ function commitMoney(wrapper, input, cfg, number = null, remember = true) {
 /** Mirror the machine value into input[data-number-output] (+ change) and the wrapper. */
 function writeMoneyOutput(wrapper, value) {
   wrapper.dataset.value = value;
-  dfDollar(wrapper).find('input[data-number-output]').toArray().forEach((out) => {
+  dfDollar(wrapper).find<HTMLInputElement>('input[data-number-output]').toArray().forEach((out) => {
     if (out.value === value) return;
     out.value = value;
     out.dispatchEvent(new Event('change', { bubbles: true }));
@@ -143,7 +143,7 @@ function writeMoneyOutput(wrapper, value) {
 
 /** Show the locale's symbol on the locale's side (a unit label is created if missing). */
 function placeCurrencySymbol(wrapper, input, cfg) {
-  let unit = dfDollar(wrapper).find('.number-input-unit').get(0);
+  let unit = dfDollar(wrapper).find<HTMLLabelElement>('.number-input-unit').get(0);
   if (!unit) {
     unit = document.createElement('label');
     unit.className = 'number-input-unit';

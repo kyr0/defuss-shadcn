@@ -445,7 +445,7 @@ function init(): void {
       (dfDollar(target).find('[data-df-entrance]').toArray() as HTMLElement[]).forEach((el) => {
         entrance(el);
       });
-      (dfDollar(target).find('[data-df-draw]').toArray() as SVGElement[]).forEach((el) => {
+      dfDollar(target).find<SVGElement>('[data-df-draw]').toArray().forEach((el) => {
         draw(el);
       });
     };

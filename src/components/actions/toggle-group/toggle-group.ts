@@ -87,7 +87,7 @@ function init() {
   initTabindex();
 
   group.addEventListener('click', (e) => {
-    const toggle = e.target.closest('.toggle');
+    const toggle = (e.target as HTMLElement).closest<HTMLButtonElement>('.toggle');
     if (!toggle || toggle.disabled || group.hasAttribute('data-disabled')) return;
 
     const toggles = getToggles();
@@ -105,7 +105,7 @@ function init() {
   });
 
   group.addEventListener('keydown', (e) => {
-    const toggle = e.target.closest('.toggle');
+    const toggle = (e.target as HTMLElement).closest<HTMLButtonElement>('.toggle');
     if (!toggle || group.hasAttribute('data-disabled')) return;
 
     const toggles = getToggles();

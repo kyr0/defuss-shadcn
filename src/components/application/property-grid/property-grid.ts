@@ -455,7 +455,7 @@ function editorFor(root, row, value) {
   const custom = optionsOf(root).getEditorFn?.(row._path[row._path.length - 1], value, ctx);
   if (custom === false) return null;
   if (custom instanceof HTMLElement) {
-    const el = custom;
+    const el = custom as HTMLInputElement;
     return { el, immediate: el.type === 'checkbox' || el.tagName === 'SELECT', getValue: () => (el.type === 'checkbox' ? el.checked : el.type === 'number' || el.type === 'range' ? el.valueAsNumber : el.value) };
   }
   if (custom && custom.el) return custom;
@@ -780,13 +780,13 @@ function init() {
 
     dfDollar(root).on('click', (e) => {
       const t = e.target;
-      if (!t?.closest || t.closest('.property-grid-editor')) return;
-      const toggle = t.closest('.property-grid-toggle');
+      if (!(t as HTMLElement | null)?.closest || (t as HTMLElement).closest('.property-grid-editor')) return;
+      const toggle = (t as HTMLElement).closest<HTMLElement>('.property-grid-toggle');
       if (toggle) {
         toggleGroup(root, toggle.closest('tr').dataset.path);
         return;
       }
-      const cell = t.closest('.property-grid-value');
+      const cell = (t as HTMLElement).closest<HTMLElement>('.property-grid-value');
       const row = cell?.closest('tr');
       if (!row || row.closest('thead') || row.hasAttribute('data-readonly')) return;
       root.api.setState('editing', { editing: row.dataset.path });
@@ -813,7 +813,7 @@ function init() {
         }
         return;
       }
-      const row = t.closest?.('tr');
+      const row = (t as HTMLElement).closest?.('tr');
       if (!row || !root.contains(row) || row.closest('thead')) return;
       const keys = { ArrowDown: 1, ArrowUp: -1, Home: -Infinity, End: Infinity, PageDown: 10, PageUp: -10 };
       if (e.key in keys) {

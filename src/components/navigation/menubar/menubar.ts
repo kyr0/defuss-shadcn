@@ -34,7 +34,7 @@ export interface MenubarStateConfigs {
   };
 }
 
-const triggersOf = (bar) => Array.from(dfDollar(bar).find('.menubar-trigger').toArray()).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
+const triggersOf = (bar) => Array.from(dfDollar(bar).find<HTMLButtonElement>('.menubar-trigger').toArray()).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
 const menuOf = (trigger) => dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '')).get(0);
 const openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(':popover-open')) ?? null;
 
@@ -126,7 +126,7 @@ function init() {
 
     // hover switching while a menu is open
     bar.addEventListener('pointerover', (e) => {
-      const t = e.target instanceof Element ? e.target.closest('.menubar-trigger') : null;
+      const t = e.target instanceof Element ? e.target.closest<HTMLButtonElement>('.menubar-trigger') : null;
       if (!t || t.closest('.menubar') !== bar || !triggersOf(bar).includes(t)) return;
       const open = openMenuOf(bar);
       if (open && menuOf(t) !== open) openMenu(bar, t, true);
@@ -139,7 +139,7 @@ function init() {
       const prev = rtl ? 'ArrowRight' : 'ArrowLeft';
       const onTrigger = e.target instanceof Element && e.target.classList.contains('menubar-trigger');
       const openMenuEl = openMenuOf(bar);
-      const i = onTrigger ? ts.indexOf(e.target as Element) : ts.findIndex((t) => menuOf(t) === openMenuEl);
+      const i = onTrigger ? ts.indexOf(e.target as HTMLButtonElement) : ts.findIndex((t) => menuOf(t) === openMenuEl);
       if (i < 0) return;
       const step = (d) => ts[(i + d + ts.length) % ts.length];
 

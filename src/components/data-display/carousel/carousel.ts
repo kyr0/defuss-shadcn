@@ -157,7 +157,7 @@ dfDollar('.carousel:not([data-init])').toArray().forEach((carousel) => {
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          const idx = slides().indexOf(entry.target);
+          const idx = slides().indexOf(entry.target as HTMLElement);
           if (idx !== -1) updateState(idx);
         }
       }
@@ -200,7 +200,7 @@ dfDollar('.carousel:not([data-init])').toArray().forEach((carousel) => {
   if (dotsContainer) {
     renderDots();
     dotsContainer.addEventListener('click', (e) => {
-      const dot = e.target.closest('.carousel-dot');
+      const dot = (e.target as HTMLElement).closest<HTMLElement>('.carousel-dot');
       if (!dot) return;
       const idx = Array.from(dfDollar(dotsContainer).find('.carousel-dot').toArray()).indexOf(dot);
       if (idx !== -1) scrollToIndex(idx);

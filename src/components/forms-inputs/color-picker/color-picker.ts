@@ -29,7 +29,7 @@ export interface ColorPickerStateConfigs {
   };
 }
 
-const getInput = (picker) => dfDollar(picker).find('input[type="color"]').get(0);
+const getInput = (picker) => dfDollar(picker).find<HTMLInputElement>('input[type="color"]').get(0);
 
 /** Notations the picker can report. The native input always holds #rrggbb;
  *  the display (and data-color-output fields) carry the chosen notation. */
@@ -111,12 +111,12 @@ function syncValue(picker) {
   const text = formatColor(input.value, format);
   const display = dfDollar(picker).find('.color-picker-value').get(0);
   if (display && display.textContent !== text) display.textContent = text;
-  dfDollar(picker).find('input[data-color-output]').toArray().forEach((out) => {
+  dfDollar(picker).find<HTMLInputElement>('input[data-color-output]').toArray().forEach((out) => {
     if (out.value === text) return;
     out.value = text;
     out.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  const switcher = dfDollar(picker).find('select.color-picker-format').get(0);
+  const switcher = dfDollar(picker).find<HTMLSelectElement>('select.color-picker-format').get(0);
   if (switcher && switcher.value !== format) switcher.value = format;
 }
 
@@ -183,13 +183,13 @@ function init() {
   picker.dataset.init = '';
   // el.store + el.api (AGENTS.md "State through stores")
   bindComponent(picker, colorPickerApi);
-  const input = dfDollar(picker).find('input[type="color"]').get(0);
+  const input = dfDollar(picker).find<HTMLInputElement>('input[type="color"]').get(0);
   if (!input) return;
   syncValue(picker);
   input.addEventListener('input', () => { syncValue(picker); });
   // user-switchable notation: <select class="color-picker-format">
   dfDollar(picker).find('select.color-picker-format').get(0)?.addEventListener('change', (e) => {
-    picker.dataset.format = e.target.value;
+    picker.dataset.format = (e.target as HTMLSelectElement).value;
     syncValue(picker);
   });
   // authors may flip data-format at runtime too

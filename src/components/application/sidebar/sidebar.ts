@@ -105,7 +105,7 @@ dfDollar('.app-sidebar:not([data-init])').toArray().forEach((sidebar) => {
 // -- Mobile dialog triggers ----------------------------------
 dfDollar('[data-sidebar-mobile]:not([data-init])').toArray().forEach((trigger) => {
   trigger.dataset.init = '';
-  const dialog = dfDollar('#' + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
+  const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
   if (!dialog) return;
 
   trigger.addEventListener('click', () => {

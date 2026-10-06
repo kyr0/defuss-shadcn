@@ -612,13 +612,13 @@ function init() {
     bindComponent(root, bibtexApi, { name: 'default', config: { format: formatFor(root, null, root._authored) } });
     triggerStateChange(root, root.store.value);
     dfDollar(root._bar).on('click', (e) => {
-      const tab = e.target.closest?.('.bibtex-tab');
+      const tab = (e.target as HTMLElement).closest?.<HTMLElement>('.bibtex-tab');
       if (tab) root.api.setState('default', { format: dfDollar(tab).attr('data-format') });
-      else if (e.target.closest?.('.bibtex-copy')) copy(root);
+      else if ((e.target as HTMLElement).closest?.('.bibtex-copy')) copy(root);
     });
     // the tabs: ← / → / Home / End move and show (automatic activation, APG tabs)
     dfDollar(root._bar).on('keydown', (e) => {
-      const tab = e.target.closest?.('.bibtex-tab');
+      const tab = (e.target as HTMLElement).closest?.<HTMLElement>('.bibtex-tab');
       if (!tab) return;
       const tabs = dfDollar(root._bar).find('.bibtex-tab').toArray();
       const at = tabs.indexOf(tab);

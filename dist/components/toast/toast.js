@@ -313,7 +313,7 @@ const toastConfigure = (opts = {}) => {
     if (opts.position)
         toastContainer.setAttribute('data-position', opts.position);
     stackToasts(toastContainer);
-    return { stack: toastContainer.dataset.stack || 'list', position: toastContainer.dataset.position };
+    return { stack: (toastContainer.dataset.stack || 'list'), position: toastContainer.dataset.position };
 };
 /** df$.shadcn.toast - show and dismiss toasts in the page's region. */
 export const toastActions = {

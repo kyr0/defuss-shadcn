@@ -82,7 +82,7 @@ function triggerStateChange(details, stateName, _config) {
 }
 
 /** Registry-level API; pass the branch element explicitly. Unknown names throw. */
-export const treeViewApi = componentState({
+export const treeViewApi = componentState<HTMLDetailsElement>({
   component: 'tree-view',
   states: treeViewStates,
   apply: (details, state) => triggerStateChange(details, state.name, state.config),
@@ -126,7 +126,7 @@ function selectItem(tree, item) {
    checked / unchecked / indeterminate from its children. data-checkable=
    "independent" turns the cascade off. The inputs stay real form controls
    (name / value submit natively). */
-const checkOf = (item) => (item ? dfDollar(item).find(':scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check').get(0) : undefined);
+const checkOf = (item) => (item ? dfDollar(item).find<HTMLInputElement>(':scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check').get(0) : undefined);
 const childItems = (item) => [...(dfDollar(item).find(':scope > details > .tree-group').get(0)?.children ?? [])].filter((li) => li.matches('[role="treeitem"]'));
 const cascades = (tree) => tree.dataset.checkable !== 'independent';
 
@@ -163,7 +163,7 @@ function syncAria(tree) {
   });
 }
 function checkedValues(tree) {
-  return [...dfDollar(tree).find('.tree-check').toArray()]
+  return [...dfDollar(tree).find<HTMLInputElement>('.tree-check').toArray()]
     .filter((b) => b.checked && !b.indeterminate)
     .map((b) => b.value !== 'on' ? b.value : dfDollar(b).closest('[role="treeitem"]').find(':scope > * > span:last-child, :scope > details > summary > span:last-child').get(0)?.textContent ?? '');
 }
@@ -257,7 +257,7 @@ function initSortable(tree) {
     const target = itemOf(row);
     const where = row.dataset.drop;
     if (where === 'inside') {
-      const details = dfDollar(target).find(':scope > details').get(0);
+      const details = dfDollar(target).find<HTMLDetailsElement>(':scope > details').get(0);
       details.open = true;
       dfDollar(details).find(':scope > .tree-group').get(0).append(dragged);
     } else {
@@ -310,7 +310,7 @@ function init() {
        select the clicked row (a branch toggles AND selects, like a file
        explorer). */
     tree.addEventListener('click', (e) => {
-      const row = e.target.closest('.tree-branch-trigger, .tree-leaf');
+      const row = (e.target as HTMLElement).closest<HTMLElement>('.tree-branch-trigger, .tree-leaf');
       if (!row || !tree.contains(row)) return;
       const item = itemOf(row);
       if (isDisabled(item)) {
@@ -326,7 +326,7 @@ function init() {
       }
     });
     /* Keep aria-expanded in sync with <details> open state */
-    dfDollar(tree).find('.tree-branch').toArray().forEach((details) => {
+    dfDollar(tree).find<HTMLDetailsElement>('.tree-branch').toArray().forEach((details) => {
       const treeitem = details.closest('[role="treeitem"]');
       if (!treeitem) return;
 
@@ -345,7 +345,7 @@ function init() {
 
     /* Keyboard navigation */
     tree.addEventListener('keydown', (e) => {
-      const target = e.target.closest('.tree-branch-trigger, .tree-leaf');
+      const target = (e.target as HTMLElement).closest<HTMLElement>('.tree-branch-trigger, .tree-leaf');
       if (!target) return;
 
       const allItems = Array.from(dfDollar(tree).find('.tree-branch-trigger, .tree-leaf').toArray());
@@ -379,7 +379,7 @@ function init() {
           break;
         case 'ArrowRight':
           e.preventDefault();
-          { const detailsR = target.closest('details.tree-branch');
+          { const detailsR = target.closest<HTMLDetailsElement>('details.tree-branch');
           if (detailsR && !detailsR.open && !isDisabled(itemOf(target))) detailsR.open = true; }
           break;
         case 'Enter':
@@ -398,7 +398,7 @@ function init() {
         }
         case 'ArrowLeft':
           e.preventDefault();
-          { const detailsL = target.closest('details.tree-branch');
+          { const detailsL = target.closest<HTMLDetailsElement>('details.tree-branch');
           if (detailsL && detailsL.open) detailsL.open = false; }
           break;
         case 'Home':

@@ -248,7 +248,7 @@ if (!document.__virtualListQueryInit) {
         clearTimeout(list._filterTimer);
         list._filterTimer = setTimeout(() => {
             const filters = dfDollar(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray()
-                .map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || 'text'))
+                .map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, (el.dataset.kind || 'text')))
                 .filter(Boolean);
             virtualListApi.setState(list, 'default', { filters });
         }, 150);

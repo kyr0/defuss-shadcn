@@ -48,7 +48,7 @@ function triggerStateChange(dialog, stateName, _config) {
     case 'open':
       if (!dialog.open) dialog.showModal();
       {
-        const input = dfDollar(dialog).find('.command-input').get(0);
+        const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
         if (input) input.focus();
       }
       break;
@@ -71,13 +71,13 @@ df$.commandStates = commandStates;
    typing in a field (the palette's own input included, where it closes it). */
 bindGlobalKeys((e) => {
   if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== 'k') return;
-  const dialog = dfDollar('dialog.command').get(0);
+  const dialog = dfDollar<HTMLDialogElement>('dialog.command').get(0);
   if (!dialog) return;
   e.preventDefault();
   if (dialog.open) dialog.close();
   else {
     dialog.showModal();
-    const input = dfDollar(dialog).find('.command-input').get(0);
+    const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
     if (input) input.focus();
   }
   return true;
@@ -98,11 +98,11 @@ function highlightItem(list, index) {
 }
 
 function init() {
-dfDollar('dialog.command:not([data-init])').toArray().forEach((dialog) => {
+dfDollar<HTMLDialogElement>('dialog.command:not([data-init])').toArray().forEach((dialog) => {
     dialog.dataset.init = '';
     // el.store + el.api (AGENTS.md "State through stores")
     bindComponent(dialog, commandApi);
-    const input = dfDollar(dialog).find('.command-input').get(0);
+    const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
     const list = dfDollar(dialog).find('.command-list').get(0);
     const empty = dfDollar(dialog).find('.command-empty').get(0);
     if (!input || !list) return;
@@ -151,7 +151,7 @@ dfDollar('dialog.command:not([data-init])').toArray().forEach((dialog) => {
 
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) dialog.close();
-      if (e.target.closest('.command-item')) dialog.close();
+      if ((e.target as HTMLElement).closest('.command-item')) dialog.close();
     });
     dialog.addEventListener('close', () => {
       // `close` fires AFTER the exit transition (display allow-discrete), so a
@@ -170,11 +170,11 @@ dfDollar('dialog.command:not([data-init])').toArray().forEach((dialog) => {
 
 dfDollar('[data-command-trigger]:not([data-init])').toArray().forEach((trigger) => {
   trigger.dataset.init = '';
-  const dialog = dfDollar('#' + CSS.escape(trigger.dataset.commandTrigger)).get(0);
+  const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.commandTrigger)).get(0);
   if (!dialog) return;
   trigger.addEventListener('click', () => {
     dialog.showModal();
-    const input = dfDollar(dialog).find('.command-input')[0];
+    const input = dfDollar(dialog).find<HTMLInputElement>('.command-input')[0];
     if (input) (input as HTMLElement).focus(); // native focus protocol stays native
   });
 });

@@ -150,7 +150,7 @@ const stackToasts = (container) => {
   });
 };
 
-const toastDismiss = (el, callback) => {
+const toastDismiss = (el, callback?: () => void) => {
   if (!el || !el.parentNode || el.hasAttribute('data-leaving')) return;
   const container = el.parentNode;
   const out = el._animation?.out;
@@ -276,12 +276,12 @@ function init() {
         container._collapse = setTimeout(() => { container.removeAttribute('data-expanded'); stackToasts(container); }, 250);
       }
     };
-    container.addEventListener('pointerover', (e) => { if (e.target.closest('.toast')) expand(true); });
-    container.addEventListener('pointerout', (e) => { if (!e.relatedTarget?.closest?.('.toast')) expand(false); });
+    container.addEventListener('pointerover', (e) => { if ((e.target as HTMLElement).closest('.toast')) expand(true); });
+    container.addEventListener('pointerout', (e) => { if (!(e.relatedTarget as HTMLElement | null)?.closest?.('.toast')) expand(false); });
     container.addEventListener('focusin', () => expand(true));
-    container.addEventListener('focusout', (e) => { if (!e.relatedTarget?.closest?.('.toast')) expand(false); });
+    container.addEventListener('focusout', (e) => { if (!(e.relatedTarget as HTMLElement | null)?.closest?.('.toast')) expand(false); });
     container.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-toast-close],[data-toast-action]');
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-toast-close],[data-toast-action]');
       if (!btn) return;
       const toast = btn.closest('.toast');
       if (!toast) return;
@@ -307,7 +307,7 @@ const toastConfigure = (opts: ToastRegionOptions = {}): ToastRegionOptions => {
   if (opts.stack) toastContainer.dataset.stack = opts.stack;
   if (opts.position) toastContainer.setAttribute('data-position', opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || 'list', position: toastContainer.dataset.position };
+  return { stack: (toastContainer.dataset.stack || 'list') as ToastRegionOptions['stack'], position: toastContainer.dataset.position as ToastRegionOptions['position'] };
 };
 
 /** df$.shadcn.toast - show and dismiss toasts in the page's region. */

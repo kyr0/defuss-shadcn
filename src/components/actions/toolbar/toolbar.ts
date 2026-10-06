@@ -93,7 +93,7 @@ function init() {
   });
 
   toolbar.addEventListener('keydown', (e) => {
-    const current = items.indexOf(document.activeElement);
+    const current = items.indexOf(document.activeElement as HTMLElement);
     if (current === -1) return;
 
     const vertical = toolbar.getAttribute('aria-orientation') === 'vertical';

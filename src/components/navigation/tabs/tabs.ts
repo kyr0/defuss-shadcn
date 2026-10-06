@@ -69,7 +69,7 @@ const iconOf = (tab) => {
   return icon.getAttribute('data-lucide') ?? icon.textContent.trim();
 };
 
-const labelOf = (tab) => {
+const labelOf = (tab: HTMLElement) => {
   const label = dfDollar(tab).find(':scope > .tab-label').get(0);
   if (label) return label.textContent.trim();
   return Array.from(tab.childNodes)
@@ -79,7 +79,7 @@ const labelOf = (tab) => {
     .trim();
 };
 
-const setLabel = (tab, text) => {
+const setLabel = (tab: HTMLElement, text) => {
   const label = dfDollar(tab).find(':scope > .tab-label').get(0);
   if (label) { label.textContent = text; return; }
   Array.from(tab.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
@@ -110,7 +110,7 @@ const applyContent = (tab, config) => {
 // -- selection ----------------------------------------------------------------
 const triggersOf = (el) => {
   const list = el.getAttribute('role') === 'tablist' ? el : el.closest('[role="tablist"]');
-  return Array.from(dfDollar(list).find('[role="tab"]').toArray());
+  return Array.from(dfDollar(list).find<HTMLButtonElement>('[role="tab"]').toArray());
 };
 
 /** Select one tab of a group and reveal its panel (single-selection model). */
@@ -236,7 +236,7 @@ const disabledOf = (t) => dfDollar(t).attr('disabled') != null;
 /** A tablist's state, as triggerStateChange writes it - the copy IS the
  *  authored markup, so 'default' only re-selects the authored tab. */
 function listMarkup(list, stateName, config) {
-  const triggers = dfDollar(list).find('[role="tab"]').toArray();
+  const triggers = dfDollar(list).find<HTMLButtonElement>('[role="tab"]').toArray();
   if (stateName === 'default') {
     const tab = triggers.find(selectedOf) || triggers.find((t) => !disabledOf(t));
     if (tab) selectMarkup(tab, triggers);
@@ -290,7 +290,7 @@ function init() {
 // stamping every tablist marked BibTeX's format tabs data-init
 dfDollar('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = '';
-    const triggers = Array.from(dfDollar(tablist).find('[role="tab"]').toArray());
+    const triggers = Array.from(dfDollar(tablist).find<HTMLButtonElement>('[role="tab"]').toArray());
     // remember the authored tab so setState('default') restores it
     triggers.forEach((t) => {
       t._authored = {

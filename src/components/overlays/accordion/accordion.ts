@@ -33,7 +33,7 @@ export interface AccordionStateConfigs {
  * (`defaults` null).
  */
 function applyMarkup(accordion, stateName, defaults) {
-  dfDollar(accordion).find('.accordion-item').each((i, item) => {
+  dfDollar(accordion).find<HTMLDetailsElement>('.accordion-item').each((i, item) => {
     const open = stateName === 'all-open' ? true : stateName === 'all-closed' ? false : defaults ? defaults[i] : null;
     if (open !== null && open !== undefined) dfDollar(item).attr('open', open ? '' : null);
   });
@@ -78,13 +78,13 @@ function init() {
   dfDollar('.accordion:not([data-api])').each((_i, accordion) => {
     dfDollar(accordion).data('api', '');
     // snapshot the authored open set - that is the 'default' state to return to
-    accordion._defaultOpen = dfDollar(accordion).find('.accordion-item').toArray().map((item) => item.open);
+    accordion._defaultOpen = dfDollar(accordion).find<HTMLDetailsElement>('.accordion-item').toArray().map((item) => item.open);
     // el.store + el.api (AGENTS.md "State through stores")
     bindComponent(accordion, accordionApi);
   });
   dfDollar('.accordion[data-type="single"]:not([data-init])').each((_i, accordion) => {
     dfDollar(accordion).data('init', '');
-    const items = dfDollar(accordion).find('.accordion-item').toArray();
+    const items = dfDollar(accordion).find<HTMLDetailsElement>('.accordion-item').toArray();
     const collapsible = dfDollar(accordion).attr('data-collapsible') != null;
     items.forEach((item) => {
       // Cancellable pre-event: closing the LAST open item of a non-collapsible

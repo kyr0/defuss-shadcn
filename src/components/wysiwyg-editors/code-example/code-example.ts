@@ -177,7 +177,7 @@ const BUNDLE_SCRIPT = /\/(all|core|wysiwyg)(?:\.min)?\.js(?:[?#]|$)/;
 /** the host's runtime bundles: all/core first, wysiwyg only when the source nests this component */
 function discoverScripts(source) {
   const out = [];
-  dfDollar('script[src]').each((_i, s) => {
+  dfDollar<HTMLScriptElement>('script[src]').each((_i, s) => {
     const m = BUNDLE_SCRIPT.exec(s.src);
     if (!m || (m[1] === 'wysiwyg' && !/\bcode-example\b/.test(source))) return;
     if (!out.includes(s.src)) out.push(s.src);
@@ -186,7 +186,7 @@ function discoverScripts(source) {
 }
 function discoverStyles() {
   const out = [];
-  dfDollar('link[rel="stylesheet"]').each((_i, l) => {
+  dfDollar<HTMLLinkElement>('link[rel="stylesheet"]').each((_i, l) => {
     if (l.href && !out.includes(l.href)) out.push(l.href);
   });
   return out;
@@ -236,7 +236,7 @@ function sandboxBridge(ch, schema) {
   // forms run their handlers; the navigation a submit starts is cancelled
   // (it would replace the preview) - method="dialog" closes a dialog instead
   document.addEventListener('submit', (e) => {
-    const method = (e.submitter && e.submitter.getAttribute('formmethod')) || e.target.getAttribute('method');
+    const method = (e.submitter && e.submitter.getAttribute('formmethod')) || (e.target as HTMLFormElement).getAttribute('method');
     if ((method || '').toLowerCase() !== 'dialog') e.preventDefault();
   });
   // an about:srcdoc document resolves links against the host page: a link
@@ -253,7 +253,7 @@ function sandboxBridge(ch, schema) {
     if (href.charAt(0) === '#' && href.length > 1) location.hash = href.slice(1);
   });
 
-  const post = (kind, extra) => parent.postMessage(Object.assign({ type: 'ce', ch, kind }, extra || {}), '*');
+  const post = (kind, extra?) => parent.postMessage(Object.assign({ type: 'ce', ch, kind }, extra || {}), '*');
 
   /** the schema target: a selector, the [data-example-root], else the first element of the source */
   function resolve(target) {
@@ -374,8 +374,8 @@ function sandboxBridge(ch, schema) {
   }
   // the source's own scripts report errors; chrome (bundles, bridge) and stylesheets do not
   addEventListener('error', (e) => {
-    const t = e.target;
-    if (t && t !== globalThis && t.tagName) {
+    const t = e.target as HTMLElement | null;
+    if (t && (t as EventTarget) !== globalThis && t.tagName) {
       if (t.tagName !== 'SCRIPT' || t.hasAttribute('data-ce-chrome')) return;
       post('error', { message: 'Example script failed to load or compile' });
       return;
@@ -500,7 +500,7 @@ function nestedConfig(source) {
 /** ch → card: one message listener and one dark observer route by channel */
 const registry = new Map();
 
-function send(root, kind, extra) {
+function send(root, kind, extra?) {
   const frame = root._ce?.frame;
   if (frame?.contentWindow) frame.contentWindow.postMessage(Object.assign({ type: 'ce-host', ch: root._ce.ch, kind }, extra || {}), '*');
 }
@@ -528,7 +528,7 @@ function run(root, source) {
     );
 }
 
-function showError(root, message, stack) {
+function showError(root, message, stack?) {
   const box = root._ce?.error;
   if (!box) return;
   dfDollar(box).prop('hidden', !message);
@@ -1068,7 +1068,7 @@ function initViewport(root) {
     const settle = debounce(() => vpApply(root), 120);
     // the resizer component (all.js) owns the gesture; the toolbar owns the size
     dfDollar(c.resizer).on('resizer-resize', (ev) => {
-      const d = ev.detail;
+      const d = (ev as CustomEvent).detail;
       if (!d) return;
       const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
       if (d.axis === 'h' && !dev) return;
@@ -1108,7 +1108,7 @@ function applyMarkup(el, name, cfg) {
   const full = name === 'fullscreen';
   $el.attr('data-fullscreen', full ? '' : null);
   $el.find('.code-example-full').html(full ? buttonContent('minimize', 'Exit fullscreen') : buttonContent('maximize', 'Fullscreen'));
-  const src = $el.find('textarea.code-example-src').get(0);
+  const src = $el.find<HTMLTextAreaElement>('textarea.code-example-src').get(0);
   const original = src ? src.defaultValue : '';
   $el.attr('data-edited', typeof cfg?.source === 'string' && cfg.source !== original ? '' : null);
 }
@@ -1311,12 +1311,12 @@ if (!document.__codeExampleInit) {
 const io = typeof IntersectionObserver === 'function'
   ? new IntersectionObserver((list) => {
       for (const en of list) {
-        if (en.isIntersecting && en.target._ce && !en.target._ce.booted) {
+        if (en.isIntersecting && (en.target as HTMLElement)._ce && !(en.target as HTMLElement)._ce.booted) {
           io.unobserve(en.target);
-          run(en.target, en.target._ce.src.value);
+          run(en.target, (en.target as HTMLElement)._ce.src.value);
         }
         // a hidden editor paints once it shows up
-        if (en.isIntersecting && en.target._ce?.stale) paint(en.target);
+        if (en.isIntersecting && (en.target as HTMLElement)._ce?.stale) paint(en.target);
       }
     }, { rootMargin: IO_ROOT_MARGIN })
   : null;

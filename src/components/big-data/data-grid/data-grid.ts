@@ -170,7 +170,7 @@ function attachPersistence(grid, config) {
   grid._saved?.destroy();
   const where = viewPersistence(grid, 'data-grid', String(dfDollar('.data-grid').toArray().indexOf(grid)), config || {});
   grid._saved = where
-    ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v) })
+    ? persisted<Record<string, unknown>>(where.key, {}, { area: where.area, validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v) })
     : null;
   const kept = {};
   for (const k of SAVED_KEYS) if (Array.isArray(grid._saved?.value[k])) kept[k] = grid._saved.value[k];
@@ -329,7 +329,7 @@ function syncFilters(grid, config) {
     if (locked.has(field)) cell.style.insetInlineStart = `${grid._lockLeft[field] ?? 0}px`;
     else cell.style.removeProperty('inset-inline-start');
     cell.toggleAttribute('data-locked', locked.has(field));
-    const input = cell.firstElementChild;
+    const input = cell.firstElementChild as HTMLInputElement | null;
     // never under the cursor: the person is typing in it
     if (input && input !== document.activeElement) input.value = filterText(filters.find((f) => f.field === field));
   }
@@ -509,7 +509,7 @@ function renderFooter(grid, config) {
   const page = Math.max(0, config.page || 0);
   const pages = pageCount(grid);
   dfDollar(grid._parts.pager).find('.data-grid-page-label').get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
-  for (const button of dfDollar(grid._parts.pager).find('[data-page]').toArray()) {
+  for (const button of dfDollar(grid._parts.pager).find<HTMLButtonElement>('[data-page]').toArray()) {
     const back = button.dataset.page === 'first' || button.dataset.page === 'prev';
     button.disabled = back ? page <= 0 : page >= pages - 1;
   }
@@ -601,7 +601,7 @@ function selectAll(grid) {
   query(grid, { selected: (grid._result?.entries ?? []).map((e) => e.row[idField]) });
 }
 
-function toggleExpand(grid, index, open) {
+function toggleExpand(grid, index, open?: boolean) {
   const entry = grid._shown[index];
   if (!entry?.meta.hasChildren) return;
   const id = entry.row[grid._source.idField];
@@ -731,12 +731,12 @@ function onClick(grid, e) {
 
 /** the filter row → config.filters (debounced while typing) */
 function onFilterInput(grid, e) {
-  const input = e.target.closest?.('.data-grid-filter');
+  const input = (e.target as HTMLElement).closest?.<HTMLInputElement>('.data-grid-filter');
   if (!input) return;
   clearTimeout(grid._filterTimer);
   grid._filterTimer = setTimeout(() => {
-    const filters = dfDollar(grid._parts.filters).find('.data-grid-filter').toArray()
-      .map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind))
+    const filters = dfDollar(grid._parts.filters).find<HTMLInputElement>('.data-grid-filter').toArray()
+      .map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind as 'text' | 'number' | 'select'))
       .filter(Boolean);
     query(grid, { filters, page: 0, collapsed: [] });
   }, e.type === 'change' ? 0 : 200);

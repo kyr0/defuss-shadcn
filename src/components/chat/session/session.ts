@@ -427,7 +427,7 @@ function init() {
 // -- df$.shadcn.session: the imperative surface ---------------------------------
 
 /** Wraps content in a .session-item (unless it is one) with an id / anchor. */
-function toItem(content, { id, anchor } = {}) {
+function toItem(content, { id, anchor }: { id?: string; anchor?: boolean } = {}) {
   let node = content;
   if (typeof content === 'string') node = document.createRange().createContextualFragment(content);
   const single = node instanceof Element && node.classList.contains('session-item');

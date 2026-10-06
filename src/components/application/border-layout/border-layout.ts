@@ -64,7 +64,7 @@ const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).ge
 const regionOf = (layout, side) => dfDollar(layout).find(`:scope > .border-layout-${side}`).get(0);
 /** The pane that carries the size: the resizer's wrapped element. */
 const paneOf = (region) => (region.classList.contains('resizer')
-  ? Array.from(region.children).find((c) => !c.classList.contains('resizer-handle'))
+  ? Array.from(region.children as HTMLCollectionOf<HTMLElement>).find((c) => !c.classList.contains('resizer-handle'))
   : region);
 const sizeOf = (region, side) => {
   if (region.hasAttribute('data-collapsed')) return 0;
@@ -162,8 +162,8 @@ const saved = new Map();
 const savedFor = (layout) => {
   const key = `defuss-shadcn:border-layout:${layout.dataset.save}`;
   if (!saved.has(key)) {
-    saved.set(key, persisted(key, {}, {
-      validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+    saved.set(key, persisted<Record<string, unknown>>(key, {}, {
+      validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v),
     }));
   }
   return saved.get(key);
@@ -286,7 +286,7 @@ function init() {
     // before any drag or key: recompute the room every side may take; a drag
     // on a folded region unfolds it first
     const before = (e) => {
-      const handle = e.target.closest?.('.resizer-handle');
+      const handle = (e.target as HTMLElement).closest?.<HTMLElement>('.resizer-handle');
       if (!handle || handle.parentElement?.parentElement !== layout) return;
       clamp(layout);
       const side = REGIONS.find((s) => handle.parentElement.classList.contains(`border-layout-${s}`));
@@ -304,11 +304,11 @@ function init() {
       collapse(layout, side, !region.hasAttribute('data-collapsed'));
     };
     layout.addEventListener('dblclick', (e) => {
-      const handle = e.target.closest('.resizer-handle');
+      const handle = (e.target as HTMLElement).closest<HTMLElement>('.resizer-handle');
       if (handle && handle.parentElement?.parentElement === layout) toggle(handle);
     });
     layout.addEventListener('keydown', (e) => {
-      const handle = e.target.closest?.('.resizer-handle');
+      const handle = (e.target as HTMLElement).closest?.<HTMLElement>('.resizer-handle');
       if (e.key === 'Enter' && handle && handle.parentElement?.parentElement === layout) {
         e.preventDefault();
         toggle(handle);
@@ -317,7 +317,7 @@ function init() {
 
     // every size change: splitter values, persistence
     layout.addEventListener('resizer-resize', (e) => {
-      if (e.target.parentElement !== layout) return;
+      if ((e.target as HTMLElement).parentElement !== layout) return;
       aria(layout);
       save(layout);
     });

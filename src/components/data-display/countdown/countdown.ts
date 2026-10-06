@@ -58,7 +58,7 @@ export interface CountdownStateConfigs {
   };
 }
 
-const UNITS = [
+const UNITS: [unit: string, seconds: number][] = [
   ['days', 86400],
   ['hours', 3600],
   ['minutes', 60],
@@ -215,7 +215,7 @@ export const countdownApi = componentState({
   read: (el, state) => {
     const values = {};
     valuesOf(el).forEach((s, i) => (values[s.dataset.unit || i] = parseFloat(s.style.getPropertyValue('--value')) || 0));
-    const config = { ...state.config, values };
+    const config: Record<string, unknown> = { ...state.config, values };
     if (isTimer(el)) config.remaining = Math.round(remaining(el));
     return { name: el.dataset.stateName || 'default', config };
   },

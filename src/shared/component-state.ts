@@ -40,7 +40,7 @@ export interface StateSpec<E extends HTMLElement = HTMLElement> {
    *  it without setState (default: data-state-name + the stored config) */
   read?(el: E, state: ComponentState): ComponentState;
   /** a state's markup on a detached copy of the authored markup (render) */
-  markup?(el: E, state: ComponentState): void;
+  markup?(el: E, state: ComponentState & { model?: import('./render.js').ElementModel }): void;
   /** events on the element after which the state is read back */
   events?: readonly string[];
   /** merge a setState config into the stored one (default: replace) */

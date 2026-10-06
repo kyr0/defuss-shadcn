@@ -150,7 +150,7 @@ let uid = 0;
 const num = (v, fallback) => (Number.isFinite(Number(v)) && v !== '' && v != null ? Number(v) : fallback);
 
 /** the parts of an instance (authored: input; the rest is found or made) */
-const inputOf = (root) => dfDollar(root).find('.autocomplete-input').get(0);
+const inputOf = (root) => dfDollar(root).find<HTMLInputElement>('.autocomplete-input').get(0);
 const popoverOf = (root) => dfDollar(root).find('.autocomplete-popover').get(0);
 const listOf = (root) => dfDollar(root).find('.autocomplete-list').get(0);
 
@@ -424,7 +424,7 @@ function choose(root, index) {
   const label = labelOf(cfg, record);
   const value = valueOf(cfg, record);
   inputOf(root).value = label;
-  const hidden = dfDollar(root).find('.autocomplete-value').get(0);
+  const hidden = dfDollar(root).find<HTMLInputElement>('.autocomplete-value').get(0);
   if (hidden) hidden.value = value == null ? '' : String(value);
   abort(root);
   autocompleteApi.setState(root, 'default', { query: label, value: value ?? null, label });
@@ -597,7 +597,7 @@ function init() {
     input.addEventListener('input', () => {
       abort(root);
       const query = input.value.trim();
-      const hidden = dfDollar(root).find('.autocomplete-value').get(0);
+      const hidden = dfDollar(root).find<HTMLInputElement>('.autocomplete-value').get(0);
       if (hidden) hidden.value = '';
       root._timer = setTimeout(() => search(root, query), configOf(root).debounce);
     });
@@ -636,13 +636,13 @@ function init() {
     });
     // pointer: pressing an option takes it (pointerdown keeps the focus in the input)
     list.addEventListener('pointerdown', (e) => {
-      const option = e.target.closest?.('.autocomplete-option');
+      const option = (e.target as HTMLElement).closest?.<HTMLElement>('.autocomplete-option');
       if (!option) return;
       e.preventDefault();
       choose(root, Number(option.dataset.index));
     });
     list.addEventListener('pointermove', (e) => {
-      const option = e.target.closest?.('.autocomplete-option');
+      const option = (e.target as HTMLElement).closest?.<HTMLElement>('.autocomplete-option');
       if (option && Number(option.dataset.index) !== root._run.active) activate(root, Number(option.dataset.index));
     });
     // infinite: near the end of the list, the next page
@@ -650,11 +650,11 @@ function init() {
       if (list.scrollTop + list.clientHeight >= list.scrollHeight - 48) loadMore(root);
     }, { passive: true });
     popover.addEventListener('click', (e) => {
-      if (e.target.closest?.('.autocomplete-retry')) search(root, root._run.query);
+      if ((e.target as HTMLElement).closest?.('.autocomplete-retry')) search(root, root._run.query);
     });
     // leaving the widget closes it
     root.addEventListener('focusout', (e) => {
-      if (e.relatedTarget && root.contains(e.relatedTarget)) return;
+      if (e.relatedTarget && root.contains(e.relatedTarget as Node)) return;
       if (root.store.value.name !== 'default') autocompleteApi.setState(root, 'default');
     });
 

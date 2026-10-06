@@ -291,7 +291,7 @@ function renderDiagram(fig: HTMLElement): Promise<boolean> {
       const parsed = new DOMParser().parseFromString(svg, 'text/html').body.firstElementChild;
       dfDollar(out).empty();
       if (parsed) dfDollar(out).append(document.importNode(parsed, true));
-      const el = dfDollar(out).find('svg').get(0) as SVGSVGElement | undefined;
+      const el = dfDollar(out).find<SVGSVGElement>('svg').get(0);
       const label = fig.getAttribute('aria-label');
       if (el) {
         el.removeAttribute('height');

@@ -93,7 +93,7 @@ const galleryIO = typeof IntersectionObserver === 'function'
     }, { rootMargin: '300px' })
   : null;
 function readyGallery(gallery) {
-  const imgs = [...dfDollar(gallery).find(':scope > img, :scope > picture img').toArray()];
+  const imgs = [...dfDollar(gallery).find<HTMLImageElement>(':scope > img, :scope > picture img').toArray()];
   Promise.all(imgs.map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => undefined))).then(() => {
     gallery.dataset.ready = '';
   });
@@ -101,7 +101,7 @@ function readyGallery(gallery) {
 function initHoverGalleries() {
   dfDollar('.hover-gallery:not([data-init])').toArray().forEach((gallery) => {
     gallery.dataset.init = '';
-    dfDollar(gallery).find(':scope > img, :scope > picture img').toArray().forEach((img, i) => {
+    dfDollar(gallery).find<HTMLImageElement>(':scope > img, :scope > picture img').toArray().forEach((img, i) => {
       if (img.loading === 'lazy') img.loading = 'eager';
       if (i > 0 && !img.hasAttribute('fetchpriority')) img.fetchPriority = 'low';
     });
@@ -211,7 +211,7 @@ function getLightbox() {
 
   /* Toolbar actions */
   dfDollar(lightbox).find('.image-lightbox-toolbar')[0].addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-action]');
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
     if (!btn) return;
 
     const action = btn.dataset.action;
@@ -290,7 +290,7 @@ if (!document.__imagePreviewInit) {
   document.__imagePreviewInit = true;
 
   document.addEventListener('click', (e) => {
-    const figure = e.target.closest('.image[data-preview]');
+    const figure = (e.target as HTMLElement).closest<HTMLElement>('.image[data-preview]');
     if (!figure) return;
 
     const img = dfDollar(figure).find('img')[0];

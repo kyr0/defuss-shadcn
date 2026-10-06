@@ -283,7 +283,7 @@ function replayContent(slide: HTMLElement, offset: number): void {
   (dfDollar(slide).find('[data-df-entrance]').toArray() as HTMLElement[]).forEach((el) => {
     entrance(el, undefined, { delay: withOffset(el) });
   });
-  (dfDollar(slide).find('[data-df-draw]').toArray() as SVGElement[]).forEach((el) => {
+  dfDollar(slide).find<SVGElement>('[data-df-draw]').toArray().forEach((el) => {
     draw(el, { delay: withOffset(el) });
   });
   (dfDollar(slide).find('[data-count]').toArray() as HTMLElement[]).forEach((el) => {

@@ -63,7 +63,7 @@ function init() {
 /* Wire triggers */
 dfDollar('[data-alert-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
   trigger.dataset.init = '';
-  const dialog = dfDollar('#' + CSS.escape(trigger.dataset.alertDialogTrigger)).get(0);
+  const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.alertDialogTrigger)).get(0);
   if (!dialog) return;
   trigger.addEventListener('click', () => {
     dialog._trigger = trigger;
@@ -72,7 +72,7 @@ dfDollar('[data-alert-dialog-trigger]:not([data-init])').toArray().forEach((trig
 });
 
 /* Wire close buttons and block Escape */
-dfDollar('dialog.alert-dialog:not([data-init])').toArray().forEach((dialog) => {
+dfDollar<HTMLDialogElement>('dialog.alert-dialog:not([data-init])').toArray().forEach((dialog) => {
   dialog.dataset.init = '';
   // el.store + el.api (AGENTS.md "State through stores")
   bindComponent(dialog, alertDialogApi);

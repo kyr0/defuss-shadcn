@@ -5,10 +5,36 @@
  * capabilities (query's MorphApi surface) and throws one actionable load-order
  * error when they are missing; it never installs, repairs or loads anything.
  */
-import type { DfDollar, MorphApi } from 'defuss-query/core';
+import type { DfDollar, DfQuery, MorphApi, QueryRoot } from 'defuss-query/core';
 
-/** The installed runtime as components may use it (callable + morph API). */
-export type HostQuery = DfDollar;
+/**
+ * The installed runtime as components may use it (callable + morph API) - with one type-only
+ * difference: a selector query yields HTMLElements by default. defuss-query types its results as
+ * Element, which is right for any DOM; component markup in this system is HTML (its classes,
+ * dataset, value, focus()), so the honest default here is HTMLElement, and the few queries for SVG
+ * name their type (`dfDollar<SVGPathElement>('path')`). Compiles to nothing.
+ * VERIFIED: (tsc -p tsconfig.components.json, HEAD + this file alone) this default removed 707 of
+ * the 1,147 component type errors the ratchet carried on 2026-10-06.
+ */
+export type HostQuery = {
+  // a bare tag name types itself (`'video'` → HTMLVideoElement, `'svg'` → SVGSVGElement)
+  <K extends keyof HTMLElementTagNameMap>(selector: K, context?: QueryRoot): DfQuery<HTMLElementTagNameMap[K]>;
+  <K extends keyof SVGElementTagNameMap>(selector: K, context?: QueryRoot): DfQuery<SVGElementTagNameMap[K]>;
+  <T extends Element = HTMLElement>(selector: string, context?: QueryRoot): DfQuery<T>;
+} & DfDollar;
+
+// the chained queries follow the same default (declaration merging: these overloads come first)
+declare module 'defuss-query/core' {
+  interface DfQuery<T extends EventTarget = Element> {
+    find<K extends keyof HTMLElementTagNameMap>(selector: K): DfQuery<HTMLElementTagNameMap[K]>;
+    find<K extends keyof SVGElementTagNameMap>(selector: K): DfQuery<SVGElementTagNameMap[K]>;
+    find<E extends Element = HTMLElement>(selector: string): DfQuery<E>;
+    closest<K extends keyof HTMLElementTagNameMap>(selector: K): DfQuery<HTMLElementTagNameMap[K]>;
+    closest<E extends Element = HTMLElement>(selector: string): DfQuery<E>;
+    children<E extends Element = HTMLElement>(selector?: string): DfQuery<E>;
+    parent<E extends Element = HTMLElement>(): DfQuery<E>;
+  }
+}
 
 /**
  * query's MorphApi contract (§2.2) - the exact injection surface core bundles.

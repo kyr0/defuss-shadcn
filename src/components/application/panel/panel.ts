@@ -50,7 +50,7 @@ export interface PanelStateConfigs {
 const SIDES = ['north', 'south', 'west', 'east', 'center'] as const;
 
 const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
-const toolInput = (panel, tool) => dfDollar(panel).find(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
+const toolInput = (panel, tool) => dfDollar(panel).find<HTMLInputElement>(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
 
 /**
  * The border-layout region a panel sits in: the panel itself (a fixed region),
@@ -173,7 +173,7 @@ function init() {
     // a double-click on the title bar (not on a tool) minimizes / restores -
     // data-title-collapse="false" switches it off
     header?.addEventListener('dblclick', (e) => {
-      if (panel.dataset.titleCollapse === 'false' || e.target.closest('.panel-tools') || !toolInput(panel, 'minimize')) return;
+      if (panel.dataset.titleCollapse === 'false' || (e.target as HTMLElement).closest('.panel-tools') || !toolInput(panel, 'minimize')) return;
       document.getSelection()?.removeAllRanges();
       panelApi.setState(panel, panel.hasAttribute('data-minimized') ? 'default' : 'minimized');
     });
@@ -181,7 +181,7 @@ function init() {
     // the close tool (a plain button - closing is not a toggle): the panel goes,
     // focus goes back to whatever opens it again
     dfDollar(panel).on('click', (e) => {
-      const close = e.target?.closest?.('.panel-close');
+      const close = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('.panel-close');
       if (!close || close.closest('.panel') !== panel) return;
       panelApi.setState(panel, 'closed');
       if (panel.id) dfDollar(`[data-panel-open="${CSS.escape(panel.id)}"], [data-panel-toggle="${CSS.escape(panel.id)}"]`).get(0)?.focus();
@@ -272,7 +272,7 @@ function bindOpeners() {
   if (openersBound) return;
   openersBound = true;
   dfDollar(document).on('click', (e) => {
-    const trigger = e.target?.closest?.('[data-panel-open], [data-panel-toggle]');
+    const trigger = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('[data-panel-open], [data-panel-toggle]');
     if (!trigger) return;
     const id = trigger.dataset.panelOpen ?? trigger.dataset.panelToggle;
     const panel = dfDollar(`#${CSS.escape(id)}`).get(0);

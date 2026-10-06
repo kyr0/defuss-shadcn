@@ -38,7 +38,7 @@ export interface DiffStateConfigs {
   };
 }
 
-const rangeOf = (el) => dfDollar(el).find(':scope > .diff-range').get(0);
+const rangeOf = (el) => dfDollar(el).find<HTMLInputElement>(':scope > .diff-range').get(0);
 
 /** Paint: the range's value (0..100) → --diff-pos on the figure. */
 function paint(el) {

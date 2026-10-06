@@ -706,7 +706,7 @@ function roundedPath(pts, r = corner) {
 function labelSpot(pts) {
   let best = 0;
   let at = { x: pts[0].x, y: pts[0].y };
-  let along = { x: 1, y: 0 };
+  let along: { x: number; y: number; len?: number } = { x: 1, y: 0 };
   for (let i = 1; i < pts.length; i++) {
     const l = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
     if (l > best) {
@@ -874,7 +874,7 @@ function draw(root, canvas) {
   const label = (text, at, edge, cls = 'diagram-wire-label', along = null, g = null) => {
     if (text) queue.push({ text, at, edge, cls, along, g });
   };
-  const wireGroup = (edge, extra = {}) => {
+  const wireGroup = (edge, extra: Record<string, unknown> & { beatOf?: HTMLElement } = {}) => {
     const g = svg('g', {
       class: 'diagram-wire',
       'data-line': edge?.dataset.line,
@@ -1018,7 +1018,7 @@ function sideDotLabels(nodes, wires, rectOf) {
 function wirePoints(wires) {
   const out = new Map();
   for (const g of dfDollar(wires).children('.diagram-wire').toArray()) {
-    const path = dfDollar(g).children('.diagram-wire-line').get(0);
+    const path = dfDollar(g).children<SVGPathElement>('.diagram-wire-line').get(0);
     if (!path?.getTotalLength) continue;
     const len = path.getTotalLength();
     const pts = [];
@@ -1104,7 +1104,7 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
     const b = nodes.get(to.id);
     if (!a || !b) continue;
     const curve = edge.dataset.curve || 'elbow';
-    const plan = { edge, from, to, a, b, curve };
+    const plan: { edge: HTMLElement; from: typeof from; to: typeof to; a: typeof a; b: typeof b; curve: string; sa?: string; sb?: string; outer?: boolean } = { edge, from, to, a, b, curve };
     if (a === b) plan.curve = 'self';
     else if (curve === 'around') {
       plan.sa = from.side || 'right';
@@ -1540,7 +1540,7 @@ const ICONS = {
   all: '<path d="M4 6h16M4 12h16M4 18h16"/>',
 };
 
-function button(action, text, label) {
+function button(action, text, label?) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'btn';
@@ -1571,13 +1571,13 @@ function makeControls(root) {
   status.setAttribute('aria-live', 'polite');
   bar.append(status);
   dfDollar(bar).on('click', (e) => {
-    const action = e.target.closest?.('[data-action]')?.dataset.action;
+    const action = (e.target as HTMLElement).closest?.<HTMLElement>('[data-action]')?.dataset.action;
     if (action) control(root, action);
   });
   dfDollar(bar).on('keydown', (e) => {
     const map = { ArrowLeft: 'prev', ArrowRight: 'next', Home: 'first', End: 'all', r: 'replay', R: 'replay', ' ': 'toggle' };
     const action = map[e.key];
-    if (!action || (e.key === ' ' && e.target.closest?.('button'))) return;
+    if (!action || (e.key === ' ' && (e.target as HTMLElement).closest?.('button'))) return;
     e.preventDefault();
     control(root, action);
   });
@@ -1862,7 +1862,7 @@ function propertiesOf(root, ref) {
     return out;
   }
   if (kind === 'node') {
-    const out = { id: el.dataset.node };
+    const out: Record<string, string> = { id: el.dataset.node };
     for (const [key, cls] of NODE_TEXT) out[key] = dfDollar(el).find(`.${cls}`).get(0)?.textContent.trim() ?? '';
     out.tone = el.dataset.tone || 'none';
     out.shape = el.dataset.shape || 'box';
@@ -2131,16 +2131,16 @@ function makeInteractive(root) {
   };
   const toggle = (ref) => (current() === ref ? root.api.setState('default') : root.api.setState('active', { ref }));
   dfDollar(root).on('click', (e) => {
-    const t = e.target;
+    const t = e.target as HTMLElement | null;
     if (!t?.closest || t.closest('.diagram-controls, .diagram-delta, .diagram-edges, .diagram-caption, .diagram-legend')) return;
-    const wire = t.closest('[data-edge-ref]');
+    const wire = t.closest<SVGElement>('[data-edge-ref]');
     if (wire) return toggle(wire.dataset.edgeRef);
-    const node = t.closest('[data-node]');
+    const node = t.closest<HTMLElement>('[data-node]');
     if (node && activatable(root).includes(node)) return toggle(node.dataset.node);
     if (t.closest('.diagram-canvas') && current() != null) root.api.setState('default');
   });
   dfDollar(root).on('keydown', (e) => {
-    const node = e.target?.closest?.('[data-node]');
+    const node = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('[data-node]');
     if (!node || !activatable(root).includes(node)) return;
     const focusActive = () => activatable(root).find((n) => n.dataset.node === current())?.focus();
     if (e.key === 'Enter' || e.key === ' ') toggle(node.dataset.node);
@@ -2163,7 +2163,7 @@ function bindOutsideControls() {
   if (controlsBound) return;
   controlsBound = true;
   dfDollar(document).on('click', (e) => {
-    const trigger = e.target?.closest?.('[data-diagram-for][data-diagram-action]');
+    const trigger = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('[data-diagram-for][data-diagram-action]');
     if (!trigger) return;
     const root = dfDollar(`#${CSS.escape(trigger.dataset.diagramFor)}`).get(0);
     if (!root?.api) return;

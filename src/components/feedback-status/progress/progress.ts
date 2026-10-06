@@ -110,9 +110,9 @@ function text(out, el) {
 
 /** Outputs bound to a bar: output[for~=id] anywhere, plus .progress-value in its field. */
 function outputsOf(el) {
-  const outs = new Set();
-  if (el.id) dfDollar(`output.progress-value[for~="${CSS.escape(el.id)}"]`).toArray().forEach((o) => outs.add(o));
-  dfDollar(el).closest('.progress-field').find('.progress-value').toArray().forEach((o) => {
+  const outs = new Set<HTMLOutputElement>();
+  if (el.id) dfDollar<HTMLOutputElement>(`output.progress-value[for~="${CSS.escape(el.id)}"]`).toArray().forEach((o) => outs.add(o));
+  dfDollar(el).closest('.progress-field').find<HTMLOutputElement>('.progress-value').toArray().forEach((o) => {
     if (!o.htmlFor?.value || (el.id && o.htmlFor.contains(el.id))) outs.add(o);
   });
   return [...outs];
@@ -228,7 +228,7 @@ function triggerStateChange(el, stateName, config) {
 }
 
 /** Registry-level API; pass the <progress class="progress"> explicitly. Unknown names throw. */
-export const progressApi = componentState({
+export const progressApi = componentState<HTMLProgressElement>({
   component: 'progress',
   states: progressStates,
   apply: (el, state) => triggerStateChange(el, state.name, state.config),
@@ -271,7 +271,7 @@ function run(el, command) {
 const COMMANDS = ['reset', 'increment', 'decrement', 'complete', 'indeterminate', 'play', 'pause'];
 
 function init() {
-  dfDollar(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
+  dfDollar<HTMLProgressElement>(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
     el.dataset.init = '';
     // el.store + el.api (AGENTS.md "State through stores")
     bindComponent(el, progressApi);
@@ -279,7 +279,7 @@ function init() {
     el.dataset.stateName = el.position < 0 ? 'indeterminate' : el.value >= maxOf(el) ? 'complete' : 'default';
     // Invoker Commands: <button commandfor="id" command="--reset">
     el.addEventListener('command', (e) => {
-      const c = String(e.command || '');
+      const c = String((e as CommandEvent).command || '');
       if (c.startsWith('--')) run(el, c.slice(2));
     });
     for (const c of COMMANDS) el.addEventListener(`progress:${c}`, () => run(el, c));

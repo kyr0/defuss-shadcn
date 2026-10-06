@@ -32,6 +32,10 @@ describe('initHooks', () => {
     const ts = `dfDollar('[data-context-menu]:not([data-init])'); dfDollar('dialog:not(.sheet):not([data-init])'); dfDollar('.x:not([data-init])');`;
     expect(initHooks(ts)).toEqual({ attrs: ['data-context-menu'], tags: ['dialog'] });
   });
+  it('sees a typed query the same (a type argument once hid dialog.js from the Notes app bundle)', () => {
+    const ts = `dfDollar<HTMLDialogElement>('dialog:not(.sheet):not([data-init])'); dfDollar<HTMLElement>('[data-context-menu]:not([data-init])');`;
+    expect(initHooks(ts)).toEqual({ attrs: ['data-context-menu'], tags: ['dialog'] });
+  });
 });
 
 describe('usedClasses', () => {

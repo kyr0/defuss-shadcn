@@ -150,10 +150,10 @@ function raise(w) {
  * leaves focus where it was; pressing into the window focuses as usual.
  */
 function showQuietly(w) {
-  const prev = document.activeElement;
+  const prev = document.activeElement as HTMLElement | null;
   w.show();
   if (prev && prev !== document.body && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
-  else if (w.contains(document.activeElement)) document.activeElement.blur();
+  else if (w.contains(document.activeElement)) (document.activeElement as HTMLElement).blur();
 }
 
 /** Hands "active" to the front-most open window left (after one closed). */
@@ -232,7 +232,7 @@ function triggerStateChange(w, stateName, config) {
 }
 
 /** Registry-level API; pass the .window element explicitly. Unknown names throw. */
-export const windowApi = componentState({
+export const windowApi = componentState<HTMLDialogElement>({
   component: 'window',
   states: windowStates,
   apply: (w, state) => {
@@ -295,7 +295,7 @@ function bindDrag(w, bar) {
 }
 
 function init() {
-  dfDollar('dialog.window:not([data-init])').toArray().forEach((w) => {
+  dfDollar<HTMLDialogElement>('dialog.window:not([data-init])').toArray().forEach((w) => {
     w.dataset.init = '';
     const bar = dfDollar(w).find(':scope > .window-titlebar').get(0);
     if (bar) {
@@ -394,7 +394,7 @@ function create(options: WindowCreateOptions = {}): HTMLDialogElement {
   const controls = document.createElement('form');
   controls.method = 'dialog';
   controls.className = 'window-controls';
-  for (const [cls, label, type] of [['window-minimize', 'Minimize', 'button'], ['window-maximize', 'Maximize', 'button'], ['window-close', 'Close', 'submit']]) {
+  for (const [cls, label, type] of [['window-minimize', 'Minimize', 'button'], ['window-maximize', 'Maximize', 'button'], ['window-close', 'Close', 'submit']] as const) {
     const b = document.createElement('button');
     b.type = type;
     b.className = cls;
@@ -433,7 +433,7 @@ function create(options: WindowCreateOptions = {}): HTMLDialogElement {
  * @returns the windows, in document order
  */
 const list = (scope?: HTMLElement | string, all: boolean = false): HTMLDialogElement[] =>
-  dfDollar(resolve(scope) ?? document).find(all ? '.window' : '.window[open]').toArray();
+  dfDollar(resolve(scope) ?? document).find<HTMLDialogElement>(all ? '.window' : '.window[open]').toArray();
 
 /**
  * Steps the open windows diagonally from the top-left, front-most last.
@@ -548,7 +548,7 @@ export const windowActions = {
    * The window in front.
    * @returns the active open window, undefined when none is open
    */
-  active: (): HTMLDialogElement | undefined => dfDollar('.window[open][data-active]').get(0),
+  active: (): HTMLDialogElement | undefined => dfDollar<HTMLDialogElement>('.window[open][data-active]').get(0),
   list,
   cascade,
   tile,

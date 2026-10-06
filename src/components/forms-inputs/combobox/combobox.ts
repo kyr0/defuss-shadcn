@@ -473,13 +473,13 @@ function init() {
       allItems.forEach((item) => { const match = !q || item.textContent.trim().toLowerCase().includes(q); dfDollar(item).prop('hidden', !match); if (match) hasVisible = true; });
       $listbox.find('.combobox-group-label').each(function (this: HTMLElement) {
         const label = this;
-        let next = label.nextElementSibling; let groupHasVisible = false;
+        let next = label.nextElementSibling as HTMLElement | null; let groupHasVisible = false;
         while (next && !next.classList.contains('combobox-group-label') && !next.classList.contains('combobox-separator')) {
-          if (next.getAttribute('role') === 'option' && !next.hidden) groupHasVisible = true; next = next.nextElementSibling;
+          if (next.getAttribute('role') === 'option' && !next.hidden) groupHasVisible = true; next = next.nextElementSibling as HTMLElement | null;
         }
         dfDollar(label).prop('hidden', !groupHasVisible);
       });
-      $listbox.find('.combobox-separator').each(function (this: HTMLElement) { const sep = this; const prev = sep.previousElementSibling; const next = sep.nextElementSibling; dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden))); });
+      $listbox.find('.combobox-separator').each(function (this: HTMLElement) { const sep = this; const prev = sep.previousElementSibling as HTMLElement | null; const next = sep.nextElementSibling as HTMLElement | null; dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden))); });
       if ($empty.length) $empty.prop('hidden', hasVisible);
     };
     const clearHighlight = () => { allItems.data('highlighted', null); highlighted = -1; };
@@ -530,8 +530,8 @@ function init() {
         }
       }
     });
-    listbox.addEventListener('click', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden && item.getAttribute('aria-disabled') !== 'true') selectItem(item); });
-    listbox.addEventListener('mousemove', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden) { const items = getVisibleItems(); doHighlight(items.indexOf(item)); } });
+    listbox.addEventListener('click', (e) => { const item = (e.target as HTMLElement).closest<HTMLElement>('[role="option"]'); if (item && !item.hidden && item.getAttribute('aria-disabled') !== 'true') selectItem(item); });
+    listbox.addEventListener('mousemove', (e) => { const item = (e.target as HTMLElement).closest<HTMLElement>('[role="option"]'); if (item && !item.hidden) { const items = getVisibleItems(); doHighlight(items.indexOf(item)); } });
     popover.addEventListener('toggle', () => {
       // queued toggle events may arrive after a re-open - mirror the real state
       const nowOpen = popover.matches(':popover-open');

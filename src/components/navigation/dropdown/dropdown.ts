@@ -180,7 +180,7 @@ function wireMenu(menu) {
   menu.addEventListener('keydown', (e) => {
     if (!own(e)) return;
     const items = itemsOf(menu);
-    const current = items.indexOf(document.activeElement);
+    const current = items.indexOf(document.activeElement as HTMLElement);
     const isSub = menu.classList.contains('dropdown-sub-content');
     const rtl = getComputedStyle(menu).direction === 'rtl';
     const inward = rtl ? 'ArrowLeft' : 'ArrowRight';
@@ -252,7 +252,7 @@ function wireSub(wrap) {
   });
   // back inside the submenu: keep it open
   sub.addEventListener('mouseenter', () => {
-    const parent = trigger.closest('[role="menu"]');
+    const parent = trigger.closest<HTMLElement>('[role="menu"]');
     if (parent) clearTimeout(parent._hoverTimer);
     highlight(parent, trigger, false);
   });

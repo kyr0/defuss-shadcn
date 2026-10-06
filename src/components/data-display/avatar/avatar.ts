@@ -40,7 +40,7 @@ function applyMarkup(el, stateName) {
  * the image view. Wrappers without an <img> have nothing to toggle.
  */
 function triggerStateChange(wrapper, stateName, _config) {
-  const img = dfDollar(wrapper).find('.avatar-image').get(0);
+  const img = dfDollar(wrapper).find<HTMLImageElement>('.avatar-image').get(0);
   if (!img) return;
   switch (stateName) {
     case 'default':
@@ -61,7 +61,7 @@ export const avatarApi = componentState({
   apply: (wrapper, state) => triggerStateChange(wrapper, state.name, state.config),
   read: (wrapper, state) => {
     // reflect reality: a network failure flips it without setState()
-    const img = dfDollar(wrapper).find('.avatar-image').get(0);
+    const img = dfDollar(wrapper).find<HTMLImageElement>('.avatar-image').get(0);
     const errored = img ? img.hasAttribute('data-error') : true;
     return {
       name: errored ? 'error' : 'default',
@@ -79,7 +79,7 @@ function init() {
   wrapper.dataset.init = '';
   // el.store + el.api (AGENTS.md "State through stores")
   bindComponent(wrapper, avatarApi);
-  const img = dfDollar(wrapper).find('.avatar-image').get(0);
+  const img = dfDollar(wrapper).find<HTMLImageElement>('.avatar-image').get(0);
   if (!img) return;
   img.dataset.init = '';
   // catch images that errored BEFORE this script ran (module scripts are

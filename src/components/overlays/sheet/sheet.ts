@@ -61,14 +61,14 @@ df$.sheetStates = sheetStates;
 function init() {
 dfDollar('[data-sheet-trigger]:not([data-init])').toArray().forEach((trigger) => {
   trigger.dataset.init = '';
-  const sheet = dfDollar('#' + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
+  const sheet = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
   if (!sheet) return;
   trigger.addEventListener('click', () => {
     sheet._trigger = trigger;
     sheet.showModal();
   });
 });
-dfDollar('dialog.sheet:not([data-init])').toArray().forEach((sheet) => {
+dfDollar<HTMLDialogElement>('dialog.sheet:not([data-init])').toArray().forEach((sheet) => {
   sheet.dataset.init = '';
   // el.store + el.api (AGENTS.md "State through stores")
   bindComponent(sheet, sheetApi);

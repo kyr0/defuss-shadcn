@@ -481,8 +481,8 @@ const STATE_API_PATTERNS: Array<[string, RegExp]> = [
   ['registry states assignment', /(df\$|defussGlobals\(\))\.\w+States\s*=/],
   ['states array declares default', /\w+States\s*=\s*\[[^\]]*['"]default['"]/],
   // componentState() (src/shared/component-state.ts) implements both
-  ['setState implementation', /\bsetState\s*\(|\bcomponentState\(/],
-  ['getState implementation', /\bgetState\s*\(|\bcomponentState\(/],
+  ['setState implementation', /\bsetState\s*\(|\bcomponentState\s*(<[^>]*>)?\(/],
+  ['getState implementation', /\bgetState\s*\(|\bcomponentState\s*(<[^>]*>)?\(/],
   ['triggerStateChange implementation', /\btriggerStateChange\b/],
 ];
 const stateApiProblems: string[] = [];
@@ -1438,7 +1438,7 @@ check(
   // the element (this exact bug disabled the docs search palette once).
   {
     const dialogSrc = readFileSync(componentFile(COMPS, 'dialog', 'dialog.ts'), 'utf8');
-    const claim = dialogSrc.match(/(?:querySelectorAll|dfDollar)\((['"])dialog:not\([\s\S]*?\1\)/);
+    const claim = dialogSrc.match(/(?:querySelectorAll|dfDollar)(?:<[^>()]*>)?\((['"])dialog:not\([\s\S]*?\1\)/);
     const owned = ['alert-dialog', 'sheet', 'command', 'window', 'cookie-consent-dialog'].filter(
       (c) => claim && !claim[0].includes(`not(.${c})`),
     );

@@ -107,7 +107,7 @@ function init() {
   dfDollar('.search-box:not([data-init])').toArray().forEach((box) => {
     box.dataset.init = '';
 
-    const field = dfDollar(box).find(':scope > input').get(0);
+    const field = dfDollar(box).find<HTMLInputElement>(':scope > input').get(0);
     if (!field) return; // the input is authored, not generated — nothing to drive
     box._field = field;
     if (!field.getAttribute('enterkeyhint')) field.setAttribute('enterkeyhint', 'search');
@@ -137,7 +137,7 @@ function init() {
 
     // a click on the frame (icon, padding) lands in the field
     box.addEventListener('mousedown', (e) => {
-      if (e.target !== field && !e.target.closest('button, a')) {
+      if (e.target !== field && !(e.target as HTMLElement).closest('button, a')) {
         e.preventDefault();
         field.focus();
       }

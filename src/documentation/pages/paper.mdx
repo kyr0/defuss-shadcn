@@ -125,7 +125,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
           <li><a href="#paper-s5-6"><span class="paper-num">5.6</span>A deep change in one session</a></li>
           <li><a href="#paper-s5-cov"><span class="paper-num">5.7</span>A second deep change: test coverage</a></li>
           <li><a href="#paper-s5-struct"><span class="paper-num">5.8</span>A third deep change: the files follow the sidebar</a></li>
-          <li><a href="#paper-s5-7"><span class="paper-num">5.9</span>Small modules, clear contracts</a></li>
+          <li><a href="#paper-s5-types"><span class="paper-num">5.9</span>A fourth deep change: zero type errors</a></li>
+          <li><a href="#paper-s5-7"><span class="paper-num">5.10</span>Small modules, clear contracts</a></li>
         </ol>
       </li>
       <li><a href="#paper-s6"><span class="paper-num">6</span>Anecdotes: self-correction</a></li>
@@ -293,7 +294,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     </figure>
     <ul class="paper-findings">
       <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>Every module, not a sample.</strong> By the final green gate, all 59 interactive component sources had changed (+3,455 / −408 lines); in all, 246 authored files (+7,570 / −1,537, generated output excluded - the session also built the section bundles and a documentation pass). verify's API docs gate reports no gap in any of the 59, and an end-to-end audit opens all 59 pages.</li>
-      <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The written types are checked.</strong> A compiler ratchet counts type errors per file; it started at 1,212 and stands at 1,147 - a new wrong type fails the build, and the count may only fall.</li>
+      <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The written types are checked.</strong> A compiler ratchet counts type errors per file; it started at 1,212 and stood at 1,147 after this change; section 5.9 took it to 0, so any new wrong type fails the build.</li>
       <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>It ran long.</strong> The whole session, up to the request for this section: 5.5 hours wall clock (4.8 hours without pauses over 15 minutes), 662 tool calls, 516,020 output tokens, and one compaction of the agent's context - the work continued from a summary without losing the requirement.</li>
       <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The tests stayed lean.</strong> The e2e runner reruns only the files whose inputs changed: 4 of 245 after a fix to two components, 135 after a change that touched every component.</li>
     </ul>
@@ -360,20 +361,52 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
       <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The new rule fails when it should.</strong> A component without <code>section:</code>, a component in the wrong section and a component outside any section each fail the <code>component sections</code> gate, which names the <code>git mv</code> or the front-matter line that fixes it (a probe; tests/component-sections.test.ts pins each case).</li>
       <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>Consumers see nothing.</strong> The minified sizes and the published paths are the same; only the unminified bundle grew by 0.6 KiB, because its comments name the longer source paths.</li>
     </ul>
+    <p><span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> a structural change across every module is cheap when one module owns the structure and every other asks it, and safe when the gates turn each half-done state into a named failure instead of a silent one - the agent never had to remember what it had not moved yet. Falsifier: the same move without the gates, or with each tool joining its own paths, taking longer or ending with a tool that still looks in the old place.</p>
+
+    <h3 id="paper-s5-types">5.9 A fourth deep change: zero type errors</h3>
+    <div class="paper-numbers">
+      <div class="statistic"><p class="statistic-title">Type errors</p><p class="statistic-value">1,147 → 0</p><p class="statistic-description">in 52 component files</p></div>
+      <div class="statistic"><p class="statistic-title">Time</p><p class="statistic-value">12.5 min</p><p class="statistic-description">to zero; 27.3 min to every gate green</p></div>
+      <div class="statistic"><p class="statistic-title">Output tokens</p><p class="statistic-value">71,958</p><p class="statistic-description">100 tool calls</p></div>
+      <div class="statistic"><p class="statistic-title">Shipped files changed</p><p class="statistic-value">0 of 85</p><p class="statistic-description">minified, byte for byte</p></div>
+    </div>
+    <p><strong>In 12.5 minutes and 71,958 output tokens, the agent removed all 1,147 type errors the compiler ratchet had carried in 52 component files; after 27.3 minutes and 82,855 tokens every gate was green again - the verifier, 571 unit tests, 246 end-to-end files - and the 85 minified files the system ships were byte for byte the same as before, without a human correction.</strong> <span class="paper-tag" data-tag="verified">VERIFIED</span> (the session transcript, git, the compiler, <code>cmp</code> and the gate) Up to zero errors the model re-read 79.3 million tokens of cached context, took 178 fresh input tokens and wrote 135,450 tokens to the cache; up to the green gates, 91.6 million, 236 and 225,359.</p>
+    <p>The work began at 17:29:02 UTC, right after section 5.8: fix the errors the ratchet had counted since section 5.6, and measure again. Since then every written type has been checked, but only against a baseline that may fall and never rise. This change goes into the meaning of the code where 5.8 went into its place, and it must not change what runs: a type is erased by the build, so the shipped bytes are its proof.</p>
     <figure class="paper-table paper-wide">
       <table class="table">
-        <thead><tr><th scope="col">The three changes</th><th scope="col" data-num>Time</th><th scope="col" data-num>Output tokens</th><th scope="col" data-num>Tool calls</th><th scope="col" data-num>Human corrections</th></tr></thead>
+        <thead><tr><th scope="col">What changed</th><th scope="col" data-num>Count</th></tr></thead>
+        <tbody>
+          <tr><td>Type errors in the component program, before / after</td><td data-num>1,147 / 0</td></tr>
+          <tr><td>... of them removed by one type-only fix in the shared query module, before any component was opened</td><td data-num>707</td></tr>
+          <tr><td>Component sources changed / shared modules and type declarations</td><td data-num>45 / 3</td></tr>
+          <tr><td>Source lines added / removed</td><td data-num>+276 / −210</td></tr>
+          <tr><td>Tools that read source as text and missed a call with a type argument (fixed)</td><td data-num>3</td></tr>
+          <tr data-best><td>Shipped minified files, byte-identical before and after</td><td data-num>85 / 85</td></tr>
+        </tbody>
+      </table>
+      <figcaption class="paper-table-caption"><b>Table 7.</b> The fourth change, from git, the compiler and <code>cmp</code>. The readable <code>.js</code> differ in two lines, where an erased cast leaves its parentheses; the minifier removes them.</figcaption>
+    </figure>
+    <ul class="paper-findings">
+      <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The owner first.</strong> Every component selects the DOM through one shared module. Typing what it returns there - an <code>HTMLElement</code> by default, the named element for a tag selector - removed 707 of the 1,147 errors (a probe: the previous commit plus that one file). The other 440 were local: optional parameters, event targets, the shape of a state declared where it grows.</li>
+      <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The byte comparison found a bug no type could.</strong> After the edits, the Notes app's bundle differed from before. The bundler finds the components an app needs by reading the source for their init calls, and <code>dfDollar&lt;HTMLDialogElement&gt;('dialog:not(...)')</code> no longer looked like one, so the Notes app would have shipped without the dialog script. Two verifier checks read the source the same way and failed by name: the State API marker for the tree view and the dialog ownership boundary. All three now accept a type argument, and tests/apps.test.ts pins the bundler's case. <span class="paper-tag" data-tag="unknown">UNKNOWN</span> whether an end-to-end test would have caught the missing script - the broken bundle never ran.</li>
+      <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>The compiler corrected the agent.</strong> The agent first typed the calendar's selected day as a string; the next compile named every place that calculates with it, and the type became <code>number | null</code>.</li>
+    </ul>
+    <p>Lesson for the method: when a change must not alter behavior, compare the shipped bytes as well as running the tests - here the comparison was the only check that saw the missing script. And a tool that reads source as text is a parser of the language: new syntax in the source, here a type argument, is new input for every such tool.</p>
+    <figure class="paper-table paper-wide">
+      <table class="table">
+        <thead><tr><th scope="col">The four changes</th><th scope="col" data-num>Time</th><th scope="col" data-num>Output tokens</th><th scope="col" data-num>Tool calls</th><th scope="col" data-num>Human corrections</th></tr></thead>
         <tbody>
           <tr><td>5.6 Typed API docs, all 59 interactive components</td><td data-num>241.9 min</td><td data-num>347,614</td><td data-num>437</td><td data-num>1</td></tr>
           <tr><td>5.7 Unit-test coverage 31.6 % → 75.6 %</td><td data-num>20.6 min</td><td data-num>39,926</td><td data-num>48</td><td data-num>0</td></tr>
           <tr><td>5.8 228 component folders into the sidebar's sections</td><td data-num>43.4 min</td><td data-num>76,358</td><td data-num>98</td><td data-num>0</td></tr>
+          <tr><td>5.9 1,147 type errors to 0, shipped bytes unchanged</td><td data-num>27.3 min</td><td data-num>82,855</td><td data-num>130</td><td data-num>0</td></tr>
         </tbody>
       </table>
-      <figcaption class="paper-table-caption"><b>Table 7.</b> The three changes of one session, each from its request to its green gate (session transcript, UTC). The first window also holds the task its request interrupted (the section bundles) and one correction; the second holds a CI workflow and a sentence of this report.</figcaption>
+      <figcaption class="paper-table-caption"><b>Table 8.</b> The four changes of one session, each from its request to its green gate (session transcript, UTC). The first window also holds the task its request interrupted (the section bundles) and one correction; the second holds a CI workflow and a sentence of this report; the fourth ends at the green verifier and test suites, before this section was written, and holds one compaction of the context.</figcaption>
     </figure>
-    <p><span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> a structural change across every module is cheap when one module owns the structure and every other asks it, and safe when the gates turn each half-done state into a named failure instead of a silent one - the agent never had to remember what it had not moved yet. Falsifier: the same move without the gates, or with each tool joining its own paths, taking longer or ending with a tool that still looks in the old place.</p>
+    <p><span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> the fourth change was fast for the reason the third was: one module owns what every query returns, so a type fixed there is fixed in every component that asks it. Falsifier: removing the same errors component by component, without the shared fix, taking no more edits per error.</p>
 
-    <h3 id="paper-s5-7">5.9 Small modules, clear contracts</h3>
+    <h3 id="paper-s5-7">5.10 Small modules, clear contracts</h3>
     <p><span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> VAE works this well here because every module stands on its own. Microservices, micro-frontends and small components suit an agent better than a person: a person drowns in hundreds of components, while an agent reads any one of them in full, and a gate can check every one of them on every run. The agent does not hold the whole system in mind either - this session's context was compacted once - it does not need to: each module can be read alone, and the gate holds the whole. The risk sits between modules. Where a contract between two of them is implicit or keeps changing, a test the agent saw green can turn red after the next, unrelated change, and nothing names the dependency that broke. Under VAE, separation of concerns, explicit contracts, small modules and composition over inheritance or shared dependencies are therefore not style - they are what makes a green gate mean something.</p>
     <ul class="paper-findings">
       <li><span class="paper-tag" data-tag="verified">VERIFIED</span> <strong>Explicit contracts.</strong> Every component is a folder of its own, and every interactive one exposes a contract a program checks: states by name, a store, a <code>render()</code> that reproduces its markup, a schema, a typed API. Because each end-to-end test's inputs are explicit, the runner can pick the tests a change affects - 4 of 245 after a fix to two components.</li>

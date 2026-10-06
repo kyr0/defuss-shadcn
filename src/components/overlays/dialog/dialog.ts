@@ -61,7 +61,7 @@ df$.dialogStates = dialogStates;
 function init() {
   dfDollar('[data-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
     trigger.dataset.init = '';
-    const dialog = dfDollar('#' + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
     if (!dialog) return;
     trigger.addEventListener('click', () => {
       dialog._trigger = trigger;
@@ -71,7 +71,7 @@ function init() {
   /* .command excluded: the command component owns its dialogs (own backdrop
      close, filtering, focus). Without this, dialog.js - which loads first —
      claims them via data-init and command.js's init silently skips them. */
-  dfDollar('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])').toArray().forEach((dialog) => {
+  dfDollar<HTMLDialogElement>('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])').toArray().forEach((dialog) => {
     dfDollar(dialog).data('init', '');
     // el.store + el.api (AGENTS.md "State through stores")
     bindComponent(dialog, dialogApi);

@@ -230,7 +230,7 @@ function triggerStateChange(tree, state, previous) {
   }
   // bound filter inputs show the query (a restored one too) - never the one being typed in
   if (tree.id) {
-    for (const input of dfDollar(`[data-tree-filter="${CSS.escape(tree.id)}"]`).toArray()) {
+    for (const input of dfDollar<HTMLInputElement>(`[data-tree-filter="${CSS.escape(tree.id)}"]`).toArray()) {
       if (input === document.activeElement) continue;
       const field = input.dataset.field || labelField(tree);
       input.value = filterText((state.config.filters || []).find((x) => x.field === field));
@@ -244,9 +244,9 @@ function attachPersistence(tree, config) {
   tree._saved?.destroy();
   const where = viewPersistence(tree, 'data-tree', String(dfDollar('.data-tree').toArray().indexOf(tree)), config || {});
   tree._saved = where
-    ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v) })
+    ? persisted<Record<string, unknown>>(where.key, {}, { area: where.area, validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v) })
     : null;
-  const kept = {};
+  const kept: Record<string, unknown> = {};
   for (const k of KEPT) if (Array.isArray(tree._saved?.value[k])) kept[k] = tree._saved.value[k];
   if (tree._saved && tree._saved.value.selected !== undefined) kept.selected = tree._saved.value.selected;
   return kept;
@@ -362,7 +362,7 @@ function onClick(tree, e) {
 if (!document.__dataTreeFilterInit) {
   document.__dataTreeFilterInit = true;
   document.addEventListener('input', (e) => {
-    const input = e.target.closest?.('[data-tree-filter]');
+    const input = (e.target as HTMLElement).closest?.<HTMLInputElement>('[data-tree-filter]');
     if (!input) return;
     const tree = dfDollar('#' + CSS.escape(input.dataset.treeFilter)).get(0);
     if (!tree?.store) return;

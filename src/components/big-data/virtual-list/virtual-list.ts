@@ -176,7 +176,7 @@ function refresh(list, config) {
   if (sizer) sizer.style.height = `${listSizer(list)}px`;
   if (columnsOf(list) > 1) list.setAttribute('aria-rowcount', String(rowCount(list)));
   if (list._rows) {
-    Array.from(list._rows.children).forEach((row) => { row._index = -1; });
+    Array.from(list._rows.children as HTMLCollectionOf<HTMLElement>).forEach((row) => { row._index = -1; });
   }
   return itemCount(list);
 }
@@ -289,19 +289,19 @@ if (!document.__virtualListQueryInit) {
   document.__virtualListQueryInit = true;
   const target = (el, attr) => dfDollar('#' + CSS.escape(el.getAttribute(attr))).get(0);
   document.addEventListener('input', (e) => {
-    const input = e.target.closest?.('[data-virtual-list-filter]');
+    const input = (e.target as HTMLElement).closest?.<HTMLInputElement>('[data-virtual-list-filter]');
     const list = input && target(input, 'data-virtual-list-filter');
     if (!list?._source || !list.store) return;
     clearTimeout(list._filterTimer);
     list._filterTimer = setTimeout(() => {
-      const filters = dfDollar(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray()
-        .map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || 'text'))
+      const filters = dfDollar<HTMLInputElement>(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray()
+        .map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, (el.dataset.kind || 'text') as 'text' | 'number' | 'select'))
         .filter(Boolean);
       virtualListApi.setState(list, 'default', { filters });
     }, 150);
   });
   document.addEventListener('change', (e) => {
-    const select = e.target.closest?.('[data-virtual-list-sort]');
+    const select = (e.target as HTMLElement).closest?.<HTMLSelectElement>('[data-virtual-list-sort]');
     const list = select && target(select, 'data-virtual-list-sort');
     if (!list?._source || !list.store) return;
     const [field, direction] = select.value.split(':');

@@ -39,6 +39,18 @@ interface CalendarDay {
   disabled?: boolean;
 }
 
+/** A calendar's view state (`el._calState`): the month shown, the selection, the bounds - and, once
+ *  the month or year picker opened, the year and the page of years it shows. */
+interface CalendarViewState {
+  year: number;
+  month: number;
+  selected: number | null;
+  minDate: string | null;
+  maxDate: string | null;
+  pickYear?: number;
+  pickPage?: number;
+}
+
 /** What calendar:view carries. */
 interface CalendarViewDetail {
   /** the panel shown: days of a month, the months of a year, or a page of years */
@@ -319,7 +331,7 @@ function syncRange(owner) {
     if (value) owner.dataset[key] = value;
     else delete owner.dataset[key];
   }
-  dfDollar(owner).find('input[data-range-input]').toArray().forEach((input) => {
+  dfDollar(owner).find<HTMLInputElement>('input[data-range-input]').toArray().forEach((input) => {
     const value = (input.dataset.rangeInput === 'end' ? r.end : r.start) ?? '';
     if (input.value === value) return;
     input.value = value;
@@ -671,7 +683,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
   cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
   const now = new Date();
     // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-    const state = (cal._calState = {
+    const state: CalendarViewState = (cal._calState = {
       year: now.getFullYear(),
       month: now.getMonth(),
       selected: null,
@@ -782,7 +794,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
 
     /* Navigation */
     cal.addEventListener('click', (e) => {
-      const nav = e.target.closest('.calendar-nav');
+      const nav = (e.target as HTMLElement).closest<HTMLElement>('.calendar-nav');
       // month / year picker: arrows page the picker, a pick moves the view
       const view = cal.dataset.view;
       if (view && nav) {
@@ -793,7 +805,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
         renderHeader(cal);
         return;
       }
-      const pick = e.target.closest('.calendar-pick');
+      const pick = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-pick');
       if (pick && !pick.disabled) {
         if (pick.dataset.year !== undefined) {
           state.pickYear = Number(pick.dataset.year);
@@ -814,7 +826,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
         renderRange(rangeOwner);
         return;
       }
-      const rangeBtn = rangeOwner && e.target.closest('.calendar-day button');
+      const rangeBtn = rangeOwner && (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
       if (rangeBtn) {
         const cell = rangeBtn.closest('.calendar-day');
         // outside days are hidden in range mode; disabled days never select
@@ -860,7 +872,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
       }
 
       /* Day selection */
-      const dayBtn = e.target.closest('.calendar-day button');
+      const dayBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
       if (dayBtn && !dayBtn.closest('[data-disabled]')) {
         const day = parseInt(dayBtn.dataset.day, 10);
         const outside = dayBtn.dataset.outside;
@@ -894,7 +906,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
           setView(cal, 'days');
           return;
         }
-        const pickBtn = e.target.closest('.calendar-pick');
+        const pickBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-pick');
         const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 4, ArrowUp: -4 }[e.key];
         if (pickBtn && step) {
           e.preventDefault();
@@ -903,7 +915,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
         }
         return;
       }
-      const dayBtn = e.target.closest('.calendar-day button');
+      const dayBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
       if (!dayBtn) return;
 
       const keyOwner = rangeOwnerOf(cal);

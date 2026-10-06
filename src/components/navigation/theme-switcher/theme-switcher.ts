@@ -64,7 +64,7 @@ function themeHref(root: HTMLElement, id: string): string {
 
 /** Apply a theme id by (re)loading its stylesheet. 'default' unloads it. */
 function applyThemeId(root: HTMLElement, id: string) {
-  let link = dfDollar('#' + CSS.escape(LINK_ID)).get(0);
+  let link = dfDollar<HTMLLinkElement>('#' + CSS.escape(LINK_ID)).get(0);
   if (!id || id === 'default') {
     link?.remove();
     remembered().set('default');

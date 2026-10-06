@@ -62,7 +62,7 @@ const hasFormat = (el) => {
 /** <output for="id …"> elements that show this slider (a range pair: both ids). */
 function outputsOf(el) {
   if (!el.id) return [];
-  return [...dfDollar('output[for]').toArray()].filter((o) => o.htmlFor.contains(el.id));
+  return [...dfDollar<HTMLOutputElement>('output[for]').toArray()].filter((o) => o.htmlFor.contains(el.id));
 }
 
 /** An emoji as an image (data-thumb-emoji: one, or a space-separated list
@@ -100,7 +100,7 @@ function updateSliderValue(el) {
 }
 
 /* -- Range: two sliders, low <= high ------------------------------- */
-const rangeInputs = (range) => [...dfDollar(range).find(':scope > .slider').toArray()].slice(0, 2);
+const rangeInputs = (range) => [...dfDollar(range).find<HTMLInputElement>(':scope > .slider').toArray()].slice(0, 2);
 
 function paintRange(range) {
   const [lo, hi] = rangeInputs(range);
@@ -160,7 +160,7 @@ function triggerStateChange(el, stateName, config) {
 }
 
 /** Registry-level API; pass the input element explicitly. Unknown names throw. */
-export const sliderApi = componentState({
+export const sliderApi = componentState<HTMLInputElement>({
   component: 'slider',
   states: sliderStates,
   apply: (el, state) => triggerStateChange(el, state.name, state.config),
@@ -182,7 +182,7 @@ function init() {
     range.dataset.init = '';
     initRange(range);
   });
-  dfDollar('.slider:not([data-init])').toArray().forEach((el) => {
+  dfDollar<HTMLInputElement>('.slider:not([data-init])').toArray().forEach((el) => {
     el.dataset.init = '';
     // remember the authored disabled state so setState('default') restores it
     el._defaultDisabled = el.disabled;

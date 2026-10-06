@@ -132,6 +132,23 @@ interface DefussShadcnRegistry {
   /** cookie consent (src/components/cookie-consent/cookie-consent.ts):
    * create(root, config) / get(root) / init() - and the State API registry */
   cookieConsent?: typeof import('../components/cookie-consent/cookie-consent.js').cookieConsent;
+  /** HTML Preview Editor (src/components/wysiwyg-editors/code-example/code-example.ts): every method
+   * takes a .code-example card, an id or a selector. Inline, not typeof import() (see toast).
+   * configure's options are the component's CodeExampleConfig. VERIFIED: (bun run typecheck, tsc ratchet 0)
+   * the members match df$.codeExample in that file. */
+  codeExample?: {
+    configure(options?: Record<string, unknown>): void;
+    source(target: string | HTMLElement): string;
+    setSource(target: string | HTMLElement, source: string): void;
+    run(target: string | HTMLElement): void;
+    reset(target: string | HTMLElement): void;
+    copy(target: string | HTMLElement): Promise<boolean>;
+    viewport(target: string | HTMLElement, mode: 'phone' | 'tablet' | 'desktop' | 'full'): void;
+    previewState(target: string | HTMLElement): Record<string, string | number | boolean>;
+    setPreviewState(target: string | HTMLElement, name: string, value: string | number | boolean): void;
+    refreshTheme(): void;
+    highlight(code: string, language: string): Promise<string | null>;
+  };
   /** panel imperative API (src/components/panel/panel.ts): every method takes a
    * .panel element, an id or a selector.
    * Inline, not typeof import(): that would pull the (not yet strictly typed)
@@ -229,8 +246,8 @@ interface HTMLElement {
   _model?: import('../shared/render.js').ElementModel;
   /** Resizer-only: authored [width, height] px snapshot at init, for 'default'. */
   _defaultSize?: [number, number];
-  /** Accordion-only: authored open flags snapshotted at init, for the 'default' state. */
-  _defaultOpen?: boolean[];
+  /** The authored open state for 'default': the accordion keeps one flag per item, a tree-view branch its own. */
+  _defaultOpen?: boolean[] | boolean;
   /** Accordion-only: set while triggerStateChange() is applying (suspends enforcement). */
   _applying?: boolean;
   /** Accordion-only: generation counter so queued toggle events can't clear a newer _applying. */
@@ -248,6 +265,18 @@ interface HTMLElement {
    * types) turns every private stash read into a type error.
    */
   [stash: `_${string}`]: any;
+}
+
+interface Document {
+  /**
+   * The double-init guard of a component's document-level listeners (AGENTS.md: `if
+   * (!document.__fooInit) { document.__fooInit = true; … }`) - one flag per delegation.
+   */
+  [initFlag: `__${string}Init`]: boolean | undefined;
+  /** Questionnaire-only: its document keyboard listener is installed. */
+  __questionnaireKeys?: boolean;
+  /** Sidebar-only: the one ResizeObserver that collapses sidebars below their breakpoint. */
+  __sidebarAutoRo?: ResizeObserver;
 }
 
 interface HTMLDialogElement {

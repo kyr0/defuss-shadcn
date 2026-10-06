@@ -48,7 +48,7 @@ export interface FileInputStateConfigs {
   };
 }
 
-const inputOf = (el) => dfDollar(el).find('.file-drop-input').get(0);
+const inputOf = (el) => dfDollar(el).find<HTMLInputElement>('.file-drop-input').get(0);
 
 /** Does a file match the input's accept list (".pdf", "image/*", "image/png")? */
 function accepts(input, file) {
