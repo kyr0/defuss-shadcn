@@ -1,7 +1,7 @@
 // dist/components/code-example/code-example.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.4") {
+if (!__df$shared || __df$shared.abi !== "0.9.5") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -1245,5 +1245,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=A56344DA3E48021264756E2164756E21
+//# debugId=1079AEF5A843B7AB64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

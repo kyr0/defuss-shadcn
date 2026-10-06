@@ -2,6 +2,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { flattenNav, NAV } from './nav';
 import { readSkillMeta } from './repo';
+import { capturePageWindowPlugin, releasePagesPlugin } from './release-pages';
 /**
  * The docs build plugins. They replace what used to be runtime DOM injection
  * (layout.ts buildToc/buildPrevNext/footer) and build-time generation living
@@ -195,5 +196,9 @@ export const docsPlugins = [
     tocPlugin,
     searchIndexPlugin,
     cleanHydrationRuntimePlugin,
+    // last of their phases: the page's window, then (HTML final) close it and
+    // forget its module - flat memory (release-pages.ts)
+    capturePageWindowPlugin,
+    releasePagesPlugin,
 ];
 //# sourceMappingURL=plugins.js.map

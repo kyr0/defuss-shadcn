@@ -22,7 +22,8 @@
         "per-app bundles, flagship deck figures, make bench (verify timing: 242 e2e files, 78 gates), build-docs memory fix",
         "fix(scaffolds): Aron Homberg with his GitHub avatar is the signed-in user in every scaffold - Admin Dashboard, Messenger, Issue Tracker, Notes &amp; Docs, Desktop",
         "fix(scaffolds): the owner's avatar in the Desktop (Settings, Start menu) and Messenger (Settings) profiles"
-      ]
+      ],
+      "hash": "8af0a333"
     },
     {
       "version": "v0.9.4",
