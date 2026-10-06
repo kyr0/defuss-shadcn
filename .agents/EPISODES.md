@@ -62,3 +62,4 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T16:43:45Z s=c273a037 FINDING src/components/<section>/<name>/ (the move) learn=verifier: verify's new component sections gate (scripts/lib/component-sections.ts) fails a component outside its section, in another section or without section:, naming t
 2026-10-06T16:43:45Z s=c273a037 FINDING the move itself (process) learn=test: the link transforms are pinned in tests/skill.test.ts; verify's dist 1:1 gate compares the shipped skills and index through them.
 2026-10-06T16:43:45Z s=c273a037 FINDING scripts/lib/type-baseline.ts (re-keyed) learn=none: the re-key script refused any changed count; the ratchet itself guards the future.
+2026-10-06T16:46:15Z s=c273a037 DONE fp=15aa7f6de847 cov=75.7% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1375)
