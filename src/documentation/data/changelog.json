@@ -1,6 +1,30 @@
 {
   "entries": [
     {
+      "version": "v0.9.5",
+      "date": "October 06, 2026",
+      "commits": [
+        "feat: working Kbd shortcuts, a two-way questionnaire flow diagram, parallax in the website templates, diagrams that fit their column, incremental e2e",
+        "kbd: every shortcut the docs show really runs - through df$.shadcn.shared.bindGlobalKeys - and the key goes down while it runs (data-pressed); the command palette's ⌘K now uses the shared listener too",
+        "questionnaire: toDiagram() and linkDiagram() - the flow as an Illustrative Diagram that follows the form and drives it: back to any step taken, forward only to the next reachable step, further on refused (questionnaire-jump-refused); the Mermaid flow example moves to the Mermaid page",
+        "diagram: a narrow figure first gives its column gaps and minimums, then scales the canvas to fit (data-fit=&quot;none&quot; opts out), with 2rem canvas padding; ```diagram fences in docs pages - the Component Skills page diagram is animated and interactive",
+        "website templates: the Seven planes parallax as the Events &quot;Summit Night&quot; hero, the sticky fly-through on the Landing page; decorative separators in the Modern Paper",
+        "separator: a real decorative example - ornamental section breaks and an accent rule; shapes: filled stacks fade sheet by sheet toward the background, centered pattern labels",
+        "table: plain links in cells take the text colour with a soft underline; statistic: a compact card in &quot;In Cards&quot;; charts: the claims-sequence contract as prose; accessibility: a live example and the Code Mockup window instead of the old demo block",
+        "numbers and dates follow the language of the text (textLocale: the nearest [lang], else en), never the browser - English formatting everywhere; counters start at 0 or the next power of ten and never leave that range",
+        "verify: a &quot;pinned versions&quot; gate - every defuss-shadcn@vX.Y.Z pin in the docs names the current release, and bump-version moves them",
+        "e2e: bun run e2e runs only the files whose inputs changed since they last passed (scripts/lib/e2e-select.ts); --all / E2E_ALL=1 for releases, --list to preview",
+        "feat: HTML Preview Editor (code-example) in the wysiwyg extra bundle; Papers (Modern Paper, BibTeX); big-data, diagram, questionnaire and property-grid components",
+        "code-example: the docs CodeExample card as a shipped component - editable source over a Shiki paint layer, sandboxed srcdoc preview, device toolbar with resize handles, zoom, fullscreen, schema-generated State tab; states default / code / state / fullscreen, el.preview drives the previewed component, df$.shadcn.codeExample.configure()",
+        "wysiwyg.css / wysiwyg.js: extra bundle (scripts/lib/bundles.ts) kept out of all.*, built from the bound dist files; every doc page loads it after all.*; verify, minify and stats know it",
+        "removed the tokenizer-based code-editor component and the docs sandbox templates",
+        "Papers: Modern Paper technical report (growth per week, LOC, review load, VAE dialect) and the BibTeX component",
+        "per-app bundles, flagship deck figures, make bench (verify timing: 242 e2e files, 78 gates), build-docs memory fix",
+        "fix(scaffolds): Aron Homberg with his GitHub avatar is the signed-in user in every scaffold - Admin Dashboard, Messenger, Issue Tracker, Notes &amp; Docs, Desktop",
+        "fix(scaffolds): the owner's avatar in the Desktop (Settings, Start menu) and Messenger (Settings) profiles"
+      ]
+    },
+    {
       "version": "v0.9.4",
       "date": "October 02, 2026",
       "commits": [
