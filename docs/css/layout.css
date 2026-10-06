@@ -88,6 +88,9 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   position: sticky; /* overrides the component's sticky top:0 (fixed header) */
   top: 3.5rem;
   height: calc(100vh - 3.5rem);
+  /* the visible viewport: 100vh is the viewport with the browser toolbar hidden, so with the
+     toolbar shown on a tablet the sidebar's last links would sit below the screen */
+  height: calc(100dvh - 3.5rem);
 }
 @media (prefers-reduced-motion: reduce) {
   .site-sidebar { transition: none; }
@@ -919,7 +922,11 @@ html[data-theme-draft] #theme-selector-btn {
     left: 0;
     z-index: 40;
     width: 16rem;
-    height: calc(100vh - 3.5rem);
+    /* anchored to the visible viewport's bottom, never a vh height: on a phone 100vh is the
+       viewport with the toolbar hidden, so while it shows, the drawer's end - and its last
+       links - sat below the screen, out of the menu's scroll range */
+    bottom: 0;
+    height: auto;
     transform: translateX(-100%);
     transition: transform 250ms ease;
     box-shadow: var(--shadow-lg);

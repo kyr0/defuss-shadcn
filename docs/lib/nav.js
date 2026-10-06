@@ -15,7 +15,13 @@ export const ALWAYS_OPEN_SECTION = 'Introduction';
 export const NAV = [
     { heading: 'Introduction', icon: 'book-open', items: [
             { label: 'Getting Started', href: 'index.html' },
-            { label: 'Installation', href: 'installation.html' },
+            {
+                label: 'Installation',
+                href: 'installation.html',
+                children: [
+                    { label: 'Bundles & Downloads', href: 'bundles.html', isNew: true },
+                ],
+            },
             { label: 'Vibe Coding / Agentic Engineering', href: 'vibe-coding.html', isNew: true },
             { label: 'How to Use', href: 'how-to-use.html' },
             { label: 'Component Skills', href: 'component-skills.html' },

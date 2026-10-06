@@ -1,7 +1,7 @@
 // dist/components/avatar/avatar.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.5") {
+if (!__df$shared || __df$shared.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -70,7 +70,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/diff/diff.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.5") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2 } = __df$shared2;
@@ -190,7 +190,7 @@ new MutationObserver(init2).observe(document, { childList: true, subtree: true }
 // dist/components/countdown/countdown.js
 var __df$core3 = globalThis.df$;
 var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
-if (!__df$shared3 || __df$shared3.abi !== "0.9.5") {
+if (!__df$shared3 || __df$shared3.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, componentState: componentState3, bindComponent: bindComponent3 } = __df$shared3;
@@ -382,7 +382,7 @@ new MutationObserver(init3).observe(document, { childList: true, subtree: true }
 // dist/components/image/image.js
 var __df$core4 = globalThis.df$;
 var __df$shared4 = __df$core4 && __df$core4.shadcn && __df$core4.shadcn.shared;
-if (!__df$shared4 || __df$shared4.abi !== "0.9.5") {
+if (!__df$shared4 || __df$shared4.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals4, defussQuery: defussQuery4, componentState: componentState4, bindComponent: bindComponent4 } = __df$shared4;
@@ -618,7 +618,7 @@ if (!document.__imagePreviewInit) {
 // dist/components/table/table.js
 var __df$core5 = globalThis.df$;
 var __df$shared5 = __df$core5 && __df$core5.shadcn && __df$core5.shadcn.shared;
-if (!__df$shared5 || __df$shared5.abi !== "0.9.5") {
+if (!__df$shared5 || __df$shared5.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals5, defussQuery: defussQuery5, componentState: componentState5, bindComponent: bindComponent5, textLocale } = __df$shared5;
@@ -905,7 +905,7 @@ new MutationObserver(init5).observe(document, { childList: true, subtree: true }
 // dist/components/tree-view/tree-view.js
 var __df$core6 = globalThis.df$;
 var __df$shared6 = __df$core6 && __df$core6.shadcn && __df$core6.shadcn.shared;
-if (!__df$shared6 || __df$shared6.abi !== "0.9.5") {
+if (!__df$shared6 || __df$shared6.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals6, defussQuery: defussQuery6, componentState: componentState6, bindComponent: bindComponent6 } = __df$shared6;
@@ -1244,7 +1244,7 @@ new MutationObserver(init6).observe(document, { childList: true, subtree: true }
 // dist/components/calendar/calendar.js
 var __df$core7 = globalThis.df$;
 var __df$shared7 = __df$core7 && __df$core7.shadcn && __df$core7.shadcn.shared;
-if (!__df$shared7 || __df$shared7.abi !== "0.9.5") {
+if (!__df$shared7 || __df$shared7.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, componentState: componentState7, bindComponent: bindComponent7, textLocale: textLocale2 } = __df$shared7;
@@ -1965,7 +1965,7 @@ new MutationObserver(init7).observe(document, { childList: true, subtree: true }
 // dist/components/carousel/carousel.js
 var __df$core8 = globalThis.df$;
 var __df$shared8 = __df$core8 && __df$core8.shadcn && __df$core8.shadcn.shared;
-if (!__df$shared8 || __df$shared8.abi !== "0.9.5") {
+if (!__df$shared8 || __df$shared8.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals8, defussQuery: defussQuery8, componentState: componentState8, bindComponent: bindComponent8 } = __df$shared8;
@@ -2175,7 +2175,7 @@ new MutationObserver(init8).observe(document, { childList: true, subtree: true }
 // dist/components/sortable/sortable.js
 var __df$core9 = globalThis.df$;
 var __df$shared9 = __df$core9 && __df$core9.shadcn && __df$core9.shadcn.shared;
-if (!__df$shared9 || __df$shared9.abi !== "0.9.5") {
+if (!__df$shared9 || __df$shared9.abi !== "0.9.6") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals9, defussQuery: defussQuery9, componentState: componentState9, bindComponent: bindComponent9 } = __df$shared9;
@@ -2494,5 +2494,5 @@ function init9() {
 init9();
 new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
-//# debugId=138E13867B7FDAC864756E2164756E21
+//# debugId=32A720BA2B82DCF864756E2164756E21
 //# sourceMappingURL=data-display.js.map
