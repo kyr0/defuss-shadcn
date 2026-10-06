@@ -1,6 +1,13 @@
 {
   "entries": [
     {
+      "version": "v0.9.6",
+      "date": "October 06, 2026",
+      "commits": [
+        "feat: typed API docs for every JS component, per-section bundles and ZIPs, the paper full screen, defuss-vae gate"
+      ]
+    },
+    {
       "version": "v0.9.5",
       "date": "October 06, 2026",
       "commits": [
