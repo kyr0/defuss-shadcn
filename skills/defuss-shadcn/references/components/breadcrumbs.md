@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Breadcrumbs
 
 ## Native basis
-A `<div>`: the Breadcrumb component (with a home icon), a back link to the parent shown only below 30rem (container query), and the page title. The collapsed variant puts the middle levels in a `popover` behind a "…" button.
+A `<div>`: the Breadcrumb component (with a home icon), a back link to the parent shown only below 30rem (container query), and the page title. The collapsed variant puts the middle levels in a `popover` behind a "..." button.
 
 Built from: [Breadcrumb](breadcrumb.md).
 
@@ -52,7 +52,7 @@ Built from: [Breadcrumb](breadcrumb.md).
 | Attribute | Behavior |
 |-----------|----------|
 | Default | The trail and the title; below 30rem only "← Parent" |
-| `data-variant="collapsed"` | Middle levels behind a "…" button in a popover |
+| `data-variant="collapsed"` | Middle levels behind a "..." button in a popover |
 
 ---
 

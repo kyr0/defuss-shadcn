@@ -47,14 +47,79 @@ export interface StateSpec<E extends HTMLElement = HTMLElement> {
   mergeConfig?: boolean;
 }
 
+/**
+ * VERIFIED: (every JS component's e2e - assertRenderContract) setState, getState,
+ * render and el.store behave as documented here on every fixture instance.
+ *
+ * The registry-level State API (`df$.shadcn.{name}Api`): the element is passed
+ * explicitly. The API docs specialize `name` and `config` per component (its
+ * state names and its StateConfigs map).
+ */
 export interface ComponentApi<E extends HTMLElement = HTMLElement> {
+  /**
+   * Enter a state: the DOM work runs (also when it is the current state), the store records it.
+   * @param el - the component's element
+   * @param name - a declared state (an unknown name throws)
+   * @param config - that state's config (merged into the stored one when the component merges)
+   * @returns what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled())
+   */
   setState(el: E, name: string, config?: Record<string, unknown>): unknown;
+  /**
+   * The state the element shows now - read back from the DOM, so it includes what the user changed.
+   * @param el - the component's element
+   * @returns the state's name, its config and the authored markup model render() starts from
+   */
   getState(el: E): ComponentState & { model?: ElementModel };
+  /**
+   * The element's markup in a state - the authored markup with that state applied; a pure function of the state.
+   * @param state - a state as getState() returns it (with its model)
+   * @returns the element's outer HTML in that state
+   */
   render(state: ComponentState & { model?: ElementModel }): string;
-  /** the element's store (bindComponent made it) */
+  /**
+   * The element's store (bindComponent made it).
+   * @param el - the component's element
+   * @returns a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component
+   */
   store(el: E): Store<ComponentState>;
-  /** record a state the element reached on its own (no DOM work) */
+  /**
+   * Record a state the element reached on its own (no DOM work) - for a component's own handlers.
+   * @param el - the component's element
+   * @param name - the state it is in
+   * @param config - its config
+   */
   commit(el: E, name: string, config?: Record<string, unknown>): void;
+}
+
+/**
+ * The per-element State API (`el.api`) bindComponent puts on every element -
+ * the registry's methods with the element bound. The API docs specialize
+ * `name` and `config` per component.
+ */
+export interface ElementStateApi {
+  /**
+   * Enter a state: the DOM work runs (also when it is the current state), the store records it.
+   * @param name - a declared state (an unknown name throws)
+   * @param config - that state's config (merged into the stored one when the component merges)
+   * @returns what the state's DOM work returned - a Promise for an async state (or await settled())
+   */
+  setState: (name: string, config?: Record<string, unknown>) => unknown;
+  /**
+   * The state the element shows now - read back from the DOM, so it includes what the user changed.
+   * @returns the state's name, its config and the authored markup model render() starts from
+   */
+  getState: () => ComponentState & { model?: ElementModel };
+  /**
+   * The element's markup in a state - the authored markup with that state applied; a pure function of the state.
+   * @param state - a state as getState() returns it (default: the current one)
+   * @returns the element's outer HTML in that state
+   */
+  render: (state?: ComponentState & { model?: ElementModel }) => string;
+  /**
+   * Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting).
+   * @returns resolves when nothing is pending
+   */
+  settled: () => Promise<void>;
 }
 
 type Entry = { store: Store<ComponentState>; model: ElementModel; recorded: WeakSet<ComponentState>; spec: StateSpec<HTMLElement>; queued: boolean; observer?: MutationObserver; unlisten?: () => void; pending?: Promise<unknown>; bound?: unknown };
@@ -186,7 +251,7 @@ export function bindComponent<E extends HTMLElement>(
   el: E,
   api: ComponentApi<E>,
   initial?: ComponentState,
-): { setState: (name: string, config?: Record<string, unknown>) => unknown; getState: () => ComponentState & { model?: ElementModel }; render: (state?: ComponentState & { model?: ElementModel }) => string; settled: () => Promise<void> } {
+): ElementStateApi {
   const spec = (api as unknown as { spec: StateSpec<HTMLElement> }).spec;
   // bound already (a menu two triggers share): one store per element
   const known = entries.get(el);

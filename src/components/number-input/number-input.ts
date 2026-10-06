@@ -13,6 +13,23 @@ const dfDollar = defussQuery();
 
 const numberInputStates = ['default'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the value shown - and a currency field's machine number). */
+export interface NumberInputStateConfigs {
+  /** The field with its value. */
+  default: {
+    /** the value - the text the field shows (a currency field reads it as a number) */
+    value?: string | number;
+    /** a currency field: the machine number (1234.5), formatted per its locale */
+    number?: string | number;
+    /** reported by getState() on a currency field: the ISO currency code */
+    currency?: string;
+    /** reported by getState() on a currency field: the locale it formats in */
+    locale?: string;
+  };
+}
+
 // the editable field: <input type="number">, or the text field of a
 // currency-masked wrapper (hidden outputs are never the field)
 const getInput = (wrapper) => dfDollar(wrapper).find('input:not([type="hidden"])').get(0);

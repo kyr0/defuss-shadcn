@@ -17,6 +17,27 @@ const dfDollar = defussQuery();
  * one side completely (item 1 at 100% / item 2 at 100%). */
 const diffStates = ['default', 'before', 'after'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the divider's position). */
+export interface DiffStateConfigs {
+  /** The divider at the authored position, or at the given one. */
+  default: {
+    /** the divider's position, % from the start (0-100); getState() reports it */
+    position?: number;
+  };
+  /** The divider at 100% - only the first item shows. */
+  before: {
+    /** reported by getState(): 100 */
+    position?: number;
+  };
+  /** The divider at 0% - only the second item shows. */
+  after: {
+    /** reported by getState(): 0 */
+    position?: number;
+  };
+}
+
 const rangeOf = (el) => dfDollar(el).find(':scope > .diff-range').get(0);
 
 /** Paint: the range's value (0..100) → --diff-pos on the figure. */

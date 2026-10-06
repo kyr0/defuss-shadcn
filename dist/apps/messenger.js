@@ -4901,11 +4901,13 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("lostpointercapture", onUp);
 }
 function init5() {
-  dfDollar5(".resizer:not([data-init])").toArray().forEach((wrapper) => {
+  const fresh = dfDollar5(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
     wrapper.dataset.init = "";
-    if (!targetOf(wrapper))
-      return;
+    return !!targetOf(wrapper);
+  });
+  for (const wrapper of fresh)
     wrapper._defaultSize = [currentPx(wrapper, "w"), currentPx(wrapper, "h")];
+  fresh.forEach((wrapper) => {
     bindComponent(wrapper, resizerApi);
     syncHandles(wrapper);
     const target = targetOf(wrapper);
@@ -5276,34 +5278,34 @@ function toItem(content, { id, anchor } = {}) {
   return item;
 }
 df$6.session = {
-  append(t, content, options) {
-    const s = resolve(t);
+  append(target, content, options) {
+    const s = resolve(target);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
-  prepend(t, content, options) {
-    const s = resolve(t);
+  prepend(target, content, options) {
+    const s = resolve(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
-  scrollToEnd: (t, o) => {
-    const s = resolve(t);
+  scrollToEnd: (target, options) => {
+    const s = resolve(target);
     if (s)
-      follow(s, o);
+      follow(s, options);
   },
-  scrollToStart: (t, o) => {
-    const s = resolve(t);
+  scrollToStart: (target, options) => {
+    const s = resolve(target);
     if (s)
-      scrollToStart(s, o);
+      scrollToStart(s, options);
   },
-  scrollToMessage: (t, id, o) => {
-    const s = resolve(t);
-    return s ? scrollToMessage(s, id, o) : false;
+  scrollToMessage: (target, id, options) => {
+    const s = resolve(target);
+    return s ? scrollToMessage(s, id, options) : false;
   },
-  isAtEnd: (t) => {
-    const s = resolve(t);
+  isAtEnd: (target) => {
+    const s = resolve(target);
     return !!s && fromEnd(s._parts.viewport) <= num(s, "threshold", 48);
   }
 };
@@ -5549,20 +5551,21 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$7.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar7(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$7.toast = toastActions;
 
-//# debugId=7EDE7C865B96DE6264756E2164756E21
+//# debugId=1A894D1647160E0964756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=messenger.js.map

@@ -226,17 +226,49 @@ The registry global is `df$.shadcn.comboboxApi` / `df$.shadcn.comboboxStates`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.comboboxApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.comboboxStates` = `default`, `open`.
+<code>type ComboboxState = 'default' | 'open'</code> - `setState(name, config)` takes the config of the state it names (`ComboboxStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The list closed. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>string</code></td><td>reported by getState(): the chosen label (several joined with ", ")</td></tr><tr><td><code>values?</code></td><td><code>string[]</code></td><td>reported by getState(): every chosen option's data-value (else its text), in list order</td></tr><tr><td><code>labels?</code></td><td><code>string[]</code></td><td>reported by getState(): the chosen options' texts, in the same order</td></tr></table> |
+| `open` | The list open (the popover shown). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>string</code></td><td>reported by getState(): the chosen label (several joined with ", ")</td></tr><tr><td><code>values?</code></td><td><code>string[]</code></td><td>reported by getState(): every chosen option's data-value (else its text), in list order</td></tr><tr><td><code>labels?</code></td><td><code>string[]</code></td><td>reported by getState(): the chosen options' texts, in the same order</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends ComboboxState&gt;(name: S, config?: ComboboxStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ComboboxStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.comboboxApi.setState&lt;S extends ComboboxState&gt;(el: HTMLElement, name: S, config?: ComboboxStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ComboboxStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.comboboxApi.getState(el: HTMLElement): { name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.comboboxApi.render(state: { name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.comboboxApi.store(el: HTMLElement): Store&lt;{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: ComboboxState; config: ComboboxStateConfigs[ComboboxState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.comboboxApi.commit&lt;S extends ComboboxState&gt;(el: HTMLElement, name: S, config?: ComboboxStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>ComboboxStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.comboboxStates: ComboboxState[]</code> | The declared states, 'default' first: <code>default</code>, <code>open</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `combobox:change` | `values`, `labels`, `created` | Fires when the user changes the selection - the selected values, their labels, and the values created from typed text. |
+| Event | Description |
+|---|---|
+| `combobox:change` | Fires when the user changes the selection - the selected values, their labels, and the values created from typed text. <code>detail</code>: <code>ComboboxChangeDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>values</code></td><td><code>string[]</code></td><td>the values of the selected options, in option order</td></tr><tr><td><code>labels</code></td><td><code>string[]</code></td><td>their labels, in the same order</td></tr><tr><td><code>created?</code></td><td><code>string \| null</code></td><td>a value just created from typed text (multiple + data-creatable), null when none; absent on a single-select</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `ComboboxChangeDetail` | What combobox:change carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>values</code></td><td><code>string[]</code></td><td>the values of the selected options, in option order</td></tr><tr><td><code>labels</code></td><td><code>string[]</code></td><td>their labels, in the same order</td></tr><tr><td><code>created?</code></td><td><code>string \| null</code></td><td>a value just created from typed text (multiple + data-creatable), null when none; absent on a single-select</td></tr></table> |
 
 ## Notes
 

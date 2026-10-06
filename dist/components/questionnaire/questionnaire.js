@@ -1207,6 +1207,8 @@ df$.questionnaire = {
      * message | null }), onSubmit(answers, { history }) (may return a
      * promise; a rejection keeps the review and says why), persist
      * ({ area, prefix, key } - where the draft is kept).
+     * @param target - the .questionnaire element or its selector
+     * @param config - branches, checks, the submit handler and the draft's place (merged into the current config)
      */
     configure(target, config = {}) {
         const root = resolve(target);
@@ -1216,34 +1218,88 @@ df$.questionnaire = {
         if (config.persist && root._walk)
             attachDraft(root, config.persist);
     },
-    /** Leave the current step forward - validated; false when it cannot be left. */
+    /**
+     * Leave the current step forward - validated; false when it cannot be left.
+     * @param target - the .questionnaire element or its selector
+     * @returns true when it moved on; false when the step does not validate (or is an end)
+     */
     next: (target) => advance(resolve(target)),
-    /** Back one step along the branch history. */
+    /**
+     * Back one step along the branch history.
+     * @param target - the .questionnaire element or its selector
+     * @returns false on the first step
+     */
     back: (target) => back(resolve(target)),
-    /** Skip an optional step - its answers dropped, the default way taken. */
+    /**
+     * Skip an optional step - its answers dropped, the default way taken.
+     * @param target - the .questionnaire element or its selector
+     * @returns true when it moved on
+     */
     skip: (target) => advance(resolve(target), { skip: true }),
-    /** Jump to a step of the history (what the trail and Edit do). */
+    /**
+     * Jump to a step of the history (what the trail and Edit do).
+     * @param target - the .questionnaire element or its selector
+     * @param id - the step id
+     * @returns false when the step is not in the history
+     */
     goTo: (target, id) => goTo(resolve(target), id),
-    /** Start over: no answers, no history, no draft. */
+    /**
+     * Start over: no answers, no history, no draft.
+     * @param target - the .questionnaire element or its selector
+     */
     restart: (target) => restart(resolve(target)),
-    /** Send from the end step (onSubmit, then questionnaire-submit). */
+    /**
+     * Send from the end step (onSubmit, then questionnaire-submit).
+     * @param target - the .questionnaire element or its selector
+     * @returns true when sent; false when onSubmit rejected or (before the end) the step did not validate
+     */
     submit: (target) => submit(resolve(target)),
-    /** The answers so far. */
+    /**
+     * The answers so far.
+     * @param target - the .questionnaire element or its selector
+     * @returns a copy of every answer, by field name
+     */
     answers: (target) => ({ ...cfgOf(resolve(target))?.answers }),
-    /** The steps taken up to the current one. */
+    /**
+     * The steps taken up to the current one.
+     * @param target - the .questionnaire element or its selector
+     * @returns the step ids, in order
+     */
     history: (target) => {
         const walk = cfgOf(resolve(target));
         return walk ? walk.history.slice(0, walk.index + 1) : [];
     },
-    /** where the answers lead from a step (the graph, evaluated) */
+    /**
+     * Where the answers lead from a step (the graph, evaluated).
+     * @param target - the .questionnaire element or its selector
+     * @param stepId - the step to leave
+     * @param answers - the answers to evaluate (default: the current ones)
+     * @returns the next step's id, null from an end
+     */
     nextOf: (target, stepId, answers) => nextOf(resolve(target), stepId, answers ?? cfgOf(resolve(target)).answers),
-    /** Check the flow graph - { ok, errors, warnings, nodes, edges }. */
+    /**
+     * Check the flow graph - { ok, errors, warnings, nodes, edges }.
+     * @param target - the .questionnaire element or its selector
+     * @returns the errors, the warnings and the graph
+     */
     analyze: (target) => analyze(resolve(target)),
-    /** The flow as a Mermaid flowchart, the walked path marked. */
+    /**
+     * The flow as a Mermaid flowchart, the walked path marked.
+     * @param target - the .questionnaire element or its selector
+     * @returns the flowchart source
+     */
     toMermaid: (target) => toMermaid(resolve(target)),
-    /** The flow as an Illustrative Diagram spec for df$.shadcn.diagram.build - steps ranked top-down, the walked path marked, the edge just walked flowing; { title } names it. */
+    /** The flow as an Illustrative Diagram spec for df$.shadcn.diagram.build - steps ranked top-down, the walked path marked, the edge just walked flowing; { title } names it.
+     * @param target - the .questionnaire element or its selector
+     * @param options - title: the figure's title
+     * @returns the spec, for df$.shadcn.diagram.build()
+     */
     toDiagram: (target, options) => toDiagram(resolve(target), options),
-    /** Link a .diagram figure both ways: it redraws on every move with the current step active, and a click moves the form - back to a step taken, forward only to the step the answers lead to; further on is refused (questionnaire-jump-refused). Returns the unlink function. */
+    /** Link a .diagram figure both ways: it redraws on every move with the current step active, and a click moves the form - back to a step taken, forward only to the step the answers lead to; further on is refused (questionnaire-jump-refused).
+     * @param target - the .questionnaire element or its selector
+     * @param figure - the .diagram figure or its selector
+     * @returns the unlink function: call it to stop the two following each other
+     */
     linkDiagram: (target, figure) => linkDiagram(resolve(target), resolve(figure)),
 };
 /** where the draft is kept (viewPersistence: data-persist / -prefix / -key, or the config) */

@@ -105,7 +105,7 @@ prerequisite); they lose nothing.
 
 - **`scripts/stats.ts`** measures `dist/core/` exactly like the all.* bundle (minified
   + per-file gzipped) and passes it through `aggregateStats` as a second
-  `BundleStats`: `StatsDoc.core` ([`scripts/lib/stats.ts`](../scripts/lib/stats.ts) —
+  `BundleStats`: `StatsDoc.core` ([`scripts/lib/stats.ts`](../scripts/lib/stats.ts):
   mirror the existing `bundle` field + `EMPTY_BUNDLE` default; pure, so
   [`tests/stats.test.ts`](../tests/stats.test.ts) pins the passthrough in browser mode).
 - **Getting Started (`index.mdx`)**: [`StatsCards`](../src/documentation/lib/components/stats-claim.tsx)
@@ -128,7 +128,7 @@ prerequisite); they lose nothing.
    `tests/e2e/core.e2e-fixture.html` + `core.e2e.ts` - loads ONLY `core.css` +
    `core.js` + two components (one CSS-only e.g. badge, one interactive e.g. dialog),
    asserts tokens live (`--primary` resolves), utilities apply (`.flex` geometry),
-   `df$` callable + `df$.morph` present, and the interactive component initializes —
+   `df$` callable + `df$.morph` present, and the interactive component initializes;
    the modular path is proven end-to-end without `all.js`.
 4. **Docs** (¼ day): Installation + How to Use modular sections (core quick start,
    "already have defuss? skip core.js" note); README same-commit if it changes; stats

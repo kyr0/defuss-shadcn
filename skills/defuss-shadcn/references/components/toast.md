@@ -78,7 +78,7 @@ region announcements. Follows `role="status"` with `aria-live="polite"`.
 
 ## Sizes
 
-Set `data-size` on the .toast element. Width envelope only - typography and padding are density’s job.
+Set `data-size` on the .toast element. Width envelope only - typography and padding are density's job.
 
 | `data-size` | Effect |
 |-------------|--------|
@@ -196,23 +196,55 @@ The registry global is `df$.shadcn.toastApi` / `df$.shadcn.toastStates`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.toastApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.toastStates` = `default`.
+<code>type ToastState = 'default'</code> - `setState(name, config)` takes the config of the state it names (`ToastStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The region as authored - setting it dismisses every visible toast. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>count?</code></td><td><code>number</code></td><td>reported by getState(): the toasts in the region now</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends ToastState&gt;(name: S, config?: ToastStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ToastStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: ToastState; config: ToastStateConfigs[ToastState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.toastApi.setState&lt;S extends ToastState&gt;(el: HTMLElement, name: S, config?: ToastStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ToastStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.toastApi.getState(el: HTMLElement): { name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.toastApi.render(state: { name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: ToastState; config: ToastStateConfigs[ToastState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.toastApi.store(el: HTMLElement): Store&lt;{ name: ToastState; config: ToastStateConfigs[ToastState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: ToastState; config: ToastStateConfigs[ToastState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.toastApi.commit&lt;S extends ToastState&gt;(el: HTMLElement, name: S, config?: ToastStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>ToastStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.toastStates: ToastState[]</code> | The declared states, 'default' first: <code>default</code>. |
 
 ### `df$.shadcn.toast`
 
 | Member | Description |
 |---|---|
-| `configure(opts = {})` | Region options: stack 'list' (default, every toast visible) or 'pile' (the newest in front, the others as sheets behind it - hover / focus fans them out); position = the corner (bottom-right, bottom-left, top-right, top-left, top-center, bottom-center). |
-| `show(options)` | Show a toast - a title string or { title, description, variant, duration, action … }; returns its element. |
-| `success(o)` | show() as a success toast. |
-| `warning(o)` | show() as a warning toast. |
-| `info(o)` | show() as an info toast. |
-| `error(o)` | show() as an error (destructive) toast. |
-| `dismiss()` | Dismiss every toast. |
+| <code>configure(opts: ToastRegionOptions = {}): ToastRegionOptions</code> | Region options: stack 'list' (default, every toast visible) or 'pile' (the newest in front, the others as sheets behind it - hover / focus fans them out); position = the corner (bottom-right, bottom-left, top-right, top-left, top-center, bottom-center). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>opts</code></td><td><code>ToastRegionOptions</code> = <code>{}</code></td><td>the options to change; omitted keys stay as they are</td></tr></table> <b>Returns</b> <code>ToastRegionOptions</code> - the region's options now |
+| <code>show(options: string \| ToastOptions): HTMLElement</code> | Show a toast - a title string or { title, description, variant, duration, action ... }. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>string \| ToastOptions</code></td><td>the title, or the toast options</td></tr></table> <b>Returns</b> <code>HTMLElement</code> - the toast element (a manual popover in the region) |
+| <code>success(options: string \| ToastOptions): HTMLElement</code> | show() as a success toast. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>string \| ToastOptions</code></td><td>the title, or the toast options (the variant is set for you)</td></tr></table> <b>Returns</b> <code>HTMLElement</code> - the toast element |
+| <code>warning(options: string \| ToastOptions): HTMLElement</code> | show() as a warning toast. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>string \| ToastOptions</code></td><td>the title, or the toast options (the variant is set for you)</td></tr></table> <b>Returns</b> <code>HTMLElement</code> - the toast element |
+| <code>info(options: string \| ToastOptions): HTMLElement</code> | show() as an info toast. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>string \| ToastOptions</code></td><td>the title, or the toast options (the variant is set for you)</td></tr></table> <b>Returns</b> <code>HTMLElement</code> - the toast element |
+| <code>error(options: string \| ToastOptions): HTMLElement</code> | show() as an error (destructive) toast. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>string \| ToastOptions</code></td><td>the title, or the toast options (the variant is set for you)</td></tr></table> <b>Returns</b> <code>HTMLElement</code> - the toast element |
+| <code>dismiss(): void</code> | Dismiss every toast. |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `ToastOptions` | What show() takes (a plain string is the title). <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>title?</code></td><td><code>string</code></td><td>the bold first line</td></tr><tr><td><code>description?</code></td><td><code>string</code></td><td>the second line</td></tr><tr><td><code>variant?</code></td><td><code>'success' \| 'warning' \| 'info' \| 'destructive'</code></td><td>the look and the icon; 'destructive' is announced assertively (role="alert")</td></tr><tr><td><code>duration?</code></td><td><code>number</code></td><td>ms until it dismisses itself (default 4000); Infinity keeps it until dismissed</td></tr><tr><td><code>action?</code></td><td><code>{ label: string; onClick: () =&gt; void }</code></td><td>one action button: its label and what a click does (the toast closes after)</td></tr><tr><td><code>onDismiss?</code></td><td><code>() =&gt; void</code></td><td>called when the toast is dismissed by its close button or its timer</td></tr><tr><td><code>size?</code></td><td><code>'sm' \| 'md' \| 'lg'</code></td><td>the width envelope</td></tr><tr><td><code>density?</code></td><td><code>'compact' \| 'comfortable' \| 'spacious'</code></td><td>the whitespace policy</td></tr><tr><td><code>animation?</code></td><td><code>string \| { in?: string; out?: string; direction?: string; duration?: number }</code></td><td>a df$.anim entrance (fadeIn, slideIn, popIn, ...), or { in, out, direction, duration } for both ways</td></tr><tr><td><code>aura?</code></td><td><code>boolean \| string</code></td><td>a ring of light around it (shapes.css .aura): true, or the aura style name</td></tr></table> |
+| `ToastRegionOptions` | The toast region's options (configure() takes and returns them). <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>stack?</code></td><td><code>'list' \| 'pile'</code></td><td>'list': every toast visible; 'pile': the newest in front, the others as sheets behind it</td></tr><tr><td><code>position?</code></td><td><code>'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left' \| 'top-center' \| 'bottom-center'</code></td><td>the corner the toasts appear in</td></tr></table> |
 
 ## Notes
 

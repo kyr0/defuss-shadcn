@@ -31,11 +31,85 @@ import {
   sizerHeight,
   scrollIntoViewTop,
 } from '../../shared/state-api.js';
+import type { DataviewFilter, DataviewJsonValue, DataviewRow, DataviewSorter } from '../../shared/dataview.js';
+import type { ViewPersistence } from '../../shared/store.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** The grid's query - its state config (merged on every query()). */
+type DataGridQuery = {
+  /** filters over every record (a tree grid shows a match with its ancestors) */
+  filters?: DataviewFilter[];
+  /** the sort order - several sorters sort by each in turn */
+  sorters?: DataviewSorter[];
+  /** the fields of the locked columns, pinned to the start in this order */
+  locked?: string[];
+  /** the page shown, 0-based (data-paging="pages") */
+  page?: number;
+  /** tree grid: the ids of the open rows */
+  expanded?: DataviewJsonValue[];
+  /** tree grid, while filtering: the rows the user closed again */
+  collapsed?: DataviewJsonValue[];
+  /** the ids of the selected rows */
+  selected?: DataviewJsonValue[];
+};
+
+/** Where a record sits - what a custom cell receives. */
+interface DataGridRowMeta {
+  /** tree grid: 0 for a root row */
+  depth: number;
+  /** tree grid: whether it has child rows */
+  hasChildren: boolean;
+  /** tree grid: whether its children show */
+  isExpanded: boolean;
+  /** whether it matches the filters (false for an ancestor shown for a match) */
+  isMatch: boolean;
+  /** whether it is selected */
+  isSelected: boolean;
+  /** tree grid: its parent's id, null for a root */
+  parentId: DataviewJsonValue | null;
+}
+
+/** What setSource() takes besides the records. */
+interface DataGridOptions {
+  /** the id field (default 'id', or data-id-field) */
+  idField?: string;
+  /** a tree grid: the parent-id field (or data-parent-field) */
+  parentIdField?: string;
+  /** custom cell content per field: fill the cell's content element */
+  cells?: Record<string, (el: HTMLElement, record: DataviewRow, meta: DataGridRowMeta) => void>;
+  /** data-paging="infinite" from a remote source: the next records from offset (an empty answer ends the loading) */
+  load?: (offset: number, size: number) => Promise<DataviewRow[]>;
+  /** the starting query (a kept view wins over it) */
+  query?: DataGridQuery;
+  /** where the view is kept between visits (default: session storage under a generated key) */
+  persist?: ViewPersistence;
+}
+
+/** What data-grid-activate carries. */
+interface DataGridActivateDetail {
+  /** the row's record */
+  record: DataviewRow;
+  /** its position in the query (every page) */
+  index: number;
+}
+
 const dataGridStates = ['default', 'loading', 'empty'];
+
+/** setState() configs per state - the config IS the grid's query, merged into the stored one ({ page: 3 } keeps the filters). */
+export interface DataGridStateConfigs {
+  /** The rows of the query; a query nothing matches lands in empty. */
+  default: DataGridQuery;
+  /** Busy: skeleton rows, aria-busy - a grid without records (or waiting for load()) starts here. */
+  loading: DataGridQuery;
+  /** No rows: the data-empty-text shows. */
+  empty: DataGridQuery;
+}
 
 /** the part that is persisted (selection and the open page are per visit) */
 const SAVED_KEYS = ['filters', 'sorters', 'locked', 'expanded'];
@@ -611,7 +685,7 @@ function onKeydown(grid, e) {
         next = [-1, col];
       } else if (entry) {
         // Fires on Enter on a row - its record and its position in the query.
-        grid.dispatchEvent(new CustomEvent('data-grid-activate', { bubbles: true, detail: { record: entry.row, index: row } }));
+        grid.dispatchEvent(new CustomEvent<DataGridActivateDetail>('data-grid-activate', { bubbles: true, detail: { record: entry.row, index: row } }));
       }
       break;
     default:
@@ -707,11 +781,14 @@ df$.dataGrid = {
    * tree grid; or data-parent-field), cells ({ field: (el, record, meta) })
    * custom cell content, load(offset, size) → Promise<records[]> for
    * data-paging="infinite" from a remote source, query ({ sorters, filters,
-   * locked, … }) the starting query, persist ({ area: 'session' | 'local' |
+   * locked, ... }) the starting query, persist ({ area: 'session' | 'local' |
    * 'none', prefix, key }) where the view is kept - a kept view wins over
    * the starting query.
+   * @param target - the .data-grid element or its selector
+   * @param rows - the records (a tree grid: a flat list linked by parent id)
+   * @param options - fields, custom cells, a remote loader, the starting view and its persistence
    */
-  setSource(target, rows, options = {}) {
+  setSource(target: string | HTMLElement, rows: DataviewRow[], options: DataGridOptions = {}): void {
     const grid = resolve(target);
     grid._sourceOptions = options;
     const parentIdField = options.parentIdField || grid.dataset.parentField;
@@ -732,27 +809,51 @@ df$.dataGrid = {
     }
     dataGridApi.setState(grid, 'default', patch);
   },
-  /** merge into the query: { filters?, sorters?, locked?, page?, expanded?, selected? } */
-  query: (target, patch) => query(resolve(target), patch),
-  /** the records the query shows, in order (all pages) */
-  rows: (target) => (resolve(target)._result?.entries ?? []).map((e) => e.row),
-  /** the selected records */
-  selected(target) {
+  /**
+   * Merge into the query: { filters?, sorters?, locked?, page?, expanded?, selected? }.
+   * @param target - the .data-grid element or its selector
+   * @param patch - the query keys to change
+   */
+  query: (target: string | HTMLElement, patch: DataGridQuery): void => { query(resolve(target), patch); },
+  /**
+   * The records the query shows.
+   * @param target - the .data-grid element or its selector
+   * @returns the records in query order, every page
+   */
+  rows: (target: string | HTMLElement): DataviewRow[] => (resolve(target)._result?.entries ?? []).map((e) => e.row),
+  /**
+   * The selected records.
+   * @param target - the .data-grid element or its selector
+   * @returns the selected records, in source order
+   */
+  selected(target: string | HTMLElement): DataviewRow[] {
     const grid = resolve(target);
     const ids = grid._selected ?? new Set();
     return (grid._source?.rows ?? []).filter((r) => ids.has(r[grid._source.idField]));
   },
-  /** Select every row the query shows (data-select="multiple"). */
-  selectAll: (target) => selectAll(resolve(target)),
-  /** Select nothing. */
-  clearSelection: (target) => query(resolve(target), { selected: [] }),
-  /** Tree grid: open every branch. */
-  expandAll(target) {
+  /**
+   * Select every row the query shows (data-select="multiple").
+   * @param target - the .data-grid element or its selector
+   */
+  selectAll: (target: string | HTMLElement): void => selectAll(resolve(target)),
+  /**
+   * Select nothing.
+   * @param target - the .data-grid element or its selector
+   */
+  clearSelection: (target: string | HTMLElement): void => { query(resolve(target), { selected: [] }); },
+  /**
+   * Tree grid: open every branch.
+   * @param target - the .data-grid element or its selector
+   */
+  expandAll(target: string | HTMLElement): void {
     const grid = resolve(target);
     query(grid, { expanded: grid._source.branchIds(), collapsed: [] });
   },
-  /** Tree grid: close every branch. */
-  collapseAll(target) {
+  /**
+   * Tree grid: close every branch (while filtering: the ways to the matches too).
+   * @param target - the .data-grid element or its selector
+   */
+  collapseAll(target: string | HTMLElement): void {
     const grid = resolve(target);
     const filtering = (configOf(grid).filters || []).length > 0;
     query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });

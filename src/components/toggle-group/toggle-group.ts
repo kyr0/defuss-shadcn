@@ -12,6 +12,16 @@ const dfDollar = defussQuery();
 
 const toggleGroupStates = ['default', 'disabled'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the toggle group's states take none. */
+export interface ToggleGroupStateConfigs {
+  /** Enabled. */
+  default: {};
+  /** Every item disabled (data-disabled on the group). */
+  disabled: {};
+}
+
 /**
  * The markup of a state, for render(): the attributes every state writes -
  * the same as triggerStateChange does on the live element - applied to a

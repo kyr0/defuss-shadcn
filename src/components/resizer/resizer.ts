@@ -38,7 +38,34 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What resizer-resize carries. */
+interface ResizerResizeDetail {
+  /** the axis that moved: 'w' (width) or 'h' (height) */
+  axis: 'w' | 'h';
+  /** the resized pane's width now, px */
+  width: number;
+  /** its height now, px */
+  height: number;
+}
+
 const resizerStates = ['default'];
+
+/** setState() configs per state (getState() reports the live size). */
+export interface ResizerStateConfigs {
+  /** The panes at a size; no config restores the authored one. */
+  default: {
+    /** the resized pane's width, px */
+    width?: number;
+    /** its height, px */
+    height?: number;
+    /** reported by getState(): how the size is applied (data-resize-mode: px, classes or controlled) */
+    mode?: string;
+  };
+}
 
 /** The 8 handle positions; corners resize both axes unless data-axis limits it. */
 const HANDLES = ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw'] as const;
@@ -193,7 +220,7 @@ function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
   }
   // Fires while the divider moves (pointer or keys) - the axis and the new width / height.
   wrapper.dispatchEvent(
-    new CustomEvent('resizer-resize', {
+    new CustomEvent<ResizerResizeDetail>('resizer-resize', {
       bubbles: true,
       detail: {
         axis,
@@ -369,12 +396,15 @@ function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent):
 }
 
 function init(): void {
-  dfDollar('.resizer:not([data-init])').toArray().forEach((wrapper: HTMLElement) => {
+  const fresh = dfDollar('.resizer:not([data-init])').toArray().filter((wrapper): wrapper is HTMLElement => wrapper instanceof HTMLElement).filter((wrapper) => {
     wrapper.dataset.init = '';
-    if (!targetOf(wrapper)) return; // a resizer wraps exactly ONE element
-    // authored snapshot for the 'default' state (computed - works for px and
-    // classes authored alike)
-    wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
+    return !!targetOf(wrapper); // a resizer wraps exactly ONE element
+  });
+  // authored snapshot for the 'default' state (computed - works for px and classes authored
+  // alike), measured for every wrapper BEFORE any is bound: a measure after a write forces a
+  // layout of the whole page, once per wrapper (the code-example cards on a docs page)
+  for (const wrapper of fresh) wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
+  fresh.forEach((wrapper: HTMLElement) => {
     // el.store + el.api (AGENTS.md "State through stores")
     bindComponent(wrapper, resizerApi);
     syncHandles(wrapper);

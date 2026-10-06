@@ -14,7 +14,43 @@ import { defussGlobals, defussQuery, safeShowPopover, componentState, bindCompon
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What combobox:change carries. */
+interface ComboboxChangeDetail {
+  /** the values of the selected options, in option order */
+  values: string[];
+  /** their labels, in the same order */
+  labels: string[];
+  /** a value just created from typed text (multiple + data-creatable), null when none; absent on a single-select */
+  created?: string | null;
+}
+
 const comboboxStates = ['default', 'open'];
+
+/** setState() configs per state - the states take none; getState() reports the selection. */
+export interface ComboboxStateConfigs {
+  /** The list closed. */
+  default: {
+    /** reported by getState(): the chosen label (several joined with ", ") */
+    value?: string;
+    /** reported by getState(): every chosen option's data-value (else its text), in list order */
+    values?: string[];
+    /** reported by getState(): the chosen options' texts, in the same order */
+    labels?: string[];
+  };
+  /** The list open (the popover shown). */
+  open: {
+    /** reported by getState(): the chosen label (several joined with ", ") */
+    value?: string;
+    /** reported by getState(): every chosen option's data-value (else its text), in list order */
+    values?: string[];
+    /** reported by getState(): the chosen options' texts, in the same order */
+    labels?: string[];
+  };
+}
 
 /**
  * The markup of a state: none - 'open' lives in the top layer
@@ -186,7 +222,7 @@ function initTags(wrapper: HTMLElement) {
     if (input.dataset.placeholder === undefined) input.dataset.placeholder = input.placeholder;
     input.placeholder = labels.length ? '' : input.dataset.placeholder;
     // Fires when the user changes the selection - the selected values, their labels, and the values created from typed text.
-    if (announce) wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels, created } }));
+    if (announce) wrapper.dispatchEvent(new CustomEvent<ComboboxChangeDetail>('combobox:change', { bubbles: true, detail: { values, labels, created } }));
   };
 
   /** Commit: exact match / highlighted row / new tag from the text. */
@@ -391,7 +427,7 @@ function init() {
             (name ? values.map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`).join('') : ''),
         ); // escaped option text + static icon (§5.1: text is never parsed as markup)
       }
-      if (announce) wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels } }));
+      if (announce) wrapper.dispatchEvent(new CustomEvent<ComboboxChangeDetail>('combobox:change', { bubbles: true, detail: { values, labels } }));
     };
     // authored aria-selected="true" options are the initial selection
     if (multiple) renderSelection(false);

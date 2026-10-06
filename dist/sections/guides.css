@@ -1,0 +1,463 @@
+/* ── components/motion/motion.css ── */
+/* -- Motion component -------------------------------------------------
+   The shared entrance-animation vocabulary: CSS @keyframes are the single
+   source of truth (geometry, easing, defaults, reduced-motion), driven either
+   declaratively via [data-df-entrance] or imperatively through the JS
+   controller `ddf$.entrance(el, effect, opts)` (src/shared/motion.ts - same
+   functions under df$.shadcn.entrance). The JS never defines keyframes; it
+   only triggers/retriggers, overrides timing vars and owns the
+   finished/cancel lifecycle via the platform's CSSAnimation objects.
+
+   Why animations (not transitions): they run deterministically when the
+   attribute first applies - including on freshly inserted DOM - and they
+   replay cleanly (cancel → play). Transitions need a rendered "from" state
+   and never fire on initial application (the reason the first vocabulary
+   demo showed a static grid).
+
+   Why animation-composition: add - transform/filter keyframes COMPOSE with
+   any pre-existing transform/filter on the element instead of replacing it,
+   so entrances are safe on arbitrarily styled DOM (no transform inspection
+   or reconstruction). The paired fade runs with `replace`.
+
+   Limits: non-replaced inline boxes (display:inline spans) are not
+   transformable per CSS - this is deliberate and NOT worked around (silent
+   display changes would alter text wrapping). Wrap inline content or let the
+   caller promote it. */
+
+@layer components {
+  /* timing tunables - :root defaults so ANY ancestor (deck mount, container,
+     inline style) can override by ordinary cascade; inline styles win last */
+  :root {
+    --df-motion-duration: 1500ms;
+    --df-motion-delay: 0ms;
+    --df-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --df-motion-distance: 24px;
+    --df-motion-scale-in: 0.9;
+    --df-motion-scale-out: 1.1;
+    --df-motion-blur: 12px;
+    --df-motion-angle: 12deg;
+    --df-motion-spin: -0.5turn;
+    /* JS writes the element's CURRENT computed opacity here, so fading an
+       opacity:.6 element ends at .6 - never brightens content it doesn't own */
+    --df-motion-base-opacity: 1;
+  }
+
+  /* one animation declaration, parameterized entirely by the vars above */
+  [data-df-entrance] {
+    animation-duration: var(--df-motion-duration);
+    animation-delay: var(--df-motion-delay);
+    animation-timing-function: var(--df-motion-ease);
+    animation-fill-mode: both;
+
+    /* transform-channel entrances pair with the fade (composition: add keeps
+       the element's own transform underneath); clip-path entrances need no
+       fade - the clip alone reveals the content */
+    &[data-df-entrance="up"] { animation-name: df-enter-up, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="down"] { animation-name: df-enter-down, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="left"] { animation-name: df-enter-left, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="right"] { animation-name: df-enter-right, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="zoom"] { animation-name: df-enter-zoom, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="zoom-out"] { animation-name: df-enter-zoom-out, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="pop"] { animation-name: df-enter-pop, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="spin"] { animation-name: df-enter-spin, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="flip"] { animation-name: df-enter-flip, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="skew"] { animation-name: df-enter-skew, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="blur"] { animation-name: df-enter-blur, df-enter-fade; animation-composition: add, replace; }
+    &[data-df-entrance="wipe"] { animation-name: df-enter-wipe; }
+    &[data-df-entrance="wipe-up"] { animation-name: df-enter-wipe-up; }
+    &[data-df-entrance="iris"] { animation-name: df-enter-iris; }
+    &[data-df-entrance="fade"] { animation-name: df-enter-fade; }
+  }
+
+  /* stagger: children of a [data-df-stagger] container get graded delays
+     (--df-motion-stagger-step per container) while keeping their own
+     direction. ponytail: beyond the 8th child the delay caps at *7 - long
+     lists should chunk into columns. An inline --df-motion-delay on a child
+     still wins (inline beats any stylesheet rule). */
+  [data-df-stagger] {
+    --df-motion-stagger-step: 120ms;
+    & > :nth-child(1) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 0); }
+    & > :nth-child(2) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 1); }
+    & > :nth-child(3) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 2); }
+    & > :nth-child(4) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 3); }
+    & > :nth-child(5) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 4); }
+    & > :nth-child(6) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 5); }
+    & > :nth-child(7) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 6); }
+    & > :nth-child(n + 8) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 7); }
+  }
+
+  /* SVG draw-in - a distinct primitive, not a DOM entrance: pathLength="1"
+     calibrates distance-along-path so ONE dash rule (1 → 0) fits every
+     geometry regardless of actual path length. (The CSS `path-length`
+     property stays experimental - the SVG attribute is the portable form.) */
+  [data-df-draw][pathLength="1"] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation:
+      df-draw
+      var(--df-motion-duration)
+      var(--df-motion-ease)
+      var(--df-motion-delay)
+      both;
+  }
+
+  /* vocabulary - every direction is exactly one keyframes rule */
+
+  @keyframes df-enter-fade {
+    from { opacity: 0; }
+    to { opacity: var(--df-motion-base-opacity); }
+  }
+
+  /* "up" travels upward into its final position (from below) */
+  @keyframes df-enter-up {
+    from { transform: translateY(var(--df-motion-distance)); }
+    to { transform: translateY(0); }
+  }
+  @keyframes df-enter-down {
+    from { transform: translateY(calc(-1 * var(--df-motion-distance))); }
+    to { transform: translateY(0); }
+  }
+  @keyframes df-enter-left {
+    from { transform: translateX(var(--df-motion-distance)); }
+    to { transform: translateX(0); }
+  }
+  @keyframes df-enter-right {
+    from { transform: translateX(calc(-1 * var(--df-motion-distance))); }
+    to { transform: translateX(0); }
+  }
+  @keyframes df-enter-zoom {
+    from { transform: scale(var(--df-motion-scale-in)); }
+    to { transform: scale(1); }
+  }
+  @keyframes df-enter-zoom-out {
+    from { transform: scale(var(--df-motion-scale-out)); }
+    to { transform: scale(1); }
+  }
+  @keyframes df-enter-pop {
+    0% { transform: scale(0.65); }
+    65% { transform: scale(1.07); }
+    100% { transform: scale(1); }
+  }
+  @keyframes df-enter-spin {
+    from { transform: rotate(var(--df-motion-spin)); }
+    to { transform: rotate(0deg); }
+  }
+  @keyframes df-enter-flip {
+    from { transform: perspective(900px) rotateY(-70deg); }
+    to { transform: perspective(900px) rotateY(0deg); }
+  }
+  @keyframes df-enter-skew {
+    from { transform: skewX(var(--df-motion-angle)); }
+    to { transform: skewX(0deg); }
+  }
+  @keyframes df-enter-blur {
+    from { filter: blur(var(--df-motion-blur)); }
+    to { filter: blur(0); }
+  }
+  @keyframes df-enter-wipe {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes df-enter-wipe-up {
+    from { clip-path: inset(100% 0 0 0); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes df-enter-iris {
+    from { clip-path: circle(0% at 50% 50%); }
+    to { clip-path: circle(150% at 50% 50%); }
+  }
+
+  @keyframes df-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* accessibility: near-instant instead of none - the JS finished/cancel
+     contract behaves identically (a finished 1ms animation still resolves),
+     while nothing visibly moves. REQUIRED for every animation. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-df-entrance],
+    [data-df-draw] {
+      --df-motion-duration: 1ms !important;
+      --df-motion-delay: 0ms !important;
+    }
+  }
+}
+
+/* ── components/anim-canvas/anim-canvas.css ── */
+/* -- Animation Canvas component ----------------------------------
+   Chess-board slide canvas: the root is the viewport (overflow hidden),
+   JS-created .anim-canvas-board carries the pan/zoom transform, slides are
+   absolute cells in board units (--anim-canvas-width/height, literal
+   defaults, token-free artboard like presentation). All motion is the shared
+   df$.anim engine + one WAAPI board pan; this sheet owns only the surface:
+   card-ish slides (allowed tokens), the overview tile affordance, and the
+   optional directional chrome. */
+
+@layer components {
+  .anim-canvas {
+    /* artboard contract - override on the mount for other formats */
+    --anim-canvas-width: 1280;
+    --anim-canvas-height: 720;
+    /* gutter between board cells (board units): separates the overview
+       tiles and shows as a seam while the board pans. 0 = flush cells. */
+    --anim-canvas-gap: 80;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--anim-canvas-width) / var(--anim-canvas-height);
+    overflow: hidden;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    /* the one pan/zoom layer (JS-created; transform-origin pinned so the
+       runtime's translate+scale math stays in raw board units) */
+    & .anim-canvas-board {
+      position: absolute;
+      inset: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    /* a board cell: card surface, separated from its neighbors by the gap
+       (radius + shadow appear in overview, where every cell is a tile) */
+    & .anim-canvas-slide {
+      position: absolute;
+      box-sizing: border-box;
+      overflow: hidden;
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    /* overview: every slide reads as a clickable tile */
+    &[data-overview] .anim-canvas-slide {
+      cursor: pointer;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+
+      &:hover {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* optional authored chrome: directional + overview buttons
+       ([data-anim-canvas-go="east|west|north|south|overview"]) */
+    & .anim-canvas-controls {
+      position: absolute;
+      inset-block-end: 0.75rem;
+      inset-inline-end: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      z-index: 2;
+    }
+
+    & .anim-canvas-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      color: var(--card-foreground);
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+      transition: background-color 150ms ease;
+
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+  }
+
+  /* accessibility: honor motion + contrast preferences (REQUIRED). The
+     engine collapses its own durations and the runtime collapses the board
+     pan to 1ms; here the chrome's hover transition flattens. */
+  @media (prefers-reduced-motion: reduce) {
+    .anim-canvas .anim-canvas-control {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .anim-canvas .anim-canvas-control {
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .anim-canvas {
+      border-color: CanvasText;
+    }
+    .anim-canvas[data-overview] .anim-canvas-slide {
+      outline: 1px solid CanvasText;
+    }
+    .anim-canvas .anim-canvas-control {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background: ButtonFace;
+    }
+  }
+}
+
+/* ── components/parallax/parallax.css ── */
+/* -- Parallax --------------------------------------------------------
+   Depth on scroll, no script. A .parallax scene is a view timeline (its
+   passage through the scrollport); every .parallax-layer moves along it -
+   far layers lag, near ones lead - so the picture separates into planes.
+   A sticky scene (data-sticky + .parallax-stage) pins its stage while you
+   scroll through it: the layers play over that whole distance (zoom, fade,
+   spin). .parallax-drift moves in-flow elements at their own speed (columns
+   of a photo wall), .parallax-reveal fades and lifts elements into view.
+   Unsupported browsers and reduced motion get the still composition. */
+
+@layer components {
+  .parallax {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    view-timeline-name: --parallax;
+    view-timeline-axis: block;
+  }
+
+  /* a layer fills the scene (or the stage) and moves by --parallax-speed:
+     a percentage of its own height over the passage, or a length */
+  .parallax-layer {
+    --_speed: var(--parallax-speed, 0%);
+
+    position: absolute;
+    /* overscan by 1.5 x the absolute speed: the travel never shows an edge */
+    inset: calc(-1.5 * max(var(--_speed), -1 * var(--_speed))) 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+
+    & > img,
+    & > video,
+    & > svg { width: 100%; height: 100%; object-fit: cover; }
+
+    &[data-depth="far"] { --_speed: var(--parallax-speed, 50%); z-index: -4; }
+    &[data-depth="mid"] { --_speed: var(--parallax-speed, 25%); z-index: -3; }
+    &[data-depth="near"] { --_speed: var(--parallax-speed, -15%); z-index: -2; }
+    &[data-depth="front"] { --_speed: var(--parallax-speed, -35%); z-index: 2; }
+  }
+
+  /* the content plane: in flow, interactive */
+  .parallax-content { position: relative; z-index: 1; }
+
+  /* sticky scene: tall (data-sticky sets the scroll distance, default 300%
+     of the stage), the stage pins while the scene passes - the layers play
+     over the pinned stretch (the timeline's contain range) */
+  .parallax[data-sticky] {
+    overflow: visible;
+    height: calc(var(--parallax-stage, 100dvh) * var(--parallax-length, 3));
+  }
+  .parallax-stage {
+    position: sticky;
+    inset-block-start: 0;
+    height: var(--parallax-stage, 100dvh);
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  /* horizontal scenes (a sideways scroller) */
+  .parallax[data-axis="inline"] { view-timeline-axis: inline; }
+
+  /* in-flow elements at their own speed - a length (6rem) or a percentage */
+  .parallax-drift { --_speed: var(--parallax-speed, 4rem); }
+
+  @keyframes parallax-shift {
+    from { translate: 0 calc(var(--_speed) * -1); }
+    to { translate: 0 var(--_speed); }
+  }
+  @keyframes parallax-shift-inline {
+    from { translate: calc(var(--_speed) * -1) 0; }
+    to { translate: var(--_speed) 0; }
+  }
+  @keyframes parallax-zoom {
+    from { scale: 1; }
+    to { scale: var(--parallax-scale, 2.5); }
+  }
+  @keyframes parallax-fade {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes parallax-spin {
+    to { rotate: var(--parallax-turn, 90deg); }
+  }
+  /* pass: in from small and transparent, hold, out large - words flying by */
+  @keyframes parallax-pass {
+    0% { opacity: 0; scale: 0.5; }
+    35%, 65% { opacity: 1; scale: 1; }
+    100% { opacity: 0; scale: 1.8; }
+  }
+  @keyframes parallax-reveal {
+    from { opacity: 0; translate: 0 var(--parallax-rise, 3rem); scale: 0.98; }
+  }
+  @keyframes parallax-reveal-zoom {
+    from { opacity: 0; scale: 0.85; }
+  }
+  @keyframes parallax-reveal-fade {
+    from { opacity: 0; }
+  }
+
+  .parallax-layer,
+  .parallax-drift { animation: parallax-shift linear both; }
+  .parallax[data-axis="inline"] .parallax-layer { animation-name: parallax-shift-inline; }
+  /* layer motions - stacked on the shift */
+  .parallax-layer[data-motion="zoom"] { animation-name: parallax-shift, parallax-zoom; }
+  .parallax-layer[data-motion="fade"] { animation-name: parallax-shift, parallax-fade; }
+  .parallax-layer[data-motion="spin"] { animation-name: parallax-shift, parallax-spin; }
+  .parallax-layer[data-motion="zoom fade"] { animation-name: parallax-shift, parallax-zoom, parallax-fade; }
+  .parallax-layer[data-motion="pass"] { animation-name: parallax-shift, parallax-pass; }
+  .parallax-reveal { animation: parallax-reveal ease-out both; }
+  .parallax-reveal[data-reveal="zoom"] { animation-name: parallax-reveal-zoom; }
+  .parallax-reveal[data-reveal="fade"] { animation-name: parallax-reveal-fade; }
+
+  /* the timelines live in their own rules: a minifier must not fold them
+     into the animation shorthand (reset-only there - dropped) */
+  @supports (animation-timeline: view()) {
+    .parallax-layer {
+      animation-timeline: --parallax;
+      animation-range: cover;
+    }
+    .parallax[data-sticky] .parallax-layer { animation-range: contain; }
+    .parallax-drift {
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    .parallax-reveal {
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+  }
+  /* no scroll timelines: the still composition (no 0s jump to the end) */
+  @supports not (animation-timeline: view()) {
+    .parallax-layer,
+    .parallax-drift,
+    .parallax-reveal { animation: none; }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-layer,
+    .parallax-drift,
+    .parallax-reveal { animation: none; }
+  }
+
+  @media (forced-colors: active) {
+    .parallax-layer { forced-color-adjust: none; }
+  }
+}

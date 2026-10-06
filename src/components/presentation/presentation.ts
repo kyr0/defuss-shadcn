@@ -29,6 +29,49 @@ const dfDollar = defussQuery();
 
 const presentationStates = ['default', 'notes', 'fullscreen'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the slide, the notes view and fullscreen). */
+export interface PresentationStateConfigs {
+  /** The authored surface; a bare setState('default') leaves notes and fullscreen. */
+  default: {
+    /** the slide to show, 0-based (clamped) */
+    index?: number;
+    /** reported by getState(): the active slide's index (accepted back as the slide to show) */
+    slide?: number;
+    /** the notes view on or off (applied in every state but notes); getState() reports it */
+    notes?: boolean;
+    /** reported by getState(): whether the deck fills the viewport */
+    fullscreen?: boolean;
+  };
+  /** The active slide's presenter notes visible ([data-notes]). */
+  notes: {
+    /** false turns the notes off again */
+    value?: boolean;
+    /** the slide to show, 0-based (clamped) */
+    index?: number;
+    /** reported by getState(): the active slide's index (accepted back as the slide to show) */
+    slide?: number;
+    /** the notes view on or off (applied in every state but notes); getState() reports it */
+    notes?: boolean;
+    /** reported by getState(): whether the deck fills the viewport */
+    fullscreen?: boolean;
+  };
+  /** The deck fills the viewport ([data-fullscreen]): native fullscreen, or a fixed overlay where the request is denied. */
+  fullscreen: {
+    /** false leaves fullscreen */
+    value?: boolean;
+    /** the slide to show, 0-based (clamped) */
+    index?: number;
+    /** reported by getState(): the active slide's index (accepted back as the slide to show) */
+    slide?: number;
+    /** the notes view on or off (applied in every state but notes); getState() reports it */
+    notes?: boolean;
+    /** reported by getState(): whether the deck fills the viewport */
+    fullscreen?: boolean;
+  };
+}
+
 /** Typed view of a mount's per-instance extras (module-private state bag). */
 type Deck = HTMLElement & {
   _presentationActivate?: (index: number, forward?: boolean) => void;

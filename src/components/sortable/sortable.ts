@@ -21,7 +21,36 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What sortable-change carries - one event per list a move touches. */
+interface SortableChangeDetail {
+  /** the item that moved */
+  item: HTMLElement;
+  /** its index in this list now; -1 on the list it left */
+  index: number;
+  /** a move between lists, on the list it joined: the list it came from */
+  from?: HTMLElement;
+  /** a move between lists, on the list it left: the list it went to */
+  to?: HTMLElement | null;
+}
+
 const sortableStates = ['default'];
+
+/** setState() configs per state (getState() reports the order and the active item). */
+export interface SortableStateConfigs {
+  /** The authored order (setting it restores that order). */
+  default: {
+    /** the item to make active (roving focus), 0-based */
+    index?: number;
+    /** reported by getState(): the items' labels in the current order */
+    order?: string[];
+    /** reported by getState(): the active item's index, -1 for none */
+    activeIndex?: number;
+  };
+}
 
 /**
  * The one drag in flight on this document: the picked-up item and the list it
@@ -195,7 +224,7 @@ dfDollar('.sortable:not([data-init])').toArray().forEach((list) => {
     setActive(item, focus);
     syncMoves();
     // Fires after a move (drag or keyboard) - the item, its new index, and the positions it moved from and to.
-    list.dispatchEvent(new CustomEvent('sortable-change', {
+    list.dispatchEvent(new CustomEvent<SortableChangeDetail>('sortable-change', {
       bubbles: true,
       detail: { item, index: slot }
     }));
@@ -217,7 +246,7 @@ dfDollar('.sortable:not([data-init])').toArray().forEach((list) => {
     setActive(item, focus);
     syncMoves();
     from._released?.(item);
-    list.dispatchEvent(new CustomEvent('sortable-change', {
+    list.dispatchEvent(new CustomEvent<SortableChangeDetail>('sortable-change', {
       bubbles: true,
       detail: { item, index: slot, from }
     }));
@@ -232,7 +261,7 @@ dfDollar('.sortable:not([data-init])').toArray().forEach((list) => {
     }
     if (!items.length) list.removeAttribute('data-active-index');
     syncMoves();
-    list.dispatchEvent(new CustomEvent('sortable-change', {
+    list.dispatchEvent(new CustomEvent<SortableChangeDetail>('sortable-change', {
       bubbles: true,
       detail: { item, index: -1, to: item.closest('.sortable') }
     }));

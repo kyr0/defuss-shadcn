@@ -98,7 +98,7 @@ slide activates - `ddf$.entrance(el)` on each `[data-df-entrance]` and
 entrances; on first load animations apply deterministically without a rendered
 "from" state). The deck only tunes the shared `--df-motion-*` defaults for its
 artboard (`--df-motion-distance: 3.5rem` so drifts scale with the surface);
-per-element overrides work exactly as in the Motion skill —
+per-element overrides work exactly as in the Motion skill:
 `--df-motion-delay`, `--df-motion-duration`, `--df-motion-ease`
 (`var(--presentation-spring)` for a bouncy settle). `ddf$.revealAttr(direction,
 delayMs)` writes the same attributes.
@@ -122,7 +122,7 @@ Declare them once on the mount (deck-wide) or per slide (overrides the deck):
 
 The curtain colour is never the slide colour: a declared
 `data-anim-in-color` is used when it contrasts (WCAG ratio ≥ 1.6) with BOTH
-slide surfaces; otherwise the runtime picks the first candidate that does —
+slide surfaces; otherwise the runtime picks the first candidate that does:
 `--presentation-accent`, the leaving slide's text colour, ink, paper.
 Navigating during a transition settles it first (fast arrow keys are never
 swallowed). `prefers-reduced-motion` collapses every transition to 1 ms.
@@ -153,8 +153,8 @@ them morphs (see the Chart skill). A chart placed directly inside a slide
 - `<video autoplay muted loop playsinline>` inside a slide plays only while
   that slide is active (restarting on every arrival) and pauses otherwise.
 - Shipped components inside a slide (table, badge, button, avatar,
-  accordion, image …) take the slide's colours: the semantic tokens
-  (`--background`, `--foreground`, `--muted*`, `--border`, `--primary` …)
+  accordion, image ...) take the slide's colours: the semantic tokens
+  (`--background`, `--foreground`, `--muted*`, `--border`, `--primary` ...)
   are re-pointed at the slide surface per `data-theme`.
 
 ## Sizes
@@ -220,11 +220,38 @@ from the design notes are these attributes - one contract, no second technique.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.presentationApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.presentationStates` = `default`, `notes`, `fullscreen`.
+<code>type PresentationState = 'default' | 'notes' | 'fullscreen'</code> - `setState(name, config)` takes the config of the state it names (`PresentationStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The authored surface; a bare setState('default') leaves notes and fullscreen. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>the slide to show, 0-based (clamped)</td></tr><tr><td><code>slide?</code></td><td><code>number</code></td><td>reported by getState(): the active slide's index (accepted back as the slide to show)</td></tr><tr><td><code>notes?</code></td><td><code>boolean</code></td><td>the notes view on or off (applied in every state but notes); getState() reports it</td></tr><tr><td><code>fullscreen?</code></td><td><code>boolean</code></td><td>reported by getState(): whether the deck fills the viewport</td></tr></table> |
+| `notes` | The active slide's presenter notes visible ([data-notes]). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>boolean</code></td><td>false turns the notes off again</td></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>the slide to show, 0-based (clamped)</td></tr><tr><td><code>slide?</code></td><td><code>number</code></td><td>reported by getState(): the active slide's index (accepted back as the slide to show)</td></tr><tr><td><code>notes?</code></td><td><code>boolean</code></td><td>the notes view on or off (applied in every state but notes); getState() reports it</td></tr><tr><td><code>fullscreen?</code></td><td><code>boolean</code></td><td>reported by getState(): whether the deck fills the viewport</td></tr></table> |
+| `fullscreen` | The deck fills the viewport ([data-fullscreen]): native fullscreen, or a fixed overlay where the request is denied. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>boolean</code></td><td>false leaves fullscreen</td></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>the slide to show, 0-based (clamped)</td></tr><tr><td><code>slide?</code></td><td><code>number</code></td><td>reported by getState(): the active slide's index (accepted back as the slide to show)</td></tr><tr><td><code>notes?</code></td><td><code>boolean</code></td><td>the notes view on or off (applied in every state but notes); getState() reports it</td></tr><tr><td><code>fullscreen?</code></td><td><code>boolean</code></td><td>reported by getState(): whether the deck fills the viewport</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends PresentationState&gt;(name: S, config?: PresentationStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>PresentationStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: PresentationState; config: PresentationStateConfigs[PresentationState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.presentationApi.setState&lt;S extends PresentationState&gt;(el: HTMLElement, name: S, config?: PresentationStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>PresentationStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.presentationApi.getState(el: HTMLElement): { name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.presentationApi.render(state: { name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: PresentationState; config: PresentationStateConfigs[PresentationState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.presentationApi.store(el: HTMLElement): Store&lt;{ name: PresentationState; config: PresentationStateConfigs[PresentationState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: PresentationState; config: PresentationStateConfigs[PresentationState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.presentationApi.commit&lt;S extends PresentationState&gt;(el: HTMLElement, name: S, config?: PresentationStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>PresentationStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.presentationStates: PresentationState[]</code> | The declared states, 'default' first: <code>default</code>, <code>notes</code>, <code>fullscreen</code>. |
 
 ## Notes
 
@@ -240,6 +267,6 @@ from the design notes are these attributes - one contract, no second technique.
   configure them declaratively.
 - `.presentation-note` lives INSIDE its slide and is only visible while that
   slide is active and notes are on.
-- Fullscreen requests may be denied (embed without `allow="fullscreen"`) —
+- Fullscreen requests may be denied (embed without `allow="fullscreen"`);
   the `[data-fullscreen]` attribute follows the confirmed state, never a
   denied request.

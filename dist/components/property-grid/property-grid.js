@@ -550,6 +550,9 @@ df$.propertyGrid = {
      * getEditorFn(key, value, ctx) returns an editor - an input / select element,
      * or { el, getValue(), validate?(), focus?(), immediate?, ownsEnter? } - null for the
      * built-in one, false for read-only. ctx = { path, depth, type, config, source, grid }.
+     * @param target - the .property-grid element or its selector
+     * @param options - the source and the hooks to set (merged into the current options)
+     * @returns the grid, null when the target matches none
      */
     configure(target, options = {}) {
         const root = resolve(target);
@@ -569,7 +572,11 @@ df$.propertyGrid = {
             root.api.setState(root.store.value.name, { collapsed: configOf(root).collapsed ?? [] });
         return root;
     },
-    /** Show another object (a copy is kept - the grid never mutates what you pass). */
+    /**
+     * Show another object (a copy is kept - the grid never mutates what you pass).
+     * @param target - the .property-grid element or its selector
+     * @param source - the object to show
+     */
     setSource(target, source) {
         const root = resolve(target);
         if (!root)
@@ -579,9 +586,18 @@ df$.propertyGrid = {
         else
             root.api.setState('default', { source: clone(source ?? {}), editing: null, collapsed: [] });
     },
-    /** A copy of the object the grid holds now - every committed edit included. */
+    /**
+     * A copy of the object the grid holds now - every committed edit included.
+     * @param target - the .property-grid element or its selector
+     * @returns the object, with every committed edit
+     */
     getSource: (target) => clone(configOf(resolve(target)).source ?? {}),
-    /** Write one property ("a.b" or ['a', 'b']) - fires property-grid-change like an edit. */
+    /**
+     * Write one property ("a.b" or ['a', 'b']) - fires property-grid-change like an edit.
+     * @param target - the .property-grid element or its selector
+     * @param path - the property: "a.b" or ['a', 'b']
+     * @param value - the new value (a copy is written)
+     */
     setProperty(target, path, value) {
         const root = resolve(target);
         if (!root)
@@ -592,21 +608,45 @@ df$.propertyGrid = {
         root.api.setState(root.store.value.name === 'editing' ? 'default' : root.store.value.name, { source, editing: null });
         root.dispatchEvent(new CustomEvent('property-grid-change', { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
     },
-    /** One property's value ("a.b" or ['a', 'b']). */
+    /**
+     * One property's value ("a.b" or ['a', 'b']).
+     * @param target - the .property-grid element or its selector
+     * @param path - the property: "a.b" or ['a', 'b']
+     * @returns a copy of its value (undefined when there is no such property)
+     */
     getProperty: (target, path) => clone(getAt(configOf(resolve(target)).source, toPath(path))),
-    /** Open a property's editor (state 'editing'). */
-    edit: (target, path) => resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) }),
-    /** Commit the open editor; false when its value is invalid. */
+    /**
+     * Open a property's editor (state 'editing').
+     * @param target - the .property-grid element or its selector
+     * @param path - the property: "a.b" or ['a', 'b']
+     */
+    edit: (target, path) => { resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) }); },
+    /**
+     * Commit the open editor.
+     * @param target - the .property-grid element or its selector
+     * @returns false when its value is invalid (the editor stays open with the message); true otherwise
+     */
     commit: (target) => commit(resolve(target)),
-    /** Close the open editor without writing. */
-    cancel: (target) => resolve(target)?.api.setState('default', { editing: null }),
-    /** Expand a group (an object / array property). */
+    /**
+     * Close the open editor without writing.
+     * @param target - the .property-grid element or its selector
+     */
+    cancel: (target) => { resolve(target)?.api.setState('default', { editing: null }); },
+    /**
+     * Expand a group (an object / array property).
+     * @param target - the .property-grid element or its selector
+     * @param path - the property: "a.b" or ['a', 'b']
+     */
     expand(target, path) {
         const root = resolve(target);
         const key = pathKey(toPath(path));
         root?.api.setState(root.store.value.name, { collapsed: (configOf(root).collapsed ?? []).filter((p) => p !== key) });
     },
-    /** Collapse a group. */
+    /**
+     * Collapse a group.
+     * @param target - the .property-grid element or its selector
+     * @param path - the property: "a.b" or ['a', 'b']
+     */
     collapse(target, path) {
         const root = resolve(target);
         const key = pathKey(toPath(path));

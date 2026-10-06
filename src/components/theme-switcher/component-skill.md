@@ -104,15 +104,38 @@ globalThis.df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts-menu')
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.themeSwitcherApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`, `select(menu, id)`; `df$.shadcn.themeSwitcherStates` = `default`, `open`.
+<code>type ThemeSwitcherState = 'default' | 'open'</code> - `setState(name, config)` takes the config of the state it names (`ThemeSwitcherStateConfigs[name]`).
 
-| `df$.shadcn.themeSwitcherApi` | Description |
+| State | Description |
 |---|---|
-| `select(menu, id)` | Apply a theme on the switcher owning `menu` (link swap, see above). |
+| `default` | The menu closed. No config. |
+| `open` | The menu shown (a popover, top layer). No config. |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends ThemeSwitcherState&gt;(name: S, config?: ThemeSwitcherStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ThemeSwitcherStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.themeSwitcherApi.setState&lt;S extends ThemeSwitcherState&gt;(el: HTMLElement, name: S, config?: ThemeSwitcherStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ThemeSwitcherStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.themeSwitcherApi.getState(el: HTMLElement): { name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.themeSwitcherApi.render(state: { name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.themeSwitcherApi.store(el: HTMLElement): Store&lt;{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: ThemeSwitcherState; config: ThemeSwitcherStateConfigs[ThemeSwitcherState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.themeSwitcherApi.commit&lt;S extends ThemeSwitcherState&gt;(el: HTMLElement, name: S, config?: ThemeSwitcherStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>ThemeSwitcherStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.themeSwitcherApi.select(menu: HTMLElement, id: string): void</code> | Apply a theme on the switcher owning `menu` (link swap, see above). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>menu</code></td><td><code>HTMLElement</code></td><td>the switcher's menu (any element inside its .theme-switcher root)</td></tr><tr><td><code>id</code></td><td><code>string</code></td><td>the theme id, one of the switcher's options</td></tr></table> |
+| <code>df$.shadcn.themeSwitcherStates: ThemeSwitcherState[]</code> | The declared states, 'default' first: <code>default</code>, <code>open</code>. |
 
 ## Notes
 
@@ -129,8 +152,8 @@ globalThis.df$.shadcn.themeSwitcherApi.select(document.querySelector('#ts-menu')
 - The component **persists through a `persisted()` store** (`defuss-shadcn-color-theme`
   in `localStorage`; memory when storage is blocked, a raw id written by older
   versions adopted, every other store for the key on the page follows)
-  and dispatches `defuss-theme-change` (`event.detail.id`) on every change —
-  listen to sync your own UI (favicons, previews); multiple switchers on one
+  and dispatches `defuss-theme-change` (`event.detail.id`) on every change;
+  listen to it to sync your own UI (favicons, previews); multiple switchers on one
   page stay in sync automatically through the same event.
 - `<link>` loads are **async**: components see the new tokens one frame
   later; do not measure theme colors synchronously after `select()`.

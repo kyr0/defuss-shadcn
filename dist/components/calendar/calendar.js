@@ -134,9 +134,11 @@ export const calendarApi = Object.assign(componentState({
     markup: (el, state) => applyMarkup(el, state.config),
 }), {
     /**
-     * Day data for this calendar (a range picker: for its whole .calendar-range):
-     * { 'YYYY-MM-DD': { mark?, note?, label?, disabled? } }. Replaces the map
-     * unless { merge: true }; re-renders without moving the view.
+     * Day data for this calendar (a range picker: for its whole .calendar-range).
+     * Replaces the map unless { merge: true }; re-renders without moving the view.
+     * @param cal - the .calendar element
+     * @param days - the day data by ISO date ('YYYY-MM-DD')
+     * @param options - merge: true adds to the current map instead of replacing it
      */
     setDays(cal, days, options = {}) {
         const holder = dayHolderOf(cal);
@@ -833,7 +835,7 @@ function init() {
                     state.selected = day;
                 }
                 renderCalendar(cal, state.year, state.month, state.selected);
-                /* Dispatch custom event */
+                // Fires when a day is picked (click or Enter) - the date.
                 cal.dispatchEvent(new CustomEvent('calendar:select', {
                     detail: { date: new Date(state.year, state.month, state.selected) },
                     bubbles: true

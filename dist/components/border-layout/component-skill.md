@@ -149,27 +149,60 @@ layout.api.setState('default');
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.borderLayoutApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.borderLayoutStates` = `default`, `collapsed`.
+<code>type BorderLayoutState = 'default' | 'collapsed'</code> - `setState(name, config)` takes the config of the state it names (`BorderLayoutStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | Every region open at its authored size. No config. |
+| `collapsed` | One or more regions folded away (their dividers stay). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>regions?</code></td><td><code>BorderLayoutSide[]</code></td><td>the regions to fold</td></tr><tr><td><code>region?</code></td><td><code>BorderLayoutSide</code></td><td>one region to fold (when regions is not given)</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends BorderLayoutState&gt;(name: S, config?: BorderLayoutStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>BorderLayoutStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.borderLayoutApi.setState&lt;S extends BorderLayoutState&gt;(el: HTMLElement, name: S, config?: BorderLayoutStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>BorderLayoutStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.borderLayoutApi.getState(el: HTMLElement): { name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.borderLayoutApi.render(state: { name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.borderLayoutApi.store(el: HTMLElement): Store&lt;{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: BorderLayoutState; config: BorderLayoutStateConfigs[BorderLayoutState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.borderLayoutApi.commit&lt;S extends BorderLayoutState&gt;(el: HTMLElement, name: S, config?: BorderLayoutStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>BorderLayoutStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.borderLayoutStates: BorderLayoutState[]</code> | The declared states, 'default' first: <code>default</code>, <code>collapsed</code>. |
 
 ### `df$.shadcn.borderLayout`
 
 | Member | Description |
 |---|---|
-| `collapse(t, side)` | Folds a region away. |
-| `expand(t, side)` | Brings a folded region back. |
-| `toggle(t, side)` | Folds or unfolds; returns whether it is now collapsed. |
-| `resize(t, side, px)` | Sets a region's size in px (clamped by the resizer). |
-| `sizes(t)` | The current sizes: { west: 240, east: 0 (collapsed), … }. |
+| <code>collapse(target: string \| HTMLElement, side: BorderLayoutSide): void</code> | Folds a region away (its divider stays). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr></table> |
+| <code>expand(target: string \| HTMLElement, side: BorderLayoutSide): void</code> | Brings a folded region back. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr></table> |
+| <code>toggle(target: string \| HTMLElement, side: BorderLayoutSide): boolean</code> | Folds or unfolds a region. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr></table> <b>Returns</b> <code>boolean</code> - true when the region is collapsed now (false also when the layout has no such region) |
+| <code>resize(target: string \| HTMLElement, side: BorderLayoutSide, px: number): void</code> | Sets a region's size (clamped by the resizer's limits). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr><tr><td><code>px</code></td><td><code>number</code></td><td>the width (west / east) or height (north / south) in px</td></tr></table> |
+| <code>sizes(target: string \| HTMLElement): Partial&lt;Record&lt;BorderLayoutSide, number&gt;&gt;</code> | The current sizes: { west: 240, east: 0 (collapsed), ... }. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr></table> <b>Returns</b> <code>Partial&lt;Record&lt;BorderLayoutSide, number&gt;&gt;</code> - px per region the layout has - 0 for a collapsed one |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `border-layout-collapse` | `region`, `collapsed` | Fires when a region folds away or comes back - which region, and whether it is collapsed now. |
+| Event | Description |
+|---|---|
+| `border-layout-collapse` | Fires when a region folds away or comes back - which region, and whether it is collapsed now. <code>detail</code>: <code>BorderLayoutCollapseDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>region</code></td><td><code>BorderLayoutSide</code></td><td>the region that folded or came back</td></tr><tr><td><code>collapsed</code></td><td><code>boolean</code></td><td>whether it is collapsed now</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `BorderLayoutCollapseDetail` | What border-layout-collapse carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>region</code></td><td><code>BorderLayoutSide</code></td><td>the region that folded or came back</td></tr><tr><td><code>collapsed</code></td><td><code>boolean</code></td><td>whether it is collapsed now</td></tr></table> |
+| `BorderLayoutSide` | A region that folds and resizes - the center takes what is left. = <code>'north' \| 'south' \| 'west' \| 'east'</code> |
 
 ---
 
@@ -178,7 +211,7 @@ layout.api.setState('default');
 | Element | Attribute | Notes |
 |---------|-----------|-------|
 | divider | `role="separator"`, `aria-label="Resize {region}"`, `aria-controls` → the pane, `aria-valuenow` / `-min` / `-max` | The window-splitter pattern; set by the runtime (the name comes from the region's `aria-label`) |
-| panes | landmarks (`<nav>`, `<main>`, `<aside>`…) with `aria-label` | Name side panes - the divider labels reuse the name |
+| panes | landmarks (`<nav>`, `<main>`, `<aside>`...) with `aria-label` | Name side panes - the divider labels reuse the name |
 
 ## Notes
 

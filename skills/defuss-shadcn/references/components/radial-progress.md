@@ -15,22 +15,22 @@ A `<div>` carrying the ARIA progressbar role, not `<progress>`: the ring must
 hold visible text in its center, and `<progress>` discards child content in
 supporting browsers (it is the no-support fallback) while its rendering lives
 in vendor pseudo-elements that cannot be masked into a ring. So the semantics
-are supplied explicitly — `role="progressbar"` with `aria-valuenow` /
-`aria-valuemin` / `aria-valuemax` — and the visual is pure CSS: one
+are supplied explicitly (`role="progressbar"` with `aria-valuenow` /
+`aria-valuemin` / `aria-valuemax`), and the visual is pure CSS: one
 `conic-gradient` masked down to an annulus.
 
 ---
 
 ## Native Web APIs
 
-- [`role="progressbar"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/progressbar_role) — ARIA progressbar semantics on a plain element that can own visible child text
-- [`@property`](https://developer.mozilla.org/en-US/docs/Web/CSS/@property) — registers a private `--_rp-value` copy of `--value` as a `<number>` so a value change interpolates instead of snapping
-- [`conic-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient) — paints the arc directly from `--value`
-- [`mask`](https://developer.mozilla.org/en-US/docs/Web/CSS/mask) — cuts the filled disc down to a ring of `--thickness`
-- [`cos()`](https://developer.mozilla.org/en-US/docs/Web/CSS/cos) / [`sin()`](https://developer.mozilla.org/en-US/docs/Web/CSS/sin) — place the leading round cap on the stroke centerline as a pure function of `--value`
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses the value tween
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — thickens the stroke and darkens the track
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — repaints the ring with `Highlight` / `GrayText` in Windows High Contrast Mode
+- [`role="progressbar"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/progressbar_role) - ARIA progressbar semantics on a plain element that can own visible child text
+- [`@property`](https://developer.mozilla.org/en-US/docs/Web/CSS/@property) - registers a private `--_rp-value` copy of `--value` as a `<number>` so a value change interpolates instead of snapping
+- [`conic-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient) - paints the arc directly from `--value`
+- [`mask`](https://developer.mozilla.org/en-US/docs/Web/CSS/mask) - cuts the filled disc down to a ring of `--thickness`
+- [`cos()`](https://developer.mozilla.org/en-US/docs/Web/CSS/cos) / [`sin()`](https://developer.mozilla.org/en-US/docs/Web/CSS/sin) - place the leading round cap on the stroke centerline as a pure function of `--value`
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses the value tween
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - thickens the stroke and darkens the track
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - repaints the ring with `Highlight` / `GrayText` in Windows High Contrast Mode
 
 ---
 
@@ -57,7 +57,7 @@ decoration, the ARIA attribute is what assistive technology announces.
 
 | Property      | Default              | Purpose                                     |
 |---------------|----------------------|---------------------------------------------|
-| `--value`     | `0`                  | Completion, `0`–`100` (unitless). Required.  |
+| `--value`     | `0`                  | Completion, `0` to `100` (unitless). Required.  |
 | `--size`      | `5rem`               | Outer diameter of the ring.                  |
 | `--thickness` | `calc(var(--size) / 10)` | Stroke width of the ring.                |
 
@@ -140,15 +140,15 @@ over `data-duration` ms, default 3000), `--pause`, `--complete`,
 
 | Attribute            | Value                | Notes                                                        |
 |----------------------|----------------------|--------------------------------------------------------------|
-| `role`               | `progressbar`        | Required — the `<div>` has no implicit semantics              |
-| `aria-valuenow`      | `0`–`100`            | Required; mirror whatever `--value` is set to                 |
+| `role`               | `progressbar`        | Required: the `<div>` has no implicit semantics              |
+| `aria-valuenow`      | `0` to `100`         | Required; mirror whatever `--value` is set to                 |
 | `aria-valuemin`      | `0`                  | Required for an explicit range                                |
 | `aria-valuemax`      | `100`                | Required for an explicit range                                |
 | `aria-label`         | text                 | Name the measure ("Storage used") when no visible label sits next to it |
 | `aria-labelledby`    | id                   | Alternative when a nearby heading already names it            |
 | `aria-valuetext`     | text                 | Only when the number needs a unit ("7 of 10 seats")           |
 
-Omit `aria-valuenow` only for a genuinely indeterminate progressbar — this
+Omit `aria-valuenow` only for a genuinely indeterminate progressbar; this
 component has no indeterminate presentation, so use `spinner` for that case.
 
 ---
@@ -180,18 +180,51 @@ tweens there over 600 ms through the registered `--_rp-value`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.radialProgressApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.radialProgressStates` = `default`, `indeterminate`, `complete`.
+<code>type RadialProgressState = 'default' | 'indeterminate' | 'complete'</code> - `setState(name, config)` takes the config of the state it names (`RadialProgressStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | Determinate; no config restores the authored value. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>number \| null</code></td><td>the value to show (clamped to 0..max); getState() reports it</td></tr><tr><td><code>duration?</code></td><td><code>number</code></td><td>ms to glide there linearly (default: jump)</td></tr><tr><td><code>max?</code></td><td><code>number</code></td><td>a new total (aria-valuemax); getState() reports it</td></tr><tr><td><code>percent?</code></td><td><code>number \| null</code></td><td>reported by getState(): value / max, 0 to 1 (null while indeterminate)</td></tr></table> |
+| `indeterminate` | No value: aria-valuenow removed, a quarter arc spins. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>number \| null</code></td><td>reported by getState(): null</td></tr><tr><td><code>max?</code></td><td><code>number</code></td><td>reported by getState(): the total</td></tr><tr><td><code>percent?</code></td><td><code>number \| null</code></td><td>reported by getState(): value / max, 0 to 1 (null while indeterminate)</td></tr></table> |
+| `complete` | The value at max - progress:completed fires. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>duration?</code></td><td><code>number</code></td><td>ms to glide to max (default: jump)</td></tr><tr><td><code>max?</code></td><td><code>number</code></td><td>a new total</td></tr><tr><td><code>value?</code></td><td><code>number \| null</code></td><td>reported by getState(): max</td></tr><tr><td><code>percent?</code></td><td><code>number \| null</code></td><td>reported by getState(): value / max, 0 to 1 (null while indeterminate)</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends RadialProgressState&gt;(name: S, config?: RadialProgressStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>RadialProgressStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.radialProgressApi.setState&lt;S extends RadialProgressState&gt;(el: HTMLElement, name: S, config?: RadialProgressStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>RadialProgressStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.radialProgressApi.getState(el: HTMLElement): { name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.radialProgressApi.render(state: { name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.radialProgressApi.store(el: HTMLElement): Store&lt;{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: RadialProgressState; config: RadialProgressStateConfigs[RadialProgressState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.radialProgressApi.commit&lt;S extends RadialProgressState&gt;(el: HTMLElement, name: S, config?: RadialProgressStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>RadialProgressStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.radialProgressStates: RadialProgressState[]</code> | The declared states, 'default' first: <code>default</code>, <code>indeterminate</code>, <code>complete</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `progress:change` | `value`, `max`, `percent` | Fires when the value changes - value, max and the fraction done (0 to 1). |
-| `progress:completed` | - | Fires once when the value reaches max. |
+| Event | Description |
+|---|---|
+| `progress:change` | Fires when the value changes - value, max and the fraction done (0 to 1). <code>detail</code>: <code>ProgressChangeDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value</code></td><td><code>number</code></td><td>the value (the --value custom property)</td></tr><tr><td><code>max</code></td><td><code>number</code></td><td>the max (data-max, default 100)</td></tr><tr><td><code>percent</code></td><td><code>number</code></td><td>value / max, 0 to 1</td></tr></table> |
+| `progress:completed` | Fires once when the value reaches max. No <code>detail</code>. |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `ProgressChangeDetail` | What progress:change carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value</code></td><td><code>number</code></td><td>the value (the --value custom property)</td></tr><tr><td><code>max</code></td><td><code>number</code></td><td>the max (data-max, default 100)</td></tr><tr><td><code>percent</code></td><td><code>number</code></td><td>value / max, 0 to 1</td></tr></table> |
 
 ---
 
@@ -200,7 +233,7 @@ tweens there over 600 ms through the registered `--_rp-value`.
 - **`--value` itself is never registered** - only the private `--_rp-value`
   copy is. A global `@property --value` would re-type every other `--value`
   on the page (the countdown's digits use one) and any consumer's own.
-- **Why not `<progress>`** — the ring's whole point is the number in the middle;
+- **Why not `<progress>`**: the ring's whole point is the number in the middle;
   `<progress>`' child text is fallback-only content and its bar lives in
   vendor pseudo-elements that cannot be masked into an annulus. Use the linear
   `progress` component whenever no centered label is needed.
@@ -212,10 +245,10 @@ tweens there over 600 ms through the registered `--_rp-value`.
   move together. With `prefers-reduced-motion` both land immediately.
 - **Sits on the text baseline** (`vertical-align: middle`), so it composes
   inline in table cells and stat rows without a wrapper.
-- **Content-box sizing** — `--size` is the drawn diameter, so `padding` on the
+- **Content-box sizing**: `--size` is the drawn diameter, so `padding` on the
   element grows the label area without distorting the ring.
 - **Nothing is clipped**: any child content (an icon, `.badge`, a two-line
   label) is centered by `place-content: center`; keep it inside
   `--size - 2 × --thickness` or it will overlap the stroke.
-- **Composition** — pair with `.card` + `.statistic` for dashboard tiles, the
+- **Composition**: pair with `.card` + `.statistic` for dashboard tiles, the
   way the linear `progress` component does.

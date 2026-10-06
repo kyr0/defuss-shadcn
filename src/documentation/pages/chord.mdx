@@ -1,6 +1,6 @@
 ---
-title: "Chord — Presentation"
-description: "Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck — a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart."
+title: "Chord - Presentation"
+description: "Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck - a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart."
 slug: "chord"
 ---
 
@@ -8,12 +8,12 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 
 <DocPage meta={meta}>
 <PageHeader slug="chord" title="Chord" component="presentation">
-  Glass Hologram: deep navy glass, cyan and violet light — how many people fly between six world regions each year, drawn as one ring of mutual flows, then re-read as totals and growth.
+  Glass Hologram: deep navy glass, cyan and violet light - how many people fly between six world regions each year, drawn as one ring of mutual flows, then re-read as totals and growth.
 </PageHeader>
 
 ```html example label="Glass Hologram" schema="none" height="26" hint="Slides zoom out of the glass (df$.anim zoomIn with scale 1.1 / fadeOut, declared on the deck); cyan curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the chord ring isolates Europe’s flows, then morphs into regional totals and growth since 2019. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
-<section class="presentation" id="deck-chord" data-anim-in="zoomIn" data-anim-in-scale="1.1" data-anim-out="fadeOut" style="--presentation-ink:#0C1024;--presentation-ink-foreground:#F5F7FF;--presentation-paper:#EDF0FF;--presentation-paper-foreground:#12172E;--presentation-accent:#7CFFEE;font-family:Inter, system-ui, sans-serif;" tabindex="-1" aria-label="Who flies where — passenger flows between world regions">
+<section class="presentation" id="deck-chord" data-anim-in="zoomIn" data-anim-in-scale="1.1" data-anim-out="fadeOut" style="--presentation-ink:#0C1024;--presentation-ink-foreground:#F5F7FF;--presentation-paper:#EDF0FF;--presentation-paper-foreground:#12172E;--presentation-accent:#7CFFEE;font-family:Inter, system-ui, sans-serif;" tabindex="-1" aria-label="Who flies where - passenger flows between world regions">
   <!-- ONE chart for the whole deck: slides name the state they show via
        data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
   <div class="chart presentation-stage" role="img" aria-label="Annual air passengers between six world regions as a chord diagram, 368 million in total, Europe–North America the largest flow at 62 million; then totals and growth by region"></div>
@@ -22,7 +22,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div aria-hidden="true" style="position:absolute; right:250px; top:280px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(124,255,238,.25), transparent 70%);"></div>
     <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Chord · Glass Hologram</p>
     <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em; font-size:6.75rem; max-width:760px;">Who flies where</h1>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">368 million passengers a year between six regions — every flow runs both ways.</p>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px;">368 million passengers a year between six regions - every flow runs both ways.</p>
     <p class="presentation-note">The glass ring previews the chord.</p>
   </section>
   <section class="slide" data-slide data-theme="ink" data-chart-state="ring" style="justify-content:flex-start;" aria-label="All flows">
@@ -52,15 +52,15 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       </div>
       <div data-df-entrance="up">
         <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#7CFFEE; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;"><span data-count="62">62</span> M</p>
-        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Europe ↔ North America — the busiest corridor</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Europe ↔ North America - the busiest corridor</p>
       </div>
       <div data-df-entrance="up">
         <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">+<span data-count="21">21</span>%</p>
-        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Africa’s growth since 2019 — the fastest</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">Africa’s growth since 2019 - the fastest</p>
       </div>
     </div>
     <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The biggest corridors are mature. The fastest growth is on the thinnest ribbons.</p>
-    <p class="presentation-note">Maturity versus growth — the planning tension.</p>
+    <p class="presentation-note">Maturity versus growth - the planning tension.</p>
   </section>
   <section class="slide" data-slide data-theme="ink" aria-label="Sky">
     <header class="presentation-header"><span>Capacity</span><span>Long-haul</span></header>
@@ -104,7 +104,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     </blockquote>
     <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
       <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#12172E; color:#7CFFEE;"><span class="avatar-fallback">AR</span></span>
-      <p class="presentation-lede" style="font-size:1.7rem;">Amal Rahimi<br /><span style="opacity:0.7; font-size:1.4rem;">Network planner — 31 routes launched</span></p>
+      <p class="presentation-lede" style="font-size:1.7rem;">Amal Rahimi<br /><span style="opacity:0.7; font-size:1.4rem;">Network planner - 31 routes launched</span></p>
     </div>
     <p class="presentation-note">The hub insight is the chord’s strength.</p>
   </section>
@@ -124,7 +124,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       </details>
       <details class="accordion-item" name="ch-qa2" data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Are connecting passengers double counted?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No — each passenger is counted once, origin to destination region.</p></div>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">No - each passenger is counted once, origin to destination region.</p></div>
       </details>
       <details class="accordion-item" name="ch-qa2" data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Where would a new route matter most?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
@@ -140,7 +140,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Chords show mutual flows where a sankey would force a direction.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Europe sits on more than half of all inter-regional travel.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Hubs in the Middle East thicken Europe–Asia indirectly.</span></li>
-      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Grow the thin ribbons — they carry the growth.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">◇</span><span>Grow the thin ribbons - they carry the growth.</span></li>
     </ul>
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">Short and luminous.</p>
@@ -149,7 +149,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div aria-hidden="true" style="position:absolute; right:120px; top:150px; width:560px; height:560px; border-radius:50%; border:2px solid rgba(124,255,238,.5); background:conic-gradient(from 40deg, rgba(124,255,238,.35), rgba(167,139,250,.35), rgba(244,114,182,.3), rgba(124,255,238,.35)); filter:blur(1px); mask:radial-gradient(circle, transparent 58%, #000 60%, #000 72%, transparent 74%);"></div>
     <div aria-hidden="true" style="position:absolute; right:250px; top:280px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(124,255,238,.25), transparent 70%);"></div>
     <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Inter, system-ui, sans-serif; font-weight:650; letter-spacing:-0.03em;">Every flow runs both ways</h2>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic passenger flows — the chord is the real way to read a network.</p>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px;">Synthetic passenger flows - the chord is the real way to read a network.</p>
     <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
       <button type="button" class="btn">Copy the deck</button>
       <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
@@ -165,7 +165,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the
-  // sandbox) — build the stage in the load handler, never at parse time.
+  // sandbox) - build the stage in the load handler, never at parse time.
   window.addEventListener('load', () => {
     const deck = document.getElementById('deck-chord');
     const TEXT = '#F5F7FF', MUTED = '#8A93C0';
@@ -207,6 +207,6 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 </script>
 ```
 
-<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 21-chord (Glass Hologram) — synthetic passenger flows.</p>
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 21-chord (Glass Hologram) - synthetic passenger flows.</p>
 <SourceFiles component="presentation" />
 </DocPage>

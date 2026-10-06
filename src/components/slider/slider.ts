@@ -14,6 +14,22 @@ const dfDollar = defussQuery();
 
 const sliderStates = ['default', 'disabled'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the value). */
+export interface SliderStateConfigs {
+  /** Enabled. */
+  default: {
+    /** the value to set (the range input's value); getState() reports it */
+    value?: number | string;
+  };
+  /** Disabled - not draggable, dimmed. */
+  disabled: {
+    /** the value to set; getState() reports it */
+    value?: number | string;
+  };
+}
+
 /** 0..100 - where the value sits between min and max. */
 function percentOf(el) {
   const min = parseFloat(el.min || 0);

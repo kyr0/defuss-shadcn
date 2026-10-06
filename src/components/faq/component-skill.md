@@ -60,7 +60,7 @@ not this block.
 | `data-variant="accordion"` (on `.mk-faq`) | The head centered above an Accordion (`.mk-faq-accordion`) - one answer open at a time |
 | `.mk-faq-split` | The head (sticky from 52rem) beside the questions |
 | `data-variant="cards"` (on `.mk-faq-grid`) | Each question and answer on a bordered card |
-| `data-variant="numbered"` (on `.mk-faq-grid`) | A mono counter (01, 02…) instead of the icon, a rule on top |
+| `data-variant="numbered"` (on `.mk-faq-grid`) | A mono counter (01, 02...) instead of the icon, a rule on top |
 | `.mk-faq-search` + `.mk-faq-topics` | A search field and topic links above the questions |
 | `.mk-faq-contact` | "Still have questions?" with the team (Avatar group) and an action |
 

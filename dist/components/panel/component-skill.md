@@ -187,28 +187,62 @@ panel.api.setState('default');
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.panelApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.panelStates` = `default`, `minimized`, `maximized`, `closed`.
+<code>type PanelState = 'default' | 'minimized' | 'maximized' | 'closed'</code> - `setState(name, config)` takes the config of the state it names (`PanelStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The title bar and body at the authored size. No config. |
+| `minimized` | The title bar only - in a border layout region, the region folds with it. No config. |
+| `maximized` | Fills its border layout, [data-panel-host] or the viewport. No config. |
+| `closed` | Gone (hidden) - in a border layout, its region and divider go too. No config. |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends PanelState&gt;(name: S, config?: PanelStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>PanelStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: PanelState; config: PanelStateConfigs[PanelState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.panelApi.setState&lt;S extends PanelState&gt;(el: HTMLElement, name: S, config?: PanelStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>PanelStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.panelApi.getState(el: HTMLElement): { name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.panelApi.render(state: { name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: PanelState; config: PanelStateConfigs[PanelState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.panelApi.store(el: HTMLElement): Store&lt;{ name: PanelState; config: PanelStateConfigs[PanelState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: PanelState; config: PanelStateConfigs[PanelState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.panelApi.commit&lt;S extends PanelState&gt;(el: HTMLElement, name: S, config?: PanelStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>PanelStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.panelStates: PanelState[]</code> | The declared states, 'default' first: <code>default</code>, <code>minimized</code>, <code>maximized</code>, <code>closed</code>. |
 
 ### `df$.shadcn.panel`
 
 | Member | Description |
 |---|---|
-| `minimize(t)` | Title bar only - in a border layout region, the region shrinks with it. |
-| `maximize(t)` | Fills its border layout / [data-panel-host] / the viewport. |
-| `restore(t)` | Back to title bar + body at the authored size. |
-| `close(t)` | Closes the panel (hidden; in a border layout its region goes too). |
-| `open(t)` | Opens a closed panel again (title bar + body). |
-| `toggle(t)` | Minimizes or restores; returns whether it is now minimized. |
+| <code>minimize(target: string \| HTMLElement): HTMLElement \| null</code> | Title bar only - in a border layout region, the region shrinks with it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .panel element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the panel, null when the target matches none |
+| <code>maximize(target: string \| HTMLElement): HTMLElement \| null</code> | Fills its border layout / [data-panel-host] / the viewport. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .panel element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the panel, null when the target matches none |
+| <code>restore(target: string \| HTMLElement): HTMLElement \| null</code> | Back to title bar + body at the authored size. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .panel element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the panel, null when the target matches none |
+| <code>close(target: string \| HTMLElement): HTMLElement \| null</code> | Closes the panel (hidden; in a border layout its region goes too). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .panel element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the panel, null when the target matches none |
+| <code>open(target: string \| HTMLElement): HTMLElement \| null</code> | Opens a closed panel again (title bar + body). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .panel element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the panel, null when the target matches none |
+| <code>toggle(target: string \| HTMLElement): boolean</code> | Minimizes or restores. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .panel element, its id or a selector</td></tr></table> <b>Returns</b> <code>boolean</code> - true when it is minimized now (false also when the target matches no panel) |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `panel-change` | `state`, `previous`, `region` | Fires when the panel changes state - the new state, the previous one and the border-layout region it sits in. |
+| Event | Description |
+|---|---|
+| `panel-change` | Fires when the panel changes state - the new state, the previous one and the border-layout region it sits in. <code>detail</code>: <code>PanelChangeDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>'default' \| 'minimized' \| 'maximized' \| 'closed'</code></td><td>the state the panel is in now (a panelStates name: the State API throws on any other, so the dispatch casts its string)</td></tr><tr><td><code>previous</code></td><td><code>'default' \| 'minimized' \| 'maximized' \| 'closed'</code></td><td>the state it left</td></tr><tr><td><code>region</code></td><td><code>'north' \| 'south' \| 'west' \| 'east' \| 'center' \| null</code></td><td>the border-layout region it sits in, null outside a border layout</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `PanelChangeDetail` | What panel-change carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>'default' \| 'minimized' \| 'maximized' \| 'closed'</code></td><td>the state the panel is in now (a panelStates name: the State API throws on any other, so the dispatch casts its string)</td></tr><tr><td><code>previous</code></td><td><code>'default' \| 'minimized' \| 'maximized' \| 'closed'</code></td><td>the state it left</td></tr><tr><td><code>region</code></td><td><code>'north' \| 'south' \| 'west' \| 'east' \| 'center' \| null</code></td><td>the border-layout region it sits in, null outside a border layout</td></tr></table> |
 
 ---
 

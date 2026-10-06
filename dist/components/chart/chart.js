@@ -8,7 +8,7 @@
 // (one morphing chart across presentation slides). Everything visual is
 // chart.css + the token file (AGENTS.md "Native web platform first").
 //
-// Markup contract: `.chart` mount carrying data-chart='{…}' (the ECharts
+// Markup contract: `.chart` mount carrying data-chart='{...}' (the ECharts
 // option; the token theme supplies every default it leaves out) + role="img"
 // + aria-label. State lives ON THE ELEMENT (dataset.stateName) - the bound
 // `api` is the only state mutator (AGENTS.md "State API").
@@ -29,6 +29,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.5') {
 const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
 const chartStates = ['default'];
 /** The ONE vendor-load error text - same actionable message everywhere. */
 const ECHARTS_NOT_LOADED = 'chart: echarts is not loaded - add <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script> before chart.js';
@@ -53,7 +56,7 @@ const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').match
 /** One 1×1 canvas resolves ANY CSS color the browser understands. */
 let probe = null;
 /**
- * Why: tokens are oklch() (and themes may use color-mix/lab/…); ECharts
+ * Why: tokens are oklch() (and themes may use color-mix/lab/...); ECharts
  * parses only hex/rgb/hsl - it would pass oklch through to SVG fills but
  * silently break every color interpolation (hover emphasis, visualMap
  * gradients, the morph between states). Painting one pixel and reading it
@@ -88,6 +91,10 @@ function toRgb(css, alpha = 1) {
  * bar, a visualMap gradient) need ECharts-parseable colors too. Resolves a
  * token name ('--chart-2', read off the element) or any CSS color to
  * rgb()/rgba(), optionally at an alpha. '' when unresolvable.
+ * @param el - the .chart element (a token resolves against its computed style)
+ * @param value - a token name ('--chart-2') or any CSS color
+ * @param alpha - opacity multiplier, 0 to 1
+ * @returns rgb() / rgba() ECharts can parse, '' when the value does not resolve
  */
 export function chartColor(el, value, alpha = 1) {
     const css = value.startsWith('--') ? getComputedStyle(el).getPropertyValue(value).trim() : value;
@@ -108,7 +115,7 @@ function surfaceOf(el) {
  * Why: the theme adapter - the chart reads the DESIGN TOKENS off its own
  * computed style and returns an ECharts THEME object (passed to init() and
  * setTheme()). A theme, unlike a merged base option, is only defaults: it
- * survives setOption(…, notMerge) (stories, deck stages), applies per
+ * survives setOption(..., notMerge) (stories, deck stages), applies per
  * component type (categoryAxis/valueAxis only style axes that EXIST - no
  * phantom axes on pies/treemaps) and per series type (bar radius, line
  * width, pie separators).
@@ -119,6 +126,8 @@ function surfaceOf(el) {
  * the tooltip, --font-sans for type, and `--chart-font-size` (component-
  * local, default 13px; decks raise it to artboard scale) for the type scale
  * every size here derives from. prefers-reduced-motion disables animation.
+ * @param el - the .chart element whose tokens and text color the theme reads
+ * @returns an ECharts theme object (pass it to init or setTheme)
  */
 export function chartTheme(el) {
     const cs = getComputedStyle(el);
@@ -309,6 +318,9 @@ function wrapSetOption(el, inst) {
  * token theme goes to init(); the option carries only what the author said.
  * The renderer is SVG (crisp at any density, selectable, small); a
  * ResizeObserver keeps the canvas honest - never a window resize listener.
+ * @param el - the .chart element to draw into
+ * @param option - the first option
+ * @returns the instance and its setOption / dispose
  */
 export function mount(el, option = {}) {
     const echarts = echartsRuntime();
@@ -347,7 +359,11 @@ export function mount(el, option = {}) {
         },
     };
 }
-/** The stored instance for an element (undefined until mounted). */
+/**
+ * The stored instance for an element.
+ * @param el - the .chart element
+ * @returns its ECharts instance, undefined until mounted
+ */
 export function instance(el) {
     return instances.get(el);
 }
@@ -495,6 +511,10 @@ function morphable(option) {
  * universalTransition, so keeping series.id and data names stable across
  * states makes ECharts MORPH instead of redrawing. An unmounted element is
  * lazily mounted with states[0].
+ * @param el - the .chart element
+ * @param states - the option of each step, in order (at least one)
+ * @param options - loop: true wraps past the ends instead of clamping
+ * @returns the story's controls
  */
 export function chartStory(el, states, { loop = false } = {}) {
     if (!Array.isArray(states) || states.length === 0) {
@@ -515,7 +535,7 @@ export function chartStory(el, states, { loop = false } = {}) {
 const DECK_TEMPO = { animationDuration: 1500, animationEasing: 'cubicOut', animationDurationUpdate: 1500, animationEasingUpdate: 'cubicInOut' };
 /**
  * Why: the deck stage - ONE chart instance for a whole presentation, so
- * every chart slide MORPHS into the next (bars → dots → donut …) instead of
+ * every chart slide MORPHS into the next (bars → dots → donut ...) instead of
  * cutting between separate charts. The stage is a `.chart.presentation-
  * stage` child of the `.presentation` mount, laid out in artboard
  * coordinates by presentation.css; slides name the state they show with
@@ -526,6 +546,9 @@ const DECK_TEMPO = { animationDuration: 1500, animationEasing: 'cubicOut', anima
  * notMerge, so a state is a complete surface; series default to
  * universalTransition. The first appearance mounts the chart, so its
  * entrance animation plays on stage - never hidden at page load.
+ * @param deck - the .presentation element holding the .chart.presentation-stage
+ * @param options - base: the chrome every state shares; states: the option of each named state
+ * @returns the stage's controls
  */
 export function chartDeck(deck, { base = {}, states }) {
     const stage = (dfDollar(deck).find(':scope > .presentation-stage').get(0) ?? null);

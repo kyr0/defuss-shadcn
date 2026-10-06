@@ -1,0 +1,3579 @@
+/* ── components/badge/badge.css ── */
+/* -- Badge component ------------------------------------------- */
+
+@layer components {
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.5rem;
+    /* a pill never breaks its label or gets squeezed in a flex row (as in
+       shadcn/ui) - a wrapped badge doubles its line-height into a lozenge */
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    /* -- Sizes: font, vertical padding and the line-height (which gives the
+       pill its height) scale together. Default (no attribute) == md. */
+    &[data-size="xs"] { font-size: 0.5625rem; padding: 0 0.375rem;    line-height: 1.125rem; }
+    &[data-size="sm"] { font-size: 0.625rem;  padding: 0.0625rem 0.5rem; line-height: 1.25rem; }
+    &[data-size="md"] { font-size: 0.6875rem; padding: 0.125rem 0.625rem; line-height: 1.5rem; }
+    &[data-size="lg"] { font-size: 0.8125rem; padding: 0.1875rem 0.75rem; line-height: 1.75rem; }
+    &[data-size="xl"] { font-size: 0.9375rem; padding: 0.25rem 0.875rem;  line-height: 2rem; }
+
+    &[data-variant="outline"] {
+      border: 1px solid var(--border);
+      color: var(--muted-foreground);
+    }
+
+    &[data-variant="secondary"] {
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+
+    &[data-variant="default"] {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+  }
+}
+
+/* ── components/type-badge/type-badge.css ── */
+/* -- Type Badge component ------------------------------------ */
+
+@layer components {
+  .type-badge {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-family: var(--font-mono);
+    padding: 0.125rem 0.375rem;
+    border: 1px solid;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    flex-shrink: 0;
+    line-height: 1.4;
+
+    &[data-size="xs"] { font-size: 0.5625rem; }
+    &[data-size="sm"] { font-size: 0.6875rem; }
+    &[data-size="md"] { font-size: 0.8125rem; }
+    &[data-size="lg"] { font-size: 0.9375rem; }
+    &[data-size="xl"] { font-size: 1.0625rem; }
+
+    &[data-type="ATM"] { color: #06B6D4; border-color: color-mix(in oklch, #06B6D4 40%, transparent); }
+    &[data-type="MOL"] { color: #3B82F6; border-color: color-mix(in oklch, #3B82F6 40%, transparent); }
+    &[data-type="ORG"] { color: #8B5CF6; border-color: color-mix(in oklch, #8B5CF6 40%, transparent); }
+    &[data-type="BLK"] { color: #F59E0B; border-color: color-mix(in oklch, #F59E0B 40%, transparent); }
+    &[data-type="TPL"] { color: #64748B; border-color: color-mix(in oklch, #64748B 40%, transparent); }
+  }
+
+  .dark .type-badge {
+    &[data-type="ATM"] { color: #22D3EE; border-color: color-mix(in oklch, #22D3EE 40%, transparent); }
+    &[data-type="MOL"] { color: #60A5FA; border-color: color-mix(in oklch, #60A5FA 40%, transparent); }
+    &[data-type="ORG"] { color: #A78BFA; border-color: color-mix(in oklch, #A78BFA 40%, transparent); }
+    &[data-type="BLK"] { color: #FBBF24; border-color: color-mix(in oklch, #FBBF24 40%, transparent); }
+    &[data-type="TPL"] { color: #94A3B8; border-color: color-mix(in oklch, #94A3B8 40%, transparent); }
+  }
+
+  @media (forced-colors: active) {
+    .type-badge { color: CanvasText; border-color: CanvasText; }
+  }
+}
+
+/* ── components/avatar/avatar.css ── */
+@layer components {
+  .avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+    background-color: var(--muted);
+
+    /* No overflow:hidden: the badge dot sits half outside the circle (like
+       shadcn's -right-1 dot) and clipping cut it to a sliver. Circular
+       rendering comes from border-radius: inherit on image/fallback instead. */
+
+    &[data-size="xs"] {
+      width: 1.5rem;
+      height: 1.5rem;
+      --_badge: 0.75rem;
+      font-size: 0.5625rem;
+    }
+
+    &[data-size="sm"] {
+      width: 2rem;
+      height: 2rem;
+      --_badge: 1rem;
+      font-size: 0.6875rem;
+    }
+
+    &[data-size="md"] {
+      width: 2.5rem;
+      height: 2.5rem;
+      --_badge: 1.25rem;
+      font-size: 0.75rem;
+    }
+
+    &[data-size="lg"] {
+      width: 3rem;
+      height: 3rem;
+      --_badge: 1.5rem;
+      font-size: 0.875rem;
+    }
+
+    &[data-size="xl"] {
+      width: 4rem;
+      height: 4rem;
+      --_badge: 1.75rem;
+      font-size: 1rem;
+    }
+
+    /* -- Shape: the image and fallback inherit the radius, so one
+       attribute reshapes the whole avatar (the badge is never clipped).
+       For silhouettes (heart, squircle, hexagon…) put a shape-* class from
+       theme/utils/shapes.css on the .avatar-image instead. */
+    &[data-shape="rounded"] { border-radius: var(--radius-lg); }
+    &[data-shape="square"] { border-radius: var(--radius-sm); }
+
+    /* a loaded photo covers the box: no muted plate behind a shaped image */
+    &:has(> .avatar-image:not([data-error])) { background-color: transparent; }
+
+    /* -- Ring: a colored ring with a background-colored gap, following
+       the avatar's shape */
+    &[data-ring] {
+      box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+    }
+    &[data-ring="secondary"] { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--muted-foreground); }
+    &[data-ring="destructive"] { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--destructive); }
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+  }
+
+  .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    background-color: var(--muted);
+    position: absolute;
+    inset: 0;
+    border-radius: inherit; /* .avatar no longer clips - the fallback must round itself */
+
+    /* placeholder colors (letters on a solid plate) */
+    &[data-variant="primary"] { background-color: var(--primary); color: var(--primary-foreground); }
+    &[data-variant="neutral"] { background-color: var(--foreground); color: var(--background); }
+  }
+
+  /* Hide fallback when image is loaded */
+  .avatar:has(.avatar-image:not([data-error])) .avatar-fallback {
+    display: none;
+  }
+
+  /* Status dot. data-variant picks the presence state; no variant = online
+     (the historical green). Status colours are literals by design - the
+     tweakcn token set has no success/warning pair (AGENTS.md token rule).
+     Colour is never the only cue (WCAG 1.4.1): offline is a hollow ring,
+     busy carries a bar, away clock hands - the four read apart in greyscale
+     and in forced-colors mode. Every cue is PAINTED inside a full circle
+     (no mask): the silhouette and its separating rim stay whole, so the dot
+     always sits in front of the avatar. Size scales with the avatar
+     (--_badge, set per data-size below); rim and cues scale with it.
+     Name it with role="img" + aria-label. */
+  .avatar-badge {
+    --_rim: max(2px, calc(var(--_badge, 1.25rem) * 0.15));
+    position: absolute;
+    inset-inline-end: calc(var(--_rim) * -0.5);
+    inset-block-end: calc(var(--_rim) * -0.5);
+    z-index: 1;
+    width: var(--_badge, 1.25rem);
+    height: var(--_badge, 1.25rem);
+    box-sizing: border-box;
+    border-radius: 9999px;
+    background-color: #16a34a;
+    border: var(--_rim) solid var(--background);
+    background-repeat: no-repeat;
+
+    &[data-variant="online"] {
+      background-color: #16a34a;
+    }
+
+    /* data-position: any of the four corners (default bottom-end); start /
+       end are logical - in RTL, start is the right */
+    &[data-position^="top"] { inset-block: calc(var(--_rim) * -0.5) auto; }
+    &[data-position$="start"] { inset-inline: calc(var(--_rim) * -0.5) auto; }
+
+    /* hollow ring: "not here" */
+    &[data-variant="offline"] {
+      background-color: var(--background);
+      box-shadow: inset 0 0 0 max(2px, calc(var(--_badge, 1.25rem) * 0.14)) #9ca3af;
+    }
+
+    /* red with a bar: do not disturb */
+    &[data-variant="busy"] {
+      background-color: #dc2626;
+      background-image: linear-gradient(#fff 0 0);
+      background-size: 56% max(2px, calc(var(--_badge, 1.25rem) * 0.14));
+      background-position: center;
+    }
+
+    /* amber with clock hands (12 → 3 o'clock): away / be right back */
+    &[data-variant="away"] {
+      background-color: #f59e0b;
+      background-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+      background-size: max(2px, calc(var(--_badge, 1.25rem) * 0.12)) 34%, 30% max(2px, calc(var(--_badge, 1.25rem) * 0.12));
+      /* hour hand: centred, from ~16% down to the centre; minute hand: from
+         the centre to ~80% (percent positions: (box - layer) * p) */
+      background-position: 50% 24%, 71% 50%;
+    }
+  }
+
+  /* Avatar group - data-overlap="sm|lg" tightens / loosens the stack */
+  .avatar-group {
+    display: flex;
+    align-items: center;
+
+    & .avatar {
+      border: 2px solid var(--background);
+      margin-left: -0.5rem;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+    &[data-overlap="sm"] :is(.avatar, .avatar-group-count):not(:first-child) { margin-left: -0.25rem; }
+    &[data-overlap="lg"] :is(.avatar, .avatar-group-count):not(:first-child) { margin-left: -1rem; }
+  }
+
+  .avatar-group-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 2px solid var(--background);
+    margin-left: -0.5rem;
+  }
+}
+
+/* Forced colors (Windows High Contrast) would repaint the status fills with
+   the system Canvas colour and erase the dot. Presence colour carries meaning
+   (like a chart series), so the badge keeps its own palette; the ring / bar /
+   crescent shape cues stay as well. */
+@media (forced-colors: active) {
+  @layer components {
+    .avatar-badge {
+      forced-color-adjust: none;
+    }
+  }
+}
+
+/* ── components/indicator/indicator.css ── */
+/* -- Indicator component ------------------------------------------ */
+
+@layer components {
+  /* .indicator wraps any element (a button, avatar, card, input, image)
+     and pins one or more .indicator-item on it. Each item is CENTERED on an
+     anchor point of the wrapper's edge: data-position picks the point -
+     vertical top / middle / bottom + horizontal start / center / end
+     (default top-end). A single word sets one axis - "start" / "center" /
+     "end" horizontal, "top" / "middle" / "bottom" vertical - so "middle-center"
+     is the middle of the element. start / end are logical: in RTL, start is
+     the right edge. */
+  .indicator {
+    position: relative;
+    display: inline-flex;
+    width: max-content;
+    max-width: 100%;
+  }
+  /* the wrapped element fills the wrapper: a no-op at the default
+     max-content width, but a wrapper given a width passes it on - a card
+     (a size container, no intrinsic width) would otherwise collapse to 0 */
+  .indicator > :not(.indicator-item) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .indicator-item {
+    /* --_h / --_v: 0 = start / top, 0.5 = center / middle, 1 = end / bottom */
+    --_h: 1;
+    --_v: 0;
+    position: absolute;
+    z-index: 1;
+    /* --_in: data-inset pulls the item toward the element's center by this
+       much per axis (a corner item moves diagonally) - for an icon inside a
+       padded button, whose box corner sits well away from the glyph;
+       --_dir flips the horizontal pull in RTL */
+    --_in: 0px;
+    --_dir: 1;
+    inset-block-start: calc(var(--_v) * 100%);
+    left: calc(var(--_h) * 100%);
+    translate:
+      calc(-50% + (1 - 2 * var(--_h)) * var(--_in) * var(--_dir))
+      calc(-50% + (1 - 2 * var(--_v)) * var(--_in));
+    white-space: nowrap;
+
+    &:dir(rtl) { left: calc((1 - var(--_h)) * 100%); --_dir: -1; }
+    &[data-inset] { --_in: 0.5rem; }
+    &[data-inset="sm"] { --_in: 0.25rem; }
+    &[data-inset="lg"] { --_in: 0.75rem; }
+
+    &[data-position^="middle"] { --_v: 0.5; }
+    &[data-position^="bottom"] { --_v: 1; }
+    &[data-position$="start"] { --_h: 0; }
+    &[data-position$="center"] { --_h: 0.5; }
+
+    /* responsive placement (DaisyUI's sm: / md: / lg: / xl:): the same
+       values in data-position-sm / -md / -lg / -xl apply from that viewport
+       width up (40 / 48 / 64 / 80rem) */
+    @media (min-width: 40rem) {
+      &[data-position-sm^="top"] { --_v: 0; }
+      &[data-position-sm^="middle"] { --_v: 0.5; }
+      &[data-position-sm^="bottom"] { --_v: 1; }
+      &[data-position-sm$="start"] { --_h: 0; }
+      &[data-position-sm$="center"] { --_h: 0.5; }
+      &[data-position-sm$="end"] { --_h: 1; }
+    }
+    @media (min-width: 48rem) {
+      &[data-position-md^="top"] { --_v: 0; }
+      &[data-position-md^="middle"] { --_v: 0.5; }
+      &[data-position-md^="bottom"] { --_v: 1; }
+      &[data-position-md$="start"] { --_h: 0; }
+      &[data-position-md$="center"] { --_h: 0.5; }
+      &[data-position-md$="end"] { --_h: 1; }
+    }
+    @media (min-width: 64rem) {
+      &[data-position-lg^="top"] { --_v: 0; }
+      &[data-position-lg^="middle"] { --_v: 0.5; }
+      &[data-position-lg^="bottom"] { --_v: 1; }
+      &[data-position-lg$="start"] { --_h: 0; }
+      &[data-position-lg$="center"] { --_h: 0.5; }
+      &[data-position-lg$="end"] { --_h: 1; }
+    }
+    @media (min-width: 80rem) {
+      &[data-position-xl^="top"] { --_v: 0; }
+      &[data-position-xl^="middle"] { --_v: 0.5; }
+      &[data-position-xl^="bottom"] { --_v: 1; }
+      &[data-position-xl$="start"] { --_h: 0; }
+      &[data-position-xl$="center"] { --_h: 0.5; }
+      &[data-position-xl$="end"] { --_h: 1; }
+    }
+  }
+
+  /* -- Status dot ----------------------------------------------------
+     A small colored dot for presence and state (DaisyUI's status): on its
+     own inline, or as an .indicator-item. data-variant colors it,
+     data-size sizes it, data-animate="ping" sends a ring pulsing out of it
+     (an ::after copy scaling up and fading), "bounce" hops it, "pulse"
+     fades it. The dot is currentColor, so a variant is one color line.
+     Success / warning / info are literals by design: the tweakcn token set
+     has no such pairs (AGENTS.md token rule, like the avatar badge). */
+  .indicator-dot {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    color: var(--muted-foreground);
+    background-color: currentColor;
+    vertical-align: middle;
+
+    &[data-variant="neutral"] { color: var(--foreground); }
+    &[data-variant="primary"] { color: var(--primary); }
+    /* the tweakcn --secondary / --accent are pale SURFACES - too faint for a
+       dot: secondary / accent take the theme's vivid chart colors instead */
+    &[data-variant="secondary"] { color: var(--chart-2); }
+    &[data-variant="accent"] { color: var(--chart-4); }
+    &[data-variant="destructive"], &[data-variant="error"] { color: var(--destructive); }
+    &[data-variant="success"] { color: #16a34a; }
+    &[data-variant="warning"] { color: #f59e0b; }
+    &[data-variant="info"] { color: #0ea5e9; }
+
+    &[data-size="xs"] { width: 0.25rem; height: 0.25rem; }
+    &[data-size="sm"] { width: 0.375rem; height: 0.375rem; }
+    &[data-size="md"] { width: 0.5rem; height: 0.5rem; }
+    &[data-size="lg"] { width: 0.75rem; height: 0.75rem; }
+    &[data-size="xl"] { width: 1rem; height: 1rem; }
+
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: currentColor;
+      animation: indicator-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    &[data-animate="bounce"] { animation: indicator-bounce 1s infinite; }
+    &[data-animate="pulse"] { animation: indicator-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  }
+
+  /* a dot pinned as an indicator stays absolutely positioned (the dot's own
+     position: relative comes later in the cascade); a bounce must not fight
+     the centering translate, so it moves the pinned dot with margin instead */
+  .indicator-item.indicator-dot {
+    position: absolute;
+
+    &[data-animate="bounce"] { animation-name: indicator-bounce-margin; }
+  }
+
+  @keyframes indicator-ping {
+    75%, 100% { scale: 2.25; opacity: 0; }
+  }
+  @keyframes indicator-bounce {
+    0%, 100% { translate: 0 -25%; animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { translate: 0 0; animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  }
+  @keyframes indicator-bounce-margin {
+    0%, 100% { margin-top: -0.25em; animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { margin-top: 0; animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  }
+  @keyframes indicator-pulse {
+    50% { opacity: 0.5; }
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .indicator-dot[data-animate], .indicator-item.indicator-dot[data-animate] { animation: none; }
+    .indicator-dot[data-animate]::after { animation: none; opacity: 0; }
+  }
+
+  /* forced colors would repaint the dot with Canvas and erase it: the
+     color carries the state, so the dot keeps its own */
+  @media (forced-colors: active) {
+    .indicator-dot { forced-color-adjust: none; }
+  }
+}
+
+/* ── components/diff/diff.css ── */
+/* -- Diff component ----------------------------------------------- */
+
+@layer components {
+  /* Two layers in one grid cell - .diff-item-1 (before) over .diff-item-2
+     (after) - and a native <input type="range" class="diff-range"> spread
+     over the whole figure as the divider: drag anywhere, arrow keys / Home /
+     End, and a screen reader announces the value. diff.js mirrors the value
+     into --diff-pos; item 1 is clipped at that line. Without JS the figure
+     still shows a 50 / 50 split. The range is widened by one knob on both
+     sides, so the knob's CENTER sits exactly on --diff-pos. */
+  .diff {
+    --diff-pos: 50%;
+    --_knob: 2.25rem;
+    position: relative;
+    display: grid;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    isolation: isolate;
+    user-select: none;
+    touch-action: pan-y;
+    background-color: var(--muted);
+    cursor: ew-resize;
+
+    /* the divider line */
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      bottom: 0;
+      left: var(--diff-pos);
+      width: 2px;
+      translate: -50% 0;
+      background-color: var(--background);
+      box-shadow: 0 0 0 1px color-mix(in oklch, var(--foreground) 12%, transparent);
+      pointer-events: none;
+    }
+  }
+
+  .diff-item-1,
+  .diff-item-2 {
+    grid-area: 1 / 1;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    & > :is(img, video, picture, canvas, svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .diff-item-1 {
+    z-index: 1;
+    clip-path: inset(0 calc(100% - var(--diff-pos)) 0 0);
+  }
+  .diff-item-2 { z-index: 0; }
+
+  /* a corner caption on either side (Before / After) */
+  .diff-label {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in oklch, var(--background) 82%, transparent);
+    color: var(--foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .diff-item-2 .diff-label { left: auto; right: 0.75rem; }
+
+  /* -- The range: a knob-high strip across the middle (diff.js makes the
+     whole figure a drag surface and keeps keyboard / AT on the range) -- */
+  .diff-range {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: calc(var(--_knob) / -2);
+    width: calc(100% + var(--_knob));
+    height: var(--_knob);
+    translate: 0 -50%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    appearance: none;
+    cursor: ew-resize;
+    outline: none;
+
+    &::-webkit-slider-runnable-track { height: 100%; background: transparent; }
+    &::-moz-range-track { height: 100%; background: transparent; }
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: var(--_knob);
+      height: var(--_knob);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--background) center / 1.125rem no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
+      box-shadow: var(--shadow-md);
+      transition: scale 120ms ease;
+    }
+    &::-moz-range-thumb {
+      width: var(--_knob);
+      height: var(--_knob);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--background) center / 1.125rem no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
+      box-shadow: var(--shadow-md);
+    }
+    &:active::-webkit-slider-thumb { scale: 1.08; }
+    &:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:focus-visible::-moz-range-thumb { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+  /* RTL: the range runs right → left, so item 1 is revealed from the right */
+  .diff:dir(rtl):not([data-orientation="vertical"]) {
+    &::after { left: calc(100% - var(--diff-pos)); }
+    & .diff-item-1 { clip-path: inset(0 0 0 calc(100% - var(--diff-pos))); }
+    & .diff-item-1 .diff-label { left: auto; right: 0.75rem; }
+    & .diff-item-2 .diff-label { right: auto; left: 0.75rem; }
+  }
+
+  /* -- Aspect ratios (or set aspect-ratio / a height yourself) -------- */
+  .diff[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+  .diff[data-ratio="4/3"] { aspect-ratio: 4 / 3; }
+  .diff[data-ratio="1/1"] { aspect-ratio: 1; }
+  .diff[data-ratio="3/4"] { aspect-ratio: 3 / 4; }
+
+  /* -- Knob variants ---------------------------------------------------- */
+  /* line: no knob - just the divider (the whole figure is still the hit area) */
+  .diff[data-variant="line"] .diff-range {
+    &::-webkit-slider-thumb { opacity: 0; }
+    &::-moz-range-thumb { opacity: 0; }
+    &:focus-visible::-webkit-slider-thumb { opacity: 1; }
+  }
+  .diff[data-variant="line"]::after { width: 3px; }
+  /* primary: a --primary divider + knob ring */
+  .diff[data-variant="primary"] {
+    &::after { background-color: var(--primary); box-shadow: none; }
+    & .diff-range::-webkit-slider-thumb { border: 2px solid var(--primary); }
+    & .diff-range::-moz-range-thumb { border: 2px solid var(--primary); }
+  }
+
+  /* -- Vertical: before on top, after below; the range runs top → bottom */
+  .diff[data-orientation="vertical"] {
+    touch-action: pan-x;
+    cursor: ns-resize;
+
+    &::after {
+      top: var(--diff-pos);
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 2px;
+      translate: 0 -50%;
+    }
+    & .diff-item-1 { clip-path: inset(0 0 calc(100% - var(--diff-pos)) 0); }
+    & .diff-item-2 .diff-label { top: auto; bottom: 0.75rem; left: 0.75rem; right: auto; }
+    & .diff-range {
+      writing-mode: vertical-lr;
+      top: calc(var(--_knob) / -2);
+      left: 50%;
+      width: var(--_knob);
+      height: calc(100% + var(--_knob));
+      translate: -50% 0;
+      cursor: ns-resize;
+
+      &::-webkit-slider-runnable-track { width: 100%; height: auto; }
+      &::-webkit-slider-thumb { rotate: 90deg; }
+      &::-moz-range-thumb { rotate: 90deg; }
+    }
+  }
+  .diff[data-orientation="vertical"][data-variant="line"]::after { height: 3px; width: auto; }
+
+  /* -- Accessibility ------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .diff-range::-webkit-slider-thumb { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .diff::after { background-color: CanvasText; }
+    .diff-range::-webkit-slider-thumb { border-color: CanvasText; }
+  }
+}
+
+/* ── components/countdown/countdown.css ── */
+/* -- Countdown component ------------------------------------------ */
+
+/* The size of one digit cell, resolved to px on .countdown - the value spans
+   set font-size: 0 (their text is the accessible fallback), so every length
+   inside them reads this instead of em. Top-level: @property is not layered. */
+@property --_cd-em {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 16px;
+}
+
+@layer components {
+  /* A number that rolls to its new value - CSS only. Each value is a
+     <span style="--value:N">N</span> (0-999) inside a .countdown; change
+     --value (and the text) and the digits roll like an odometer: the ones
+     digit and the higher digits are two independent columns (::after /
+     ::before), picked with CSS math (mod(), round(down, …)). Leading zeros
+     are dropped (the column narrows away) unless data-digits="2" / "3". */
+  .countdown {
+    --_cd-em: 1em;
+    --_cd-speed: 1s;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+
+    & > span {
+      --_v: clamp(0, round(var(--value, 0)), 999);
+      --_hi: round(down, calc(var(--_v) / 10), 1);
+      --_lo: mod(var(--_v), 10);
+      display: inline-flex;
+      align-items: flex-start;
+      height: var(--_cd-em);
+      overflow-x: visible;
+      overflow-y: clip;
+      font-size: 0;
+
+      /* higher digits (0-99), right-aligned so a growing number opens leftward */
+      &::before {
+        content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99" / "";
+        width: calc((min(1, var(--_hi)) + min(1, round(down, calc(var(--_hi) / 10), 1))) * 1ch);
+        direction: rtl;
+        text-align: start;
+        /* a narrowed column clips its (right-aligned) leading digits away */
+        overflow: hidden;
+        translate: 0 calc(var(--_hi) * -1em);
+      }
+      /* the ones digit */
+      &::after {
+        content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9" / "";
+        width: 1ch;
+        translate: 0 calc(var(--_lo) * -1em);
+      }
+      &::before,
+      &::after {
+        font-size: var(--_cd-em);
+        line-height: 1;
+        white-space: pre;
+        transition:
+          translate var(--_cd-speed) cubic-bezier(1, 0, 0, 1),
+          width calc(var(--_cd-speed) / 2) ease;
+      }
+    }
+
+    /* at least two digits: 5 → "05" */
+    &[data-digits="2"] > span::before {
+      width: calc(max(1, min(1, var(--_hi)) + min(1, round(down, calc(var(--_hi) / 10), 1))) * 1ch);
+    }
+    /* three digits: 7 → "007" */
+    &[data-digits="3"] > span::before {
+      content: "00\A 01\A 02\A 03\A 04\A 05\A 06\A 07\A 08\A 09\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99" / "";
+      width: 2ch;
+    }
+
+    /* -- Sizes ------------------------------------------------------- */
+    &[data-size="sm"] { font-size: 0.875rem; }
+    &[data-size="md"] { font-size: 1rem; }
+    &[data-size="lg"] { font-size: 1.5rem; }
+    &[data-size="xl"] { font-size: 2.25rem; }
+    &[data-size="2xl"] { font-size: 3.75rem; }
+    &[data-size="3xl"] { font-size: 6rem; }
+
+    /* -- Speed: the roll's duration ----------------------------------- */
+    &[data-speed="fast"] { --_cd-speed: 0.4s; }
+    &[data-speed="slow"] { --_cd-speed: 1.6s; }
+  }
+
+  /* -- Composition: a row of units, each a value over a label ---------- */
+  .countdown-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .countdown-unit {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 4.5rem;
+
+    &[data-variant] {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-lg);
+    }
+    &[data-variant="muted"] { background-color: var(--muted); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      & .countdown-label { color: color-mix(in oklch, var(--primary-foreground) 75%, transparent); }
+    }
+    &[data-variant="outline"] { border: 1px solid var(--border); }
+  }
+  .countdown-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Accessibility ------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .countdown > span::before,
+    .countdown > span::after { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .countdown-unit[data-variant] { border: 1px solid CanvasText; }
+  }
+}
+
+/* ── components/card/card.css ── */
+/* -- Card component -------------------------------------------- */
+
+@layer components {
+  /* Spacing runs through one private variable: --_pad (section padding) =
+     --_base (the SIZE's padding, md 1.5rem) × --_k (the DENSITY factor), and
+     --_hf (the header→footer gap when no content sits between them) =
+     --_hfb × --_kh. Size and density therefore combine instead of fighting.
+     --_title / --_desc carry the size's type scale. All private. */
+  .card {
+    --_base: 1.5rem;
+    --_hfb: 1rem;
+    --_k: 1;
+    --_kh: 1;
+    --_pad: calc(var(--_base) * var(--_k));
+    --_hf: calc(var(--_hfb) * var(--_kh));
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: var(--_pad, 1.5rem);
+    padding-bottom: 0;
+  }
+
+  .card-title {
+    font-size: var(--_title, 1.25rem);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .card-description {
+    font-size: var(--_desc, 0.875rem);
+    color: var(--muted-foreground);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .card-content {
+    padding: var(--_pad, 1.5rem);
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: var(--_pad, 1.5rem);
+    padding-top: 0;
+  }
+
+  /* Header + footer with no .card-content between: the zeroed paddings would
+     glue them together - restore the gap for that composition only. */
+  .card-header + .card-footer {
+    padding-top: var(--_hf, 1rem);
+  }
+
+  /* A header-only card (a title + description panel): the header is the last
+     section, so it keeps its bottom padding instead of sitting on the edge. */
+  .card-header:last-child {
+    padding-bottom: var(--_pad, 1.5rem);
+  }
+
+  /* -- Body: an optional wrapper around header / content / footer.
+     Needed for the side and overlay layouts (media | body); in a column it
+     pushes the footer to the bottom, so a row of cards lines up its actions. */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    & > .card-footer { margin-top: auto; }
+  }
+
+  /* -- Media: a figure (img / video / picture / svg) edge to edge - first
+     child for an image on top, last child for one at the bottom. 16:9 unless
+     the author sets an aspect-ratio. data-inset pads and rounds it instead
+     (the centered-content look). */
+  .card-media {
+    display: block;
+    margin: 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+
+    & > :is(img, video, picture, svg) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &[data-inset] {
+      margin: var(--_pad) var(--_pad) 0;
+      border-radius: var(--radius-lg);
+    }
+    &[data-inset]:last-child {
+      margin: 0 var(--_pad) var(--_pad);
+    }
+  }
+
+  /* -- Density --------------------------------------------------
+     data-density on the .card root scales the section paddings together.
+     Scale matches sizing.css data-density (0.75 / 1 / 1.25): comfortable is
+     the unsized default (1.5rem), compact 1rem, spacious 2rem; the
+     header+footer-only gap (1rem base) follows the ratio (0.75 / 1 / 1.5). */
+  .card:where([data-density="compact"]) { --_k: calc(2 / 3); --_kh: 0.75; }
+  .card:where([data-density="comfortable"]) { --_k: 1; --_kh: 1; }
+  .card:where([data-density="spacious"]) { --_k: calc(4 / 3); --_kh: 1.5; }
+
+  .card {
+    /* -- Sizes: padding + type scale together (md == the default) ----- */
+    &[data-size="xs"] { --_base: 0.75rem; --_hfb: 0.5rem; --_title: 0.875rem; --_desc: 0.75rem; }
+    &[data-size="sm"] { --_base: 1rem; --_hfb: 0.75rem; --_title: 1rem; --_desc: 0.8125rem; }
+    &[data-size="md"] { --_base: 1.5rem; --_hfb: 1rem; --_title: 1.25rem; --_desc: 0.875rem; }
+    &[data-size="lg"] { --_base: 2rem; --_hfb: 1.25rem; --_title: 1.5rem; --_desc: 1rem; }
+    &[data-size="xl"] { --_base: 2.5rem; --_hfb: 1.5rem; --_title: 1.875rem; --_desc: 1.0625rem; }
+
+    /* -- Variants -------------------------------------------------- */
+    &[data-variant="outline"] { background-color: transparent; }
+    &[data-variant="dashed"] { border-style: dashed; border-width: 2px; }
+    &[data-variant="ghost"] { background-color: transparent; border-color: transparent; }
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="elevated"] { border-color: transparent; box-shadow: var(--shadow-lg); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: transparent;
+
+      & .card-description { color: color-mix(in oklch, var(--primary-foreground) 78%, transparent); }
+    }
+    /* a charcoal surface: the inverse colors, softened (78%) so it stays
+       apart from --primary - in the default theme primary IS near-black */
+    &[data-variant="neutral"] {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+
+      & .card-description { color: color-mix(in oklch, var(--background) 72%, transparent); }
+    }
+    /* ghost / link buttons on a colored surface take its text color and a
+       hover tint made from it (the default hover - the pale --accent - would
+       put near-white text on near-white) */
+    &:is([data-variant="primary"], [data-variant="neutral"], [data-layout="overlay"]) .btn:is([data-variant="ghost"], [data-variant="link"]) {
+      color: inherit;
+
+      &:hover { background-color: color-mix(in oklch, currentColor 16%, transparent); color: inherit; }
+    }
+    /* frosted: translucent card over whatever is behind it */
+    &[data-variant="glass"] {
+      background-color: color-mix(in oklch, var(--card) 55%, transparent);
+      border-color: color-mix(in oklch, var(--foreground) 14%, transparent);
+      backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow: 0 8px 32px -8px color-mix(in oklch, var(--foreground) 22%, transparent);
+    }
+
+    /* -- Centered content ------------------------------------------ */
+    &[data-align="center"] {
+      text-align: center;
+
+      & .card-header { align-items: center; }
+      & .card-footer { justify-content: center; }
+    }
+
+    /* -- Layouts ---------------------------------------------------
+       side: media | body in one row, always (media after the body = image
+       on the right). auto: side by side while the CARD is wide enough,
+       stacked when it is not - the flex-wrap switch follows the card's own
+       width, not the viewport, so the same card works in a sidebar and in a
+       wide column. overlay: the media is the background, the body sits on
+       a scrim at the bottom. */
+    &[data-layout="side"] {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+
+      & > .card-media { aspect-ratio: auto; min-height: 100%; }
+    }
+    &[data-layout="side"]:has(> .card-body:first-child) {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+    &[data-layout="auto"] {
+      display: flex;
+      flex-wrap: wrap;
+
+      & > .card-media { flex: 1 1 12rem; aspect-ratio: auto; min-height: 10rem; }
+      & > .card-body { flex: 999 1 18rem; }
+    }
+    &[data-layout="overlay"] {
+      display: grid;
+      color: #fff;
+      border-color: transparent;
+
+      & > * { grid-area: 1 / 1; }
+      & > .card-media { aspect-ratio: auto; min-height: 14rem; }
+      & > .card-body {
+        z-index: 1;
+        align-self: end;
+        background: linear-gradient(to top, oklch(0 0 0 / 0.78), oklch(0 0 0 / 0.35) 65%, transparent);
+        padding-top: 3rem;
+      }
+      & .card-description { color: oklch(1 0 0 / 0.82); }
+    }
+
+    /* -- Interactive: a link (or [data-interactive]) card lifts on hover
+       and shows a focus ring on keyboard focus ------------------------ */
+    &:is(a, [data-interactive]) {
+      display: block;
+      text-decoration: none;
+      transition: translate 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+
+      &:hover { translate: 0 -2px; box-shadow: var(--shadow-md); border-color: color-mix(in oklch, var(--foreground) 22%, var(--border)); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    }
+    &:is(a, [data-interactive])[data-layout="auto"] { display: flex; }
+    &:is(a, [data-interactive]):is([data-layout="side"], [data-layout="overlay"]) { display: grid; }
+
+    /* -- Selectable: a <label class="card"> around a checkbox / radio -
+       the checked card takes a primary ring; keyboard focus shows too */
+    &:is(label) {
+      display: block;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+
+      &:has(:is(input[type="checkbox"], input[type="radio"]):checked) {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+      }
+      &:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+      &:has(input:disabled) { cursor: not-allowed; opacity: 0.55; }
+    }
+  }
+
+  /* -- Container query: compact card in narrow containers - unless the
+     card asks for a size (an explicit data-size wins) -- */
+  @container (max-width: 280px) {
+    .card:not([data-size]) :is(.card-header, .card-content, .card-footer) { --_pad: 1rem; }
+    .card:not([data-size]) .card-title { font-size: 1rem; }
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .card:is(a, [data-interactive]) { transition: none; }
+    .card:is(a, [data-interactive]):hover { translate: none; }
+  }
+  @media (forced-colors: active) {
+    .card:is(label):has(:is(input[type="checkbox"], input[type="radio"]):checked) { border: 2px solid Highlight; }
+  }
+}
+
+/* ── components/image/image.css ── */
+@layer components {
+  .image {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    margin: 0;
+
+    & > img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 200ms ease;
+    }
+
+    /* -- Progressive placeholder --------------------------------
+       Why: the low-res stand-in (data-src-low) shows blurred until the
+       real source is preloaded and swapped in; 8px is a hardcoded filter
+       value per the token boundary (no --* token for filters). */
+    & > img[data-loading] {
+      filter: blur(8px);
+    }
+
+    /* -- Fit variants ---------------------------------------- */
+    &[data-fit="contain"] > img { object-fit: contain; }
+    &[data-fit="fill"]    > img { object-fit: fill; }
+    &[data-fit="none"]    > img { object-fit: none; }
+
+    /* -- Aspect ratio ---------------------------------------- */
+    &[data-ratio="1/1"]  { aspect-ratio: 1 / 1; }
+    &[data-ratio="4/3"]  { aspect-ratio: 4 / 3; }
+    &[data-ratio="3/2"]  { aspect-ratio: 3 / 2; }
+    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+    &[data-ratio="21/9"] { aspect-ratio: 21 / 9; }
+    &[data-ratio="3/4"]  { aspect-ratio: 3 / 4; }
+
+    /* -- Radius variants ------------------------------------- */
+    &[data-radius="none"] { border-radius: 0; }
+    &[data-radius="sm"]   { border-radius: var(--radius-sm); }
+    &[data-radius="md"]   { border-radius: var(--radius-md); }
+    &[data-radius="full"] { border-radius: 9999px; }
+
+    /* -- Preview cursor -------------------------------------- */
+    &[data-preview] {
+      cursor: zoom-in;
+    }
+
+    /* -- Fallback -------------------------------------------- */
+    & > .image-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+
+      & > svg {
+        width: 2.5rem;
+        height: 2.5rem;
+        opacity: 0.5;
+      }
+    }
+
+    /* Hide fallback when image loads successfully */
+    &:has(> img:not([data-error])) > .image-fallback {
+      display: none;
+    }
+  }
+
+  /* -- Caption ----------------------------------------------- */
+  .image-caption {
+    padding: 0.625rem 0 0.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  /* -- Lightbox dialog --------------------------------------- */
+  dialog.image-lightbox {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: auto;
+    position: fixed;
+    inset: 0;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 200ms ease, display 200ms allow-discrete;
+
+    &[open] {
+      opacity: 1;
+    }
+
+    &::backdrop {
+      background: oklch(0 0 0 / 0);
+      transition: all 200ms ease, display 200ms allow-discrete;
+    }
+
+    &[open]::backdrop {
+      background: oklch(0 0 0 / 0.85);
+    }
+  }
+
+  @starting-style {
+    dialog.image-lightbox[open] {
+      opacity: 0;
+    }
+
+    dialog.image-lightbox[open]::backdrop {
+      background: oklch(0 0 0 / 0);
+    }
+  }
+
+  /* -- Scroll lock ------------------------------------------- */
+  /* Page behind stays put while the lightbox is modal (see dialog.css):
+     `:modal` + overflow:hidden freezes the viewport at its current offset. */
+  html:has(dialog.image-lightbox:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  .image-lightbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    & > img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      transition: transform 200ms ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+  }
+
+  .image-lightbox-toolbar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.25rem;
+    z-index: 1;
+  }
+
+  .image-lightbox-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: oklch(0 0 0 / 0.5);
+    color: white;
+    cursor: pointer;
+    transition: background 150ms ease;
+
+    &:hover {
+      background: oklch(0 0 0 / 0.7);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    & > svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .image > img,
+    dialog.image-lightbox,
+    dialog.image-lightbox::backdrop,
+    .image-lightbox-content > img {
+      transition: none;
+    }
+  }
+
+  /* -- Hover gallery (daisyUI's hover-gallery, plus) -----------------------
+     A .hover-gallery holds 2-10 images in one cell. The first shows; every
+     other image is an invisible vertical strip of the frame (1/n of its
+     width, in order) that the pointer can hit - hovering strip k shows
+     image k full-size, and the strips of the others stay above it so moving
+     on keeps working. CSS only. data-ratio sizes the frame (default 4/3),
+     data-indicator draws a position bar, data-effect="zoom" eases the shown
+     image in, data-direction="vertical" slices the frame into rows. On
+     touch screens (no hover) it becomes a swipeable scroll-snap strip. */
+  .hover-gallery {
+    --_n: 1;
+    --_cur: 1;
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-lg);
+    background-color: var(--muted);
+    isolation: isolate;
+
+    &[data-ratio="1/1"] { aspect-ratio: 1; }
+    &[data-ratio="3/4"] { aspect-ratio: 3 / 4; }
+    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+
+    & > :is(img, picture, video) {
+      grid-area: 1 / 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      object-fit: cover;
+    }
+    & > :not(:first-child) {
+      z-index: 1;
+      opacity: 0;
+      /* strip k of n: the columns (k-1)/n .. k/n */
+      clip-path: inset(0 calc(100% - var(--_k) * 100% / var(--_n)) 0 calc((var(--_k) - 1) * 100% / var(--_n)));
+      /* the switch is instant: a crossfade would leave both images half
+         transparent for a moment and the first would shine through */
+    }
+    & > :not(:first-child):hover {
+      z-index: 0;
+      opacity: 1;
+      clip-path: none;
+    }
+    /* with image.js: no switching until every image is decoded (data-ready) -
+       the first one stays instead of a half-loaded frame */
+    &[data-init]:not([data-ready]) > :not(:first-child) { visibility: hidden; }
+    &[data-direction="vertical"] > :not(:first-child) {
+      clip-path: inset(calc((var(--_k) - 1) * 100% / var(--_n)) 0 calc(100% - var(--_k) * 100% / var(--_n)) 0);
+    }
+    &[data-direction="vertical"] > :not(:first-child):hover { clip-path: none; }
+    /* strip 1 needs a hit area too: moving back from image k must leave it */
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      inset: 0 calc(100% - 100% / var(--_n)) 0 0;
+    }
+    &[data-direction="vertical"]::before { inset: 0 0 calc(100% - 100% / var(--_n)) 0; }
+
+    /* k per image, n from the count, the shown one for the indicator */
+    & > :nth-child(2) { --_k: 2; }
+    & > :nth-child(3) { --_k: 3; }
+    & > :nth-child(4) { --_k: 4; }
+    & > :nth-child(5) { --_k: 5; }
+    & > :nth-child(6) { --_k: 6; }
+    & > :nth-child(7) { --_k: 7; }
+    & > :nth-child(8) { --_k: 8; }
+    & > :nth-child(9) { --_k: 9; }
+    & > :nth-child(10) { --_k: 10; }
+    &:has(> :nth-child(2)) { --_n: 2; }
+    &:has(> :nth-child(3)) { --_n: 3; }
+    &:has(> :nth-child(4)) { --_n: 4; }
+    &:has(> :nth-child(5)) { --_n: 5; }
+    &:has(> :nth-child(6)) { --_n: 6; }
+    &:has(> :nth-child(7)) { --_n: 7; }
+    &:has(> :nth-child(8)) { --_n: 8; }
+    &:has(> :nth-child(9)) { --_n: 9; }
+    &:has(> :nth-child(10)) { --_n: 10; }
+    &:has(> :nth-child(2):hover) { --_cur: 2; }
+    &:has(> :nth-child(3):hover) { --_cur: 3; }
+    &:has(> :nth-child(4):hover) { --_cur: 4; }
+    &:has(> :nth-child(5):hover) { --_cur: 5; }
+    &:has(> :nth-child(6):hover) { --_cur: 6; }
+    &:has(> :nth-child(7):hover) { --_cur: 7; }
+    &:has(> :nth-child(8):hover) { --_cur: 8; }
+    &:has(> :nth-child(9):hover) { --_cur: 9; }
+    &:has(> :nth-child(10):hover) { --_cur: 10; }
+
+    /* position bar: n segments, the shown one bright */
+    &[data-indicator]::after {
+      content: '';
+      position: absolute;
+      z-index: 2;
+      inset: auto 0.75rem 0.625rem;
+      height: 3px;
+      pointer-events: none;
+      --_seg: calc((100% + 4px) / var(--_n));
+      /* stops along the full width: the shown segment bright, all segments dim */
+      background:
+        linear-gradient(90deg, transparent calc((var(--_cur) - 1) * var(--_seg)), oklch(1 0 0) 0 calc(var(--_cur) * var(--_seg) - 4px), transparent 0),
+        repeating-linear-gradient(90deg, oklch(1 0 0 / 0.45) 0 calc(var(--_seg) - 4px), transparent 0 var(--_seg));
+      border-radius: 9999px;
+      filter: drop-shadow(0 1px 1px oklch(0 0 0 / 0.35));
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+    &[data-indicator]:hover::after,
+    &[data-indicator="always"]::after { opacity: 1; }
+
+    /* zoom: the shown image eases in from a slight scale */
+    &[data-effect="zoom"] > :is(img, picture, video) { transition: scale 400ms ease; }
+    &[data-effect="zoom"]:hover > :first-child:not(:has(~ :hover)),
+    &[data-effect="zoom"] > :not(:first-child):hover { scale: 1.04; }
+  }
+  /* no hover (touch): a swipeable strip, one image per view */
+  @media (hover: none) {
+    .hover-gallery {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+
+      & > :is(img, picture, video),
+      & > :not(:first-child) {
+        flex: 0 0 100%;
+        opacity: 1;
+        clip-path: none;
+        scroll-snap-align: start;
+      }
+      &[data-indicator]::after { display: none; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hover-gallery > * { transition: none; }
+    .hover-gallery[data-effect="zoom"] > * { scale: none !important; }
+  }
+}
+
+/* ── components/statistic/statistic.css ── */
+@layer components {
+  .statistic {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .statistic-title {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    letter-spacing: 0.01em;
+  }
+
+  .statistic-value {
+    margin: 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    color: var(--foreground);
+  }
+
+  .statistic-description {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .statistic-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-weight: 500;
+
+    & svg {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    &[data-trend="up"] {
+      color: #16a34a;
+    }
+
+    &[data-trend="down"] {
+      color: #dc2626;
+    }
+  }
+}
+
+/* ── components/table/table.css ── */
+@layer components {
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    container-type: inline-size;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    caption-side: bottom;
+  }
+
+  .table-caption {
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+
+  .table-head {
+    padding: 0.75rem 1rem;
+    /* explicit: a th's UA default centers unless the table sets a non-initial alignment */
+    text-align: start;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    background-color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+
+    &:first-child {
+      border-top-left-radius: var(--radius-lg);
+    }
+
+    &:last-child {
+      border-top-right-radius: var(--radius-lg);
+    }
+  }
+
+  .table-row {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 150ms ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    tbody &:hover {
+      background-color: var(--muted);
+    }
+  }
+
+  .table-cell {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    color: var(--foreground);
+
+    /* a row header (<th scope="row">) reads like a cell: start-aligned,
+       not the UA's centered th */
+    &:is(th) { text-align: start; font-weight: 500; }
+  }
+
+  tfoot .table-row {
+    background-color: var(--muted);
+    border-top: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  tfoot .table-cell:first-child {
+    border-bottom-left-radius: var(--radius-lg);
+  }
+
+  tfoot .table-cell:last-child {
+    border-bottom-right-radius: var(--radius-lg);
+  }
+
+  /* -- Density ----------------------------------------------------
+     data-density on the .table root scales cell/head/caption padding.
+     Scale matches sizing.css (0.75 / 1 / 1.25): comfortable == the unsized
+     default (0.75rem 1rem), compact 0.375rem 0.625rem, spacious 1rem 1.25rem.
+     :where() gives these (0,2,0) - an explicit density always beats the
+     automatic narrow-container compaction below. */
+  .table:where([data-density="compact"]) {
+    & .table-head, & .table-cell { padding: 0.375rem 0.625rem; }
+    & .table-caption { padding: 0.5rem 0.625rem; }
+  }
+  .table:where([data-density="comfortable"]) {
+    & .table-head, & .table-cell { padding: 0.75rem 1rem; }
+    & .table-caption { padding: 0.75rem 1rem; }
+  }
+  .table:where([data-density="spacious"]) {
+    & .table-head, & .table-cell { padding: 1rem 1.25rem; }
+    & .table-caption { padding: 1rem 1.25rem; }
+  }
+
+
+  /* -- Alignment: data-align on a th / td (start / center / end);
+     data-numeric: end-aligned tabular figures (amounts, counts) ---------- */
+  :is(.table-head, .table-cell) {
+    &[data-align="start"] { text-align: start; }
+    &[data-align="center"] { text-align: center; }
+    &[data-align="end"] { text-align: end; }
+    &[data-numeric] { text-align: end; font-variant-numeric: tabular-nums; }
+    &[data-valign="top"] { vertical-align: top; }
+    &[data-nowrap] { white-space: nowrap; }
+  }
+  .table { text-align: start; }
+
+  /* -- Sorting: a .table-sort button in the header; aria-sort on the th
+     (ascending / descending) draws the arrow, table.js sorts the rows ---- */
+  .table-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: -0.25rem -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover { color: var(--foreground); background-color: color-mix(in oklch, var(--foreground) 6%, transparent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    /* the arrow: both halves muted while unsorted, one strong when sorted */
+    &::after {
+      content: '';
+      width: 0.5rem;
+      height: 0.75rem;
+      flex-shrink: 0;
+      background:
+        conic-gradient(from 150deg at 50% 0, currentColor 60deg, transparent 0) top / 100% 40% no-repeat,
+        conic-gradient(from -30deg at 50% 100%, currentColor 60deg, transparent 0) bottom / 100% 40% no-repeat;
+      opacity: 0.35;
+    }
+    [data-align="end"] > &, [data-numeric] > & { flex-direction: row-reverse; }
+  }
+  .table-head[aria-sort="ascending"] .table-sort::after {
+    opacity: 1;
+    background: conic-gradient(from 150deg at 50% 0, currentColor 60deg, transparent 0) center / 100% 50% no-repeat;
+  }
+  .table-head[aria-sort="descending"] .table-sort::after {
+    opacity: 1;
+    background: conic-gradient(from -30deg at 50% 100%, currentColor 60deg, transparent 0) center / 100% 50% no-repeat;
+  }
+  .table-head[aria-sort]:not([aria-sort="none"]) { color: var(--foreground); }
+
+  /* -- Selection: a leading .table-select cell with a checkbox (the header
+     one selects all); a selected row is tinted -------------------------- */
+  .table-select {
+    width: 1%;
+    padding-inline-end: 0 !important;
+
+    & .checkbox { vertical-align: middle; }
+  }
+  .table-row[aria-selected="true"] {
+    background-color: color-mix(in oklch, var(--primary) 7%, transparent);
+
+    tbody &:hover { background-color: color-mix(in oklch, var(--primary) 11%, transparent); }
+  }
+
+  /* -- Reordering: a .table-handle cell with a grip button; the row being
+     dragged fades, a line shows where it lands -------------------------- */
+  .table-handle {
+    width: 1%;
+    padding-inline-end: 0 !important;
+    color: var(--muted-foreground);
+
+    & button {
+      display: inline-grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: none;
+      color: inherit;
+      cursor: grab;
+
+      &:hover { color: var(--foreground); background-color: var(--accent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      & svg { width: 1rem; height: 1rem; }
+    }
+  }
+  .table-row[data-dragging] { opacity: 0.4; }
+  .table-row[data-drop="before"] { box-shadow: inset 0 2px 0 var(--primary); }
+  .table-row[data-drop="after"] { box-shadow: inset 0 -2px 0 var(--primary); }
+
+  /* -- Locked columns + sticky header --------------------------------------
+     data-lock-start="1|2|3" on the .table keeps the first columns in view
+     while the .table-container scrolls sideways (table.js measures their
+     offsets into --table-lock-1 / -2); data-lock-end="1" the last column.
+     data-sticky-header keeps the header row while the container scrolls
+     vertically (give the container a max-height). */
+  .table[data-lock-start] :is(.table-head, .table-cell),
+  .table[data-lock-end] :is(.table-head, .table-cell) { background-clip: padding-box; }
+  .table[data-lock-start] :is(tr > :nth-child(1)),
+  .table:is([data-lock-start="2"], [data-lock-start="3"]) :is(tr > :nth-child(2)),
+  .table[data-lock-start="3"] :is(tr > :nth-child(3)),
+  .table[data-lock-end] :is(tr > :last-child) {
+    position: sticky;
+    z-index: 1;
+    background-color: var(--_lock-bg, var(--background));
+  }
+  .table[data-lock-start] tr > :nth-child(1) { inset-inline-start: 0; }
+  .table:is([data-lock-start="2"], [data-lock-start="3"]) tr > :nth-child(2) { inset-inline-start: var(--table-lock-1, 0px); }
+  .table[data-lock-start="3"] tr > :nth-child(3) { inset-inline-start: calc(var(--table-lock-1, 0px) + var(--table-lock-2, 0px)); }
+  .table[data-lock-end] tr > :last-child { inset-inline-end: 0; }
+  .table thead .table-head { --_lock-bg: var(--muted); }
+  .table tfoot .table-cell { --_lock-bg: var(--muted); }
+  /* the edge of the locked block casts a hairline */
+  .table[data-lock-start="1"] tr > :nth-child(1),
+  .table[data-lock-start="2"] tr > :nth-child(2),
+  .table[data-lock-start="3"] tr > :nth-child(3) { box-shadow: inset -1px 0 0 var(--border); }
+  .table[data-lock-end] tr > :last-child { box-shadow: inset 1px 0 0 var(--border); }
+  .table-row:hover > :is(.table-cell) { --_lock-bg: color-mix(in oklch, var(--muted) 100%, var(--background)); }
+  .table-row[aria-selected="true"] > .table-cell { --_lock-bg: color-mix(in oklch, var(--primary) 7%, var(--background)); }
+
+  .table[data-sticky-header] thead .table-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .table-container:has(> .table[data-sticky-header]) { overflow: auto; }
+
+  /* -- Actions: a .table-actions cell of buttons, end-aligned - always
+     visible. data-actions="quiet" on the table dims them until the row is
+     hovered or focused (touch screens: full strength). On a narrow table
+     (container < 40rem) the inline buttons (.table-actions-inline) give way
+     to one "more" button (.table-actions-menu) opening a native popover
+     menu (.table-menu) - one menu in the row, no JavaScript. Touch screens
+     get 44px targets. */
+  .table-actions {
+    width: 1%;
+    white-space: nowrap;
+    text-align: end;
+
+    & > * + *,
+    & .table-actions-inline > * + * { margin-inline-start: 0.25rem; }
+  }
+  .table-actions-inline { display: inline-flex; align-items: center; }
+  .table-actions-menu { display: none; }
+  .table[data-actions="quiet"] :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) {
+    opacity: 0.45;
+    transition: opacity 150ms ease;
+  }
+  .table[data-actions="quiet"] .table-row:is(:hover, :focus-within) :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) { opacity: 1; }
+  @media (hover: none) {
+    .table[data-actions="quiet"] :is(.table-actions > .btn, .table-actions-inline, .table-actions-menu > .btn) { opacity: 1; }
+  }
+  @media (pointer: coarse) {
+    .table-actions .btn[data-size^="icon"] { min-width: 2.75rem; min-height: 2.75rem; }
+  }
+  @container (max-width: 40rem) {
+    .table-actions:has(.table-actions-menu) .table-actions-inline { display: none; }
+    .table-actions-menu { display: inline-flex; }
+  }
+
+  /* the row menu: a popover anchored to its own "more" button */
+  .table-row { anchor-scope: --table-row-menu; }
+  .table-actions-menu > .btn { anchor-name: --table-row-menu; }
+  .table-menu[popover] {
+    position: fixed;
+    position-anchor: --table-row-menu;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    position-try-fallbacks: flip-block;
+    margin: 0.25rem 0 0;
+    min-width: 10rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-lg);
+    text-align: start;
+
+    &:popover-open { display: grid; gap: 0.125rem; }
+  }
+  .table-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.625rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover, &:focus-visible { background-color: var(--accent); color: var(--accent-foreground); outline: none; }
+    &[data-tone="destructive"] { color: var(--destructive); }
+    & svg { width: 1rem; height: 1rem; }
+  }
+  @media (pointer: coarse) {
+    .table-menu-item { min-height: 2.75rem; }
+  }
+
+
+  /* -- Empty state: one .table-empty cell spanning the columns ----------- */
+  .table-empty {
+    padding: 2.5rem 1rem !important;
+    text-align: center;
+    color: var(--muted-foreground);
+
+    & > * { display: block; margin-inline: auto; }
+    & > * + * { margin-top: 0.375rem; }
+    & > strong { color: var(--foreground); font-weight: 600; }
+    & > .btn { display: inline-flex; margin-top: 1rem; }
+  }
+  .table-empty-icon {
+    display: grid !important;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+
+    & svg { width: 1.25rem; height: 1.25rem; }
+  }
+  tbody .table-row:has(> .table-empty):hover { background-color: transparent; }
+  /* a dropdown button straight in the actions cell anchors its .table-menu too */
+  .table-actions > .btn[popovertarget] { anchor-name: --table-row-menu; }
+
+  /* -- Text in cells ------------------------------------------------------- */
+  /* a plain link in a cell (a name, an id) speaks the tokens, not the UA's
+     blue: the text colour, a soft underline that firms up on hover, the
+     ring on keyboard focus. Classed links (.btn, a badge) keep their own. */
+  .table-cell a:not([class]) {
+    color: var(--foreground);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, currentColor 30%, transparent);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms ease;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
+  .table-sub {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  .table-truncate {
+    display: block;
+    max-width: var(--table-truncate, 14rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .table-clamp {
+    display: -webkit-box;
+    max-width: var(--table-clamp, 20rem);
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  .table-mono {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+  .table-muted { color: var(--muted-foreground); }
+
+  /* -- Container query: compact table in narrow containers -- */
+  @container (max-width: 480px) {
+    .table-head,
+    .table-cell { padding: 0.5rem 0.75rem; font-size: 0.8125rem; }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .table,
+    .table *,
+    .table::before,
+    .table::after,
+    .table *::before,
+    .table *::after,
+    .table::backdrop,
+    .table-caption,
+    .table-caption *,
+    .table-caption::before,
+    .table-caption::after,
+    .table-caption *::before,
+    .table-caption *::after,
+    .table-caption::backdrop,
+    .table-cell,
+    .table-cell *,
+    .table-cell::before,
+    .table-cell::after,
+    .table-cell *::before,
+    .table-cell *::after,
+    .table-cell::backdrop,
+    .table-container,
+    .table-container *,
+    .table-container::before,
+    .table-container::after,
+    .table-container *::before,
+    .table-container *::after,
+    .table-container::backdrop,
+    .table-head,
+    .table-head *,
+    .table-head::before,
+    .table-head::after,
+    .table-head *::before,
+    .table-head *::after,
+    .table-head::backdrop,
+    .table-row,
+    .table-row *,
+    .table-row::before,
+    .table-row::after,
+    .table-row *::before,
+    .table-row *::after,
+    .table-row::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/collapsible/collapsible.css ── */
+@layer components {
+  .collapsible {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: var(--foreground);
+
+    /* Two gotchas, both required for the panel to glide:
+       1. `::details-content` must attach to the compound (`&::details-content`,
+          NOT `& ::details-content` - the descendant form never matches, the
+          pseudo's originating element is the subject itself).
+       2. `block-size: auto` is a keyword - without interpolate-size the
+          0→auto pair is non-interpolable and the transition silently snaps. */
+    &::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      interpolate-size: allow-keywords;
+      transition: block-size 200ms ease, content-visibility 200ms allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @starting-style {
+    .collapsible[open]::details-content {
+      block-size: 0;
+    }
+  }
+
+  /* -- Density --------------------------------------------------
+     data-density on the .collapsible root scales the padding between text
+     and the outer border (trigger + content), ratio 0.75 / 1 / 1.25;
+     comfortable matches the unsized default. */
+  .collapsible:where([data-density="compact"]) {
+    & .collapsible-trigger { padding: 0.5rem 0.75rem; }
+    & .collapsible-content  { padding: 0 0.75rem 0.5rem; }
+  }
+  .collapsible:where([data-density="comfortable"]) {
+    & .collapsible-trigger { padding: 0.75rem 1rem; }
+    & .collapsible-content  { padding: 0 1rem 0.75rem; }
+  }
+  .collapsible:where([data-density="spacious"]) {
+    & .collapsible-trigger { padding: 1rem 1.25rem; }
+    & .collapsible-content  { padding: 0 1.25rem 1rem; }
+  }
+
+  .collapsible-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: inherit;
+    list-style: none;
+
+    /* a tint of the text color - reads on any surface, custom colors included */
+    &:hover {
+      background-color: color-mix(in oklch, currentColor 7%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .collapsible-chevron {
+    width: 1rem;
+    height: 1rem;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 60%, transparent);
+    transition: transform 200ms ease;
+    flex-shrink: 0;
+
+    details[open] > summary > & {
+      transform: rotate(180deg);
+    }
+  }
+
+  .collapsible-content {
+    padding: 0 1rem 0.75rem;
+    font-size: 0.875rem;
+    color: color-mix(in oklch, currentColor 72%, transparent);
+    line-height: 1.6;
+  }
+
+  /* -- Leading icon / emoji ----------------------------------------
+     .collapsible-icon in front of the heading: an svg or an emoji in a
+     fixed 1.1em box, so headings line up whatever the glyph. */
+  .collapsible-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+    font-style: normal;
+    line-height: 1;
+
+    & svg { width: 1em; height: 1em; }
+  }
+
+  /* -- Sizes: the heading's scale and weight (md == default) ------- */
+  .collapsible {
+    &[data-size="sm"] .collapsible-trigger { font-size: 0.8125rem; }
+    &[data-size="md"] .collapsible-trigger { font-size: 0.875rem; }
+    &[data-size="lg"] .collapsible-trigger { font-size: 1rem; font-weight: 600; }
+    &[data-size="xl"] .collapsible-trigger { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    /* -- Variants: the surface (content follows its text color) ---- */
+    &[data-variant="ghost"] { border-color: transparent; }
+    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: transparent;
+    }
+    &[data-variant="neutral"] {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+    }
+    /* highlight: plain while closed, the primary surface once open */
+    &[data-variant="highlight"] {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+
+      &[open] {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        border-color: transparent;
+      }
+    }
+  }
+
+  /* -- Markers: a CSS-drawn open/close sign at the end of the heading -
+     data-marker="arrow" (a chevron that turns up) or "plus" (+ that
+     becomes -); data-marker-position="start" puts it before the text.
+     For your own glyph use .collapsible-chevron (turns 180°, or 90° with
+     data-turn="quarter") or swap two elements with .collapsible-when-open /
+     .collapsible-when-closed. */
+  .collapsible:is([data-marker="arrow"], [data-marker="plus"]) > .collapsible-trigger::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 65%, transparent);
+    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+  }
+  .collapsible[data-marker="arrow"] > .collapsible-trigger::after {
+    width: 0.45em;
+    height: 0.45em;
+    margin-inline-end: 0.2em;
+    /* physical: a down/up arrow is the same in RTL */
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+  .collapsible[data-marker="arrow"][open] > .collapsible-trigger::after {
+    rotate: -135deg;
+    translate: 0 0.1em;
+  }
+  .collapsible[data-marker="plus"] > .collapsible-trigger::after {
+    width: 0.8em;
+    height: 0.8em;
+    background:
+      linear-gradient(currentColor 0 0) center / 100% 2px no-repeat,
+      linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
+  }
+  .collapsible[data-marker="plus"][open] > .collapsible-trigger::after {
+    background-size: 100% 2px, 2px 0;
+    rotate: 180deg;
+  }
+  .collapsible[data-marker-position="start"] > .collapsible-trigger::after {
+    order: -1;
+    margin-inline-start: 0;
+    margin-inline-end: 0.25em;
+  }
+
+  .collapsible-chevron[data-turn="quarter"] {
+    details[open] > summary > & { transform: rotate(90deg); }
+    /* RTL: a quarter-turned chevron-right points the other way */
+    &:dir(rtl) { scale: -1 1; }
+    details[open] > summary > &:dir(rtl) { transform: rotate(-90deg); }
+  }
+
+  /* swap two glyphs (📁 / 📂, "Show" / "Hide") instead of turning one */
+  .collapsible:not([open]) > .collapsible-trigger .collapsible-when-open,
+  .collapsible[open] > .collapsible-trigger .collapsible-when-closed {
+    display: none;
+  }
+  .collapsible-trigger > :is(.collapsible-when-open, .collapsible-when-closed) {
+    margin-inline-start: auto;
+  }
+
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .collapsible,
+    .collapsible *,
+    .collapsible::before,
+    .collapsible::after,
+    .collapsible *::before,
+    .collapsible *::after,
+    .collapsible::backdrop,
+    .collapsible::details-content,
+    .collapsible-chevron,
+    .collapsible-chevron *,
+    .collapsible-chevron::before,
+    .collapsible-chevron::after,
+    .collapsible-chevron *::before,
+    .collapsible-chevron *::after,
+    .collapsible-chevron::backdrop,
+    .collapsible-content,
+    .collapsible-content *,
+    .collapsible-content::before,
+    .collapsible-content::after,
+    .collapsible-content *::before,
+    .collapsible-content *::after,
+    .collapsible-content::backdrop,
+    .collapsible-trigger,
+    .collapsible-trigger *,
+    .collapsible-trigger::before,
+    .collapsible-trigger::after,
+    .collapsible-trigger *::before,
+    .collapsible-trigger *::after,
+    .collapsible-trigger::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/timeline/timeline.css ── */
+@layer components {
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    position: relative;
+
+    /* Connector line */
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0.3125rem;
+      top: 1rem;
+      bottom: 0;
+      width: 1px;
+      background-color: var(--border);
+    }
+
+    &:last-child::before {
+      display: none;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+
+  .timeline-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+    background-color: var(--border);
+    flex-shrink: 0;
+    margin-top: 0.375rem;
+    position: relative;
+    z-index: 1;
+
+    &[data-variant="active"] {
+      background-color: var(--primary);
+    }
+    &[data-variant="destructive"] {
+      background-color: var(--destructive);
+    }
+    /* a hollow ring: planned / upcoming */
+    &[data-variant="outline"] {
+      background-color: var(--background);
+      box-shadow: inset 0 0 0 2px var(--primary);
+    }
+
+    /* an icon inside the dot (svg / img / lucide <i data-lucide>) turns it
+       into a 1.5rem badge; the connector re-centers on it (below) */
+    &:has(> :is(svg, img)) {
+      display: grid;
+      place-items: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-top: -0.125rem;
+      background-color: var(--muted);
+      color: var(--foreground);
+
+      & > :is(svg, img) { width: 0.875rem; height: 0.875rem; }
+      &[data-variant="active"] { background-color: var(--primary); color: var(--primary-foreground); }
+      &[data-variant="destructive"] { background-color: var(--destructive); color: var(--destructive-foreground); }
+      &[data-variant="outline"] { background-color: var(--background); color: var(--foreground); box-shadow: inset 0 0 0 1px var(--border); }
+    }
+  }
+
+  /* vertical connector under an icon dot: centered on the 1.5rem badge */
+  .timeline-item:has(> .timeline-dot > :is(svg, img))::before {
+    left: calc(0.75rem - 0.5px);
+    top: 1.75rem;
+    bottom: 0.5rem;
+  }
+
+  .timeline-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .timeline-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+    line-height: 1.4;
+  }
+
+  .timeline-description {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+  }
+
+  .timeline-time {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-top: 0.125rem;
+  }
+  /* -- Density ----------------------------------------------------
+     data-density on the .timeline root scales the item rhythm (connector
+     gap + trailing space). comfortable == the unsized default. The
+     padding-bottom rule is gated :not(:last-child) so the base
+     `:last-child { padding-bottom: 0 }` (same specificity, earlier source)
+     keeps winning for the final item. */
+  .timeline:where([data-density="compact"]) {
+    & .timeline-item { gap: 0.75rem; }
+    & .timeline-item:not(:last-child) { padding-bottom: 1.125rem; }
+  }
+  .timeline:where([data-density="comfortable"]) {
+    & .timeline-item { gap: 1rem; }
+    & .timeline-item:not(:last-child) { padding-bottom: 1.5rem; }
+  }
+  .timeline:where([data-density="spacious"]) {
+    & .timeline-item { gap: 1.25rem; }
+    & .timeline-item:not(:last-child) { padding-bottom: 1.875rem; }
+  }
+
+  /* -- Horizontal ---------------------------------------------------
+     data-orientation="horizontal": one equal column per item (at least
+     10rem - more items scroll sideways, snapping to each), the dot on top,
+     the content below. The rows are a SUBGRID across all items, so every
+     dot sits on one line even when contents differ in height. The
+     connector is the item's ::before as a GRID ITEM in the dot's row: it
+     starts 0.375rem after the dot and runs through the item's trailing
+     padding to 0.375rem before the next dot. data-align="center" centers
+     dot and text in the column; data-alternate puts every second item's
+     content ABOVE the line. The item gap (density-scaled) spaces dot and
+     content. Declared after the density rules, which it overrides where
+     they meet (padding). */
+  .timeline[data-orientation="horizontal"] {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(10rem, 1fr);
+    grid-template-rows: auto auto;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+
+    & > .timeline-item {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 0;
+      padding: 0;
+      padding-inline-end: 1.5rem;
+      scroll-snap-align: start;
+
+      & > .timeline-dot { grid-row: 1; grid-column: 1; margin: 0; justify-self: start; align-self: center; }
+      & > .timeline-content { grid-row: 2; grid-column: 1; }
+
+      &::before {
+        position: static;
+        grid-row: 1;
+        grid-column: 1;
+        align-self: center;
+        width: auto;
+        height: 1px;
+        margin-inline: 1rem -1.125rem;
+      }
+      &:has(> .timeline-dot > :is(svg, img))::before { margin-inline: 1.875rem -1.125rem; }
+      &:last-child { padding-inline-end: 0; }
+    }
+
+    &[data-align="center"] > .timeline-item {
+      text-align: center;
+
+      & > .timeline-dot { justify-self: center; }
+      & > .timeline-content { align-items: center; }
+      /* percentages resolve against the column: from just past this dot's
+         center to just before the next one's */
+      &::before { margin-inline: calc(50% + 0.6875rem) calc(-50% - 0.8125rem); }
+      &:has(> .timeline-dot > :is(svg, img))::before { margin-inline: calc(50% + 1.125rem) calc(-50% - 0.375rem); }
+    }
+
+    &[data-alternate] {
+      grid-template-rows: auto auto auto;
+
+      & > .timeline-item {
+        grid-row: span 3;
+
+        & > .timeline-dot, &::before { grid-row: 2; }
+        & > .timeline-content { grid-row: 3; }
+        &:nth-child(even) > .timeline-content { grid-row: 1; align-self: end; }
+      }
+    }
+  }
+
+
+  /* -- Accessibility ------------------------------------------
+     forced colors drop background colors: keep the dots and the
+     connector visible in system colors */
+  @media (forced-colors: active) {
+    .timeline-dot { forced-color-adjust: none; background-color: CanvasText; color: Canvas; }
+    .timeline-dot[data-variant="active"] { background-color: Highlight; color: HighlightText; }
+    .timeline-dot[data-variant="outline"] { background-color: Canvas; box-shadow: inset 0 0 0 2px CanvasText; color: CanvasText; }
+    .timeline-item::before { forced-color-adjust: none; background-color: CanvasText; }
+  }
+}
+
+/* ── components/tree-view/tree-view.css ── */
+@layer components {
+  .tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.875rem;
+  }
+
+  .tree-group {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+  }
+
+  .tree-item {
+    padding: 0;
+  }
+
+  .tree-branch {
+    border: none;
+
+    /* Two gotchas, both required for the branch to glide:
+       1. `::details-content` must attach to the compound (`&::details-content`,
+          NOT `& ::details-content` - the descendant form never matches, the
+          pseudo's originating element is the subject itself).
+       2. `block-size: auto` is a keyword - without interpolate-size the
+          0→auto pair is non-interpolable and the transition silently snaps. */
+    &::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      interpolate-size: allow-keywords;
+      transition: block-size 200ms ease, content-visibility 200ms allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @starting-style {
+    .tree-branch[open]::details-content {
+      block-size: 0;
+    }
+  }
+
+  .tree-branch-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--foreground);
+    list-style: none;
+
+    &:hover {
+      background-color: var(--accent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+    }
+
+    & svg:first-child {
+      width: 0.875rem;
+      height: 0.875rem;
+      color: var(--muted-foreground);
+      transition: transform 200ms ease;
+    }
+  }
+
+  details[open] > .tree-branch-trigger > svg:first-child {
+    transform: rotate(90deg);
+  }
+
+  .tree-leaf {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    padding-left: calc(0.5rem + 0.875rem + 0.375rem);
+    border-radius: var(--radius-md);
+    color: var(--foreground);
+    cursor: default;
+
+    &:hover {
+      background-color: var(--accent);
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      color: var(--muted-foreground);
+    }
+  }
+  /* -- Checkboxes (data-checkable) ---------------------------------
+     A .tree-check (the checkbox component) sits after the icons, before
+     the label; tree-view.js cascades and rolls it up (indeterminate). */
+  .tree-check {
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .tree[data-checkable] .tree-leaf:has(.tree-check) { cursor: pointer; }
+
+  /* -- Drag & drop (data-sortable) ----------------------------------
+     A dragged item fades; the row under the pointer shows where it lands:
+     a line above / below (before / after) or a tinted frame (into a
+     folder). */
+  .tree[data-sortable] :is(.tree-branch-trigger, .tree-leaf)[draggable="true"] { cursor: grab; }
+  .tree[data-sortable] :is(.tree-branch-trigger, .tree-leaf):active { cursor: grabbing; }
+  .tree [data-dragging] > :is(.tree-leaf, details > .tree-branch-trigger) { opacity: 0.4; }
+  :is(.tree-branch-trigger, .tree-leaf) {
+    &[data-drop="before"] { box-shadow: inset 0 2px 0 var(--primary); }
+    &[data-drop="after"] { box-shadow: inset 0 -2px 0 var(--primary); }
+    &[data-drop="inside"] {
+      background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
+  }
+  /* -- Labels -----------------------------------------------------
+     The label is the trigger's / leaf's last <span>. Deep nesting eats the
+     inline space (1.25rem indent per level), so a long label truncates with
+     an ellipsis instead of overflowing the tree - put the full text in
+     title="…" when it matters. Leaves may be links (<a class="tree-leaf">,
+     navigation trees): no underline, pointer cursor. */
+  :is(.tree-branch-trigger, .tree-leaf) > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a.tree-leaf {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* -- Selection (opt-in: data-selectable on .tree) ---------------
+     aria-selected on the treeitem is the state (tree-view.js writes it on
+     click / Enter / Space; authored markup may preset it). The selected row
+     gets a primary-tinted surface and medium weight - distinct from the
+     neutral accent hover surface, in every theme. The row is the item's
+     leaf OR its branch's <summary> (a grandchild: <li> > <details> > <summary>). */
+  :is(.tree-item[aria-selected="true"] > .tree-leaf,
+    .tree-item[aria-selected="true"] > .tree-branch > .tree-branch-trigger) {
+    background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  .tree[data-selectable] :is(.tree-leaf, .tree-branch-trigger) {
+    cursor: pointer;
+  }
+
+  /* -- Disabled: aria-disabled="true" on the treeitem --------------
+     Still focusable (APG: disabled items stay in the keyboard path) but not
+     operable - tree-view.js refuses to open or select it. The dimming covers
+     the row only; an open disabled branch's children keep their own state. */
+  :is(.tree-item[aria-disabled="true"] > .tree-leaf,
+    .tree-item[aria-disabled="true"] > .tree-branch > .tree-branch-trigger) {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  /* -- Empty branch -----------------------------------------------
+     A folder with no children shows a muted placeholder row instead of
+     opening onto nothing. Text: data-empty on the .tree-group ("Empty" by
+     default). :has() rather than :empty - authored whitespace would defeat
+     :empty. Generated content: screen readers announce the group's size. ::after, because
+     the guides variant already draws its line with ::before. */
+  .tree-group:not(:has(> .tree-item))::after {
+    content: 'Empty';
+    display: block;
+    padding: 0.25rem 0.5rem;
+    padding-left: calc(0.5rem + 0.875rem + 0.375rem);
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+
+  .tree-group[data-empty]:not(:has(> .tree-item))::after {
+    content: attr(data-empty);
+  }
+
+  /* -- Variant: guides --------------------------------------------
+     data-variant="guides" on the .tree root draws one vertical guideline
+     per nested .tree-group, so the depth of nesting reads at a glance. The
+     line sits under the parent branch's chevron centre (trigger padding
+     0.5rem + half the 0.875rem chevron) and spans the whole group; it is a
+     border, not a background, so forced-colors keeps it visible. The line
+     of the innermost group that holds focus darkens - the keyboard user
+     sees which level they are on. */
+  .tree[data-variant="guides"] .tree-group {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(0.5rem + 0.4375rem - 0.5px);
+      border-inline-start: 1px solid var(--border);
+      pointer-events: none;
+    }
+
+    &:focus-within:not(:has(.tree-group:focus-within))::before {
+      border-inline-start-color: var(--muted-foreground);
+    }
+  }
+
+  /* -- Density ----------------------------------------------------
+     data-density on the .tree root scales the row padding-block. Indent
+     (padding-left) is structural - untouched. comfortable == the default. */
+  .tree:where([data-density="compact"]) {
+    & .tree-branch-trigger, & .tree-leaf { padding-block: 0.125rem; }
+  }
+  .tree:where([data-density="comfortable"]) {
+    & .tree-branch-trigger, & .tree-leaf { padding-block: 0.25rem; }
+  }
+  .tree:where([data-density="spacious"]) {
+    & .tree-branch-trigger, & .tree-leaf { padding-block: 0.375rem; }
+  }
+
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .tree,
+    .tree *,
+    .tree::before,
+    .tree::after,
+    .tree *::before,
+    .tree *::after,
+    .tree::backdrop,
+    .tree-branch,
+    .tree-branch *,
+    .tree-branch::before,
+    .tree-branch::after,
+    .tree-branch *::before,
+    .tree-branch *::after,
+    .tree-branch::backdrop,
+    .tree-branch::details-content,
+    .tree-branch-trigger,
+    .tree-branch-trigger *,
+    .tree-branch-trigger::before,
+    .tree-branch-trigger::after,
+    .tree-branch-trigger *::before,
+    .tree-branch-trigger *::after,
+    .tree-branch-trigger::backdrop,
+    .tree-group,
+    .tree-group *,
+    .tree-group::before,
+    .tree-group::after,
+    .tree-group *::before,
+    .tree-group *::after,
+    .tree-group::backdrop,
+    .tree-item,
+    .tree-item *,
+    .tree-item::before,
+    .tree-item::after,
+    .tree-item *::before,
+    .tree-item *::after,
+    .tree-item::backdrop,
+    .tree-leaf,
+    .tree-leaf *,
+    .tree-leaf::before,
+    .tree-leaf::after,
+    .tree-leaf *::before,
+    .tree-leaf *::after,
+    .tree-leaf::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast) drop the tinted surface - the
+   selected row must still read as selected: system
+   Highlight pair, the same signal native listboxes use. */
+@media (forced-colors: active) {
+  @layer components {
+    :is(.tree-item[aria-selected="true"] > .tree-leaf,
+      .tree-item[aria-selected="true"] > .tree-branch > .tree-branch-trigger) {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+}
+
+/* ── components/calendar/calendar.css ── */
+@layer components {
+  .calendar {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+    user-select: none;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.25rem 0.5rem;
+  }
+
+  .calendar-heading {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+
+  /* The heading as a button (the JS upgrades a plain heading): the month +
+     year are the obvious thing to click - it opens the month grid, and in
+     the month grid the year opens the year grid. The chevron says "menu". */
+  button.calendar-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &::after {
+      content: '';
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-top: -0.1875rem;
+      border: solid currentColor;
+      border-width: 0 1.5px 1.5px 0;
+      rotate: 45deg;
+      transition: rotate 150ms ease;
+    }
+
+    &[aria-expanded="true"]::after { rotate: -135deg; margin-top: 0.1875rem; }
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* data-caption="dropdown": native month + year selects between the arrows
+     (the fastest way to a date decades away - type the year) */
+  .calendar-caption {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  .calendar-select {
+    padding: 0.25rem 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  }
+
+  /* -- Month / year picker (data-view="months" | "years") -------
+     Swaps in for the day grid at the same size: 12 months or 12 years in a
+     4-column grid. The current one is filled, this month / year is tinted. */
+  .calendar-picker { display: none; }
+
+  .calendar[data-view] {
+    & .calendar-grid { display: none; }
+
+    & .calendar-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-content: center;
+      gap: 0.375rem;
+      box-sizing: border-box;
+      padding: 0.25rem;
+    }
+  }
+
+  .calendar-pick {
+    height: 2.25rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &[data-today] { background-color: var(--accent); font-weight: 600; }
+
+    &[aria-current="true"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    /* legible but inert (outside min / max), like every disabled control */
+    &:disabled {
+      background-color: transparent;
+      color: var(--muted-foreground);
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+  }
+
+  .calendar-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background-color 150ms ease;
+
+    &:hover {
+      background-color: var(--accent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+
+  .calendar-grid {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  .calendar-day-label {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--muted-foreground);
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* -- Density --------------------------------------------------
+     data-density on the .calendar root scales the whitespace between the
+     frame and the grid plus the day hit-areas (0.75 / 1 / 1.25-ish scale of
+     the 2rem/2.25rem cells); comfortable matches the unsized default.
+     Typography stays put - a spacing policy, not a zoom. */
+  .calendar:where([data-density="compact"]) {
+    padding: 0.5rem;
+    & .calendar-day-label,
+    & .calendar-day { width: 1.75rem; height: 1.75rem; }
+    & .calendar-day button { width: 1.5rem; height: 1.5rem; }
+  }
+  .calendar:where([data-density="comfortable"]) {
+    padding: 0.75rem;
+  }
+  .calendar:where([data-density="spacious"]) {
+    padding: 1rem;
+    & .calendar-day-label,
+    & .calendar-day { width: 2.75rem; height: 2.75rem; }
+    & .calendar-day button { width: 2.5rem; height: 2.5rem; }
+  }
+
+  .calendar-day {
+    width: 2.25rem;
+    height: 2.25rem;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+
+    & button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      font-size: 0.8125rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background-color: transparent;
+      color: var(--foreground);
+      cursor: pointer;
+      transition: background-color 150ms ease, color 150ms ease;
+
+      &:hover {
+        background-color: var(--accent);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    &[data-today] button {
+      background-color: var(--accent);
+      font-weight: 600;
+    }
+
+    &[data-selected] button {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    &[data-outside] button {
+      color: var(--muted-foreground);
+      opacity: 0.5;
+    }
+
+    &[data-disabled] button {
+      color: var(--muted-foreground);
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  /* -- Day data: marks + notes -----------------------------------
+     data-mark="…" is the page's own classification of a day (a holiday, a
+     booked night, a scheduled event): a dot in the cell's corner plus, for
+     the built-in names, a look of its own. Any other name gets the neutral
+     dot - style it with .calendar-day[data-mark="name"]. A note is a second
+     line under the number (a price, a count); a calendar with notes gets
+     taller cells (data-notes, set by the JS). */
+  .calendar-day button { position: relative; }
+
+  .calendar-day[data-mark] button::after {
+    content: '';
+    position: absolute;
+    top: 0.1875rem;
+    inset-inline-end: 0.1875rem;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    border-radius: 50%;
+    background-color: var(--muted-foreground);
+  }
+
+  .calendar-day[data-mark="holiday"] button {
+    color: var(--destructive);
+    font-weight: 600;
+
+    &::after { background-color: var(--destructive); }
+  }
+
+  .calendar-day[data-mark="event"] button::after { background-color: var(--primary); }
+
+  .calendar-day[data-mark="booked"] button {
+    color: var(--muted-foreground);
+    text-decoration: line-through;
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in oklch, var(--muted-foreground) 18%, transparent) 4px 5px);
+
+    &::after { display: none; }
+  }
+
+  /* a marked day that is also blocked (booked, a blackout date) keeps its
+     look at full strength - the mark IS the information, the 0.35 fade of
+     a plain disabled day would erase it */
+  .calendar-day[data-mark][data-disabled]:not([data-outside]) button { opacity: 1; }
+
+  /* on a filled (selected / endpoint) day the marks follow its foreground */
+  .calendar-day:is([data-selected], [data-range-start], [data-range-end])[data-mark] button {
+    color: var(--primary-foreground);
+    &::after { background-color: currentColor; }
+  }
+
+  .calendar-day-note {
+    display: block;
+    font-size: 0.625rem;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+
+  .calendar-day:is([data-selected], [data-range-start], [data-range-end]) .calendar-day-note {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .calendar[data-notes] {
+    & .calendar-day-label { width: 2.75rem; }
+
+    & .calendar-day {
+      width: 2.75rem;
+      height: 3rem;
+
+      & button {
+        flex-direction: column;
+        gap: 0.1875rem;
+        width: 2.5rem;
+        height: 2.75rem;
+      }
+    }
+  }
+
+  /* -- Range mode ------------------------------------------------
+     A range picker is a .calendar[data-mode="range"] or a .calendar-range
+     wrapper around several calendars (consecutive months, one shared range).
+     Look: endpoints (data-range-start / -end) are filled with --primary,
+     the days between (data-in-range) form a continuous --accent band that
+     runs half into each endpoint cell (data-range-span). While only the start
+     is chosen, the hovered/focused day previews the span (data-range-preview:
+     lighter band, outlined end). Outside days are hidden - each month grid
+     shows only its own days, so the band never jumps between months. */
+  .calendar-range {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+
+    /* the months sit on the wrapper's card */
+    & > .calendar {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background-color: transparent;
+    }
+
+    /* one pair of arrows for the whole picker: back on the first month,
+       forward on the last (visibility keeps the headings centred) */
+    & > .calendar ~ .calendar [data-action="prev-month"],
+    & > .calendar:has(~ .calendar) [data-action="next-month"] {
+      visibility: hidden;
+    }
+  }
+
+  /* summary row under the months: the chosen range as one answer.
+     contain: inline-size - the row takes the months' width instead of
+     widening the picker to its own (a 100%-basis row would stretch the
+     inline-flex card across the page) */
+  .calendar-range-footer {
+    flex-basis: 100%;
+    contain: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--foreground);
+  }
+
+  :is(.calendar[data-mode="range"], .calendar-range .calendar) .calendar-day[data-outside] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .calendar-day {
+    &[data-in-range] {
+      background-color: var(--accent);
+
+      & button {
+        color: var(--accent-foreground);
+      }
+    }
+
+    &[data-range-start][data-range-span] {
+      background: linear-gradient(to right, transparent 50%, var(--accent) 50%);
+    }
+
+    &[data-range-end][data-range-span] {
+      background: linear-gradient(to left, transparent 50%, var(--accent) 50%);
+    }
+
+    &:is([data-range-start], [data-range-end]) button {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-weight: 500;
+    }
+
+    /* preview (start chosen, end not yet): lighter band, outlined end */
+    &[data-in-range][data-range-preview] {
+      background-color: color-mix(in oklch, var(--accent) 60%, transparent);
+    }
+
+    &[data-range-end][data-range-preview][data-range-span] {
+      background: linear-gradient(to left, transparent 50%, color-mix(in oklch, var(--accent) 60%, transparent) 50%);
+    }
+
+    &[data-range-end][data-range-preview] button {
+      background-color: var(--background);
+      color: var(--foreground);
+      box-shadow: inset 0 0 0 1.5px var(--primary);
+    }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .calendar,
+    .calendar *,
+    .calendar::before,
+    .calendar::after,
+    .calendar *::before,
+    .calendar *::after,
+    .calendar::backdrop,
+    .calendar-header,
+    .calendar-header *,
+    .calendar-header::before,
+    .calendar-header::after,
+    .calendar-header *::before,
+    .calendar-header *::after,
+    .calendar-header::backdrop,
+    .calendar-heading,
+    .calendar-heading *,
+    .calendar-heading::before,
+    .calendar-heading::after,
+    .calendar-heading *::before,
+    .calendar-heading *::after,
+    .calendar-heading::backdrop,
+    .calendar-nav,
+    .calendar-nav *,
+    .calendar-nav::before,
+    .calendar-nav::after,
+    .calendar-nav *::before,
+    .calendar-nav *::after,
+    .calendar-nav::backdrop,
+    .calendar-grid,
+    .calendar-grid *,
+    .calendar-grid::before,
+    .calendar-grid::after,
+    .calendar-grid *::before,
+    .calendar-grid *::after,
+    .calendar-grid::backdrop,
+    .calendar-day-label,
+    .calendar-day-label *,
+    .calendar-day-label::before,
+    .calendar-day-label::after,
+    .calendar-day-label *::before,
+    .calendar-day-label *::after,
+    .calendar-day-label::backdrop,
+    .calendar-day,
+    .calendar-day *,
+    .calendar-day::before,
+    .calendar-day::after,
+    .calendar-day *::before,
+    .calendar-day *::after,
+    .calendar-day::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast) drop the accent band and the primary
+   fills: selected days (the single selection, both endpoints and the days
+   between) take the system Highlight pair instead. */
+@media (forced-colors: active) {
+  @layer components {
+    .calendar-day[aria-selected="true"] button {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .calendar-pick[aria-current="true"] {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .calendar-day[data-mark] button::after {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    .calendar-pick:disabled,
+    .calendar-day[data-mark="booked"] button { color: GrayText; }
+  }
+}
+
+/* ── components/carousel/carousel.css ── */
+@layer components {
+  .carousel {
+    position: relative;
+    width: 100%;
+
+    /* ── Viewport ──────────────────────────────── */
+    & .carousel-viewport {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 1rem;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+
+      &::-webkit-scrollbar { display: none; }
+    }
+
+    /* ── Slide ─────────────────────────────────── */
+    & .carousel-slide {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      min-width: 0;
+    }
+
+    /* ── Prev / Next buttons ───────────────────── */
+    & .carousel-prev,
+    & .carousel-next {
+      position: absolute;
+      top: 50%;
+      translate: 0 -50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      background-color: var(--background);
+      color: var(--foreground);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: background-color 150ms ease, opacity 150ms ease;
+      font-size: 0.875rem;
+      z-index: 1;
+
+      &:hover { background-color: var(--accent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+      &:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+      & svg { width: 1rem; height: 1rem; }
+    }
+
+    & .carousel-prev { left: -1rem; }
+    & .carousel-next { right: -1rem; }
+
+    /* ── Dot indicators ────────────────────────── */
+    & .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      padding-block: 0.75rem;
+    }
+
+    & .carousel-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background-color: var(--border);
+      transition: background-color 150ms ease, scale 150ms ease;
+
+      &[aria-current="true"] {
+        background-color: var(--foreground);
+        scale: 1.25;
+      }
+
+      &:hover:not([aria-current="true"]) {
+        background-color: var(--muted-foreground);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* ── Counter text ──────────────────────────── */
+    & .carousel-counter {
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      padding-block-start: 0.5rem;
+    }
+
+    /* ── Vertical orientation ──────────────────── */
+    &[data-orientation="vertical"] {
+      & .carousel-viewport {
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+        overscroll-behavior-x: unset;
+        overscroll-behavior-y: contain;
+      }
+
+      & .carousel-prev,
+      & .carousel-next {
+        left: 50%;
+        right: auto;
+        translate: -50% 0;
+        top: auto;
+      }
+      & .carousel-prev { top: -1rem; bottom: auto; }
+      & .carousel-next { bottom: -1rem; top: auto; }
+
+      & .carousel-dots { flex-direction: column; }
+    }
+  }
+
+  /* ── Accessibility ─────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .carousel .carousel-viewport { scroll-behavior: auto; }
+    .carousel .carousel-prev,
+    .carousel .carousel-next { transition: none; }
+    .carousel .carousel-dot { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .carousel .carousel-prev,
+    .carousel .carousel-next {
+      border-width: 2px;
+    }
+    .carousel .carousel-dot {
+      border: 1px solid var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .carousel .carousel-prev,
+    .carousel .carousel-next {
+      border: 1px solid ButtonText;
+      background: ButtonFace;
+      color: ButtonText;
+    }
+    .carousel .carousel-dot {
+      background: ButtonText;
+      &[aria-current="true"] { background: Highlight; }
+    }
+  }
+}
+
+/* ── components/scroll-area/scroll-area.css ── */
+@layer components {
+  .scroll-area {
+    /* -- Density --------------------------------------------------
+       For a scroll area the whitespace policy IS the scrollbar gutter:
+       data-density scales the thumb thickness (4 / 6 / 8px); comfortable
+       matches the unsized default. */
+    --scrollbar-size: 6px;
+    overflow: auto;
+    position: relative;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+
+    /* Webkit custom scrollbar */
+    &::-webkit-scrollbar { width: var(--scrollbar-size); height: var(--scrollbar-size); }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--border);
+      border-radius: calc(var(--scrollbar-size) / 2);
+      &:hover { background-color: var(--muted-foreground); }
+    }
+
+    /* Standard scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+
+    &[data-density="compact"] { --scrollbar-size: 4px; }
+    &[data-density="comfortable"] { --scrollbar-size: 6px; }
+    &[data-density="spacious"] {
+      --scrollbar-size: 8px;
+      scrollbar-width: medium;
+    }
+  }
+}
+
+/* ── components/sortable/sortable.css ── */
+@layer components {
+  .sortable {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    /* Horizontal orientation */
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  .sortable-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--card);
+    font-size: 0.875rem;
+    color: var(--foreground);
+    cursor: grab;
+    transition: box-shadow 150ms ease, opacity 150ms ease, border-color 150ms ease;
+    user-select: none;
+
+    &:active { cursor: grabbing; }
+
+    /* Keyboard focus (roving tabindex) */
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* Active descendant highlight (keyboard navigation) */
+    &[data-active] {
+      border-color: var(--ring);
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    /* Drag in progress */
+    &[data-dragging] {
+      opacity: 0.5;
+      box-shadow: var(--shadow-md);
+      border-style: dashed;
+    }
+
+    /* Drop target indicator */
+    &[data-over="before"] {
+      border-top: 2px solid var(--primary);
+    }
+    &[data-over="after"] {
+      border-bottom: 2px solid var(--primary);
+    }
+
+    /* Horizontal drop indicators */
+    .sortable[data-orientation="horizontal"] &[data-over="before"] {
+      border-top: 1px solid var(--border);
+      border-inline-start: 2px solid var(--primary);
+    }
+    .sortable[data-orientation="horizontal"] &[data-over="after"] {
+      border-bottom: 1px solid var(--border);
+      border-inline-end: 2px solid var(--primary);
+    }
+
+    /* Disabled */
+    &[aria-disabled="true"] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  .sortable-handle {
+    color: var(--muted-foreground);
+    cursor: grab;
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+
+    &:active { cursor: grabbing; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  /* -- Move buttons: reorder by tap / click --------------------
+     Native drag-and-drop mostly never starts on touch screens, so a list
+     people must reorder by tapping carries Up / Down buttons per item.
+     They sit at the item's end; Up/Down disable at the list's edges. */
+  .sortable-moves {
+    display: inline-flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  .sortable-move {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
+
+    & svg { width: 1rem; height: 1rem; }
+    &:hover { background: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* legible but inert, like every disabled control (no opacity fade) */
+    &:disabled {
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
+
+    /* a finger needs a bigger target than a pointer (WCAG 2.5.5: 44px) */
+    @media (pointer: coarse) {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+
+  /* -- Connected lists (data-group) ------------------------------
+     A list that items can be dragged INTO needs a body even when empty:
+     an empty grouped list is a dashed drop zone (its data-empty text, if
+     any, says what goes there), and a drag over the list's own box - gap,
+     padding, empty zone - marks it as "drop at the end". */
+  .sortable[data-group] {
+    min-height: 2.75rem;
+
+    &:not(:has(.sortable-item)) {
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+
+      &::before { content: attr(data-empty); }
+    }
+  }
+
+  .sortable[data-over="end"] {
+    outline: 2px dashed var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+
+  /* Live region for screen reader announcements */
+  .sortable-live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sortable-item, .sortable-move { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .sortable-item {
+      border-width: 2px;
+      &[data-active] { outline: 2px solid LinkText; }
+      &[data-over="before"] { border-top-width: 3px; }
+      &[data-over="after"] { border-bottom-width: 3px; }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .sortable-item {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background-color: ButtonFace;
+      &[data-active] { border-color: Highlight; color: HighlightText; }
+      &[data-dragging] { border-color: GrayText; }
+      &[data-over="before"] { border-top-color: Highlight; }
+      &[data-over="after"] { border-bottom-color: Highlight; }
+      &[aria-disabled="true"] { color: GrayText; border-color: GrayText; }
+    }
+    .sortable-handle { color: GrayText; }
+    .sortable-move {
+      border-color: ButtonText;
+      color: ButtonText;
+      &:disabled { border-color: GrayText; color: GrayText; }
+    }
+    .sortable[data-over="end"] { outline-color: Highlight; }
+  }
+  /* -- Density ----------------------------------------------------
+     data-density on the .sortable root scales the list gap and the item
+     padding. comfortable == the unsized default. */
+  .sortable:where([data-density="compact"]) {
+    gap: 0.125rem;
+    & .sortable-item { padding: 0.375rem 0.5rem; }
+  }
+  .sortable:where([data-density="comfortable"]) {
+    gap: 0.25rem;
+    & .sortable-item { padding: 0.5rem 0.75rem; }
+  }
+  .sortable:where([data-density="spacious"]) {
+    gap: 0.375rem;
+    & .sortable-item { padding: 0.625rem 1rem; }
+  }
+
+}

@@ -138,6 +138,11 @@ const toastDismiss = (el, callback) => {
     catch { } dfDollar(el).remove(); stackToasts(container); if (callback)
         callback(); });
 };
+/**
+ * Show a toast - a title string or { title, description, variant, duration, action ... }.
+ * @param options - the title, or the toast options
+ * @returns the toast element (a manual popover in the region)
+ */
 const toastCreate = (options) => {
     const o = typeof options === 'string' ? { title: options } : options;
     const { title, description, variant, action, onDismiss, size, density, animation, aura } = o;
@@ -222,7 +227,7 @@ const toastCreate = (options) => {
     // mount through query's exact .append() - the node itself is inserted
     // (identity + delegated listeners kept, §3 toast row of the morph plan)
     // animation: { in, out, direction, duration } - names from df$.anim
-    // (fadeIn, slideIn, popIn, zoomIn, flipIn, blurIn, …); the CSS entrance
+    // (fadeIn, slideIn, popIn, zoomIn, flipIn, blurIn, ...); the CSS entrance
     // stands down while a named one plays
     if (animation) {
         el._animation = typeof animation === 'string' ? { in: animation } : animation;
@@ -294,10 +299,14 @@ function init() {
 }
 init();
 new MutationObserver(init).observe(document.body, { childList: true, subtree: true });
-/** Region options: stack 'list' (default, every toast visible) or 'pile'
+/**
+ * Region options: stack 'list' (default, every toast visible) or 'pile'
  * (the newest in front, the others as sheets behind it - hover / focus fans
  * them out); position = the corner (bottom-right, bottom-left, top-right,
- * top-left, top-center, bottom-center). */
+ * top-left, top-center, bottom-center).
+ * @param opts - the options to change; omitted keys stay as they are
+ * @returns the region's options now
+ */
 const toastConfigure = (opts = {}) => {
     if (opts.stack)
         toastContainer.dataset.stack = opts.stack;
@@ -306,19 +315,36 @@ const toastConfigure = (opts = {}) => {
     stackToasts(toastContainer);
     return { stack: toastContainer.dataset.stack || 'list', position: toastContainer.dataset.position };
 };
-df$.toast = {
+/** df$.shadcn.toast - show and dismiss toasts in the page's region. */
+export const toastActions = {
     configure: toastConfigure,
-    /** Show a toast - a title string or { title, description, variant, duration, action … }; returns its element. */
     show: toastCreate,
-    /** show() as a success toast. */
-    success: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'success' })),
-    /** show() as a warning toast. */
-    warning: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'warning' })),
-    /** show() as an info toast. */
-    info: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'info' })),
-    /** show() as an error (destructive) toast. */
-    error: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'destructive' })),
+    /**
+     * show() as a success toast.
+     * @param options - the title, or the toast options (the variant is set for you)
+     * @returns the toast element
+     */
+    success: (options) => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'success' })),
+    /**
+     * show() as a warning toast.
+     * @param options - the title, or the toast options (the variant is set for you)
+     * @returns the toast element
+     */
+    warning: (options) => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'warning' })),
+    /**
+     * show() as an info toast.
+     * @param options - the title, or the toast options (the variant is set for you)
+     * @returns the toast element
+     */
+    info: (options) => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'info' })),
+    /**
+     * show() as an error (destructive) toast.
+     * @param options - the title, or the toast options (the variant is set for you)
+     * @returns the toast element
+     */
+    error: (options) => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'destructive' })),
     /** Dismiss every toast. */
     dismiss: () => { dfDollar(toastContainer).find('.toast').toArray().forEach((el) => { toastDismiss(el); }); }
 };
+df$.toast = toastActions;
 //# sourceMappingURL=toast.js.map

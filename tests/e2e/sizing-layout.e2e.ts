@@ -33,17 +33,22 @@ const VENDOR = /esm\.sh|unpkg\.com|cdnjs|api\.github\.com|fonts\.googleapis/;
 async function demoBox(pg: import('playwright').Page, name: string, timeoutMs = 12000) {
   const deadline = Date.now() + timeoutMs;
   for (;;) {
-    const local = pg.locator(`[data-demo="${name}"]`);
-    if (await local.count()) {
-      const b = await local.first().boundingBox();
-      if (b) return b;
-    }
-    for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
-      const el = await f.$(`[data-demo="${name}"]`);
-      if (el) {
-        const b = await el.boundingBox();
+    try {
+      const local = pg.locator(`[data-demo="${name}"]`);
+      if (await local.count()) {
+        const b = await local.first().boundingBox();
         if (b) return b;
       }
+      for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
+        const el = await f.$(`[data-demo="${name}"]`);
+        if (el) {
+          const b = await el.boundingBox();
+          if (b) return b;
+        }
+      }
+    } catch (err) {
+      // the same race as inDemo: a sandbox frame rebuilt between finding the demo and measuring it
+      if (!/context was destroyed|frame was detached|Target closed/i.test(String(err)) || Date.now() > deadline) throw err;
     }
     if (Date.now() > deadline) throw new Error(`demo "${name}" never rendered`);
     await pg.waitForTimeout(250);
@@ -54,11 +59,17 @@ async function demoBox(pg: import('playwright').Page, name: string, timeoutMs = 
 async function inDemo<T>(pg: import('playwright').Page, name: string, fn: (el: Element) => T, timeoutMs = 12000): Promise<T> {
   const deadline = Date.now() + timeoutMs;
   for (;;) {
-    const local = pg.locator(`[data-demo="${name}"]`);
-    if (await local.count()) return (await local.first().evaluate(fn)) as T;
-    for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
-      const el = await f.$(`[data-demo="${name}"]`);
-      if (el) return (await el.evaluate(fn)) as T;
+    try {
+      const local = pg.locator(`[data-demo="${name}"]`);
+      if (await local.count()) return (await local.first().evaluate(fn)) as T;
+      for (const f of pg.frames().filter((x) => x !== pg.mainFrame())) {
+        const el = await f.$(`[data-demo="${name}"]`);
+        if (el) return (await el.evaluate(fn)) as T;
+      }
+    } catch (err) {
+      // a sandbox frame can be rebuilt (its srcdoc reassigned) between finding the
+      // demo and reading it - "Execution context was destroyed"; look again
+      if (!/context was destroyed|frame was detached|Target closed/i.test(String(err)) || Date.now() > deadline) throw err;
     }
     if (Date.now() > deadline) throw new Error(`demo "${name}" frame not found`);
     await pg.waitForTimeout(250);

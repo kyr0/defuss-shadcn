@@ -1,7 +1,7 @@
 ---
 name: Address Form
 type: BLK
-why: The autocomplete tokens (name, address-line1, postal-code, country…) let browsers and password managers fill the whole form in one tap - no script.
+why: The autocomplete tokens (name, address-line1, postal-code, country...) let browsers and password managers fill the whole form in one tap - no script.
 when: Checkout, account settings, event shipping. Payment details are payment-form.
 where: dist/components/address-form/address-form.css
 supportedStates: default

@@ -1,0 +1,1080 @@
+/* ── components/spinner/spinner.css ── */
+@layer components {
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    animation: spinner-rotate 1s linear infinite;
+    color: var(--muted-foreground);
+    flex-shrink: 0;
+
+    &[data-size="xs"] {
+      width: 0.625rem;
+      height: 0.625rem;
+    }
+
+    &[data-size="sm"] {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    &[data-size="md"] {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    &[data-size="lg"] {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    &[data-size="xl"] {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  @keyframes spinner-rotate {
+    to { transform: rotate(360deg); }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .spinner,
+    .spinner *,
+    .spinner::before,
+    .spinner::after,
+    .spinner *::before,
+    .spinner *::after,
+    .spinner::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/skeleton/skeleton.css ── */
+@layer components {
+  .skeleton {
+    background-color: var(--accent);
+    border-radius: var(--radius-md);
+    animation: skeleton-pulse 2s ease-in-out infinite;
+  }
+
+  .skeleton-round {
+    border-radius: 9999px;
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .skeleton,
+    .skeleton *,
+    .skeleton::before,
+    .skeleton::after,
+    .skeleton *::before,
+    .skeleton *::after,
+    .skeleton::backdrop,
+    .skeleton-round,
+    .skeleton-round *,
+    .skeleton-round::before,
+    .skeleton-round::after,
+    .skeleton-round *::before,
+    .skeleton-round *::after,
+    .skeleton-round::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/progress/progress.css ── */
+/* -- Progress component --------------------------------------------- */
+
+@layer components {
+  /* The fill resolves once, here: data-tone (--_c) > the public
+     --progress-color > --primary. Everything below paints from --_fill. */
+  .progress {
+    --_fill: var(--_c, var(--progress-color, var(--primary)));
+    --_stripes: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    height: 0.5rem;
+    border: none;
+    border-radius: 9999px;
+    overflow: hidden;
+    background-color: var(--secondary);
+    accent-color: var(--_fill);
+    vertical-align: middle;
+
+    /* -- Sizes: bar thickness scale; default (no attribute) == md. */
+    &[data-size="xs"] { height: 0.25rem; }
+    &[data-size="sm"] { height: 0.375rem; }
+    &[data-size="md"] { height: 0.5rem; }
+    &[data-size="lg"] { height: 0.75rem; }
+    &[data-size="xl"] { height: 1rem; }
+
+    /* -- Tones: success / warning / info / destructive; any other color
+       via style="--progress-color: …". auto follows the value: the
+       runtime (progress.js) sets data-level low (< 34%) / mid / high. */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.75 0.16 70); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-tone="auto"] {
+      &[data-level="low"] { --_c: var(--destructive); }
+      &[data-level="mid"] { --_c: oklch(0.75 0.16 70); }
+      &[data-level="high"] { --_c: oklch(0.6 0.15 150); }
+    }
+
+    /* -- Stripes: diagonal bands over the fill; "animated" moves them */
+    &[data-striped] {
+      --_stripes: repeating-linear-gradient(
+        -45deg,
+        color-mix(in oklch, white 22%, transparent) 0 0.375rem,
+        transparent 0.375rem 0.75rem
+      );
+    }
+  }
+
+  /* WebKit (Chrome, Safari, Edge) */
+  .progress::-webkit-progress-bar {
+    background-color: var(--secondary);
+    border-radius: 9999px;
+  }
+  .progress::-webkit-progress-value {
+    background: var(--_stripes), var(--_fill);
+    background-size: 1.06rem 1.06rem, auto;
+    border-radius: 9999px;
+  }
+  .progress[data-striped="animated"]::-webkit-progress-value {
+    animation: progress-stripes 700ms linear infinite;
+  }
+
+  /* Firefox */
+  .progress::-moz-progress-bar {
+    background: var(--_stripes), var(--_fill);
+    background-size: 1.06rem 1.06rem, auto;
+    border-radius: 9999px;
+  }
+  .progress[data-striped="animated"]::-moz-progress-bar {
+    animation: progress-stripes 700ms linear infinite;
+  }
+
+  @keyframes progress-stripes {
+    to { background-position: 1.06rem 0, 0 0; }
+  }
+
+  /* Indeterminate state */
+  .progress:indeterminate {
+    background: linear-gradient(
+      90deg,
+      var(--secondary) 0%,
+      var(--_fill) 50%,
+      var(--secondary) 100%
+    );
+    background-size: 200% 100%;
+    animation: progress-indeterminate 1.5s linear infinite;
+  }
+  .progress:indeterminate::-webkit-progress-bar { background-color: transparent; }
+  .progress:indeterminate::-moz-progress-bar { background-color: transparent; }
+
+  @keyframes progress-indeterminate {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* -- Field: a label + a live value readout with the bar ---------------
+     <div class="progress-field">
+       <div class="progress-header"><span class="progress-label">…</span>
+         <output class="progress-value" for="bar-id"></output></div>
+       <progress class="progress" id="bar-id" …></progress>
+     </div>
+     progress.js writes the value into every output (data-format: percent
+     | fraction | value, or a data-template). */
+  .progress-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    width: 100%;
+  }
+  .progress-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .progress-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  .progress-value {
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+  .progress-hint {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Label inside the bar: data-label="inside" on the field (bar + output
+     only). The output spans the bar; its text reads in the foreground over
+     the track and - through a copy clipped to the filled part (::after,
+     data-text + --progress-pct set by progress.js) - in the fill's own
+     foreground over the fill. */
+  .progress-field[data-label="inside"] {
+    display: grid;
+
+    & > .progress {
+      grid-area: 1 / 1;
+      height: 1.25rem;
+      &[data-size="lg"] { height: 1.5rem; }
+      &[data-size="xl"] { height: 1.75rem; }
+    }
+    & > .progress-value {
+      grid-area: 1 / 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--foreground);
+      pointer-events: none;
+
+      &::after {
+        content: attr(data-text);
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: var(--primary-foreground);
+        clip-path: inset(0 calc(100% - var(--progress-pct, 0%)) 0 0);
+      }
+    }
+  }
+  /* the tones are light fills: dark text reads better on them */
+  .progress-field[data-label="inside"]:has(> .progress:is([data-tone="warning"], [data-tone="auto"][data-level="mid"])) > .progress-value::after {
+    color: oklch(0.25 0.05 70);
+  }
+  .progress-field[data-label="inside"]:has(> .progress:is([data-tone="success"], [data-tone="info"], [data-tone="destructive"], [data-tone="auto"]:not([data-level="mid"]))) > .progress-value::after {
+    color: white;
+  }
+  .progress-field[data-label="inside"]:dir(rtl) > .progress-value::after {
+    clip-path: inset(0 0 0 calc(100% - var(--progress-pct, 0%)));
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend firing. (progress.js also skips
+   its value tween then - the bar jumps straight to the target.) */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .progress,
+    .progress::-webkit-progress-value,
+    .progress::-moz-progress-bar {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .progress { outline: 1px solid var(--foreground); outline-offset: 1px; }
+    .progress-value { color: var(--foreground); }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .progress { forced-color-adjust: none; background: Canvas; outline: 1px solid CanvasText; }
+    .progress::-webkit-progress-bar { background: Canvas; }
+    .progress::-webkit-progress-value { background: Highlight; }
+    .progress::-moz-progress-bar { background: Highlight; }
+    .progress-field[data-label="inside"] > .progress-value { color: CanvasText; }
+    .progress-field[data-label="inside"] > .progress-value::after { color: HighlightText; }
+  }
+}
+
+/* ── components/radial-progress/radial-progress.css ── */
+/* -- Radial Progress component --------------------------------- */
+
+/* Typed custom property: a registered <number> interpolates, so a new
+   --value tweens the ring with zero JS. The PUBLIC knob stays the plain
+   --value (daisyUI's API); only this private copy is registered - a global
+   @property --value would re-type every other --value on the page (the
+   countdown digits use one) and any consumer's own. @property is an
+   at-rule: no cascade weight, outside @layer components. */
+@property --_rp-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer components {
+  /* Public custom properties (set them inline on the element):
+       --value      0–100, required — the completion percentage
+       --size       outer diameter        (default 5rem)
+       --thickness  ring stroke width     (default 10% of --size)
+     Colors come from the ring's own `color`, so a variant recolors the arc
+     and the label in one declaration. */
+  .radial-progress {
+    /* the public knob (an inline style="--value:70" overrides it) and its
+       registered, animatable copy that everything below paints from */
+    --value: 0;
+    --_rp-value: var(--value);
+    --size: 5rem;
+    --thickness: calc(var(--size) / 10);
+    /* leading-edge cap travels the stroke centerline: r = (size - thickness)/2 */
+    --_rp-angle: calc(var(--_rp-value) * 3.6deg - 90deg);
+
+    position: relative;
+    display: inline-grid;
+    place-content: center;
+    box-sizing: content-box;
+    inline-size: var(--size);
+    block-size: var(--size);
+    border-radius: 9999px;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: center;
+    /* data-tone (--_c) > the public --progress-color > --primary; the arc,
+       its cap and the label all paint in currentColor */
+    color: var(--_c, var(--progress-color, var(--primary)));
+    /* the arc is a function of --value, so the registered property tweens it */
+    transition: --_rp-value 600ms ease;
+
+    /* Track + indicator in one painted layer: a conic-gradient (arc up to
+       --value, track after it) masked down to a ring, plus a round dot at
+       12 o'clock so the arc's start is capped. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(farthest-side, currentColor 98%, #0000)
+          top / var(--thickness) var(--thickness) no-repeat,
+        conic-gradient(currentColor calc(var(--_rp-value) * 1%), var(--secondary) 0);
+      -webkit-mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+      mask: radial-gradient(
+        farthest-side,
+        #0000 calc(99% - var(--thickness)),
+        #000 calc(100% - var(--thickness))
+      );
+    }
+
+    /* Round cap at the leading edge. Positioned with cos()/sin() rather than
+       a compound `transform: rotate() translate()` — individual transform
+       properties compose in the wrong order for a polar offset, and the trig
+       functions keep the position a pure function of --value (so it tweens). */
+    &::after {
+      content: "";
+      position: absolute;
+      inline-size: var(--thickness);
+      block-size: var(--thickness);
+      border-radius: 9999px;
+      background-color: currentColor;
+      inset-inline-start: calc(
+        50% + cos(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+      inset-block-start: calc(
+        50% + sin(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 -
+          var(--thickness) / 2
+      );
+    }
+
+    /* -- Variants (recolor arc + label together) ------------------ */
+    &[data-variant="default"] {
+      color: var(--primary);
+    }
+
+    &[data-variant="secondary"] {
+      color: var(--muted-foreground);
+    }
+
+    &[data-variant="destructive"] {
+      color: var(--destructive);
+    }
+
+    /* no semantic "success" token exists in the tweakcn shape — literal, same
+       green the toast component uses (token boundary rule) */
+    &[data-variant="success"] {
+      color: oklch(0.65 0.2 145);
+    }
+
+    /* -- Tones (same vocabulary as progress): success / warning / info /
+       destructive; auto follows the value - radial-progress.js sets
+       data-level low (< 34%) / mid / high. Any color: --progress-color. */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.72 0.16 70); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-tone="auto"] {
+      &[data-level="low"] { --_c: var(--destructive); }
+      &[data-level="mid"] { --_c: oklch(0.72 0.16 70); }
+      &[data-level="high"] { --_c: oklch(0.6 0.15 150); }
+    }
+
+    /* -- Label parts: a .radial-progress-value (the number the script
+       writes) over an optional .radial-progress-caption ------------- */
+    & .radial-progress-value { font-weight: 600; }
+    & .radial-progress-caption {
+      margin-block-start: 0.25em;
+      font-size: 0.6875em;
+      font-weight: 400;
+      color: var(--muted-foreground);
+    }
+
+    /* -- A glide driven by the script paints every frame itself: no CSS
+       easing on top (it would lag the counting label) --------------- */
+    &[data-running] { transition: none; }
+
+    /* -- Indeterminate: no aria-valuenow (an indeterminate progressbar has
+       none) - a quarter arc spins, the cap hides --------------------- */
+    &:not([aria-valuenow]) {
+      --_rp-value: 25;
+      transition: none;
+      &::before { animation: radial-progress-spin 1s linear infinite; }
+      &::after { display: none; }
+    }
+
+    /* -- Sizes ---------------------------------------------------- */
+    &[data-size="sm"] {
+      --size: 3.5rem;
+      font-size: 0.75rem;
+    }
+
+    &[data-size="lg"] {
+      --size: 8rem;
+      font-size: 1.25rem;
+    }
+  }
+
+  @keyframes radial-progress-spin { to { rotate: 1turn; } }
+
+  /* -- Accessibility -------------------------------------------- */
+
+  /* Suppress motion for users who request it (REQUIRED — AGENTS.md
+     "Accessibility CSS"). Near-zero instead of `none` keeps transitionend
+     firing for anything awaiting the value tween. */
+  @media (prefers-reduced-motion: reduce) {
+    .radial-progress {
+      transition-duration: 0.01ms !important;
+      &::before { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+    }
+  }
+
+  /* Thicker stroke and a darker track when more contrast is requested. */
+  @media (prefers-contrast: more) {
+    .radial-progress {
+      --thickness: calc(var(--size) / 6);
+
+      &::before {
+        background:
+          radial-gradient(farthest-side, currentColor 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(currentColor calc(var(--_rp-value) * 1%), var(--border) 0);
+      }
+    }
+  }
+
+  /* Windows High Contrast Mode: gradients are dropped by forced colors, so
+     opt out and repaint the ring with system colors instead. */
+  @media (forced-colors: active) {
+    .radial-progress {
+      forced-color-adjust: none;
+      color: Highlight;
+
+      &::before {
+        background:
+          radial-gradient(farthest-side, Highlight 98%, #0000)
+            top / var(--thickness) var(--thickness) no-repeat,
+          conic-gradient(Highlight calc(var(--_rp-value) * 1%), GrayText 0);
+      }
+    }
+  }
+}
+
+/* ── components/alert/alert.css ── */
+@layer components {
+  .alert {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    background-color: var(--background);
+
+    &[data-variant="destructive"] {
+      border-color: var(--destructive);
+      color: var(--destructive);
+
+      & .alert-title {
+        color: var(--destructive);
+      }
+
+      & .alert-description {
+        color: var(--destructive);
+        opacity: 0.9;
+      }
+
+      & .alert-icon {
+        color: var(--destructive);
+      }
+    }
+  }
+
+  .alert-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--foreground);
+  }
+
+  .alert-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* -- Density --------------------------------------------------
+     data-density on the .alert root scales its padding and the icon/content
+     gap (ratio 0.75 / 1 / 1.25); comfortable matches the unsized default. */
+  .alert:where([data-density="compact"]) {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+  .alert:where([data-density="comfortable"]) {
+    padding: 1rem 1.25rem;
+    gap: 0.75rem;
+  }
+  .alert:where([data-density="spacious"]) {
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+  }
+
+  .alert-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+  }
+
+  .alert-description {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+  }
+
+  .alert-action {
+    flex-shrink: 0;
+    margin-left: auto;
+    align-self: center;
+  }
+}
+
+/* ── components/alert-dialog/alert-dialog.css ── */
+@layer components {
+  dialog.alert-dialog {
+    border: none;
+    border-radius: var(--radius-xl);
+    background: var(--background);
+    color: var(--foreground);
+    padding: 0;
+    max-width: 28rem;
+    width: calc(100% - 2rem);
+    box-shadow: var(--shadow-lg);
+    margin: auto;
+    position: fixed;
+    inset: 0;
+
+    /* Entry/exit animation */
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.98);
+    transition: opacity 200ms ease, transform 200ms ease, display 200ms allow-discrete;
+
+    &[open] {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    &::backdrop {
+      background: oklch(0 0 0 / 0);
+      backdrop-filter: blur(0px);
+      transition: all 200ms ease, display 200ms allow-discrete;
+    }
+
+    &[open]::backdrop {
+      background: oklch(0 0 0 / 0.45);
+      backdrop-filter: blur(3px);
+    }
+
+    /* Block Escape key - user must choose an action */
+    &::backdrop {
+      pointer-events: auto;
+    }
+  }
+
+  @starting-style {
+    dialog.alert-dialog[open] {
+      opacity: 0;
+      transform: translateY(-0.5rem) scale(0.98);
+    }
+    dialog.alert-dialog[open]::backdrop {
+      background: oklch(0 0 0 / 0);
+      backdrop-filter: blur(0px);
+    }
+  }
+
+  /* -- Scroll lock ------------------------------------------- */
+  /* Page behind stays put while the alert is modal (see dialog.css):
+     `:modal` + overflow:hidden freezes the viewport at its current offset. */
+  html:has(dialog.alert-dialog:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  .alert-dialog-content {
+    padding: 1.5rem;
+  }
+
+  /* -- Density ------------------------------------------------
+     data-density on the .alert-dialog root scales the content padding
+     (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
+     unsized default. */
+  .alert-dialog:where([data-density="compact"]) .alert-dialog-content     { padding: 1rem; }
+  .alert-dialog:where([data-density="comfortable"]) .alert-dialog-content { padding: 1.5rem; }
+  .alert-dialog:where([data-density="spacious"]) .alert-dialog-content    { padding: 2rem; }
+
+  .alert-dialog-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .alert-dialog-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .alert-dialog-description {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+  }
+
+  .alert-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .alert-dialog,
+    .alert-dialog *,
+    .alert-dialog::before,
+    .alert-dialog::after,
+    .alert-dialog *::before,
+    .alert-dialog *::after,
+    .alert-dialog::backdrop,
+    .alert-dialog-content,
+    .alert-dialog-content *,
+    .alert-dialog-content::before,
+    .alert-dialog-content::after,
+    .alert-dialog-content *::before,
+    .alert-dialog-content *::after,
+    .alert-dialog-content::backdrop,
+    .alert-dialog-header,
+    .alert-dialog-header *,
+    .alert-dialog-header::before,
+    .alert-dialog-header::after,
+    .alert-dialog-header *::before,
+    .alert-dialog-header *::after,
+    .alert-dialog-header::backdrop,
+    .alert-dialog-title,
+    .alert-dialog-title *,
+    .alert-dialog-title::before,
+    .alert-dialog-title::after,
+    .alert-dialog-title *::before,
+    .alert-dialog-title *::after,
+    .alert-dialog-title::backdrop,
+    .alert-dialog-description,
+    .alert-dialog-description *,
+    .alert-dialog-description::before,
+    .alert-dialog-description::after,
+    .alert-dialog-description *::before,
+    .alert-dialog-description *::after,
+    .alert-dialog-description::backdrop,
+    .alert-dialog-footer,
+    .alert-dialog-footer *,
+    .alert-dialog-footer::before,
+    .alert-dialog-footer::after,
+    .alert-dialog-footer *::before,
+    .alert-dialog-footer *::after,
+    .alert-dialog-footer::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/toast/toast.css ── */
+/* -- Toast component ------------------------------------------- */
+
+@layer components {
+  /* -- Container ------------------------------------------------ */
+  .toast-container {
+    position: fixed;
+    z-index: 100;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    padding: 1rem;
+    max-height: 100vh;
+    pointer-events: none;
+
+    &[data-position="bottom-right"] { bottom: 0; right: 0; }
+    &[data-position="bottom-left"]  { bottom: 0; left: 0; }
+    &[data-position="top-right"]    { top: 0; right: 0; flex-direction: column; }
+    &[data-position="top-left"]     { top: 0; left: 0; flex-direction: column; }
+    &[data-position="top-center"]   { top: 0; left: 50%; transform: translateX(-50%); flex-direction: column; align-items: center; }
+    &[data-position="bottom-center"]{ bottom: 0; left: 50%; transform: translateX(-50%); align-items: center; }
+  }
+
+  /* -- Toast ---------------------------------------------------- */
+  .toast {
+    /* Top layer (popover="manual") bypasses the container's flex layout - the
+       UA sheet would CENTER every toast (inset:0 + margin:auto). Pin each toast
+       to its container's corner instead and stack via --toast-stack, which the
+       component JS measures (toast.ts stackToasts) since heights vary. */
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    /* the UA popover sheet clips (overflow: auto) - the pile badge sits on the edge */
+    overflow: visible;
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    min-width: 20rem;
+    max-width: 26rem;
+    box-shadow: 0 4px 16px oklch(0 0 0 / 0.12);
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 200ms ease, transform 200ms ease;
+
+    &:popover-open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* -- Corner placement (top layer - see note above) ------------
+       --toast-stack: measured px offset of the stack below this toast;
+       the first toast is 0, so default bottom-right lands at the edge. */
+    [data-position="bottom-right"] & { bottom: calc(1rem + var(--toast-stack, 0px)); right: 1rem; }
+    [data-position="bottom-left"] & { bottom: calc(1rem + var(--toast-stack, 0px)); left: 1rem; }
+    [data-position="top-right"] & { top: calc(1rem + var(--toast-stack, 0px)); right: 1rem; }
+    [data-position="top-left"] & { top: calc(1rem + var(--toast-stack, 0px)); left: 1rem; }
+    [data-position="top-center"] & { top: calc(1rem + var(--toast-stack, 0px)); left: 50%; translate: -50% 0; }
+    [data-position="bottom-center"] & { bottom: calc(1rem + var(--toast-stack, 0px)); left: 50%; translate: -50% 0; }
+
+    /* -- Sizes + Density ------------------------------------------
+       data-size scales the toast's width envelope (sm/md/lg, md == the
+       unsized default); data-density is the whitespace policy - padding and
+       the content gap at the shared 0.75 / 1 / 1.25 ratio, comfortable ==
+       the unsized default. Both live on the .toast element itself. */
+    &[data-size="sm"] { min-width: 16rem; max-width: 20rem; }
+    &[data-size="md"] { min-width: 20rem; max-width: 26rem; }
+    &[data-size="lg"] { min-width: 24rem; max-width: 32rem; }
+
+    &[data-density="compact"]    { padding: 0.75rem; & .toast-content { gap: 0.5rem; } }
+    &[data-density="comfortable"] { padding: 1rem; }
+    &[data-density="spacious"]   { padding: 1.25rem; & .toast-content { gap: 1rem; } }
+
+    /* -- Variants ------------------------------------------------- */
+    &[data-variant="destructive"] {
+      background-color: var(--destructive);
+      color: var(--destructive-foreground);
+      border-color: var(--destructive);
+
+      & .toast-description {
+        color: var(--destructive-foreground);
+        opacity: 0.85;
+      }
+    }
+
+    /* -- Semantic variants (border + icon color) ----------------- */
+    &[data-variant="success"] {
+      border-color: oklch(0.65 0.2 145);
+
+      & .toast-icon { color: oklch(0.65 0.2 145); }
+    }
+
+    &[data-variant="warning"] {
+      border-color: oklch(0.75 0.18 75);
+
+      & .toast-icon { color: oklch(0.75 0.18 75); }
+    }
+
+    &[data-variant="info"] {
+      border-color: oklch(0.6 0.15 250);
+
+      & .toast-icon { color: oklch(0.6 0.15 250); }
+    }
+  }
+
+  @starting-style {
+    .toast:popover-open {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+
+  /* -- Named animations (options.animation) ------------------------
+     df$.anim plays the entrance / exit; the CSS fade stands down. */
+  .toast[data-anim] {
+    transition: bottom 220ms ease, top 220ms ease, scale 220ms ease, opacity 220ms ease;
+
+    &:popover-open { opacity: 1; transform: none; }
+  }
+  @starting-style {
+    .toast[data-anim]:popover-open { opacity: 1; transform: none; }
+  }
+
+  /* -- Pile (df$.shadcn.toast.configure({ stack: 'pile' })) ----------
+     The newest toast is in front and wears the shapes.css stack-* sheets
+     (added by toast.js); the older ones wait behind it, hidden, and fan out
+     into a list while the pointer or focus is inside the pile. A "+n" badge
+     counts the hidden ones. */
+  .toast-container[data-stack="pile"] .toast {
+    transition: opacity 200ms ease, transform 200ms ease, bottom 220ms cubic-bezier(0.2, 0.8, 0.2, 1), top 220ms cubic-bezier(0.2, 0.8, 0.2, 1), scale 220ms ease;
+  }
+  .toast[data-piled] {
+    opacity: 0 !important;
+    scale: 0.94;
+    pointer-events: none;
+  }
+  .toast[data-more]:not([data-more="0"])::after {
+    content: "+" attr(data-more);
+    position: absolute;
+    inset-block-start: -0.5rem;
+    inset-inline-start: -0.5rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding-inline: 0.375rem;
+    border-radius: 9999px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .toast-container[data-position^="top"] .toast[data-more]::after { inset-block-start: auto; inset-block-end: -0.5rem; }
+
+  /* -- Aura (options.aura) ------------------------------------------
+     The toast is the ring of light (shapes.css .aura), its content sits on
+     an inner surface with the toast's own colors and padding. */
+  .toast[data-aura] {
+    --shape-round: var(--radius-lg);
+    border: 0;
+    background-color: transparent;
+    box-shadow: 0 8px 28px -6px color-mix(in oklch, var(--foreground) 30%, transparent);
+  }
+  .toast-surface {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+
+    .toast[data-variant="destructive"] > & { background-color: var(--destructive); color: var(--destructive-foreground); }
+  }
+
+  /* -- Inner elements ------------------------------------------- */
+  .toast-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .toast-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toast-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .toast-description {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    margin: 0.125rem 0 0;
+    line-height: 1.5;
+  }
+
+  .toast-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: calc(var(--radius) * 0.5);
+    transition: color 150ms, background 150ms;
+
+    &:hover {
+      color: var(--foreground);
+      background: var(--accent);
+    }
+  }
+
+  .toast-icon {
+    /* explicit size: SVGs without width/height render at a ~300px intrinsic
+       default, which blew up the whole toast */
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.125rem;
+  }
+
+  .toast-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .toast-container,
+    .toast-container *,
+    .toast-container::before,
+    .toast-container::after,
+    .toast-container *::before,
+    .toast-container *::after,
+    .toast-container::backdrop,
+    .toast,
+    .toast *,
+    .toast::before,
+    .toast::after,
+    .toast *::before,
+    .toast *::after,
+    .toast::backdrop,
+    .toast-description,
+    .toast-description *,
+    .toast-description::before,
+    .toast-description::after,
+    .toast-description *::before,
+    .toast-description *::after,
+    .toast-description::backdrop,
+    .toast-icon,
+    .toast-icon *,
+    .toast-icon::before,
+    .toast-icon::after,
+    .toast-icon *::before,
+    .toast-icon *::after,
+    .toast-icon::backdrop,
+    .toast-content,
+    .toast-content *,
+    .toast-content::before,
+    .toast-content::after,
+    .toast-content *::before,
+    .toast-content *::after,
+    .toast-content::backdrop,
+    .toast-text,
+    .toast-text *,
+    .toast-text::before,
+    .toast-text::after,
+    .toast-text *::before,
+    .toast-text *::after,
+    .toast-text::backdrop,
+    .toast-title,
+    .toast-title *,
+    .toast-title::before,
+    .toast-title::after,
+    .toast-title *::before,
+    .toast-title *::after,
+    .toast-title::backdrop,
+    .toast-close,
+    .toast-close *,
+    .toast-close::before,
+    .toast-close::after,
+    .toast-close *::before,
+    .toast-close *::after,
+    .toast-close::backdrop,
+    .toast-actions,
+    .toast-actions *,
+    .toast-actions::before,
+    .toast-actions::after,
+    .toast-actions *::before,
+    .toast-actions *::after,
+    .toast-actions::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}

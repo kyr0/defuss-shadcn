@@ -1,6 +1,6 @@
 ---
-title: "Treemap — Presentation"
-description: "Mondrian Composition design language presenting a city’s €2.4 billion budget as a 12-slide deck — a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart."
+title: "Treemap - Presentation"
+description: "Mondrian Composition design language presenting a city's €2.4 billion budget as a 12-slide deck - a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart."
 slug: "treemap"
 ---
 
@@ -8,12 +8,12 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 
 <DocPage meta={meta}>
 <PageHeader slug="treemap" title="Treemap" component="presentation">
-  Mondrian Composition: black rules, red, blue and yellow blocks — where a city’s budget goes, drawn as nested rectangles whose area is money, then turned into rings and change bars without losing a single block.
+  Mondrian Composition: black rules, red, blue and yellow blocks - where a city's budget goes, drawn as nested rectangles whose area is money, then turned into rings and change bars without losing a single block.
 </PageHeader>
 
 ```html example label="Mondrian Composition" schema="none" height="26" hint="Slides wipe in and wipe out (df$.anim wipeIn / wipeOut, declared on the deck); blue curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the treemap isolates transport, morphs into a sunburst of the very same nodes, then into change since 2020. Use ← / → inside the deck." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
-<section class="presentation" id="deck-treemap" data-anim-in="wipeIn" data-anim-in-direction="east" data-anim-out="wipeOut" style="--presentation-ink:#111111;--presentation-ink-foreground:#F5F1E8;--presentation-paper:#F5F1E8;--presentation-paper-foreground:#111111;--presentation-accent:#D8261C;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Where the city’s euro goes — a municipal budget as a treemap">
+<section class="presentation" id="deck-treemap" data-anim-in="wipeIn" data-anim-in-direction="east" data-anim-out="wipeOut" style="--presentation-ink:#111111;--presentation-ink-foreground:#F5F1E8;--presentation-paper:#F5F1E8;--presentation-paper-foreground:#111111;--presentation-accent:#D8261C;font-family:Arial, Helvetica, sans-serif;" tabindex="-1" aria-label="Where the city’s euro goes - a municipal budget as a treemap">
   <!-- ONE chart for the whole deck: slides name the state they show via
        data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
   <div class="chart presentation-stage" role="img" aria-label="A city budget of 2,400 million euros as a treemap of six departments and their programmes, social and health the largest at 912 million; then the same hierarchy as a sunburst and the change per department since 2020"></div>
@@ -29,7 +29,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     </svg>
     <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Treemap · Mondrian Composition</p>
     <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95; font-size:6.4rem; max-width:760px;">Where the city’s euro goes</h1>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px; max-width:700px;">€2.4 billion, six departments, sixteen programmes — every block is money.</p>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px; max-width:700px;">€2.4 billion, six departments, sixteen programmes - every block is money.</p>
     <p class="presentation-note">The cover grid is the treemap before it has data.</p>
   </section>
   <section class="slide" data-slide data-theme="paper" data-chart-state="blocks" style="justify-content:flex-start;" aria-label="Budget">
@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <section class="slide" data-slide data-theme="paper" data-chart-state="transport" style="justify-content:flex-start;" aria-label="Transport">
     <header class="presentation-header"><span>Budget 2025</span><span>Transport highlighted</span></header>
-    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;">Transport: 14% — most of it for transit</h2>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;">Transport: 14% - most of it for transit</h2>
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">Everything but transport greys out; its three programmes stay yellow.</p>
   </section>
@@ -48,7 +48,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <header class="presentation-header"><span>Hierarchy</span><span>Same data, radial</span></header>
     <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;">The same blocks, bent into rings</h2>
     <span class="presentation-slide-number"></span>
-    <p class="presentation-note">The treemap morphs into a sunburst — every node keeps its identity.</p>
+    <p class="presentation-note">The treemap morphs into a sunburst - every node keeps its identity.</p>
   </section>
   <section class="slide" data-slide data-theme="ink" aria-label="Key figures">
     <p class="presentation-eyebrow" data-df-entrance="fade">Three numbers for the council</p>
@@ -59,11 +59,11 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       </div>
       <div data-df-entrance="up">
         <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; color:#D8261C; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;"><span data-count="38">38</span>%</p>
-        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">goes to social & health — the largest block</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">goes to social & health - the largest block</p>
       </div>
       <div data-df-entrance="up">
         <p class="presentation-title" style="font-size:6.25rem; margin:0 0 0.5rem; font-variant-numeric:tabular-nums; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;">+<span data-count="64">64</span>%</p>
-        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">housing since 2020 — the fastest-growing</p>
+        <p class="presentation-lede" style="font-size:1.6rem; max-width:22rem;">housing since 2020 - the fastest-growing</p>
       </div>
     </div>
     <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:800ms; font-size:1.8rem; margin-top:3.25rem; max-width:1200px;">The largest block is not the fastest-growing one. That is the council’s real debate.</p>
@@ -74,7 +74,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
       <div style="flex:1 1 0; min-width:0;">
         <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95; font-size:3.2rem;">Every block is a street</h2>
-        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">€2.4 billion for 412,000 residents is about €5,800 per person — €2,200 of it on social and health.</p>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">€2.4 billion for 412,000 residents is about €5,800 per person - €2,200 of it on social and health.</p>
       </div>
       <figure class="image" data-ratio="4/3" data-df-entrance="zoom-out" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
         <img src="https://picsum.photos/id/1067/960/720" alt="An aerial view of a city skyline at sunset, towers stretching along a lakeshore" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
@@ -114,13 +114,13 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     </blockquote>
     <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
       <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#F4C800; color:#111;"><span class="avatar-fallback">PV</span></span>
-      <p class="presentation-lede" style="font-size:1.7rem;">Paula Verhoeven<br /><span style="opacity:0.7; font-size:1.4rem;">City treasurer — fictional</span></p>
+      <p class="presentation-lede" style="font-size:1.7rem;">Paula Verhoeven<br /><span style="opacity:0.7; font-size:1.4rem;">City treasurer - fictional</span></p>
     </div>
     <p class="presentation-note">Legibility changes the conversation.</p>
   </section>
   <section class="slide" data-slide data-theme="paper" data-chart-state="change" style="justify-content:flex-start;" aria-label="Change">
     <header class="presentation-header"><span>Change</span><span>2025 vs 2020</span></header>
-    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;">Housing grew fastest — culture shrank</h2>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95;">Housing grew fastest - culture shrank</h2>
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">The rings unroll into one bar per department.</p>
   </section>
@@ -130,15 +130,15 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
       <details class="accordion-item" name="tm-qa" open data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is administration 12%?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It includes staff for every department — €190 M of payroll plus €98 M for IT that the others rely on.</p></div>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">It includes staff for every department - €190 M of payroll plus €98 M for IT that the others rely on.</p></div>
       </details>
       <details class="accordion-item" name="tm-qa" data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Is the housing jump permanent?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">About a third of it — €66 M — is a five-year renovation programme that ends in 2029.</p></div>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">About a third of it - €66 M - is a five-year renovation programme that ends in 2029.</p></div>
       </details>
       <details class="accordion-item" name="tm-qa" data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Where would a 1% cut hurt least?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Spread evenly it is €24 M — more than the entire museum budget of €18 M.</p></div>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Spread evenly it is €24 M - more than the entire museum budget of €18 M.</p></div>
       </details>
     </div>
     <span class="presentation-slide-number"></span>
@@ -147,7 +147,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   <section class="slide" data-slide data-theme="paper" aria-label="Takeaways">
     <header class="presentation-header"><span>Takeaways</span><span>For the budget debate</span></header>
     <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
-      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Use area when the hierarchy matters — departments contain programmes.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Use area when the hierarchy matters - departments contain programmes.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Social & health is 38% of every euro.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Housing grew 64% in five years; culture shrank.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">■</span><span>Morph, don’t redraw: the same nodes read as blocks, rings and bars.</span></li>
@@ -166,7 +166,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <rect x="500" y="380" width="120" height="240" fill="#111" stroke="#111" stroke-width="14" />
     </svg>
     <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:Arial Black, Arial, sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:-0.045em; line-height:0.95; font-size:5.2rem; max-width:720px;">Every euro, one rectangle</h2>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px; max-width:700px;">A synthetic budget for a fictional city — the treemap is the real way to show a hierarchy of money.</p>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px; max-width:700px;">A synthetic budget for a fictional city - the treemap is the real way to show a hierarchy of money.</p>
     <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
       <button type="button" class="btn">Copy the deck</button>
       <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
@@ -182,7 +182,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the
-  // sandbox) — build the stage in the load handler, never at parse time.
+  // sandbox) - build the stage in the load handler, never at parse time.
   window.addEventListener('load', () => {
     const deck = document.getElementById('deck-treemap');
     const INK = '#111111', MUTED = '#66615A', DIM = '#E2DCCD', DIM_TEXT = '#9B9486';
@@ -196,7 +196,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     ];
     const color = Object.fromEntries(depts.map((d) => [d[0], d[1]]));
     const sum = (kids) => kids.reduce((s, k) => s + k[1], 0);
-    // one hierarchy for every state — stable names let treemap and sunburst morph node for node
+    // one hierarchy for every state - stable names let treemap and sunburst morph node for node
     const tree = (focus) => depts.map(([n, c, fg, kids]) => {
       const on = !focus || n === focus, col = on ? c : DIM, txt = on ? fg : DIM_TEXT;
       return { name: n, value: sum(kids), itemStyle: { color: col }, label: { color: txt }, upperLabel: { color: on ? '#FFFFFF' : DIM_TEXT },
@@ -240,6 +240,6 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 </script>
 ```
 
-<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 18-treemap (Mondrian Composition) — a synthetic budget for a fictional city.</p>
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 18-treemap (Mondrian Composition) - a synthetic budget for a fictional city.</p>
 <SourceFiles component="presentation" />
 </DocPage>

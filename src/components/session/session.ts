@@ -14,10 +14,58 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** How an added message is marked. */
+interface SessionItemOptions {
+  /** its data-message-id - what scrollToMessage() and session-visibility name it by */
+  id?: string;
+  /** true: an anchor - a turn the reader lands on and the visibility event reports */
+  anchor?: boolean;
+}
+
+/** How a scroll moves. */
+interface SessionScrollOptions {
+  /** false jumps instead of scrolling smoothly (default true) */
+  smooth?: boolean;
+}
+
+/** What session-visibility carries. */
+interface SessionVisibilityDetail {
+  /** the id of the anchor the reader is in, null when none has an id */
+  currentAnchorId: string | null;
+  /** the ids of the messages in view, in order */
+  visibleMessageIds: string[];
+}
+
+/** What session-drop carries. */
+interface SessionDropDetail {
+  /** the dropped files data-drop accepts */
+  files: File[];
+}
+
 /** default = following the live edge; detached = the reader scrolled away
  *  (or a turn anchored); streaming = a reply is being written (aria-busy),
  *  the transcript follows it. */
 const sessionStates = ['default', 'detached', 'streaming'];
+
+/** setState() configs per state. */
+export interface SessionStateConfigs {
+  /** Following the live edge - new messages scroll into view (scrolls to the end). */
+  default: {
+    /** false jumps to the end instead of scrolling smoothly */
+    smooth?: boolean;
+  };
+  /** Not following: the reader scrolled away, or a turn anchored. */
+  detached: {
+    /** where to scroll: 'start', or a message's data-message-id */
+    to?: string;
+  };
+  /** A reply is being written: aria-busy on the log; it follows the reply while the reader is at the end - default ends it. */
+  streaming: {};
+}
 
 const num = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
@@ -289,7 +337,7 @@ function track(s) {
   s._visibleIds = ids.join();
   items.forEach((it) => it.toggleAttribute('data-current', it === current));
   // Fires when the messages in view change - the current anchor's id and the ids of the visible messages.
-  s.dispatchEvent(new CustomEvent('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+  s.dispatchEvent(new CustomEvent<SessionVisibilityDetail>('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
 }
 
 // -- Drop target (data-drop) ----------------------------------------------------
@@ -309,7 +357,7 @@ function bindDrop(s) {
     s.removeAttribute('data-drop-active');
     const files = [...e.dataTransfer.files].filter(ok);
     // Fires when files are dropped on the session (data-drop) - the accepted files.
-    if (files.length) s.dispatchEvent(new CustomEvent('session-drop', { bubbles: true, detail: { files } }));
+    if (files.length) s.dispatchEvent(new CustomEvent<SessionDropDetail>('session-drop', { bubbles: true, detail: { files } }));
   });
 }
 
@@ -394,28 +442,58 @@ function toItem(content, { id, anchor } = {}) {
 }
 
 df$.session = {
-  /** Adds a message at the end; follows (or anchors) as the session decides. */
-  append(t, content, options) {
-    const s = resolve(t);
+  /**
+   * Adds a message at the end; follows (or anchors) as the session decides.
+   * @param target - the .session element, its id or a selector
+   * @param content - the message: markup, a node, or a ready .session-item
+   * @param options - its id and whether it is an anchor
+   * @returns the .session-item added
+   */
+  append(target: string | HTMLElement, content: string | Node, options?: SessionItemOptions): HTMLElement {
+    const s = resolve(target);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
-  /** Adds older messages at the start; the reader's place is kept. */
-  prepend(t, content, options) {
-    const s = resolve(t);
+  /**
+   * Adds older messages at the start; the reader's place is kept.
+   * @param target - the .session element, its id or a selector
+   * @param content - one message or several (markup, nodes or .session-items), oldest first
+   * @param options - an id and the anchor flag for every message added
+   * @returns the .session-items added, in order
+   */
+  prepend(target: string | HTMLElement, content: string | Node | Array<string | Node>, options?: SessionItemOptions): HTMLElement[] {
+    const s = resolve(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
-  /** Scroll to the newest message and follow again (options: { behavior }). */
-  scrollToEnd: (t, o) => { const s = resolve(t); if (s) follow(s, o); },
-  /** Scroll to the oldest message (the session stops following). */
-  scrollToStart: (t, o) => { const s = resolve(t); if (s) scrollToStart(s, o); },
-  /** Bring a message into view by id - false when there is none. */
-  scrollToMessage: (t, id, o) => { const s = resolve(t); return s ? scrollToMessage(s, id, o) : false; },
-  /** Whether the reader is at the end (within data-threshold, 48px by default). */
-  isAtEnd: (t) => { const s = resolve(t); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
+  /**
+   * Scroll to the newest message and follow again.
+   * @param target - the .session element, its id or a selector
+   * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+   */
+  scrollToEnd: (target: string | HTMLElement, options?: SessionScrollOptions): void => { const s = resolve(target); if (s) follow(s, options); },
+  /**
+   * Scroll to the oldest message (the session stops following).
+   * @param target - the .session element, its id or a selector
+   * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+   */
+  scrollToStart: (target: string | HTMLElement, options?: SessionScrollOptions): void => { const s = resolve(target); if (s) scrollToStart(s, options); },
+  /**
+   * Bring a message into view by id.
+   * @param target - the .session element, its id or a selector
+   * @param id - the message's data-message-id
+   * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+   * @returns false when the session has no such message
+   */
+  scrollToMessage: (target: string | HTMLElement, id: string, options?: SessionScrollOptions): boolean => { const s = resolve(target); return s ? scrollToMessage(s, id, options) : false; },
+  /**
+   * Whether the reader is at the end (within data-threshold, 48px by default).
+   * @param target - the .session element, its id or a selector
+   * @returns true when following is on - new messages scroll into view
+   */
+  isAtEnd: (target: string | HTMLElement): boolean => { const s = resolve(target); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
 };
 
 init();

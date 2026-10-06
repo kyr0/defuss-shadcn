@@ -1,0 +1,1202 @@
+/* ── components/button/button.css ── */
+/* -- Button component ------------------------------------------ */
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    line-height: 1;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 150ms ease;
+    outline: none;
+    flex-shrink: 0;
+    height: 2.25rem;
+    padding: 0 1rem;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+
+    & svg {
+      pointer-events: none;
+      flex-shrink: 0;
+
+      &:not([class*="size-"]) { width: 1rem; height: 1rem; }
+    }
+
+    /* a loading .spinner inside a button takes the button's own text color —
+       spinner.css defaults it to --muted-foreground, invisible on a primary */
+    & .spinner { color: inherit; }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &:disabled, &[aria-disabled="true"] {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* Loading state (aria-busy + a .spinner child): a disabled button must
+       freeze its spinner - "pending" is signaled by the dimming, a frozen
+       wheel is the accepted pattern; only an ENABLED busy button spins. */
+    &:disabled .spinner,
+    &[aria-disabled="true"] .spinner {
+      animation-play-state: paused;
+    }
+
+    /* -- Variants -------------------------------------------- */
+    &[data-variant="default"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+
+      &:hover { opacity: 0.9; }
+    }
+
+    &[data-variant="secondary"] {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+
+      /* --secondary is near-white in light themes, so an opacity fade would
+         wash the button further into the page background (invisible hover).
+         Mixing in the foreground color instead darkens light themes and
+         lightens dark ones - always moving away from the page surface. */
+      &:hover {
+        background-color: color-mix(in oklch, var(--secondary) 85%, var(--secondary-foreground));
+      }
+    }
+
+    &[data-variant="outline"] {
+      background-color: var(--background);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+
+    &[data-variant="ghost"] {
+      background-color: transparent;
+      color: var(--foreground);
+      border-color: transparent;
+
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+
+    &[data-variant="destructive"] {
+      background-color: var(--destructive);
+      color: var(--destructive-foreground);
+
+      &:hover { opacity: 0.9; }
+    }
+
+    &[data-variant="link"] {
+      background-color: transparent;
+      color: var(--primary);
+      height: auto;
+      padding: 0;
+      text-underline-offset: 4px;
+
+      &:hover { text-decoration: underline; }
+    }
+
+    /* soft: a tint of the color, text in the color */
+    &[data-variant="soft"] {
+      background-color: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+
+      &:hover { background-color: color-mix(in oklch, var(--primary) 20%, transparent); }
+    }
+
+    /* dashed: a drop-zone / "add" look */
+    &[data-variant="dashed"] {
+      background-color: transparent;
+      color: var(--foreground);
+      border: 1px dashed color-mix(in oklch, var(--foreground) 35%, transparent);
+
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+        border-style: solid;
+      }
+    }
+
+    /* -- Tones: any variant in another color -------------------
+       data-tone="success" / "warning" / "info" / "destructive" - or
+       data-tone="custom" with style="--btn-color: …; --btn-color-fg: …"
+       (the text on a solid fill, default white). Solid buttons fill with the
+       tone; outline / ghost / soft / dashed / link write in it, mixed toward
+       the foreground so a light tone (amber) stays readable. */
+    &[data-tone] {
+      --_tone: var(--btn-color, var(--primary));
+      --_tone-fg: var(--btn-color-fg, #fff);
+      --_tone-ink: color-mix(in oklch, var(--_tone) 78%, var(--foreground));
+    }
+    &[data-tone="success"] { --_tone: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_tone: oklch(0.8 0.16 80); --_tone-fg: oklch(0.28 0.06 60); }
+    &[data-tone="info"] { --_tone: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_tone: var(--destructive); --_tone-fg: var(--destructive-foreground, #fff); }
+
+    &[data-tone]:is(:not([data-variant]), [data-variant="default"]) {
+      background-color: var(--_tone);
+      color: var(--_tone-fg);
+
+      &:hover { opacity: 0.9; }
+    }
+    &[data-tone][data-variant="outline"] {
+      background-color: transparent;
+      color: var(--_tone-ink);
+      border-color: var(--_tone);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 12%, transparent); color: var(--_tone-ink); }
+    }
+    &[data-tone]:is([data-variant="ghost"], [data-variant="dashed"]) {
+      color: var(--_tone-ink);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 14%, transparent); color: var(--_tone-ink); }
+    }
+    &[data-tone][data-variant="dashed"] { border-color: var(--_tone); }
+    &[data-tone][data-variant="soft"] {
+      background-color: color-mix(in oklch, var(--_tone) 16%, transparent);
+      color: var(--_tone-ink);
+
+      &:hover { background-color: color-mix(in oklch, var(--_tone) 26%, transparent); }
+    }
+    &[data-tone][data-variant="link"] { color: var(--_tone-ink); }
+
+    /* -- RTL: arrows and other directional icons mirror ----------
+       mark them data-rtl-flip; symmetric icons stay as they are */
+    &:dir(rtl) [data-rtl-flip] { scale: -1 1; }
+
+    /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"]      { height: 1.75rem; padding: 0 0.5rem;  font-size: 0.75rem; border-radius: var(--radius-sm); }
+    &[data-size="sm"]      { height: 2rem;    padding: 0 0.75rem; font-size: 0.8125rem; }
+    &[data-size="md"]      { height: 2.25rem; padding: 0 1rem;    font-size: 0.875rem; }
+    &[data-size="lg"]      { height: 2.75rem; padding: 0 2rem;    font-size: 1rem; }
+    &[data-size="xl"]      { height: 3.25rem; padding: 0 2.5rem;  font-size: 1.125rem; }
+    &[data-size="icon"]    { height: 2.25rem; width: 2.25rem;  padding: 0; }
+    &[data-size="icon-xs"] { height: 1.75rem; width: 1.75rem;  padding: 0; border-radius: var(--radius-sm); }
+    &[data-size="icon-sm"] { height: 2rem;    width: 2rem;     padding: 0; }
+    &[data-size="icon-lg"] { height: 2.75rem; width: 2.75rem;  padding: 0; }
+    &[data-size="icon-xl"] { height: 3.25rem; width: 3.25rem;  padding: 0; }
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .btn {
+      border: 2px solid transparent;
+
+      &[data-variant="default"],
+      &[data-variant="secondary"],
+      &[data-variant="destructive"] {
+        border-color: currentColor;
+      }
+
+      &[data-variant="outline"],
+      &[data-variant="ghost"] {
+        border-color: var(--foreground);
+      }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .btn {
+      border: 1px solid ButtonText;
+
+      &:disabled, &[aria-disabled="true"] {
+        border-color: GrayText;
+        color: GrayText;
+      }
+    }
+  }
+}
+
+/* ── components/fab/fab.css ── */
+/* -- FAB (floating action button) + speed dial ---------------------- */
+
+@layer components {
+  /* A .fab holds a .fab-trigger (a .btn with popovertarget) and, for a speed
+     dial, a .fab-menu[popover] of .fab-action buttons. The popover is the
+     whole behavior: click / Enter toggles it, Escape and an outside click
+     close it, the trigger reports aria-expanded - no JavaScript. The menu is
+     anchored to the trigger (anchor-scope keeps many FABs apart) and stacks
+     its actions away from it: data-direction up (default) / down / left /
+     right, or data-layout="flower" for a quarter circle. */
+  .fab {
+    --_trig: 3.5rem;
+    --_act: 2.75rem;
+    --_gap: 0.75rem;
+    --_edge: 1.5rem;
+    anchor-scope: --fab;
+    position: fixed;
+    z-index: 50;
+    inset-block-end: var(--_edge);
+    inset-inline-end: var(--_edge);
+    display: flex;
+
+    /* -- Position: the corner (or edge center) it floats in ------------- */
+    &[data-position="bottom-start"] { inset-inline-end: auto; inset-inline-start: var(--_edge); }
+    &[data-position="top-end"] { inset-block-end: auto; inset-block-start: var(--_edge); }
+    &[data-position="top-start"] { inset: var(--_edge) auto auto var(--_edge); }
+    &[data-position="bottom-center"] { inset-inline: 0; justify-content: center; pointer-events: none; & > * { pointer-events: auto; } }
+    /* inside a positioned container (a card, a panel) instead of the page */
+    &[data-attach="container"] { position: absolute; }
+
+    /* -- Sizes: trigger + actions scale together (md == default) --------- */
+    &[data-size="sm"] { --_trig: 2.75rem; --_act: 2.25rem; --_gap: 0.5rem; }
+    &[data-size="md"] { --_trig: 3.5rem; --_act: 2.75rem; --_gap: 0.75rem; }
+    &[data-size="lg"] { --_trig: 4.25rem; --_act: 3.25rem; --_gap: 0.875rem; }
+  }
+
+  /* -- Trigger ------------------------------------------------------------ */
+  .fab-trigger {
+    anchor-name: --fab;
+    width: var(--_trig);
+    height: var(--_trig);
+    padding: 0;
+    border-radius: 9999px;
+    box-shadow: var(--shadow-lg);
+
+    & svg { width: 1.375rem; height: 1.375rem; }
+    & .fab-icon { display: inline-grid; place-items: center; font-size: 1.375rem; line-height: 1; transition: rotate 200ms ease; }
+
+    /* extended: icon + label, a pill */
+    /* icon-only width == the round trigger, so a folded label leaves a circle */
+    &:has(.fab-text) { width: auto; min-width: var(--_trig); padding-inline: calc((var(--_trig) - 1.375rem) / 2); gap: 0; }
+    & .fab-text { margin-inline-start: 0.625rem; padding-inline-end: 0.25rem; }
+  }
+  .fab-text {
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0.9375rem;
+  }
+  /* open: the trigger's icon turns (+ becomes ×) - or swaps with
+     .fab-icon-open / .fab-icon-closed */
+  .fab:has(.fab-menu:popover-open) .fab-trigger .fab-icon:not(.fab-icon-open, .fab-icon-closed) { rotate: 45deg; }
+  .fab:not(:has(.fab-menu:popover-open)) .fab-icon-open,
+  .fab:has(.fab-menu:popover-open) .fab-icon-closed { display: none; }
+
+  /* -- The menu (a popover in the top layer, anchored to the trigger) ----- */
+  .fab-menu[popover] {
+    position: fixed;
+    position-anchor: --fab;
+    inset: auto;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    overflow: visible;
+    display: none;
+    gap: var(--_gap);
+    align-items: center;
+
+    /* up (default): stacked above the trigger, first action nearest */
+    bottom: anchor(bottom);
+    left: anchor(center);
+    translate: -50% 0;
+    flex-direction: column-reverse;
+    padding-block-end: calc(var(--_trig) + var(--_gap));
+
+    &:popover-open { display: flex; }
+
+    /* the menu box overlaps the trigger (its padding leaves room for it) - only
+       the actions take the pointer, so the trigger stays clickable to close */
+    pointer-events: none;
+    & > * { pointer-events: auto; }
+
+    transition: display 180ms allow-discrete, overlay 180ms allow-discrete;
+  }
+  .fab[data-direction="down"] .fab-menu[popover] {
+    bottom: auto;
+    top: anchor(top);
+    flex-direction: column;
+    padding-block: calc(var(--_trig) + var(--_gap)) 0;
+  }
+  .fab[data-direction="left"] .fab-menu[popover] {
+    bottom: auto;
+    left: auto;
+    right: anchor(right);
+    top: anchor(center);
+    translate: 0 -50%;
+    flex-direction: row-reverse;
+    padding: 0 calc(var(--_trig) + var(--_gap)) 0 0;
+  }
+  .fab[data-direction="right"] .fab-menu[popover] {
+    bottom: auto;
+    left: anchor(left);
+    top: anchor(center);
+    translate: 0 -50%;
+    flex-direction: row;
+    padding: 0 0 0 calc(var(--_trig) + var(--_gap));
+  }
+  /* an optional dim layer behind the open dial */
+  .fab[data-backdrop] .fab-menu::backdrop {
+    background-color: color-mix(in oklch, var(--foreground) 22%, transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  /* text dials: the pills line up with the trigger's outer edge */
+  .fab-menu[popover]:has(> .fab-action > .fab-text) {
+    left: auto;
+    right: anchor(right);
+    translate: none;
+    align-items: flex-end;
+  }
+  .fab:is([data-position="bottom-start"], [data-position="top-start"]) .fab-menu[popover]:has(> .fab-action > .fab-text) {
+    right: auto;
+    left: anchor(left);
+    align-items: flex-start;
+  }
+
+  /* -- Actions ------------------------------------------------------------ */
+  .fab-action {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: var(--_act);
+    height: var(--_act);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    font: inherit;
+    font-size: 1.125rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 160ms ease, scale 160ms ease, translate 160ms ease, background-color 150ms ease;
+    transition-delay: calc(var(--_i, 0) * 35ms);
+
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    & svg { width: 1.125rem; height: 1.125rem; }
+    /* .btn tones / variants work on an action too */
+    &.btn { border-radius: 9999px; width: var(--_act); height: var(--_act); padding: 0; }
+  }
+  /* text actions: a pill with the words inside */
+  .fab-action:has(> .fab-text) { display: inline-flex; align-items: center; width: auto; padding-inline: 0.875rem 1.125rem; gap: 0.5rem; white-space: nowrap; font-size: 0.875rem; font-weight: 500; }
+  .fab-action .fab-text { font-size: inherit; }
+
+  /* the stagger: actions pop out from the trigger one after another */
+  .fab-menu > :nth-child(2) { --_i: 1; }
+  .fab-menu > :nth-child(3) { --_i: 2; }
+  .fab-menu > :nth-child(4) { --_i: 3; }
+  .fab-menu > :nth-child(5) { --_i: 4; }
+  .fab-menu > :nth-child(6) { --_i: 5; }
+  .fab-menu > :nth-child(7) { --_i: 6; }
+  .fab-menu:not(:popover-open) > * { opacity: 0; scale: 0.6; }
+  @starting-style {
+    .fab-menu:popover-open > * { opacity: 0; scale: 0.6; }
+    .fab[data-layout="flower"] .fab-menu:popover-open > * { translate: -50% -50%; }
+  }
+
+  /* label chips beside the actions (toward the screen's middle) */
+  .fab-label {
+    position: absolute;
+    inset-inline-end: calc(100% + 0.625rem);
+    top: 50%;
+    translate: 0 -50%;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .fab:is([data-position="bottom-start"], [data-position="top-start"]) .fab-label {
+    inset-inline-end: auto;
+    inset-inline-start: calc(100% + 0.625rem);
+  }
+  /* sideways dials: the label sits above its action */
+  .fab:is([data-direction="left"], [data-direction="right"]) .fab-label {
+    inset-inline: auto;
+    left: 50%;
+    top: auto;
+    bottom: calc(100% + 0.5rem);
+    translate: -50% 0;
+  }
+
+  /* -- Main action: an action that takes the trigger's place when open ---- */
+  .fab-menu > .fab-main {
+    --_i: 0;
+    width: var(--_trig);
+    height: var(--_trig);
+    border: 0;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-lg);
+    font-size: 1.375rem;
+
+    &:hover { background-color: color-mix(in oklch, var(--primary) 88%, var(--primary-foreground)); color: var(--primary-foreground); }
+    & svg { width: 1.375rem; height: 1.375rem; }
+  }
+  .fab-menu:has(> .fab-main) { padding: 0 !important; }
+  .fab-menu:has(> .fab-main) > :not(.fab-main) { --_i: 1; }
+
+  /* -- Flower: the actions on a quarter circle around the trigger --------
+     The arc opens toward the screen's middle (up-left from bottom-end);
+     2 - 6 actions spread evenly. Labels are visually hidden here (they
+     still name the buttons). */
+  .fab[data-layout="flower"] {
+    --_r: calc(var(--_trig) + var(--_act) * 1.6);
+    --_arc: 90deg;
+    --_a0: 0deg;
+    --_sx: -1;
+    --_sy: -1;
+
+    &:is([data-position="bottom-start"], [data-position="top-start"]) { --_sx: 1; }
+    &:is([data-position="top-end"], [data-position="top-start"]) { --_sy: 1; }
+    /* from the center of an edge (a dock's raised action): a semicircle */
+    /* the upper arc only (30° - 150°): the ends stay clear of whatever sits
+       level with the trigger (a dock's neighbouring items) */
+    &:is([data-position="bottom-center"], [data-position="top-center"]) {
+      --_arc: 120deg;
+      --_a0: 30deg;
+      --_sx: -1;
+      --_r: calc(var(--_trig) + var(--_act) * 0.9);
+    }
+    &[data-position="bottom-center"] { --_sy: -1; }
+    &[data-position="top-center"] { --_sy: 1; }
+
+    & .fab-menu[popover] {
+      top: anchor(center);
+      left: anchor(center);
+      bottom: auto;
+      right: auto;
+      width: 0;
+      height: 0;
+      padding: 0;
+      translate: none;
+      display: none;
+      &:popover-open { display: block; }
+    }
+    & .fab-menu > * {
+      --_step: var(--_arc);
+      --_a: calc(var(--_a0) + var(--_k, 0) * var(--_step));
+      position: absolute;
+      left: 0;
+      top: 0;
+      translate: calc(-50% + var(--_sx) * cos(var(--_a)) * var(--_r)) calc(-50% + var(--_sy) * sin(var(--_a)) * var(--_r));
+    }
+    & .fab-menu:not(:popover-open) > * { translate: -50% -50%; }
+    & .fab-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0; }
+
+    /* k = 0 … n-1 along the arc (the main action, if any, stays centered) */
+    & .fab-menu > :not(.fab-main):nth-child(1 of :not(.fab-main)) { --_k: 0; }
+    & .fab-menu > :not(.fab-main):nth-child(2 of :not(.fab-main)) { --_k: 1; }
+    & .fab-menu > :not(.fab-main):nth-child(3 of :not(.fab-main)) { --_k: 2; }
+    & .fab-menu > :not(.fab-main):nth-child(4 of :not(.fab-main)) { --_k: 3; }
+    & .fab-menu > :not(.fab-main):nth-child(5 of :not(.fab-main)) { --_k: 4; }
+    & .fab-menu > :not(.fab-main):nth-child(6 of :not(.fab-main)) { --_k: 5; }
+    & .fab-menu:has(> :not(.fab-main):nth-child(3 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 2); }
+    & .fab-menu:has(> :not(.fab-main):nth-child(4 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 3); }
+    & .fab-menu:has(> :not(.fab-main):nth-child(5 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 4); --_r: calc(var(--_trig) + var(--_act) * 2.1); }
+    & .fab-menu:has(> :not(.fab-main):nth-child(6 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 5); }
+    & .fab-menu > .fab-main { translate: -50% -50%; }
+  }
+
+  /* -- Extended FAB that shrinks to its icon as the page scrolls ----------
+     data-shrink="scroll": a scroll-driven animation (no listener) folds the
+     label away over the first 120px of scrolling. It follows the page;
+     for a scrolling container, name its timeline (scroll-timeline: --list;
+     timeline-scope on a shared ancestor) and set --fab-timeline: --list. */
+  @keyframes fab-shrink {
+    to { max-width: 0; opacity: 0; margin-inline-start: 0; padding-inline-end: 0; }
+  }
+  .fab[data-shrink="scroll"] .fab-trigger {
+    & .fab-text {
+      max-width: 12rem;
+      animation: fab-shrink linear both;
+      animation-timeline: var(--fab-timeline, scroll(root block));
+      animation-range: 0 120px;
+    }
+  }
+
+  /* -- Back to top --------------------------------------------------------
+     data-scroll-top: the trigger is a link to the start (href="#top" - the
+     browser scrolls the document to its top natively, even without an
+     element of that id; for a scrolling container, link to an element at
+     its start). A scroll-driven animation keeps it hidden at the top and
+     fades / grows it in between --fab-scroll-top-from and -to of scroll
+     (default 160px - 320px); visibility follows, so it is not focusable
+     while hidden. The timeline is a var() - minifiers leave it alone. */
+  @keyframes fab-appear {
+    from { opacity: 0; scale: 0.6; visibility: hidden; }
+  }
+  .fab[data-scroll-top] .fab-trigger {
+    animation: fab-appear linear both;
+    animation-timeline: var(--fab-timeline, scroll(root block));
+    animation-range: var(--fab-scroll-top-from, 160px) var(--fab-scroll-top-to, 320px);
+  }
+  /* the jump glides - for people who have not asked for less motion */
+  @media (prefers-reduced-motion: no-preference) {
+    html:has(.fab[data-scroll-top]) { scroll-behavior: smooth; }
+  }
+
+  /* -- Accessibility -------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .fab-action, .fab-trigger .fab-icon, .fab-menu[popover] { transition: none; }
+    .fab[data-shrink="scroll"] .fab-trigger .fab-text { animation: none; }
+    .fab[data-scroll-top] .fab-trigger { animation: none; }
+  }
+  @media (forced-colors: active) {
+    .fab-action, .fab-label { border: 1px solid CanvasText; }
+  }
+}
+
+/* ── components/toggle/toggle.css ── */
+/* -- Toggle component ------------------------------------------ */
+
+@layer components {
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    outline: none;
+    flex-shrink: 0;
+    height: 2.25rem;
+    padding: 0 0.5rem;
+    min-width: 2.25rem;
+
+    &:hover:not(:disabled) {
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+    }
+
+    &[aria-pressed="true"] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+
+      &:hover:not(:disabled) {
+        background-color: color-mix(in oklch, var(--accent) 85%, var(--foreground));
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* disabled: dimmed, with the not-allowed cursor - no pointer-events: none,
+       which would hide the cursor too (a disabled button fires no click) */
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    & svg {
+      pointer-events: none;
+      flex-shrink: 0;
+
+      &:not([class*="size-"]) { width: 1rem; height: 1rem; }
+    }
+
+    /* -- Variants -------------------------------------------- */
+    &[data-variant="outline"] {
+      border: 1px solid var(--input);
+      background: transparent;
+      box-shadow: var(--shadow-xs);
+
+      &:hover:not(:disabled) {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+
+      &[aria-pressed="true"] {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+
+        &:hover:not(:disabled) {
+          background-color: color-mix(in oklch, var(--accent) 85%, var(--foreground));
+        }
+      }
+    }
+
+    /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"]  { height: 1.75rem; padding: 0 0.25rem;  min-width: 1.75rem; font-size: 0.75rem; }
+    &[data-size="sm"]  { height: 2rem;  padding: 0 0.375rem; min-width: 2rem; }
+    &[data-size="md"]  { height: 2.25rem; padding: 0 0.5rem;   min-width: 2.25rem; }
+    &[data-size="lg"]  { height: 2.5rem; padding: 0 0.625rem; min-width: 2.5rem; }
+    &[data-size="xl"]  { height: 3rem;  padding: 0 0.75rem;  min-width: 3rem; font-size: 1rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toggle { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .toggle {
+      border: 2px solid transparent;
+
+      &[data-variant="outline"] {
+        border-color: var(--foreground);
+      }
+
+      &[aria-pressed="true"] {
+        border-color: currentColor;
+      }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .toggle {
+      border: 1px solid ButtonText;
+
+      &[aria-pressed="true"] {
+        background: Highlight;
+        color: HighlightText;
+      }
+
+      &:disabled {
+        border-color: GrayText;
+        color: GrayText;
+      }
+    }
+  }
+}
+
+/* ── components/swap/swap.css ── */
+/* -- Swap component -------------------------------------------- */
+
+@layer components {
+  .swap {
+    /* the faces stack in one grid cell, so the box sizes to the widest one
+       and no absolute positioning / JS measurement is needed */
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--foreground);
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    /* flip needs depth; harmless for the other variants */
+    perspective: 40rem;
+
+    /* the checkbox IS the state — visually hidden but focusable and
+       hit-testable across the whole control (no .sr-only dependency) */
+    & > input[type="checkbox"] {
+      grid-area: 1 / 1;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      cursor: inherit;
+    }
+
+    & .swap-on,
+    & .swap-off,
+    & .swap-indeterminate {
+      grid-area: 1 / 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      backface-visibility: hidden;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        rotate 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    & svg:not([class*="size-"]) {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* -- Faces: default (off) ------------------------------- */
+    & .swap-off { opacity: 1; }
+
+    /* -- Faces: indeterminate ------------------------------- */
+    &:has(> input:indeterminate) {
+      & .swap-off { opacity: 0; }
+      & .swap-indeterminate { opacity: 1; }
+    }
+
+    /* -- Faces: on (checked, or forced via data-active) ------ */
+    &:has(> input:checked),
+    &[data-active] {
+      & .swap-off,
+      & .swap-indeterminate { opacity: 0; }
+      & .swap-on { opacity: 1; }
+    }
+
+    /* -- Variant: rotate ------------------------------------ */
+    &[data-variant="rotate"] {
+      & .swap-on,
+      & .swap-indeterminate { rotate: -45deg; }
+
+      &:has(> input:indeterminate) {
+        & .swap-off { rotate: 45deg; }
+        & .swap-indeterminate { rotate: 0deg; }
+      }
+
+      &:has(> input:checked),
+      &[data-active] {
+        & .swap-off,
+        & .swap-indeterminate { rotate: 45deg; }
+        & .swap-on { rotate: 0deg; }
+      }
+    }
+
+    /* -- Variant: flip -------------------------------------- */
+    &[data-variant="flip"] {
+      & .swap-on,
+      & .swap-indeterminate { rotate: y 180deg; }
+
+      &:has(> input:indeterminate) {
+        & .swap-off { rotate: y -180deg; }
+        & .swap-indeterminate { rotate: y 0deg; }
+      }
+
+      &:has(> input:checked),
+      &[data-active] {
+        & .swap-off,
+        & .swap-indeterminate { rotate: y -180deg; }
+        & .swap-on { rotate: y 0deg; }
+      }
+    }
+
+    /* -- Sizes ---------------------------------------------- */
+    &[data-size="sm"] {
+      min-width: 2rem;
+      min-height: 2rem;
+      font-size: 0.75rem;
+
+      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+    }
+
+    &[data-size="lg"] {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      font-size: 1.125rem;
+
+      & svg:not([class*="size-"]) { width: 1.5rem; height: 1.5rem; }
+    }
+
+    /* -- Interaction states --------------------------------- */
+    &:hover:not(:has(> input:disabled)) { background-color: var(--accent); color: var(--accent-foreground); }
+
+    &:has(> input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* a disabled input never toggles - no pointer-events: none, so the
+       not-allowed cursor shows */
+    &:has(> input:disabled) {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Accessibility: honour a reduced-motion request — the faces still swap,
+     they just do not animate (near-zero duration keeps transitionend firing). */
+  @media (prefers-reduced-motion: reduce) {
+    .swap .swap-on,
+    .swap .swap-off,
+    .swap .swap-indeterminate {
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .swap {
+      border: 2px solid transparent;
+
+      &:has(> input:checked),
+      &[data-active] { border-color: currentColor; }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .swap {
+      border: 1px solid ButtonText;
+      color: ButtonText;
+      forced-color-adjust: none;
+
+      &:has(> input:checked),
+      &[data-active] {
+        background: Highlight;
+        color: HighlightText;
+      }
+
+      &:has(> input:disabled) { border-color: GrayText; color: GrayText; }
+    }
+  }
+}
+
+/* ── components/toggle-group/toggle-group.css ── */
+/* -- Toggle Group component ------------------------------------- */
+
+@layer components {
+  .toggle-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.0625rem;
+
+    /* -- Outline variant: propagate border + shadow to children -- */
+    &[data-variant="outline"] > .toggle {
+      border: 1px solid var(--input);
+      background: transparent;
+      box-shadow: var(--shadow-xs);
+
+      &:hover {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+
+      &[aria-pressed="true"] {
+        background-color: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+
+    /* Collapse double borders on connected outline items */
+    &[data-variant="outline"]:not([data-spacing]) > .toggle:not(:first-child) {
+      margin-inline-start: -1px;
+    }
+
+    &[data-variant="outline"]:not([data-spacing])[data-orientation="vertical"] > .toggle:not(:first-child) {
+      margin-inline-start: 0;
+      margin-block-start: -1px;
+    }
+
+    /* -- Sizes: propagate to child toggles ---------------------- */
+    &[data-size="xs"] > .toggle {
+      height: 1.75rem;
+      padding: 0 0.25rem;
+      min-width: 1.75rem;
+      font-size: 0.75rem;
+    }
+
+    &[data-size="sm"] > .toggle {
+      height: 2rem;
+      padding: 0 0.375rem;
+      min-width: 2rem;
+
+      & svg { width: 0.875rem; height: 0.875rem; }
+    }
+
+    &[data-size="md"] > .toggle {
+      height: 2.25rem;
+      padding: 0 0.5rem;
+      min-width: 2.25rem;
+    }
+
+    &[data-size="lg"] > .toggle {
+      height: 2.5rem;
+      padding: 0 0.625rem;
+      min-width: 2.5rem;
+    }
+
+    &[data-size="xl"] > .toggle {
+      height: 3rem;
+      padding: 0 0.75rem;
+      min-width: 3rem;
+      font-size: 1rem;
+
+      & svg { width: 1.125rem; height: 1.125rem; }
+    }
+
+    /* -- Vertical orientation ----------------------------------- */
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+    }
+
+    /* -- Connected borders: merge adjacent toggle radii ---------
+       Square only the corners that actually touch a neighbour:
+       inline corners horizontally, block corners vertically. The
+       orientation attribute is wrapped in :where() so every rule
+       keeps one-class-plus-one-pseudo specificity - the later
+       [data-spacing] radius restore must still win the tie.
+       (The previous per-corner "restore" overrides let the
+       :not(:last-child) block re-round a middle item's top-right
+       corner - issue #12.) */
+    &:where(:not([data-orientation="vertical"])) > .toggle:not(:first-child) {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+
+    &:where(:not([data-orientation="vertical"])) > .toggle:not(:last-child) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    &:where([data-orientation="vertical"]) > .toggle:not(:first-child) {
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+
+    &:where([data-orientation="vertical"]) > .toggle:not(:last-child) {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    /* -- Spacing: adds gap and restores individual radii --------- */
+    &[data-spacing] {
+      gap: 0.25rem;
+
+      & > .toggle {
+        border-radius: var(--radius-md);
+      }
+    }
+
+    /* -- Disabled group ----------------------------------------- */
+    /* the runtime ignores clicks in a disabled group; the cursor says so */
+    &[data-disabled] {
+      & > .toggle {
+        opacity: 0.5;
+        cursor: not-allowed;
+        &:hover { background-color: transparent; color: inherit; }
+      }
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .toggle-group .toggle {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .toggle-group > .toggle {
+      border-color: ButtonBorder;
+
+      &[aria-pressed="true"] {
+        background-color: Highlight;
+        color: HighlightText;
+        border-color: Highlight;
+      }
+
+      &:focus-visible {
+        outline-color: Highlight;
+      }
+    }
+  }
+}
+
+/* ── components/button-group/button-group.css ── */
+/* -- Button Group component ------------------------------------- */
+
+@layer components {
+  .btn-group {
+    display: inline-flex;
+    align-items: stretch;
+
+    /* Collapse borders between adjacent buttons */
+    & > .btn + .btn {
+      margin-inline-start: -1px;
+    }
+
+    /* Remove internal radii for connected appearance. The orientation gate is
+       :where()-wrapped so these INLINE-corner rules only ever apply to
+       horizontal groups; ungated they also squared vertical buttons' corners
+       at a higher specificity than the vertical block below, leaving "Top"
+       with a rounded top-left but a square top-right (issue #13). */
+    &:where(:not([data-orientation="vertical"])) > .btn:not(:first-child) {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+
+    &:where(:not([data-orientation="vertical"])) > .btn:not(:last-child) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    /* A separator JOINS the control (a split button: action | menu trigger):
+       it is the one dividing line, so the buttons on either side keep their
+       square inner corners and drop the border that touches it - 1px total,
+       not border + rule + border with rounded inner corners (which read as
+       two buttons with a gap). */
+    &:where(:not([data-orientation="vertical"])) {
+      & > .btn:has(+ [role="separator"]) { border-inline-end-width: 0; }
+      & > [role="separator"] + .btn { border-inline-start-width: 0; }
+    }
+
+    /* Ensure hovered/focused button stacks above its neighbors */
+    & > .btn:hover,
+    & > .btn:focus-visible {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* -- Separator ------------------------------------------- */
+    & > [role="separator"] {
+      width: 1px;
+      align-self: stretch;
+      background: var(--border);
+      border: 0;
+      margin: 0;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    /* -- Vertical orientation -------------------------------- */
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      align-items: stretch;
+
+      & > .btn + .btn {
+        margin-inline-start: 0;
+        margin-top: -1px;
+      }
+
+      /* Square exactly the BLOCK corners that touch a neighbour - a
+         non-first button squares its top edge, a non-last its bottom
+         edge; the base .btn radius keeps every outer corner rounded on
+         both sides. No per-corner "restore" overrides: the last block's
+         restores re-rounded a corner the previous block had just
+         squared, which (together with the ungated horizontal rules)
+         produced the asymmetric Top/Middle corners of issue #13. */
+      & > .btn:not(:first-child) {
+        border-start-start-radius: 0;
+        border-start-end-radius: 0;
+      }
+
+      & > .btn:not(:last-child) {
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+      }
+
+      & > [role="separator"] {
+        width: auto;
+        height: 1px;
+      }
+
+      & > .btn:has(+ [role="separator"]) { border-block-end-width: 0; }
+      & > [role="separator"] + .btn { border-block-start-width: 0; }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .btn-group > [role="separator"] {
+      background: ButtonText;
+    }
+  }
+}
+
+/* ── components/toolbar/toolbar.css ── */
+/* -- Toolbar component ------------------------------------------ */
+
+@layer components {
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--background);
+    width: fit-content;
+
+    /* -- Sizes ----------------------------------------------------
+       data-size on the .toolbar root scales the chrome (padding/gap) and the
+       direct .btn/.toggle/.toggle-group controls together, mirroring the
+       button ladder (md = .btn's default 2.25rem). The descendant selector
+       (0-3-0) outranks each control's own [data-size] rule (0-2-0). */
+    &[data-size="xs"] {
+      gap: 0.125rem;
+      padding: 0.125rem;
+      & :is(.btn, .toggle) { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
+    }
+    &[data-size="sm"] {
+      gap: 0.1875rem;
+      padding: 0.1875rem;
+      & :is(.btn, .toggle) { height: 2rem; padding: 0 0.75rem; font-size: 0.8125rem; }
+    }
+    &[data-size="md"] {
+      gap: 0.25rem;
+      padding: 0.25rem;
+      & :is(.btn, .toggle) { height: 2.25rem; }
+    }
+    &[data-size="lg"] {
+      gap: 0.375rem;
+      padding: 0.375rem;
+      & :is(.btn, .toggle) { height: 2.75rem; padding: 0 1rem; font-size: 1rem; }
+    }
+    &[data-size="xl"] {
+      gap: 0.5rem;
+      padding: 0.5rem;
+      & :is(.btn, .toggle) { height: 3.25rem; padding: 0 1.25rem; font-size: 1.125rem; }
+    }
+
+    /* Vertical separators stretch to fill toolbar height */
+    & > .separator[data-orientation="vertical"] {
+      align-self: stretch;
+      height: auto;
+      margin: 0.25rem 0.25rem;
+    }
+
+    /* Vertical toolbar */
+    &[aria-orientation="vertical"] {
+      flex-direction: column;
+
+      & > .separator[data-orientation="horizontal"],
+      & > .separator:not([data-orientation]) {
+        height: 1px;
+        width: 1.5rem;
+        margin: 0.25rem 0;
+      }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .toolbar {
+      border-color: ButtonText;
+    }
+  }
+}

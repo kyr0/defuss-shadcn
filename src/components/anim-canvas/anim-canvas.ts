@@ -34,6 +34,28 @@ const dfDollar = defussQuery();
 
 const animCanvasStates = ['default', 'overview'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() also reports the live slide and overview flag). */
+export interface AnimCanvasStateConfigs {
+  /** One slide framed 1:1. */
+  default: {
+    /** the id of the slide to focus (plays its declared transition); without it the active slide is framed again. getState() reports the active slide's id */
+    slide?: string;
+    /** reported by getState(): whether the board is zoomed out (false here) */
+    overview?: boolean;
+  };
+  /** The whole board zoomed out, every slide a clickable tile ([data-overview] on the root). */
+  overview: {
+    /** false zooms back into the active slide instead */
+    value?: boolean;
+    /** reported by getState(): the id of the active slide */
+    slide?: string;
+    /** reported by getState(): whether the board is zoomed out */
+    overview?: boolean;
+  };
+}
+
 /** Board geometry of one slide cell, in board units (px at scale 1). */
 interface SlidePos {
   x: number;

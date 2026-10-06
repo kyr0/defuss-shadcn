@@ -19,6 +19,16 @@ const dfDollar = defussQuery();
 
 const imageStates = ['default', 'error'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the image's states take none. */
+export interface ImageStateConfigs {
+  /** The image shows. */
+  default: {};
+  /** The image failed to load - the fallback shows (set by the error event, or by setState). */
+  error: {};
+}
+
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
  * to a detached copy of the authored markup ('default' IS the authored

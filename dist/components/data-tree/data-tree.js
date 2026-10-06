@@ -230,7 +230,7 @@ function select(tree, index) {
     if (!entry)
         return;
     query(tree, { selected: entry.row[tree._source.idField] });
-    // Fires when an item is selected (click, Enter, Space) - its record and its tree meta (depth, hasChildren …).
+    // Fires when an item is selected (click, Enter, Space) - its record and its tree meta (depth, hasChildren ...).
     tree.dispatchEvent(new CustomEvent('data-tree-select', { bubbles: true, detail: { record: entry.row, meta: entry.meta } }));
 }
 /** move the active item and keep it on screen */
@@ -334,6 +334,9 @@ df$.dataTree = {
      * ('parentId', or data-parent-field), render(el, record, meta) for the
      * label (default: the data-label-field value), query (the starting view),
      * persist ({ area: 'session' | 'local' | 'none', prefix, key }).
+     * @param target - the .data-tree element or its selector
+     * @param rows - the records, a flat list linked by parent id
+     * @param options - fields, label rendering, the starting view and its persistence
      */
     setSource(target, rows, options = {}) {
         const tree = resolve(target);
@@ -346,20 +349,34 @@ df$.dataTree = {
         if (tree.store)
             dataTreeApi.setState(tree, 'default', { ...options.query, ...(options.persist ? attachPersistence(tree, options.persist) : {}) });
     },
-    /** merge into the query: { filters?, sorters?, expanded?, selected? } */
-    query: (target, patch) => query(resolve(target), patch),
-    /** Open every branch. */
+    /**
+     * Merge into the query: { filters?, sorters?, expanded?, selected? }.
+     * @param target - the .data-tree element or its selector
+     * @param patch - the query keys to change
+     */
+    query: (target, patch) => { query(resolve(target), patch); },
+    /**
+     * Open every branch.
+     * @param target - the .data-tree element or its selector
+     */
     expandAll(target) {
         const tree = resolve(target);
         query(tree, { expanded: tree._source.branchIds(), collapsed: [] });
     },
-    /** Close every branch (while filtering: the ways to the matches too). */
+    /**
+     * Close every branch (while filtering: the ways to the matches too).
+     * @param target - the .data-tree element or its selector
+     */
     collapseAll(target) {
         const tree = resolve(target);
         const filtering = (configOf(tree).filters || []).length > 0;
         query(tree, filtering ? { collapsed: tree._source.branchIds() } : { expanded: [] });
     },
-    /** the selected record (or null) */
+    /**
+     * The selected record.
+     * @param target - the .data-tree element or its selector
+     * @returns the record whose id is selected, null when none is
+     */
     selected(target) {
         const tree = resolve(target);
         const id = configOf(tree).selected ?? null;

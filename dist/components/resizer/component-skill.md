@@ -67,22 +67,53 @@ document.querySelector('#panel').api.setState('default', { width: 320 });
 document.querySelector('#panel').api.getState(); // { name: 'default', config: { width, height, mode } }
 ```
 
-Actions (schema contract): `reset` dispatches `resizer-reset` on the wrapper —
+Actions (schema contract): `reset` dispatches `resizer-reset` on the wrapper,
 equivalent to `setState('default')`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.resizerApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.resizerStates` = `default`.
+<code>type ResizerState = 'default'</code> - `setState(name, config)` takes the config of the state it names (`ResizerStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The panes at a size; no config restores the authored one. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>width?</code></td><td><code>number</code></td><td>the resized pane's width, px</td></tr><tr><td><code>height?</code></td><td><code>number</code></td><td>its height, px</td></tr><tr><td><code>mode?</code></td><td><code>string</code></td><td>reported by getState(): how the size is applied (data-resize-mode: px, classes or controlled)</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends ResizerState&gt;(name: S, config?: ResizerStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ResizerStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: ResizerState; config: ResizerStateConfigs[ResizerState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.resizerApi.setState&lt;S extends ResizerState&gt;(el: HTMLElement, name: S, config?: ResizerStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>ResizerStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.resizerApi.getState(el: HTMLElement): { name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.resizerApi.render(state: { name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: ResizerState; config: ResizerStateConfigs[ResizerState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.resizerApi.store(el: HTMLElement): Store&lt;{ name: ResizerState; config: ResizerStateConfigs[ResizerState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: ResizerState; config: ResizerStateConfigs[ResizerState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.resizerApi.commit&lt;S extends ResizerState&gt;(el: HTMLElement, name: S, config?: ResizerStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>ResizerStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.resizerStates: ResizerState[]</code> | The declared states, 'default' first: <code>default</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `resizer-resize` | `axis`, `width`, `height` | Fires while the divider moves (pointer or keys) - the axis and the new width / height. |
+| Event | Description |
+|---|---|
+| `resizer-resize` | Fires while the divider moves (pointer or keys) - the axis and the new width / height. <code>detail</code>: <code>ResizerResizeDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>axis</code></td><td><code>'w' \| 'h'</code></td><td>the axis that moved: 'w' (width) or 'h' (height)</td></tr><tr><td><code>width</code></td><td><code>number</code></td><td>the resized pane's width now, px</td></tr><tr><td><code>height</code></td><td><code>number</code></td><td>its height now, px</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `ResizerResizeDetail` | What resizer-resize carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>axis</code></td><td><code>'w' \| 'h'</code></td><td>the axis that moved: 'w' (width) or 'h' (height)</td></tr><tr><td><code>width</code></td><td><code>number</code></td><td>the resized pane's width now, px</td></tr><tr><td><code>height</code></td><td><code>number</code></td><td>its height now, px</td></tr></table> |
 
 ## ARIA
 

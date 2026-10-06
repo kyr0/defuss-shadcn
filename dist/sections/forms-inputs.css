@@ -1,0 +1,3727 @@
+/* ── components/label/label.css ── */
+/* -- Label component -------------------------------------------- */
+
+@layer components {
+  .label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    line-height: 1;
+    color: var(--foreground);
+    display: block;
+    margin-bottom: 0.375rem;
+    cursor: default;
+
+    /* Required - the adjacent control carries `required`: render the star.
+       Pure CSS (no span to remember, nothing to desync); decorative only —
+       the native attribute already conveys the requirement to AT. */
+    &:has(+ input[required])::after,
+    &:has(+ textarea[required])::after {
+      content: ' \00a0*';
+      color: var(--destructive);
+      font-weight: 600;
+    }
+
+    /* Disabled - explicit attribute */
+    &[data-disabled] {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Disabled - auto-detect via adjacent disabled control */
+    &:has(+ :disabled),
+    &:has(+ [data-disabled]) {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  /* -- Hint text (optional, required indicators) ----------- */
+  .label-hint {
+    font-weight: 400;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Accessibility ---------------------------------------- */
+  @media (prefers-contrast: more) {
+    .label[data-disabled],
+    .label:has(+ :disabled),
+    .label:has(+ [data-disabled]) {
+      opacity: 0.85;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .label {
+      color: LinkText;
+    }
+
+    .label[data-disabled],
+    .label:has(+ :disabled),
+    .label:has(+ [data-disabled]) {
+      opacity: 1;
+      color: GrayText;
+    }
+  }
+}
+
+/* ── components/input/input.css ── */
+/* -- Input component ------------------------------------------- */
+
+@layer components {
+  .input {
+    /* border-box is load-bearing for the shared field ladder: the UA gives
+       <input> content-box, so `height` would otherwise exclude the 2px frame
+       and render 2px taller than the border-box fields (select, button-based
+       triggers). With it, every declared height IS the rendered box.
+       The unsized default IS the ladder's md step (2.25rem = 36px) - same
+       height, padding and font as [data-size="md"] below, so an unlabeled
+       field and an explicit md field are the same control. */
+    box-sizing: border-box;
+    height: 2.25rem;
+    width: 100%;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &::placeholder { color: var(--muted-foreground); }
+
+    /* -- Readonly state -------------------------------------- */
+    /* :not(:disabled) is load-bearing: a disabled input ALSO matches
+       :read-only, and this rule's specificity (class + pseudo + :not attr)
+       outranks the plain :disabled below - without the exclusion, disabled
+       controls would render with the readonly look (0.7/default). */
+    &:read-only:not([type="file"], :disabled) {
+      background: var(--muted);
+      cursor: default;
+      opacity: 0.7;
+
+      &:focus {
+        border-color: var(--input);
+        box-shadow: var(--shadow-xs);
+      }
+    }
+
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
+    &:disabled {
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* -- Invalid state --------------------------------------- */
+    /* WHEN a field turns red: aria-invalid="true" always (the page decided).
+       The browser's own verdict (:user-invalid, i.e. after the user left a
+       changed field) only counts inside a <form> - a standalone text box has
+       nothing to submit, so a half-typed value is never judged - and inside
+       form[data-validate="submit"] only once the page has stamped
+       data-submitted on the form (a submit attempt): check when the person
+       is finished, not the instant they leave the box. */
+    &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+
+      &:focus {
+        border-color: var(--destructive);
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* -- File input ------------------------------------------ */
+    &[type="file"] {
+      padding: 0;
+      font-size: 0.875rem;
+
+      &::file-selector-button {
+        height: 100%;
+        border: none;
+        border-right: 1px solid var(--input);
+        background: var(--muted);
+        color: var(--foreground);
+        font-size: 0.875rem;
+        font-weight: 500;
+        font-family: var(--font-sans);
+        padding: 0 0.75rem;
+        margin-right: 0.75rem;
+        cursor: pointer;
+        transition: background 150ms;
+
+        &:hover { background: var(--accent); }
+      }
+    }
+
+    /* -- Native in-field buttons ------------------------------
+       The clear "×" of type="search" and the calendar/clock icon of the
+       date/time types are clickable controls INSIDE the text field - without
+       this they inherit the field's text cursor and look like more text to
+       type into (the file picker's button above already points). */
+    &::-webkit-search-cancel-button,
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+    }
+
+    /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
+  }
+
+  /* -- Input group: icons, text and buttons inside the field ---
+     The GROUP draws the field frame (border, radius, shadow, focus ring,
+     invalid / disabled / readonly surfaces); the .input inside goes
+     frameless and fills the rest. DOM order is the placement: an addon
+     before the .input sits at the start, one after it at the end - so a
+     trailing copy / show-password / clear button is just markup after the
+     input, and any addon width works without hand-tuned padding. */
+  .input-group {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 2.25rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    & > .input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      border-radius: inherit;
+      background: transparent;
+      box-shadow: none;
+      font-size: inherit;
+
+      &:focus { box-shadow: none; }
+      &:not(:first-child) { padding-inline-start: 0.5rem; }
+      &:not(:last-child) { padding-inline-end: 0.5rem; }
+    }
+
+    &:has(> .input:focus) {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &:has(> .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *))) {
+      border-color: var(--destructive);
+
+      &:has(> .input:focus) {
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* readonly: the group carries the muted surface (the input's own
+       readonly background would stop short of the addons) */
+    &:has(> .input:read-only:not(:disabled)) {
+      background: var(--muted);
+
+      & > .input { background: transparent; }
+      &:has(> .input:focus) {
+        border-color: var(--input);
+        box-shadow: var(--shadow-xs);
+      }
+    }
+
+    &:has(> .input:disabled) {
+      background: var(--muted);
+      box-shadow: none;
+      cursor: not-allowed;
+
+      & > .input { background: transparent; }
+    }
+
+    /* decorative icon (inline <svg> or lucide <i>) */
+    & > .input-group-icon {
+      flex-shrink: 0;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+      pointer-events: none;
+
+      &:first-child { margin-inline-start: 0.75rem; }
+      &:last-child { margin-inline-end: 0.75rem; }
+    }
+
+    /* static text: a unit, a protocol, a domain */
+    & > .input-group-text {
+      flex-shrink: 0;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+      user-select: none;
+
+      &:first-child { margin-inline-start: 0.75rem; }
+      &:last-child { margin-inline-end: 0.75rem; }
+    }
+
+    /* an in-field action: copy, show/hide, clear, open a picker */
+    & > .input-group-button {
+      flex-shrink: 0;
+      display: inline-grid;
+      place-items: center;
+      box-sizing: border-box;
+      height: calc(100% - 0.5rem);
+      aspect-ratio: 1;
+      padding: 0;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background-color 150ms, color 150ms;
+
+      & svg { width: 1rem; height: 1rem; }
+      /* icon swaps (copy -> check, eye -> eye-off): the UA's [hidden] rule
+         only covers HTML elements, so a hidden <svg> needs its own */
+      & svg[hidden] { display: none; }
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      &:disabled { cursor: not-allowed; background: transparent; color: var(--muted-foreground); }
+      &:first-child { margin-inline-start: 0.25rem; }
+      &:last-child { margin-inline-end: 0.25rem; }
+      & + .input-group-button { margin-inline-start: 0.125rem; }
+    }
+
+    /* -- Sizes: the same ladder as .input, set on the group ------ */
+    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem; }
+  }
+
+  /* -- Auto-growing textarea --------------------------------- */
+  textarea.input {
+    field-sizing: content;
+    min-height: 5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* -- Field description ------------------------------------- */
+  .field-description {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    margin: 0.375rem 0 0;
+  }
+
+  /* -- Field error ------------------------------------------- */
+  .field-error {
+    font-size: 0.8125rem;
+    color: var(--destructive);
+    margin: 0.375rem 0 0;
+  }
+
+  /* -- Accessibility ---------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .input {
+      transition: none;
+    }
+
+    .input[type="file"]::file-selector-button {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .input {
+      border-width: 2px;
+    }
+
+    .input:disabled {
+      border-color: var(--muted-foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .input {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background: Field;
+    }
+
+    .input:focus {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+
+    .input:disabled {
+      opacity: 1;
+      color: GrayText;
+      border-color: GrayText;
+    }
+
+    .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: LinkText;
+    }
+
+    .field-error {
+      color: LinkText;
+    }
+
+    .input-group {
+      border-color: ButtonBorder;
+      background: Field;
+
+      & > .input:focus { outline: none; }
+      &:has(> .input:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
+      &:has(> .input:disabled) { border-color: GrayText; }
+      & > .input-group-button { color: ButtonText; }
+    }
+  }
+}
+
+/* ── components/otp-input/otp-input.css ── */
+/* -- OTP Input -------------------------------------------------- */
+/* One real <input> under a row of slots. The input keeps every native */
+/* behaviour (paste, one-time-code autofill, selection, form value);   */
+/* the slots are a mirror of its value.                                */
+
+@layer components {
+  .otp-input {
+    --otp-input-slot-size: 2.75rem;
+
+    position: relative;
+    display: inline-flex;
+    width: max-content;
+
+    /* The field covers the slots so clicks, drags and taps land on the real
+       control. Its own text is invisible — the slots do the drawing — but it
+       stays a normal input to the browser and to assistive technology. */
+    & > input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      caret-color: transparent;
+      font-size: 1rem; /* >=16px keeps iOS from zooming on focus */
+      text-align: center;
+      outline: none;
+      cursor: text;
+
+      /* the selection highlight would show through the transparent text */
+      &::selection {
+        background: transparent;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .otp-input-slots {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none; /* the field beneath owns every pointer event */
+  }
+
+  .otp-input-slot {
+    /* --otp-input-slot-size is the outer size, border included */
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: var(--otp-input-slot-size);
+    height: var(--otp-input-slot-size);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &[data-filled] {
+      border-color: var(--ring);
+    }
+
+    /* the slot the caret sits in — the field's own caret is hidden */
+    &[data-active],
+    &[data-caret] {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent);
+    }
+
+    &[data-caret]::after {
+      content: "";
+      width: 1px;
+      height: 1.125rem;
+      background: var(--foreground);
+      animation: otp-input-caret 1s steps(2, start) infinite;
+    }
+  }
+
+  /* Gap between groups, e.g. 3-3 for a six digit code. */
+  .otp-input-separator {
+    width: 0.75rem;
+    height: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* -- Invalid ------------------------------------------------ */
+  .otp-input[data-invalid] .otp-input-slot {
+    border-color: var(--destructive);
+
+    &[data-active],
+    &[data-caret] {
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 25%, transparent);
+    }
+  }
+
+  /* -- Disabled ----------------------------------------------- */
+  /* Deliberately not a blanket opacity fade: the digits must stay readable,
+     so only the surface dims while the border and text keep their contrast. */
+  .otp-input:has(> input:disabled) .otp-input-slot {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+  }
+
+  @keyframes otp-input-caret {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .otp-input,
+    .otp-input *,
+    .otp-input::before,
+    .otp-input::after,
+    .otp-input *::before,
+    .otp-input *::after,
+    .otp-input-slot,
+    .otp-input-slot::before,
+    .otp-input-slot::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .otp-input-slot {
+      border-width: 2px;
+      border-color: var(--foreground);
+    }
+
+    .otp-input[data-invalid] .otp-input-slot {
+      border-color: var(--destructive);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .otp-input-slot {
+      border-color: ButtonText;
+      color: ButtonText;
+
+      &[data-active],
+      &[data-caret] {
+        border-color: Highlight;
+      }
+    }
+
+    .otp-input[data-invalid] .otp-input-slot {
+      border-color: LinkText;
+    }
+
+    .otp-input:has(> input:disabled) .otp-input-slot {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}
+
+/* ── components/textarea/textarea.css ── */
+/* -- Textarea component ----------------------------------------- */
+
+@layer components {
+  .textarea {
+    /* border-box: UA gives <textarea> content-box, which would render the
+       min-height 2px above the shared field frame (see .input) */
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 5rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms;
+    resize: vertical;
+    field-sizing: content;
+    line-height: 1.5;
+
+    /* -- Rows: data-rows is the height it starts at, data-max-rows where it
+       stops growing and scrolls instead (field-sizing grows it in between).
+       1lh = one line of this textarea, + the padding and border. -------- */
+    &[data-rows="1"] { min-height: calc(1lh + 1rem + 2px); }
+    &[data-rows="2"] { min-height: calc(2lh + 1rem + 2px); }
+    &[data-rows="3"] { min-height: calc(3lh + 1rem + 2px); }
+    &[data-rows="4"] { min-height: calc(4lh + 1rem + 2px); }
+    &[data-rows="5"] { min-height: calc(5lh + 1rem + 2px); }
+    &[data-rows="6"] { min-height: calc(6lh + 1rem + 2px); }
+    &[data-rows="8"] { min-height: calc(8lh + 1rem + 2px); }
+    &[data-rows="10"] { min-height: calc(10lh + 1rem + 2px); }
+    &[data-max-rows="2"] { max-height: calc(2lh + 1rem + 2px); }
+    &[data-max-rows="3"] { max-height: calc(3lh + 1rem + 2px); }
+    &[data-max-rows="4"] { max-height: calc(4lh + 1rem + 2px); }
+    &[data-max-rows="5"] { max-height: calc(5lh + 1rem + 2px); }
+    &[data-max-rows="6"] { max-height: calc(6lh + 1rem + 2px); }
+    &[data-max-rows="8"] { max-height: calc(8lh + 1rem + 2px); }
+    &[data-max-rows="10"] { max-height: calc(10lh + 1rem + 2px); }
+    &[data-max-rows="12"] { max-height: calc(12lh + 1rem + 2px); }
+    &[data-resize="none"] { resize: none; }
+
+    &:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &::placeholder { color: var(--muted-foreground); }
+
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
+    &:disabled {
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+      /* resize stays off (Chrome would still let a disabled field be dragged
+         taller), but the corner keeps a grip so it still reads as a text
+         field - two painted diagonal strokes where the native grip sits */
+      resize: none;
+      background-image:
+        linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%),
+        linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%);
+      background-repeat: no-repeat;
+      background-size: 0.625rem 0.625rem, 0.3125rem 0.3125rem;
+      background-position: right 0.1875rem bottom 0.1875rem, right 0.1875rem bottom 0.1875rem;
+    }
+
+    &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+
+      &:focus {
+        border-color: var(--destructive);
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+  }
+
+  /* -- Textarea group: a composer --------------------------------
+     The GROUP draws the frame (border, radius, focus ring, drop target);
+     the .textarea inside goes frameless and grows. Children in order: an
+     optional .file-drop-list (attachment chips, the file-input's own
+     items), the textarea, a .textarea-group-actions row (attach, send,
+     a counter). data-layout="inline" puts the actions beside the text -
+     a one-line chat composer that grows upward. */
+  .textarea-group {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-lg);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms, background-color 150ms;
+
+    & > .textarea {
+      min-height: calc(2lh + 1rem);
+      border: 0;
+      border-radius: inherit;
+      background: transparent;
+      box-shadow: none;
+      resize: none;
+      padding: 0.75rem 0.875rem 0.25rem;
+
+      &:focus { box-shadow: none; }
+    }
+
+    &:has(> .textarea:focus) {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    &:has(> .textarea:disabled) {
+      background: var(--muted);
+      box-shadow: none;
+    }
+
+    /* attachment chips above the text - a wrapping row of file items */
+    & > .file-drop-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.625rem 0.625rem 0;
+
+      &:empty { display: none; }
+      & > .file-drop-item { width: 13rem; max-width: 100%; box-sizing: border-box; }
+    }
+
+    & > .textarea-group-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.375rem;
+
+      /* everything after the spacer sits at the end - usually send */
+      & > .textarea-group-spacer { flex: 1; }
+    }
+
+    & .textarea-group-count {
+      padding-inline: 0.375rem;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* inline: [actions] text [actions] on one row, aligned to the last line */
+    &[data-layout="inline"] {
+      flex-flow: row wrap;
+      align-items: flex-end;
+
+      & > .file-drop-list { flex-basis: 100%; }
+      & > .textarea {
+        flex: 1;
+        min-width: 0;
+        min-height: calc(1lh + 1rem);
+        padding: 0.5rem 0.25rem;
+      }
+      & > .textarea:first-child { padding-inline-start: 0.875rem; }
+      & > .textarea-group-actions { padding: 0.3125rem; }
+    }
+
+    /* a file dragged over the composer: the page sets data-dragover */
+    &[data-dragover] {
+      border-style: dashed;
+      border-color: var(--ring);
+      background: color-mix(in oklch, var(--accent) 45%, var(--background));
+    }
+  }
+
+  /* -- Accessibility ---------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .textarea,
+    .textarea-group {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .textarea,
+    .textarea-group {
+      border-width: 2px;
+    }
+    .textarea-group > .textarea { border-width: 0; }
+
+    .textarea:disabled {
+      border-color: var(--muted-foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .textarea-group { border-color: ButtonBorder; }
+    .textarea-group:has(> .textarea:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
+    .textarea-group > .textarea:focus { outline: none; }
+
+    .textarea {
+      border-color: ButtonBorder;
+      color: ButtonText;
+      background: Field;
+    }
+
+    .textarea:focus {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+
+    .textarea:disabled {
+      opacity: 1;
+      background-image: none;
+      color: GrayText;
+      border-color: GrayText;
+    }
+
+    .textarea:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: LinkText;
+    }
+  }
+}
+
+/* ── components/checkbox/checkbox.css ── */
+/* -- Checkbox component ----------------------------------------- */
+
+@layer components {
+  .checkbox {
+    appearance: none;
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: background-color 150ms, border-color 150ms;
+
+    &:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 45%;
+        width: 6px;
+        height: 10px;
+        border: solid var(--primary-foreground);
+        border-width: 0 2px 2px 0;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+    }
+
+    /* Per spec, an indeterminate checkbox ALSO matches :checked - both
+       ::after rules land on the element, so the dash must explicitly cancel
+       the checkmark's border (else the rotated border renders on top of it). */
+    &:indeterminate {
+      background-color: var(--primary);
+      border-color: var(--primary);
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 10px;
+        height: 2px;
+        border: none;
+        background: var(--primary-foreground);
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
+    &:disabled {
+      background-color: var(--muted);
+      /* a mid-grey edge: --border on the muted fill is too faint to read as a box */
+      border-color: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
+      cursor: not-allowed;
+
+      &:is(:checked, :indeterminate) {
+        background-color: color-mix(in oklch, var(--primary) 45%, var(--background));
+        border-color: transparent;
+      }
+    }
+
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+    }
+  }
+
+  /* -- Checkbox item layout --------------------------------- */
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & > label {
+      font-size: 0.875rem;
+      cursor: pointer;
+      /* leading-none (shadcn parity): a 1.6 line-box centers the LINE, not
+         the glyphs - baseline then floats with the font's ascent, so text
+         rides visibly off the box midline (worst with metric-heavy
+         fallbacks). line-height:1 shrinks the box to the glyphs themselves. */
+      line-height: 1;
+    }
+  }
+
+  .checkbox-item-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    & > label {
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    & > .checkbox {
+      margin-top: 0.125rem;
+    }
+  }
+
+  /* Gap hit area: inside an item layout the control's click target spans
+     the gap to its label (a transparent ::before, part of the input's own
+     hit box), so clicking the whitespace between control and text toggles
+     too - the label's `for` covers the text itself. Inline-end only: the
+     label always sits after the control (block layouts place it in the
+     second grid column). */
+  :is(.checkbox-item, .checkbox-item-block) > .checkbox::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.5rem);
+  }
+
+  /* Disabled auto-styling */
+  .checkbox-item:has(.checkbox:disabled),
+  .checkbox-item-block:has(.checkbox:disabled) {
+    cursor: not-allowed;
+
+    /* the text says "unavailable" too - and never offers the hand pointer
+       for a click that cannot land */
+    & label {
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
+  }
+
+  /* -- Accessibility ---------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .checkbox {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .checkbox {
+      border-width: 2px;
+    }
+
+    .checkbox:disabled {
+      border-color: var(--muted-foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .checkbox {
+      appearance: auto;
+    }
+  }
+}
+
+/* ── components/radio/radio.css ── */
+/* -- Radio Group component -------------------------------------- */
+
+@layer components {
+  .radio-group {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    & > legend {
+      /* top + bottom breathing room: stacked groups (e.g. a density ladder
+         demo) would otherwise jam each heading against the options above it */
+      margin-top: 0.5rem;
+      margin-bottom: 0.375rem;
+    }
+
+    /* Horizontal layout */
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+
+  .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & > label {
+      font-size: 0.875rem;
+      font-weight: 400;
+      cursor: pointer;
+    }
+  }
+
+  /* -- With-description layout -------------------------------- */
+  .radio-item-block {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 0.5rem;
+
+    & > .radio {
+      grid-row: 1 / 3;
+      margin-top: 0.125rem;
+    }
+
+    & > label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+
+    & > .radio-description {
+      grid-column: 2;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+  }
+
+  /* -- Density --------------------------------------------------
+     data-density on the .radio-group root is a whitespace policy: the gap
+     between options (and card padding) scale at the shared 0.75 / 1 / 1.25
+     ratio; comfortable matches the unsized default. Radio size itself stays
+     fixed - this is spacing, not zoom. */
+  .radio-group:where([data-density="compact"]) {
+    gap: 0.25rem;
+    &[data-orientation="horizontal"] { gap: 0.75rem; }
+    & .radio-card { padding: 0.75rem 1rem; }
+  }
+  .radio-group:where([data-density="comfortable"]) {
+    gap: 0.5rem;
+    &[data-orientation="horizontal"] { gap: 1rem; }
+  }
+  .radio-group:where([data-density="spacious"]) {
+    gap: 0.75rem;
+    &[data-orientation="horizontal"] { gap: 1.5rem; }
+    & .radio-card { padding: 1.25rem 1.5rem; }
+  }
+
+  /* Gap hit area: inside an item layout the radio's click target spans the
+     gap to its label (a transparent ::before, part of the input's own hit
+     box), so clicking the whitespace between circle and text selects too -
+     the label's `for` covers the text itself. Inline-end only: the label
+     always sits after the radio (the block layout's second grid column). */
+  :is(.radio-item, .radio-item-block) > .radio::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem -0.5rem;
+  }
+
+  /* -- Card variant ------------------------------------------- */
+  .radio-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: border-color 150ms, background 150ms;
+
+    &:hover {
+      background: var(--accent);
+    }
+
+    &:has(.radio:checked) {
+      border-color: var(--primary);
+    }
+
+    &:has(.radio:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    &:has(.radio:disabled) {
+      cursor: not-allowed;
+      background: var(--muted);
+
+      &:hover { background: var(--muted); }
+      & > label { color: var(--muted-foreground); cursor: not-allowed; }
+    }
+
+    & > .radio {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    & > label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    & > .radio-description {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+  }
+
+  .radio {
+    appearance: none;
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--background);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 150ms;
+
+    &:checked {
+      border-color: var(--primary);
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: var(--primary);
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
+    &:disabled {
+      background: var(--muted);
+      /* a mid-grey ring: --border on the muted fill is too faint to read as a shape */
+      border-color: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
+      cursor: not-allowed;
+
+      &:checked {
+        border-color: color-mix(in oklch, var(--primary) 45%, var(--background));
+
+        &::after { background: color-mix(in oklch, var(--primary) 45%, var(--background)); }
+      }
+
+      & + label { color: var(--muted-foreground); cursor: not-allowed; }
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--destructive);
+
+      &:checked {
+        border-color: var(--destructive);
+
+        &::after {
+          background: var(--destructive);
+        }
+      }
+    }
+  }
+
+  /* Helper text for group-level descriptions */
+  .radio-group-description {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    margin: -0.125rem 0 0.25rem;
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .radio,
+    .radio-card {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .radio {
+      border-color: ButtonText;
+
+      &:checked {
+        border-color: Highlight;
+
+        &::after {
+          background: Highlight;
+        }
+      }
+
+      &:disabled {
+        border-color: GrayText;
+
+        &:checked::after {
+          background: GrayText;
+        }
+      }
+    }
+
+    .radio-card {
+      border-color: ButtonText;
+
+      &:has(.radio:checked) {
+        border-color: Highlight;
+      }
+    }
+  }
+}
+
+/* ── components/switch/switch.css ── */
+/* -- Switch component ------------------------------------------- */
+
+@layer components {
+  .switch {
+    appearance: none;
+    margin: 0; /* kill the UA's ~4px input margin - breaks flex/grid rhythm */
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--input);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background-color 150ms;
+    border: none;
+    outline: none;
+
+    /* Thumb */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(1.25rem - 4px);
+      height: calc(1.25rem - 4px);
+      border-radius: 50%;
+      background: var(--background);
+      transition: transform 150ms;
+      box-shadow: 0 1px 2px oklch(0 0 0 / 0.15);
+    }
+
+    &:checked {
+      background: var(--primary);
+
+      &::after {
+        transform: translateX(1rem);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* Disabled = legible but inert: never an opacity fade (0.5 on a light
+       --border edge left a ghost you had to look for). The shape keeps its
+       full-strength edge, the surface turns muted, a chosen state keeps a
+       softened primary fill, and the label goes muted with the no-entry
+       cursor - "a choice that exists but is unavailable right now". */
+    &:disabled {
+      cursor: not-allowed;
+      /* the off track keeps its full --input shade; an edge ring holds the
+         outline even where --input sits close to the page */
+      box-shadow: inset 0 0 0 1px var(--border);
+
+      &::after {
+        background: var(--muted);
+        box-shadow: 0 0 0 1px var(--border);
+      }
+
+      &:checked {
+        background: color-mix(in oklch, var(--primary) 45%, var(--background));
+        box-shadow: none;
+
+        &::after { background: var(--background); box-shadow: none; }
+      }
+    }
+
+    &[aria-invalid="true"] {
+      background: var(--destructive);
+
+      &:checked {
+        background: var(--destructive);
+      }
+    }
+
+    /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"] {
+      width: 1.5rem;
+      height: 0.875rem;
+
+      &::after {
+        width: calc(0.875rem - 4px);
+        height: calc(0.875rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(0.625rem);
+      }
+    }
+
+    &[data-size="sm"] {
+      width: 1.75rem;
+      height: 1rem;
+
+      &::after {
+        width: calc(1rem - 4px);
+        height: calc(1rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(0.75rem);
+      }
+    }
+
+    &[data-size="md"] {
+      /* same as the default - explicit member of the scale */
+    }
+
+    &[data-size="lg"] {
+      width: 2.75rem;
+      height: 1.5rem;
+
+      &::after {
+        width: calc(1.5rem - 4px);
+        height: calc(1.5rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(1.25rem);
+      }
+    }
+
+    &[data-size="xl"] {
+      width: 3.25rem;
+      height: 1.75rem;
+
+      &::after {
+        width: calc(1.75rem - 4px);
+        height: calc(1.75rem - 4px);
+      }
+
+      &:checked::after {
+        transform: translateX(1.5rem);
+      }
+    }
+  }
+
+  /* -- Switch item layout ----------------------------------- */
+  .switch-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & > label {
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+  }
+
+  /* With-description layout: label + description stack beside the switch.
+     The switch spans both rows, so grid auto-placement (definite-row items
+     first) pins it to column 1 - the track template must therefore lead with
+     the auto (switch) track. `1fr auto` here once placed the text in the far
+     right track (reported: "description renders on the far right"). */
+  .switch-item-block {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 0.75rem;
+    align-items: center;
+
+    & > .switch {
+      grid-row: 1 / 3;
+    }
+
+    & > label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    & > .switch-description {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+  }
+
+  /* Gap hit area: inside an item layout the control's click target spans
+     the gap to its label (a transparent ::before, part of the input's own
+     hit box), so clicking the whitespace between control and text toggles
+     too - the label's `for` covers the text itself. Inline-end only: the
+     label always sits after the control (block layouts place it in the
+     second grid column). */
+  :is(.switch-item) > .switch::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.5rem);
+  }
+
+  :is(.switch-item-block) > .switch::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.25rem;
+    inset-inline: -0.25rem calc(-1 * 0.75rem);
+  }
+
+  /* Label disabled styling via :has() */
+  .switch-item:has(.switch:disabled),
+  .switch-item-block:has(.switch:disabled) {
+    cursor: not-allowed;
+
+    /* the words say "unavailable" too - no hand pointer over a label whose
+       click cannot flip the switch */
+    & > label {
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
+  }
+
+  /* -- Accessibility ---------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .switch,
+    .switch::after {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .switch {
+      background: ButtonFace;
+      border: 1px solid ButtonText;
+
+      &::after {
+        background: ButtonText;
+        box-shadow: none;
+      }
+
+      &:checked {
+        background: Highlight;
+        border-color: Highlight;
+
+        &::after {
+          background: HighlightText;
+        }
+      }
+
+      &:disabled {
+        border-color: GrayText;
+
+        &::after {
+          background: GrayText;
+        }
+      }
+    }
+  }
+}
+
+/* ── components/slider/slider.css ── */
+/* -- Slider component ------------------------------------------- */
+
+@layer components {
+  /* Everything runs through a few private variables so a .slider-range
+     wrapper (two thumbs) can hand its size and color down to both inputs:
+     --_track / --_thumb (set by data-size, on the slider or on the range),
+     --_c (set by data-tone) and the public --slider-color for any color.
+     --_fill resolves them once, here, on the input. */
+  .slider {
+    --slider-value: 50%;
+    --_fill: var(--_c, var(--slider-color, var(--primary)));
+    --_t: var(--_track, 0.5rem);
+    --_d: var(--_thumb, 1.25rem);
+    --_dir: to right;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    /* the UA gives a range a 2px margin: with width 100% the track would
+       overflow its box and drift off a .slider-marks scale */
+    margin-inline: 0;
+    height: var(--_t);
+    border-radius: 9999px;
+    background: var(--secondary);
+    cursor: pointer;
+    outline: none;
+    border: none;
+    accent-color: var(--_fill);
+
+    /* Track - WebKit (filled via gradient) */
+    &::-webkit-slider-runnable-track {
+      height: var(--_t);
+      border-radius: 9999px;
+      background: linear-gradient(
+        var(--_dir),
+        var(--_fill) 0%,
+        var(--_fill) var(--slider-value),
+        var(--secondary) var(--slider-value),
+        var(--secondary) 100%
+      );
+    }
+
+    /* Track - Firefox */
+    &::-moz-range-track {
+      height: var(--_t);
+      border-radius: 9999px;
+      background: var(--secondary);
+      border: none;
+    }
+
+    /* Filled portion - Firefox */
+    &::-moz-range-progress {
+      height: var(--_t);
+      border-radius: 9999px;
+      background: var(--_fill);
+    }
+
+    /* Thumb - WebKit (re-centered on the track: (track - thumb) / 2).
+       --slider-thumb-image paints a picture (an emoji, see data-thumb) */
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: var(--_d);
+      height: var(--_d);
+      border-radius: 50%;
+      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      border: 2px solid var(--_fill);
+      margin-top: calc((var(--_t) - var(--_d)) / 2);
+      cursor: pointer;
+      transition: box-shadow 150ms, scale 150ms;
+    }
+
+    /* Thumb - Firefox */
+    &::-moz-range-thumb {
+      width: var(--_d);
+      height: var(--_d);
+      border-radius: 50%;
+      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      border: 2px solid var(--_fill);
+      cursor: pointer;
+      transition: box-shadow 150ms, scale 150ms;
+    }
+
+    /* Hover */
+    &:hover:not(:disabled) {
+      &::-webkit-slider-thumb {
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--_fill) 15%, transparent);
+      }
+      &::-moz-range-thumb {
+        box-shadow: 0 0 0 4px color-mix(in oklch, var(--_fill) 15%, transparent);
+      }
+    }
+
+    /* Focus */
+    &:focus-visible {
+      &::-webkit-slider-thumb {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+      &::-moz-range-thumb {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+
+    /* Disabled */
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &::-webkit-slider-thumb { cursor: not-allowed; }
+      &::-moz-range-thumb { cursor: not-allowed; }
+    }
+
+    /* RTL: the range runs right to left, so does the fill */
+    &:dir(rtl) { --_dir: to left; }
+
+    /* Vertical orientation */
+    &[data-orientation="vertical"] {
+      --_dir: to top;
+      writing-mode: vertical-lr;
+      direction: rtl;
+      width: var(--_t);
+      height: 12rem;
+
+      &::-webkit-slider-runnable-track { width: var(--_t); height: auto; }
+      &::-webkit-slider-thumb {
+        margin-top: 0;
+        margin-left: calc((var(--_t) - var(--_d)) / 2);
+      }
+    }
+
+    /* -- Emoji thumb: data-thumb="emoji" (slider.js draws the emoji from
+       data-thumb-emoji into --slider-thumb-image) - no ring, no fill disc,
+       a bit larger than the plain thumb. */
+    &[data-thumb="emoji"] {
+      --_d: var(--_thumb, 2rem);
+
+      &::-webkit-slider-thumb { border: 0; background-color: transparent; }
+      &::-moz-range-thumb { border: 0; background-color: transparent; }
+      &:active::-webkit-slider-thumb { scale: 1.15; }
+      &:active::-moz-range-thumb { scale: 1.15; }
+    }
+  }
+
+  /* -- Sizes: track thickness + thumb diameter (md == the default) ----
+     On a .slider or on a .slider-range (both inputs inherit). */
+  :is(.slider, .slider-range, .slider-marks) {
+    &[data-size="xs"] { --_track: 0.25rem; --_thumb: 0.75rem; }
+    &[data-size="sm"] { --_track: 0.375rem; --_thumb: 1rem; }
+    &[data-size="md"] { --_track: 0.5rem; --_thumb: 1.25rem; }
+    &[data-size="lg"] { --_track: 0.625rem; --_thumb: 1.5rem; }
+    &[data-size="xl"] { --_track: 0.75rem; --_thumb: 1.75rem; }
+
+    /* -- Tones: success / warning / info / destructive; any other color
+       via style="--slider-color: …" */
+    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
+    &[data-tone="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
+    &[data-tone="destructive"] { --_c: var(--destructive); }
+  }
+
+  /* -- Marks: a CSS-only tick scale under a stepped slider ------------
+     <div class="slider-marks" aria-hidden="true"> right after the slider
+     (or range); each child is a zero-width flex item, so space-between
+     lands the tick centres on the thumb-centre travel (inset by half a
+     thumb at each end). The tick is generated, the child's text is the
+     optional label. It follows the slider's data-size when it is the
+     slider's next sibling (or set data-size on the marks). */
+  .slider-marks {
+    display: flex;
+    justify-content: space-between;
+    padding-inline: calc(var(--_thumb, 1.25rem) / 2);
+    margin-top: 0.375rem;
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+
+    & > * {
+      /* zero-width: flex-basis 0 alone leaves min-width:auto, which would
+         widen the item to its label and push the tick off its step */
+      flex: 0 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+    & > *::before {
+      content: "";
+      width: 1px;
+      height: 0.375rem;
+      background: var(--border);
+    }
+    /* a tick without a label (an empty child) stays a short tick */
+    & > :empty::before { height: 0.25rem; }
+  }
+  :is(.slider, .slider-range)[data-size="xs"] + .slider-marks:not([data-size]) { --_thumb: 0.75rem; }
+  :is(.slider, .slider-range)[data-size="sm"] + .slider-marks:not([data-size]) { --_thumb: 1rem; }
+  :is(.slider, .slider-range)[data-size="lg"] + .slider-marks:not([data-size]) { --_thumb: 1.5rem; }
+  :is(.slider, .slider-range)[data-size="xl"] + .slider-marks:not([data-size]) { --_thumb: 1.75rem; }
+
+  /* -- Range: two thumbs on one track ---------------------------------
+     Two .slider inputs stacked in a .slider-range; only their thumbs take
+     the pointer, the wrapper paints one track with the span between the
+     thumbs filled (slider.js keeps --range-from / --range-to in sync and
+     the low value <= the high one). Each input keeps its own keyboard,
+     label and State API. */
+  .slider-range {
+    --range-from: 25%;
+    --range-to: 75%;
+    --_fill: var(--_c, var(--slider-color, var(--primary)));
+    --_dir: to right;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--_thumb, 1.25rem);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      height: var(--_track, 0.5rem);
+      translate: 0 -50%;
+      border-radius: 9999px;
+      background: linear-gradient(
+        var(--_dir),
+        var(--secondary) var(--range-from),
+        var(--_fill) var(--range-from),
+        var(--_fill) var(--range-to),
+        var(--secondary) var(--range-to)
+      );
+    }
+    &:dir(rtl) { --_dir: to left; }
+
+    & > .slider {
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      translate: 0 -50%;
+      margin: 0;
+      background: none;
+      pointer-events: none;
+
+      &::-webkit-slider-runnable-track { background: none; }
+      &::-moz-range-track { background: none; }
+      &::-moz-range-progress { background: none; }
+      &::-webkit-slider-thumb { pointer-events: auto; }
+      &::-moz-range-thumb { pointer-events: auto; }
+    }
+    /* the thumb last moved stays on top (both can reach the same value) */
+    & > .slider[data-active] { z-index: 1; }
+
+    &:has(.slider:disabled) { opacity: 0.5; }
+  }
+
+  /* -- Field: icons, emojis and values around a slider ----------------- */
+  .slider-field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+
+    & > :is(.slider, .slider-range) { flex: 1 1 auto; min-width: 0; }
+  }
+  .slider-icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1;
+    color: var(--muted-foreground);
+
+    & svg { width: 1.125rem; height: 1.25rem; }
+  }
+  .slider-value {
+    flex-shrink: 0;
+    min-width: 3.5em;
+    text-align: end;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+  /* a scale under the track: the first and last labels align to the ends */
+  .slider-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .slider {
+      &::-webkit-slider-thumb { transition: none; }
+      &::-moz-range-thumb { transition: none; }
+    }
+  }
+
+  /* High contrast */
+  @media (prefers-contrast: more) {
+    .slider-marks { color: var(--foreground); & > *::before { background: var(--foreground); } }
+    .slider {
+      &::-webkit-slider-thumb {
+        border-width: 3px;
+      }
+      &::-moz-range-thumb {
+        border-width: 3px;
+      }
+    }
+  }
+
+  /* Forced colors (Windows High Contrast Mode) */
+  @media (forced-colors: active) {
+    .slider-marks { color: CanvasText; & > *::before { background: CanvasText; } }
+    .slider {
+      &::-webkit-slider-runnable-track {
+        background: ButtonFace;
+        border: 1px solid ButtonText;
+      }
+      &::-moz-range-track {
+        background: ButtonFace;
+        border: 1px solid ButtonText;
+      }
+      &::-moz-range-progress {
+        background: Highlight;
+      }
+      &::-webkit-slider-thumb {
+        background: ButtonText;
+        border-color: ButtonText;
+      }
+      &::-moz-range-thumb {
+        background: ButtonText;
+        border-color: ButtonText;
+      }
+
+      &:focus-visible {
+        &::-webkit-slider-thumb {
+          outline-color: Highlight;
+        }
+        &::-moz-range-thumb {
+          outline-color: Highlight;
+        }
+      }
+    }
+    .slider-range::before { background: Highlight; }
+  }
+}
+
+/* ── components/rating/rating.css ── */
+/* -- Rating component ------------------------------------------- */
+/* Star rating. Interactive form is a native radio group (no JS);   */
+/* the read-only form is a display-only fraction of five stars.     */
+
+@layer components {
+  .rating {
+    /* Local knobs — not theme tokens: there is no amber in the tweakcn
+       shape, and a rating's fill colour is a per-instance decision
+       (stars amber, hearts destructive, …). Override inline or in a
+       wrapper rule; both forms below read them. */
+    --rating-color: #f59e0b;
+    --rating-empty: var(--border);
+    --rating-size: 1.25rem;
+
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    line-height: 1;
+
+    &[data-size="sm"] {
+      --rating-size: 1rem;
+    }
+
+    &[data-size="lg"] {
+      --rating-size: 1.75rem;
+    }
+
+    /* -- Glyph: any text glyph via --rating-glyph (the read-only form reads
+       --rating-glyphs, the same glyph five times); data-glyph="heart" is
+       the common one, in the destructive colour. U+FE0E keeps ♥ a text
+       glyph (an emoji heart would ignore color). */
+    &[data-glyph="heart"] {
+      --rating-glyph: "\2665\FE0E";
+      --rating-glyphs: "\2665\FE0E\2665\FE0E\2665\FE0E\2665\FE0E\2665\FE0E";
+      --rating-color: var(--destructive);
+    }
+  }
+
+  /* -- Interactive form (radio group) ------------------------- */
+  .rating-item {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    line-height: 1;
+
+    &::before {
+      content: var(--rating-glyph, "★");
+      font-size: var(--rating-size);
+      color: var(--rating-empty);
+      transition: color 150ms, scale 150ms;
+    }
+  }
+
+  /* The radio stays in the accessibility tree and keeps keyboard support —
+     it is only visually replaced by the star drawn above. */
+  .rating-input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Filled: this star, and every star before the checked one. */
+  .rating-item:has(.rating-input:checked)::before,
+  .rating-item:has(~ .rating-item .rating-input:checked)::before {
+    color: var(--rating-color);
+  }
+
+  /* Hover preview wins over the current value while the pointer is on the
+     group: reset all, then fill up to the hovered star. Specificity is
+     deliberate — each rule must outrank the checked rules above.
+     A disabled group is excluded: previewing a value there would promise a
+     choice the control cannot accept. */
+  @media (hover: hover) {
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item::before {
+      color: var(--rating-empty);
+    }
+
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item:hover::before,
+    .rating:not(:has(.rating-input:disabled)):has(.rating-item:hover) .rating-item:has(~ .rating-item:hover)::before {
+      color: var(--rating-color);
+      scale: 1.1;
+    }
+  }
+
+  .rating-item:has(.rating-input:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Disabled — native <fieldset disabled> propagates to every radio. */
+  .rating:has(.rating-input:disabled) {
+    opacity: 0.5;
+
+    /* the star and the radio stretched over it must agree — a hand on one and
+       "no entry" on the other invites a click the control cannot take */
+    & .rating-item,
+    & .rating-input {
+      cursor: not-allowed;
+    }
+  }
+
+  .rating[data-readonly] .rating-item {
+    cursor: default;
+  }
+
+  /* -- Read-only form (fractional display) -------------------- */
+  /* Two layers of five stars: empty underneath, filled on top clipped to
+     the value — so 3.5 renders a half star with no extra markup. */
+  .rating[data-readonly] {
+    position: relative;
+    display: inline-block;
+    font-size: var(--rating-size);
+    letter-spacing: 0.125rem;
+
+    &::before,
+    &::after {
+      content: var(--rating-glyphs, "★★★★★");
+      line-height: 1;
+    }
+
+    &::before {
+      color: var(--rating-empty);
+    }
+
+    &::after {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: calc(var(--rating-value, 0) / 5 * 100%);
+      overflow: hidden;
+      white-space: nowrap;
+      color: var(--rating-color);
+    }
+  }
+
+  /* -- Label beside the stars --------------------------------- */
+  .rating-value {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-inline-start: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .rating,
+    .rating *,
+    .rating::before,
+    .rating::after,
+    .rating *::before,
+    .rating *::after,
+    .rating-item,
+    .rating-item *,
+    .rating-item::before,
+    .rating-item::after {
+      transition: none;
+      animation: none;
+      scale: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .rating {
+      --rating-empty: var(--muted-foreground);
+    }
+
+    .rating-item:has(.rating-input:focus-visible) {
+      outline-width: 3px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .rating {
+      --rating-color: Highlight;
+      --rating-empty: GrayText;
+
+      &:has(.rating-input:disabled) {
+        --rating-color: GrayText;
+      }
+    }
+
+    .rating-item:has(.rating-input:focus-visible) {
+      outline-color: Highlight;
+    }
+  }
+}
+
+/* ── components/select/select.css ── */
+/* -- Select component ------------------------------------------- */
+
+@layer components {
+  .select {
+    appearance: none;
+    /* the field standard: unsized = md step (see .input) */
+    height: 2.25rem;
+    width: 100%;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    padding: 0 2rem 0 0.75rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+    box-shadow: var(--shadow-xs);
+    cursor: pointer;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    /* Custom chevron */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+
+    /* Placeholder = the empty-value option. It stays selectable (no
+       `disabled`) so it doubles as the clear/reset entry - choosing it
+       again empties the box (issue #32). While it is the selection the
+       closed control reads as a placeholder; a real value restores
+       --foreground because the base rule's color wins over this one.
+       option:checked matches the *selected* option in every engine. */
+    &:has(> option[value=""]:checked) {
+      color: var(--muted-foreground);
+    }
+
+    &:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
+    &:disabled {
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 1; /* Chrome's UA sheet fades select:disabled to 0.7 on its own */
+    }
+
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+
+      &:focus {
+        border-color: var(--destructive);
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* -- Multiple (<select multiple>) ---------------------------
+       The browser renders a list box instead of a dropdown: every option is
+       visible (size="N" rows), Ctrl/⌘-click or Shift-click / Shift+arrows
+       pick several, and the form submits every chosen value under the same
+       name. No fixed height, no chevron; chosen options get a tinted row. */
+    &[multiple] {
+      height: auto;
+      padding: 0.25rem;
+      background-image: none;
+      overflow-y: auto;
+
+      & option {
+        padding: 0.375rem 0.5rem;
+        border-radius: calc(var(--radius-md) - 2px);
+        color: var(--foreground);
+      }
+
+      & option:checked {
+        /* a gradient beats the UA's opaque selection paint in every engine */
+        background: linear-gradient(color-mix(in oklch, var(--primary) 14%, transparent), color-mix(in oklch, var(--primary) 14%, transparent));
+        font-weight: 500;
+      }
+
+      /* one unavailable choice in a usable list */
+      & option:disabled {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+      }
+
+      & optgroup {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted-foreground);
+      }
+    }
+
+    /* -- Sizes ----------------------------------------------- */
+    &[data-size="xs"] { height: 1.75rem; padding-left: 0.5rem;   font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    padding-left: 0.625rem; font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; padding-left: 0.75rem;  font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; padding-left: 1rem;     font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; padding-left: 1.25rem;  font-size: 1.125rem; }
+
+    &[multiple][data-size] { height: auto; }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .select,
+    .select *,
+    .select::before,
+    .select::after,
+    .select *::before,
+    .select *::after,
+    .select::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/number-input/number-input.css ── */
+/* -- Number Input component ------------------------------------- */
+
+@layer components {
+  .number-input {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    /* explicit border-box: the size ladder below sets an explicit container
+       height and must land on it exactly (a div is content-box by default;
+       inputs get border-box from the UA). The unsized default keeps its
+       auto height (children drive it), so this changes nothing today. */
+    box-sizing: border-box;
+    /* explicit default box height (the size ladder below does the rest): an
+       auto-height box let the UA-padding children overshoot to 44px. The
+       unsized default IS the ladder's md step - field standard, see .input */
+    height: 2.25rem;
+
+    & input {
+      border: none;
+      outline: none;
+      background: transparent;
+      height: 100%;
+      /* 4rem basis, but GROWS when the container is widened (w-full demos,
+         grid cells): a fixed width left dead space after the + button.
+         width pins the intrinsic size too - Chrome otherwise derives a
+         number input's width from the digit count of max (no max: ~170px,
+         max="100": 34px), so the field width followed a validation attr. */
+      flex: 1 1 4rem;
+      width: 4rem;
+      min-width: 0;
+      text-align: center;
+      font-size: 0.875rem;
+      font-family: var(--font-sans);
+      color: var(--foreground);
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+
+    & button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      /* height:100% so the button can't overshoot the container's border-box
+         height (the ladder below already sets children to 100%) */
+      height: 100%;
+      border: none;
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: var(--font-sans);
+      transition: background 150ms, color 150ms;
+      flex-shrink: 0;
+
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+
+      &:first-child {
+        border-right: 1px solid var(--input);
+      }
+
+      &:last-child {
+        border-left: 1px solid var(--input);
+      }
+    }
+
+    /* -- Unit affix: <label class="number-input-unit" for="…"> -----
+       A unit (°C, %, kg, €, h) sits before or after the input. It is a
+       second <label> for the input: clicking it focuses the field and the
+       unit joins the accessible name ("Temperature °C"). The value aligns
+       TOWARD the unit so number + unit read as one ("19.0 °C", "€ 24.90"). */
+    & .number-input-unit {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      flex-shrink: 0;
+      padding-inline: 0.25rem;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      cursor: text;
+
+      /* edge of the box (no stepper on that side): field padding */
+      &:first-child { padding-inline-start: 0.75rem; }
+      &:last-child { padding-inline-end: 0.75rem; }
+    }
+
+    /* NOT user-select: none - the unit is part of the value when text is
+       selected, copied or exported ("72,5 kg", not a bare "72,5") */
+
+    &:has(input:not([type="hidden"]) + .number-input-unit) input { text-align: end; }
+    &:has(.number-input-unit + input:not([type="hidden"])) input { text-align: start; }
+
+    /* currency fields carry grouped amounts ("1.234.567,89") */
+    &[data-currency] input { width: 8rem; }
+
+    /* stepper-less field (currency, measurements): the input reaches the box
+       edge - give it the regular field padding there */
+    & input:first-child { padding-inline-start: 0.75rem; }
+    & input:last-child { padding-inline-end: 0.75rem; }
+
+    &:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* -- Sizes -------------------------------------------------
+       Container height + input/button/font scale together, matching the
+       input/button ladders (md = 2.25rem; the unsized default stays at the
+       historical 2.5rem, exactly like .input does). Children switch to
+       height:100% so they can't fight the container. */
+    &[data-size="xs"] {
+      height: 1.75rem;
+      & input { height: 100%; width: 3rem; font-size: 0.75rem; }
+      & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
+      & .number-input-unit { font-size: 0.75rem; }
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
+      & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
+      & .number-input-unit { font-size: 0.8125rem; }
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      & input { height: 100%; font-size: 0.875rem; }
+      & button { height: 100%; }
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      & input { height: 100%; width: 4.5rem; font-size: 1rem; }
+      & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
+      & .number-input-unit { font-size: 1rem; }
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      & input { height: 100%; width: 5rem; font-size: 1.125rem; }
+      & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
+      & .number-input-unit { font-size: 1.125rem; }
+    }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .number-input,
+    .number-input *,
+    .number-input::before,
+    .number-input::after,
+    .number-input *::before,
+    .number-input *::after,
+    .number-input::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/file-input/file-input.css ── */
+/* -- File Input component --------------------------------------- */
+
+@layer components {
+  .file-input {
+    /* see .input - border-box so the declared ladder height is the real box;
+       unsized default = the ladder's md step (field standard) */
+    box-sizing: border-box;
+    width: 100%;
+    /* the chosen file name is the whole point of the control's text part -
+       never let a flex/grid row squeeze it below a readable path length */
+    min-inline-size: min(100%, 24rem);
+    height: 2.25rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms;
+    padding: 0;
+    cursor: pointer;
+
+    &::file-selector-button {
+      /* % resolves against the border-box's CONTENT height once the control is
+         border-box - 100% would leave 1px gaps above/below the divider; +2px
+         makes the button flush with the frame (its original visual) */
+      height: calc(100% + 2px);
+      border: none;
+      border-right: 1px solid var(--input);
+      background: var(--muted);
+      color: var(--foreground);
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      padding: 0 0.75rem;
+      margin-right: 0.75rem;
+      cursor: pointer;
+      transition: background 150ms;
+
+      &:hover { background: var(--accent); }
+    }
+
+    &:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* Disabled = legible but inert: muted surface + text inside the
+       full-strength border - never an opacity fade */
+    &:disabled {
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+
+      &::file-selector-button {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+
+        &:hover { background: var(--muted); }
+      }
+    }
+
+    /* -- Sizes: same ladder as .input/.date-input (md = 2.25rem; the
+       unsized default keeps the historical 2.5rem). The file-selector
+       button fills the container (height:100%), so only the box and the
+       font scale. */
+    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem;    &::file-selector-button { padding: 0 0.5rem; margin-right: 0.5rem; font-size: 0.75rem; } }
+    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem;  &::file-selector-button { padding: 0 0.625rem; margin-right: 0.625rem; font-size: 0.8125rem; } }
+    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
+    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
+  }
+
+  /* -- Drop zone ---------------------------------------------------------
+     .file-drop wraps a <label class="file-drop-zone"> (the card) whose
+     native <input type="file" class="file-drop-input"> covers it,
+     invisible - so a click opens the picker and a DROP lands on the input
+     itself: the browser fills input.files natively, no JavaScript needed.
+     file-input.js adds the drag highlight, filters dropped files by
+     accept / data-max-size / data-max-files (the browser does not filter
+     drops), appends to the selection instead of replacing it, and lists the
+     files in .file-drop-list with previews and remove buttons. */
+  .file-drop {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .file-drop-zone {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.375rem;
+    padding: 2rem 1.5rem;
+    border: 2px dashed color-mix(in oklch, var(--foreground) 22%, transparent);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 150ms ease, background-color 150ms ease, scale 150ms ease;
+
+    &:hover { border-color: color-mix(in oklch, var(--foreground) 40%, transparent); }
+    &:has(.file-drop-input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:has(.file-drop-input:disabled) { opacity: 0.55; cursor: not-allowed; }
+  }
+  .file-drop-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: inherit;
+    font-size: 0; /* no native "No file chosen" hit-box quirks */
+  }
+  .file-drop-icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.25rem;
+    border-radius: 9999px;
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: background-color 150ms ease, color 150ms ease, translate 150ms ease;
+
+    & svg { width: 1.5rem; height: 1.5rem; }
+  }
+  .file-drop-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-wrap: balance;
+
+    & u, & .file-drop-browse { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+  }
+  .file-drop-hint {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-wrap: balance;
+  }
+
+  /* dragging files over the zone */
+  .file-drop[data-state-name="dragover"] .file-drop-zone {
+    border-color: var(--primary);
+    border-style: solid;
+    background-color: color-mix(in oklch, var(--primary) 6%, var(--card));
+    scale: 1.01;
+
+    & .file-drop-icon { background-color: var(--primary); color: var(--primary-foreground); translate: 0 -2px; }
+  }
+  /* rejected files (wrong type, too big, too many) */
+  .file-drop[data-state-name="error"] .file-drop-zone { border-color: var(--destructive); }
+  .file-drop-error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--destructive);
+
+    &:empty { display: none; }
+  }
+
+  /* compact: one row - icon, text, and the whole row is the target */
+  .file-drop[data-size="sm"] .file-drop-zone {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0;
+    padding: 0.75rem 1rem;
+    text-align: start;
+    border-radius: var(--radius-lg);
+
+    & .file-drop-icon { grid-row: span 2; width: 2.25rem; height: 2.25rem; margin: 0; font-size: 1.125rem; & svg { width: 1.125rem; height: 1.125rem; } }
+  }
+
+  /* -- The file list ---------------------------------------------------- */
+  .file-drop-list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &:empty { display: none; }
+  }
+  .file-drop-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+  }
+  .file-drop-thumb {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+
+    & img { width: 100%; height: 100%; object-fit: cover; }
+  }
+  .file-drop-name {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .file-drop-meta {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--muted-foreground);
+  }
+  .file-drop-remove {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  @media (forced-colors: active) {
+    .file-drop-zone { border-color: CanvasText; }
+    .file-drop[data-state-name="dragover"] .file-drop-zone { border-color: Highlight; }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .file-input,
+    .file-input *,
+    .file-input::before,
+    .file-input::after,
+    .file-input *::before,
+    .file-input *::after,
+    .file-input::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/color-picker/color-picker.css ── */
+/* -- Color Picker component ------------------------------------- */
+
+@layer components {
+  .color-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    /* the unsized default IS the ladder's md step (see .input):
+       1.75rem swatch + 2×3px block padding + 2px frame = 36px */
+    padding: 0.1875rem 0.75rem 0.1875rem 0.25rem;
+    box-shadow: var(--shadow-xs);
+
+    & input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1.75rem;
+      height: 1.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      padding: 0;
+      background: none;
+
+      &::-webkit-color-swatch-wrapper { padding: 0; }
+      &::-webkit-color-swatch {
+        border: none;
+        border-radius: calc(var(--radius-sm) - 1px);
+      }
+      &::-moz-color-swatch {
+        border: none;
+        border-radius: calc(var(--radius-sm) - 1px);
+      }
+    }
+
+    /* the value is meant to be used: one click selects all of it for copy;
+       tabular digits keep the width steady while dragging through colours */
+    & .color-picker-value {
+      font-size: 0.8125rem;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      user-select: all;
+    }
+
+    /* optional notation switcher (hex / rgb / hsl / oklch) at the end */
+    & .color-picker-format {
+      margin-inline-start: auto;
+      padding: 0 0 0 0.5rem;
+      border: none;
+      border-inline-start: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+    }
+
+    /* -- Sizes -------------------------------------------------
+       Swatch + padding re-derived per step so the TOTAL box height lands
+       on the shared input ladder (xs 28 / sm 32 / md 36 / lg 44 / xl 52
+       px - md is the typical 2.25rem the other inputs use at md). The UA
+       styles form controls border-box, so:
+       total = swatch + 2×padding-block + 2px frame:
+       xs 20+6+2 · sm 24+6+2 · md 28+6+2 · lg 32+10+2 · xl 40+10+2.
+       The unsized default IS md (1.75rem swatch, 0.1875rem block padding = 36px)
+       - exactly like .input defaults to the md step. */
+    &[data-size="xs"] { padding: 0.1875rem 0.5rem; gap: 0.375rem; & input[type="color"] { width: 1.25rem; height: 1.25rem; } & .color-picker-value { font-size: 0.6875rem; } }
+    &[data-size="sm"] { padding: 0.1875rem 0.625rem; gap: 0.375rem; & input[type="color"] { width: 1.5rem; height: 1.5rem; } & .color-picker-value { font-size: 0.75rem; } }
+    &[data-size="md"] { padding: 0.1875rem 0.75rem; & input[type="color"] { width: 1.75rem; height: 1.75rem; } & .color-picker-value { font-size: 0.8125rem; } }
+    &[data-size="lg"] { padding: 0.3125rem 0.875rem; & input[type="color"] { width: 2rem; height: 2rem; } & .color-picker-value { font-size: 0.875rem; } }
+    &[data-size="xl"] { padding: 0.3125rem 1rem; gap: 0.625rem; & input[type="color"] { width: 2.5rem; height: 2.5rem; } & .color-picker-value { font-size: 1rem; } }
+  }
+}
+
+/* ── components/date-picker/date-picker.css ── */
+/* -- Date Picker component -------------------------------------- */
+/* Uses the .input class with type="date" or type="datetime-local" */
+/* This file adds date-specific overrides only.                     */
+
+@layer components {
+  .date-input {
+    /* see .input - border-box so the declared ladder height is the real box;
+       unsized default = the ladder's md step (field standard) */
+    box-sizing: border-box;
+    height: 2.25rem;
+    width: 100%;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+    box-shadow: var(--shadow-xs);
+    transition: border-color 150ms, box-shadow 150ms;
+    cursor: pointer;
+
+    &:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* Disabled = legible but inert: a muted surface and muted text inside
+       the full-strength border - never an opacity fade that lets the box
+       dissolve into the page. */
+    &:disabled {
+      background-color: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* -- Sizes: same ladder as .input (md = 2.25rem; the unsized default
+       stays at the historical 2.5rem) so date fields sit in the same row
+       rhythm as text inputs at every step. */
+    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;    font-size: 0.75rem; }
+    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem;  font-size: 0.8125rem; }
+    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;   font-size: 0.875rem; }
+    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;      font-size: 1rem; }
+    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;   font-size: 1.125rem; }
+
+    /* -- Out of range / invalid ----------------------------------
+       The browser already rejects a TYPED date outside min/max (validity
+       rangeUnderflow / rangeOverflow) - the same rule the calendar popup
+       enforces by disabling days. :user-invalid shows it once the user has
+       interacted (an untouched empty field never turns red); aria-invalid
+       lets an app flag server-side errors the same way. */
+    &:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: var(--destructive);
+
+      &:focus {
+        border-color: var(--destructive);
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
+    }
+
+    /* Style the calendar icon */
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 150ms;
+
+      &:hover { opacity: 1; }
+    }
+  }
+
+  /* -- Range hint --------------------------------------------------
+     States the allowed dates up front (point aria-describedby at it, so it
+     is announced with the field) and turns into the error when the field
+     holds a date outside them: destructive colour + a warning sign, so the
+     state never rests on colour alone. Always rendered - no show/hide, no
+     live-region timing, no JavaScript. Place it after the input. */
+  .date-input-hint {
+    margin: 0.375rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+    color: var(--destructive);
+
+    &::before {
+      content: '⚠\FE0E  ';
+      font-weight: 600;
+    }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .date-input,
+    .date-input *,
+    .date-input::before,
+    .date-input::after,
+    .date-input *::before,
+    .date-input *::after,
+    .date-input::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Forced colors (Windows High Contrast): the destructive colour is replaced
+   by system colours - the invalid field keeps a distinct border and the hint
+   keeps its warning sign. */
+@media (forced-colors: active) {
+  @layer components {
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) {
+      border-color: LinkText;
+      border-width: 2px;
+    }
+
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+      color: LinkText;
+    }
+  }
+}
+
+/* ── components/combobox/combobox.css ── */
+/* -- Combobox component ---------------------------------------- */
+
+@layer components {
+  .combobox {
+    position: relative;
+
+    /* -- Sizes: set data-size on the .combobox wrapper; the trigger (a
+       .btn) and the popover's rows scale together. Heights/fonts mirror the
+       field ladder the .input defines: the unsized trigger renders 2.5rem —
+       the .input default - via the .combobox-trigger rule below, md = 2.25rem
+       is the ladder's md, exactly like .input goes 2.5rem → 2.25rem at md. */
+    &[data-size="xs"] {
+      & .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 0.75rem; padding-block: 0.25rem; }
+    }
+    &[data-size="sm"] {
+      & .combobox-trigger { height: 2rem; padding: 0 0.625rem; font-size: 0.8125rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 0.8125rem; padding-block: 0.3125rem; }
+    }
+    &[data-size="md"] {
+      & .combobox-trigger { height: 2.25rem; }
+    }
+    &[data-size="lg"] {
+      & .combobox-trigger { height: 2.75rem; padding: 0 1rem; font-size: 1rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 1rem; padding-block: 0.5rem; }
+    }
+    &[data-size="xl"] {
+      & .combobox-trigger { height: 3.25rem; padding: 0 1.25rem; font-size: 1.125rem; }
+      & .combobox-item, & .combobox-group-label { font-size: 1.125rem; padding-block: 0.625rem; }
+    }
+  }
+
+  .combobox-trigger {
+    width: 100%;
+    justify-content: space-between;
+    /* the field standard for the unsized default (see .input): the ladder's
+       md step - identical to what a bare .btn renders, so no override is
+       needed beyond pinning it explicitly against .btn base drift */
+    height: 2.25rem;
+  }
+
+  .combobox-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .combobox-value[data-placeholder] {
+    color: var(--muted-foreground);
+  }
+
+  .combobox-chevron {
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+    opacity: 0.5;
+  }
+
+  /* Clear button (injected by combobox.js after the trigger). Anchor-positioned
+     over the trigger's chevron slot; anchored via the same per-instance anchor
+     name the popover uses. `data-placeholder` presence is the single
+     selection marker - the :has() rules below flip chevron and clear in sync,
+     so no JS toggles visibility. */
+  .combobox-clear {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    top: anchor(top);
+    bottom: anchor(bottom);
+    right: anchor(right);
+    /* center the 20px box exactly over the 16px chevron (1rem trigger padding) */
+    margin-inline-end: 0.875rem;
+    width: 1.25rem;
+    display: none;
+    place-items: center;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &:hover { color: var(--foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+  }
+
+  .combobox:has(.combobox-value:not([data-placeholder])) {
+    & .combobox-clear { display: grid; }
+    & .combobox-chevron { display: none; }
+  }
+
+  /* -- Multi-select (data-multiple) --------------------------------
+     Options show a checkbox (empty box → filled with a check), the chosen
+     options sit as removable tags under the trigger. The check is ::after,
+     painted in --primary-foreground over the ::before box, so it stays
+     visible in light and dark (primary flips, its foreground flips with it). */
+  .combobox[data-multiple] .combobox-item {
+    padding-inline-start: 1.875rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0.5rem;
+      top: 50%;
+      width: 1rem;
+      height: 1rem;
+      transform: translateY(-50%);
+      box-sizing: border-box;
+      border: 1px solid var(--input);
+      border-radius: calc(var(--radius-sm) * 0.75);
+      background: var(--background);
+      mask: none;
+    }
+
+    &[aria-selected="true"]::before {
+      border-color: var(--primary);
+      background-color: var(--primary);
+      mask: none;
+    }
+
+    &[aria-selected="true"]::after {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0.625rem;
+      top: 50%;
+      width: 0.75rem;
+      height: 0.75rem;
+      transform: translateY(-50%);
+      background-color: var(--primary-foreground);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+  }
+
+  .combobox-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+
+    /* nothing chosen: no empty gap under the trigger */
+    &:not(:has(.combobox-tag)) {
+      display: none;
+    }
+  }
+
+  .combobox-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    padding: 0.125rem 0.25rem 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+  }
+
+  .combobox-tag-remove {
+    display: inline-grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: none;
+    border-radius: calc(var(--radius-sm) * 0.75);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &:hover {
+      background-color: color-mix(in oklch, var(--foreground) 10%, transparent);
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+
+  /* -- Tag input (data-tags) ----------------------------------------
+     Tags INSIDE a field-like box, typed into directly: .combobox-field looks
+     like .input (same border, radius, ring on focus-within), the tags and the
+     text input wrap together, the input takes the remaining width. */
+  .combobox-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    box-sizing: border-box;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    cursor: text;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* the tag span dissolves into the field's wrap (tags + input flow together) */
+    & > .combobox-tags {
+      display: contents;
+    }
+
+    & .combobox-tag {
+      line-height: 1.375rem;
+    }
+  }
+
+  .combobox-field-input {
+    flex: 1 1 6rem;
+    min-width: 6rem;
+    height: 1.625rem;
+    padding: 0 0.25rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.875rem;
+
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* "Create …" row: a plus instead of the checkbox */
+  .combobox[data-multiple] .combobox-item.combobox-create {
+    color: var(--muted-foreground);
+
+    &::before {
+      border: none;
+      border-radius: 0;
+      background-color: currentColor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    &[data-highlighted] {
+      color: var(--accent-foreground);
+    }
+  }
+
+  .combobox-content {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+
+    /* -- Anchor positioning -- */
+    top: anchor(bottom);
+    left: anchor(left);
+    width: anchor-size(width);
+    margin-top: 4px;
+    position-try-fallbacks: flip-block;
+
+    /* -- Animation --------------------------------------------- */
+    opacity: 0;
+    transform: scale(0.96) translateY(-0.25rem);
+    transition: opacity 150ms ease, transform 150ms ease,
+                display 150ms allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @starting-style {
+    .combobox-content:popover-open {
+      opacity: 0;
+      transform: scale(0.96) translateY(-0.25rem);
+    }
+  }
+
+  .combobox-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .combobox-search-icon {
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+  }
+
+  .combobox-search-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+
+    &::placeholder { color: var(--muted-foreground); }
+  }
+
+  .combobox-listbox {
+    max-height: 16rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.25rem;
+  }
+
+  .combobox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: calc(var(--radius) * 0.6);
+    font-size: 0.875rem;
+    cursor: pointer;
+    outline: none;
+    transition: background 100ms;
+    /* room for the selection check; the ::before is absolute (like
+       .dropdown-check) so unselected rows never shift horizontally */
+    padding-inline-start: 1.5rem;
+    position: relative;
+
+    &:hover, &[data-highlighted] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    /* Mask (not background-image): a data: URI SVG resolves currentColor to
+       BLACK when used as an image, making the check invisible in dark mode.
+       Masking paints it with background-color: currentColor - the real text
+       color, hover/foreground included. */
+    &[aria-selected="true"]::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0.375rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 1rem;
+      background-color: currentColor;
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      flex-shrink: 0;
+    }
+
+    &[aria-disabled="true"] {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* Author `display: flex` overrides the UA's [hidden] { display: none }
+       (author origin always wins), so filter()'s item.hidden = true left
+       non-matching options rendered - and clickable - in the list. */
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .combobox-empty {
+    padding: 1.5rem 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  .combobox-group-label {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+  }
+
+  .combobox-separator {
+    height: 1px;
+    background: var(--border);
+    margin: 0.25rem -0.25rem;
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+
+  @media (prefers-reduced-motion: reduce) {
+    .combobox-content {
+      transition: none;
+    }
+    .combobox-item {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .combobox-content {
+      border-color: ButtonText;
+    }
+    .combobox-item {
+      &:hover, &[data-highlighted] {
+        forced-color-adjust: none;
+        background: Highlight;
+        color: HighlightText;
+      }
+    }
+  }
+}
+
+/* ── components/search-filter/search-filter.css ── */
+/* -- Search & Filter component ----------------------------------
+   Two form controls for narrowing a list:
+   .search-box - a search field with a leading icon and a clear (×) button
+                 that shows only while there is something to clear
+   .filter     - category chips on native radios / checkboxes: pick one and
+                 the others step aside behind a reset (×) - CSS only */
+
+@layer components {
+  /* -- Search box ------------------------------------------------ */
+  .search-box {
+    /* the BOX draws the field frame; the input inside is bare, so the icon
+       and the clear button sit inside the border like one control */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: 2.25rem;
+    padding-inline: 0.75rem 0.375rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow-xs);
+    cursor: text;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
+    }
+
+    /* the leading icon (an <svg> or a lucide <i> before the input) */
+    & > :is(svg, i, .search-box-icon) {
+      flex: none;
+      width: 1em;
+      height: 1em;
+      color: var(--muted-foreground);
+    }
+
+    & > input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      appearance: none;
+
+      &::placeholder { color: var(--muted-foreground); }
+      /* the box brings its own clear button - drop the UA's */
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration { appearance: none; display: none; }
+      &:disabled { cursor: not-allowed; }
+    }
+
+    &:has(> input:disabled) {
+      background: var(--muted);
+      color: var(--muted-foreground);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    &:has(> input[aria-invalid="true"]) {
+      border-color: var(--destructive);
+      &:focus-within { box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2); }
+    }
+
+    /* -- Clear button: a CSS-drawn ×, only while there is text -------- */
+    & > .search-box-clear {
+      position: relative;
+      flex: none;
+      display: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background-color 150ms, color 150ms;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: 0.75rem;
+        height: 1.5px;
+        border-radius: 1px;
+        background: currentColor;
+        translate: -50% -50%;
+        rotate: 45deg;
+      }
+      &::after { rotate: -45deg; }
+
+      &:hover { background: var(--accent); color: var(--accent-foreground); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    }
+
+    /* the runtime names the state: filled / searching = there is a value */
+    &:is([data-state-name="filled"], [data-state-name="searching"]) {
+      & > .search-box-clear { display: block; }
+      /* a trailing hint (a <kbd> shortcut, a scope label) steps aside */
+      & > :is(kbd, .search-box-hint) { display: none; }
+    }
+
+    & > :is(kbd, .search-box-hint) {
+      flex: none;
+      margin-inline-end: 0.125rem;
+    }
+
+    & > .search-box-hint {
+      color: var(--muted-foreground);
+      font-size: 0.75em;
+    }
+
+    /* -- Searching: a spinner stands in for the leading icon ---------- */
+    &::before {
+      content: "";
+      display: none;
+      flex: none;
+      box-sizing: border-box;
+      width: 1em;
+      height: 1em;
+      border: 2px solid color-mix(in oklch, var(--muted-foreground) 30%, transparent);
+      border-top-color: var(--muted-foreground);
+      border-radius: 50%;
+      animation: search-box-spin 700ms linear infinite;
+    }
+
+    &[data-state-name="searching"] {
+      &::before { display: block; }
+      & > :is(svg, i, .search-box-icon) { display: none; }
+    }
+
+    /* -- Variants / shape / sizes ------------------------------------- */
+    &[data-variant="muted"] {
+      background: var(--muted);
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    &[data-shape="pill"] {
+      border-radius: 999px;
+      padding-inline-start: 0.875rem;
+    }
+
+    &[data-size="sm"] {
+      height: 2rem;
+      padding-inline: 0.625rem 0.25rem;
+      font-size: 0.8125rem;
+      & > .search-box-clear { width: 1.25rem; height: 1.25rem; }
+    }
+
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding-inline: 1rem 0.5rem;
+      font-size: 1rem;
+      & > .search-box-clear { width: 1.75rem; height: 1.75rem; }
+    }
+  }
+
+  /* -- Filter ------------------------------------------------------ */
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    /* chips space themselves (margin, not gap): a collapsed chip must take
+       no room at all, and a gap would stay behind it */
+    row-gap: 0.375rem;
+    /* chips collapse to and grow from width 0 - animate to/from auto */
+    interpolate-size: allow-keywords;
+    /* a <form> or <fieldset> host carries no box of its own */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+
+    /* every chip is a native radio / checkbox (or the reset button) -
+       appearance: none, the label drawn from aria-label */
+    & > input {
+      appearance: none;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      min-width: 0;
+      width: auto;
+      height: 2rem;
+      margin: 0 0.375rem 0 0;
+      padding: 0 0.875rem;
+      border: 1px solid var(--input);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--background);
+      color: var(--foreground);
+      font: 500 0.875rem/1 var(--font-sans);
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: var(--shadow-xs);
+      /* choosing a chip never jumps: the others shrink to nothing and the
+         reset grows, all in one glide, and the chosen chip slides along */
+      transition:
+        background-color 150ms, color 150ms, border-color 150ms,
+        width 250ms ease, padding 250ms ease, margin 250ms ease, border-width 250ms ease,
+        opacity 200ms, scale 250ms ease, visibility 250ms allow-discrete;
+
+      &:is([type="radio"], [type="checkbox"]):not(.filter-reset)::after { content: attr(aria-label); }
+
+      /* a checkbox chip shows its box: several may be ticked */
+      &[type="checkbox"]::before {
+        content: "";
+        flex: none;
+        box-sizing: border-box;
+        width: 0.875em;
+        height: 0.875em;
+        margin-inline-end: 0.5em;
+        border: 1.5px solid currentColor;
+        border-radius: 0.25em;
+        opacity: 0.7;
+      }
+      &[type="checkbox"]:checked::before {
+        opacity: 1;
+        background: currentColor;
+        /* the tick is cut out of the filled box, so it shows the chip colour */
+        mask:
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat,
+          linear-gradient(#000 0 0);
+        mask-composite: exclude;
+      }
+
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+
+      &:checked {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-foreground);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        &:hover { background: var(--background); color: var(--foreground); }
+      }
+    }
+
+    /* the reset: <input type="reset" value="×"> in a form, or a radio of
+       the group with .filter-reset outside one - a square ×, authored LAST
+       so it appears after the chosen chip and nothing moves under the
+       pointer */
+    & > :is(input[type="reset"], .filter-reset) {
+      width: 2rem;
+      padding: 0;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--muted-foreground);
+    }
+    & > .filter-reset::after { content: "×"; }
+
+    /* -- Variants / shape / sizes ------------------------------------- */
+    &[data-variant="secondary"] > input:checked {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+
+    &[data-variant="outline"] > input:checked {
+      background: var(--background);
+      border-color: var(--foreground);
+      color: var(--foreground);
+      box-shadow: inset 0 0 0 1px var(--foreground);
+    }
+
+    &[data-shape="pill"] > input { border-radius: 999px; }
+
+    &[data-size="sm"] > input {
+      height: 1.75rem;
+      padding-inline: 0.625rem;
+      font-size: 0.75rem;
+      &:is([type="reset"], .filter-reset) { width: 1.75rem; padding: 0; font-size: 1rem; }
+    }
+
+    &[data-size="lg"] > input {
+      height: 2.5rem;
+      padding-inline: 1.125rem;
+      font-size: 1rem;
+      &:is([type="reset"], .filter-reset) { width: 2.5rem; padding: 0; font-size: 1.5rem; }
+    }
+
+    /* -- Collapsed chips (after the sizes: these win) --------------------
+       nothing chosen yet (or the reset radio is the choice): no reset;
+       one chosen: the others step aside until the reset brings them back.
+       Collapsed = no width, no box, hidden from pointer, focus and the
+       radio group's arrow keys (visibility flips at the END of the glide
+       when hiding, at the start when showing). */
+    &:not(:has(> input:checked:not(.filter-reset))) > :is(input[type="reset"], .filter-reset),
+    &:not([data-multiple]):has(> input:checked:not(.filter-reset)) > input:not(:checked, .filter-reset, [type="reset"]) {
+      width: 0;
+      padding-inline: 0;
+      margin-inline-end: 0;
+      border-inline-width: 0;
+      opacity: 0;
+      scale: 0.8;
+      box-shadow: none;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  @keyframes search-box-spin {
+    to { rotate: 360deg; }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .search-box,
+    .search-box > .search-box-clear,
+    .filter > input { transition: none; }
+    /* the spinner still says "working" - slowly */
+    .search-box::before { animation-duration: 2s; }
+  }
+
+  @media (prefers-contrast: more) {
+    .search-box { border-color: var(--foreground); }
+    .search-box > .search-box-clear { color: var(--foreground); }
+    .filter > input { border-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .search-box { border: 1px solid CanvasText; }
+    .search-box:focus-within { outline: 2px solid Highlight; }
+    .search-box > .search-box-clear::before,
+    .search-box > .search-box-clear::after { background: ButtonText; }
+    .filter > input { border: 1px solid ButtonText; }
+    .filter > input:checked {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+  }
+}
+
+/* ── components/form/form.css ── */
+/* -- Form component --------------------------------------------- */
+
+@layer components {
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* -- Form field -------------------------------------------- */
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    /* -- Horizontal orientation (label beside control) ------- */
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      align-items: start;
+      gap: 1rem;
+
+      & > .label {
+        margin-bottom: 0;
+        padding-top: 0.5rem;
+        min-width: 8rem;
+        flex-shrink: 0;
+      }
+    }
+
+    /* -- Invalid state -------------------------------------- */
+    &[data-invalid] {
+      & > .field-description {
+        color: var(--destructive);
+      }
+    }
+  }
+
+  /* -- Inline field (checkbox, switch, radio inline) -------- */
+  .form-field-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & > .label {
+      margin-bottom: 0;
+    }
+  }
+
+  /* -- Notification / switch row layout --------------------- */
+  .form-field-row {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: var(--shadow-xs);
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    & > div > .label {
+      margin-bottom: 0;
+      line-height: 1.4;
+    }
+
+    & > div > .field-description {
+      margin: 0;
+    }
+
+    &[data-disabled] {
+      opacity: 0.6;
+    }
+  }
+
+  /* -- Button actions row ----------------------------------- */
+  .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding-top: 0.5rem;
+  }
+
+  /* -- Fieldset --------------------------------------------- */
+  .form-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    & > legend {
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      color: var(--foreground);
+      padding: 0;
+      margin-bottom: 0.25rem;
+    }
+
+    & > .field-description {
+      margin: -0.25rem 0 0.5rem;
+    }
+  }
+
+  /* -- Form group (vertical stack of fields) ---------------- */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* -- Accessibility ---------------------------------------- */
+  @media (prefers-contrast: more) {
+    .form-field-row {
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .form-field-row {
+      border-color: ButtonBorder;
+    }
+
+    .form-fieldset > legend {
+      color: LinkText;
+    }
+  }
+}

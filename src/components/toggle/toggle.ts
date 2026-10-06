@@ -14,6 +14,16 @@ const dfDollar = defussQuery();
 
 const toggleStates = ['default', 'pressed'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the toggle's states take none. */
+export interface ToggleStateConfigs {
+  /** Not pressed (aria-pressed="false"). */
+  default: {};
+  /** Pressed (aria-pressed="true"). */
+  pressed: {};
+}
+
 /**
  * The markup of a state - the one place a state becomes attributes. setState
  * runs it on the live button, render() on a detached copy of the authored

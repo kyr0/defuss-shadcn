@@ -1,8 +1,8 @@
 ---
 name: Rating
 type: MOL
-why: Native radio group styled as stars — keyboard, form submission and exclusivity are the browser's, so no JavaScript.
-when: Collecting or displaying a score out of five — reviews, feedback, quality scores. Use radio for a general small choice set.
+why: Native radio group styled as stars; keyboard, form submission and exclusivity are the browser's, so no JavaScript.
+when: Collecting or displaying a score out of five (reviews, feedback, quality scores). Use radio for a general small choice set.
 where: dist/components/rating/rating.css
 supportedStates: default
 ---
@@ -18,15 +18,15 @@ element with no inputs.
 ---
 
 ## Native Web APIs
-- [`<input type="radio">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) — exclusivity via shared `name`, arrow-key navigation, form submission
-- [`<fieldset>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset) — groups the radios and propagates `disabled` to all of them
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) — fills every star up to the checked or hovered one, with no JavaScript
-- [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked) — current value
-- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) — keyboard-only focus ring on the star
-- [`@media (hover: hover)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover) — hover preview only where a pointer exists
-- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) — suppresses the fill transition and star scale
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — darkens empty stars, thickens the focus ring
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — maps fill to `Highlight`, empty to `GrayText`
+- [`<input type="radio">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) - exclusivity via shared `name`, arrow-key navigation, form submission
+- [`<fieldset>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset) - groups the radios and propagates `disabled` to all of them
+- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - fills every star up to the checked or hovered one, with no JavaScript
+- [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked) - current value
+- [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on the star
+- [`@media (hover: hover)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover) - hover preview only where a pointer exists
+- [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses the fill transition and star scale
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - darkens empty stars, thickens the focus ring
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - maps fill to `Highlight`, empty to `GrayText`
 
 ---
 
@@ -54,7 +54,7 @@ element with no inputs.
 </fieldset>
 ```
 
-Any number of stars works — add or remove `.rating-item` elements.
+Any number of stars works: add or remove `.rating-item` elements.
 
 ### Read-only (a value you display)
 
@@ -107,7 +107,7 @@ form is always five stars.
 
 | Property | Default | Purpose |
 |----------|---------|---------|
-| `--rating-color` | `#f59e0b` | Filled star. Amber has no token in the tweakcn shape, so it is a literal — set it per instance for hearts, brand colours, etc. |
+| `--rating-color` | `#f59e0b` | Filled star. Amber has no token in the tweakcn shape, so it is a literal; set it per instance for hearts, brand colours, etc. |
 | `--rating-empty` | `var(--border)` | Unfilled star |
 | `--rating-size` | `1.25rem` | Star size; `data-size` sets it |
 | `--rating-glyph` | `"★"` | The glyph of an interactive item - any text glyph (`"●"`, `"♥︎"`) |
@@ -118,7 +118,7 @@ form is always five stars.
 ## States
 
 The rating is CSS-only and has no scripted state: `default` is its only state.
-The current value lives in the checked radio, exactly as in any radio group —
+The current value lives in the checked radio, exactly as in any radio group;
 read it with `form.elements.score.value`.
 
 ---
@@ -127,9 +127,9 @@ read it with `form.elements.score.value`.
 
 | Attribute | Element | When |
 |-----------|---------|------|
-| `aria-label` | `.rating` | Always — names the group ("Rate this product") |
-| `aria-label` | `.rating-input` | Always — "1 star", "2 stars", … so each option is announced |
-| `role="img"` + `aria-label` | `.rating[data-readonly]` | Always — the read-only form is a picture of a score, and the label carries the value |
+| `aria-label` | `.rating` | Always: names the group ("Rate this product") |
+| `aria-label` | `.rating-input` | Always: "1 star", "2 stars", ... so each option is announced |
+| `role="img"` + `aria-label` | `.rating[data-readonly]` | Always: the read-only form is a picture of a score, and the label carries the value |
 
 ---
 

@@ -1,0 +1,68 @@
+---
+title: "Bundles & Downloads"
+description: "Load defuss-shadcn whole, per sidebar section, or per component - from the jsDelivr CDN, with npm, or as a ZIP you vendor into your project."
+slug: "bundles"
+---
+
+import { DocPage, PageHeader, CodeWindow, DocText, DocLink, TableCard, SectionBundleTable, SectionLoad, SectionTotal, AllTotal, ZipLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="bundles" title="Bundles & Downloads">
+  Three ways to load the system, from one file pair to one file per component: <code>all.*</code> carries every component, a <strong>section bundle</strong> carries one sidebar section - the forms, the overlays, the website blocks - and the per-component files carry exactly one. Each way loads from the jsDelivr CDN, installs with npm, or comes as a ZIP to copy into your project.
+</PageHeader>
+
+<h2 id="three-sizes" class="h2-display">Three sizes</h2>
+
+<DocText>All three load the same component code. They differ only in how many files a page requests and how much of the system it downloads. Every way starts with <code>core.css</code> (tokens + utilities); the section and per-component ways also load <code>core.js</code> (the <code>df$</code> runtime every component binds to), which <code>all.js</code> already embeds.</DocText>
+
+<TableCard title="Ways to load" rows={[
+  ["Way", "Files", "Pick it when"],
+  ["all", "components/all.css + all.js", "a page uses components from most sections, or you prototype"],
+  ["section", "sections/{section}.css + .js, plus the sections it needs", "a page lives in one or two areas - a form, a dashboard, a landing page"],
+  ["component", "components/{name}/{name}.css + .js", "a page uses a handful of components and you list them yourself"],
+]} code={[1]} />
+
+<DocText>The <DocLink href="installation.html">Installation</DocLink> page covers <code>all</code> and per-component loading; this page covers the section bundles and the downloads.</DocText>
+
+<h2 id="section-bundles" class="h2-display">The section bundles</h2>
+
+<DocText>Every component sits in exactly one sidebar section, and every sidebar section that holds components ships as one bundle: <code>dist/sections/&#123;section&#125;.css</code>, plus <code>.js</code> when a member has behavior, plus the minified twins and source maps. The WYSIWYG Editors section is the extra bundle <code>components/wysiwyg.*</code> that every page of this documentation loads. A section bundle holds only its own components, so loading several sections never ships a component twice.</DocText>
+
+<DocText><strong>Needs</strong> lists the other sections whose components the section's documented markup uses: a Website pricing block is built from Buttons and Badges, a Dialog from Buttons. The list is computed from every <code>html</code> block of the members' component skills, plus the markup their JavaScript writes. Primitives appears almost everywhere because it carries Typography, the page's base text size. Sizes are minified + gzip-compressed, CSS and JS together, without core.</DocText>
+
+<SectionBundleTable />
+
+```mermaid label="Load order" caption="core first, then every section in the Needs column, then the section itself."
+flowchart LR
+    Core["core.css + core.js<br/>tokens, utilities, df$ runtime"] --> Needs["the sections<br/>in its Needs column"]
+    Needs --> Section["the section bundle"]
+```
+
+<h2 id="cdn" class="h2-display">From the CDN</h2>
+
+<DocText>Load core, then the sections it needs, then the section - the order in the diagram. For the Overlays section that is <SectionTotal section="overlays" /> minified and compressed, against <AllTotal /> for <code>core.css</code> + <code>all.css</code> + <code>all.js</code>:</DocText>
+
+<SectionLoad section="overlays" mode="cdn" />
+
+<DocText>Each section bundle binds to the runtime <code>core.js</code> installed, so <code>core.js</code> comes first; its components then initialize themselves, including ones added to the page later. Replace <code>@latest</code> with a release tag to lock the version (see <DocLink href="installation.html#toc-pinning-a-version">Pinning a version</DocLink>), and drop <code>.min</code> from a file name for the readable source.</DocText>
+
+<h2 id="npm" class="h2-display">With a package manager</h2>
+
+<DocText>The npm package ships the same <code>dist/</code> tree. Import the same files in the same order, once, in the app entry:</DocText>
+
+<SectionLoad section="overlays" mode="npm" />
+
+<h2 id="zip" class="h2-display">Download a ZIP (vendoring)</h2>
+
+<DocText>For a project that cannot reach a CDN or a registry - an offline build, a locked-down network, a CMS theme folder - every GitHub release attaches one ZIP per section and one for <code>all</code>. The links in the table above point at the release of this page's version. Each ZIP is complete on its own: core, every section the chosen one needs, and the section, as readable files, minified files and source maps, with the license, the third-party notice and a README that shows the load order.</DocText>
+
+<CodeWindow title="defuss-shadcn-vX.Y.Z-overlays.zip" numbers={false} code={"defuss-shadcn-vX.Y.Z-overlays/\n├-- README.md               ← what is inside + the <link>/<script> tags in load order\n├-- LICENSE\n├-- NOTICE.txt              ← bundled third-party code (defuss-morph, defuss-query)\n├-- components/\n│   ├-- core.css            ← + core.min.css, core.min.css.map\n│   └-- core.js             ← + core.js.map, core.min.js, core.min.js.map\n└-- sections/\n    ├-- primitives.css / .js ← the sections Overlays needs, each with its twins\n    ├-- actions.css / .js\n    ├-- data-display.css / .js\n    └-- overlays.css / .js   ← the section itself"} />
+
+<DocText>Unzip the folder into your static files and copy the tags from its README. The <ZipLink name="all" /> ZIP holds <code>core.css</code> and <code>all.*</code> - <code>all.js</code> embeds the runtime, so it has no <code>core.js</code>. Releases up to v0.9.5 predate the split and attach no ZIPs; for the whole repository (sources, docs and all), use the source archive GitHub attaches to every release, or the <DocLink href="installation.html#toc-self-hosting">Self-hosting</DocLink> download.</DocText>
+
+<h2 id="how" class="h2-display">How the split is made</h2>
+
+<DocText>The sidebar is the source: <code>scripts/lib/sections.ts</code> reads it, assigns each component to the one section that links its page, and fails the build when a component is in no section or in two. <code>scripts/bundle.ts</code> builds the bundles, <code>bun run verify</code> checks that each carries exactly its members and no copy of the core runtime, and <code>dist/stats.json</code> records members, needs and sizes - this page renders from it. <code>scripts/release-zips.ts</code> packs the ZIPs from the same data when a release is cut.</DocText>
+
+</DocPage>

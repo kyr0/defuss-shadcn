@@ -10,13 +10,13 @@ supportedStates: default
 # Pattern: Typography
 
 ## Native basis
-Native HTML text elements: `<h1>`–`<h4>`, `<p>`, `<blockquote>`, `<code>`, `<small>`.
+Native HTML text elements: `<h1>` to `<h4>`, `<p>`, `<blockquote>`, `<code>`, `<small>`.
 Pure CSS - no JavaScript or ARIA required.
 
 ---
 
 ## Native Web APIs
-- [`<h1>`–`<h6>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements) - semantic heading hierarchy
+- [`<h1>` to `<h6>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements) - semantic heading hierarchy
 - [`<blockquote>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) - quoted block content
 - [`<code>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code) - inline code fragment
 - [`<small>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small) - side comments and small print
@@ -150,7 +150,7 @@ same classes switch to CJK rules:
 ## Notes
 
 - These are utility classes for prose content - not a component with variants/sizes.
-- The `.h1`–`.h4` classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.
+- The `.h1` to `.h4` classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.
 - Typography classes compose freely with other components (Card content, Dialog body, Alert description).
 - `text-wrap: balance` is used on all headings (h1–h4) for better visual line distribution.
 - `text-wrap: pretty` is used on paragraphs and lead text for orphan prevention.

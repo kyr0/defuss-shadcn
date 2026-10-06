@@ -80,8 +80,22 @@ export type AppStats = BundleStats & {
   components: string[];
 };
 
+/** One sidebar section built on its own (scripts/lib/sections.ts): only its
+ *  members, loaded after core.* - the Bundles & Downloads page renders these.
+ *  VERIFIED: (verify `stats.json fresh`) regenerated from dist/ on every build. */
+export type SectionStats = BundleStats & {
+  /** the sidebar section heading */
+  heading: string;
+  /** its components, in sidebar order */
+  members: string[];
+  /** the headings of the other sections its documented markup uses */
+  needs: string[];
+  /** dist-relative bundle files a page links (the min twins sit beside them) */
+  files: string[];
+};
+
 /** Extra measurements the caller passes through (fs-bound, see stats-files.ts). */
-export type StatsExtra = { tokens?: number; examples?: number; apps?: Record<string, AppStats>; templateGroups?: Record<string, number>; bundles?: Record<string, BundleStats> };
+export type StatsExtra = { tokens?: number; examples?: number; apps?: Record<string, AppStats>; templateGroups?: Record<string, number>; bundles?: Record<string, BundleStats>; sections?: Record<string, SectionStats> };
 
 /** The whole dist/stats.json document. */
 export type StatsDoc = {
@@ -111,6 +125,8 @@ export type StatsDoc = {
   core: BundleStats;
   /** the extra bundles (scripts/lib/bundles.ts) - components kept out of all.*, e.g. wysiwyg */
   bundles: Record<string, BundleStats>;
+  /** one bundle per sidebar section, in sidebar order (scripts/lib/sections.ts) */
+  sections: Record<string, SectionStats>;
   components: Record<string, ComponentStats>;
   /** the Application Scaffolds, each built on its own */
   apps: Record<string, AppStats>;
@@ -151,6 +167,7 @@ export function aggregateStats(
     bundle,
     core,
     bundles: extra.bundles ?? {},
+    sections: extra.sections ?? {},
     components: {},
     apps: extra.apps ?? {},
   };

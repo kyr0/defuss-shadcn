@@ -27,6 +27,17 @@ export const STANDALONE_APPS = ['scaffold-admin-dashboard', 'scaffold-messenger'
 /** The generated full-screen page name for a scaffold page slug. */
 export const standaloneAppFile = (slug: string): string => `app-${slug.replace(/^scaffold-/, '')}.html`;
 
+/** Document templates with a generated full-screen reading page (the paper):
+ *  like the scaffolds, one example fence and two ways to view it - but a
+ *  document scrolls and loads the whole system (all.css + all.js), since it
+ *  composes charts, diagrams and BibTeX rather than one app's components.
+ *  VERIFIED: (paper-fullscreen.e2e) the page scrolls, its diagram, charts, BibTeX and
+ *  icons initialize on all.js, and it follows the OS color scheme. */
+export const STANDALONE_DOCS = ['paper'];
+
+/** The generated full-screen page name for a document page slug. */
+export const standaloneDocFile = (slug: string): string => `full-${slug}.html`;
+
 /** The generated standalone page name for a deck page slug. */
 export const standaloneDeckFile = (slug: string): string => `deck-${slug}.html`;
 
@@ -61,6 +72,9 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   // full-screen scaffolds: app-{n}.html ← pages/scaffold-{n}.mdx (its example fence)
   const app = STANDALONE_APPS.find((s) => r === standaloneAppFile(s));
   if (app) return `documentation/pages/${app}.mdx`;
+  // full-screen documents: full-{n}.html ← pages/{n}.mdx (its example fence)
+  const doc = STANDALONE_DOCS.find((s) => r === standaloneDocFile(s));
+  if (doc) return `documentation/pages/${doc}.mdx`;
   // pages: {n}.html ← pages/{n}.mdx
   if (r.endsWith('.html')) return `documentation/pages/${r.replace(/\.html$/, '')}.mdx`;
   return null;

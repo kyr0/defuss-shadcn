@@ -14,6 +14,21 @@ const dfDollar = defussQuery();
 
 const colorPickerStates = ['default'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the colour in both notations). */
+export interface ColorPickerStateConfigs {
+  /** The picker with its colour. */
+  default: {
+    /** the colour, #rrggbb (the native input's value) */
+    value?: string;
+    /** the notation the field shows */
+    format?: 'hex' | 'rgb' | 'hsl' | 'oklch';
+    /** reported by getState(): the colour written in that notation */
+    formatted?: string;
+  };
+}
+
 const getInput = (picker) => dfDollar(picker).find('input[type="color"]').get(0);
 
 /** Notations the picker can report. The native input always holds #rrggbb;

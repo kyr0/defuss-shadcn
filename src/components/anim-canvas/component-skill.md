@@ -28,7 +28,7 @@ registry, it ships no animation of its own.
 - [`df$.anim` engine](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) - the shared animation registry (`fadeIn/Out`, `slideIn/Out`, `zoomIn/Out`, `popIn/Out`, `spinIn/Out`, `flipIn/Out`, `skewIn/Out`, `blurIn/Out`, `wipeIn/Out`, `irisIn/Out`, `blocksIn/Out`) the canvas plays by name
 - [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - re-scales/re-frames the board on every viewport resize
 - [`inert`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert) - inactive slides leave tab order and AT (lifted in overview, where every tile is clickable)
-- [`data-*` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*) - the relation map (`data-east`…) and per-slide animation declarations (`data-anim-in`…) are the entire authoring surface
+- [`data-*` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*) - the relation map (`data-east`...) and per-slide animation declarations (`data-anim-in`...) are the entire authoring surface
 - [`transform: translate() scale()` + `transform-origin`](https://developer.mozilla.org/en-US/docs/Web/CSS/transform) - board units → viewport mapping (1:1 framing and the overview zoom-out)
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - engine durations and the board pan collapse to 1ms (built in, required)
 - [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - overview tiles and chrome keep system-color outlines
@@ -111,7 +111,7 @@ plus the per-slide animation declarations; slide surfaces read `--card` /
 
 Keys route to the focused canvas, else the first canvas intersecting the
 viewport. Editable elements are never hijacked (the shared `bindGlobalKeys`
-listener filters them), and a direction with no neighbor is never swallowed —
+listener filters them), and a direction with no neighbor is never swallowed:
 the key keeps its default behavior at the board's edge.
 
 ## States
@@ -130,11 +130,37 @@ canvas.api.getState();                                  // { name, config: { sli
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.animCanvasApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.animCanvasStates` = `default`, `overview`.
+<code>type AnimCanvasState = 'default' | 'overview'</code> - `setState(name, config)` takes the config of the state it names (`AnimCanvasStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | One slide framed 1:1. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>slide?</code></td><td><code>string</code></td><td>the id of the slide to focus (plays its declared transition); without it the active slide is framed again. getState() reports the active slide's id</td></tr><tr><td><code>overview?</code></td><td><code>boolean</code></td><td>reported by getState(): whether the board is zoomed out (false here)</td></tr></table> |
+| `overview` | The whole board zoomed out, every slide a clickable tile ([data-overview] on the root). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>boolean</code></td><td>false zooms back into the active slide instead</td></tr><tr><td><code>slide?</code></td><td><code>string</code></td><td>reported by getState(): the id of the active slide</td></tr><tr><td><code>overview?</code></td><td><code>boolean</code></td><td>reported by getState(): whether the board is zoomed out</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends AnimCanvasState&gt;(name: S, config?: AnimCanvasStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>AnimCanvasStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.animCanvasApi.setState&lt;S extends AnimCanvasState&gt;(el: HTMLElement, name: S, config?: AnimCanvasStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>AnimCanvasStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.animCanvasApi.getState(el: HTMLElement): { name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.animCanvasApi.render(state: { name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.animCanvasApi.store(el: HTMLElement): Store&lt;{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: AnimCanvasState; config: AnimCanvasStateConfigs[AnimCanvasState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.animCanvasApi.commit&lt;S extends AnimCanvasState&gt;(el: HTMLElement, name: S, config?: AnimCanvasStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>AnimCanvasStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.animCanvasStates: AnimCanvasState[]</code> | The declared states, 'default' first: <code>default</code>, <code>overview</code>. |
 
 ## Notes
 

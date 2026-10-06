@@ -139,19 +139,54 @@ The registry global is `df$.shadcn.tableApi` / `df$.shadcn.tableStates`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.tableApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.tableStates` = `default`, `sorted`, `selected`.
+<code>type TableState = 'default' | 'sorted' | 'selected'</code> - `setState(name, config)` takes the config of the state it names (`TableStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | As authored: the original row order, no sort, nothing selected. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>sort?</code></td><td><code>{ column: number; direction: 'ascending' \| 'descending' } \| null</code></td><td>reported by getState(): the sort applied, null for none</td></tr><tr><td><code>selected?</code></td><td><code>number[]</code></td><td>reported by getState(): the indices of the selected body rows</td></tr></table> |
+| `sorted` | Sorted by one column. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>column?</code></td><td><code>number</code></td><td>the column's index (default 0)</td></tr><tr><td><code>direction?</code></td><td><code>'ascending' \| 'descending'</code></td><td>the direction (default ascending)</td></tr><tr><td><code>sort?</code></td><td><code>{ column: number; direction: 'ascending' \| 'descending' } \| null</code></td><td>the sort as getState() reports it - accepted instead of column / direction</td></tr><tr><td><code>selected?</code></td><td><code>number[]</code></td><td>body rows to select as well, by index</td></tr></table> |
+| `selected` | Rows selected. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>rows?</code></td><td><code>number[] \| 'all'</code></td><td>the body rows to select: indices, or 'all' (default [0])</td></tr><tr><td><code>selected?</code></td><td><code>number[]</code></td><td>the same as rows (what getState() reports)</td></tr><tr><td><code>sort?</code></td><td><code>{ column: number; direction: 'ascending' \| 'descending' } \| null</code></td><td>a sort to keep while selecting</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends TableState&gt;(name: S, config?: TableStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TableStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: TableState; config: TableStateConfigs[TableState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.tableApi.setState&lt;S extends TableState&gt;(el: HTMLElement, name: S, config?: TableStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TableStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.tableApi.getState(el: HTMLElement): { name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.tableApi.render(state: { name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: TableState; config: TableStateConfigs[TableState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.tableApi.store(el: HTMLElement): Store&lt;{ name: TableState; config: TableStateConfigs[TableState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: TableState; config: TableStateConfigs[TableState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.tableApi.commit&lt;S extends TableState&gt;(el: HTMLElement, name: S, config?: TableStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>TableStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.tableStates: TableState[]</code> | The declared states, 'default' first: <code>default</code>, <code>sorted</code>, <code>selected</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `table-reorder` | `row`, `index` | Fires after a row is moved (drag or keyboard) - the row and its new index. |
-| `table-select` | `rows`, `count` | Fires when the selection changes - the selected rows and how many. |
-| `table-sort` | `column`, `direction` | Fires when a column is sorted - the column and the direction (ascending, descending, none). |
+| Event | Description |
+|---|---|
+| `table-reorder` | Fires after a row is moved (drag or keyboard) - the row and its new index. <code>detail</code>: <code>TableReorderDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>row</code></td><td><code>HTMLTableRowElement</code></td><td>the row that moved</td></tr><tr><td><code>index</code></td><td><code>number</code></td><td>its index among the body rows now</td></tr></table> |
+| `table-select` | Fires when the selection changes - the selected rows and how many. <code>detail</code>: <code>TableSelectDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>rows</code></td><td><code>HTMLTableRowElement[]</code></td><td>the selected body rows, in table order</td></tr><tr><td><code>count</code></td><td><code>number</code></td><td>how many</td></tr></table> |
+| `table-sort` | Fires when a column is sorted - the column and the direction (ascending, descending, none). <code>detail</code>: <code>TableSortDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>column</code></td><td><code>number</code></td><td>the sorted column's index (its header cell's cellIndex)</td></tr><tr><td><code>direction</code></td><td><code>'ascending' \| 'descending' \| 'none'</code></td><td>the new direction - 'none' restores the authored order</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `TableReorderDetail` | What table-reorder carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>row</code></td><td><code>HTMLTableRowElement</code></td><td>the row that moved</td></tr><tr><td><code>index</code></td><td><code>number</code></td><td>its index among the body rows now</td></tr></table> |
+| `TableSelectDetail` | What table-select carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>rows</code></td><td><code>HTMLTableRowElement[]</code></td><td>the selected body rows, in table order</td></tr><tr><td><code>count</code></td><td><code>number</code></td><td>how many</td></tr></table> |
+| `TableSortDetail` | What table-sort carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>column</code></td><td><code>number</code></td><td>the sorted column's index (its header cell's cellIndex)</td></tr><tr><td><code>direction</code></td><td><code>'ascending' \| 'descending' \| 'none'</code></td><td>the new direction - 'none' restores the authored order</td></tr></table> |
 
 ## Density
 

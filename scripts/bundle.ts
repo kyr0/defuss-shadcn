@@ -1,11 +1,12 @@
 #!/usr/bin/env bun
-import { mkdirSync, readdirSync, readFileSync, existsSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, existsSync, rmSync, writeFileSync } from 'node:fs';
 import { viteIgnore } from './lib/vite-ignore.ts';
 import { join } from 'node:path';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { appPlans } from './lib/apps-files.ts';
 import { EXTRA_BUNDLES, inAllBundle } from './lib/bundles.ts';
+import { sections } from './lib/sections-files.ts';
 
 /**
  * Why: doc pages (and CDN consumers who want everything) used to carry 68
@@ -33,9 +34,12 @@ import { EXTRA_BUNDLES, inAllBundle } from './lib/bundles.ts';
  *
  * CSS: concatenation is safe because every component stylesheet lives in
  * `@layer components` with flat-specificity, prefixed class selectors and
- * resolves tokens via var(--*) at runtime - source order is not load-bearing,
- * so alphabetical (deterministic) order is fine. all.min.css (+ the one
- * .min.css.map in the system) is derived by minify.ts.
+ * resolves tokens via var(--*) at runtime - so alphabetical (deterministic)
+ * order is fine. VERIFIED: (section-bundles.e2e) source order still breaks an
+ * equal-specificity tie between two components' classes on ONE element (a
+ * dock snippet's `.dock-item.fab` outside its .dock); the components resolve
+ * their real compositions by specificity instead (`.dock .fab.dock-item`).
+ * all.min.css (+ the one .min.css.map in the system) is derived by minify.ts.
  *
  * Runs after build.ts (dist/ exists) and before minify.ts in both the
  * `build` and `docs` script chains.
@@ -180,35 +184,57 @@ const css = names
   .join('\n\n');
 writeFileSync(join(DIST_COMPONENTS, 'all.css'), `${css}\n`);
 
-// 2b. the extra bundles (scripts/lib/bundles.ts): components too heavy or
-//     too specialised for all.* - e.g. wysiwyg.css + wysiwyg.js, the HTML
-//     Preview Editor. ONLY the members: no core payload, no shared layer -
-//     like a per-component .js, the bundle binds to the df$ runtime all.js /
-//     core.js installed, so a page loads it after one of them.
-for (const [bundle, members] of Object.entries(EXTRA_BUNDLES)) {
-  const bundleEntry = join(TMP, `${bundle}-entry.ts`);
-  // from the BOUND dist files (build.ts replaced their shared import with
-  // the df$.shadcn.shared binding): bundling the src would embed a second
-  // copy of the shared layer instead of using the installed one
+/**
+ * A members-only bundle: {outDir}/{name}.css (+ .js when a member has JS).
+ * No core payload, no shared layer - like a per-component .js, it binds to
+ * the df$ runtime all.js / core.js installed, so a page loads it after one
+ * of them. The JS is bundled from the BOUND dist files (build.ts replaced
+ * their shared import with the df$.shadcn.shared binding): bundling the src
+ * would embed a second copy of the shared layer instead of using the
+ * installed one.
+ */
+async function buildMembersBundle(outDir: string, name: string, members: readonly string[]): Promise<void> {
   const scripts = members.filter((n) => existsSync(join(DIST_COMPONENTS, n, `${n}.js`)));
-  writeFileSync(bundleEntry, scripts.map((n) => `import '../dist/components/${n}/${n}.js';`).join('\n') + '\n');
-  const built = await Bun.build({ entrypoints: [bundleEntry], outdir: DIST_COMPONENTS, naming: `${bundle}.js`, format: 'esm', target: 'browser', sourcemap: 'external', minify: false });
-  if (!built.success) {
-    console.error(`bundle: ${bundle} Bun.build failed:`);
-    for (const log of built.logs) console.error(`  ${log}`);
-    process.exit(1);
+  if (scripts.length) {
+    const bundleEntry = join(TMP, `${name}-entry.ts`);
+    writeFileSync(bundleEntry, scripts.map((n) => `import '../dist/components/${n}/${n}.js';`).join('\n') + '\n');
+    const built = await Bun.build({ entrypoints: [bundleEntry], outdir: outDir, naming: `${name}.js`, format: 'esm', target: 'browser', sourcemap: 'external', minify: false });
+    if (!built.success) {
+      console.error(`bundle: ${name} Bun.build failed:`);
+      for (const log of built.logs) console.error(`  ${log}`);
+      process.exit(1);
+    }
+    restoreViteIgnore(join(outDir, `${name}.js`));
+    linkSourceMap(join(outDir, `${name}.js`), `${name}.js.map`);
   }
-  restoreViteIgnore(join(DIST_COMPONENTS, `${bundle}.js`));
-  linkSourceMap(join(DIST_COMPONENTS, `${bundle}.js`), `${bundle}.js.map`);
   writeFileSync(
-    join(DIST_COMPONENTS, `${bundle}.css`),
+    join(outDir, `${name}.css`),
     members
       .filter((n) => existsSync(join(SRC_COMPONENTS, n, `${n}.css`)))
       .map((n) => `/* ── components/${n}/${n}.css ── */\n` + readFileSync(join(SRC_COMPONENTS, n, `${n}.css`), 'utf8').trimEnd())
       .join('\n\n') + '\n',
   );
+}
+
+// 2b. the extra bundles (scripts/lib/bundles.ts): components too heavy or
+//     too specialised for all.* - e.g. wysiwyg.css + wysiwyg.js, the HTML
+//     Preview Editor.
+for (const [bundle, members] of Object.entries(EXTRA_BUNDLES)) {
+  await buildMembersBundle(DIST_COMPONENTS, bundle, members);
   console.log(`bundle: ${bundle}.js + ${bundle}.css (${members.join(', ')}) - kept out of all.*`);
 }
+
+// 2c. one bundle per sidebar section (scripts/lib/sections.ts) - the middle
+//     ground between all.* and one file per component. Members only, like
+//     the extra bundles; a section that IS an extra bundle (WYSIWYG Editors =
+//     wysiwyg) was built above. dist/sections/ is rebuilt from scratch so a
+//     renamed or removed section leaves no stale file behind.
+const DIST_SECTIONS = join(ROOT, 'dist', 'sections');
+rmSync(DIST_SECTIONS, { recursive: true, force: true });
+mkdirSync(DIST_SECTIONS, { recursive: true });
+const sectionList = sections();
+for (const s of sectionList) if (s.dir === 'sections') await buildMembersBundle(DIST_SECTIONS, s.name, s.members);
+console.log(`bundle: ${sectionList.length} section bundles → dist/sections/ (${sectionList.map((s) => `${s.name} ${s.members.length}`).join(', ')})`);
 
 // 3. one bundle per Application Scaffold (scripts/lib/apps.ts): core + exactly
 //    the components the app's markup needs - dist/apps/{app}.css + .js. The

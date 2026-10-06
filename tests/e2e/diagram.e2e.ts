@@ -546,6 +546,36 @@ try {
     assert.deepEqual(bad, []);
   });
 
+  await check('clearance: in every framed diagram, nothing drawn comes closer than 20px to the border (zones, zone labels, wire labels, wires)', async () => {
+    await page.evaluate(() => document.querySelectorAll('figure.diagram').forEach((f) => (globalThis as any).df$.shadcn.diagram.redraw(f)));
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+    const bad = await page.evaluate(() => {
+      const MIN = 20; // CLEARANCE in diagram.ts
+      const out: string[] = [];
+      for (const canvas of document.querySelectorAll<HTMLElement>('figure.diagram .diagram-canvas')) {
+        if (!canvas.getClientRects().length || !parseFloat(getComputedStyle(canvas).borderTopWidth)) continue;
+        const box = canvas.getBoundingClientRect();
+        const scale = box.width / (canvas.offsetWidth || 1) || 1;
+        const ox = box.left + canvas.clientLeft * scale;
+        const oy = box.top + canvas.clientTop * scale;
+        for (const el of canvas.querySelectorAll('*')) {
+          // flow tokens ride on their wires (animated) - the wire itself is measured
+          if (el.matches('.diagram-wires, .diagram-wire-labels, .diagram-wire-hit, .diagram-token, g') || !el.getClientRects().length) continue;
+          const r = el.getBoundingClientRect();
+          if (!r.width && !r.height) continue;
+          const x = (r.left - ox) / scale, y = (r.top - oy) / scale, w = r.width / scale, h = r.height / scale;
+          const d = Math.min(y, x, canvas.clientHeight - (y + h), canvas.clientWidth - (x + w));
+          if (d < MIN - 0.5) {
+            out.push(`${canvas.closest('figure')!.id || '(figure)'}: ${(el.getAttribute('class') ?? el.tagName).split(' ')[0]} ${Math.round(d)}px from the border`);
+            break;
+          }
+        }
+      }
+      return out;
+    });
+    assert.deepEqual(bad, []);
+  });
+
   // render() contract last - it reloads the page
   await check('render() contract: default / playing / paused', async () => {
     await ready();

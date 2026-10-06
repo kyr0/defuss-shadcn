@@ -1,0 +1,928 @@
+/* ── components/paper/paper.css ── */
+/* -- Paper -------------------------------------------------------------------
+   A modern research-paper project page (the layout of the Nerfies / InternVL
+   project pages) in the system's own tokens: a centered reading column for
+   prose, figures and tables that may break out wider, a serif title, linked
+   authors with affiliation marks, resource buttons, an abstract, numbered
+   sections, captioned figures, findings, key numbers, BibTeX and a footer.
+   CSS-only; the column is a named grid, so any child can opt into the wide
+   track with .paper-wide. */
+
+@layer components {
+  :where(.paper, .paper *, .paper *::before, .paper *::after) {
+    box-sizing: border-box;
+  }
+
+  .paper {
+    --paper-measure: 46rem;
+    --paper-wide: 64rem;
+    --paper-gap: 2.5rem;
+
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(1rem, 1fr)
+      [wide-start] minmax(0, calc((var(--paper-wide) - var(--paper-measure)) / 2))
+      [content-start] min(100% - 2rem, var(--paper-measure))
+      [content-end] minmax(0, calc((var(--paper-wide) - var(--paper-measure)) / 2))
+      [wide-end] minmax(1rem, 1fr)
+      [full-end];
+    row-gap: var(--paper-gap);
+    padding-block: 3.5rem 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+    container-type: inline-size;
+
+    & > * {
+      grid-column: content;
+      min-inline-size: 0;
+    }
+    & > .paper-wide,
+    & > .paper-hero,
+    & > .paper-teaser {
+      grid-column: wide;
+    }
+    & > .paper-footer {
+      grid-column: full;
+    }
+    & :is(p, li) {
+      text-wrap: pretty;
+    }
+    & a:not(.btn) {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
+      text-underline-offset: 0.2em;
+    }
+    & a:not(.btn):hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  /* -- the title block ------------------------------------------------------ */
+  .paper-hero {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+  .paper-venue {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+  }
+  .paper-title {
+    max-inline-size: 22em;
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.875rem, 4.6cqi, 3.25rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .paper-title-sub {
+    display: block;
+    margin-block-start: 0.35em;
+    color: var(--muted-foreground);
+    font-size: 0.55em;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  .paper-authors,
+  .paper-affiliations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .paper-authors {
+    font-size: 1.125rem;
+    font-weight: 500;
+
+    & sup {
+      margin-inline-start: 0.1em;
+      color: var(--muted-foreground);
+      font-size: 0.65em;
+    }
+  }
+  .paper-affiliations {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+
+    & sup {
+      margin-inline-end: 0.15em;
+      font-size: 0.75em;
+    }
+  }
+  .paper-note {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  .paper-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-block-start: 0.5rem;
+
+    & .btn {
+      border-radius: 999px;
+    }
+  }
+
+  /* -- a news line under the title ------------------------------------------ */
+  .paper-news {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.875rem 1.125rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--muted) 60%, var(--background));
+    font-size: 0.9375rem;
+    line-height: 1.55;
+
+    & .badge {
+      flex: none;
+    }
+  }
+
+  /* -- figures ---------------------------------------------------------------- */
+  .paper-teaser,
+  .paper-figure {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+
+    & > :is(img, video, svg, .diagram) {
+      inline-size: 100%;
+      max-inline-size: 100%;
+      border-radius: var(--radius-lg);
+    }
+    & > :is(img, video) {
+      display: block;
+      block-size: auto;
+      border: 1px solid var(--border);
+      background: var(--muted);
+    }
+  }
+  .paper-teaser > figcaption,
+  .paper-figure > figcaption,
+  .paper-table-caption {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    text-align: center;
+    text-wrap: balance;
+
+    & b {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+  }
+
+  /* -- abstract and sections ------------------------------------------------- */
+  .paper-abstract {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.5rem 1.75rem;
+    border-inline-start: 3px solid var(--primary);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    background: color-mix(in oklab, var(--muted) 50%, var(--background));
+
+    & > h2 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 1.375rem;
+      font-weight: 500;
+    }
+    & > p {
+      margin: 0;
+      text-align: justify;
+      hyphens: auto;
+    }
+  }
+  .paper-section {
+    display: grid;
+    gap: 1rem;
+
+    & > h2 {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin: 0;
+      padding-block-end: 0.5rem;
+      border-block-end: 1px solid var(--border);
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+    & > h3 {
+      margin: 0.5rem 0 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+    }
+    & > p {
+      margin: 0;
+    }
+    & > :is(ul, ol):not([class]) {
+      margin: 0;
+      padding-inline-start: 1.25rem;
+    }
+  }
+  /* inside a section, .paper-wide breaks out of the reading column to the
+     wide track (100cqi = the paper's width - it is the container) */
+  .paper-section > .paper-wide {
+    margin-inline: calc((100% - min(var(--paper-wide), 100cqi - 2rem)) / 2);
+  }
+  .paper-num {
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    font-weight: 500;
+  }
+
+  /* -- findings: a row of numbered cards ------------------------------------- */
+  .paper-findings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: paper-finding;
+
+    /* a card of flowing text: inline code and links stay inline */
+    & > li {
+      display: block;
+      padding: 1.125rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      color: var(--card-foreground);
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      counter-increment: paper-finding;
+    }
+    & > li::before {
+      display: block;
+      margin-block-end: 0.375rem;
+      content: "Finding " counter(paper-finding);
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    & strong {
+      font-weight: 600;
+    }
+    /* the leading phrase is the card's title */
+    & > li > strong:first-child {
+      display: block;
+      margin-block-end: 0.25rem;
+    }
+    /* a tag leads its card on a line of its own */
+    & > li > .paper-tag:first-child {
+      display: table;
+      margin-block-end: 0.5rem;
+    }
+  }
+
+  /* -- table of contents: a numbered outline in columns --------------------- */
+  .paper-toc {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.125rem 1.25rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & > h2 {
+      margin: 0;
+      color: var(--muted-foreground);
+      font: 600 0.75rem/1.2 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    & ol {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    & > ol {
+      columns: 2 15rem;
+      column-gap: 2rem;
+    }
+    & li {
+      break-inside: avoid;
+      padding-block: 0.125rem;
+      font-size: 0.9375rem;
+      line-height: 1.45;
+    }
+    & li li {
+      padding-inline-start: 1.5rem;
+      font-size: 0.875rem;
+    }
+    & a {
+      display: flex;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    & a:hover,
+    & a:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+    & .paper-num {
+      flex: none;
+      min-inline-size: 1.75rem;
+      font-size: 0.8125rem;
+    }
+  }
+  /* headings land below a sticky header when the ToC jumps to them */
+  .paper :is(h2, h3)[id] {
+    scroll-margin-block-start: 5rem;
+  }
+
+  /* -- epistemic tags (VAE-DIALECT): verified, hypothesis, unknown ---------- */
+  /* solid chips in three chart colors at distinct steps; the text takes the
+     contrasting end of the fill's own lightness, so every theme reads */
+  .paper-tag {
+    --paper-tag: var(--chart-2);
+
+    display: inline-block;
+    margin-inline-end: 0.375rem;
+    padding: 0.0625rem 0.4375rem;
+    border: 1px solid var(--paper-tag);
+    border-radius: var(--radius-sm);
+    background: var(--paper-tag);
+    color: var(--background);
+    font: 700 0.6875rem/1.5 var(--font-mono);
+    letter-spacing: 0.04em;
+    vertical-align: 0.1em;
+    white-space: nowrap;
+
+    &[data-tag="verified"] { --paper-tag: var(--chart-2); }
+    &[data-tag="hypothesis"] { --paper-tag: var(--chart-1); }
+    &[data-tag="unknown"] { --paper-tag: var(--chart-5); }
+  }
+  @supports (color: oklch(from red l c h)) {
+    .paper-tag {
+      /* light fill → near-black text, dark fill → white text */
+      color: oklch(from var(--paper-tag) clamp(0.12, (0.64 - l) * 100, 0.99) 0 0);
+    }
+  }
+  .paper-tags > li::before {
+    content: none;
+  }
+
+  /* -- a code record, a quotation, a chart figure ---------------------------- */
+  .paper-code {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--muted);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+  .paper-quote {
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    border-inline-start: 3px solid var(--border);
+    color: var(--muted-foreground);
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    font-style: italic;
+    line-height: 1.6;
+
+    & p {
+      margin: 0;
+    }
+    /* a longer quotation: paragraphs, inline code, an attribution */
+    & p + p {
+      margin-block-start: 0.875rem;
+    }
+    & strong {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+    & code {
+      font-style: normal;
+    }
+    & > footer {
+      margin-block-start: 1rem;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      font-style: normal;
+      letter-spacing: 0.02em;
+    }
+  }
+  .paper-chart {
+    inline-size: 100%;
+    block-size: 20rem;
+  }
+
+  /* -- key numbers: Statistic tiles ------------------------------------------ */
+  .paper-numbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1rem;
+
+    & > .statistic {
+      padding: 1rem 1.125rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+    }
+    & .statistic-value {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  /* -- tables ----------------------------------------------------------------- */
+  .paper-table {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    overflow-x: auto;
+
+    & table {
+      inline-size: 100%;
+      font-variant-numeric: tabular-nums;
+    }
+    /* booktabs: a heavy rule above and below, a light one under the head */
+    & table {
+      border-collapse: collapse;
+      border-block: 1.5px solid var(--foreground);
+    }
+    & thead th {
+      border-block-end: 1px solid var(--border);
+      font-weight: 600;
+    }
+    & :is(td, th) {
+      padding: 0.5rem 0.75rem;
+      text-align: start;
+    }
+    & :is(td, th)[data-num] {
+      text-align: end;
+    }
+    & tr[data-best] > td {
+      font-weight: 600;
+    }
+  }
+
+  /* -- BibTeX ------------------------------------------------------------------ */
+  .paper-bibtex {
+    display: grid;
+    gap: 0.75rem;
+
+    & > h2 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 1.375rem;
+      font-weight: 500;
+    }
+    /* a plain <pre> - the BibTeX component brings its own frame */
+    & > pre {
+      margin: 0;
+      padding: 1.125rem 1.25rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--muted);
+      color: var(--foreground);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      tab-size: 2;
+    }
+  }
+
+  /* -- footer ------------------------------------------------------------------ */
+  .paper-footer {
+    margin-block-start: 1.5rem;
+    padding: 2rem 1rem 2.5rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    text-align: center;
+    text-wrap: balance;
+
+    & p {
+      max-inline-size: var(--paper-measure);
+      margin: 0 auto;
+    }
+    & p + p {
+      margin-block-start: 0.5rem;
+    }
+  }
+
+  /* -- narrow: the title block keeps its rhythm, prose loses the justify ------ */
+  @container (max-width: 36rem) {
+    .paper-abstract {
+      padding: 1.125rem 1.25rem;
+
+      & > p {
+        text-align: start;
+      }
+    }
+    .paper-section > h2 {
+      font-size: 1.4rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .paper a:not(.btn) {
+      transition: none;
+    }
+  }
+  @media (prefers-contrast: more) {
+    .paper-news,
+    .paper-findings > li,
+    .paper-numbers > .statistic,
+    .paper-bibtex pre,
+    .paper-section > h2 {
+      border-color: var(--foreground);
+    }
+    .paper :is(.paper-venue, .paper-affiliations, .paper-note, .paper-title-sub, figcaption, .paper-footer) {
+      color: var(--foreground);
+    }
+  }
+  @media (forced-colors: active) {
+    .paper-abstract {
+      border-inline-start-color: CanvasText;
+    }
+    .paper-news,
+    .paper-findings > li,
+    .paper-numbers > .statistic,
+    .paper-bibtex pre {
+      border-color: CanvasText;
+    }
+  }
+}
+
+/* ── components/bibtex/bibtex.css ── */
+/* -- BibTeX ------------------------------------------------------------------
+   A citation block: the BibTeX itself (aligned, highlighted) or a formatted
+   reference - APA, MLA, Chicago, Harvard, IEEE - with format tabs and a copy
+   button that copies exactly what is shown. Without JS the authored source
+   (.bibtex-source) is what shows. Every color, radius and font is the theme's. */
+
+@layer components {
+  :where(.bibtex, .bibtex *, .bibtex *::before, .bibtex *::after) {
+    box-sizing: border-box;
+  }
+
+  .bibtex {
+    --bibtex-pad: 1rem 1.25rem;
+    --bibtex-code: 0.8125rem;
+    --bibtex-text: 0.9375rem;
+
+    position: relative;
+    display: grid;
+    margin: 0;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    & > figcaption {
+      padding: 0.75rem 1.25rem 0;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    &[data-size="sm"] {
+      --bibtex-pad: 0.75rem 0.875rem;
+      --bibtex-code: 0.75rem;
+      --bibtex-text: 0.8125rem;
+    }
+  }
+
+  /* the authored source: shown without JS, replaced by the view with it */
+  .bibtex > pre:has(> .bibtex-source) {
+    margin: 0;
+    padding: var(--bibtex-pad);
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  .bibtex-source {
+    font-family: var(--font-mono);
+    font-size: var(--bibtex-code);
+  }
+  .bibtex[data-init] > .bibtex-source,
+  .bibtex[data-init] > pre:has(> .bibtex-source) {
+    display: none;
+  }
+
+  /* -- the bar: format tabs + copy ------------------------------------------ */
+  .bibtex-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+    border-block-end: 1px solid var(--border);
+    background: color-mix(in oklab, var(--muted) 55%, var(--card));
+  }
+  .bibtex-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-inline-end: auto;
+  }
+  .bibtex-tab,
+  .bibtex-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    block-size: 1.875rem;
+    padding: 0 0.625rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted-foreground);
+    font: 500 0.75rem/1 var(--font-mono);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+
+    &:hover {
+      color: var(--foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+  .bibtex-tab[aria-selected="true"] {
+    border-color: var(--border);
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-2xs);
+  }
+  .bibtex-copy {
+    margin-inline-start: auto;
+    border-color: var(--border);
+    background: var(--background);
+
+    & svg {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    & .bibtex-icon-done {
+      display: none;
+    }
+  }
+  .bibtex[data-copied] .bibtex-copy {
+    color: var(--foreground);
+
+    & .bibtex-icon-copy { display: none; }
+    & .bibtex-icon-done { display: block; color: var(--chart-2); }
+  }
+  .bibtex-status {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* -- the view ---------------------------------------------------------------- */
+  .bibtex-view {
+    min-inline-size: 0;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+  }
+  .bibtex-code {
+    margin: 0;
+    padding: var(--bibtex-pad);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--bibtex-code);
+    line-height: 1.6;
+    tab-size: 2;
+  }
+  /* the view owns its code typography - a host page's pre / code / span
+     styles (chips, borders, backgrounds) never leak in */
+  .bibtex-code,
+  .bibtex-code :is(code, span) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    font-family: var(--font-mono);
+    letter-spacing: normal;
+  }
+  .bibtex-code {
+    background: var(--card);
+  }
+  .bibtex-code :is(code, span) {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .bibtex-type { color: var(--chart-4); font-weight: 600; }
+  .bibtex-key { color: var(--foreground); font-weight: 600; }
+  .bibtex-field { color: var(--chart-2); }
+  .bibtex-value { color: var(--foreground); }
+  .bibtex[data-highlight="none"] .bibtex-code {
+    color: var(--foreground);
+  }
+
+  /* DOIs and URLs are links in the view - the copy stays plain text */
+  .bibtex-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  /* formatted references: hanging indent, the academic way */
+  .bibtex-ref {
+    margin: 0;
+    font-size: var(--bibtex-text);
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .bibtex-view > .bibtex-ref {
+    padding: var(--bibtex-pad);
+  }
+  .bibtex-list {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: var(--bibtex-pad);
+    list-style: none;
+
+    & > .bibtex-ref {
+      padding-inline-start: 2em;
+      text-indent: -2em;
+    }
+  }
+  .bibtex[data-format="ieee"] .bibtex-list > .bibtex-ref {
+    padding-inline-start: 2.25em;
+    text-indent: -2.25em;
+  }
+  .bibtex-num {
+    display: inline-block;
+    min-inline-size: 2.25em;
+    text-indent: 0;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- minimal: no bar, the copy button floats in the corner ---------------- */
+  .bibtex[data-variant="minimal"] {
+    & > .bibtex-bar {
+      position: absolute;
+      inset-block-start: 0.5rem;
+      inset-inline-end: 0.5rem;
+      z-index: 1;
+      padding: 0;
+      border: 0;
+      background: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    &:is(:hover, :focus-within, [data-copied]) > .bibtex-bar {
+      opacity: 1;
+    }
+    & .bibtex-copy-label {
+      display: none;
+    }
+    & .bibtex-copy {
+      padding: 0;
+      inline-size: 1.875rem;
+      justify-content: center;
+    }
+  }
+  @media (hover: none) {
+    .bibtex[data-variant="minimal"] > .bibtex-bar {
+      opacity: 1;
+    }
+  }
+
+  /* -- inline: one reference inside running text --------------------------- */
+  .bibtex[data-variant="inline"] {
+    display: inline;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+
+    & > .bibtex-source {
+      font-family: inherit;
+      font-size: inherit;
+    }
+    & > .bibtex-bar {
+      display: inline-flex;
+      vertical-align: -0.2em;
+      padding: 0;
+      margin-inline-start: 0.25rem;
+      border: 0;
+      background: none;
+    }
+    & .bibtex-view,
+    & .bibtex-ref {
+      display: inline;
+      padding: 0;
+      font-size: inherit;
+      line-height: inherit;
+    }
+    & .bibtex-copy {
+      block-size: 1.375rem;
+      inline-size: 1.375rem;
+      padding: 0;
+      justify-content: center;
+    }
+    & .bibtex-copy-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bibtex-tab,
+    .bibtex-copy,
+    .bibtex[data-variant="minimal"] > .bibtex-bar {
+      transition: none;
+    }
+  }
+  @media (prefers-contrast: more) {
+    .bibtex,
+    .bibtex-bar,
+    .bibtex-copy,
+    .bibtex-tab[aria-selected="true"] {
+      border-color: var(--foreground);
+    }
+    .bibtex-tab,
+    .bibtex-num {
+      color: var(--foreground);
+    }
+  }
+  @media (forced-colors: active) {
+    .bibtex,
+    .bibtex-bar,
+    .bibtex-copy {
+      border-color: CanvasText;
+    }
+    .bibtex-tab[aria-selected="true"] {
+      border-color: Highlight;
+      color: Highlight;
+    }
+    .bibtex[data-variant="minimal"] > .bibtex-bar {
+      opacity: 1;
+    }
+  }
+}

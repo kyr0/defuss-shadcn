@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Delivery Options
 
 ## Native basis
-A `<fieldset>` of radio cards (`<label>` around each `<input type="radio">`): an icon, the method, "Arrives `<time>`…", optional detail (pickup store) and the price.
+A `<fieldset>` of radio cards (`<label>` around each `<input type="radio">`): an icon, the method, "Arrives `<time>`...", optional detail (pickup store) and the price.
 
 Built from: [Radio](../radio/component-skill.md).
 

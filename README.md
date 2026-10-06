@@ -11,7 +11,7 @@
 
 **A UI component system that scales with AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**228 components - 59 with JavaScript, 169 CSS-only - 391.4 KiB minified + compressed - 262.9 KiB as the all.css/all.js bundle.**
+**228 components - 59 with JavaScript, 169 CSS-only - 392.2 KiB minified + compressed - 263.4 KiB as the all.css/all.js bundle.**
 169 of 228 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
@@ -101,6 +101,8 @@ Download the full system and drop it into any project. All the files are static 
 
 **[Download latest (.zip)](https://github.com/kyr0/defuss-shadcn/archive/refs/heads/main.zip)**
 
+Need less than everything? Every sidebar section also ships as its own bundle in `dist/sections/`, and each release attaches one ZIP per section - see [Bundles & Downloads](https://kyr0.github.io/defuss-shadcn/bundles.html).
+
 ## Built on five layers
 
 Each component is a self-contained folder with up to five layers:
@@ -132,7 +134,7 @@ Some components - like Button and Badge - are CSS-only. No JavaScript needed.
 
 Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. A theme is one plain stylesheet with `:root` + `.dark` token blocks - switching themes means switching that file.
 
-1. **Ship it at build time** - link a theme file instead of the token file: every [tweakcn](https://tweakcn.com) preset ships generated in [`dist/theme/`](dist/theme/) (`claude.css`, `vercel.css`, …, 43 presets; regenerate with `bun run build`, gated by `verify`). Or export your own from tweakcn and replace `dist/theme/utils/default-semantic-tokens.css` - components see the same tokens either way.
+1. **Ship it at build time** - link a theme file instead of the token file: every [tweakcn](https://tweakcn.com) preset ships generated in [`dist/theme/`](dist/theme/) (`claude.css`, `vercel.css`, ..., 43 presets; regenerate with `bun run build`, gated by `verify`). Or export your own from tweakcn and replace `dist/theme/utils/default-semantic-tokens.css` - components see the same tokens either way.
 2. **Switch it at runtime** - the [Theme Switcher](https://kyr0.github.io/defuss-shadcn/theme-switcher.html) component loads/unloads one `<link id="theme-css">` (the theme rides on top of the token file; no JS token objects). That's exactly what the theme picker on the documentation site does.
 3. Everything updates automatically - all components, the doc site, dark mode (each theme file carries both palettes).
 
@@ -221,7 +223,7 @@ copies of the component assets. Refresh with `bun run docs`, never edit it direc
 A `Makefile` wraps the common tasks: `make setup` (install deps + Playwright browsers),
 `make dev`, `make test-run`, `make coverage`, `make e2e`, `make lint` (oxlint),
 `make typecheck`, `make verify`, `make screenshots`, `make stats`, `make docs`. **`make build`** runs
-the whole pipeline - lint → compile → bundle → minify → stats → docs SSG (defuss-ssg) → screenshots → docs-mirror → verify → tests → e2e —
+the whole pipeline - lint → compile → bundle → minify → stats → docs SSG (defuss-ssg) → screenshots → docs-mirror → verify → tests → e2e,
 the same loop CI runs.
 
 `bun run verify` is the static consistency gate (~0.3 s, runs automatically at the end
@@ -245,7 +247,7 @@ Every failing check prints the offending files **and the exact fix** - the verif
 the loop's authority (AGENTS.md defers to its output), so a coding agent can iterate
 `edit → build → do what it says` until the goal is reached. The warn-ratchets for legacy
 rollouts (State API, e2e, reduced motion) are now empty and kept as hard gates against
-regressions. How this all scales without human review - and the proof-loop diagram —
+regressions. How this all scales without human review, and the proof-loop diagram,
 are documented in [ARCH.md](ARCH.md).
 
 ## Testing
@@ -274,7 +276,7 @@ the intro page renders, the SPA router navigates, and the header search opens th
 
 ## Credits
 
-This project began as a fork of **[shadcn-html](https://github.com/codylindley/shadcn-html)** —
+This project began as a fork of **[shadcn-html](https://github.com/codylindley/shadcn-html)**;
 credit to [Cody Lindley](https://github.com/codylindley) for the original idea and first
 implementation.
 

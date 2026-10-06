@@ -75,7 +75,7 @@ Built from: [Avatar](avatar.md).
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| kind | text "New", "Fixed"… | Color is a second cue |
+| kind | text "New", "Fixed"... | Color is a second cue |
 | PR | a link with the number | Traceable |
 
 ---

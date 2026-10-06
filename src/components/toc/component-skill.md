@@ -41,7 +41,7 @@ supportedStates: default
 
 | Class        | Purpose                                             |
 |--------------|-----------------------------------------------------|
-| `.toc`       | the nav block (host positions it - rail, sticky…)   |
+| `.toc`       | the nav block (host positions it - rail, sticky...)   |
 | `.toc-title` | small caps group label                              |
 | `.toc-link`  | a section link; left border when current            |
 

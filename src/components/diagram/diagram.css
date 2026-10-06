@@ -112,6 +112,13 @@
     gap: var(--diagram-gap-y) var(--_diagram-gap-x);
     min-width: min-content;
     padding: 2rem;
+    /* extra room on a side for absolutely placed content (free / wardley
+       nodes, timeline ticks): diagram.ts sets it when something comes closer
+       than its CLEARANCE to the border - padding cannot move absolute boxes */
+    --_inset-top: 0px;
+    --_inset-right: 0px;
+    --_inset-bottom: 0px;
+    --_inset-left: 0px;
     background-color: var(--diagram-paper);
     background-image: radial-gradient(color-mix(in oklab, var(--diagram-ink) 9%, transparent) 1px, transparent 1.2px);
     background-size: 1rem 1rem;
@@ -1217,8 +1224,8 @@
 
     & > :is(.diagram-node, .diagram-cell, .diagram-tag, .diagram-note) {
       position: absolute;
-      left: calc(var(--x, 50) * 1%);
-      top: calc(var(--y, 50) * 1%);
+      left: calc(var(--_inset-left) + (100% - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100);
+      top: calc(var(--_inset-top) + (100% - var(--_inset-top) - var(--_inset-bottom)) * var(--y, 50) / 100);
       translate: -50% -50%;
     }
   }
@@ -1249,7 +1256,8 @@
 
   /* wardley: value chain (y) × evolution (x), four bands */
   .diagram[data-type="wardley"] .diagram-canvas {
-    padding: 1.5rem 1.5rem 2.75rem 3rem;
+    /* the axes sit in the left / bottom padding, 1.25rem (diagram.ts CLEARANCE) off the border */
+    padding: 1.5rem 1.5rem 3.5rem 4rem;
     background-image:
       linear-gradient(to right, transparent calc(25% - 0.5px), color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(25% - 0.5px) calc(25% + 0.5px), transparent calc(25% + 0.5px)),
       linear-gradient(to right, transparent calc(50% - 0.5px), color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
@@ -1272,9 +1280,9 @@
       font-weight: 600;
     }
     &[data-axis="x"] {
-      left: 3rem;
-      right: 1.5rem;
-      bottom: 0.75rem;
+      left: calc(4rem + var(--_inset-left));
+      right: calc(1.5rem + var(--_inset-right));
+      bottom: calc(1.25rem + var(--_inset-bottom));
       padding-top: 0.375rem;
       border-top: 1px solid color-mix(in oklab, var(--diagram-ink) 30%, transparent);
     }
@@ -1283,9 +1291,9 @@
       text-align: center;
     }
     &[data-axis="y"] {
-      top: 1.5rem;
-      bottom: 2.75rem;
-      left: 0.5rem;
+      top: calc(1.5rem + var(--_inset-top));
+      bottom: calc(3.5rem + var(--_inset-bottom));
+      left: calc(1.25rem + var(--_inset-left));
       inline-size: 2rem;
       flex-direction: column;
       align-items: flex-start;
@@ -1313,7 +1321,7 @@
     }
     & > .diagram-node {
       position: absolute;
-      left: calc(1.5rem + (100% - 3rem) * var(--x, 50) / 100);
+      left: calc(1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100);
       top: var(--axis, 55%);
       inline-size: 0.625rem;
       block-size: 0.625rem;
@@ -1363,7 +1371,7 @@
     }
     & > .diagram-tick {
       position: absolute;
-      left: calc(1.5rem + (100% - 3rem) * var(--x, 50) / 100);
+      left: calc(1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100);
       top: var(--axis, 55%);
       translate: -50% 0.375rem;
       color: var(--diagram-muted);
@@ -1381,8 +1389,8 @@
     }
     & > .diagram-span {
       position: absolute;
-      left: calc(1.5rem + (100% - 3rem) * var(--x, 0) / 100);
-      inline-size: calc((100% - 3rem) * var(--w, 10) / 100);
+      left: calc(1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 0) / 100);
+      inline-size: calc((100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--w, 10) / 100);
       top: calc(var(--axis, 55%) - 0.375rem);
       block-size: 0.75rem;
       background: color-mix(in oklab, var(--diagram-accent) 18%, transparent);

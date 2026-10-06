@@ -12,6 +12,16 @@ const dfDollar = defussQuery();
 
 const tooltipStates = ['default', 'visible'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the tooltip's states take none. */
+export interface TooltipStateConfigs {
+  /** Hidden. */
+  default: {};
+  /** Shown (popover="hint"), anchored to its trigger. */
+  visible: {};
+}
+
 /**
  * The markup of a state: none - 'visible' lives in the top layer
  * (:popover-open), not in an attribute, so every state renders the authored

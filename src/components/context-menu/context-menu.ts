@@ -12,6 +12,21 @@ const dfDollar = defussQuery();
 
 const contextMenuStates = ['default', 'open'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state. */
+export interface ContextMenuStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open at a point of the viewport. */
+  open: {
+    /** the menu's left edge, px from the viewport's left (default 8) */
+    x?: number;
+    /** the menu's top edge, px from the viewport's top (default 8) */
+    y?: number;
+  };
+}
+
 /** Like a native menu: where there is no room right of / below the point,
  * open toward its other side, and never past the viewport. Measured right
  * after the (usually synchronous) show - else once the deferred show lands. */

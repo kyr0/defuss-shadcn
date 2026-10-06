@@ -65,7 +65,11 @@ function skipGroup(s, i) {
     }
     return s.length;
 }
-/** BibTeX text → [{ type, key, fields: { name: raw value }, order: [names], bare: { name: value written without braces } }] - @comment / @preamble / @string are skipped */
+/**
+ * BibTeX text → [{ type, key, fields: { name: raw value }, order: [names], bare: { name: value written without braces } }] - @comment / @preamble / @string are skipped
+ * @param text - BibTeX source, any number of entries
+ * @returns the entries, in source order
+ */
 function parse(text) {
     const s = String(text ?? '');
     const entries = [];
@@ -98,7 +102,7 @@ function parse(text) {
             let value = '';
             let pieces = 0;
             let bareOnly = true;
-            // a value: {…}, "…", a number or a macro - pieces joined with #
+            // a value: {...}, "...", a number or a macro - pieces joined with #
             for (;;) {
                 pieces++;
                 if (body[p] === '{' || body[p] === '"') {
@@ -133,7 +137,7 @@ function parse(text) {
     }
     return entries;
 }
-/** the month macros of BibTeX (jan … dec) */
+/** the month macros of BibTeX (jan ... dec) */
 const MONTHS = { jan: 'January', feb: 'February', mar: 'March', apr: 'April', may: 'May', jun: 'June', jul: 'July', aug: 'August', sep: 'September', oct: 'October', nov: 'November', dec: 'December' };
 /** IEEE's month abbreviations */
 const IEEE_MONTH = { January: 'Jan.', February: 'Feb.', March: 'Mar.', April: 'Apr.', May: 'May', June: 'Jun.', July: 'Jul.', August: 'Aug.', September: 'Sep.', October: 'Oct.', November: 'Nov.', December: 'Dec.' };
@@ -398,9 +402,11 @@ function format(entries, style, { align = true, highlight = true } = {}) {
     return { html: refs, text: refs.map(plain).join('\n\n'), list: refs.length > 1 };
 }
 // -- the element ---------------------------------------------------------------------------------
+/** a known format name */
+const isStyle = (f) => FORMATS.includes(f);
 /** the formats an element offers (data-formats, else every one) */
 function formatsOf(el) {
-    const own = String(dfDollar(el).attr('data-formats') ?? '').split(/[\s,]+/).filter((f) => FORMATS.includes(f));
+    const own = String(dfDollar(el).attr('data-formats') ?? '').split(/[\s,]+/).filter(isStyle);
     return own.length ? own : FORMATS;
 }
 /** the format a state shows: its config, else the authored data-format, else the first offered */
@@ -542,15 +548,37 @@ df$.bibtex = {
     formats: FORMATS,
     /** Parse BibTeX text into entries - [{ type, key, fields, order }]; @comment, @preamble and @string are skipped. */
     parse,
-    /** Format entries (or BibTeX text) in one style - { html, text, list }: html is a string for bibtex, else one reference per entry. Options: align, highlight (bibtex). */
+    /**
+     * Format entries (or BibTeX text) in one style - { html, text, list }: html is a string for bibtex, else one reference per entry. Options: align, highlight (bibtex).
+     * @param entries - parsed entries, or BibTeX text to parse first
+     * @param style - the citation format
+     * @param options - bibtex only: align the = signs (default true), highlight the parts (default true)
+     * @returns the markup, the plain text and whether it is a list
+     */
     format: (entries, style, options) => format(typeof entries === 'string' ? parse(entries) : entries, style, options),
-    /** Show a format on an element (state 'default' with that format). */
-    show: (target, fmt) => resolve(target)?.api.setState('default', { format: fmt }),
-    /** Copy what an element shows - resolves true when the clipboard took it. */
+    /**
+     * Show a format on an element (state 'default' with that format).
+     * @param target - the .bibtex element or its selector
+     * @param fmt - the format to show (one the element offers)
+     */
+    show: (target, fmt) => { resolve(target)?.api.setState('default', { format: fmt }); },
+    /**
+     * Copy what an element shows.
+     * @param target - the .bibtex element or its selector
+     * @returns true when the clipboard took it; false when the view was selected for a manual copy
+     */
     copy: (target) => copy(resolve(target)),
-    /** The text a copy of the element takes now. */
+    /**
+     * The text a copy of the element takes now.
+     * @param target - the .bibtex element or its selector
+     * @returns the shown format as plain text ('' before the first render)
+     */
     text: (target) => resolve(target)?._text ?? '',
-    /** The element's parsed entries. */
+    /**
+     * The element's parsed entries.
+     * @param target - the .bibtex element or its selector
+     * @returns a copy of the entries its source holds
+     */
     entries: (target) => structuredClone(resolve(target)?._entries ?? []),
 };
 function init() {

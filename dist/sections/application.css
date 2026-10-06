@@ -1,0 +1,1745 @@
+/* ── components/sidebar/sidebar.css ── */
+/* -- Sidebar component ------------------------------------------ */
+/* Application sidebar with collapsible state, mobile sheet overlay, */
+/* collapsible groups, submenus, and keyboard shortcut (Cmd+B).      */
+
+@layer components {
+
+  /* ── Shell layout ─────────────────────────────────────────── */
+  .sidebar-layout {
+    display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* ── Sidebar panel ────────────────────────────────────────── */
+  .app-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width, 16rem);
+    height: 100vh;
+    height: 100dvh;
+    position: sticky;
+    top: 0;
+    background-color: var(--sidebar);
+    border-right: 1px solid var(--sidebar-border);
+    flex-shrink: 0;
+    transition: width 200ms ease;
+    overflow: hidden;
+    z-index: 30;
+
+    /* Right side */
+    &[data-side="right"] {
+      border-right: none;
+      border-left: 1px solid var(--sidebar-border);
+      order: 1;
+    }
+
+    /* Collapsed - icon-only rail */
+    &[data-state="collapsed"] {
+      width: var(--sidebar-width-collapsed, 3.5rem);
+
+      & .sidebar-link span:not(.sidebar-icon, .sidebar-dot),
+      & .sidebar-section-title,
+      & .sidebar-group-action,
+      & .sidebar-badge,
+      & .sidebar-footer,
+      & .sidebar-logo-text { display: none; }
+
+      & .sidebar-link { justify-content: center; padding: 0.5rem; gap: 0; }
+      & .sidebar-header { justify-content: center; padding: 0.75rem 0.5rem; }
+      & .sidebar-group > summary { justify-content: center; }
+      & .sidebar-group > summary span:not(.sidebar-icon, .sidebar-dot) { display: none; }
+      & .sidebar-group > summary > svg:last-child { display: none; }
+
+      /* The nested-nav indent (0.75rem) would offset submenu icons from the
+         rail column - drop it while collapsed. */
+      & .sidebar-group > .sidebar-nav { padding-left: 0; }
+
+      /* Submenu summary (e.g. Settings/cog) is NOT a .sidebar-link - it needs
+         the same centering or its icon drifts off the icon column. Expanded
+         submenu items have no icons, so the nav stays hidden while collapsed. */
+      & .sidebar-submenu > summary { justify-content: center; padding: 0.5rem; gap: 0; }
+      & .sidebar-submenu > summary span:not(.sidebar-icon, .sidebar-dot) { display: none; }
+      & .sidebar-submenu > summary > svg:last-child { display: none; }
+      & .sidebar-submenu > .sidebar-nav { display: none; }
+    }
+
+    /* Hidden on mobile by default - shown via dialog */
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  /* ── Sidebar header ───────────────────────────────────────── */
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--sidebar-border);
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sidebar-foreground);
+    text-decoration: none;
+  }
+
+  /* ── Sidebar content (scrollable area) ────────────────────── */
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.5rem;
+    gap: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sidebar-border) transparent;
+  }
+
+  /* ── Sidebar nav ──────────────────────────────────────────── */
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  /* ── Nav links ────────────────────────────────────────────── */
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--sidebar-foreground);
+    text-decoration: none;
+    transition: background-color 150ms ease;
+    position: relative;
+
+    &:hover {
+      background-color: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    &[data-active="true"],
+    &[aria-current="page"] {
+      background-color: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+      font-weight: 500;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sidebar-ring);
+      outline-offset: -2px;
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+    }
+  }
+
+  /* ── Menu badge ───────────────────────────────────────────── */
+  .sidebar-badge {
+    margin-left: auto;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--sidebar-primary);
+    color: var(--sidebar-primary-foreground);
+    line-height: 1;
+  }
+
+  /* ── Leading icon / emoji ─────────────────────────────────── */
+  /* <span class="sidebar-icon"> in front of a link, submenu or group label:
+     holds an <svg> or an emoji in a fixed 1rem box, so labels line up and
+     the collapsed rail keeps showing it. */
+  .sidebar-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    font-size: 0.9375rem;
+    font-style: normal;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: 0;
+
+    & svg { width: 1rem; height: 1rem; }
+  }
+  .sidebar-group > summary .sidebar-icon { width: 0.875rem; height: 0.875rem; font-size: 0.8125rem; }
+  .sidebar-group > summary .sidebar-icon svg { width: 0.875rem; height: 0.875rem; }
+
+  /* ── Activity dot ─────────────────────────────────────────── */
+  /* <span class="sidebar-dot"> at the end of a link / summary marks news or
+     activity (name it: role="img" aria-label="New"). Colors via data-variant,
+     a ping via data-animate="ping"; on the collapsed rail it sits on the
+     icon's corner. */
+  .sidebar-dot {
+    --_c: var(--sidebar-primary);
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    margin-left: auto;
+    border-radius: 999px;
+    background-color: var(--_c);
+
+    &[data-variant="destructive"] { --_c: var(--destructive); }
+    &[data-variant="success"] { --_c: oklch(0.65 0.17 150); }
+    &[data-variant="warning"] { --_c: oklch(0.78 0.16 75); }
+    &[data-variant="info"] { --_c: oklch(0.62 0.17 250); }
+
+    &[data-animate="ping"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: var(--_c);
+      animation: sidebar-dot-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  }
+  @keyframes sidebar-dot-ping {
+    75%, 100% { scale: 2.4; opacity: 0; }
+  }
+  /* dot + badge / dot + chevron share the pushed-right slot */
+  .sidebar-badge + .sidebar-dot,
+  .sidebar-dot + .sidebar-badge,
+  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot ~ svg:last-child { margin-left: 0; }
+  .app-sidebar[data-state="collapsed"] {
+    & :is(.sidebar-group, .sidebar-submenu) > summary { position: relative; }
+    & .sidebar-dot { position: absolute; top: 0.3125rem; right: 0.3125rem; margin: 0; width: 0.4375rem; height: 0.4375rem; }
+  }
+
+  /* ── Section title ────────────────────────────────────────── */
+  .sidebar-section-title {
+    padding: 0.75rem 0.75rem 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted-foreground);
+  }
+
+  /* ── Collapsible group (uses <details>) ────────────────────── */
+  .sidebar-group {
+    & > summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      list-style: none;
+      border-radius: var(--radius-md);
+      transition: background-color 150ms ease;
+
+      &:hover { background-color: var(--sidebar-accent); }
+      &::-webkit-details-marker { display: none; }
+
+      & > svg:last-child {
+        width: 0.875rem;
+        height: 0.875rem;
+        margin-left: auto;
+        transition: rotate 200ms ease;
+      }
+    }
+
+    &[open] > summary > svg:last-child { rotate: 90deg; }
+    & > .sidebar-nav { padding: 0.25rem 0 0.25rem 0.75rem; }
+  }
+
+  /* ── Submenu (nested <details>) ────────────────────────────── */
+  .sidebar-submenu {
+    & > summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      color: var(--sidebar-foreground);
+      cursor: pointer;
+      list-style: none;
+      transition: background-color 150ms ease;
+
+      /* leading icon matches .sidebar-link's 1rem - otherwise lucide's
+         24px default renders the cog larger than the nav icons */
+      & > svg:first-child { width: 1rem; height: 1rem; flex-shrink: 0; }
+
+      &:hover {
+        background-color: var(--sidebar-accent);
+        color: var(--sidebar-accent-foreground);
+      }
+      &::-webkit-details-marker { display: none; }
+
+      & > svg:last-child {
+        width: 0.875rem;
+        height: 0.875rem;
+        margin-left: auto;
+        transition: rotate 200ms ease;
+      }
+    }
+
+    &[open] > summary > svg:last-child { rotate: 90deg; }
+
+    & > .sidebar-nav {
+      padding: 0.25rem 0 0.25rem 1.5rem;
+      border-left: 1px solid var(--sidebar-border);
+      margin-left: 0.75rem;
+    }
+  }
+
+  /* ── Group action button ──────────────────────────────────── */
+  .sidebar-group-action {
+    margin-left: auto;
+    padding: 0.125rem;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+
+    &:hover { color: var(--sidebar-foreground); background-color: var(--sidebar-accent); }
+    & svg { width: 0.875rem; height: 0.875rem; }
+  }
+
+  /* ── Sidebar footer ───────────────────────────────────────── */
+  .sidebar-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--sidebar-border);
+    font-size: 0.8125rem;
+    color: var(--sidebar-foreground);
+    flex-shrink: 0;
+    & p { margin: 0; }
+  }
+
+  /* ── Sidebar trigger ──────────────────────────────────────── */
+  .sidebar-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+
+    &:hover { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    & svg { width: 1rem; height: 1rem; }
+  }
+
+  /* ── Mobile sidebar (<dialog> sheet overlay) ──────────────── */
+  .sidebar-mobile {
+    border: none;
+    padding: 0;
+    margin: 0;
+    position: fixed;
+    inset: 0;
+    width: var(--sidebar-width, 16rem);
+    max-width: 80vw;
+    height: 100%;
+    background-color: var(--sidebar);
+    color: var(--sidebar-foreground);
+    z-index: 50;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    opacity: 0;
+    translate: -100% 0;
+    transition: opacity 200ms ease, translate 200ms ease,
+                display 200ms allow-discrete;
+
+    &[open] {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    &[data-side="right"] {
+      right: 0;
+      left: auto;
+      translate: 100% 0;
+      &[open] { translate: 0 0; }
+    }
+
+    &::backdrop {
+      background: oklch(0 0 0 / 0.5);
+      opacity: 0;
+      transition: opacity 200ms ease, display 200ms allow-discrete;
+    }
+
+    &[open]::backdrop { opacity: 1; }
+
+    & .sidebar-mobile-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      border: none;
+      background: transparent;
+      color: var(--sidebar-foreground);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover { background-color: var(--sidebar-accent); }
+      & svg { width: 0.875rem; height: 0.875rem; }
+    }
+
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  @starting-style {
+    .sidebar-mobile[open] { opacity: 0; translate: -100% 0; }
+    .sidebar-mobile[open]::backdrop { opacity: 0; }
+    .sidebar-mobile[data-side="right"][open] { opacity: 0; translate: 100% 0; }
+  }
+
+  /* ── Scroll lock ──────────────────────────────────────────── */
+  /* Page behind stays put while the mobile sheet is modal (see dialog.css):
+     `:modal` + overflow:hidden freezes the viewport at its current offset. */
+  html:has(.sidebar-mobile:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  /* ── Reduced motion ───────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .app-sidebar { transition: none; }
+    .sidebar-link { transition: none; }
+    .sidebar-group > summary > svg:last-child { transition: none; }
+    .sidebar-submenu > summary > svg:last-child { transition: none; }
+    .sidebar-dot[data-animate]::after { animation: none; }
+    .sidebar-mobile { transition: none; }
+    .sidebar-mobile::backdrop { transition: none; }
+  }
+  /* -- Density ----------------------------------------------------
+     data-density on the .app-sidebar root scales link rows and the content
+     frame. comfortable == the unsized default (0.5rem). Independent of the
+     collapsed rail, whose compact paddings win by higher specificity. */
+  .app-sidebar:where([data-density="compact"]) {
+    & .sidebar-link { padding-block: 0.375rem; }
+    & .sidebar-content { padding: 0.375rem; gap: 0.375rem; }
+  }
+  .app-sidebar:where([data-density="comfortable"]) {
+    & .sidebar-link { padding-block: 0.5rem; }
+    & .sidebar-content { padding: 0.5rem; gap: 0.5rem; }
+  }
+  .app-sidebar:where([data-density="spacious"]) {
+    & .sidebar-link { padding-block: 0.625rem; }
+    & .sidebar-content { padding: 0.625rem; gap: 0.625rem; }
+  }
+
+}
+
+/* ── components/resizer/resizer.css ── */
+@layer components {
+  /* -- Resizer --------------------------------------------------
+     Wraps ONE container element and adds draggable handles on any subset of
+     its 8 positions (sides + corners). The wrapper is the positioning context;
+     handles overhang the border box by design, so keep overflow visible.
+     Sizing behavior (px vs w-/h- classes) is driven by the runtime - this
+     sheet owns only the handle geometry, cursors and feedback states. */
+  .resizer {
+    position: relative;
+    /* block box hugging the wrapped element (its intrinsic width) so handles
+       sit on the BOX's edges, not the container's; an explicit authored/
+       runtime width overrides this (e.g. the CodeExample toolbar writes px) */
+    width: fit-content;
+  }
+
+  /* The resizer owns resizing: a native CSS `resize` on the wrapped element
+     (e.g. a resizable canvas) would double the affordances - the runtime
+     neutralizes it inline; this is the authored-CSS fallback. */
+  .resizer[data-resize-mode] {
+    resize: none;
+  }
+
+  .resizer-handle {
+    position: absolute;
+    z-index: 5;
+    display: block;
+    box-sizing: border-box;
+    width: 0.375rem;
+    height: 0.375rem;
+    background: var(--background);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-2xs);
+    touch-action: none; /* the pointer-drag is ours - no scroll/pinch steal */
+    opacity: 0.85;
+    transition: opacity 120ms ease, background-color 120ms ease, transform 120ms ease;
+
+    /* generous hit area around the small visible chip */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -0.5rem;
+    }
+
+    &:hover {
+      opacity: 1;
+      background: var(--primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      opacity: 1;
+    }
+  }
+
+  /* drag in progress - the active handle (and the box) read as engaged */
+  .resizer[data-resizing] > .resizer-handle {
+    opacity: 1;
+    background: var(--primary);
+  }
+  .resizer[data-resizing] {
+    outline: 1px dashed var(--ring);
+    outline-offset: 2px;
+  }
+  /* the box must track the pointer 1:1 - a size TRANSITION on the wrapped
+     element (e.g. the sidebar's `transition: width 200ms`) would ease toward
+     the drag instead of following it, which reads as the handle lagging
+     behind the mouse. Only during the drag; authored transitions resume after
+     (trigger-toggle collapse animation stays intact) */
+  .resizer[data-resizing] > * {
+    transition-duration: 0s;
+  }
+
+  /* -- side geometry: edge centers + corners, with the right cursor -------- */
+  .resizer-handle[data-handle='n'] {
+    top: -0.1875rem;
+    left: 50%;
+    translate: -50% -50%;
+    cursor: ns-resize;
+  }
+  .resizer-handle[data-handle='s'] {
+    bottom: -0.1875rem;
+    left: 50%;
+    translate: -50% 50%;
+    cursor: ns-resize;
+  }
+  .resizer-handle[data-handle='e'] {
+    right: -0.1875rem;
+    top: 50%;
+    translate: 50% -50%;
+    cursor: ew-resize;
+  }
+  .resizer-handle[data-handle='w'] {
+    left: -0.1875rem;
+    top: 50%;
+    translate: -50% -50%;
+    cursor: ew-resize;
+  }
+  .resizer-handle[data-handle='ne'] {
+    top: -0.1875rem;
+    right: -0.1875rem;
+    translate: 50% -50%;
+    cursor: nesw-resize;
+  }
+  .resizer-handle[data-handle='nw'] {
+    top: -0.1875rem;
+    left: -0.1875rem;
+    translate: -50% -50%;
+    cursor: nwse-resize;
+  }
+  .resizer-handle[data-handle='se'] {
+    bottom: -0.1875rem;
+    right: -0.1875rem;
+    translate: 50% 50%;
+    cursor: nwse-resize;
+  }
+  .resizer-handle[data-handle='sw'] {
+    bottom: -0.1875rem;
+    left: -0.1875rem;
+    translate: -50% 50%;
+    cursor: nesw-resize;
+  }
+
+  /* -- Divider: a split pane's edge (data-variant="divider") ----------------
+     The edge handles become full-length strips along the box - invisible until
+     hovered, focused or dragged, then a thin line - and the box gets no dashed
+     outline while it resizes. Corners keep their chip. */
+  .resizer[data-variant='divider'] {
+    & > .resizer-handle:is([data-handle='e'], [data-handle='w'], [data-handle='n'], [data-handle='s']) {
+      width: 0.5rem;
+      height: 0.5rem;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      opacity: 1;
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        background: var(--primary);
+        opacity: 0;
+        transition: opacity 120ms ease;
+      }
+      &::after { inset: 0; }
+      &:hover::before, &:focus-visible::before { opacity: 0.6; }
+      &:focus-visible { outline: none; }
+    }
+    & > .resizer-handle:is([data-handle='e'], [data-handle='w']) {
+      top: 0;
+      bottom: 0;
+      height: auto;
+      translate: 0 0;
+      cursor: col-resize;
+      &::before { width: 2px; }
+    }
+    & > .resizer-handle[data-handle='e'] { right: -0.25rem; }
+    & > .resizer-handle[data-handle='w'] { left: -0.25rem; }
+    & > .resizer-handle:is([data-handle='n'], [data-handle='s']) {
+      left: 0;
+      right: 0;
+      width: auto;
+      translate: 0 0;
+      cursor: row-resize;
+      &::before { height: 2px; }
+    }
+    & > .resizer-handle[data-handle='n'] { top: -0.25rem; }
+    & > .resizer-handle[data-handle='s'] { bottom: -0.25rem; }
+    &[data-resizing] { outline: none; }
+    &[data-resizing] > .resizer-handle { background: none; }
+    &[data-resizing] > .resizer-handle::before { opacity: 1; }
+  }
+
+  /* -- Accessibility media features (REQUIRED) ------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .resizer-handle,
+    .resizer[data-resizing] > .resizer-handle,
+    .resizer[data-variant='divider'] > .resizer-handle::before {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    /* a divider always shows its line */
+    .resizer[data-variant='divider'] > .resizer-handle::before { opacity: 0.5; }
+    .resizer-handle {
+      width: 0.625rem;
+      height: 0.625rem;
+      opacity: 1;
+      border-width: 2px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .resizer-handle {
+      background: Canvas;
+      border-color: CanvasText;
+      forced-color-adjust: none;
+    }
+    .resizer[data-resizing] > .resizer-handle {
+      background: Highlight;
+      border-color: Highlight;
+    }
+    .resizer[data-variant='divider'] > .resizer-handle::before { background: Highlight; }
+  }
+}
+
+/* ── components/border-layout/border-layout.css ── */
+/* -- Border Layout component --------------------------------------
+   An application frame in five regions - north, south, west, east around a
+   center - on a CSS grid. Every side region that should resize is a
+   .resizer wrapping its pane: inside a border layout the resizer's handle
+   becomes a full-length divider (line, optional grip), dragged or moved with
+   the arrow keys. Regions left out collapse, so the same frame is a
+   horizontal split, a vertical split, three columns... */
+
+@layer components {
+  .border-layout {
+    /* the divider, themable per layout or per region */
+    --_line-width: var(--border-layout-divider-width, 1px);
+    --_line-style: solid;
+    --_line-color: var(--border-layout-divider-color, var(--border));
+    --_accent: var(--border-layout-accent, var(--ring));
+    --_hit: 0.75rem;
+    --_gap: 0px;
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    /* north and south dominate: they span the full width */
+    grid-template-areas:
+      "north north north"
+      "west  center east"
+      "south south south";
+    gap: var(--_gap);
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    /* west and east dominate: they span the full height */
+    &[data-dominant="we"] {
+      grid-template-areas:
+        "west north  east"
+        "west center east"
+        "west south  east";
+    }
+
+    /* no frame of its own - fills a window or a page */
+    &[data-frame="none"] {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+  }
+
+  .border-layout > .border-layout-north { grid-area: north; }
+  .border-layout > .border-layout-south { grid-area: south; }
+  .border-layout > .border-layout-west { grid-area: west; }
+  .border-layout > .border-layout-east { grid-area: east; }
+  .border-layout > .border-layout-center {
+    grid-area: center;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  /* -- Regions ------------------------------------------------------ */
+  /* a resizable region: the resizer wrapper fills its grid cell, its pane
+     stretches across the other axis and carries the size on its own */
+  .border-layout > .resizer {
+    display: flex;
+    width: auto;
+    min-width: 0;
+    min-height: 0;
+  }
+  .border-layout > :is(.border-layout-north, .border-layout-south).resizer { flex-direction: column; }
+  .border-layout > .resizer > :not(.resizer-handle) {
+    flex: none;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+  /* the pane of a collapsed region is gone; its divider stays to bring it back */
+  .border-layout > .resizer[data-collapsed] > :not(.resizer-handle) { display: none; }
+
+  /* a region that does not resize still gets the divider line */
+  .border-layout > .border-layout-north:not(.resizer) { border-block-end: var(--_line-width) var(--_line-style) var(--_line-color); }
+  .border-layout > .border-layout-south:not(.resizer) { border-block-start: var(--_line-width) var(--_line-style) var(--_line-color); }
+  .border-layout > .border-layout-west:not(.resizer) { border-inline-end: var(--_line-width) var(--_line-style) var(--_line-color); }
+  .border-layout > .border-layout-east:not(.resizer) { border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color); }
+
+  /* padding for panes that hold text (optional) */
+  .border-layout-pane { padding: 0.75rem; }
+
+  /* -- Dividers: the resizer handle, redrawn --------------------------- */
+  .border-layout > .resizer > .resizer-handle {
+    z-index: 5;
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
+    color: var(--muted-foreground);
+
+    /* the line */
+    &::before {
+      content: "";
+      position: absolute;
+      transition: border-color 120ms;
+    }
+    /* the grip - hidden unless data-grip asks for one */
+    &::after {
+      content: none;
+      inset: auto;
+    }
+
+    &:hover,
+    &:focus-visible { background: transparent; outline: none; }
+    &:is(:hover, :focus-visible)::before { border-color: var(--_accent); }
+    &:focus-visible::after { outline: 2px solid var(--_accent); outline-offset: 1px; }
+
+    /* vertical dividers: west's east edge, east's west edge */
+    &:is([data-handle="e"], [data-handle="w"]) {
+      top: 0;
+      bottom: 0;
+      width: var(--_hit);
+      cursor: col-resize;
+      &::before {
+        inset-block: 0;
+        left: 50%;
+        border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
+        translate: -50% 0;
+      }
+    }
+    &[data-handle="e"] { right: 0; left: auto; translate: calc(50% + var(--_gap) / 2) 0; }
+    &[data-handle="w"] { left: 0; right: auto; translate: calc(-50% - var(--_gap) / 2) 0; }
+
+    /* horizontal dividers: north's south edge, south's north edge */
+    &:is([data-handle="n"], [data-handle="s"]) {
+      left: 0;
+      right: 0;
+      height: var(--_hit);
+      cursor: row-resize;
+      &::before {
+        inset-inline: 0;
+        top: 50%;
+        border-block-start: var(--_line-width) var(--_line-style) var(--_line-color);
+        translate: 0 -50%;
+      }
+    }
+    &[data-handle="s"] { bottom: 0; top: auto; translate: 0 calc(50% + var(--_gap) / 2); }
+    &[data-handle="n"] { top: 0; bottom: auto; translate: 0 calc(-50% - var(--_gap) / 2); }
+  }
+
+  /* dragging: the divider lights up; the resizer's own box outline stays off */
+  .border-layout > .resizer[data-resizing] {
+    outline: none;
+    & > .resizer-handle { background: transparent; }
+    & > .resizer-handle::before { border-color: var(--_accent); }
+  }
+
+  /* -- Grips: data-grip on the layout (every divider) or on one region -- */
+  :is(.border-layout[data-grip] > .resizer, .border-layout > .resizer[data-grip]) > .resizer-handle::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    box-sizing: border-box;
+    border-radius: var(--radius-sm);
+  }
+  /* dots: a small card with a dotted grip */
+  :is(.border-layout[data-grip="dots"] > .resizer, .border-layout > .resizer[data-grip="dots"]) > .resizer-handle::after {
+    width: 0.75rem;
+    height: 1.25rem;
+    border: 1px solid var(--_line-color);
+    background:
+      radial-gradient(circle, currentColor 0.75px, transparent 1.25px) center / 4px 4px,
+      var(--background);
+  }
+  /* bar: a pill across the line */
+  :is(.border-layout[data-grip="bar"] > .resizer, .border-layout > .resizer[data-grip="bar"]) > .resizer-handle::after {
+    width: 0.25rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--foreground) 35%, var(--_line-color));
+  }
+  /* data-grip="none" - on the layout (regions without their own grip) or one
+     region - switches it off; more specific than the rules above */
+  :is(.border-layout[data-grip="none"] > .resizer:not([data-grip]), .border-layout > .resizer[data-grip="none"]) > .resizer-handle::after { content: none; }
+  /* horizontal dividers turn the grip sideways */
+  .border-layout .resizer > .resizer-handle:is([data-handle="n"], [data-handle="s"])::after { rotate: 90deg; }
+  .border-layout .resizer > .resizer-handle:is(:hover, :focus-visible)::after { border-color: var(--_accent); }
+
+  /* -- Divider styles (data-divider on the layout or one region) ----------- */
+  :is(.border-layout, .border-layout > .resizer, .border-layout > [class*="border-layout-"]) {
+    &[data-divider="dashed"] { --_line-style: dashed; }
+    &[data-divider="dotted"] { --_line-style: dotted; --_line-width: var(--border-layout-divider-width, 2px); }
+    &[data-divider="double"] { --_line-style: double; --_line-width: var(--border-layout-divider-width, 4px); }
+    &[data-divider="thick"] { --_line-width: var(--border-layout-divider-width, 4px); --_line-color: var(--border-layout-divider-color, var(--muted)); }
+    &[data-divider="none"] { --_line-width: 0px; }
+  }
+  /* gap: the regions float as cards in a gutter, the divider lives in the gutter */
+  .border-layout[data-divider="gap"] {
+    --_gap: 0.5rem;
+    --_line-width: 0px;
+    padding: var(--_gap);
+    background: var(--muted);
+
+    & > :is(.border-layout-north, .border-layout-south, .border-layout-west, .border-layout-east, .border-layout-center):not(.resizer),
+    & > .resizer > :not(.resizer-handle) {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .border-layout > .resizer > .resizer-handle::before { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .border-layout { --_line-color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .border-layout { border: 1px solid CanvasText; --_line-color: CanvasText; --_accent: Highlight; }
+    .border-layout > .resizer > .resizer-handle::before { forced-color-adjust: none; }
+  }
+}
+
+/* ── components/panel/panel.css ── */
+/* -- Panel component ----------------------------------------------
+   A title bar inside a card - icon, title and tools (minimize / maximize are
+   Swaps) above a scrolling body. Minimized it is the title bar only; as the
+   pane of a border-layout region it takes the region with it: north / south
+   shrink to the bar, west / east turn the bar into a vertical tab (after the
+   ExtJS 4 border layout). Maximized it fills its border layout, a
+   [data-panel-host] or the viewport. Builds on .card (surface, border,
+   radius) and .swap (the tool faces). */
+
+@layer components {
+  .panel {
+    /* the card's padding scale, a notch tighter for tool-like bodies */
+    --_base: 1rem;
+    --_bar: 2.5rem;
+    --_bar-bg: color-mix(in oklch, var(--muted) 60%, var(--card));
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+
+    /* -- Title bar -------------------------------------------------- */
+    & > .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      min-block-size: var(--_bar);
+      box-sizing: border-box;
+      padding-block: 0.25rem;
+      padding-inline: 0.75rem 0.375rem;
+      border-block-end: 1px solid var(--border);
+      background: var(--_bar-bg);
+      color: var(--foreground);
+      user-select: none;
+    }
+
+    & .panel-icon {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+    }
+
+    & .panel-title {
+      flex: 1;
+      min-inline-size: 0;
+      margin: 0;
+      overflow: hidden;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      line-height: 1.25;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* tools: the swaps (and any .btn) at the end of the bar */
+    & .panel-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.125rem;
+      flex: none;
+      margin-inline-start: auto;
+    }
+
+    /* small tool buttons - the swap at icon-button size */
+    & > .panel-header .panel-tools .swap {
+      min-width: 1.75rem;
+      min-height: 1.75rem;
+      color: var(--muted-foreground);
+
+      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+      &:hover:not(:has(> input:disabled)) { color: var(--accent-foreground); }
+    }
+
+    /* -- Body ----------------------------------------------------------- */
+    & > .panel-body {
+      flex: 1;
+      min-block-size: 0;
+      overflow: auto;
+      padding: var(--_pad, 1rem);
+    }
+    /* a body that brings its own layout (a list, a table, a code view) */
+    & > .panel-body[data-flush] { padding: 0; }
+
+    & > .panel-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      padding: 0.5rem 0.75rem;
+      border-block-start: 1px solid var(--border);
+      background: var(--_bar-bg);
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    /* -- Minimized: the title bar only ------------------------------------- */
+    &[data-minimized] {
+      & > :not(.panel-header) { display: none; }
+      & > .panel-header { border-block-end-color: transparent; }
+    }
+    /* the authored height (inline, or the resizer's px) gives way to the bar */
+    &[data-minimized]:not([data-region="west"], [data-region="east"]) {
+      height: auto !important;
+      min-height: 0;
+    }
+
+    /* west / east: the bar turns into a vertical tab, the width to the bar's */
+    &[data-minimized]:is([data-region="west"], [data-region="east"]) {
+      width: auto !important;
+      min-width: 0;
+      /* the card's inline-size containment would size the tab to zero */
+      container-type: normal;
+
+      & > .panel-header {
+        flex: 1;
+        writing-mode: vertical-rl;
+        padding-block: 0.25rem;
+        padding-inline: 0.375rem 0.75rem;
+        border-block-end: 0;
+      }
+      /* the restore tool leads, like ExtJS's collapsed placeholder */
+      & .panel-tools { order: -1; margin-inline: 0 0.25rem; }
+      & .panel-maximize { display: none; }
+    }
+
+    /* the minimize chevron points where the panel folds to */
+    &[data-region="south"] .panel-minimize { rotate: 180deg; }
+    &[data-region="west"] .panel-minimize { rotate: -90deg; }
+    &[data-region="east"] .panel-minimize { rotate: 90deg; }
+
+    /* -- Maximized: fills the viewport ... -------------------------------- */
+    &[data-maximized] {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      width: auto !important;
+      height: auto !important;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: var(--shadow-xl);
+    }
+  }
+
+  /* ... or its border layout / [data-panel-host] */
+  :is(.border-layout, [data-panel-host])[data-panel-maximized] {
+    position: relative;
+
+    & .panel[data-maximized] {
+      position: absolute;
+      z-index: 20;
+      border-radius: inherit;
+    }
+  }
+  /* the regions step back so the layout is the containing block; their
+     dividers rest under the maximized panel */
+  .border-layout[data-panel-maximized] > .resizer {
+    position: static;
+
+    & > .resizer-handle { visibility: hidden; }
+  }
+  /* the region holding it rises too: a region may be a stacking context of
+     its own (a <main> with a view-transition-name) that would trap the
+     panel's z-index - grid items take z-index without being positioned, so
+     the layout stays the containing block */
+  .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) { z-index: 20; }
+
+  /* -- In a border layout: the region frames the panel ---------------------- */
+  :where(.border-layout > .resizer, .border-layout > .border-layout-center, .border-layout) > .panel {
+    border: 0;
+    border-radius: 0;
+  }
+  /* the region shrinks with the panel: its pane is the panel */
+  .border-layout > .resizer[data-panel-minimized] > .panel { overflow: hidden; }
+  /* closed: the panel and its region leave the layout */
+  .panel[hidden],
+  .border-layout > [data-panel-closed] { display: none; }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .panel .panel-minimize { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .panel > .panel-header { border-block-end-color: var(--foreground); }
+    .panel .panel-title { font-weight: 700; }
+  }
+
+  @media (forced-colors: active) {
+    .panel { border: 1px solid CanvasText; }
+    .panel > .panel-header { border-block-end: 1px solid CanvasText; background: Canvas; color: CanvasText; }
+    .panel .panel-icon { color: CanvasText; }
+  }
+}
+
+/* ── components/property-grid/property-grid.css ── */
+/* -- Property Grid -------------------------------------------------------------
+   Two columns over one JSON object - key, value - dense by default. Groups
+   (nested objects / arrays) fold; a value edits in place. Every color, radius
+   and font is the theme's. */
+
+@layer components {
+  :where(.property-grid, .property-grid *, .property-grid *::before, .property-grid *::after) {
+    box-sizing: border-box;
+  }
+
+  .property-grid {
+    --property-grid-key-width: 42%;
+    --property-grid-row: 1.875rem;
+    --property-grid-pad-x: 0.5rem;
+    --property-grid-indent: 0.875rem;
+    --property-grid-font: 0.8125rem;
+
+    min-width: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: var(--property-grid-font);
+    line-height: 1.35;
+
+    &[data-variant="comfortable"] {
+      --property-grid-row: 2.375rem;
+      --property-grid-pad-x: 0.75rem;
+      --property-grid-indent: 1.125rem;
+      --property-grid-font: 0.875rem;
+    }
+    /* inside a panel body (data-flush) the panel is the frame */
+    &[data-frame="none"] {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+  }
+
+  .property-grid-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    & thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      block-size: var(--property-grid-row);
+      padding: 0 var(--property-grid-pad-x);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      border-block-end: 1px solid var(--border);
+      font-size: 0.75em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-align: start;
+      text-transform: uppercase;
+    }
+    & thead th.property-grid-key {
+      inline-size: var(--property-grid-key-width);
+      border-inline-end: 1px solid var(--border);
+    }
+    & tbody tr {
+      block-size: var(--property-grid-row);
+    }
+    & tbody tr + tr > * {
+      border-block-start: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+    }
+  }
+
+  .property-grid-key {
+    padding: 0 var(--property-grid-pad-x);
+    padding-inline-start: calc(var(--property-grid-pad-x) + var(--depth, 0) * var(--property-grid-indent));
+    border-inline-end: 1px solid var(--border);
+    font-weight: 500;
+    text-align: start;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .property-grid-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .property-grid-value {
+    position: relative;
+    padding: 0 var(--property-grid-pad-x);
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: text;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+    &[data-editing] {
+      padding: 0.125rem;
+      overflow: visible;
+      white-space: normal;
+      cursor: default;
+    }
+  }
+  .property-grid-row:not([data-readonly]) > .property-grid-value:hover {
+    background: color-mix(in oklab, var(--accent) 70%, transparent);
+  }
+  .property-grid-row[data-readonly] > .property-grid-value {
+    color: var(--muted-foreground);
+    cursor: default;
+  }
+  .property-grid-row[data-type="number"] > .property-grid-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* groups: a nested object / array, folded with its toggle */
+  .property-grid-group {
+    background: color-mix(in oklab, var(--muted) 55%, transparent);
+
+    & > .property-grid-key {
+      font-weight: 600;
+    }
+    & > .property-grid-value {
+      cursor: default;
+    }
+  }
+  .property-grid-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-inline-size: 100%;
+    margin: 0 0 0 -0.25rem;
+    padding: 0.125rem 0.25rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      flex: none;
+      inline-size: 0.4rem;
+      block-size: 0.4rem;
+      border-inline-end: 1.5px solid currentColor;
+      border-block-end: 1.5px solid currentColor;
+      rotate: -45deg;
+      transition: rotate 0.15s ease;
+    }
+    &[aria-expanded="true"]::before {
+      rotate: 45deg;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+
+  /* default value renderings */
+  .property-grid-summary,
+  .property-grid-null {
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+  }
+  .property-grid-null {
+    font-style: italic;
+  }
+  .property-grid-bool {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+
+    &[data-value="true"] { color: var(--chart-2); }
+    &[data-value="false"] { color: var(--muted-foreground); }
+  }
+  .property-grid-color {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+  }
+  .property-grid-swatch {
+    flex: none;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    border: 1px solid color-mix(in oklab, var(--foreground) 25%, transparent);
+    border-radius: var(--radius-sm);
+  }
+  .property-grid-empty > td {
+    padding: 0.75rem var(--property-grid-pad-x);
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+
+  /* the editor fills its cell */
+  .property-grid-editor {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-block-size: calc(var(--property-grid-row) - 0.25rem);
+
+    & > :is(.input, .select, .textarea) {
+      inline-size: 100%;
+      min-inline-size: 0;
+      font-size: inherit;
+    }
+    & > .textarea {
+      min-block-size: 4.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+      resize: vertical;
+    }
+    & > .switch {
+      margin-inline-start: calc(var(--property-grid-pad-x) - 0.125rem);
+    }
+    & [aria-invalid="true"] {
+      border-color: var(--destructive);
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--destructive) 25%, transparent);
+    }
+  }
+  /* a refused value: the reason under the editor */
+  .property-grid-error {
+    flex-basis: 100%;
+    padding: 0.125rem 0.25rem 0.25rem;
+    color: var(--destructive);
+    font-size: 0.75rem;
+    line-height: 1.3;
+    white-space: normal;
+  }
+  .property-grid-color-input {
+    inline-size: 2.5rem;
+    block-size: calc(var(--property-grid-row) - 0.5rem);
+    margin-inline-start: calc(var(--property-grid-pad-x) - 0.125rem);
+    padding: 0.125rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .property-grid-toggle::before { transition: none; }
+  }
+  @media (prefers-contrast: more) {
+    .property-grid-key,
+    .property-grid-table tbody tr + tr > * { border-color: var(--foreground); }
+  }
+  @media (forced-colors: active) {
+    .property-grid,
+    .property-grid-key,
+    .property-grid-table thead th { border-color: CanvasText; }
+    .property-grid-value:focus-visible { outline: 2px solid Highlight; box-shadow: none; }
+    .property-grid-swatch { forced-color-adjust: none; }
+  }
+}
+
+/* ── components/window/window.css ── */
+/* -- Window component --------------------------------------------
+   A desktop-style window: a non-modal <dialog> with a title bar (icon,
+   title, minimize / maximize / close), moved by dragging the bar, raised to
+   the front on click, resized natively. Chrome styles after Windows, macOS,
+   Linux (GNOME) and a retro 9x look. The controls are a
+   <form method="dialog">, so the × closes the window without script. */
+
+@layer components {
+  /* the area windows live in: positioned, clipped - a desktop */
+  .window-desktop {
+    position: relative;
+    overflow: hidden;
+    min-height: 18rem;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 12%, transparent) 1px, transparent 0) 0 0 / 1.25rem 1.25rem,
+      var(--muted);
+    isolation: isolate;
+  }
+
+  .window {
+    /* the UA dialog defaults (centered, padded, bordered) - replaced */
+    --_titlebar: 2.25rem;
+    --_ctl: 2.75rem;
+    position: absolute;
+    inset: auto;
+    left: var(--window-x, 2rem);
+    top: var(--window-y, 2rem);
+    box-sizing: border-box;
+    width: var(--window-w, 24rem);
+    height: var(--window-h, auto);
+    max-width: none;
+    max-height: none;
+    min-width: 12rem;
+    margin: 0;
+    padding: 0;
+    display: none;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: box-shadow 150ms;
+
+    &[open] { display: flex; }
+
+    /* native resize handle, bottom-right */
+    &[data-resizable] {
+      resize: both;
+      min-height: calc(var(--_titlebar) + 4rem);
+    }
+
+    /* -- Title bar ---------------------------------------------------- */
+    & > .window-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      height: var(--_titlebar);
+      padding-inline-start: 0.75rem;
+      background: var(--muted);
+      border-bottom: 1px solid var(--border);
+      cursor: default;
+      user-select: none;
+      touch-action: none;
+
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -2px;
+      }
+    }
+
+    & .window-icon {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      object-fit: contain;
+      color: var(--muted-foreground);
+    }
+
+    & .window-title {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* -- Controls: CSS-drawn glyphs --------------------------------------- */
+    & .window-controls {
+      display: flex;
+      align-self: stretch;
+      flex: none;
+      margin: 0;
+    }
+
+    & .window-controls > button {
+      position: relative;
+      box-sizing: border-box;
+      width: var(--_ctl);
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--foreground);
+      cursor: default;
+      transition: background-color 120ms, color 120ms;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 50% auto auto 50%;
+        translate: -50% -50%;
+        box-sizing: border-box;
+      }
+
+      &:hover { background: color-mix(in oklch, var(--foreground) 10%, transparent); }
+      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+    }
+
+    /* minimize: a bar */
+    & .window-minimize::before {
+      width: 0.625rem;
+      height: 1px;
+      background: currentColor;
+    }
+    /* maximize: a box; restore (while maximized): two boxes */
+    & .window-maximize::before {
+      width: 0.625rem;
+      height: 0.625rem;
+      border: 1px solid currentColor;
+      border-radius: 1px;
+    }
+    &[data-maximized] .window-maximize {
+      &::before { translate: -40% -60%; width: 0.5rem; height: 0.5rem; }
+      &::after {
+        translate: -65% -35%;
+        width: 0.5rem;
+        height: 0.5rem;
+        border: 1px solid currentColor;
+        border-radius: 1px;
+        background: var(--muted);
+      }
+    }
+    /* close: an × */
+    & .window-close {
+      &::before,
+      &::after {
+        width: 0.75rem;
+        height: 1px;
+        background: currentColor;
+        rotate: 45deg;
+      }
+      &::after { rotate: -45deg; }
+    }
+    /* Windows chrome: the × turns red with a white glyph. Stated through
+       .window-controls > so it outranks the shared control hover (a light
+       tint) - otherwise the white glyph landed on light grey. The other
+       chromes style their own close button. */
+    &:not([data-chrome="mac"], [data-chrome="linux"], [data-chrome="retro"]) .window-controls > .window-close:hover {
+      background: oklch(0.58 0.21 27);
+      color: oklch(0.99 0 0);
+    }
+
+    /* -- Toolbar: an app's menubar / buttons under the title bar -------- */
+    & > .window-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex: none;
+      min-height: 2.25rem;
+      padding: 0.125rem 0.375rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--background);
+      overflow-x: auto;
+    }
+
+    /* -- Body / status bar -------------------------------------------- */
+    & > .window-body {
+      flex: 1;
+      min-height: 0;
+      padding: 1rem;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+    & > .window-body[data-flush] { padding: 0; }
+
+    & > .window-statusbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: none;
+      padding: 0.25rem 0.75rem;
+      border-top: 1px solid var(--border);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+
+    /* -- Active / inactive ---------------------------------------------- */
+    &:not([data-active]) {
+      box-shadow: var(--shadow-sm);
+      & > .window-titlebar { color: var(--muted-foreground); }
+    }
+
+    /* -- Maximized: fill the desktop; minimized: rolled up to the bar -- */
+    &[data-maximized] {
+      inset: 0;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      border-width: 0;
+      resize: none;
+      box-shadow: none;
+    }
+    &[data-minimized] {
+      height: auto;
+      min-height: 0;
+      resize: none;
+      & > :not(.window-titlebar) { display: none; }
+      & > .window-titlebar { border-bottom: 0; }
+    }
+    &[data-dragging] { transition: none; }
+
+    /* -- Chrome: macOS - traffic lights on the left, centred title ------- */
+    &[data-chrome="mac"] {
+      --_ctl: 1.25rem;
+      & > .window-titlebar { padding-inline: 0.75rem; }
+      & .window-controls {
+        order: -1;
+        align-self: center;
+        gap: 0.5rem;
+        margin-inline-end: 0.25rem;
+      }
+      & .window-controls > button {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 999px;
+        color: oklch(0.3 0.05 30 / 0);
+        &:hover { background: var(--_light); }
+        &::before,
+        &::after { scale: 0.7; }
+      }
+      /* the glyphs appear when the pointer is over the lights */
+      & .window-controls:hover > button { color: oklch(0.3 0.05 30 / 0.8); }
+      & .window-close { order: 1; --_light: oklch(0.68 0.2 25); }
+      & .window-minimize { order: 2; --_light: oklch(0.82 0.16 85); }
+      & .window-maximize { order: 3; --_light: oklch(0.74 0.17 145); }
+      & .window-controls > button { background: var(--_light); }
+      & .window-close:hover { color: oklch(0.3 0.05 30 / 0.8); }
+      & .window-title { text-align: center; }
+      /* the icon sits beside the centred title */
+      & .window-icon { order: 1; }
+      & .window-title { order: 0; }
+      &[data-maximized] .window-maximize::after { background: var(--_light); }
+      &:not([data-active]) .window-controls:not(:hover) > button { background: color-mix(in oklch, var(--muted-foreground) 35%, transparent); }
+    }
+
+    /* -- Chrome: Linux (GNOME) - round grey buttons on the right --------- */
+    &[data-chrome="linux"] {
+      --_ctl: 1.5rem;
+      & > .window-titlebar { padding-inline-end: 0.5rem; }
+      & .window-title { text-align: center; font-weight: 600; }
+      & .window-controls { align-self: center; gap: 0.5rem; }
+      & .window-controls > button {
+        width: var(--_ctl);
+        height: var(--_ctl);
+        border-radius: 999px;
+        background: color-mix(in oklch, var(--foreground) 9%, transparent);
+        &::before,
+        &::after { scale: 0.8; }
+        &:hover { background: color-mix(in oklch, var(--foreground) 16%, transparent); }
+      }
+      & .window-close:hover { background: color-mix(in oklch, var(--foreground) 16%, transparent); color: var(--foreground); }
+      &[data-maximized] .window-maximize::after { background: transparent; }
+    }
+
+    /* -- Chrome: retro - a bevelled 9x window with a gradient title ------ */
+    &[data-chrome="retro"] {
+      --_face: oklch(0.8 0 0);
+      --_hi: oklch(1 0 0);
+      --_lo: oklch(0.5 0 0);
+      --_ctl: 1.125rem;
+      padding: 3px;
+      border: 0;
+      border-radius: 0;
+      background: var(--_face);
+      color: oklch(0.15 0 0);
+      box-shadow:
+        inset -1px -1px 0 oklch(0.1 0 0), inset 1px 1px 0 var(--_face),
+        inset -2px -2px 0 var(--_lo), inset 2px 2px 0 var(--_hi);
+      & > .window-titlebar {
+        height: 1.375rem;
+        padding-inline: 0.25rem 0.125rem;
+        gap: 0.25rem;
+        border: 0;
+        background: linear-gradient(90deg, oklch(0.3 0.16 264), oklch(0.62 0.12 240));
+        color: oklch(1 0 0);
+      }
+      & .window-icon { color: inherit; }
+      & .window-title { font-weight: 700; font-size: 0.75rem; }
+      & .window-controls { align-self: center; gap: 2px; }
+      & .window-controls > button {
+        width: calc(var(--_ctl) + 2px);
+        height: var(--_ctl);
+        background: var(--_face);
+        color: oklch(0.1 0 0);
+        box-shadow:
+          inset -1px -1px 0 oklch(0.1 0 0), inset 1px 1px 0 var(--_hi),
+          inset -2px -2px 0 var(--_lo);
+        &:hover { background: var(--_face); color: oklch(0.1 0 0); }
+        &:active { box-shadow: inset 1px 1px 0 oklch(0.1 0 0), inset -1px -1px 0 var(--_hi), inset 2px 2px 0 var(--_lo); }
+        &::before,
+        &::after { scale: 0.75; }
+      }
+      & .window-close { margin-inline-start: 2px; }
+      & .window-minimize::before { height: 2px; translate: -50% 150%; }
+      & .window-maximize::before { border-top-width: 2px; }
+      & .window-close::before,
+      & .window-close::after { height: 2px; }
+      &[data-maximized] .window-maximize::after { background: var(--_face); border-top-width: 2px; }
+      & > .window-body {
+        margin-top: 2px;
+        background: oklch(1 0 0);
+        box-shadow: inset 1px 1px 0 var(--_lo), inset -1px -1px 0 var(--_hi), inset 2px 2px 0 oklch(0.1 0 0);
+      }
+      & > .window-toolbar {
+        margin-top: 2px;
+        border: 0;
+        background: var(--_face);
+        color: oklch(0.15 0 0);
+      }
+      & > .window-statusbar {
+        margin-top: 2px;
+        border: 0;
+        background: var(--_face);
+        color: oklch(0.15 0 0);
+        box-shadow: inset 1px 1px 0 var(--_lo), inset -1px -1px 0 var(--_hi);
+      }
+      &:not([data-active]) > .window-titlebar {
+        background: linear-gradient(90deg, oklch(0.55 0 0), oklch(0.72 0 0));
+        color: oklch(0.85 0 0);
+      }
+      &[data-maximized] { padding: 3px; }
+    }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .window,
+    .window .window-controls > button { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .window { border-color: var(--foreground); }
+    .window > .window-titlebar { border-bottom-color: var(--foreground); }
+    .window:not([data-active]) > .window-titlebar { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .window { border: 1px solid CanvasText; }
+    .window[data-active] > .window-titlebar {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+    .window .window-controls > button::before,
+    .window .window-controls > button::after { border-color: ButtonText; }
+  }
+}

@@ -3,7 +3,36 @@ import type { ElementModel } from '../../shared/render.js';
 
 const df$ = defussGlobals();
 const q = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
 const cookieConsentStates = ['default', 'open', 'preferences', 'services'] as const;
+
+/** setState() configs per state - el.api is the instance (CookieConsentInstance), whose setState takes these. */
+export interface CookieConsentStateConfigs {
+  /** The dialog closed (the floating settings button shows after a decision). */
+  default: {
+    /** switch the texts to this language (built in, or given in translations); getState() reports the language shown */
+    language?: Language;
+  };
+  /** The notice: the texts and the accept / reject / settings buttons. */
+  open: {
+    /** switch the texts to this language (built in, or given in translations); getState() reports the language shown */
+    language?: Language;
+  };
+  /** The settings by category. */
+  preferences: {
+    /** switch the texts to this language (built in, or given in translations); getState() reports the language shown */
+    language?: Language;
+  };
+  /** The settings by service. */
+  services: {
+    /** switch the texts to this language (built in, or given in translations); getState() reports the language shown */
+    language?: Language;
+  };
+}
+/** A view of the consent dialog - the component's states: closed (default), the notice (open), the categories (preferences), the services list. */
 export type ConsentView = typeof cookieConsentStates[number];
 /** A language code (BCP 47). English and German are built in; any other
  *  becomes available by passing its texts in `translations` - every key it
@@ -11,34 +40,83 @@ export type ConsentView = typeof cookieConsentStates[number];
 export type Language = string;
 /** The built-in languages. */
 export const builtInLanguages: readonly Language[] = ['en', 'de'];
+/** A service's category - essential services are always on. */
 export type CookieCategory = 'essential' | 'functional' | 'marketing' | 'other';
 export const categories: readonly CookieCategory[] = ['essential', 'functional', 'marketing', 'other'];
+/** A text in one language, or per language ({ en, de, ... } - a missing one falls back to English). */
 export type Localized = string | Partial<Record<Language, string>>;
 
+/** One service the site uses - what the visitor allows or rejects. */
 export interface CookieOrigin {
+  /** its id: what data-consent-service on gated scripts and frames names */
   id: string;
+  /** its name in the lists */
   name: string;
+  /** what it does */
   description: Localized;
+  /** its category */
   category: CookieCategory;
+  /** the domain it sets cookies on */
   domain?: string;
+  /** its privacy information page */
   url?: Localized;
+  /** what it collects, per language */
   dataCollected?: Partial<Record<Language, string[]>>;
   /** Kept for migration. Optional services never start granted. */
   consent?: boolean;
   /** Essential services are on; disabled optional services stay off. */
   disabled?: boolean;
+  /** the cookies it sets (a name, or name + path / domain) - removed when it is revoked */
   cookies?: Array<string | { name: string; path?: string; domain?: string }>;
   /** Tear down timers, SDKs, listeners, etc. Removal cannot undo script execution. */
   onRevoke?: () => void;
 }
 
+/** Every text the dialog shows - translations replace any of them. */
 export interface ConsentMessages {
-  title: string; text: string; settings: string; close: string; language: string;
-  preferences: string; preferencesText: string; categories: string; services: string;
-  acceptAll: string; denyAll: string; save: string; required: string;
-  privacyPolicy: string; legalNotice: string; moreInformation: string;
-  blocked: string; activate: string; thirdParty: string; storageError: string;
+  /** the notice's heading */
+  title: string;
+  /** the notice's text */
+  text: string;
+  /** the button (and floating button) that opens the settings */
+  settings: string;
+  /** the button that closes without saving */
+  close: string;
+  /** the language picker's label */
+  language: string;
+  /** the settings view's heading */
+  preferences: string;
+  /** the settings view's intro */
+  preferencesText: string;
+  /** the categories tab */
+  categories: string;
+  /** the services tab */
+  services: string;
+  /** the accept-all button */
+  acceptAll: string;
+  /** the reject-optional button */
+  denyAll: string;
+  /** the save button */
+  save: string;
+  /** the badge on essential services */
+  required: string;
+  /** the privacy policy link */
+  privacyPolicy: string;
+  /** the legal notice link */
+  legalNotice: string;
+  /** a service's information link */
+  moreInformation: string;
+  /** after a service's name on gated content it blocks */
+  blocked: string;
+  /** the button on gated content that allows its service */
+  activate: string;
+  /** the note that third-party cookies stay (the site cannot remove them) */
+  thirdParty: string;
+  /** shown when the choice could not be stored */
+  storageError: string;
+  /** each category's name */
   categoryNames: Record<CookieCategory, string>;
+  /** each category's description */
   categoryDescriptions: Record<CookieCategory, string>;
 }
 
@@ -81,43 +159,98 @@ export const translations: Record<string, ConsentMessages> = {
   },
 };
 
+/** What create() takes (also the JSON in the root's config script). */
 export interface CookieConsentConfig {
+  /** every service the site uses */
   cookieOrigins: CookieOrigin[];
+  /** the language before the visitor picks one (default: the page's lang, else English) */
   defaultLanguage?: Language;
+  /** a floating settings button after the decision (default true) */
   showFloatingButton?: boolean;
+  /** the privacy policy page */
   privacyPolicyUrl?: Localized;
+  /** the legal notice page */
   legalNoticeUrl?: Localized;
+  /** the storage key of the decision */
   storageKey?: string;
+  /** change it to ask everyone again (a new set of services) */
   revision?: string;
+  /** days a decision is kept */
   maxAgeDays?: number;
+  /** where the decision is kept (default localStorage; null: nowhere) */
   storage?: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | null;
+  /** open the notice when no decision is stored (default true) */
   autoShow?: boolean;
   /** Defaults to ownerDocument; use a container to isolate resource ownership. */
   resourceRoot?: Document | HTMLElement;
+  /** texts per language - any key left out falls back to English */
   translations?: Partial<Record<Language, Partial<ConsentMessages>>>;
+  /** called on every decision with the state and why */
   onChange?: (state: CookieConsentState, reason: ConsentReason) => void;
+  /** called when everything is accepted */
   onAccept?: (state: CookieConsentState) => void;
+  /** called when the optional services are rejected */
   onDeny?: (state: CookieConsentState) => void;
 }
 
+/** The decision - getConsent() returns it, cookie-consent:change carries it. */
 export interface CookieConsentState {
+  /** the config revision it was made under */
   revision: string;
+  /** whether the visitor decided (false: no decision yet, or it was reset) */
   decisionMade: boolean;
+  /** the language the texts show */
   language: Language;
+  /** the ids of the accepted services */
   acceptedServices: string[];
+  /** the categories every service of which is accepted */
   acceptedCategories: CookieCategory[];
+  /** when it was made, ms since the epoch; null before a decision */
   updatedAt: number | null;
+  /** every optional service accepted */
   acceptAll: boolean;
+  /** every optional service rejected */
   denyAll: boolean;
 }
+/** Why the decision changed: the buttons (accept, deny, save), one service, a reset, or a decision read from storage. */
 export type ConsentReason = 'accept' | 'deny' | 'save' | 'service' | 'reset' | 'storage';
+/** What failed (cookie-consent:error): the config, storage, a callback, the markup, a revoke hook, a URL. */
+export type ConsentErrorKind = 'config' | 'storage' | 'callback' | 'markup' | 'revoke' | 'url';
+
+/** What cookie-consent:change carries. */
+interface CookieConsentChangeDetail {
+  /** the decision now */
+  state: CookieConsentState;
+  /** what changed it */
+  reason: ConsentReason;
+}
+
+/** What cookie-consent:error carries. */
+interface CookieConsentErrorDetail {
+  /** what failed */
+  kind: ConsentErrorKind;
+  /** what was thrown */
+  error: unknown;
+}
 type StoredConsent = Pick<CookieConsentState, 'revision' | 'decisionMade' | 'language' | 'acceptedServices' | 'updatedAt'> & { schemaVersion: 1 };
+/** A consent manager - create() returns it, and it is the root's el.api. */
 export interface CookieConsentInstance {
-  /** Show a view by name (default, open, preferences, services); { language } switches the texts. */
+  /**
+   * Show a view by name (default, open, preferences, services); { language } switches the texts.
+   * @param name - the view
+   * @param config - language: switch the texts too
+   */
   setState(name: ConsentView, config?: { language?: Language }): void;
-  /** The view shown now and the language. */
+  /**
+   * The view shown now and the language.
+   * @returns the view's name, the language and the authored model render() starts from
+   */
   getState(): { name: ConsentView; config: { language: Language }; model?: ElementModel };
-  /** The markup of a state (the render() contract). */
+  /**
+   * The markup of a state (the render() contract).
+   * @param state - the state (default: the current one)
+   * @returns the root's markup in that state
+   */
   render(state?: DefussShadcnComponentState): string;
   /** Open the consent dialog. */
   open(): void;
@@ -129,17 +262,36 @@ export interface CookieConsentInstance {
   denyAll(): void;
   /** Keep the services ticked in the settings and close. */
   save(): void;
-  /** Accept one service (also what a gated element's Allow does). */
+  /**
+   * Accept one service (also what a gated element's Allow does).
+   * @param id - the service's id
+   */
   acceptService(id: string): void;
-  /** Revoke one optional service - its scripts and frames unload, its cookies are removed. */
+  /**
+   * Revoke one optional service - its scripts and frames unload, its cookies are removed.
+   * @param id - the service's id
+   */
   revokeService(id: string): void;
-  /** Whether a service is accepted now. */
+  /**
+   * Whether a service is accepted now.
+   * @param id - the service's id
+   * @returns true when it is accepted (essential services always are)
+   */
   isServiceAccepted(id: string): boolean;
-  /** The decision: services, categories, acceptAll / denyAll, language, revision, date. */
+  /**
+   * The decision: services, categories, acceptAll / denyAll, language, revision, date.
+   * @returns a copy of the decision
+   */
   getConsent(): CookieConsentState;
-  /** The services ticked in the settings, not saved yet. */
+  /**
+   * The services ticked in the settings, not saved yet.
+   * @returns their ids
+   */
   getDraft(): string[];
-  /** Switch the texts (a built-in or a translated language). */
+  /**
+   * Switch the texts (a built-in or a translated language).
+   * @param language - a language code with texts (built in, or in translations)
+   */
   setLanguage(language: Language): void;
   /** Forget the decision (in storage too) and open the notice again. */
   reset(): void;
@@ -247,7 +399,7 @@ class Controller implements CookieConsentInstance {
       try { storage = this.doc.defaultView?.localStorage ?? null; } catch { storage = null; }
     }
     this.storage = storage;
-    // the record is the store's value; its own checks (revision, age, …) run
+    // the record is the store's value; its own checks (revision, age, ...) run
     // in readStored - the store only guarantees an object or null
     this.saved = storage
       ? persisted<StoredConsent | null>(this.key, null, {
@@ -266,7 +418,7 @@ class Controller implements CookieConsentInstance {
     q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
     this.dialog = q<HTMLDialogElement>('.cookie-consent-dialog', root)[0];
     // el.store (AGENTS.md "State through stores"); the controller stays
-    // el.api - its open() / acceptAll() / … are the documented surface, and
+    // el.api - its open() / acceptAll() / ... are the documented surface, and
     // its setState / getState run through the store
     // registered before the first state: the store's apply reaches the
     // controller through the registry (create() sets the same entry again)
@@ -468,13 +620,13 @@ class Controller implements CookieConsentInstance {
     this.setState('open');
     this.emit('reset');
   }
-  error(kind: string, error: unknown): void {
+  error(kind: ConsentErrorKind, error: unknown): void {
     // Fires when something fails without breaking the page - storage (kind "storage"), a callback, a revoke hook.
-    this.root.dispatchEvent(new CustomEvent('cookie-consent:error', { bubbles: true, detail: { kind, error } }));
+    this.root.dispatchEvent(new CustomEvent<CookieConsentErrorDetail>('cookie-consent:error', { bubbles: true, detail: { kind, error } }));
   }
   emit(reason: ConsentReason): void {
     // Fires on every decision - the consent state and why (accept, deny, save, service, reset, storage).
-    this.root.dispatchEvent(new CustomEvent('cookie-consent:change', { bubbles: true, detail: { state: this.getConsent(), reason } }));
+    this.root.dispatchEvent(new CustomEvent<CookieConsentChangeDetail>('cookie-consent:change', { bubbles: true, detail: { state: this.getConsent(), reason } }));
     try { this.config.onChange?.(this.getConsent(), reason); } catch (error) { this.error('callback', error); }
     const callback = reason === 'accept' ? this.config.onAccept : reason === 'deny' ? this.config.onDeny : undefined;
     try { callback?.(this.getConsent()); } catch (error) { this.error('callback', error); }
@@ -779,7 +931,12 @@ export const cookieConsentApi = componentState<HTMLElement>({
 });
 
 export const cookieConsent = {
-  /** Start a consent manager on root with a config (cookieOrigins, texts, storage …) - returns its instance (also el.api); a second call returns the same one. */
+  /**
+   * Start a consent manager on root with a config (cookieOrigins, texts, storage ...); a second call returns the same one.
+   * @param root - the .cookie-consent element (connected to the document)
+   * @param config - the services, texts, storage and callbacks
+   * @returns its instance - also root's el.api
+   */
   create(root: HTMLElement, config: CookieConsentConfig): CookieConsentInstance {
     if (controllers.has(root)) return controllers.get(root)!;
     if (!root.isConnected) throw new Error('cookie-consent: root must be connected');
@@ -789,7 +946,11 @@ export const cookieConsent = {
     controllers.set(root, controller);
     return controller;
   },
-  /** The instance a root already has, if any. */
+  /**
+   * The instance a root already has.
+   * @param root - the .cookie-consent element
+   * @returns its instance, undefined before create()
+   */
   get(root: HTMLElement): CookieConsentInstance | undefined { return controllers.get(root); },
   init,
 };
@@ -810,7 +971,7 @@ function init(): void {
       cookieConsent.create(root, JSON.parse(q(configTag).text()) as CookieConsentConfig);
     } catch (error) {
       q(root).attr('data-init', '').attr('data-cookie-consent-error', '');
-      root.dispatchEvent(new CustomEvent('cookie-consent:error', { bubbles: true, detail: { kind: 'config', error } }));
+      root.dispatchEvent(new CustomEvent<CookieConsentErrorDetail>('cookie-consent:error', { bubbles: true, detail: { kind: 'config', error } }));
       console.error(error);
     }
   }

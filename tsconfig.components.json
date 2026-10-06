@@ -1,0 +1,19 @@
+{
+  // The component type check (verify's `component types` ratchet): the
+  // shipped sources, the shared layer and core, checked LOOSELY - implicit
+  // any stays allowed (most internals are still untyped), but every type
+  // that IS written must hold at its call sites and in its body: a wrong
+  // argument / return / event-detail type in the API docs is a new error.
+  // tsconfig.json keeps noCheck for the build (type stripping only).
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true
+  },
+  "include": ["src/components/**/*.ts", "src/shared/**/*.ts", "src/core/**/*.ts", "src/types/**/*.d.ts"]
+}

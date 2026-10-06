@@ -5576,7 +5576,9 @@ df$5.dataGrid = {
     }
     dataGridApi.setState(grid, "default", patch);
   },
-  query: (target, patch) => query(resolve(target), patch),
+  query: (target, patch) => {
+    query(resolve(target), patch);
+  },
   rows: (target) => (resolve(target)._result?.entries ?? []).map((e) => e.row),
   selected(target) {
     const grid = resolve(target);
@@ -5584,7 +5586,9 @@ df$5.dataGrid = {
     return (grid._source?.rows ?? []).filter((r) => ids.has(r[grid._source.idField]));
   },
   selectAll: (target) => selectAll(resolve(target)),
-  clearSelection: (target) => query(resolve(target), { selected: [] }),
+  clearSelection: (target) => {
+    query(resolve(target), { selected: [] });
+  },
   expandAll(target) {
     const grid = resolve(target);
     query(grid, { expanded: grid._source.branchIds(), collapsed: [] });
@@ -7239,10 +7243,8 @@ var tabsApi = componentState({
 df$14.tabsApi = tabsApi;
 df$14.tabsStates = tabsStates;
 function init14() {
-  dfDollar14('[role="tablist"]:not([data-init])').toArray().forEach((tablist) => {
+  dfDollar14('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    if (!dfDollar14(tablist).find(".tab-trigger").get(0))
-      return;
     const triggers = Array.from(dfDollar14(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
@@ -7555,19 +7557,20 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$15.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar15(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$15.toast = toastActions;
 
 // src/components/toggle/toggle.ts
 var df$16 = defussGlobals();
@@ -7703,6 +7706,6 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-//# debugId=90B054BF49B634FA64756E2164756E21
+//# debugId=9F7E80AAEBB58ABE64756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=admin-dashboard.js.map

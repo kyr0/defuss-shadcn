@@ -377,13 +377,16 @@ function startDrag(wrapper, handle, ev) {
     handle.addEventListener('lostpointercapture', onUp);
 }
 function init() {
-    dfDollar('.resizer:not([data-init])').toArray().forEach((wrapper) => {
+    const fresh = dfDollar('.resizer:not([data-init])').toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
         wrapper.dataset.init = '';
-        if (!targetOf(wrapper))
-            return; // a resizer wraps exactly ONE element
-        // authored snapshot for the 'default' state (computed - works for px and
-        // classes authored alike)
+        return !!targetOf(wrapper); // a resizer wraps exactly ONE element
+    });
+    // authored snapshot for the 'default' state (computed - works for px and classes authored
+    // alike), measured for every wrapper BEFORE any is bound: a measure after a write forces a
+    // layout of the whole page, once per wrapper (the code-example cards on a docs page)
+    for (const wrapper of fresh)
         wrapper._defaultSize = [currentPx(wrapper, 'w'), currentPx(wrapper, 'h')];
+    fresh.forEach((wrapper) => {
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(wrapper, resizerApi);
         syncHandles(wrapper);

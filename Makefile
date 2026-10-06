@@ -2,7 +2,7 @@
 # KISS: every target delegates to package.json so there is one source of truth.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup dev test test-run coverage e2e e2e-all lint verify screenshots minify stats build docs purge-cdn bench
+.PHONY: help setup dev test test-run coverage e2e e2e-all lint verify screenshots minify stats build docs purge-cdn bench metrics start stop restart status log
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -70,6 +70,12 @@ verify: ## Static consistency gate (runs automatically after build)
 
 screenshots: ## Default-state screenshot of every component (agent inspection)
 	bun run screenshots
+
+metrics: ## Print the current build metrics (dist/stats.json; regenerate with `make stats`)
+	@cat dist/stats.json
+
+# A library, not a service: `make dev` serves the docs for humans; no daemon to manage.
+start stop restart status log: ; @echo "∅ $@: no service"
 
 # Measurements, never part of build/verify/test: they load the machine on
 # purpose. `make bench AGENT="Claude Code · Opus 5.5 (high effort)"` times one

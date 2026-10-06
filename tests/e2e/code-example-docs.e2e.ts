@@ -206,6 +206,32 @@ try {
     await page.waitForTimeout(300);
     assert.ok(await stillThere(), 'a page URL is cancelled');
   });
+
+  // Why: the cards' viewport fit (code-example) and the resizer's authored-size snapshot each
+  // read layout right after writing styles - once PER CARD, every read forced a style recalc of
+  // the whole page: ~6 s before load on diagram.html (12 cards), which timed out a unit test.
+  // Batched (reads, then writes, over every card) the forced recalcs no longer grow with the
+  // card count. The trace names the script that forced each one.
+  await check('I: a page of cards loads without per-card forced style recalcs (batched fit)', async () => {
+    const tp = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    try {
+      await browser.startTracing(tp, { categories: ['devtools.timeline', 'disabled-by-default-devtools.timeline.stack'] });
+      await tp.goto(`${url}/dist/documentation/diagram.html`, { waitUntil: 'load', timeout: 30000 });
+      const trace = JSON.parse((await browser.stopTracing()).toString()) as { traceEvents: { name: string; args?: { beginData?: { stackTrace?: { url: string; functionName: string }[] } } }[] };
+      const cards = await tp.evaluate(() => document.querySelectorAll('.code-example').length);
+      const forced = trace.traceEvents
+        .filter((e) => e.name === 'UpdateLayoutTree')
+        .map((e) => e.args?.beginData?.stackTrace?.[0])
+        .filter((top) => top && /\/components\/(all|wysiwyg)\.js/.test(top.url));
+      assert.ok(cards >= 10, `diagram.html should hold many cards, found ${cards}`);
+      assert.ok(
+        forced.length < cards,
+        `${forced.length} forced style recalcs from the component bundles for ${cards} cards: ${[...new Set(forced.map((f) => f!.functionName))].join(', ')}`,
+      );
+    } finally {
+      await tp.close();
+    }
+  });
 } finally {
   await browser.close();
   stop();

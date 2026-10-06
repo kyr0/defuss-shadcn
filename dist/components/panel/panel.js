@@ -194,26 +194,52 @@ const act = (t, state) => {
         panel.api.setState(state);
     return panel ?? null;
 };
-df$.panel = {
-    /** Title bar only - in a border layout region, the region shrinks with it. */
-    minimize: (t) => act(t, 'minimized'),
-    /** Fills its border layout / [data-panel-host] / the viewport. */
-    maximize: (t) => act(t, 'maximized'),
-    /** Back to title bar + body at the authored size. */
-    restore: (t) => act(t, 'default'),
-    /** Closes the panel (hidden; in a border layout its region goes too). */
-    close: (t) => act(t, 'closed'),
-    /** Opens a closed panel again (title bar + body). */
-    open: (t) => act(t, 'default'),
-    /** Minimizes or restores; returns whether it is now minimized. */
-    toggle: (t) => {
-        const panel = resolve(t);
+/** df$.shadcn.panel - the panel actions, by element, id or selector. */
+export const panelActions = {
+    /**
+     * Title bar only - in a border layout region, the region shrinks with it.
+     * @param target - the .panel element, its id or a selector
+     * @returns the panel, null when the target matches none
+     */
+    minimize: (target) => act(target, 'minimized'),
+    /**
+     * Fills its border layout / [data-panel-host] / the viewport.
+     * @param target - the .panel element, its id or a selector
+     * @returns the panel, null when the target matches none
+     */
+    maximize: (target) => act(target, 'maximized'),
+    /**
+     * Back to title bar + body at the authored size.
+     * @param target - the .panel element, its id or a selector
+     * @returns the panel, null when the target matches none
+     */
+    restore: (target) => act(target, 'default'),
+    /**
+     * Closes the panel (hidden; in a border layout its region goes too).
+     * @param target - the .panel element, its id or a selector
+     * @returns the panel, null when the target matches none
+     */
+    close: (target) => act(target, 'closed'),
+    /**
+     * Opens a closed panel again (title bar + body).
+     * @param target - the .panel element, its id or a selector
+     * @returns the panel, null when the target matches none
+     */
+    open: (target) => act(target, 'default'),
+    /**
+     * Minimizes or restores.
+     * @param target - the .panel element, its id or a selector
+     * @returns true when it is minimized now (false also when the target matches no panel)
+     */
+    toggle: (target) => {
+        const panel = resolve(target);
         if (!panel?.api)
             return false;
         panel.api.setState(panel.hasAttribute('data-minimized') ? 'default' : 'minimized');
         return panel.hasAttribute('data-minimized');
     },
 };
+df$.panel = panelActions;
 // [data-panel-open="id"] anywhere opens that panel again (and puts focus on its
 // first tool); [data-panel-toggle="id"] closes an open panel, opens a closed one
 // and says which (aria-expanded, kept in step with every state change)

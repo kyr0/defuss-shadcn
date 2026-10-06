@@ -1,8 +1,8 @@
 ---
 name: Kbd
 type: ATM
-why: Native <kbd>, and a combination is <kbd> nested inside <kbd> exactly as the HTML spec prescribes — the markup already says "these keys together".
-when: Showing a shortcut — in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
+why: Native <kbd>, and a combination is <kbd> nested inside <kbd> exactly as the HTML spec prescribes, so the markup already says "these keys together".
+when: Showing a shortcut in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
 where: dist/components/kbd/kbd.css
 supportedStates: default
 ---
@@ -13,15 +13,15 @@ supportedStates: default
 The `<kbd>` element, which means "user input from a keyboard". For a
 combination the spec nests them: an outer `<kbd>` for the chord, one inner
 `<kbd>` per key. That is why this component needs no wrapper `<div>` and no
-JavaScript — the meaning is in the elements.
+JavaScript: the meaning is in the elements.
 
 ---
 
 ## Native Web APIs
-- [`<kbd>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd) — keyboard input; nested for key combinations, as the spec describes
-- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) — the border inside a button is derived from the button's own text colour
-- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) — solid foreground border and text when asked
-- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) — Windows High Contrast Mode support
+- [`<kbd>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd) - keyboard input; nested for key combinations, as the spec describes
+- [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix) - the border inside a button is derived from the button's own text colour
+- [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - solid foreground border and text when asked
+- [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode support
 
 ---
 
@@ -81,7 +81,7 @@ label.
 
 | `data-size` | Key size |
 |-------------|----------|
-| `sm` | 1.125rem — for use inside buttons and menu items |
+| `sm` | 1.125rem, for use inside buttons and menu items |
 | *(default)* | 1.375rem |
 | `lg` | 1.75rem |
 
@@ -112,7 +112,7 @@ global key API - a key that does nothing reads as broken.
 ## ARIA
 
 None. `<kbd>` already carries the meaning, and a key's label is its text
-content. Do not add `role` or `aria-label` — spelling out "Command K" in an
+content. Do not add `role` or `aria-label`; spelling out "Command K" in an
 `aria-label` would be read *instead of* the keys and usually reads worse.
 
 If the shortcut is decoration beside a control that already announces its own
@@ -121,7 +121,7 @@ action, hide it: `<kbd class="kbd" aria-hidden="true">⌘K</kbd>`.
 ---
 
 ## Notes
-- Use it for keys, not for code — inline code is `.inline-code` on `<code>`.
+- Use it for keys, not for code; inline code is `.inline-code` on `<code>`.
 - Write the symbol you want read: `⌘`, `⇧`, `⌥`, `Ctrl`, `Enter`, `Esc`. The
   component does not translate between platforms; pick per platform if you need
   to.

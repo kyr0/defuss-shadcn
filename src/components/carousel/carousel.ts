@@ -19,6 +19,17 @@ let carSeq = 0;
 
 const carouselStates = ['default'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the slide shown). */
+export interface CarouselStateConfigs {
+  /** The carousel showing one slide. */
+  default: {
+    /** the slide to show, 0-based (default 0) */
+    index?: number;
+  };
+}
+
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
  * to a detached copy of the authored markup ('default' IS the authored

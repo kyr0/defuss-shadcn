@@ -423,30 +423,60 @@ function toItem(content, { id, anchor } = {}) {
     return item;
 }
 df$.session = {
-    /** Adds a message at the end; follows (or anchors) as the session decides. */
-    append(t, content, options) {
-        const s = resolve(t);
+    /**
+     * Adds a message at the end; follows (or anchors) as the session decides.
+     * @param target - the .session element, its id or a selector
+     * @param content - the message: markup, a node, or a ready .session-item
+     * @param options - its id and whether it is an anchor
+     * @returns the .session-item added
+     */
+    append(target, content, options) {
+        const s = resolve(target);
         const item = toItem(content, options);
         s?._parts?.content.append(item);
         return item;
     },
-    /** Adds older messages at the start; the reader's place is kept. */
-    prepend(t, content, options) {
-        const s = resolve(t);
+    /**
+     * Adds older messages at the start; the reader's place is kept.
+     * @param target - the .session element, its id or a selector
+     * @param content - one message or several (markup, nodes or .session-items), oldest first
+     * @param options - an id and the anchor flag for every message added
+     * @returns the .session-items added, in order
+     */
+    prepend(target, content, options) {
+        const s = resolve(target);
         const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
         s?._parts?.content.prepend(...items);
         return items;
     },
-    /** Scroll to the newest message and follow again (options: { behavior }). */
-    scrollToEnd: (t, o) => { const s = resolve(t); if (s)
-        follow(s, o); },
-    /** Scroll to the oldest message (the session stops following). */
-    scrollToStart: (t, o) => { const s = resolve(t); if (s)
-        scrollToStart(s, o); },
-    /** Bring a message into view by id - false when there is none. */
-    scrollToMessage: (t, id, o) => { const s = resolve(t); return s ? scrollToMessage(s, id, o) : false; },
-    /** Whether the reader is at the end (within data-threshold, 48px by default). */
-    isAtEnd: (t) => { const s = resolve(t); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
+    /**
+     * Scroll to the newest message and follow again.
+     * @param target - the .session element, its id or a selector
+     * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+     */
+    scrollToEnd: (target, options) => { const s = resolve(target); if (s)
+        follow(s, options); },
+    /**
+     * Scroll to the oldest message (the session stops following).
+     * @param target - the .session element, its id or a selector
+     * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+     */
+    scrollToStart: (target, options) => { const s = resolve(target); if (s)
+        scrollToStart(s, options); },
+    /**
+     * Bring a message into view by id.
+     * @param target - the .session element, its id or a selector
+     * @param id - the message's data-message-id
+     * @param options - smooth: false jumps instead of scrolling smoothly (default true)
+     * @returns false when the session has no such message
+     */
+    scrollToMessage: (target, id, options) => { const s = resolve(target); return s ? scrollToMessage(s, id, options) : false; },
+    /**
+     * Whether the reader is at the end (within data-threshold, 48px by default).
+     * @param target - the .session element, its id or a selector
+     * @returns true when following is on - new messages scroll into view
+     */
+    isAtEnd: (target) => { const s = resolve(target); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
 };
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });

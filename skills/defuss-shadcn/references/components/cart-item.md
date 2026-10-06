@@ -73,7 +73,7 @@ Built from: [Number Input](number-input.md).
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| quantity | sr-only `<label>` "Quantity of …" | Every stepper names its product |
+| quantity | sr-only `<label>` "Quantity of ..." | Every stepper names its product |
 | total | `<output for>` | Tied to the quantity |
 | remove | `aria-label="Remove … from cart"` | Unique per line |
 

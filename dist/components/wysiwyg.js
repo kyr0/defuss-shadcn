@@ -777,67 +777,102 @@ function debounce(fn, wait) {
     t = setTimeout(fn, wait);
   };
 }
-function vpZoomApply(root) {
-  const c = root._ce;
-  const vpZ = c.vpZ;
-  if (!vpZ)
-    return;
-  const canvas = c.resizer || c.device;
-  const manual = clamp(Math.round(Number(vpZ.value) || 0), 0, 100);
-  let z;
-  if (manual >= 25)
-    z = Math.min(manual, 100);
-  else if (c.fitFrozen)
-    return;
-  else {
-    const prev = canvas.style.zoom;
-    canvas.style.zoom = "";
-    const box = canvas.getBoundingClientRect();
+function vpZoomAll(roots) {
+  const plan = [];
+  for (const root of roots) {
+    const c = root._ce;
+    if (!c.vpZ)
+      continue;
+    const canvas = c.resizer || c.device;
+    const manual = clamp(Math.round(Number(c.vpZ.value) || 0), 0, 100);
+    if (manual >= 25)
+      plan.push({ root, canvas, z: Math.min(manual, 100) });
+    else if (!c.fitFrozen)
+      plan.push({ root, canvas, z: 0 });
+  }
+  for (const p of plan)
+    if (!p.z)
+      p.canvas.style.zoom = "";
+  for (const p of plan) {
+    if (p.z)
+      continue;
+    const c = p.root._ce;
+    const box = p.canvas.getBoundingClientRect();
     let fit = Math.max(c.stage.clientWidth - 24, 120) / (box.width || 1);
-    if (dfDollar(root).attr("data-fullscreen") != null && (c.vpMode === "phone" || c.vpMode === "tablet") && box.height) {
+    if (dfDollar(p.root).attr("data-fullscreen") != null && (c.vpMode === "phone" || c.vpMode === "tablet") && box.height) {
       fit = Math.min(fit, Math.max(c.stage.clientHeight - 24, 120) / box.height);
     }
-    canvas.style.zoom = prev;
-    z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
+    p.z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
   }
-  canvas.style.zoom = z < 100 ? String(z / 100) : "";
-  dfDollar(root).attr("data-vp-zoom", String(z));
+  for (const p of plan) {
+    p.canvas.style.zoom = p.z < 100 ? String(p.z / 100) : "";
+    dfDollar(p.root).attr("data-vp-zoom", String(p.z));
+  }
+}
+function vpZoomApply(root) {
+  vpZoomAll([root]);
+}
+function vpApplyAll(roots) {
+  for (const root of roots) {
+    const c = root._ce;
+    const dev = c.vpMode === "phone" || c.vpMode === "tablet";
+    const rawW = Number(c.vpW.value);
+    const w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
+    const rawH = Number(c.vpH.value);
+    const h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
+    if (c.resizer)
+      c.resizer.style.cssText = "";
+    c.device.style.cssText = "";
+    c.frame.style.width = "100%";
+    if (dev) {
+      if (c.resizer && w)
+        c.resizer.style.width = `${w}px`;
+      if (c.resizer && h)
+        c.resizer.style.height = `${h}px`;
+      c.frame.style.height = "100%";
+    } else {
+      if (c.resizer && w)
+        c.resizer.style.width = `${w}px`;
+      if (c.frame.style.height === "100%")
+        c.frame.style.height = "";
+      send(root, "measure");
+    }
+  }
+  vpZoomAll(roots);
+  for (const root of roots) {
+    const c = root._ce;
+    c.stage.style.overflow = c.vpMode === "phone" || c.vpMode === "tablet" ? "visible" : "auto";
+  }
+  const wide = roots.map((root) => {
+    const c = root._ce;
+    const canvas = c.resizer || c.device;
+    return canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr("data-vp-zoom")) || 100) / 100) > c.stage.clientWidth - 24;
+  });
+  roots.forEach((root, i) => {
+    const c = root._ce;
+    const dev = c.vpMode === "phone" || c.vpMode === "tablet";
+    c.stage.style.justifyContent = !dev && wide[i] ? "flex-start" : "";
+    dfDollar(root).attr("data-vp-mode", c.vpMode);
+    dfDollar(c.screen).attr("data-mode", c.vpMode);
+    if (c.resizer) {
+      const axis = dev ? "both" : "w";
+      if (dfDollar(c.resizer).attr("data-axis") !== axis)
+        dfDollar(c.resizer).attr("data-axis", axis);
+    }
+  });
 }
 function vpApply(root) {
-  const c = root._ce;
-  const dev = c.vpMode === "phone" || c.vpMode === "tablet";
-  const rawW = Number(c.vpW.value);
-  const w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
-  const rawH = Number(c.vpH.value);
-  const h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
-  if (c.resizer)
-    c.resizer.style.cssText = "";
-  c.device.style.cssText = "";
-  c.frame.style.width = "100%";
-  if (dev) {
-    if (c.resizer && w)
-      c.resizer.style.width = `${w}px`;
-    if (c.resizer && h)
-      c.resizer.style.height = `${h}px`;
-    c.frame.style.height = "100%";
-  } else {
-    if (c.resizer && w)
-      c.resizer.style.width = `${w}px`;
-    if (c.frame.style.height === "100%")
-      c.frame.style.height = "";
-    send(root, "measure");
-  }
-  vpZoomApply(root);
-  const canvas = c.resizer || c.device;
-  c.stage.style.overflow = dev ? "visible" : "auto";
-  c.stage.style.justifyContent = !dev && canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr("data-vp-zoom")) || 100) / 100) > c.stage.clientWidth - 24 ? "flex-start" : "";
-  dfDollar(root).attr("data-vp-mode", c.vpMode);
-  dfDollar(c.screen).attr("data-mode", c.vpMode);
-  if (c.resizer) {
-    const axis = dev ? "both" : "w";
-    if (dfDollar(c.resizer).attr("data-axis") !== axis)
-      dfDollar(c.resizer).attr("data-axis", axis);
-  }
+  vpApplyAll([root]);
+}
+var fitQueue = new Set;
+function scheduleFit(root) {
+  if (!fitQueue.size)
+    queueMicrotask(() => {
+      const roots = [...fitQueue].filter((r) => r.isConnected);
+      fitQueue.clear();
+      vpApplyAll(roots);
+    });
+  fitQueue.add(root);
 }
 function vpSetMode(root, mode) {
   const c = root._ce;
@@ -928,7 +963,7 @@ function initViewport(root) {
     });
   }
   if (c.resizer) {
-    vpApply(root);
+    scheduleFit(root);
     const settle = debounce(() => vpApply(root), 120);
     dfDollar(c.resizer).on("resizer-resize", (ev) => {
       const d = ev.detail;
@@ -1122,9 +1157,7 @@ if (!document.__codeExampleInit) {
       leaveOverlays();
   });
   addEventListener("resize", debounce(() => {
-    for (const root of registry.values())
-      if (root._ce.vpZ && !root._ce.vpZ.value)
-        vpZoomApply(root);
+    vpZoomAll([...registry.values()].filter((root) => root._ce.vpZ && !root._ce.vpZ.value));
   }, 120));
 }
 var io = typeof IntersectionObserver === "function" ? new IntersectionObserver((list) => {
@@ -1245,5 +1278,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=1079AEF5A843B7AB64756E2164756E21
+//# debugId=6DFF5383A42C61DD64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

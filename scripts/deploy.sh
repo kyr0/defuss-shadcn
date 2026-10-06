@@ -133,6 +133,16 @@ fi
 if command -v gh &> /dev/null; then
   gh release create "${TAG}" --title "${TAG}" --notes "$RELEASE_NOTES" --verify-tag
   echo "✅ Created GitHub Release ${TAG}"
+  # the vendoring ZIPs (one per section bundle + all) the Bundles & Downloads
+  # page links as releases/download/${TAG}/… - built from the dist/ just released
+  # non-fatal like purge-cdn: the tag and the release already exist, so a
+  # failure here must not skip the steps after it - rerun it by hand.
+  # UNKNOWN: unobserved until the next release (bash -n passes)
+  if bun run release-zips && gh release upload "${TAG}" release/*.zip --clobber; then
+    echo "✅ Attached $(ls release/*.zip | wc -l | tr -d ' ') ZIPs to ${TAG}"
+  else
+    echo "⚠️  release ZIPs failed - run \`bun run release-zips && gh release upload ${TAG} release/*.zip --clobber\`"
+  fi
 else
   echo "⚠️  gh CLI not found - skipping GitHub Release (install: https://cli.github.com)"
 fi

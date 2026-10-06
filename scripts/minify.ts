@@ -25,9 +25,14 @@ import { isDerivedArtifact } from './lib/minify.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const COMPONENTS = join(ROOT, 'dist', 'components');
-// the per-app bundles (bundle.ts step 3) ship min twins like all.* does
+// the generated bundles beside dist/components/ ship min twins like all.*
+// does: the per-app bundles (bundle.ts step 3) and the section bundles (2c).
+// VERIFIED: (verify `minified artifacts`) every section .css/.js has them
 const APPS = join(ROOT, 'dist', 'apps');
-const appFiles = (exts: string[]): string[] => (existsSync(APPS) ? walk(APPS, exts) : []);
+const SECTIONS = join(ROOT, 'dist', 'sections');
+const dirFiles = (dir: string, exts: string[]): string[] => (existsSync(dir) ? walk(dir, exts) : []);
+const appFiles = (exts: string[]): string[] => dirFiles(APPS, exts);
+const bundleDirFiles = (exts: string[]): string[] => [...appFiles(exts), ...dirFiles(SECTIONS, exts)];
 
 // 1. JS: oxc minifySync - sourcemap maps min → the shipped readable .js
 //    (which its own tsc map then maps back to the .ts source).
@@ -35,7 +40,7 @@ const appFiles = (exts: string[]): string[] => (existsSync(APPS) ? walk(APPS, ex
 // names stay (the exports are the public State API contract - AGENTS.md).
 // Derived twins are skipped so re-running `make minify` stays idempotent
 // (never re-minifies a .min.js into a .min.min.js).
-const jsFiles = [...walk(COMPONENTS, ['.js']), ...appFiles(['.js'])].filter((f) => !isDerivedArtifact(f));
+const jsFiles = [...walk(COMPONENTS, ['.js']), ...bundleDirFiles(['.js'])].filter((f) => !isDerivedArtifact(f));
 // §6 provenance: oxc drops comments, so the min twins of the two RUNTIME
 // bundles (they embed defuss-morph + defuss-query) get the pointer re-stamped
 // after minification - every shipped copy of the runtime carries its notice.
@@ -69,12 +74,12 @@ for (const file of jsFiles) {
 
 // 2. CSS: lightningcss minify - no lowering targets given, so modern author
 //    features (@layer, nesting, anchor positioning) pass through untouched.
-const cssFiles = [...walk(COMPONENTS, ['.css']), ...appFiles(['.css'])].filter((f) => !isDerivedArtifact(f));
+const cssFiles = [...walk(COMPONENTS, ['.css']), ...bundleDirFiles(['.css'])].filter((f) => !isDerivedArtifact(f));
 // the generated bundles (all.css, core.css) also ship a CSS source map —
 // they're the files consumers debug in production (permissive map: the
 // concat has no own map; lightningcss maps minified→concat, which is the
 // readable bundle shipped next to it)
-const MAPPED_BUNDLES = new Set([join(COMPONENTS, 'all.css'), join(COMPONENTS, 'core.css'), ...Object.keys(EXTRA_BUNDLES).map((b) => join(COMPONENTS, `${b}.css`)), ...cssFiles.filter((f) => f.startsWith(APPS))]);
+const MAPPED_BUNDLES = new Set([join(COMPONENTS, 'all.css'), join(COMPONENTS, 'core.css'), ...Object.keys(EXTRA_BUNDLES).map((b) => join(COMPONENTS, `${b}.css`)), ...cssFiles.filter((f) => f.startsWith(APPS) || f.startsWith(SECTIONS))]);
 for (const file of cssFiles) {
   const withMap = MAPPED_BUNDLES.has(file);
   const { code, map } = transform({
@@ -92,7 +97,7 @@ for (const file of cssFiles) {
 const pct = (a: number, b: number) => `${Math.round((100 * a) / b)}%`;
 const bytes = (files: string[]) => files.reduce((n, f) => n + readFileSync(f).byteLength, 0);
 const all = [...jsFiles, ...cssFiles];
-const mins = [...walk(COMPONENTS, ['.min.js', '.min.css']), ...appFiles(['.min.js', '.min.css'])];
+const mins = [...walk(COMPONENTS, ['.min.js', '.min.css']), ...bundleDirFiles(['.min.js', '.min.css'])];
 console.log(
   `minify: ${jsFiles.length} JS → .min.js + .min.js.map, ${cssFiles.length} CSS → .min.css ` +
     `(${bytes(all)} → ${bytes(mins)} bytes, ${pct(bytes(mins), bytes(all))})`,

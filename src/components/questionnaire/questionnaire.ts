@@ -16,11 +16,206 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence } from '../../shared/state-api.js';
+import type { ViewPersistence } from '../../shared/store.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** One answer: a text / select value, a number field, a checkbox (boolean, or the checked values of a group), null when unanswered. */
+type QuestionnaireAnswer = string | number | boolean | string[] | null;
+/** Every answer so far, by field name. */
+type QuestionnaireAnswers = Record<string, QuestionnaireAnswer>;
+
+/** One condition on an answer. */
+interface QuestionnaireCondition {
+  /** the field it reads */
+  field: string;
+  /** how it compares (default 'eq': equal, case-insensitive; on a list: includes) */
+  op?: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'includes' | 'contains' | 'startsWith' | 'endsWith' | 'answered' | 'empty';
+  /** what it compares with: a value, or { field } for another answer */
+  value?: QuestionnaireAnswer | QuestionnaireAnswer[] | { field: string };
+}
+/** When a rule applies: one condition, a list (all must hold), or { any } / { all }. */
+type QuestionnaireWhen = QuestionnaireCondition | QuestionnaireCondition[] | { any: QuestionnaireCondition[] } | { all: QuestionnaireCondition[] };
+
+/** A branch out of a step. */
+interface QuestionnaireBranch {
+  /** when it is taken */
+  when: QuestionnaireWhen;
+  /** the step it leads to */
+  goto: string;
+}
+
+/** A cross-field check a step must pass. */
+interface QuestionnaireAssert {
+  /** the conditions that must hold */
+  assert: QuestionnaireWhen;
+  /** shown when they do not (default 'Check this answer.') */
+  message?: string;
+  /** the field the message points at */
+  field?: string;
+}
+
+/** What configure() takes - merged over the markup's script.questionnaire-rules. */
+interface QuestionnaireConfig {
+  /** per step id: the branches, tried in order before the step's data-next */
+  branches?: Record<string, QuestionnaireBranch[]>;
+  /** per step id: checks, or a function of (all answers, the step's answers) returning a message when invalid */
+  validate?: Record<string, QuestionnaireAssert[] | ((answers: QuestionnaireAnswers, stepAnswers: QuestionnaireAnswers) => string | null | undefined)>;
+  /** called on submit; a rejection keeps the review and shows why */
+  onSubmit?: (answers: QuestionnaireAnswers, context: { history: string[] }) => void | Promise<void>;
+  /** where the draft is kept (default: session storage under a generated key) */
+  persist?: ViewPersistence;
+}
+
+/** A step of the flow graph. */
+interface QuestionnaireNode {
+  /** its data-step id */
+  id: string;
+  /** its legend */
+  title: string;
+  /** whether it is an end (data-end) */
+  end: boolean;
+  /** the id of its block, '' outside one */
+  block: string;
+}
+
+/** A way between two steps. */
+interface QuestionnaireEdge {
+  /** the step it leaves */
+  from: string;
+  /** the step it leads to */
+  to: string;
+  /** the choice or rule text that takes it, '' for the default way */
+  label: string;
+  /** what makes it: an option's data-goto, a branch rule, or the default next step */
+  kind: 'choice' | 'rule' | 'next';
+}
+
+/** What analyze() returns. */
+interface QuestionnaireAnalysis {
+  /** true when there are no errors */
+  ok: boolean;
+  /** missing targets, cycles, dead ends, no end step */
+  errors: string[];
+  /** unreachable steps, fields a rule reads that a path may arrive without */
+  warnings: string[];
+  /** every step */
+  nodes: QuestionnaireNode[];
+  /** every way between steps */
+  edges: QuestionnaireEdge[];
+}
+
+/** An Illustrative Diagram JSON spec - df$.shadcn.diagram.build() renders it. */
+type QuestionnaireDiagramSpec = Record<string, unknown>;
+
+/** What questionnaire-invalid carries. */
+interface QuestionnaireInvalidDetail {
+  /** the step that cannot be left */
+  step: string;
+  /** the message shown */
+  message: string;
+}
+
+/** What questionnaire-invalidate carries. */
+interface QuestionnaireInvalidateDetail {
+  /** the step whose answers changed */
+  cause: string;
+  /** the fields that changed */
+  changed: string[];
+  /** the steps whose answers were cleared */
+  cleared: string[];
+}
+
+/** What questionnaire-step carries. */
+interface QuestionnaireStepDetail {
+  /** the step now shown */
+  step: string;
+  /** the step left */
+  from: string;
+  /** every answer so far */
+  answers: QuestionnaireAnswers;
+}
+
+/** What questionnaire-submit carries. */
+interface QuestionnaireSubmitDetail {
+  /** the answers on the path taken */
+  answers: QuestionnaireAnswers;
+  /** the steps taken, in order */
+  history: string[];
+}
+
+/** What questionnaire-jump-refused carries. */
+interface QuestionnaireJumpRefusedDetail {
+  /** the step the diagram click asked for */
+  to: string;
+  /** the step the form is on */
+  step: string;
+  /** 'unreached': further than the answers lead; 'invalid': the current step does not validate */
+  reason: 'unreached' | 'invalid';
+}
+
 const questionnaireStates = ['default', 'answering', 'review', 'submitted'];
+
+/** setState() configs per state - merged into the stored one ({ step } keeps the answers); getState() reports the walk. */
+export interface QuestionnaireStateConfigs {
+  /** At the start step. */
+  default: {
+    /** replace the answers (the fields are filled from them) */
+    answers?: QuestionnaireAnswers;
+    /** reported by getState(): the step shown */
+    step?: string;
+    /** reported by getState(): the steps taken, in order */
+    history?: string[];
+    /** reported by getState(): the current step's position in history */
+    index?: number;
+    /** reported by getState(): the optional steps skipped */
+    skipped?: string[];
+  };
+  /** On a later step. */
+  answering: {
+    /** the step to show (one the answers reach) */
+    step?: string;
+    /** replace the answers */
+    answers?: QuestionnaireAnswers;
+    /** reported by getState(): the steps taken, in order */
+    history?: string[];
+    /** reported by getState(): the current step's position in history */
+    index?: number;
+    /** reported by getState(): the optional steps skipped */
+    skipped?: string[];
+  };
+  /** On an end step - the summary and Send. */
+  review: {
+    /** the end step to show (default: the first end) */
+    step?: string;
+    /** replace the answers */
+    answers?: QuestionnaireAnswers;
+    /** reported by getState(): the steps taken, in order */
+    history?: string[];
+    /** reported by getState(): the current step's position in history */
+    index?: number;
+    /** reported by getState(): the optional steps skipped */
+    skipped?: string[];
+  };
+  /** Sent - the steps give way to the .questionnaire-complete message. */
+  submitted: {
+    /** reported by getState(): the answers sent */
+    answers?: QuestionnaireAnswers;
+    /** reported by getState(): the end step */
+    step?: string;
+    /** reported by getState(): the steps taken, in order */
+    history?: string[];
+    /** reported by getState(): the end step's position in history */
+    index?: number;
+    /** reported by getState(): the optional steps skipped */
+    skipped?: string[];
+  };
+}
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 // -- the flow: steps, rules, graph -----------------------------------------------
@@ -636,7 +831,7 @@ function advance(root, { skip = false } = {}) {
     if (problem) {
       showInvalid(step, problem);
       // Fires when a step cannot be left - the step and the message shown.
-      root.dispatchEvent(new CustomEvent('questionnaire-invalid', { bubbles: true, detail: { step: walk.step, message: problem.message } }));
+      root.dispatchEvent(new CustomEvent<QuestionnaireInvalidDetail>('questionnaire-invalid', { bubbles: true, detail: { step: walk.step, message: problem.message } }));
       return false;
     }
   }
@@ -679,12 +874,12 @@ function advance(root, { skip = false } = {}) {
   if (cleared.length) {
     notify(root, `${cleared.length === 1 ? '1 later answer was' : cleared.length + ' later answers were'} cleared - they depended on "${titleOf(step)}".`);
     // Fires when a changed answer clears later answers - the step that changed, the fields that changed, the steps cleared.
-    root.dispatchEvent(new CustomEvent('questionnaire-invalidate', { bubbles: true, detail: { cause: walk.step, changed, cleared } }));
+    root.dispatchEvent(new CustomEvent<QuestionnaireInvalidateDetail>('questionnaire-invalidate', { bubbles: true, detail: { cause: walk.step, changed, cleared } }));
   } else notify(root, '');
   show(root, to);
   record(root);
   // Fires on every move forward - the new step, the one left, the answers.
-  root.dispatchEvent(new CustomEvent('questionnaire-step', { bubbles: true, detail: { step: to, from: history[walk.index - 1], answers } }));
+  root.dispatchEvent(new CustomEvent<QuestionnaireStepDetail>('questionnaire-step', { bubbles: true, detail: { step: to, from: history[walk.index - 1], answers } }));
   return true;
 }
 
@@ -750,7 +945,7 @@ async function submit(root) {
   paint(root);
   record(root, 'submitted');
   // Fires when sent - the answers on the path and the steps taken.
-  root.dispatchEvent(new CustomEvent('questionnaire-submit', { bubbles: true, detail: { answers, history: walk.history.slice(0, walk.index + 1) } }));
+  root.dispatchEvent(new CustomEvent<QuestionnaireSubmitDetail>('questionnaire-submit', { bubbles: true, detail: { answers, history: walk.history.slice(0, walk.index + 1) } }));
   return true;
 }
 
@@ -1041,7 +1236,7 @@ function linkDiagram(root, figure) {
     const target = stepById(root, to);
     if (reason === 'unreached') notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
     // Fires when a click on the linked diagram asks for a step the walk cannot reach yet - the step asked for, the current step and why: 'unreached' (further on) or 'invalid' (the current step does not validate).
-    root.dispatchEvent(new CustomEvent('questionnaire-jump-refused', { bubbles: true, detail: { to, step: walk.step, reason } }));
+    root.dispatchEvent(new CustomEvent<QuestionnaireJumpRefusedDetail>('questionnaire-jump-refused', { bubbles: true, detail: { to, step: walk.step, reason } }));
   };
   const onActivate = (e) => {
     if (syncing) return;
@@ -1080,42 +1275,98 @@ df$.questionnaire = {
    * message | null }), onSubmit(answers, { history }) (may return a
    * promise; a rejection keeps the review and says why), persist
    * ({ area, prefix, key } - where the draft is kept).
+   * @param target - the .questionnaire element or its selector
+   * @param config - branches, checks, the submit handler and the draft's place (merged into the current config)
    */
-  configure(target, config = {}) {
+  configure(target: string | HTMLElement, config: QuestionnaireConfig = {}): void {
     const root = resolve(target);
     root._config = { ...root._config, ...config };
     if (root._flow) root._flow.rules = rulesOf(root);
     if (config.persist && root._walk) attachDraft(root, config.persist);
   },
-  /** Leave the current step forward - validated; false when it cannot be left. */
-  next: (target) => advance(resolve(target)),
-  /** Back one step along the branch history. */
-  back: (target) => back(resolve(target)),
-  /** Skip an optional step - its answers dropped, the default way taken. */
-  skip: (target) => advance(resolve(target), { skip: true }),
-  /** Jump to a step of the history (what the trail and Edit do). */
-  goTo: (target, id) => goTo(resolve(target), id),
-  /** Start over: no answers, no history, no draft. */
-  restart: (target) => restart(resolve(target)),
-  /** Send from the end step (onSubmit, then questionnaire-submit). */
-  submit: (target) => submit(resolve(target)),
-  /** The answers so far. */
-  answers: (target) => ({ ...cfgOf(resolve(target))?.answers }),
-  /** The steps taken up to the current one. */
-  history: (target) => {
+  /**
+   * Leave the current step forward - validated; false when it cannot be left.
+   * @param target - the .questionnaire element or its selector
+   * @returns true when it moved on; false when the step does not validate (or is an end)
+   */
+  next: (target: string | HTMLElement): boolean => advance(resolve(target)),
+  /**
+   * Back one step along the branch history.
+   * @param target - the .questionnaire element or its selector
+   * @returns false on the first step
+   */
+  back: (target: string | HTMLElement): boolean => back(resolve(target)),
+  /**
+   * Skip an optional step - its answers dropped, the default way taken.
+   * @param target - the .questionnaire element or its selector
+   * @returns true when it moved on
+   */
+  skip: (target: string | HTMLElement): boolean => advance(resolve(target), { skip: true }),
+  /**
+   * Jump to a step of the history (what the trail and Edit do).
+   * @param target - the .questionnaire element or its selector
+   * @param id - the step id
+   * @returns false when the step is not in the history
+   */
+  goTo: (target: string | HTMLElement, id: string): boolean => goTo(resolve(target), id),
+  /**
+   * Start over: no answers, no history, no draft.
+   * @param target - the .questionnaire element or its selector
+   */
+  restart: (target: string | HTMLElement): void => restart(resolve(target)),
+  /**
+   * Send from the end step (onSubmit, then questionnaire-submit).
+   * @param target - the .questionnaire element or its selector
+   * @returns true when sent; false when onSubmit rejected or (before the end) the step did not validate
+   */
+  submit: (target: string | HTMLElement): Promise<boolean> => submit(resolve(target)),
+  /**
+   * The answers so far.
+   * @param target - the .questionnaire element or its selector
+   * @returns a copy of every answer, by field name
+   */
+  answers: (target: string | HTMLElement): QuestionnaireAnswers => ({ ...cfgOf(resolve(target))?.answers }),
+  /**
+   * The steps taken up to the current one.
+   * @param target - the .questionnaire element or its selector
+   * @returns the step ids, in order
+   */
+  history: (target: string | HTMLElement): string[] => {
     const walk = cfgOf(resolve(target));
     return walk ? walk.history.slice(0, walk.index + 1) : [];
   },
-  /** where the answers lead from a step (the graph, evaluated) */
-  nextOf: (target, stepId, answers) => nextOf(resolve(target), stepId, answers ?? cfgOf(resolve(target)).answers),
-  /** Check the flow graph - { ok, errors, warnings, nodes, edges }. */
-  analyze: (target) => analyze(resolve(target)),
-  /** The flow as a Mermaid flowchart, the walked path marked. */
-  toMermaid: (target) => toMermaid(resolve(target)),
-  /** The flow as an Illustrative Diagram spec for df$.shadcn.diagram.build - steps ranked top-down, the walked path marked, the edge just walked flowing; { title } names it. */
-  toDiagram: (target, options) => toDiagram(resolve(target), options),
-  /** Link a .diagram figure both ways: it redraws on every move with the current step active, and a click moves the form - back to a step taken, forward only to the step the answers lead to; further on is refused (questionnaire-jump-refused). Returns the unlink function. */
-  linkDiagram: (target, figure) => linkDiagram(resolve(target), resolve(figure)),
+  /**
+   * Where the answers lead from a step (the graph, evaluated).
+   * @param target - the .questionnaire element or its selector
+   * @param stepId - the step to leave
+   * @param answers - the answers to evaluate (default: the current ones)
+   * @returns the next step's id, null from an end
+   */
+  nextOf: (target: string | HTMLElement, stepId: string, answers?: QuestionnaireAnswers): string | null => nextOf(resolve(target), stepId, answers ?? cfgOf(resolve(target)).answers),
+  /**
+   * Check the flow graph - { ok, errors, warnings, nodes, edges }.
+   * @param target - the .questionnaire element or its selector
+   * @returns the errors, the warnings and the graph
+   */
+  analyze: (target: string | HTMLElement): QuestionnaireAnalysis => analyze(resolve(target)),
+  /**
+   * The flow as a Mermaid flowchart, the walked path marked.
+   * @param target - the .questionnaire element or its selector
+   * @returns the flowchart source
+   */
+  toMermaid: (target: string | HTMLElement): string => toMermaid(resolve(target)),
+  /** The flow as an Illustrative Diagram spec for df$.shadcn.diagram.build - steps ranked top-down, the walked path marked, the edge just walked flowing; { title } names it.
+   * @param target - the .questionnaire element or its selector
+   * @param options - title: the figure's title
+   * @returns the spec, for df$.shadcn.diagram.build()
+   */
+  toDiagram: (target: string | HTMLElement, options?: { title?: string }): QuestionnaireDiagramSpec => toDiagram(resolve(target), options),
+  /** Link a .diagram figure both ways: it redraws on every move with the current step active, and a click moves the form - back to a step taken, forward only to the step the answers lead to; further on is refused (questionnaire-jump-refused).
+   * @param target - the .questionnaire element or its selector
+   * @param figure - the .diagram figure or its selector
+   * @returns the unlink function: call it to stop the two following each other
+   */
+  linkDiagram: (target: string | HTMLElement, figure: string | HTMLElement): (() => void) => linkDiagram(resolve(target), resolve(figure)),
 };
 
 /** where the draft is kept (viewPersistence: data-persist / -prefix / -key, or the config) */

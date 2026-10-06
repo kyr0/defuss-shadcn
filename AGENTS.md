@@ -33,8 +33,8 @@ The consumer-facing system lives in `dist/` - **it is generated**: edit sources 
 everything else 1:1, then renders the documentation site with
 [defuss-ssg](https://github.com/kyr0/defuss) from the MDX pages + TSX components in
 `src/documentation/` - `bun run build:docs`, invoked under **node**, never bun).
-`docs/` is also generated: **only the documentation site** (`dist/documentation/*`
-— defuss-ssg output - + `robots.txt`/`sitemap.xml` + a `404.html` copy of
+`docs/` is also generated: **only the documentation site** (`dist/documentation/*`,
+which defuss-ssg outputs, + `robots.txt`/`sitemap.xml` + a `404.html` copy of
 `index.html` so GitHub Pages never serves an empty page for dead links) published by
 GitHub Pages - its pages' `../components/…`, `../theme/…` and
 `../apps/…` references are rewritten to the jsDelivr GitHub CDN (shared transform in
@@ -67,6 +67,7 @@ defuss-shadcn/
 │   ├── SKILL.md                       ← agent entry point (generated from src/SKILL_tpl.md + skill frontmatter)
 │   ├── stats.json                     ← generated size/surface summary (counts per type, JS split, byte sizes, template groups, the per-app bundles; `make stats`)
 │   ├── apps/                          ← one bundle per Application Scaffold: {app}.css + .js (+ min twins) = core + only the components its markup uses (bundle.ts step 3, scripts/lib/apps.ts) - the full-screen app-{app}.html loads ONLY this; scaffold-lean.e2e proves it renders exactly as on all.css + all.js
+│   ├── sections/                      ← one bundle per sidebar section that holds components: {section}.css (+ .js, + min twins) = ONLY its members, loaded after core.* (bundle.ts step 2c, scripts/lib/sections.ts); WYSIWYG Editors IS components/wysiwyg.*; stats.json `sections` lists members, needs (the other sections its skill markup uses) and sizes; section-bundles.e2e renders every release ZIP against the rest of the system
 │   ├── theme/                        ← design tokens + optional standalone modules
 │   │   ├── {preset}.css              ← generated tweakcn presets (43; from themes.ts by build.ts, drop-in companions to the token file; `theme files fresh` gate)
 │   │   ├── {preset}.json             ← resource sidecars (schema v1; font <link>s as defuss-JSX-as-JSON VNodes) for the presets that declare `links:` in themes.ts - fetched by `df$.shadcn.loadTheme()` (src/shared/theme-links.ts) when a theme applies; no sidecar = no resources (404 is the answer)
@@ -127,6 +128,9 @@ defuss-shadcn/
 │   ├── build-docs.ts                  ← dist/documentation producer: compiles runtime → public/js, then defuss-ssg build (runs under node)
 │   ├── bundle.ts                      ← dist/components/all.css (concat) + all.js (Bun.build from src .ts) single-file bundle; the extra bundles (wysiwyg.*) and dist/apps/
 │   ├── lib/bundles.ts                 ← EXTRA_BUNDLES: components kept out of all.* (wysiwyg: code-example) - read by bundle.ts, minify, stats and verify's `artifact contract` / `cross-page imports`
+│   ├── lib/sections.ts                ← the section split (pure): sidebar section → members, a section = an extra bundle when their members match, needs; fails on a component in no / two sections
+│   ├── lib/sections-files.ts          ← the fs half: plans + needs (apps resolver over each member's component-skill.md html blocks) - read by bundle.ts, stats-files.ts, verify, release-zips
+│   ├── release-zips.ts                ← `bun run release-zips [--out dir]`: one vendoring ZIP per section + all into release/ (gitignored) - deploy.sh uploads them to the GitHub release; lib/release-zips.ts (pure) decides the files + README; verify's `bundles page ↔ release ZIPs` gate compares the Bundles & Downloads page's links
 │   ├── minify.ts                      ← post-pass: per-component *.min.css (lightningcss) + *.min.js + *.min.js.map (oxc-minify; `make minify`)
 │   ├── stats.ts                       ← post-minify pass: measures dist/components/ → dist/stats.json (`make stats`)
 │   ├── lib/stats.ts                   ← stats aggregation core (pure: counts + totals, no fs/zlib)
@@ -148,7 +152,7 @@ defuss-shadcn/
 │   ├── lib/schema.ts                  ← component schema contract: validator + ## States table parser + CodeExample rules (pure)
 │   ├── lib/e2e-select.ts              ← which inputs an e2e file exercises (its fixtures, the dist files they load, the sources behind them - all.js via the apps.ts markup analysis; docs tests: all of src/ + scripts/) - pure, tests/e2e-select.test.ts
 │   ├── push.sh                        ← non-release: commit everything on main + push (SSH, else HTTPS via gh - lib/git-push.sh)
-│   ├── deploy.sh                      ← release, on main: bump every version site, changelog entry, make build, two-commit rule, tag v<version>, push, GitHub release, purge-cdn
+│   ├── deploy.sh                      ← release, on main: bump every version site, changelog entry, make build, two-commit rule, tag v<version>, push, GitHub release + its section ZIPs (release-zips), purge-cdn
 │   ├── bump-version.ts                ← moves every version site (lib/version-sites.ts) to a new version
 │   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks; plus every CDN pin `defuss-shadcn@vX.Y.Z` in the authored docs (PIN_GLOBS - the installation page's "Pinning a version"): bump-version moves them, verify's `pinned versions` gate requires the current release
 │   ├── lib/git-push.sh                ← push_ref: push to origin, falling back to HTTPS with gh credentials when SSH is unavailable
@@ -185,7 +189,7 @@ full rationale lives in [ARCH.md](ARCH.md).
 
 ### Each component owns its dialog
 
-`dialog.js`'s init claims plain `<dialog>` elements for backdrop-click close —
+`dialog.js`'s init claims plain `<dialog>` elements for backdrop-click close,
 via a `dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])`
 selector. **Any component that ships its own `<dialog class="…">` with custom
 behavior must be `:not()`-excluded there**, or dialog.js (loaded before every
@@ -199,7 +203,7 @@ The docs header search is the shipped command component itself: clicking the
 input (or ⌘/Ctrl+K) opens `<dialog class="command" id="docs-palette">` (static
 markup from `lib/components/site-header.tsx`), fed by the build-time index
 (`lib/plugins.ts` post hook → `dist/documentation/js/search-index.js`, built
-from NAV + every rendered page's `<h2>`). The trigger is click/Enter only —
+from NAV + every rendered page's `<h2>`). The trigger is click/Enter only,
 never `focus`: `dialog.close()` restores focus to the opener synchronously,
 which would bounce the palette open again.
 
@@ -234,7 +238,7 @@ forget:
 `verify` enforces the pillar set (`README ↔ index parity`, hard gate) and the
 **`README ↔ index commit window`** gate: if the two files' last-touch commits
 (README.md and `src/documentation/pages/index.mdx`) are neither identical nor
-within **15 minutes** of each other, the build fails as "un-synced edit" —
+within **15 minutes** of each other, the build fails as "un-synced edit",
 forcing you to land them together. Wording parity itself is yours to maintain
 (no automated text diff; the window is the backstop).
 
@@ -246,7 +250,7 @@ Every version in `package.json` needs an entry in
 **all commit messages** of that release (deploy.sh adds them via
 `scripts/changelog-entry.ts`; v0.7.14 was the first release after the fork from
 codylindley/shadcn-html, so its entry documents the fork). Each entry shows
-either the release date badge or - once the version is actually **committed** —
+either the release date badge or (once the version is actually **committed**)
 the short git hash of the commit that added the entry (the entry's `hash`
 field). The hash is unknowable before that commit exists, so authoring an
 entry is inherently **two commits**:
@@ -394,7 +398,7 @@ can do it, we don't write JavaScript for it.
 
 JavaScript is only for behavior that HTML and CSS cannot express: keyboard
 navigation patterns, focus management, and state coordination between elements.
-Use modern ECMAScript (ES modules, arrow functions, `const`/`let`, etc.) —
+Use modern ECMAScript (ES modules, arrow functions, `const`/`let`, etc.);
 no libraries, no frameworks.
 
 All `querySelectorAll` loops that add event listeners **must** guard against
@@ -446,7 +450,7 @@ df$.shadcn.toast = { show, success, dismiss };  // public imperative API
   `window.toast = { … }`.
 - Doc-site-only scripts (not shipped) share the same discipline under
   `df$.shadcn.docs` (theme registry, SPA hooks: `THEMES`, `applyTheme`,
-  `onPageReady`, …). Classic head scripts run before the library runtime
+  `onPageReady`, ...). Classic head scripts run before the library runtime
   installs `df$`, so they stage their data locally and merge it into
   `df$.shadcn.docs` on DOMContentLoaded.
 - Third-party CDN globals (`lucide`, `marked`) are owned by their vendors - read
@@ -517,7 +521,7 @@ are the actual implementation - edit them directly, no build step needed.
 ### State API (REQUIRED for every JS component)
 
 Components with a `.js` file have observable UI states (open/closed, collapsed,
-selected…). Every such component must expose its states **by name** so agents and
+selected...). Every such component must expose its states **by name** so agents and
 tests can drive them without knowing the implementation:
 
 ```js
@@ -588,7 +592,7 @@ document.querySelector('#x').api.getState(); // → { name: 'open', config: { �
    - put the state → markup mapping in ONE function (`applyMarkup(el, name, …)`)
      that `triggerStateChange` calls on the live element and `render` calls on
      a detached copy: `render(state) { return renderModel(state.model, (el) =>
-     applyMarkup(el, state.name, …)); }` - setState and render cannot drift.
+     applyMarkup(el, state.name, ...)); }` - setState and render cannot drift.
      Where the live path is a native protocol (`showModal()`, popovers) or
      writes outside the element (a progress bar's `<output>` readouts),
      applyMarkup writes the markup that protocol produces on the element and
@@ -635,7 +639,7 @@ Types for the globals live in `src/types/defuss-shadcn.d.ts` - extend it when th
 contract grows; never re-declare the globals inside a component file.
 
 `scripts/verify.ts` checks all markers for every new JS component (hard fail).
-Legacy components in its `STATE_API_LEGACY` list warn only until migrated —
+Legacy components in its `STATE_API_LEGACY` list warn only until migrated:
 remove a name from the list in the same commit that migrates the component.
 
 ### State through stores (REQUIRED)
@@ -705,27 +709,55 @@ places that cannot drift: the skill's `## API` section (right after
   settled`, `el.store`) and the registry (`df$.shadcn.{name}Api` +
   `{name}States`, plus methods merged onto it with `Object.assign`);
 - the component's own namespace - every `df$.<ns> = { … }` (or an
-  identifier pointing at an object / a function): each member, its
-  parameters (types stripped), and **its JSDoc** (a reference such as
-  `mount` or `url: MERMAID_URL` takes the JSDoc of what it names);
+  identifier pointing at an object / a function): each member as a
+  **TypeScript signature** (`build(target: string | HTMLElement, spec:
+  DiagramSpec | DiagramDelta): HTMLElement | null`), its JSDoc prose, one
+  **`@param` per argument** (matched by position, so a destructured options
+  argument is documented too) and **`@returns`** for anything but `void`
+  (a reference such as `mount` or `url: MERMAID_URL` takes the JSDoc and
+  the types of what it names; a value member needs a type - an annotation,
+  `x as T`, or a literal's);
 - an instance that replaces `el.api` (cookie-consent's controller) through a
-  declared `interface <Name>Instance` - each member with JSDoc;
-- every event - `new CustomEvent('name', { detail })`: the `detail` keys
-  (or the expression) and **the comment directly above the line that
-  creates it** (or above the statement when the call opens on the line
-  before).
+  declared `interface <Name>Instance` - each member typed and described the
+  same way;
+- every event - `new CustomEvent<Detail>('name', { detail })`: **the detail
+  is typed** with an interface / type alias (or an inline literal) whose
+  every field carries a `/** description */`; the keys the dispatch writes
+  must be fields of it, and tsc checks the object against it. The event's
+  own description is **the comment directly above the line that creates
+  it** (or above the statement when the call opens on the line before);
+- **every type the API names that the component declares** (an options
+  interface, a detail, a union like `BibtexStyle`) - its JSDoc and each
+  field's, listed under a `### Types` table.
+
+The page and the skill render the same shape: the signature in the Member
+cell, and inside the Description cell a nested table (Argument / Type /
+Description; a detail's or a type's Field / Type / Description) plus the
+return value. `any`, `object` and `Function` are refused as documented
+types - name the real one. The written types are claims, so the compiler
+checks them: verify's **`component types (tsc ratchet)`** runs
+`tsc -p tsconfig.components.json` (loose: implicit any stays allowed) and
+compares each file's error count with `TYPE_BASELINE`
+(`scripts/lib/type-baseline.ts`) - a wrong argument / return / detail type
+adds an error and fails; a file that got cleaner fails until its baseline
+is lowered (`scripts/lib/type-check.ts`; the baseline only goes down).
+Per-element stashes follow the `_name` convention (`src/types/
+defuss-shadcn.d.ts` types them), and a namespace's ambient declaration stays
+inline there (a `typeof import()` would pull a not-yet-strict component
+into the strict `typecheck` program).
 
 `bun run api-docs` rewrites every skill's `## API` section (the section
-says so; never edit it by hand - edit the JSDoc / the event comment).
-verify's `API docs (JS components)` gate fails on: a member or event
-without a description, a missing or stale `## API` section (or one before
+says so; never edit it by hand - edit the JSDoc, the types, the event
+comment). verify's `API docs (JS components)` gate fails on: a member,
+argument, return value, event, detail field or declared type without a
+type or a description, a missing or stale `## API` section (or one before
 `## States`), a page without `<ApiSection>` after `<StatesSection>`, a
 component that assigns `.store` itself, or one that replaces `el.api`
 without a declared `<Name>Instance` interface. Together with `store
-contract` (componentState + bindComponent in the source) and the e2e
-`assertRenderContract` (el.store / el.api proven on every fixture
-instance), that is the whole State API + API contract, statically and at
-runtime.
+contract` (componentState + bindComponent in the source), the tsc ratchet
+and the e2e `assertRenderContract` (el.store / el.api proven on every
+fixture instance), that is the whole State API + API contract, statically
+and at runtime.
 
 ### Big data (dataview + windowing)
 
@@ -754,7 +786,7 @@ same) so e2e checks can name exact cells.
 
 ### Component schemas (machine contracts, REQUIRED)
 
-Every documented component owns a `src/components/{name}/{name}.schema.json` —
+Every documented component owns a `src/components/{name}/{name}.schema.json`,
 the machine-readable twin of its State API: `states` (name → type
 `string|number|boolean|enum`, optional `values`/`default`, how to `mutate` and
 `observe` the DOM, which `target`, which `editor` hint) and `actions` (named
@@ -768,7 +800,7 @@ contract that keeps everything else honest.
   component `.js` files contain no schema bytes (`verify`'s `runtime schema-free`
   gate). `dist/schemas/manifest.json` (sorted, written by build.ts) is the
   discovery index; `schemas` is in verify's dist allow-list.
-- **The validator** is `scripts/lib/schema.ts` (`parseComponentSchema`, pure) —
+- **The validator** is `scripts/lib/schema.ts` (`parseComponentSchema`, pure),
   pinned by `tests/component-schema.test.ts`. Every failure message names the
   file + JSON path so an agent can repair it blind.
 - **Docs parity** - a page's `## States` section IS the contract table: it
@@ -931,7 +963,7 @@ These exist as real CSS custom properties because component CSS uses `var(--radi
 
 The docs are a **statically rendered multi-page app**: every page is a full HTML
 document produced by defuss-ssg from `pages/*.mdx` + the shared TSX components in
-`lib/components/` (DocPage shell, SiteHeader, SiteNav, PrevNext, SiteFooter —
+`lib/components/` (DocPage shell, SiteHeader, SiteNav, PrevNext, SiteFooter;
 **no custom elements, no runtime chrome injection**; the TOC and § anchors are
 injected at build time by `lib/plugins.ts`'s toc plugin). The doc site dev
 server runs on `http://localhost:3000/` via `bun run dev` (Vite, serves `dist/`).
@@ -1098,7 +1130,7 @@ Every component carries exactly **one** atomic-design type:
 | `ATM` | Atom - contains **no descendant components** (arbitrary DOM inside is fine) | cyan `#06B6D4` / `#22D3EE` |
 | `MOL` | Molecule - ≥1 direct child component, **all atoms** | blue `#3B82F6` / `#60A5FA` |
 | `ORG` | Organism - direct children are atoms/molecules with **≥1 molecule** | violet `#8B5CF6` / `#A78BFA` |
-| `BLK` | Block - a self-contained **sectional template slice** (header, hero, pricing, footer…); arbitrary nesting | amber `#F59E0B` / `#FBBF24` |
+| `BLK` | Block - a self-contained **sectional template slice** (header, hero, pricing, footer...); arbitrary nesting | amber `#F59E0B` / `#FBBF24` |
 | `TPL` | Template - the **whole page/UI composition** of blocks and anything else (slide decks count: the artboard composes the whole UI) | slate `#64748B` / `#94A3B8` |
 
 Deterministic classifier (apply in order): role = whole composition → `TPL`; role =
@@ -1119,7 +1151,7 @@ is an atom → `MOL`; some direct child is a molecule → `ORG`; otherwise → `
   `TypeBadge`/`NavTypeBadge` components - never hand-write it; recolor via
   `.type-badge[data-type]` rules in `documentation/public/css/layout.css`.
   Pages that are **not components** (sub-pages like the chart studies or the per-animation
-  deep dives) carry their badge as `type:` on their `NavItem` in `lib/nav.ts` instead —
+  deep dives) carry their badge as `type:` on their `NavItem` in `lib/nav.ts` instead:
   SiteNav and the search index prefer it over the skill lookup; their PageHeader badge
   still comes from the parent component's skill (`component="chart"` → MOL,
   `component="motion"` → ATM).
@@ -1305,7 +1337,7 @@ Translate React/Radix patterns into semantic HTML + vanilla JS.
 only real errors should gate CI.
 
 Keep the log clean: fix every warning an edit introduces. For a variable that is
-**known to be intentionally unused**, prefix it with `_` (e.g. `var _copyBtn = …`) —
+**known to be intentionally unused**, prefix it with `_` (e.g. `var _copyBtn = …`);
 oxlint's `no-unused-vars` accepts that convention. For intentionally unused
 **caught errors**, omit the parameter entirely (`catch { … }`, ES2019) - oxlint flags
 `catch (_e)` too. Do not silence warnings with ignore comments, and do not delete
@@ -1391,7 +1423,7 @@ assertions are data (literal computed px values, pairwise-distinct token colors,
 
 ### Legacy rollouts (complete)
 
-Every component now ships the State API (interactive ones) and an e2e pair —
+Every component now ships the State API (interactive ones) and an e2e pair;
 the `STATE_API_LEGACY` / e2e warn-ratchets in `scripts/verify.ts` are empty and
 the checks are hard gates. New components must land compliant from day one:
 source → skill `## States` + doc page (`<code>` per state + `data-state-demo`
@@ -1402,7 +1434,7 @@ anchor) → `bun run screenshots` → e2e fixture + test, ideally in one commit.
 The e2e fixture and the documentation must describe the **same** component
 surface, so a green pipeline means "documented == tested == shipped":
 
-| Feature exists in… | Then… |
+| Feature exists in... | Then... |
 | --- | --- |
 | code only | add it to the doc page **and** the e2e fixture/test |
 | docs only | add an e2e check for it (it must work in the shipped files) |
@@ -1449,7 +1481,7 @@ The docs chrome is statically rendered per page by the TSX components in
 - `<DocPage>` - the whole page shell: `<html>`/`<head>` (meta/og tags from the
   page's frontmatter, the 4 synchronous head scripts, the stylesheet chain) and
   `<body>` (header, sidebar, TOC shell, footer, end-of-body scripts)
-- `<SiteHeader>` / `<SiteNav>` - the fixed header and sidebar (static markup —
+- `<SiteHeader>` / `<SiteNav>` - the fixed header and sidebar (static markup;
   the old `<site-header>`/`<site-nav>` custom elements are gone)
 - `<PrevNext>` / `<SiteFooter>` - pager + footer (was runtime injection)
 - The TOC aside, § heading anchors and `toc-*` ids are injected by the toc
@@ -1472,7 +1504,7 @@ index, and TOC pick the page up automatically.
 ## Sidebar nav order
 
 The sidebar is ordered by dependency (primitives first):
-1. Introduction (Getting Started, Installation, Vibe Coding / Agentic Engineering, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
+1. Introduction (Getting Started, Installation → {Bundles & Downloads}, Vibe Coding / Agentic Engineering, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
 2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris, Parallax}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Typewriter, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)
@@ -1482,7 +1514,7 @@ The sidebar is ordered by dependency (primitives first):
 8. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Image → {Image Gallery}, Statistic, Table, Collapsible, Timeline, Tree View, Calendar)
 9. Big Data (Virtual List, Data Tree, Data Grid, Tree Grid, Autocomplete) - records by the hundred thousand: windowed DOM, every query local over all rows through defuss-dataview (see "Big data"); Tree Grid is the Data Grid with `data-parent-field` (a `type: 'ATM'` nav page, sources of data-grid)
 10. Charts (Chart, Comparison, Change over time, Distribution, Composition, Election, Narrative)
-11. Diagrams (Illustrative Diagrams → {Architecture, Flow, State (+ complex state), State Lifecycle, ER (+ database schema), Timeline, Swimlane, Nested, Organigram, Layers, Loop, Data Lake, Medallion, High-level, High-level Parametric, Process, Data Flow, Topology, Matrix, Fishbone, Wardley Map, Kanban, User Journey, Deployment, Dependency Graph, UML Class, Story Map, Sequence, Quadrant, Policy Trace}, Mermaid) - Illustrative Diagrams is the dependency-free `diagram` component, meant to be written by agents as illustration (plain HTML nodes on a grid / free / radial canvas + an `<ol class="diagram-edges">`, wires drawn into an SVG layer from the measured layout; visual grammar adapted from cathrynlavery/diagram-design, MIT; theme colors only - chart colors for accent / changes -, the theme's radius (wire elbows too) and monospace); every type page shows the diagram, the same diagram revealed step by step (`data-steps`), an interactive twin (`data-interactive` + declarative outside controls `data-diagram-for` / `data-diagram-action` / `<output data-diagram-for>`; state `active`), multi-edge flow where the type moves data (`data-flow` / `-tokens` / `-delay`) and a before/changes/after delta (`data-delta` + `data-change`); no label or text sits under a wire or over a box (labels and dot names are placed around boxes, text and other wires; the e2e "readability" check pins it); High-level Parametric renders JSON specs (`script.diagram-spec`, `df$.shadcn.diagram.build`); a ```diagram fence in ARCH.md is such a spec (lib/arch-md.ts - the architecture page's proof loop). Every node / edge is plain JSON through `df$.shadcn.diagram.properties / propertySchema / setProperties` - each type page's "Inspect and edit" example binds it to a Property Grid in a closable Panel. On a presentation slide a diagram takes the slide's palette and `data-autoplay="ms"` replays on every arrival (Parliament Hemicycle, Sankey, Story State Machine and Bump Ranking carry one diagram slide; the flagship deck's VAE slide chains two). Mermaid renders text-first diagrams; a ```mermaid fence in any MDX page or ARCH.md renders through the same component (lib/mdx-example.ts, lib/arch-md.ts)
+11. Diagrams (Illustrative Diagrams → {Architecture, Flow, State (+ complex state), State Lifecycle, ER (+ database schema), Timeline, Swimlane, Nested, Organigram, Layers, Loop, Data Lake, Medallion, High-level, High-level Parametric, Process, Data Flow, Topology, Matrix, Fishbone, Wardley Map, Kanban, User Journey, Deployment, Dependency Graph, UML Class, Story Map, Sequence, Quadrant, Policy Trace}, Mermaid) - Illustrative Diagrams is the dependency-free `diagram` component, meant to be written by agents as illustration (plain HTML nodes on a grid / free / radial canvas + an `<ol class="diagram-edges">`, wires drawn into an SVG layer from the measured layout; visual grammar adapted from cathrynlavery/diagram-design, MIT; theme colors only - chart colors for accent / changes -, the theme's radius (wire elbows too) and monospace); every type page shows the diagram, the same diagram revealed step by step (`data-steps`), an interactive twin (`data-interactive` + declarative outside controls `data-diagram-for` / `data-diagram-action` / `<output data-diagram-for>`; state `active`), multi-edge flow where the type moves data (`data-flow` / `-tokens` / `-delay`) and a before/changes/after delta (`data-delta` + `data-change`); no label or text sits under a wire or over a box (labels and dot names are placed around boxes, text and other wires; the e2e "readability" check pins it; nothing drawn - zones, labels, wires - comes closer than 20px to a framed canvas's border: diagram.ts CLEARANCE grows the padding or the absolute insets, the e2e "clearance" check pins it); High-level Parametric renders JSON specs (`script.diagram-spec`, `df$.shadcn.diagram.build`); a ```diagram fence in ARCH.md is such a spec (lib/arch-md.ts - the architecture page's proof loop). Every node / edge is plain JSON through `df$.shadcn.diagram.properties / propertySchema / setProperties` - each type page's "Inspect and edit" example binds it to a Property Grid in a closable Panel. On a presentation slide a diagram takes the slide's palette and `data-autoplay="ms"` replays on every arrival (Parliament Hemicycle, Sankey, Story State Machine and Bump Ranking carry one diagram slide; the flagship deck's VAE slide chains two). Mermaid renders text-first diagrams; a ```mermaid fence in any MDX page or ARCH.md renders through the same component (lib/mdx-example.ts, lib/arch-md.ts)
 12. Feedback & Status (Spinner, Skeleton, Progress, Radial Progress, Alert, Alert Dialog, Toast)
 13. Overlays (Popover, Tooltip, Context Menu, Dialog, Sheet, Accordion, Command)
 14. Navigation (Navbar, Dock, Breadcrumb, Pagination, Steps, Tabs, Dropdown Menu, Menubar, Navigation Menu)
@@ -1490,7 +1522,7 @@ The sidebar is ordered by dependency (primitives first):
 16. Chat (Bubble, Marker, Message, Session) - the conversation surfaces: message rows (avatar, name, time, status, actions, groups), message bubbles (variants, groups, tails, reactions, typing), markers (inline status, spinners, shimmer, separators) and the session that hosts and scrolls a whole conversation (follow / detach, history, anchored turns, streaming, drop target) above the textarea composer
 17. Mockup (Code) - device and window mockups, starting with a terminal for commands and output (generated prompts never copied, tones, highlights, chrome)
 18. Presentations (Presentation, Deck Gallery → {The System in Numbers - flagship deck: defuss-shadcn presents itself as a newsroom study report in eleven slides (engine curtain transitions, section route with the sidebar icons, bundle and per-app sizes linking the full-screen apps, RAD and two chained VAE diagrams, the recorded verifier run - every number a data-stat figure); 32 design-study decks (all 32 echarts-feat studies): Editorial Highlight Bars, Lollipop Ranking, Dumbbell Before/After, Slopegraph, Diverging Bars, Waterfall, Normalized Stack, Bump Ranking, Bar Race, Confidence Band, Annotated Time Series, Small Multiples, Scatter Quadrants, Jittered Distribution, Heatmap Matrix, Calendar Heatmap, Theme River, Treemap, Sunburst, Sankey, Chord, Editorial Gauge, Parliament Hemicycle, Election Majority Bar, Election Hex Cartogram, Election Shift Arrows, Universal Transition, Waffle Dot Matrix, Boxplot, Violin - Custom Series, Custom Wind Vectors, Story State Machine}) - Deck Gallery is a parent page with nested submenu children (`NavItem.children`); every deck is a 12-slide English presentation (13 where an interactive diagram slide joins: Parliament Hemicycle, Sankey, Story State Machine, Bump Ranking) on its own real-world topic with its own (synthetic) numbers, adapting one echarts-feat design study - every slide animates in and out through the df$.anim engine (data-anim-in/-out on the deck or slide; curtains in a colour that contrasts with both slide surfaces), every chart slide plays on ONE deck-level chart (`.chart.presentation-stage` + `df$.shadcn.chart.deck()`, slides name states via `data-chart-state`) so the charts morph into each other, and every deck includes photo or video, table, quote and accordion slides
-19. Papers (Modern Paper, BibTeX) - research-paper project pages as `type: TPL` templates and their parts; BibTeX (`bibtex`, JS, states default / copied, config `{ format }`) parses the authored `.bibtex-source` once and shows it as normalized BibTeX (aligned, highlighted, bare macros kept bare) or an APA / MLA / Chicago / Harvard / IEEE reference (several entries = a sorted or numbered list), format tabs (APG) and a copy button (Clipboard API, selection fallback, `bibtex-copy` / `bibtex-format` events), variants minimal / inline, `data-size="sm"`, `data-align|highlight|copy="none"`, `df$.shadcn.bibtex.{parse,format,show,copy,text,entries}`; Modern Paper (`paper`, CSS-only) is the Nerfies / InternVL project-page layout in the system tokens: one `<article class="paper">` on a named grid (reading column `--paper-measure`, wide track `--paper-wide` + `.paper-wide`, which also breaks out of a section), serif title, linked authors + affiliation marks, pill resource Buttons, news line, teaser figure (its example plays an Illustrative Diagram), tinted abstract, numbered sections, findings, Statistic tiles, a booktabs Table, BibTeX, footer; its example is the system's own technical report - every number a data-stat figure
+19. Papers (Modern Paper, BibTeX) - research-paper project pages as `type: TPL` templates and their parts; BibTeX (`bibtex`, JS, states default / copied, config `{ format }`) parses the authored `.bibtex-source` once and shows it as normalized BibTeX (aligned, highlighted, bare macros kept bare) or an APA / MLA / Chicago / Harvard / IEEE reference (several entries = a sorted or numbered list), format tabs (APG) and a copy button (Clipboard API, selection fallback, `bibtex-copy` / `bibtex-format` events), variants minimal / inline, `data-size="sm"`, `data-align|highlight|copy="none"`, `df$.shadcn.bibtex.{parse,format,show,copy,text,entries}`; Modern Paper (`paper`, CSS-only) is the Nerfies / InternVL project-page layout in the system tokens: one `<article class="paper">` on a named grid (reading column `--paper-measure`, wide track `--paper-wide` + `.paper-wide`, which also breaks out of a section), serif title, linked authors + affiliation marks, pill resource Buttons, news line, teaser figure (its example plays an Illustrative Diagram), tinted abstract, numbered sections, findings, Statistic tiles, a booktabs Table, BibTeX, footer; its example is the system's own technical report - every number a data-stat figure; like a scaffold, that fence also becomes a full-screen page `full-paper.html` ("Open full screen"; `STANDALONE_DOCS` in `scripts/lib/docs-ssg.ts`, written by `scripts/build-docs.ts`) - a document, so it scrolls and loads all.css + all.js, pinned by `paper-fullscreen.e2e`
 20. Website - CSS-only page blocks composed from the same tokens + primitives, grouped in twelve sub-sections; each sub-section is a parent page (`NavItem.children`) that composes its blocks into a live template (`type: 'TPL'`) and lists them: Landing Page → {Site Header, Hero, Product Showcase, Brand Logos, Section Header, Feature Details, Testimonials, Stats, Pricing, Blog, FAQ, Get In Touch, Newsletter, Cookie Consent, Site Footer}, News → {News Header, News Item, News Ticker}, Blog → {Blog Header, Blog Item, Archive Index}, Article → {Article Header, Article Body, Author Bio, Author List, Related Item, Share Links, Article Navigation}, Comments → {Comment Header, Comment Item, Comment Form}, Company → {About Intro, Team Member, Job Item, Job Details, Application Form, Service Item, Process Step, Use Case, Case Preview, Case Study, Project Item, Project Details, Timeline Item, Integration Item, Comparison Table, Credential Item, Press Item}, Events & Promotions → {CTA, Announcement, Offer Banner, Event Countdown, Booking Form, Event Item, Event Header, Event Description, Speaker Item, Session Item, Registration Form, Location Item, Location Map, Locator Search, Opening Hours}, Media → {Gallery Item, Media Gallery, Text Media, Video Player, Audio Player, Playlist Item, Before After, Social Post}, Shop → {Collection Item, Product Item, Cart Item, Cart Summary, Discount Form, Address Form, Delivery Options, Payment Form, Order Summary, Order Confirmation, Tracking Status, Wishlist Item}, Account & States → {Login Form, Social Login, Signup Form, Reset Request, Password Reset, Profile Header, Profile Form, Security Settings, Notification Settings, Support Form, Feedback Form, Survey Question, Form Progress, Empty State, Error State, Success State, Coming Soon, Maintenance, 404 Page}, Docs & Help → {Resource Item, Download Item, Docs Navigation, Docs Content, Code Example (slug code-block), Release Header, Release Item, Roadmap Item, Help Category, Help Article}, Search & Navigation → {Search Box, Search Suggestions, Search Summary, Search Result, Filter Bar, Filter Sidebar, Active Filters, Sort Control, View Switcher, Collection Pagination, Load More, Tag Cloud, Tag List, Category Menu, Breadcrumbs, Contents, Quick Links}. The second-wave blocks scope `box-sizing: border-box` to their own root (zero specificity) so they render the same on any page, and interactive behavior stays native: radios / checkboxes read by :has(), non-modal `<dialog open>` + `<form method="dialog">` for dismissible notices, popovers anchored with CSS anchor positioning Block classes keep the `mk-` prefix (from the section's former name, Marketing) so consumer markup stays stable
 
 Every section except Introduction (and the section holding the current
@@ -1586,22 +1618,22 @@ files at docs build time and embeds them (escaped) with copy buttons. There is
 The docs dogfood the product: every page loads the shipped
 `theme/utils/sizing.css` + `theme/utils/layout.css`, and their utilities are used
 DIRECTLY (`flex items-center gap-4 mb-3`, `w-full max-w-80`,
-`overflow-x-auto`, `whitespace-nowrap`, …) - never re-declared in
+`overflow-x-auto`, `whitespace-nowrap`, ...) - never re-declared in
 `public/css/docs-utilities.css`. The audit gate
 (`scripts/lib/audit.ts → moduleDefinedClasses`) already counts the modules'
 classes as defined on doc pages. If a genuinely generic utility is missing
-(it applies without knowing the component), add it to the shipped module —
+(it applies without knowing the component), add it to the shipped module,
 with a contract test in `tests/sizing-layout.test.ts` and a demo on the
 matching Width & Height / Spacing / Layout / Density page - instead of
 hand-rolling it in the docs sheet.
 
 `public/css/docs-utilities.css` therefore holds only:
 
-- **doc typography utilities** (`text-sm`, `text-xs`, `font-medium`, …) —
+- **doc typography utilities** (`text-sm`, `text-xs`, `font-medium`, ...):
   they can't move to the modules: `tests/sizing-layout.test.ts` pins those
   to geometry/spacing only (no `font-size`).
 - **semantic pattern classes** (`.code-card`, `.mono-meta`, `.swatch-*`,
-  `.h2-display`, `.mini-table`, …) - token colors, fonts and page-chrome
+  `.h2-display`, `.mini-table`, ...) - token colors, fonts and page-chrome
   geometry no consumer needs. When a pattern is just a utility stack,
   delete it and use the stack.
 - The sheet is UNLAYERED, so its classes beat the layered modules and
@@ -1614,3 +1646,19 @@ hand-rolling it in the docs sheet.
   in the same edit if the sample is explicit (`<ExampleCode>`/`<DemoCode>`).
   Remember `gap-N`/`m-N`/`p-N` are density-scaled - inside a `[data-density]`
   demo scope they intentionally resize with the demo.
+
+<!-- defuss-vae:start -->
+## defuss-vae
+Read `.agents/MEMORY.md` + `.agents/CLI_GIST.md` before engineering work; `grep` `.agents/EPISODES.md` for recurring failures.
+Skills `plan` `implement` `review` `finalize` are human-triggered only; never auto-invoke them. Outside skills write plain concise prose.
+Evidence > assumption: IF a runtime fact is unknown THEN observe before editing (read → existing test/command → smallest discriminating probe → ask). Temporary probe lines carry `vae:probe` and the gate rejects leftovers; read logs bounded (`make log`, tail, grep); no log spraying.
+Layout: `.agents/` agent state; `Makefile` verbs setup start stop status log metrics bench test coverage lint e2e verify; services only via `make start` → `var/log/<svc>.stdout|.stderr`, `tmp/<svc>.pid` (gitignored); programs read `input/`, write `output/` (both gitignored; commit e2e fixtures via `!input/<file>`).
+test = real subsystems in isolation (a throwaway database|queue|filesystem|local server process instead of a mock), never live|production data or services; coverage is Pareto: every public behavior + its main error path, not every line (gate floor 60%); e2e = build the publishable artifact and consume it like a user, covering EVERY page|route|screen|component of a UI and EVERY CLI command|API endpoint at least once; a web frontend's e2e drives the built app, served via `make start`, in a real Playwright browser (`bun add -d playwright` + `bunx playwright install --with-deps chromium` | `uv add --dev playwright` + `uv run playwright install --with-deps chromium`) with what the app needs enabled: WebGL2 (GPU-less CI: launch args `--use-angle=swiftshader --enable-unsafe-swiftshader`), real network, permissions via `context.grantPermissions([...])` (Python `grant_permissions`); assert rendered output, fail on console errors and failed requests, and write the report (`outputDir`) to `output/`. The gate fails closed without `.agents/VERIFY.py`, any verb, or `verify` running lint test coverage e2e, and when e2e leaves no fresh file in `output/`. A library without a service keeps the layout: `init` adds the ignores and one Makefile line `start stop restart status log: ; @echo "∅ $@: no service"` covers the service verbs; never disable `layout` for that. lint = `uv run ruff check .` (Python) | `bunx oxlint --deny-warnings` (JS/TS; plain oxlint exits 0 on findings). verify = lint + test + coverage + e2e; CI on a GitHub remote is `.github/workflows/verify.yml` running `make setup` then `make verify`; CI runs async: after a push report the run URL and finish, NOT wait for it (`gh run watch`), since the local gate is the proof.
+Toolchain: new projects and subprojects start on `bun` (JS/TS, `bun init`) or `uv` (Python, `uv init`), never npm/yarn/pnpm/pip/poetry; the gate rejects newly added foreign lockfiles. In uv projects use `uv run`/`uv add`, not venv activation, which agent shells do not keep. A repo already on another toolchain keeps it unless the human approves migrating; propose it. Missing uv/bun: `make setup` installs them with the official installers (brand-new project: `curl -LsSf https://astral.sh/uv/install.sh | sh`, `curl -fsSL https://bun.sh/install | bash`).
+Habits: separate concerns (pure core logic; I/O, config and framework glue at the edges) in small single-purpose modules testable with real inputs; split by responsibility, never speculatively. Logs: one line per event, ISO-8601 UTC timestamp first (`2026-10-01T12:00:00.123Z`), then level, message, key=value; never secrets. Config: env vars from a gitignored `.env` (bun loads it itself; Python `uv run --env-file .env`); every key the code reads stays in `.env.example` without secret values, updated in the same change (gate-checked); validate config once at startup and fail fast. Services exit cleanly on SIGTERM (`make stop`).
+Epistemics: `VERIFIED` = direct evidence; `HYPOTHESIS` = testable inference + falsifier; `UNKNOWN` = not established. Never promote by rhetoric.
+Ponytail: understand → YAGNI → reuse → stdlib → native → installed dependency → minimum code; bug fix = root cause + sibling callers.
+Docs: why this design beats a plausible alternative; prefix material claims `VERIFIED:`, `HYPOTHESIS:` or `UNKNOWN:`.
+Doc pages (`*.md|*.mdx`) are gated: `vae.py prose --fix`, rewrite the rest by meaning, review against the plugin's `references/PROSE.md`; schematic content → a rendered Mermaid diagram. `README.md` covers the root and each package with a CLI|API, `ARCH.md` (why + how, operations, security, privacy) each package with production code; both state only VERIFIED facts. New JS/TS packages start on bun, ESM, oxlint and (libraries) pkgroll. The failing check names the template and the exact gaps.
+Lessons: test | `.agents/VERIFY.py` rule > MEMORY line > EPISODES line.
+<!-- defuss-vae:end -->

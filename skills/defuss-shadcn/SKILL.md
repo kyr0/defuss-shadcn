@@ -17,7 +17,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
    - The target project has a `package.json` / package manager → **Path A: npm**.
    - No package manager, or the goal is a standalone `.html` prototype → **Path B: jsDelivr CDN** (plain HTML, **no TypeScript, no build step**).
 2. **Include exactly three files, in this order:**
-   1. `components/core.css` - design tokens + the layout/sizing/accessibility utilities the examples use (`flex`, `gap-4`, `stack`, `sr-only` …),
+   1. `components/core.css` - design tokens + the layout/sizing/accessibility utilities the examples use (`flex`, `gap-4`, `stack`, `sr-only` ...),
    2. `components/all.css` - every component's styles,
    3. `components/all.js` as an ES module - the `df$` runtime + every component's behavior.
    (`all.css` holds component styles only: without `core.css` there are no tokens and no utilities.)
@@ -104,11 +104,11 @@ Copy this skeleton and put component markup inside `<body>`. Replace `@latest` w
 
 - **Markup from the skills, verbatim.** Every component's `component-skill.md` has a Structure section: copy it, change only content and documented attributes. One base class per component (`.btn`, `.card`, `.dialog`); variants and sizes are `data-variant` / `data-size` / `data-side` - never modifier classes (`.btn-outline` does not exist).
 - **Native elements first.** `<dialog>` for modals, the `popover` attribute for menus/tooltips, `<details>` for accordions/trees, native form controls. If you are about to write JavaScript for open/close/toggle/focus, the component already does it - re-read its skill.
-- **Colors, radius, shadows, fonts come from tokens.** Use `var(--primary)`, `var(--border)`, `var(--radius-md)`, `var(--shadow-sm)` … (the tweakcn set). Never hardcode brand colors into markup; re-theme by loading a preset from `dist/theme/` after core.
+- **Colors, radius, shadows, fonts come from tokens.** Use `var(--primary)`, `var(--border)`, `var(--radius-md)`, `var(--shadow-sm)` ... (the tweakcn set). Never hardcode brand colors into markup; re-theme by loading a preset from `dist/theme/` after core.
 - **State through the State API.** Interactive components expose `el.api.setState(name, config?)` / `el.api.getState()` per element, plus `df$.shadcn.{name}Api` / `df$.shadcn.{name}States`. Supported state names are listed per component in §4.
 - **One runtime: `df$`.** `core.js` (or `all.js`) installs the callable `df$` (defuss-query + defuss-morph) once; your own scripts may use it (`df$(sel).attr()`, `df$(container).morph(html)`), but never replace it and never define your own `window` globals. Imperative component APIs live under `df$.shadcn.*` (e.g. `df$.shadcn.toast.show({...})`).
 - **Dynamic content just works.** Every component initializes new elements automatically (MutationObserver) - insert markup, no re-init call.
-- **Layout helpers ship in `core.css`.** Sizing + layout + accessibility utilities (`flex`, `grid`, `stack`, `container`, `gap-4`, `p-6`, `w-full`, `sr-only` …) - use them instead of inline layout CSS. `shapes.css` is opt-in.
+- **Layout helpers ship in `core.css`.** Sizing + layout + accessibility utilities (`flex`, `grid`, `stack`, `container`, `gap-4`, `p-6`, `w-full`, `sr-only` ...) - use them instead of inline layout CSS. `shapes.css` is opt-in.
 - **Accessibility is built in.** Keep the ARIA attributes from the skill (roles, `aria-*`, labels with `for`); icon-only buttons need `aria-label`.
 
 ## 3. Documentation map - guides and live examples
@@ -119,6 +119,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 
 - [Getting Started](../../src/documentation/pages/index.mdx) - A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform.
 - [Installation](../../src/documentation/pages/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
+  - [Bundles & Downloads](../../src/documentation/pages/bundles.mdx) - Load defuss-shadcn whole, per sidebar section, or per component - from the jsDelivr CDN, with npm, or as a ZIP you vendor into your project.
 - [Vibe Coding / Agentic Engineering](../../src/documentation/pages/vibe-coding.mdx) - Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML.
 - [How to Use](../../src/documentation/pages/how-to-use.mdx) - Built on five layers: semantic tokens, a component skill, CSS, HTML, and vanilla JavaScript - each a plain file you copy or link.
 - [Component Skills](../../src/documentation/pages/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
@@ -156,7 +157,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Sizing](../../src/documentation/pages/sizing.mdx) - A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.
   - [Width & Height](../../src/documentation/pages/width-height.mdx) - Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.
   - [Spacing](../../src/documentation/pages/spacing.mdx) - One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
-  - [Density](../../src/documentation/pages/density.mdx) - Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.
+  - [Density](../../src/documentation/pages/density.mdx) - Compactness is an explicit whitespace policy, not a global zoom factor. Keep typography, geometry and target sizes independent.
 - [Layout](../../src/documentation/pages/layout.mdx) - Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime.
   - [Container](../../src/documentation/pages/container.mdx) - Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice.
   - [Flex](../../src/documentation/pages/flex.mdx) - Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.
@@ -236,33 +237,33 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 
 - [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
   - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship deck with the system's real, measured numbers: glyph cover, unit dots, the feature line map, bundle and app sizes, the method (RAD + VAE) as live diagrams, the timed verifier and the four ways in.
-  - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region’s commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
+  - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region's commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
   - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
-  - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city’s rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
+  - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city's rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
   - [Slopegraph](../../src/documentation/pages/slopegraph.mdx) - Terminal Data Noir design language presenting the shift in programming languages asked for in job ads, 2020–2025, as a 12-slide deck - slopes that isolate the risers, then morph from change bars into the 2025 ranking.
   - [Diverging Bars](../../src/documentation/pages/diverging-bars.mdx) - Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart.
-  - [Waterfall](../../src/documentation/pages/waterfall.mdx) - Art Deco Night design language presenting a cinema chain’s revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
+  - [Waterfall](../../src/documentation/pages/waterfall.mdx) - Art Deco Night design language presenting a cinema chain's revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
   - [Normalized Stack](../../src/documentation/pages/normalized-stack.mdx) - Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart.
   - [Bump Ranking](../../src/documentation/pages/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 13-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
-  - [Bar Race](../../src/documentation/pages/bar-race.mdx) - Sports Broadcast design language presenting a fictional league’s golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
+  - [Bar Race](../../src/documentation/pages/bar-race.mdx) - Sports Broadcast design language presenting a fictional league's golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
   - [Confidence Band](../../src/documentation/pages/confidence-band.mdx) - Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart.
   - [Annotated Time Series](../../src/documentation/pages/annotated-timeseries.mdx) - Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart.
   - [Small Multiples](../../src/documentation/pages/small-multiples.mdx) - 1960s Modernist Grid design language presenting rooftop solar yield by roof orientation as a 12-slide deck - six panels that collapse into one overlay, sum into annual bars and end on a summer-day profile, one morphing chart.
   - [Scatter Quadrants](../../src/documentation/pages/scatter-quadrants.mdx) - Annual Report Corporate design language presenting a software portfolio (growth × net revenue retention × ARR) as a 12-slide deck - a quadrant map that isolates the stars, collapses into ARR bars and moves to the 2026 plan, one morphing chart.
   - [Jittered Distribution](../../src/documentation/pages/jittered-distribution.mdx) - Organic Data Garden design language presenting raspberry yield per plant under four growing methods as a 12-slide deck - every plant as a dot, then groups collapsing into mean bars and boxplots, one morphing chart.
   - [Heatmap Matrix](../../src/documentation/pages/heatmap-matrix.mdx) - Cyber Matrix design language presenting one week of security alerts as a 12-slide deck - a 7 × 24 heatmap that exposes a 3 a.m. burst, re-cuts by alert type and collapses into an hourly profile, one morphing chart.
-  - [Calendar Heatmap](../../src/documentation/pages/calendar-heatmap.mdx) - Pastel Stationery design language presenting a runner’s training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart.
-  - [Theme River](../../src/documentation/pages/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck — a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
-  - [Treemap](../../src/documentation/pages/treemap.mdx) - Mondrian Composition design language presenting a city’s €2.4 billion budget as a 12-slide deck — a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
-  - [Sunburst](../../src/documentation/pages/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck — a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
-  - [Sankey](../../src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city’s waste as a 13-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
-  - [Chord](../../src/documentation/pages/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck — a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
-  - [Editorial Gauge](../../src/documentation/pages/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport’s on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
+  - [Calendar Heatmap](../../src/documentation/pages/calendar-heatmap.mdx) - Pastel Stationery design language presenting a runner's training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart.
+  - [Theme River](../../src/documentation/pages/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck - a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
+  - [Treemap](../../src/documentation/pages/treemap.mdx) - Mondrian Composition design language presenting a city's €2.4 billion budget as a 12-slide deck - a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
+  - [Sunburst](../../src/documentation/pages/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck - a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
+  - [Sankey](../../src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city's waste as a 13-slide deck - a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
+  - [Chord](../../src/documentation/pages/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck - a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
+  - [Editorial Gauge](../../src/documentation/pages/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport's on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
   - [Parliament Hemicycle](../../src/documentation/pages/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 13-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
   - [Election Majority Bar](../../src/documentation/pages/election-majority-bar.mdx) - Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats.
-  - [Election Hex Cartogram](../../src/documentation/pages/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county’s rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
+  - [Election Hex Cartogram](../../src/documentation/pages/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county's rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
   - [Election Shift Arrows](../../src/documentation/pages/election-shift-arrows.mdx) - Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart.
-  - [Universal Transition](../../src/documentation/pages/universal-transition.mdx) - Kinetic Typography design language presenting a music festival’s 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart.
+  - [Universal Transition](../../src/documentation/pages/universal-transition.mdx) - Kinetic Typography design language presenting a music festival's 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart.
   - [Waffle Dot Matrix](../../src/documentation/pages/waffle-dot-matrix.mdx) - Pixel Arcade design language presenting how players split across gaming platforms as a 12-slide deck - a 10 × 10 pixel waffle that re-colours from 2020 to 2025, merges into bars and re-sorts by play time, one morphing chart.
   - [Boxplot](../../src/documentation/pages/boxplot.mdx) - Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart.
   - [Violin - Custom Series](../../src/documentation/pages/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
@@ -342,8 +343,8 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### Kbd · ATM · CSS
 
-- **Why:** Native `<kbd>`, and a combination is `<kbd>` nested inside `<kbd>` exactly as the HTML spec prescribes — the markup already says "these keys together".
-- **When:** Showing a shortcut — in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
+- **Why:** Native `<kbd>`, and a combination is `<kbd>` nested inside `<kbd>` exactly as the HTML spec prescribes, so the markup already says "these keys together".
+- **When:** Showing a shortcut in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
 - **States:** `default` · **Skill:** [references/components/kbd.md](references/components/kbd.md) · **Examples:** [src/documentation/pages/kbd.mdx](../../src/documentation/pages/kbd.mdx)
 
 #### Heading Anchor · ATM · CSS
@@ -374,8 +375,8 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### Swap · ATM · CSS
 
-- **Why:** A hidden `<input type="checkbox">` inside a `<label>` is the whole state machine — :checked, :indeterminate and :has() pick the visible face, CSS transforms animate it.
-- **When:** Toggling between two (or three) glyphs or words in place — theme icons, play/pause, hamburger/close; use toggle or switch when the control needs a pressed button or form-field appearance.
+- **Why:** A hidden `<input type="checkbox">` inside a `<label>` is the whole state machine; :checked, :indeterminate and :has() pick the visible face, and CSS transforms animate it.
+- **When:** Toggling between two (or three) glyphs or words in place (theme icons, play/pause, hamburger/close); use toggle or switch when the control needs a pressed button or form-field appearance.
 - **States:** `default` · **Skill:** [references/components/swap.md](references/components/swap.md) · **Examples:** [src/documentation/pages/swap.mdx](../../src/documentation/pages/swap.mdx)
 
 #### Toggle Group · MOL · JS
@@ -412,8 +413,8 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### OTP Input · MOL · JS
 
-- **Why:** One real input under a row of slots — paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
-- **When:** Short codes typed once — SMS verification, email confirmation, a PIN. Use input for anything longer or free-form.
+- **Why:** One real input under a row of slots, so paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
+- **When:** Short codes typed once (SMS verification, email confirmation, a PIN). Use input for anything longer or free-form.
 - **States:** `default`, `filled`, `invalid` · **Skill:** [references/components/otp-input.md](references/components/otp-input.md) · **Examples:** [src/documentation/pages/otp-input.mdx](../../src/documentation/pages/otp-input.mdx)
 
 #### Textarea · ATM · CSS
@@ -448,8 +449,8 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### Rating · MOL · CSS
 
-- **Why:** Native radio group styled as stars — keyboard, form submission and exclusivity are the browser's, so no JavaScript.
-- **When:** Collecting or displaying a score out of five — reviews, feedback, quality scores. Use radio for a general small choice set.
+- **Why:** Native radio group styled as stars; keyboard, form submission and exclusivity are the browser's, so no JavaScript.
+- **When:** Collecting or displaying a score out of five (reviews, feedback, quality scores). Use radio for a general small choice set.
 - **States:** `default` · **Skill:** [references/components/rating.md](references/components/rating.md) · **Examples:** [src/documentation/pages/rating.mdx](../../src/documentation/pages/rating.mdx)
 
 #### Select · ATM · CSS
@@ -625,7 +626,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 #### Virtual List · ATM · JS
 
 - **Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same; records behind a defuss-dataview source filter and sort locally.
-- **When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
+- **When:** Lists too long to render, such as search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
 - **States:** `default`, `loading`, `empty` · **Skill:** [references/components/virtual-list.md](references/components/virtual-list.md) · **Examples:** [src/documentation/pages/virtual-list.mdx](../../src/documentation/pages/virtual-list.mdx)
 
 #### Data Tree · ATM · JS
@@ -651,7 +652,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 #### Chart · MOL · JS
 
 - **Why:** Apache ECharts does the drawing; the component is the thin token bridge - the tokens become an ECharts theme (resolved to sRGB), options may name tokens as var(--x), and theme or dark-mode switches re-theme live.
-- **When:** Any data visualization (bar/line/pie/scatter…) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
+- **When:** Any data visualization (bar/line/pie/scatter...) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
 - **States:** `default` · **Skill:** [references/components/chart.md](references/components/chart.md) · **Examples:** [src/documentation/pages/chart.mdx](../../src/documentation/pages/chart.mdx)
 
 ### Diagrams
@@ -873,7 +874,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 #### Marker · ATM · CSS
 
 - **Why:** A small flex row of icon + words is all an inline status needs; separators draw their rules with pseudo-elements, the shimmer is background-clip text, links and buttons are real `<a>`/`<button>`.
-- **When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking…", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
+- **When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking...", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
 - **States:** `default` · **Skill:** [references/components/marker.md](references/components/marker.md) · **Examples:** [src/documentation/pages/marker.mdx](../../src/documentation/pages/marker.mdx)
 
 #### Message · MOL · CSS
@@ -1378,7 +1379,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### Address Form · BLK · CSS
 
-- **Why:** The autocomplete tokens (name, address-line1, postal-code, country…) let browsers and password managers fill the whole form in one tap - no script.
+- **Why:** The autocomplete tokens (name, address-line1, postal-code, country...) let browsers and password managers fill the whole form in one tap - no script.
 - **When:** Checkout, account settings, event shipping. Payment details are payment-form.
 - **States:** `default` · **Skill:** [references/components/address-form.md](references/components/address-form.md) · **Examples:** [src/documentation/pages/address-form.mdx](../../src/documentation/pages/address-form.mdx)
 

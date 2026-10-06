@@ -18,6 +18,22 @@ const dfDollar = defussQuery();
 /** default = every menu closed; open = one menu open ({ menu: id | index }). */
 const menubarStates = ['default', 'open'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the open menu's id). */
+export interface MenubarStateConfigs {
+  /** Every menu closed. */
+  default: {
+    /** reported by getState(): null - no menu is open */
+    menu?: string | null;
+  };
+  /** One menu open. */
+  open: {
+    /** the menu to open: its id (its trigger's data-dropdown-trigger), or its index; default the first. getState() reports the open menu's id */
+    menu?: string | number | null;
+  };
+}
+
 const triggersOf = (bar) => Array.from(dfDollar(bar).find('.menubar-trigger').toArray()).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
 const menuOf = (trigger) => dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '')).get(0);
 const openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(':popover-open')) ?? null;

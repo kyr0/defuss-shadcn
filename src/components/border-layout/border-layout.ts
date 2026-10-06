@@ -14,9 +14,37 @@ import { defussGlobals, defussQuery, componentState, bindComponent, persisted } 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A region that folds and resizes - the center takes what is left. */
+type BorderLayoutSide = 'north' | 'south' | 'west' | 'east';
+
+/** What border-layout-collapse carries. */
+interface BorderLayoutCollapseDetail {
+  /** the region that folded or came back */
+  region: BorderLayoutSide;
+  /** whether it is collapsed now */
+  collapsed: boolean;
+}
+
 /** default = every region open at its authored size; collapsed = one or
  *  more regions folded away (their divider stays). */
 const borderLayoutStates = ['default', 'collapsed'];
+
+/** setState() configs per state. */
+export interface BorderLayoutStateConfigs {
+  /** Every region open at its authored size. */
+  default: {};
+  /** One or more regions folded away (their dividers stay). */
+  collapsed: {
+    /** the regions to fold */
+    regions?: BorderLayoutSide[];
+    /** one region to fold (when regions is not given) */
+    region?: BorderLayoutSide;
+  };
+}
 
 const SIDES = {
   north: { handle: 's', axis: 'h', size: 'height' },
@@ -112,7 +140,7 @@ function collapse(layout, side, collapsed) {
   aria(layout);
   save(layout);
   // Fires when a region folds away or comes back - which region, and whether it is collapsed now.
-  layout.dispatchEvent(new CustomEvent('border-layout-collapse', { bubbles: true, detail: { region: side, collapsed } }));
+  layout.dispatchEvent(new CustomEvent<BorderLayoutCollapseDetail>('border-layout-collapse', { bubbles: true, detail: { region: side, collapsed } }));
   syncState(layout);
 }
 
@@ -307,24 +335,46 @@ function init() {
 // -- df$.shadcn.borderLayout: the imperative surface ----------------------------------
 
 df$.borderLayout = {
-  /** Folds a region away. */
-  collapse: (t, side) => { const l = resolve(t); if (l) collapse(l, side, true); },
-  /** Brings a folded region back. */
-  expand: (t, side) => { const l = resolve(t); if (l) collapse(l, side, false); },
-  /** Folds or unfolds; returns whether it is now collapsed. */
-  toggle: (t, side) => {
-    const l = resolve(t);
+  /**
+   * Folds a region away (its divider stays).
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   */
+  collapse: (target: string | HTMLElement, side: BorderLayoutSide): void => { const l = resolve(target); if (l) collapse(l, side, true); },
+  /**
+   * Brings a folded region back.
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   */
+  expand: (target: string | HTMLElement, side: BorderLayoutSide): void => { const l = resolve(target); if (l) collapse(l, side, false); },
+  /**
+   * Folds or unfolds a region.
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   * @returns true when the region is collapsed now (false also when the layout has no such region)
+   */
+  toggle: (target: string | HTMLElement, side: BorderLayoutSide): boolean => {
+    const l = resolve(target);
     const region = l && regionOf(l, side);
     if (!region) return false;
     collapse(l, side, !region.hasAttribute('data-collapsed'));
     return region.hasAttribute('data-collapsed');
   },
-  /** Sets a region's size in px (clamped by the resizer). */
-  resize: (t, side, px) => { const l = resolve(t); const r = l && regionOf(l, side); if (r) { clamp(l); setSize(r, side, px); } },
-  /** The current sizes: { west: 240, east: 0 (collapsed), … }. */
-  sizes: (t) => {
-    const l = resolve(t);
-    const out = {};
+  /**
+   * Sets a region's size (clamped by the resizer's limits).
+   * @param target - the .border-layout element, its id or a selector
+   * @param side - the region
+   * @param px - the width (west / east) or height (north / south) in px
+   */
+  resize: (target: string | HTMLElement, side: BorderLayoutSide, px: number): void => { const l = resolve(target); const r = l && regionOf(l, side); if (r) { clamp(l); setSize(r, side, px); } },
+  /**
+   * The current sizes: { west: 240, east: 0 (collapsed), ... }.
+   * @param target - the .border-layout element, its id or a selector
+   * @returns px per region the layout has - 0 for a collapsed one
+   */
+  sizes: (target: string | HTMLElement): Partial<Record<BorderLayoutSide, number>> => {
+    const l = resolve(target);
+    const out: Partial<Record<BorderLayoutSide, number>> = {};
     if (l) for (const side of REGIONS) { const r = regionOf(l, side); if (r) out[side] = sizeOf(r, side); }
     return out;
   },

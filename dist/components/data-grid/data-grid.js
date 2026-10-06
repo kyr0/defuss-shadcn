@@ -753,9 +753,12 @@ df$.dataGrid = {
      * tree grid; or data-parent-field), cells ({ field: (el, record, meta) })
      * custom cell content, load(offset, size) → Promise<records[]> for
      * data-paging="infinite" from a remote source, query ({ sorters, filters,
-     * locked, … }) the starting query, persist ({ area: 'session' | 'local' |
+     * locked, ... }) the starting query, persist ({ area: 'session' | 'local' |
      * 'none', prefix, key }) where the view is kept - a kept view wins over
      * the starting query.
+     * @param target - the .data-grid element or its selector
+     * @param rows - the records (a tree grid: a flat list linked by parent id)
+     * @param options - fields, custom cells, a remote loader, the starting view and its persistence
      */
     setSource(target, rows, options = {}) {
         const grid = resolve(target);
@@ -780,26 +783,50 @@ df$.dataGrid = {
         }
         dataGridApi.setState(grid, 'default', patch);
     },
-    /** merge into the query: { filters?, sorters?, locked?, page?, expanded?, selected? } */
-    query: (target, patch) => query(resolve(target), patch),
-    /** the records the query shows, in order (all pages) */
+    /**
+     * Merge into the query: { filters?, sorters?, locked?, page?, expanded?, selected? }.
+     * @param target - the .data-grid element or its selector
+     * @param patch - the query keys to change
+     */
+    query: (target, patch) => { query(resolve(target), patch); },
+    /**
+     * The records the query shows.
+     * @param target - the .data-grid element or its selector
+     * @returns the records in query order, every page
+     */
     rows: (target) => (resolve(target)._result?.entries ?? []).map((e) => e.row),
-    /** the selected records */
+    /**
+     * The selected records.
+     * @param target - the .data-grid element or its selector
+     * @returns the selected records, in source order
+     */
     selected(target) {
         const grid = resolve(target);
         const ids = grid._selected ?? new Set();
         return (grid._source?.rows ?? []).filter((r) => ids.has(r[grid._source.idField]));
     },
-    /** Select every row the query shows (data-select="multiple"). */
+    /**
+     * Select every row the query shows (data-select="multiple").
+     * @param target - the .data-grid element or its selector
+     */
     selectAll: (target) => selectAll(resolve(target)),
-    /** Select nothing. */
-    clearSelection: (target) => query(resolve(target), { selected: [] }),
-    /** Tree grid: open every branch. */
+    /**
+     * Select nothing.
+     * @param target - the .data-grid element or its selector
+     */
+    clearSelection: (target) => { query(resolve(target), { selected: [] }); },
+    /**
+     * Tree grid: open every branch.
+     * @param target - the .data-grid element or its selector
+     */
     expandAll(target) {
         const grid = resolve(target);
         query(grid, { expanded: grid._source.branchIds(), collapsed: [] });
     },
-    /** Tree grid: close every branch. */
+    /**
+     * Tree grid: close every branch (while filtering: the ways to the matches too).
+     * @param target - the .data-grid element or its selector
+     */
     collapseAll(target) {
         const grid = resolve(target);
         const filtering = (configOf(grid).filters || []).length > 0;

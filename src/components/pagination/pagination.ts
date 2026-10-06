@@ -22,7 +22,34 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What pagination-change carries. */
+interface PaginationChangeDetail {
+  /** the page now active, clamped to data-min / data-max */
+  page: number;
+}
+
 const paginationStates = ['default'];
+
+/** setState() configs per state (getState() reports the live page and range). */
+export interface PaginationStateConfigs {
+  /** The links for the current page and range. */
+  default: {
+    /** the page to make active (clamped to the range) */
+    activePage?: number;
+    /** the same as activePage (when activePage is not given) */
+    page?: number;
+    /** the first page */
+    minPage?: number;
+    /** the last page */
+    maxPage?: number;
+    /** how many page links show at once (default 5) */
+    pageDisplayCount?: number;
+  };
+}
 
 /** Read one numeric data attribute (camelCase key) with a fallback. */
 const numAttr = (el: HTMLElement, key: string, fallback: number): number => {
@@ -144,7 +171,7 @@ function setPage(nav: HTMLElement, page: number): void {
   if (next === numAttr(nav, 'activePage', min)) return;
   nav.dataset.activePage = String(next); // the attribute MO re-renders
   // Fires when the user changes the page (a link, the arrows) - the new page.
-  nav.dispatchEvent(new CustomEvent('pagination-change', { bubbles: true, detail: { page: next } }));
+  nav.dispatchEvent(new CustomEvent<PaginationChangeDetail>('pagination-change', { bubbles: true, detail: { page: next } }));
 }
 
 /**

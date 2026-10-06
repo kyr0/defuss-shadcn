@@ -12,7 +12,29 @@ import { defussGlobals, safeShowPopover, defussQuery, componentState, bindCompon
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What dropdown:select carries. */
+interface DropdownSelectDetail {
+  /** the chosen menu item */
+  item: HTMLElement;
+  /** its data-value, else its trimmed text */
+  value: string;
+  /** a checkbox / radio item: whether it is checked now (absent for a plain item) */
+  checked?: boolean;
+}
+
 const dropdownStates = ['default', 'open'];
+
+/** setState() configs per state - the dropdown's states take none. */
+export interface DropdownStateConfigs {
+  /** The menu closed. */
+  default: {};
+  /** The menu open (the popover shown). */
+  open: {};
+}
 
 const ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 const isDisabled = (el) => el.disabled || el.getAttribute('aria-disabled') === 'true';
@@ -83,16 +105,16 @@ function activate(menu, item) {
     const checked = item.getAttribute('aria-checked') !== 'true';
     item.setAttribute('aria-checked', String(checked));
     // Fires when an item is chosen - the item, its value (data-value or its text) and, for a checkbox item, whether it is checked now.
-    item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    item.dispatchEvent(new CustomEvent<DropdownSelectDetail>('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
     return; // stays open: toggling several options in one go
   }
   if (role === 'menuitemradio') {
     const group = item.closest('[role="group"]') ?? menu;
     dfDollar(group).find('[role="menuitemradio"]').toArray().forEach((r) => { if (r.closest('[role="menu"]') === menu) r.setAttribute('aria-checked', String(r === item)); });
-    item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    item.dispatchEvent(new CustomEvent<DropdownSelectDetail>('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
     return;
   }
-  item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  item.dispatchEvent(new CustomEvent<DropdownSelectDetail>('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
   // a plain item acts and closes the whole menu tree
   try { rootOf(menu).hidePopover(); } catch { /* closed */ }
 }

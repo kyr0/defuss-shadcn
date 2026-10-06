@@ -13,6 +13,16 @@ const dfDollar = defussQuery();
 
 const sidebarStates = ['default', 'collapsed'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the sidebar's states take none. */
+export interface SidebarStateConfigs {
+  /** As authored (expanded unless the markup collapses it). */
+  default: {};
+  /** Icons only (data-state="collapsed"). */
+  collapsed: {};
+}
+
 /**
  * The markup of a state, for render(): the attributes every state writes -
  * the same as triggerStateChange does on the live element - applied to a

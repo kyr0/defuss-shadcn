@@ -109,7 +109,7 @@ our `data-orientation="vertical"` (the LINE is vertical).
 | `data-gap` | `none`, `sm`, `md` (default 0.75rem), `lg`, `xl` | Space between the text and the lines |
 | `data-orientation-md` / `-lg` | `vertical` | A vertical line from 48 / 64rem up - the parent must switch to a row at the same width |
 
-For space AROUND a separator use the margin utilities (`my-4`, `my-8` …).
+For space AROUND a separator use the margin utilities (`my-4`, `my-8` ...).
 
 ---
 

@@ -21,6 +21,27 @@ const dfDollar = defussQuery();
 
 const stepsStates = ['default'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the live progress). */
+export interface StepsStateConfigs {
+  /** The tracker at a step. */
+  default: {
+    /** the current step, 1-based */
+    activeStep?: number;
+    /** the same as activeStep (when activeStep is not given) */
+    step?: number;
+    /** the same as activeStep (when neither is given) */
+    page?: number;
+    /** the step marked as failed, 0 for none */
+    errorStep?: number;
+    /** true marks the current step as failed, false clears that */
+    activeStepError?: boolean;
+    /** the size */
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  };
+}
+
 /** Read one numeric data attribute (camelCase key) with a fallback. */
 const numAttr = (el: HTMLElement, key: string, fallback: number): number => {
   const v = parseInt(el.dataset[key] ?? '', 10);

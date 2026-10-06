@@ -179,7 +179,12 @@ df$.virtualListStates = virtualListStates;
  * assume the element is empty or new.
  */
 df$.virtualList = {
-    /** An index range instead of records: count rows, renderRow(row, index) fills a recycled element - nothing is stored per row. */
+    /**
+     * An index range instead of records: count rows, renderRow(row, index) fills a recycled element - nothing is stored per row.
+     * @param list - the .virtual-list element
+     * @param count - how many rows (floored, at least 0; 0 shows the empty state)
+     * @param renderRow - fills the recycled element of row `index`; omitted, the last one given stays
+     */
     setData(list, count, renderRow) {
         list._source = null;
         list._count = Math.max(0, Math.floor(count) || 0);
@@ -193,6 +198,9 @@ df$.virtualList = {
      * Records instead of a count: `rows` is any array of objects, `render(el,
      * record, { index })` fills a recycled element. Filters and multisort run
      * over every row (defuss-dataview); `query` is the first one.
+     * @param list - the .virtual-list element
+     * @param rows - the records
+     * @param options - render, the id field and the first query
      */
     setSource(list, rows, { render, idField = 'id', query = {} } = {}) {
         list._source = dataSource(rows, { idField });
@@ -205,11 +213,19 @@ df$.virtualList = {
         else
             list._pendingQuery = query;
     },
-    /** run a query (merged into the stored one): { filters?, sorters? } */
+    /**
+     * Run a query (merged into the stored one): { filters?, sorters? }.
+     * @param list - the .virtual-list element
+     * @param query - the keys to change
+     */
     query(list, query) {
-        return virtualListApi.setState(list, 'default', query);
+        virtualListApi.setState(list, 'default', query);
     },
-    /** the rows the current query shows (records, in order) */
+    /**
+     * The rows the current query shows.
+     * @param list - the .virtual-list element
+     * @returns the records, in list order ([] for an index range from setData)
+     */
     rows(list) {
         return list._source ? list._result.entries.map((entry) => entry.row) : [];
     },

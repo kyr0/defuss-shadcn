@@ -5599,19 +5599,20 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$10.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar10(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$10.toast = toastActions;
 
 // src/components/toggle/toggle.ts
 var df$11 = defussGlobals();
@@ -6056,6 +6057,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=8A90A9E9B162A1C964756E2164756E21
+//# debugId=275CF518242B2E9E64756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=notes.js.map

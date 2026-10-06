@@ -279,7 +279,11 @@ function init() {
         }
     });
 }
-/** Builds a window element from options - the shape the skill documents. */
+/**
+ * Builds a window element from options - the shape the skill documents.
+ * @param options - title, body, place, size, look and where it opens
+ * @returns the new window (a <dialog class="window">), open unless focus is false
+ */
 function create(options = {}) {
     const { title = 'Untitled', icon, content, html, statusbar, id, x, y, width, height, chrome, resizable = true, parent, focus = true, flush = false, } = options;
     const host = resolve(parent) ?? dfDollar('.window-desktop').get(0) ?? document.body;
@@ -346,15 +350,27 @@ function create(options = {}) {
         globalThis.lucide?.createIcons?.();
     return w;
 }
-/** Windows (open unless `all`) inside `scope` (default: the page). */
+/**
+ * Windows (open unless `all`) inside `scope` (default: the page).
+ * @param scope - a desktop element, its id or a selector (default: the page)
+ * @param all - true: closed windows too
+ * @returns the windows, in document order
+ */
 const list = (scope, all = false) => dfDollar(resolve(scope) ?? document).find(all ? '.window' : '.window[open]').toArray();
-/** Steps the open windows diagonally from the top-left, front-most last. */
+/**
+ * Steps the open windows diagonally from the top-left, front-most last.
+ * @param scope - a desktop element, its id or a selector (default: the page)
+ * @param step - px between two windows (default 28)
+ */
 function cascade(scope, step = 28) {
     list(scope)
         .sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0))
         .forEach((w, i) => { windowApi.setState(w, 'default', {}); moveTo(w, 16 + i * step, 16 + i * step); });
 }
-/** Lays the open windows side by side in a grid that fills their desktop. */
+/**
+ * Lays the open windows side by side in a grid that fills their desktop.
+ * @param scope - a desktop element, its id or a selector (default: the page)
+ */
 function tile(scope) {
     const wins = list(scope);
     if (!wins.length)
@@ -376,22 +392,48 @@ function tile(scope) {
 }
 // the imperative API: df$.shadcn.win.* - every method takes an element,
 // an id or a selector
-df$.win = {
+/** df$.shadcn.win - create, arrange and drive windows. */
+export const windowActions = {
     create,
-    /** Open a window (closed, minimized or not shown yet) - config is the state's config. */
-    open: (t, config = {}) => { const w = resolve(t); if (w)
+    /**
+     * Open a window (closed, minimized or not shown yet) - config is the state's config.
+     * @param target - the .window element, its id or a selector
+     * @param config - where it opens: { x, y } px
+     * @returns the window, null when the target matches none
+     */
+    open: (target, config = {}) => { const w = resolve(target); if (w)
         windowApi.setState(w, 'default', config); return w; },
-    /** Close it (the closed state). */
-    close: (t) => { const w = resolve(t); if (w)
+    /**
+     * Close it (the closed state).
+     * @param target - the .window element, its id or a selector
+     * @returns the window, null when the target matches none
+     */
+    close: (target) => { const w = resolve(target); if (w)
         windowApi.setState(w, 'closed', {}); return w; },
-    /** Bring it to the front (the active window). */
-    focus: (t) => { const w = resolve(t); if (w?.open)
+    /**
+     * Bring it to the front (the active window).
+     * @param target - the .window element, its id or a selector
+     * @returns the window, null when the target matches none
+     */
+    focus: (target) => { const w = resolve(target); if (w?.open)
         raise(w); return w; },
-    /** Move it to x, y (px, inside its desktop). */
-    move: (t, x, y) => { const w = resolve(t); return w ? moveTo(w, x, y) : null; },
-    /** Size it: width (and height) as px numbers or CSS lengths. */
-    resize: (t, width, height) => {
-        const w = resolve(t);
+    /**
+     * Move it to x, y (px, inside its desktop).
+     * @param target - the .window element, its id or a selector
+     * @param x - the left edge, px
+     * @param y - the top edge, px
+     * @returns where it landed (kept reachable inside its desktop), null when the target matches none
+     */
+    move: (target, x, y) => { const w = resolve(target); return w ? moveTo(w, x, y) : null; },
+    /**
+     * Size it: width (and height) as px numbers or CSS lengths.
+     * @param target - the .window element, its id or a selector
+     * @param width - px, or a CSS length
+     * @param height - px, or a CSS length; omitted, the height stays
+     * @returns the window, null when the target matches none
+     */
+    resize: (target, width, height) => {
+        const w = resolve(target);
         if (!w)
             return null;
         w.style.width = '';
@@ -401,28 +443,48 @@ df$.win = {
             w.style.setProperty('--window-h', typeof height === 'number' ? `${height}px` : height);
         return w;
     },
-    /** Fill the desktop. */
-    maximize: (t) => { const w = resolve(t); if (w)
+    /**
+     * Fill the desktop.
+     * @param target - the .window element, its id or a selector
+     * @returns the window, null when the target matches none
+     */
+    maximize: (target) => { const w = resolve(target); if (w)
         windowApi.setState(w, 'maximized', {}); return w; },
-    /** Minimize it to the taskbar. */
-    minimize: (t) => { const w = resolve(t); if (w)
+    /**
+     * Minimize it to the taskbar.
+     * @param target - the .window element, its id or a selector
+     * @returns the window, null when the target matches none
+     */
+    minimize: (target) => { const w = resolve(target); if (w)
         windowApi.setState(w, 'minimized', {}); return w; },
-    /** Back to its normal size and place. */
-    restore: (t) => { const w = resolve(t); if (w)
+    /**
+     * Back to its normal size and place.
+     * @param target - the .window element, its id or a selector
+     * @returns the window, null when the target matches none
+     */
+    restore: (target) => { const w = resolve(target); if (w)
         windowApi.setState(w, 'default', {}); return w; },
-    /** Maximize it, or restore it when it is maximized. */
-    toggleMaximize: (t) => {
-        const w = resolve(t);
+    /**
+     * Maximize it, or restore it when it is maximized.
+     * @param target - the .window element, its id or a selector
+     * @returns the window, null when the target matches none
+     */
+    toggleMaximize: (target) => {
+        const w = resolve(target);
         if (w)
             windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {});
         return w;
     },
-    /** The window in front, if any. */
+    /**
+     * The window in front.
+     * @returns the active open window, undefined when none is open
+     */
     active: () => dfDollar('.window[open][data-active]').get(0),
     list,
     cascade,
     tile,
 };
+df$.win = windowActions;
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 //# sourceMappingURL=window.js.map

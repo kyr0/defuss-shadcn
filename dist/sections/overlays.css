@@ -1,0 +1,1009 @@
+/* ── components/popover/popover.css ── */
+@layer components {
+  .popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    padding: 1rem;
+
+    /* -- Density --------------------------------------------------
+       data-density on the .popover root scales the content padding
+       (0.75 / 1 / 1.25 of the 1rem default); comfortable matches the
+       unsized default. */
+    &[data-density="compact"]     { padding: 0.75rem; }
+    &[data-density="comfortable"] { padding: 1rem; }
+    &[data-density="spacious"]    { padding: 1.25rem; }
+    box-shadow: var(--shadow-md);
+    width: 20rem;
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity 150ms ease, translate 150ms ease, display 150ms allow-discrete;
+
+    /* -- Default: bottom center -- */
+    position-area: bottom;
+    margin-top: 4px;
+    position-try-fallbacks: flip-block;
+
+    &:popover-open {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    /* ----- Side variants ----- */
+    &[data-side="top"] {
+      position-area: top;
+      margin-top: 0;
+      margin-bottom: 4px;
+      translate: 0 4px;
+      &:popover-open { translate: 0 0; }
+    }
+
+    &[data-side="left"] {
+      position-area: left;
+      margin-top: 0;
+      margin-right: 4px;
+      translate: 4px 0;
+      position-try-fallbacks: flip-inline;
+      &:popover-open { translate: 0 0; }
+    }
+
+    &[data-side="right"] {
+      position-area: right;
+      margin-top: 0;
+      margin-left: 4px;
+      translate: -4px 0;
+      position-try-fallbacks: flip-inline;
+      &:popover-open { translate: 0 0; }
+    }
+
+    /* ----- Align variants (combined with side) ----- */
+    &[data-align="start"] {
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: bottom left; }
+      &[data-side="top"] { position-area: top left; }
+      &[data-side="left"] { position-area: left top; }
+      &[data-side="right"] { position-area: right top; }
+    }
+
+    &[data-align="end"] {
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: bottom right; }
+      &[data-side="top"] { position-area: top right; }
+      &[data-side="left"] { position-area: left bottom; }
+      &[data-side="right"] { position-area: right bottom; }
+    }
+  }
+
+  @starting-style {
+    .popover:popover-open { opacity: 0; translate: 0 -4px; }
+    .popover[data-side="top"]:popover-open { opacity: 0; translate: 0 4px; }
+    .popover[data-side="left"]:popover-open { opacity: 0; translate: 4px 0; }
+    .popover[data-side="right"]:popover-open { opacity: 0; translate: -4px 0; }
+  }
+
+  .popover-header { margin-bottom: 0.75rem; }
+  .popover-title { margin: 0; font-size: 0.875rem; font-weight: 500; color: var(--foreground); }
+  .popover-description { margin: 0.25rem 0 0; font-size: 0.8125rem; color: var(--muted-foreground); }
+  .popover-content { font-size: 0.875rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .popover {
+      transition: none;
+    }
+  }
+}
+
+/* ── components/tooltip/tooltip.css ── */
+@layer components {
+  .tooltip {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    /* The UA popover stylesheet sets overflow:auto - the [data-arrow] caret
+       sits OUTSIDE the border box (-4px offsets), so it got clipped to a
+       sliver and overflow:auto rendered a scrollbar around the text. */
+    overflow: visible;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    box-shadow: var(--shadow-sm);
+    pointer-events: none;
+    max-width: 16rem;
+    width: max-content;
+    opacity: 0;
+    transition: opacity 150ms ease, translate 150ms ease, display 150ms allow-discrete;
+
+    /* -- Default: top center -- */
+    position-area: top;
+    margin-bottom: 6px;
+    translate: 0 2px;
+    position-try-fallbacks: flip-block, flip-inline;
+
+    &:popover-open { opacity: 1; translate: 0 0; }
+
+    /* ----- Side variants ----- */
+    &[data-side="bottom"] {
+      position-area: bottom;
+      margin-bottom: 0;
+      margin-top: 6px;
+      translate: 0 -2px;
+      &:popover-open { translate: 0 0; }
+    }
+
+    &[data-side="left"] {
+      position-area: left;
+      margin-bottom: 0;
+      margin-right: 6px;
+      translate: 2px 0;
+      &:popover-open { translate: 0 0; }
+    }
+
+    &[data-side="right"] {
+      position-area: right;
+      margin-bottom: 0;
+      margin-left: 6px;
+      translate: -2px 0;
+      &:popover-open { translate: 0 0; }
+    }
+
+    /* ----- Align variants (combined with side) -----
+       span-*: the tooltip starts AT the trigger's edge and extends past it.
+       (The corner areas - "top left" - put it entirely beside the trigger,
+       pointing at nothing.) start = shares the trigger's start edge. */
+    &[data-align="start"] {
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-right; }
+      &[data-side="bottom"] { position-area: bottom span-right; }
+      &[data-side="left"] { position-area: left span-bottom; }
+      &[data-side="right"] { position-area: right span-bottom; }
+    }
+
+    &[data-align="end"] {
+      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-left; }
+      &[data-side="bottom"] { position-area: bottom span-left; }
+      &[data-side="left"] { position-area: left span-top; }
+      &[data-side="right"] { position-area: right span-top; }
+    }
+
+    /* ----- Arrow ----- */
+    & [data-arrow] {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: inherit;
+      rotate: 45deg;
+      border: none;
+    }
+
+    /* Arrow placement - default (top side): arrow at bottom center */
+    &:not([data-side]), &[data-side="top"] {
+      & [data-arrow] { bottom: -4px; left: 50%; margin-left: -4px; }
+    }
+    &[data-side="bottom"] {
+      & [data-arrow] { top: -4px; left: 50%; margin-left: -4px; }
+    }
+    &[data-side="left"] {
+      & [data-arrow] { right: -4px; top: 50%; margin-top: -4px; }
+    }
+    &[data-side="right"] {
+      & [data-arrow] { left: -4px; top: 50%; margin-top: -4px; }
+    }
+
+    /* Aligned tooltips: the arrow sits near the shared edge, so it points
+       into the trigger (a centred arrow would point past a narrow trigger) */
+    &[data-align="start"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: 1rem; margin-left: -4px; }
+    &[data-align="end"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: auto; right: 1rem; margin-left: 0; margin-right: -4px; }
+    &[data-align="start"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: 0.75rem; margin-top: -4px; }
+    &[data-align="end"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: auto; bottom: 0.75rem; margin-top: 0; margin-bottom: -4px; }
+  }
+
+  @starting-style {
+    .tooltip:popover-open { opacity: 0; translate: 0 2px; }
+    .tooltip[data-side="bottom"]:popover-open { opacity: 0; translate: 0 -2px; }
+    .tooltip[data-side="left"]:popover-open { opacity: 0; translate: 2px 0; }
+    .tooltip[data-side="right"]:popover-open { opacity: 0; translate: -2px 0; }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .tooltip,
+    .tooltip *,
+    .tooltip::before,
+    .tooltip::after,
+    .tooltip *::before,
+    .tooltip *::after,
+    .tooltip::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/context-menu/context-menu.css ── */
+@layer components {
+  .context-menu-trigger {
+    display: flex; align-items: center; justify-content: center;
+    border: 2px dashed var(--border); border-radius: var(--radius-lg);
+    padding: 3rem; font-size: 0.875rem; color: var(--muted-foreground); cursor: default;
+  }
+
+  .context-menu {
+    margin: 0; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    background-color: var(--popover); color: var(--popover-foreground);
+    padding: 0.25rem; box-shadow: var(--shadow-md); min-width: 10rem;
+    opacity: 0; transform: scale(0.95);
+    transition: opacity 100ms ease, transform 100ms ease, display 100ms allow-discrete;
+
+    &:popover-open { opacity: 1; transform: scale(1); }
+  }
+
+  @starting-style {
+    .context-menu:popover-open { opacity: 0; transform: scale(0.95); }
+  }
+
+  .context-menu-item {
+    display: flex; align-items: center; gap: 0.5rem; width: 100%;
+    padding: 0.375rem 0.5rem; border: none; border-radius: var(--radius-md);
+    background: transparent; color: var(--popover-foreground);
+    font-size: 0.8125rem; font-family: inherit; text-align: left; cursor: pointer;
+    transition: background-color 100ms ease;
+
+    &:hover, &[data-highlighted] { background-color: var(--accent); color: var(--accent-foreground); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+  }
+
+  .context-menu-separator { height: 1px; background-color: var(--border); margin: 0.25rem -0.25rem; }
+  /* -- Density ----------------------------------------------------
+     data-density on the .context-menu root scales the container padding and
+     the item rows. comfortable == the unsized default. */
+  .context-menu:where([data-density="compact"]) {
+    padding: 0.125rem;
+    & .context-menu-item { padding: 0.25rem 0.5rem; }
+  }
+  .context-menu:where([data-density="comfortable"]) {
+    padding: 0.25rem;
+    & .context-menu-item { padding: 0.375rem 0.5rem; }
+  }
+  .context-menu:where([data-density="spacious"]) {
+    padding: 0.375rem;
+    & .context-menu-item { padding: 0.5rem 0.625rem; }
+  }
+
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .context-menu-trigger,
+    .context-menu-trigger *,
+    .context-menu-trigger::before,
+    .context-menu-trigger::after,
+    .context-menu-trigger *::before,
+    .context-menu-trigger *::after,
+    .context-menu-trigger::backdrop,
+    .context-menu,
+    .context-menu *,
+    .context-menu::before,
+    .context-menu::after,
+    .context-menu *::before,
+    .context-menu *::after,
+    .context-menu::backdrop,
+    .context-menu-item,
+    .context-menu-item *,
+    .context-menu-item::before,
+    .context-menu-item::after,
+    .context-menu-item *::before,
+    .context-menu-item *::after,
+    .context-menu-item::backdrop,
+    .context-menu-separator,
+    .context-menu-separator *,
+    .context-menu-separator::before,
+    .context-menu-separator::after,
+    .context-menu-separator *::before,
+    .context-menu-separator *::after,
+    .context-menu-separator::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/dialog/dialog.css ── */
+/* -- Dialog component ------------------------------------------ */
+
+@layer components {
+  dialog.dialog {
+    border: none;
+    border-radius: var(--radius-xl);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+    padding: 0;
+    margin: auto;
+    position: fixed;
+    inset: 0;
+    max-width: 28rem;
+    width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    box-shadow: 0 25px 80px oklch(0 0 0 / 0.25), 0 0 0 1px var(--border);
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.98);
+    transition: opacity 200ms ease, transform 200ms ease, display 200ms allow-discrete;
+
+    &[open] {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* -- Sizes ------------------------------------------------ */
+    &[data-size="sm"]   { max-width: 24rem; }
+    &[data-size="md"]   { max-width: 28rem; }
+    &[data-size="lg"]   { max-width: 32rem; }
+    &[data-size="xl"]   { max-width: 40rem; }
+    &[data-size="full"] { max-width: calc(100vw - 2rem); }
+
+    /* -- Backdrop --------------------------------------------- */
+    &::backdrop {
+      background: oklch(0 0 0 / 0);
+      backdrop-filter: blur(0px);
+      transition: all 200ms ease, display 200ms allow-discrete;
+    }
+
+    &[open]::backdrop {
+      background: oklch(0 0 0 / 0.45);
+      backdrop-filter: blur(3px);
+    }
+  }
+
+  @starting-style {
+    dialog.dialog[open] {
+      opacity: 0;
+      transform: translateY(-0.5rem) scale(0.98);
+    }
+
+    dialog.dialog[open]::backdrop {
+      background: oklch(0 0 0 / 0);
+      backdrop-filter: blur(0px);
+    }
+  }
+
+  /* -- Scroll lock ------------------------------------------- */
+  /* While the dialog is modal the page behind must stay put - closing
+     returns you to exactly the scroll offset you had. `:modal` matches only
+     while opened via showModal(); overflow:hidden freezes the viewport
+     without losing the scroll position (no JS position:fixed hack), and
+     scrollbar-gutter:stable keeps the scrollbar's space reserved so its
+     removal can't shift the layout underneath. */
+  html:has(dialog.dialog:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  /* -- Density ------------------------------------------------
+     data-density on the .dialog root scales the content padding
+     (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
+     unsized default. Width stays governed by data-size - two axes. */
+  .dialog:where([data-density="compact"]) .dialog-content      { padding: 1rem; }
+  .dialog:where([data-density="comfortable"]) .dialog-content  { padding: 1.5rem; }
+  .dialog:where([data-density="spacious"]) .dialog-content     { padding: 2rem; }
+
+  /* -- Content sections ------------------------------------- */
+  .dialog-content { padding: 1.5rem; }
+  .dialog-header  { margin-bottom: 1rem; }
+  .dialog-title   { font-size: 1.0625rem; font-weight: 600; margin: 0 0 0.375rem; letter-spacing: -0.01em; }
+  .dialog-description { font-size: 0.875rem; color: var(--muted-foreground); margin: 0; line-height: 1.6; }
+  .dialog-body    { margin-top: 1rem; }
+  .dialog-footer  { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+}
+
+/* Accessibility: reduced motion removes open/close transitions (REQUIRED
+   for all components - AGENTS.md "Accessibility CSS"). */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    dialog.dialog,
+    dialog.dialog::backdrop { transition: none; }
+  }
+}
+
+/* ── components/sheet/sheet.css ── */
+/* -- Sheet component ------------------------------------------- */
+
+@layer components {
+  /* -- Base -------------------------------------------------- */
+  dialog.sheet {
+    border: none;
+    border-radius: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    max-height: none;
+    opacity: 0;
+    transition: opacity 300ms ease, transform 300ms ease, display 300ms allow-discrete;
+
+    &[open] { opacity: 1; }
+
+    /* -- Side: right (default) --------------------------------- */
+    &, &[data-side="right"] {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      left: auto;
+      width: 24rem;
+      max-width: 100vw;
+      max-height: 100vh;
+      height: 100%;
+      border-left: 1px solid var(--border);
+      transform: translateX(100%);
+    }
+
+    &[open], &[data-side="right"][open] {
+      transform: translateX(0);
+    }
+
+    /* -- Side: left -------------------------------------------- */
+    &[data-side="left"] {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      right: auto;
+      width: 24rem;
+      max-width: 100vw;
+      max-height: 100vh;
+      height: 100%;
+      border-left: none;
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+
+      &[open] { transform: translateX(0); }
+    }
+
+    /* -- Side: top --------------------------------------------- */
+    &[data-side="top"] {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      bottom: auto;
+      width: 100%;
+      max-width: 100vw;
+      /* a sheet, not a page: the backdrop always shows (content scrolls
+         inside the modal past this) */
+      max-height: 85dvh;
+      height: auto;
+      border-left: none;
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-100%);
+
+      &[open] { transform: translateY(0); }
+    }
+
+    /* -- Side: bottom ------------------------------------------ */
+    &[data-side="bottom"] {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      top: auto;
+      width: 100%;
+      max-width: 100vw;
+      /* a sheet, not a page: the backdrop always shows (content scrolls
+         inside the modal past this) */
+      max-height: 85dvh;
+      height: auto;
+      border-left: none;
+      border-top: 1px solid var(--border);
+      transform: translateY(100%);
+
+      &[open] { transform: translateY(0); }
+    }
+
+    /* -- Backdrop ---------------------------------------------- */
+    &::backdrop {
+      background: oklch(0 0 0 / 0);
+      backdrop-filter: blur(0px);
+      transition: all 300ms ease, display 300ms allow-discrete;
+    }
+
+    &[open]::backdrop {
+      background: oklch(0 0 0 / 0.45);
+      backdrop-filter: blur(3px);
+    }
+  }
+
+  @starting-style {
+    dialog.sheet[open],
+    dialog.sheet[data-side="right"][open] {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    dialog.sheet[data-side="left"][open] {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+
+    dialog.sheet[data-side="top"][open] {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+
+    dialog.sheet[data-side="bottom"][open] {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+
+    dialog.sheet[open]::backdrop {
+      background: oklch(0 0 0 / 0);
+      backdrop-filter: blur(0px);
+    }
+  }
+
+  /* -- Scroll lock ------------------------------------------- */
+  /* Page behind stays put while a sheet is modal (see dialog.css):
+     `:modal` + overflow:hidden freezes the viewport at its current offset. */
+  html:has(dialog.sheet:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  /* -- Content sections -------------------------------------- */
+  .sheet-content     { padding: 1.5rem; position: relative; }
+
+  /* -- Density ----------------------------------------------------
+     data-density on the .sheet root scales the content padding
+     (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
+     unsized default. The sheet's slide-in width is layout, not whitespace —
+     it stays put. */
+  .sheet:where([data-density="compact"]) .sheet-content     { padding: 1rem; }
+  .sheet:where([data-density="comfortable"]) .sheet-content { padding: 1.5rem; }
+  .sheet:where([data-density="spacious"]) .sheet-content    { padding: 2rem; }
+
+  /* Top/bottom sheets span the full viewport width - on wide screens the
+     content would stretch unaligned, so keep a readable, centered column
+     (the side sheets are already width-constrained at 24rem). */
+  dialog.sheet[data-side="top"] .sheet-content,
+  dialog.sheet[data-side="bottom"] .sheet-content {
+    max-width: 48rem;
+    box-sizing: border-box; /* the 1.5rem padding is part of the 48rem column */
+    width: 100%;
+    margin-inline: auto;
+  }
+  .sheet-header      { margin-bottom: 1rem; padding-right: 2rem; }
+  .sheet-title       { font-size: 1.0625rem; font-weight: 600; margin: 0 0 0.375rem; letter-spacing: -0.01em; }
+  .sheet-description { font-size: 0.875rem; color: var(--muted-foreground); margin: 0; line-height: 1.6; }
+  .sheet-body        { margin-top: 1rem; }
+  .sheet-footer      { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+
+  /* -- Close button ------------------------------------------ */
+  .sheet-close-x {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 1.75rem; height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color 150ms, background-color 150ms;
+
+    &:hover {
+      color: var(--foreground);
+      background-color: var(--accent);
+    }
+  }
+}
+
+/* Accessibility: suppress motion for users who request it (REQUIRED for all
+   components - AGENTS.md "Accessibility CSS"). Near-zero duration instead of
+   `none` keeps transitionend/animationend (and discrete display flips)
+   firing so JS state machines that await them keep working. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .sheet,
+    .sheet *,
+    .sheet::before,
+    .sheet::after,
+    .sheet *::before,
+    .sheet *::after,
+    .sheet::backdrop,
+    .sheet-body,
+    .sheet-body *,
+    .sheet-body::before,
+    .sheet-body::after,
+    .sheet-body *::before,
+    .sheet-body *::after,
+    .sheet-body::backdrop,
+    .sheet-close-x,
+    .sheet-close-x *,
+    .sheet-close-x::before,
+    .sheet-close-x::after,
+    .sheet-close-x *::before,
+    .sheet-close-x *::after,
+    .sheet-close-x::backdrop,
+    .sheet-content,
+    .sheet-content *,
+    .sheet-content::before,
+    .sheet-content::after,
+    .sheet-content *::before,
+    .sheet-content *::after,
+    .sheet-content::backdrop,
+    .sheet-description,
+    .sheet-description *,
+    .sheet-description::before,
+    .sheet-description::after,
+    .sheet-description *::before,
+    .sheet-description *::after,
+    .sheet-description::backdrop,
+    .sheet-footer,
+    .sheet-footer *,
+    .sheet-footer::before,
+    .sheet-footer::after,
+    .sheet-footer *::before,
+    .sheet-footer *::after,
+    .sheet-footer::backdrop,
+    .sheet-header,
+    .sheet-header *,
+    .sheet-header::before,
+    .sheet-header::after,
+    .sheet-header *::before,
+    .sheet-header *::after,
+    .sheet-header::backdrop,
+    .sheet-title,
+    .sheet-title *,
+    .sheet-title::before,
+    .sheet-title::after,
+    .sheet-title *::before,
+    .sheet-title *::after,
+    .sheet-title::backdrop {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ── components/accordion/accordion.css ── */
+/* -- Accordion component --------------------------------------- */
+
+@layer components {
+  .accordion {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .accordion-item {
+    border-bottom: 1px solid var(--border);
+
+    &:last-child { border-bottom: none; }
+
+    /* -- Content animation (CSS-only) -------------------------
+       Two gotchas, both required for the panel to glide:
+       1. `::details-content` must attach to the compound (`&::details-content`,
+          NOT `& ::details-content` - the descendant form never matches, the
+          pseudo's originating element is the subject itself).
+       2. `block-size: auto` is a keyword - without interpolate-size the
+          0→auto pair is non-interpolable and the transition silently snaps. */
+    &::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      interpolate-size: allow-keywords;
+      transition: block-size 200ms ease, content-visibility 200ms allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @starting-style {
+    .accordion-item[open]::details-content {
+      block-size: 0;
+    }
+  }
+
+  /* Remove default details marker */
+  .accordion-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-align: start;
+    cursor: pointer;
+    list-style: none;
+    color: inherit;
+    transition: color 150ms;
+
+    &::-webkit-details-marker { display: none; }
+    &::marker { content: ''; }
+    &:hover { text-decoration: underline; }
+  }
+
+  /* Chevron rotation */
+  .accordion-chevron {
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 60%, transparent);
+    transition: transform 200ms ease;
+    flex-shrink: 0;
+
+    details[open] > .accordion-trigger & {
+      transform: rotate(180deg);
+    }
+  }
+
+  /* Content */
+  .accordion-content {
+    padding-bottom: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: color-mix(in oklch, currentColor 72%, transparent);
+    overflow: hidden;
+
+    & p { margin: 0; }
+  }
+
+  /* -- Surfaces (data-variant on the .accordion) -----------------------
+     bordered: one box, items divided · separated: every item its own card
+     · muted / primary / neutral: separated items on that surface ·
+     highlight: separated, the open item turns primary · ghost: no
+     dividers. Boxed variants pad the text inside and swap the underline
+     hover for a tint. The item's text color flows into the heading, the
+     marker and the content, so custom colors (style on an item) just work. */
+  .accordion {
+    color: var(--foreground);
+
+    &[data-variant="bordered"] {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    &:is([data-variant="separated"], [data-variant="muted"], [data-variant="primary"], [data-variant="neutral"], [data-variant="highlight"]) {
+      gap: 0.5rem;
+
+      & > .accordion-item {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+    }
+    &[data-variant="muted"] > .accordion-item { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="primary"] > .accordion-item { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    &[data-variant="neutral"] > .accordion-item {
+      background-color: color-mix(in oklch, var(--foreground) 78%, var(--background));
+      color: var(--background);
+      border-color: transparent;
+    }
+    &[data-variant="highlight"] > .accordion-item {
+      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+
+      &[open] { background-color: var(--primary); color: var(--primary-foreground); border-color: transparent; }
+    }
+    &[data-variant="ghost"] > .accordion-item { border-bottom-color: transparent; }
+
+    /* boxed: text inset, tint on hover */
+    &:is([data-variant="bordered"], [data-variant="separated"], [data-variant="muted"], [data-variant="primary"], [data-variant="neutral"], [data-variant="highlight"]) {
+      & .accordion-trigger {
+        padding-inline: 1rem;
+
+        &:hover { text-decoration: none; background-color: color-mix(in oklch, currentColor 7%, transparent); }
+      }
+      & .accordion-content { padding-inline: 1rem; }
+    }
+
+    /* -- Sizes: the headings' scale and weight (md == default) ---------- */
+    &[data-size="sm"] .accordion-trigger { font-size: 0.8125rem; }
+    &[data-size="md"] .accordion-trigger { font-size: 0.9375rem; }
+    &[data-size="lg"] .accordion-trigger { font-size: 1.0625rem; font-weight: 600; }
+    &[data-size="xl"] .accordion-trigger { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+  }
+
+  /* -- Leading icon / emoji ------------------------------------------- */
+  .accordion-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.15em;
+    height: 1.15em;
+    flex-shrink: 0;
+    font-style: normal;
+    line-height: 1;
+
+    & svg { width: 1em; height: 1em; }
+  }
+
+  /* -- Markers: data-marker="arrow" / "plus" on the .accordion draws the
+     open/close sign (no icon markup); data-marker-position="start" puts it
+     before the heading. Own glyphs: .accordion-chevron (180°, or 90° with
+     data-turn="quarter" - mirrored in RTL) or two elements
+     .accordion-when-closed / .accordion-when-open. */
+  .accordion:is([data-marker="arrow"], [data-marker="plus"]) .accordion-trigger::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: color-mix(in oklch, currentColor 65%, transparent);
+    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+  }
+  .accordion[data-marker="arrow"] .accordion-trigger::after {
+    width: 0.45em;
+    height: 0.45em;
+    margin-inline-end: 0.2em;
+    /* physical: a down / up arrow is the same in RTL */
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.15em;
+  }
+  .accordion[data-marker="arrow"] .accordion-item[open] > .accordion-trigger::after {
+    rotate: -135deg;
+    translate: 0 0.1em;
+  }
+  .accordion[data-marker="plus"] .accordion-trigger::after {
+    width: 0.8em;
+    height: 0.8em;
+    background:
+      linear-gradient(currentColor 0 0) center / 100% 2px no-repeat,
+      linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
+  }
+  .accordion[data-marker="plus"] .accordion-item[open] > .accordion-trigger::after {
+    background-size: 100% 2px, 2px 0;
+    rotate: 180deg;
+  }
+  .accordion[data-marker-position="start"] .accordion-trigger::after {
+    order: -1;
+    margin-inline-start: 0;
+    margin-inline-end: 0.25em;
+  }
+  .accordion-chevron[data-turn="quarter"] {
+    details[open] > .accordion-trigger > & { transform: rotate(90deg); }
+    &:dir(rtl) { scale: -1 1; }
+    details[open] > .accordion-trigger > &:dir(rtl) { transform: rotate(-90deg); }
+  }
+  .accordion-item:not([open]) > .accordion-trigger .accordion-when-open,
+  .accordion-item[open] > .accordion-trigger .accordion-when-closed { display: none; }
+  .accordion-trigger > :is(.accordion-when-open, .accordion-when-closed) { margin-inline-start: auto; }
+
+  /* -- Density ----------------------------------------------------
+     data-density on the .accordion root scales trigger + panel padding.
+     comfortable (1rem) == the unsized default. Ratio mirrors sizing.css. */
+  .accordion:where([data-density="compact"]) {
+    & .accordion-trigger { padding: 0.75rem 0; }
+    & .accordion-content { padding-bottom: 0.75rem; }
+  }
+  .accordion:where([data-density="comfortable"]) {
+    & .accordion-trigger { padding: 1rem 0; }
+    & .accordion-content { padding-bottom: 1rem; }
+  }
+  .accordion:where([data-density="spacious"]) {
+    & .accordion-trigger { padding: 1.25rem 0; }
+    & .accordion-content { padding-bottom: 1.25rem; }
+  }
+
+}
+
+/* Accessibility: reduced motion suppresses the expand/collapse animation
+   (REQUIRED for all components - AGENTS.md "Accessibility CSS"). */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .accordion-item::details-content { transition: none; }
+    .accordion-trigger { transition: none; }
+  }
+}
+
+/* ── components/command/command.css ── */
+@layer components {
+  dialog.command {
+    border: none; border-radius: var(--radius-xl);
+    background: var(--popover); color: var(--popover-foreground);
+    padding: 0; max-width: 32rem; width: calc(100% - 2rem);
+    box-shadow: var(--shadow-lg); margin: auto; position: fixed; inset: 0;
+    top: 15%; bottom: auto; overflow: hidden;
+    opacity: 0; transform: scale(0.98);
+    transition: opacity 150ms ease, transform 150ms ease, display 150ms allow-discrete;
+
+    &[open] { opacity: 1; transform: scale(1); }
+    &::backdrop { background: oklch(0 0 0 / 0); transition: all 150ms ease, display 150ms allow-discrete; }
+    &[open]::backdrop { background: oklch(0 0 0 / 0.45); }
+  }
+
+  @starting-style {
+    dialog.command[open] { opacity: 0; transform: scale(0.98); }
+    dialog.command[open]::backdrop { background: oklch(0 0 0 / 0); }
+  }
+
+  /* -- Scroll lock ------------------------------------------- */
+  /* Page behind stays put while the palette is modal (see dialog.css):
+     `:modal` + overflow:hidden freezes the viewport at its current offset. */
+  html:has(dialog.command:modal) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  .command-input-wrapper {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+    & svg { width: 1rem; height: 1rem; color: var(--muted-foreground); flex-shrink: 0; }
+  }
+
+  .command-input {
+    flex: 1; border: none; background: transparent;
+    font-size: 0.875rem; color: var(--foreground); outline: none; font-family: inherit;
+    &::placeholder { color: var(--muted-foreground); }
+  }
+
+  .command-list { max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; padding: 0.25rem; }
+  .command-group { padding: 0.25rem 0; }
+  .command-group-heading { margin: 0; padding: 0.375rem 0.5rem; font-size: 0.75rem; font-weight: 500; color: var(--muted-foreground); }
+
+  .command-item {
+    display: flex; align-items: center; gap: 0.5rem; width: 100%;
+    padding: 0.5rem 0.5rem; border: none; border-radius: var(--radius-md);
+    background: transparent; color: var(--foreground); font-size: 0.8125rem;
+    font-family: inherit; text-align: left; cursor: pointer; outline: none;
+    &:hover, &[data-highlighted] { background-color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+    &[aria-disabled="true"] { pointer-events: none; opacity: 0.5; }
+    & svg { width: 1rem; height: 1rem; color: var(--muted-foreground); flex-shrink: 0; }
+    /* Same as combobox-item: `display: flex` beats the UA [hidden] rule, and
+       command.ts filter() hides non-matches via the hidden attribute. */
+    &[hidden] { display: none; }
+  }
+
+  .command-separator { height: 1px; background-color: var(--border); margin: 0.25rem -0.25rem; }
+  .command-shortcut { margin-inline-start: auto; font-size: 0.6875rem; color: var(--muted-foreground); font-family: var(--font-mono); }
+  .command-empty { padding: 1.5rem; text-align: center; font-size: 0.875rem; color: var(--muted-foreground); }
+
+  /* -- Accessibility ------------------------------------------ */
+
+  @media (prefers-reduced-motion: reduce) {
+    dialog.command { transition: none; opacity: 1; transform: none; }
+    dialog.command::backdrop { transition: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    dialog.command { border: 2px solid var(--border); }
+    .command-item {
+      &:hover, &[data-highlighted] { outline: 1px solid var(--foreground); }
+    }
+  }
+
+  @media (forced-colors: active) {
+    dialog.command { border: 2px solid CanvasText; }
+    .command-item {
+      &:hover, &[data-highlighted] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+    }
+    .command-separator { background-color: CanvasText; }
+  }
+  /* -- Density ----------------------------------------------------
+     data-density on the dialog.command root scales the rows of the palette.
+     comfortable == the unsized default. (0,2,1) beats the base (0,1,0). */
+  dialog.command:where([data-density="compact"]) {
+    & .command-input-wrapper { padding: 0.5rem 0.75rem; }
+    & .command-item { padding: 0.375rem 0.5rem; }
+    & .command-group-heading { padding: 0.25rem 0.5rem; }
+  }
+  dialog.command:where([data-density="comfortable"]) {
+    & .command-input-wrapper { padding: 0.75rem 1rem; }
+    & .command-item { padding: 0.5rem 0.5rem; }
+    & .command-group-heading { padding: 0.375rem 0.5rem; }
+  }
+  dialog.command:where([data-density="spacious"]) {
+    & .command-input-wrapper { padding: 1rem 1.25rem; }
+    & .command-item { padding: 0.625rem 0.5rem; }
+    & .command-group-heading { padding: 0.5rem 0.5rem; }
+  }
+
+}

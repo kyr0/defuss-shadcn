@@ -53,7 +53,7 @@ the first. Same markup as daisyUI's text-rotate.
 </p>
 ```
 
-- 2 - 6 lines; each line is one child element (a span, a strong, an emoji…)
+- 2 - 6 lines; each line is one child element (a span, a strong, an emoji...)
   and stays on one line (`nowrap`).
 - The window is as wide as the widest line; it inherits font, size, weight,
   color and line-height from the text around it (`lh` sizing).

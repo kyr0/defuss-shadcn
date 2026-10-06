@@ -22,11 +22,86 @@ import { defussGlobals, defussQuery, componentState, bindComponent, textLocale }
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** One day's data - from the calendar's JSON <script class="calendar-days"> or setDays(). */
+interface CalendarDay {
+  /** a mark name: 'holiday' (red number), 'event' (primary dot), 'booked' (struck through) or any name (a neutral dot, style it yourself) */
+  mark?: string;
+  /** a second line under the number (a price, a count) */
+  note?: string | number;
+  /** added to the day's title and accessible name */
+  label?: string;
+  /** true: the day cannot be picked */
+  disabled?: boolean;
+}
+
+/** What calendar:view carries. */
+interface CalendarViewDetail {
+  /** the panel shown: days of a month, the months of a year, or a page of years */
+  view: 'days' | 'months' | 'years';
+  /** the year it shows */
+  year: number;
+  /** the month it shows, 0-11 */
+  month: number;
+}
+
+/** What calendar:range carries. */
+interface CalendarRangeDetail {
+  /** the first date as a Date (local midnight), null while unset */
+  start: Date | null;
+  /** the last date as a Date, null while unset */
+  end: Date | null;
+  /** the first date as YYYY-MM-DD, null while unset */
+  startIso: string | null;
+  /** the last date as YYYY-MM-DD, null while unset */
+  endIso: string | null;
+}
+
+/** What calendar:select carries. */
+interface CalendarSelectDetail {
+  /** the selected day, local midnight */
+  date: Date;
+}
 // id prefix source for calendars without their own #id (unique per element,
 // so morph day-cell ids never collide between calendars on one page)
 let calSeq = 0;
 
 const calendarStates = ['default'];
+
+/** setState() configs per state (getState() reports the live view - navigation and picks included). */
+export interface CalendarStateConfigs {
+  /** The month view; without a config it shows today's month. */
+  default: {
+    /** the year to show */
+    year?: number;
+    /** the month to show, 0-11 */
+    month?: number;
+    /** the day of that month to select */
+    day?: number;
+    /** the selected day (what getState() reports; setState accepts it back) */
+    selected?: number | null;
+    /** 'YYYY-MM' or 'YYYY-MM-DD': show that month (and select that day) - instead of year / month / day */
+    date?: string;
+    /** the earliest selectable day, 'YYYY-MM-DD' ('' clears it) */
+    minDate?: string | null;
+    /** the latest selectable day, 'YYYY-MM-DD' ('' clears it) */
+    maxDate?: string | null;
+    /** a range picker: the range's first day, 'YYYY-MM-DD' (null clears the range) - moves the view to it */
+    start?: string | null;
+    /** a range picker: the range's last day, 'YYYY-MM-DD' (never before start) */
+    end?: string | null;
+    /** reported by getState(): the panel shown */
+    view?: 'days' | 'months' | 'years';
+    /** reported by getState() in a range picker: the range's first day */
+    rangeStart?: string | null;
+    /** reported by getState() in a range picker: the range's last day */
+    rangeEnd?: string | null;
+  };
+}
 
 /**
  * UI side of setState: 'default' (re)renders the view. Without config it
@@ -125,11 +200,13 @@ export const calendarApi = Object.assign(componentState({
   markup: (el, state) => applyMarkup(el, state.config),
 }), {
   /**
-   * Day data for this calendar (a range picker: for its whole .calendar-range):
-   * { 'YYYY-MM-DD': { mark?, note?, label?, disabled? } }. Replaces the map
-   * unless { merge: true }; re-renders without moving the view.
+   * Day data for this calendar (a range picker: for its whole .calendar-range).
+   * Replaces the map unless { merge: true }; re-renders without moving the view.
+   * @param cal - the .calendar element
+   * @param days - the day data by ISO date ('YYYY-MM-DD')
+   * @param options - merge: true adds to the current map instead of replacing it
    */
-  setDays(cal, days, options: { merge?: boolean } = {}) {
+  setDays(cal: HTMLElement, days: Record<string, CalendarDay>, options: { merge?: boolean } = {}): void {
     const holder = dayHolderOf(cal);
     holder._calDays = options.merge ? { ...holder._calDays, ...days } : { ...days };
     rerender(cal);
@@ -447,7 +524,7 @@ function setView(el, view) {
     (pick as HTMLElement | null)?.focus();
   }
   // Fires when the panel changes - the view (days, months, years) and the year and month it shows.
-  el.dispatchEvent(new CustomEvent('calendar:view', { bubbles: true, detail: { view, year: st.year, month: st.month } }));
+  el.dispatchEvent(new CustomEvent<CalendarViewDetail>('calendar:view', { bubbles: true, detail: { view, year: st.year, month: st.month } }));
 }
 
 const renderGrid = (year, month, selectedDay, calId, minDate?, maxDate?, range?, days?, locale = names(null)) => {
@@ -581,7 +658,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
   const viewKey = `${year}-${month}`;
   if (el._viewKey !== viewKey) {
     el._viewKey = viewKey;
-    el.dispatchEvent(new CustomEvent('calendar:view', { bubbles: true, detail: { view: 'days', year, month } }));
+    el.dispatchEvent(new CustomEvent<CalendarViewDetail>('calendar:view', { bubbles: true, detail: { view: 'days', year, month } }));
   }
 };
 
@@ -756,7 +833,7 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
         rs.hover = null;
         syncRange(rangeOwner);
         // Fires when a range is complete (its second date) - start and end as Dates and as ISO dates.
-        rangeOwner.dispatchEvent(new CustomEvent('calendar:range', {
+        rangeOwner.dispatchEvent(new CustomEvent<CalendarRangeDetail>('calendar:range', {
           detail: {
             start: rs.start ? isoToDate(rs.start) : null,
             end: rs.end ? isoToDate(rs.end) : null,
@@ -800,8 +877,8 @@ dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
         }
         renderCalendar(cal, state.year, state.month, state.selected);
 
-        /* Dispatch custom event */
-        cal.dispatchEvent(new CustomEvent('calendar:select', {
+        // Fires when a day is picked (click or Enter) - the date.
+        cal.dispatchEvent(new CustomEvent<CalendarSelectDetail>('calendar:select', {
           detail: { date: new Date(state.year, state.month, state.selected) },
           bubbles: true
         }));

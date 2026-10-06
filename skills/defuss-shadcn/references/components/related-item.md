@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Related Item
 
 ## Native basis
-An `<article>`: thumbnail, kind (Article, Guide, Video…), the title link stretched over the item, and meta.
+An `<article>`: thumbnail, kind (Article, Guide, Video...), the title link stretched over the item, and meta.
 
 ---
 

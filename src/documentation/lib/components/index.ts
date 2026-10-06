@@ -21,3 +21,4 @@ export { PageOverlay, DemoCode } from './markers';
 export { DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from './doc-blocks';
 export { DeckRail } from './deck-rail';
 export { DeclaredStatesTable } from './declared-states';
+export { SectionBundleTable, SectionLoad, SectionTotal, AllTotal, ZipLink } from './section-bundles';

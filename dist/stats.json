@@ -18,19 +18,19 @@
   "examples": 1553,
   "withJs": 59,
   "withoutJs": 169,
-  "totalSize": 2302614,
-  "totalSizeMinified": 1200279,
-  "totalSizeGz": 701559,
-  "totalSizeGzMinified": 400805,
+  "totalSize": 2330164,
+  "totalSizeMinified": 1202835,
+  "totalSizeGz": 707813,
+  "totalSizeGzMinified": 401567,
   "bundle": {
-    "jsSize": 798646,
-    "jsSizeMinified": 460744,
-    "cssSize": 1224381,
-    "cssSizeMinified": 748882,
-    "totalSizeGz": 432076,
-    "totalSizeGzMinified": 269177,
-    "jsSizeGzMinified": 140494,
-    "cssSizeGzMinified": 128683
+    "jsSize": 801331,
+    "jsSizeMinified": 462042,
+    "cssSize": 1225357,
+    "cssSizeMinified": 749505,
+    "totalSizeGz": 432951,
+    "totalSizeGzMinified": 269686,
+    "jsSizeGzMinified": 140916,
+    "cssSizeGzMinified": 128770
   },
   "core": {
     "jsSize": 144460,
@@ -44,14 +44,659 @@
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 50126,
-      "jsSizeMinified": 32383,
+      "jsSize": 51069,
+      "jsSizeMinified": 32892,
       "cssSize": 14935,
       "cssSizeMinified": 9402,
-      "totalSizeGz": 17394,
-      "totalSizeGzMinified": 13439,
-      "jsSizeGzMinified": 11125,
+      "totalSizeGz": 17651,
+      "totalSizeGzMinified": 13646,
+      "jsSizeGzMinified": 11332,
       "cssSizeGzMinified": 2314
+    }
+  },
+  "sections": {
+    "guides": {
+      "heading": "Guides",
+      "members": [
+        "motion",
+        "anim-canvas",
+        "parallax"
+      ],
+      "needs": [
+        "Primitives",
+        "Data Display"
+      ],
+      "files": [
+        "sections/guides.css",
+        "sections/guides.js"
+      ],
+      "jsSize": 16876,
+      "jsSizeMinified": 9831,
+      "cssSize": 17878,
+      "cssSizeMinified": 8975,
+      "totalSizeGz": 10140,
+      "totalSizeGzMinified": 5986,
+      "jsSizeGzMinified": 3831,
+      "cssSizeGzMinified": 2155
+    },
+    "primitives": {
+      "heading": "Primitives",
+      "members": [
+        "typography",
+        "text-rotate",
+        "typewriter",
+        "separator",
+        "icon",
+        "kbd",
+        "heading-anchor"
+      ],
+      "needs": [
+        "Actions"
+      ],
+      "files": [
+        "sections/primitives.css",
+        "sections/primitives.js"
+      ],
+      "jsSize": 6517,
+      "jsSizeMinified": 3975,
+      "cssSize": 28742,
+      "cssSizeMinified": 14855,
+      "totalSizeGz": 9433,
+      "totalSizeGzMinified": 5235,
+      "jsSizeGzMinified": 1648,
+      "cssSizeGzMinified": 3587
+    },
+    "actions": {
+      "heading": "Actions",
+      "members": [
+        "button",
+        "fab",
+        "toggle",
+        "swap",
+        "toggle-group",
+        "button-group",
+        "toolbar"
+      ],
+      "needs": [
+        "Primitives",
+        "Overlays"
+      ],
+      "files": [
+        "sections/actions.css",
+        "sections/actions.js"
+      ],
+      "jsSize": 9141,
+      "jsSizeMinified": 4893,
+      "cssSize": 39420,
+      "cssSizeMinified": 21359,
+      "totalSizeGz": 11038,
+      "totalSizeGzMinified": 6031,
+      "jsSizeGzMinified": 1666,
+      "cssSizeGzMinified": 4365
+    },
+    "forms-inputs": {
+      "heading": "Forms & Inputs",
+      "members": [
+        "label",
+        "input",
+        "otp-input",
+        "textarea",
+        "checkbox",
+        "radio",
+        "switch",
+        "slider",
+        "rating",
+        "select",
+        "number-input",
+        "file-input",
+        "color-picker",
+        "date-picker",
+        "combobox",
+        "search-filter",
+        "form"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions"
+      ],
+      "files": [
+        "sections/forms-inputs.css",
+        "sections/forms-inputs.js"
+      ],
+      "jsSize": 58054,
+      "jsSizeMinified": 33007,
+      "cssSize": 113274,
+      "cssSizeMinified": 57355,
+      "totalSizeGz": 37066,
+      "totalSizeGzMinified": 20040,
+      "jsSizeGzMinified": 10194,
+      "cssSizeGzMinified": 9846
+    },
+    "wysiwyg": {
+      "heading": "WYSIWYG Editors",
+      "members": [
+        "code-example"
+      ],
+      "needs": [
+        "Primitives",
+        "Forms & Inputs",
+        "Application"
+      ],
+      "files": [
+        "components/wysiwyg.css",
+        "components/wysiwyg.js"
+      ],
+      "jsSize": 51069,
+      "jsSizeMinified": 32892,
+      "cssSize": 14935,
+      "cssSizeMinified": 9402,
+      "totalSizeGz": 17651,
+      "totalSizeGzMinified": 13646,
+      "jsSizeGzMinified": 11332,
+      "cssSizeGzMinified": 2314
+    },
+    "questionnaire": {
+      "heading": "Questionnaire",
+      "members": [
+        "questionnaire"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs"
+      ],
+      "files": [
+        "sections/questionnaire.css",
+        "sections/questionnaire.js"
+      ],
+      "jsSize": 47889,
+      "jsSizeMinified": 28080,
+      "cssSize": 11106,
+      "cssSizeMinified": 7126,
+      "totalSizeGz": 14893,
+      "totalSizeGzMinified": 11471,
+      "jsSizeGzMinified": 9550,
+      "cssSizeGzMinified": 1921
+    },
+    "data-display": {
+      "heading": "Data Display",
+      "members": [
+        "badge",
+        "type-badge",
+        "avatar",
+        "indicator",
+        "diff",
+        "countdown",
+        "card",
+        "image",
+        "statistic",
+        "table",
+        "collapsible",
+        "timeline",
+        "tree-view",
+        "calendar",
+        "carousel",
+        "scroll-area",
+        "sortable"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs"
+      ],
+      "files": [
+        "sections/data-display.css",
+        "sections/data-display.js"
+      ],
+      "jsSize": 95019,
+      "jsSizeMinified": 53944,
+      "cssSize": 118281,
+      "cssSizeMinified": 65153,
+      "totalSizeGz": 47705,
+      "totalSizeGzMinified": 28999,
+      "jsSizeGzMinified": 16028,
+      "cssSizeGzMinified": 12971
+    },
+    "big-data": {
+      "heading": "Big Data",
+      "members": [
+        "virtual-list",
+        "data-tree",
+        "data-grid",
+        "autocomplete"
+      ],
+      "needs": [
+        "Primitives",
+        "Forms & Inputs"
+      ],
+      "files": [
+        "sections/big-data.css",
+        "sections/big-data.js"
+      ],
+      "jsSize": 71559,
+      "jsSizeMinified": 42070,
+      "cssSize": 29379,
+      "cssSizeMinified": 18692,
+      "totalSizeGz": 22044,
+      "totalSizeGzMinified": 16336,
+      "jsSizeGzMinified": 12652,
+      "cssSizeGzMinified": 3684
+    },
+    "charts": {
+      "heading": "Charts",
+      "members": [
+        "chart"
+      ],
+      "needs": [
+        "Primitives"
+      ],
+      "files": [
+        "sections/charts.css",
+        "sections/charts.js"
+      ],
+      "jsSize": 16903,
+      "jsSizeMinified": 9786,
+      "cssSize": 2151,
+      "cssSizeMinified": 991,
+      "totalSizeGz": 6170,
+      "totalSizeGzMinified": 4464,
+      "jsSizeGzMinified": 3993,
+      "cssSizeGzMinified": 471
+    },
+    "diagrams": {
+      "heading": "Diagrams",
+      "members": [
+        "diagram",
+        "mermaid"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions"
+      ],
+      "files": [
+        "sections/diagrams.css",
+        "sections/diagrams.js"
+      ],
+      "jsSize": 89329,
+      "jsSizeMinified": 53393,
+      "cssSize": 60631,
+      "cssSizeMinified": 42405,
+      "totalSizeGz": 35966,
+      "totalSizeGzMinified": 26965,
+      "jsSizeGzMinified": 18756,
+      "cssSizeGzMinified": 8209
+    },
+    "feedback-status": {
+      "heading": "Feedback & Status",
+      "members": [
+        "spinner",
+        "skeleton",
+        "progress",
+        "radial-progress",
+        "alert",
+        "alert-dialog",
+        "toast"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Overlays"
+      ],
+      "files": [
+        "sections/feedback-status.css",
+        "sections/feedback-status.js"
+      ],
+      "jsSize": 32296,
+      "jsSizeMinified": 19554,
+      "cssSize": 33844,
+      "cssSizeMinified": 17895,
+      "totalSizeGz": 14804,
+      "totalSizeGzMinified": 9568,
+      "jsSizeGzMinified": 5563,
+      "cssSizeGzMinified": 4005
+    },
+    "overlays": {
+      "heading": "Overlays",
+      "members": [
+        "popover",
+        "tooltip",
+        "context-menu",
+        "dialog",
+        "sheet",
+        "accordion",
+        "command"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Data Display"
+      ],
+      "files": [
+        "sections/overlays.css",
+        "sections/overlays.js"
+      ],
+      "jsSize": 22209,
+      "jsSizeMinified": 11720,
+      "cssSize": 35627,
+      "cssSizeMinified": 20591,
+      "totalSizeGz": 11483,
+      "totalSizeGzMinified": 7342,
+      "jsSizeGzMinified": 3366,
+      "cssSizeGzMinified": 3976
+    },
+    "navigation": {
+      "heading": "Navigation",
+      "members": [
+        "navbar",
+        "dock",
+        "breadcrumb",
+        "toc",
+        "pagination",
+        "steps",
+        "tabs",
+        "dropdown",
+        "menubar",
+        "navigation-menu",
+        "theme-switcher"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Data Display",
+        "Overlays"
+      ],
+      "files": [
+        "sections/navigation.css",
+        "sections/navigation.js"
+      ],
+      "jsSize": 48889,
+      "jsSizeMinified": 27754,
+      "cssSize": 92143,
+      "cssSizeMinified": 55929,
+      "totalSizeGz": 28815,
+      "totalSizeGzMinified": 17230,
+      "jsSizeGzMinified": 7692,
+      "cssSizeGzMinified": 9538
+    },
+    "application": {
+      "heading": "Application",
+      "members": [
+        "sidebar",
+        "resizer",
+        "border-layout",
+        "panel",
+        "property-grid",
+        "window"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Data Display",
+        "Overlays"
+      ],
+      "files": [
+        "sections/application.css",
+        "sections/application.js"
+      ],
+      "jsSize": 74272,
+      "jsSizeMinified": 44134,
+      "cssSize": 57255,
+      "cssSizeMinified": 32219,
+      "totalSizeGz": 29370,
+      "totalSizeGzMinified": 19767,
+      "jsSizeGzMinified": 13178,
+      "cssSizeGzMinified": 6589
+    },
+    "chat": {
+      "heading": "Chat",
+      "members": [
+        "bubble",
+        "marker",
+        "message",
+        "session"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs",
+        "Data Display",
+        "Feedback & Status"
+      ],
+      "files": [
+        "sections/chat.css",
+        "sections/chat.js"
+      ],
+      "jsSize": 13759,
+      "jsSizeMinified": 8450,
+      "cssSize": 28520,
+      "cssSizeMinified": 18186,
+      "totalSizeGz": 10530,
+      "totalSizeGzMinified": 7185,
+      "jsSizeGzMinified": 3119,
+      "cssSizeGzMinified": 4066
+    },
+    "mockup": {
+      "heading": "Mockup",
+      "members": [
+        "mockup-code"
+      ],
+      "needs": [
+        "Primitives"
+      ],
+      "files": [
+        "sections/mockup.css"
+      ],
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 11507,
+      "cssSizeMinified": 6668,
+      "totalSizeGz": 3240,
+      "totalSizeGzMinified": 1965,
+      "jsSizeGzMinified": 0,
+      "cssSizeGzMinified": 1965
+    },
+    "presentations": {
+      "heading": "Presentations",
+      "members": [
+        "presentation"
+      ],
+      "needs": [
+        "Guides",
+        "Primitives",
+        "Charts"
+      ],
+      "files": [
+        "sections/presentations.css",
+        "sections/presentations.js"
+      ],
+      "jsSize": 15294,
+      "jsSizeMinified": 8259,
+      "cssSize": 13618,
+      "cssSizeMinified": 6708,
+      "totalSizeGz": 8429,
+      "totalSizeGzMinified": 4996,
+      "jsSizeGzMinified": 3301,
+      "cssSizeGzMinified": 1695
+    },
+    "papers": {
+      "heading": "Papers",
+      "members": [
+        "paper",
+        "bibtex"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Data Display"
+      ],
+      "files": [
+        "sections/papers.css",
+        "sections/papers.js"
+      ],
+      "jsSize": 23407,
+      "jsSizeMinified": 15047,
+      "cssSize": 23168,
+      "cssSizeMinified": 14061,
+      "totalSizeGz": 12494,
+      "totalSizeGzMinified": 9252,
+      "jsSizeGzMinified": 5850,
+      "cssSizeGzMinified": 3402
+    },
+    "website": {
+      "heading": "Website",
+      "members": [
+        "site-header",
+        "hero",
+        "product-showcase",
+        "brand-logos",
+        "section-header",
+        "feature-details",
+        "testimonials",
+        "stats",
+        "pricing",
+        "blog",
+        "faq",
+        "get-in-touch",
+        "newsletter",
+        "cookie-consent",
+        "site-footer",
+        "news-header",
+        "news-item",
+        "news-ticker",
+        "blog-header",
+        "blog-item",
+        "archive-index",
+        "article-header",
+        "article-body",
+        "author-bio",
+        "author-list",
+        "related-item",
+        "share-links",
+        "article-navigation",
+        "comment-header",
+        "comment-item",
+        "comment-form",
+        "about-intro",
+        "team-member",
+        "job-item",
+        "job-details",
+        "application-form",
+        "service-item",
+        "process-step",
+        "use-case",
+        "case-preview",
+        "case-study",
+        "project-item",
+        "project-details",
+        "timeline-item",
+        "integration-item",
+        "comparison-table",
+        "credential-item",
+        "press-item",
+        "cta",
+        "announcement",
+        "offer-banner",
+        "event-countdown",
+        "booking-form",
+        "event-item",
+        "event-header",
+        "event-description",
+        "speaker-item",
+        "session-item",
+        "registration-form",
+        "location-item",
+        "location-map",
+        "locator-search",
+        "opening-hours",
+        "gallery-item",
+        "media-gallery",
+        "text-media",
+        "video-player",
+        "audio-player",
+        "playlist-item",
+        "before-after",
+        "social-post",
+        "collection-item",
+        "product-item",
+        "cart-item",
+        "cart-summary",
+        "discount-form",
+        "address-form",
+        "delivery-options",
+        "payment-form",
+        "order-summary",
+        "order-confirmation",
+        "tracking-status",
+        "wishlist-item",
+        "login-form",
+        "social-login",
+        "signup-form",
+        "reset-request",
+        "password-reset",
+        "profile-header",
+        "profile-form",
+        "security-settings",
+        "notification-settings",
+        "support-form",
+        "feedback-form",
+        "survey-question",
+        "form-progress",
+        "empty-state",
+        "error-state",
+        "success-state",
+        "coming-soon",
+        "maintenance",
+        "page-not-found",
+        "resource-item",
+        "download-item",
+        "docs-navigation",
+        "docs-content",
+        "code-block",
+        "release-header",
+        "release-item",
+        "roadmap-item",
+        "help-category",
+        "help-article",
+        "search-box",
+        "search-suggestions",
+        "search-summary",
+        "search-result",
+        "filter-bar",
+        "filter-sidebar",
+        "active-filters",
+        "sort-control",
+        "view-switcher",
+        "collection-pagination",
+        "load-more",
+        "tag-cloud",
+        "tag-list",
+        "category-menu",
+        "breadcrumbs",
+        "contents",
+        "quick-links"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs",
+        "Data Display",
+        "Feedback & Status",
+        "Overlays",
+        "Navigation",
+        "Mockup"
+      ],
+      "files": [
+        "sections/website.css",
+        "sections/website.js"
+      ],
+      "jsSize": 39425,
+      "jsSizeMinified": 27117,
+      "cssSize": 508796,
+      "cssSizeMinified": 341516,
+      "totalSizeGz": 90782,
+      "totalSizeGzMinified": 60489,
+      "jsSizeGzMinified": 8549,
+      "cssSizeGzMinified": 51940
     }
   },
   "components": {
@@ -267,14 +912,14 @@
       "name": "autocomplete",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 25505,
-      "jsSizeMinified": 10502,
+      "jsSize": 26145,
+      "jsSizeMinified": 10504,
       "cssSize": 4938,
       "cssSizeMinified": 3365,
-      "totalSizeGz": 8800,
-      "totalSizeGzMinified": 4993,
-      "totalSize": 30443,
-      "totalSizeMinified": 13867
+      "totalSizeGz": 8952,
+      "totalSizeGzMinified": 4994,
+      "totalSize": 31083,
+      "totalSizeMinified": 13869
     },
     "avatar": {
       "name": "avatar",
@@ -319,14 +964,14 @@
       "name": "bibtex",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 30622,
-      "jsSizeMinified": 15056,
+      "jsSize": 31612,
+      "jsSizeMinified": 15068,
       "cssSize": 8314,
       "cssSizeMinified": 5240,
-      "totalSizeGz": 11831,
-      "totalSizeGzMinified": 7364,
-      "totalSize": 38936,
-      "totalSizeMinified": 20296
+      "totalSizeGz": 12064,
+      "totalSizeGzMinified": 7371,
+      "totalSize": 39926,
+      "totalSizeMinified": 20308
     },
     "blog": {
       "name": "blog",
@@ -384,13 +1029,13 @@
       "name": "border-layout",
       "type": "ORG",
       "withJs": true,
-      "jsSize": 16589,
+      "jsSize": 17428,
       "jsSizeMinified": 6217,
       "cssSize": 9112,
       "cssSizeMinified": 5485,
-      "totalSizeGz": 7470,
+      "totalSizeGz": 7622,
       "totalSizeGzMinified": 3811,
-      "totalSize": 25701,
+      "totalSize": 26540,
       "totalSizeMinified": 11702
     },
     "brand-logos": {
@@ -475,13 +1120,13 @@
       "name": "calendar",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 43113,
+      "jsSize": 43269,
       "jsSizeMinified": 16419,
       "cssSize": 14759,
       "cssSizeMinified": 8426,
-      "totalSizeGz": 15712,
+      "totalSizeGz": 15748,
       "totalSizeGzMinified": 7596,
-      "totalSize": 57872,
+      "totalSize": 58028,
       "totalSizeMinified": 24845
     },
     "card": {
@@ -579,13 +1224,13 @@
       "name": "chart",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 29829,
+      "jsSize": 31110,
       "jsSizeMinified": 9982,
       "cssSize": 2104,
       "cssSizeMinified": 949,
-      "totalSizeGz": 10986,
+      "totalSizeGz": 11373,
       "totalSizeGzMinified": 4458,
-      "totalSize": 31933,
+      "totalSize": 33214,
       "totalSizeMinified": 10931
     },
     "checkbox": {
@@ -618,14 +1263,14 @@
       "name": "code-example",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 66952,
-      "jsSizeMinified": 32426,
+      "jsSize": 69993,
+      "jsSizeMinified": 32937,
       "cssSize": 14874,
       "cssSizeMinified": 9359,
-      "totalSizeGz": 22369,
-      "totalSizeGzMinified": 13364,
-      "totalSize": 81826,
-      "totalSizeMinified": 41785
+      "totalSizeGz": 23213,
+      "totalSizeGzMinified": 13575,
+      "totalSize": 84867,
+      "totalSizeMinified": 42296
     },
     "collapsible": {
       "name": "collapsible",
@@ -800,13 +1445,13 @@
       "name": "cookie-consent",
       "type": "ORG",
       "withJs": true,
-      "jsSize": 44882,
+      "jsSize": 45406,
       "jsSizeMinified": 26184,
       "cssSize": 7763,
       "cssSizeMinified": 4794,
-      "totalSizeGz": 14133,
+      "totalSizeGz": 14338,
       "totalSizeGzMinified": 9618,
-      "totalSize": 52645,
+      "totalSize": 53169,
       "totalSizeMinified": 30978
     },
     "countdown": {
@@ -852,27 +1497,27 @@
       "name": "data-grid",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 40684,
-      "jsSizeMinified": 18532,
+      "jsSize": 41639,
+      "jsSizeMinified": 18536,
       "cssSize": 12791,
       "cssSizeMinified": 8737,
-      "totalSizeGz": 14282,
+      "totalSizeGz": 14450,
       "totalSizeGzMinified": 8886,
-      "totalSize": 53475,
-      "totalSizeMinified": 27269
+      "totalSize": 54430,
+      "totalSizeMinified": 27273
     },
     "data-tree": {
       "name": "data-tree",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 18452,
-      "jsSizeMinified": 8111,
+      "jsSize": 19074,
+      "jsSizeMinified": 8113,
       "cssSize": 5278,
       "cssSizeMinified": 3517,
-      "totalSizeGz": 7268,
-      "totalSizeGzMinified": 4423,
-      "totalSize": 23730,
-      "totalSizeMinified": 11628
+      "totalSizeGz": 7388,
+      "totalSizeGzMinified": 4428,
+      "totalSize": 24352,
+      "totalSizeMinified": 11630
     },
     "date-picker": {
       "name": "date-picker",
@@ -904,14 +1549,14 @@
       "name": "diagram",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 99941,
-      "jsSizeMinified": 45577,
-      "cssSize": 55659,
-      "cssSizeMinified": 39865,
-      "totalSizeGz": 38169,
-      "totalSizeGzMinified": 23590,
-      "totalSize": 155600,
-      "totalSizeMinified": 85442
+      "jsSize": 105812,
+      "jsSizeMinified": 46808,
+      "cssSize": 56635,
+      "cssSizeMinified": 40488,
+      "totalSizeGz": 39774,
+      "totalSizeGzMinified": 24065,
+      "totalSize": 162447,
+      "totalSizeMinified": 87296
     },
     "dialog": {
       "name": "dialog",
@@ -1528,13 +2173,13 @@
       "name": "mermaid",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 17854,
+      "jsSize": 18548,
       "jsSizeMinified": 6734,
       "cssSize": 3893,
       "cssSizeMinified": 1892,
-      "totalSizeGz": 7690,
+      "totalSizeGz": 7949,
       "totalSizeGzMinified": 3645,
-      "totalSize": 21747,
+      "totalSize": 22441,
       "totalSizeMinified": 8626
     },
     "message": {
@@ -1775,14 +2420,14 @@
       "name": "panel",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 12679,
-      "jsSizeMinified": 4789,
+      "jsSize": 13670,
+      "jsSizeMinified": 4828,
       "cssSize": 6585,
       "cssSizeMinified": 3173,
-      "totalSizeGz": 6018,
-      "totalSizeGzMinified": 2880,
-      "totalSize": 19264,
-      "totalSizeMinified": 7962
+      "totalSizeGz": 6147,
+      "totalSizeGzMinified": 2888,
+      "totalSize": 20255,
+      "totalSizeMinified": 8001
     },
     "paper": {
       "name": "paper",
@@ -2009,26 +2654,26 @@
       "name": "property-grid",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 34014,
-      "jsSizeMinified": 15244,
+      "jsSize": 35520,
+      "jsSizeMinified": 15248,
       "cssSize": 7234,
       "cssSizeMinified": 5094,
-      "totalSizeGz": 11150,
-      "totalSizeGzMinified": 6730,
-      "totalSize": 41248,
-      "totalSizeMinified": 20338
+      "totalSizeGz": 11355,
+      "totalSizeGzMinified": 6731,
+      "totalSize": 42754,
+      "totalSizeMinified": 20342
     },
     "questionnaire": {
       "name": "questionnaire",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 64290,
+      "jsSize": 66412,
       "jsSizeMinified": 28149,
       "cssSize": 11043,
       "cssSizeMinified": 7077,
-      "totalSizeGz": 19789,
+      "totalSizeGz": 20168,
       "totalSizeGzMinified": 11439,
-      "totalSize": 75333,
+      "totalSize": 77455,
       "totalSizeMinified": 35226
     },
     "quick-links": {
@@ -2152,14 +2797,14 @@
       "name": "resizer",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 20611,
-      "jsSizeMinified": 6236,
+      "jsSize": 20898,
+      "jsSizeMinified": 6307,
       "cssSize": 6378,
       "cssSizeMinified": 3169,
-      "totalSizeGz": 9147,
-      "totalSizeGzMinified": 3390,
-      "totalSize": 26989,
-      "totalSizeMinified": 9405
+      "totalSizeGz": 9273,
+      "totalSizeGzMinified": 3424,
+      "totalSize": 27276,
+      "totalSizeMinified": 9476
     },
     "resource-item": {
       "name": "resource-item",
@@ -2334,13 +2979,13 @@
       "name": "session",
       "type": "ORG",
       "withJs": true,
-      "jsSize": 20477,
+      "jsSize": 21836,
       "jsSizeMinified": 8520,
       "cssSize": 5165,
       "cssSizeMinified": 2889,
-      "totalSizeGz": 8109,
+      "totalSizeGz": 8351,
       "totalSizeGzMinified": 4148,
-      "totalSize": 25642,
+      "totalSize": 27001,
       "totalSizeMinified": 11409
     },
     "session-item": {
@@ -2659,14 +3304,14 @@
       "name": "tabs",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 16295,
-      "jsSizeMinified": 5807,
+      "jsSize": 16708,
+      "jsSizeMinified": 5781,
       "cssSize": 16349,
       "cssSizeMinified": 8849,
-      "totalSizeGz": 8556,
-      "totalSizeGzMinified": 3896,
-      "totalSize": 32644,
-      "totalSizeMinified": 14656
+      "totalSizeGz": 8761,
+      "totalSizeGzMinified": 3890,
+      "totalSize": 33057,
+      "totalSizeMinified": 14630
     },
     "tag-cloud": {
       "name": "tag-cloud",
@@ -2763,13 +3408,13 @@
       "name": "theme-switcher",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 12224,
+      "jsSize": 12633,
       "jsSizeMinified": 3872,
       "cssSize": 3423,
       "cssSizeMinified": 2100,
-      "totalSizeGz": 5571,
+      "totalSizeGz": 5747,
       "totalSizeGzMinified": 2511,
-      "totalSize": 15647,
+      "totalSize": 16056,
       "totalSizeMinified": 5972
     },
     "timeline": {
@@ -2802,14 +3447,14 @@
       "name": "toast",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 16515,
-      "jsSizeMinified": 6597,
+      "jsSize": 17454,
+      "jsSizeMinified": 6646,
       "cssSize": 10125,
       "cssSizeMinified": 5771,
-      "totalSizeGz": 8248,
-      "totalSizeGzMinified": 3997,
-      "totalSize": 26640,
-      "totalSizeMinified": 12368
+      "totalSizeGz": 8389,
+      "totalSizeGzMinified": 4013,
+      "totalSize": 27579,
+      "totalSizeMinified": 12417
     },
     "toc": {
       "name": "toc",
@@ -2984,27 +3629,27 @@
       "name": "virtual-list",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 14659,
-      "jsSizeMinified": 5362,
+      "jsSize": 15263,
+      "jsSizeMinified": 5355,
       "cssSize": 6137,
       "cssSizeMinified": 3086,
-      "totalSizeGz": 7004,
+      "totalSizeGz": 7149,
       "totalSizeGzMinified": 3201,
-      "totalSize": 20796,
-      "totalSizeMinified": 8448
+      "totalSize": 21400,
+      "totalSizeMinified": 8441
     },
     "window": {
       "name": "window",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 19719,
-      "jsSizeMinified": 9350,
+      "jsSize": 22050,
+      "jsSizeMinified": 9391,
       "cssSize": 12335,
       "cssSizeMinified": 7493,
-      "totalSizeGz": 8938,
-      "totalSizeGzMinified": 4967,
-      "totalSize": 32054,
-      "totalSizeMinified": 16843
+      "totalSizeGz": 9283,
+      "totalSizeGzMinified": 4977,
+      "totalSize": 34385,
+      "totalSizeMinified": 16884
     },
     "wishlist-item": {
       "name": "wishlist-item",
@@ -3056,13 +3701,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 274604,
-      "jsSizeMinified": 149085,
+      "jsSize": 274701,
+      "jsSizeMinified": 149063,
       "cssSize": 324627,
       "cssSizeMinified": 215728,
-      "totalSizeGz": 118674,
-      "totalSizeGzMinified": 75431,
-      "jsSizeGzMinified": 46858,
+      "totalSizeGz": 118668,
+      "totalSizeGzMinified": 75426,
+      "jsSizeGzMinified": 46853,
       "cssSizeGzMinified": 28573
     },
     "messenger": {
@@ -3086,13 +3731,13 @@
         "toast",
         "typography"
       ],
-      "jsSize": 194848,
-      "jsSizeMinified": 104050,
+      "jsSize": 195196,
+      "jsSizeMinified": 104121,
       "cssSize": 236250,
       "cssSizeMinified": 168885,
-      "totalSizeGz": 83802,
-      "totalSizeGzMinified": 55340,
-      "jsSizeGzMinified": 33938,
+      "totalSizeGz": 83854,
+      "totalSizeGzMinified": 55375,
+      "jsSizeGzMinified": 33973,
       "cssSizeGzMinified": 21402
     },
     "issue-tracker": {
@@ -3124,13 +3769,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 245883,
-      "jsSizeMinified": 133850,
+      "jsSize": 246034,
+      "jsSizeMinified": 133854,
       "cssSize": 291108,
       "cssSizeMinified": 197577,
-      "totalSizeGz": 104878,
-      "totalSizeGzMinified": 67525,
-      "jsSizeGzMinified": 41600,
+      "totalSizeGz": 104885,
+      "totalSizeGzMinified": 67526,
+      "jsSizeGzMinified": 41601,
       "cssSizeGzMinified": 25925
     },
     "notes": {
@@ -3162,11 +3807,11 @@
         "tree-view",
         "typography"
       ],
-      "jsSize": 211747,
+      "jsSize": 211876,
       "jsSizeMinified": 112409,
       "cssSize": 279807,
       "cssSizeMinified": 188849,
-      "totalSizeGz": 94058,
+      "totalSizeGz": 94063,
       "totalSizeGzMinified": 59591,
       "jsSizeGzMinified": 35285,
       "cssSizeGzMinified": 24306
@@ -3195,13 +3840,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 204992,
-      "jsSizeMinified": 108870,
+      "jsSize": 205068,
+      "jsSizeMinified": 108844,
       "cssSize": 247939,
       "cssSizeMinified": 172369,
-      "totalSizeGz": 88094,
-      "totalSizeGzMinified": 57490,
-      "jsSizeGzMinified": 35872,
+      "totalSizeGz": 88092,
+      "totalSizeGzMinified": 57482,
+      "jsSizeGzMinified": 35864,
       "cssSizeGzMinified": 21618
     },
     "desktop": {
@@ -3242,13 +3887,13 @@
         "typography",
         "window"
       ],
-      "jsSize": 244834,
-      "jsSizeMinified": 132537,
+      "jsSize": 245034,
+      "jsSizeMinified": 132511,
       "cssSize": 358945,
       "cssSizeMinified": 241637,
-      "totalSizeGz": 117572,
-      "totalSizeGzMinified": 73797,
-      "jsSizeGzMinified": 41202,
+      "totalSizeGz": 117585,
+      "totalSizeGzMinified": 73794,
+      "jsSizeGzMinified": 41199,
       "cssSizeGzMinified": 32595
     }
   }

@@ -12,6 +12,16 @@ const dfDollar = defussQuery();
 
 const navigationMenuStates = ['default', 'open'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the navigation menu's states take none. */
+export interface NavigationMenuStateConfigs {
+  /** The panel closed. */
+  default: {};
+  /** The panel open. */
+  open: {};
+}
+
 /**
  * The markup of a state: none - 'open' lives in the top layer
  * (:popover-open), not in an attribute, so every state renders the authored

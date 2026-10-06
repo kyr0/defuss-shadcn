@@ -45,6 +45,11 @@
   letter-spacing: -0.02em;
   margin: 0 0 0.875rem;
 }
+/* After prose the paragraph's own margin spaces the heading; after a boxed
+   block (a figure, a code window, a table card) nothing does - give it room. */
+:is(figure, [data-code-static], .code-card) + .h2-display {
+  margin-top: 2rem;
+}
 
 /* Sub-heading inside demo panels (toc demo). */
 .h3-demo { font-size: 0.9375rem; margin: 0.75rem 0 0.25rem; }

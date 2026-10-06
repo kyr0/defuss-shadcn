@@ -14,9 +14,68 @@ import { defussGlobals, defussQuery, componentState, bindComponent, textLocale }
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What table-select carries. */
+interface TableSelectDetail {
+  /** the selected body rows, in table order */
+  rows: HTMLTableRowElement[];
+  /** how many */
+  count: number;
+}
+
+/** What table-reorder carries. */
+interface TableReorderDetail {
+  /** the row that moved */
+  row: HTMLTableRowElement;
+  /** its index among the body rows now */
+  index: number;
+}
+
+/** What table-sort carries. */
+interface TableSortDetail {
+  /** the sorted column's index (its header cell's cellIndex) */
+  column: number;
+  /** the new direction - 'none' restores the authored order */
+  direction: 'ascending' | 'descending' | 'none';
+}
+
 /** default = as authored (original order, no sort, nothing selected);
  * sorted = { column, direction }; selected = { rows: [indices] | 'all' }. */
 const tableStates = ['default', 'sorted', 'selected'];
+
+/** setState() configs per state (getState() reports the sort and the selected rows). */
+export interface TableStateConfigs {
+  /** As authored: the original row order, no sort, nothing selected. */
+  default: {
+    /** reported by getState(): the sort applied, null for none */
+    sort?: { column: number; direction: 'ascending' | 'descending' } | null;
+    /** reported by getState(): the indices of the selected body rows */
+    selected?: number[];
+  };
+  /** Sorted by one column. */
+  sorted: {
+    /** the column's index (default 0) */
+    column?: number;
+    /** the direction (default ascending) */
+    direction?: 'ascending' | 'descending';
+    /** the sort as getState() reports it - accepted instead of column / direction */
+    sort?: { column: number; direction: 'ascending' | 'descending' } | null;
+    /** body rows to select as well, by index */
+    selected?: number[];
+  };
+  /** Rows selected. */
+  selected: {
+    /** the body rows to select: indices, or 'all' (default [0]) */
+    rows?: number[] | 'all';
+    /** the same as rows (what getState() reports) */
+    selected?: number[];
+    /** a sort to keep while selecting */
+    sort?: { column: number; direction: 'ascending' | 'descending' } | null;
+  };
+}
 
 const bodyOf = (table) => table.tBodies[0];
 const bodyRows = (table) => [...(bodyOf(table)?.rows ?? [])];
@@ -83,7 +142,7 @@ function syncSelection(table, announce = true) {
   if (announce) {
     const selected = rows.filter((r) => r.getAttribute('aria-selected') === 'true');
     // Fires when the selection changes - the selected rows and how many.
-    table.dispatchEvent(new CustomEvent('table-select', { bubbles: true, detail: { rows: selected, count: selected.length } }));
+    table.dispatchEvent(new CustomEvent<TableSelectDetail>('table-select', { bubbles: true, detail: { rows: selected, count: selected.length } }));
   }
 }
 function selectRows(table, which) {
@@ -103,7 +162,7 @@ function selectRows(table, which) {
 /* -- Reordering ------------------------------------------------------------ */
 function announceMove(table, row) {
   // Fires after a row is moved (drag or keyboard) - the row and its new index.
-  table.dispatchEvent(new CustomEvent('table-reorder', { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
+  table.dispatchEvent(new CustomEvent<TableReorderDetail>('table-reorder', { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
 }
 function moved(table, row) {
   // a manual order is no longer the sorted one
@@ -249,7 +308,7 @@ function init() {
         else sortBy(table, col, next);
         table.dataset.stateName = next === 'none' ? 'default' : 'sorted';
         // Fires when a column is sorted - the column and the direction (ascending, descending, none).
-        table.dispatchEvent(new CustomEvent('table-sort', { bubbles: true, detail: { column: col, direction: next } }));
+        table.dispatchEvent(new CustomEvent<TableSortDetail>('table-sort', { bubbles: true, detail: { column: col, direction: next } }));
       });
     });
     // an authored aria-sort sorts on load

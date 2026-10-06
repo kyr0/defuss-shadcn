@@ -205,11 +205,36 @@ Set `data-density` on the `.steps` root; the flex gaps scale - the size ladder k
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.stepsApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.stepsStates` = `default`.
+<code>type StepsState = 'default'</code> - `setState(name, config)` takes the config of the state it names (`StepsStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The tracker at a step. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>activeStep?</code></td><td><code>number</code></td><td>the current step, 1-based</td></tr><tr><td><code>step?</code></td><td><code>number</code></td><td>the same as activeStep (when activeStep is not given)</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the same as activeStep (when neither is given)</td></tr><tr><td><code>errorStep?</code></td><td><code>number</code></td><td>the step marked as failed, 0 for none</td></tr><tr><td><code>activeStepError?</code></td><td><code>boolean</code></td><td>true marks the current step as failed, false clears that</td></tr><tr><td><code>size?</code></td><td><code>'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'</code></td><td>the size</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends StepsState&gt;(name: S, config?: StepsStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>StepsStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: StepsState; config: StepsStateConfigs[StepsState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.stepsApi.setState&lt;S extends StepsState&gt;(el: HTMLElement, name: S, config?: StepsStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>StepsStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.stepsApi.getState(el: HTMLElement): { name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.stepsApi.render(state: { name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: StepsState; config: StepsStateConfigs[StepsState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.stepsApi.store(el: HTMLElement): Store&lt;{ name: StepsState; config: StepsStateConfigs[StepsState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: StepsState; config: StepsStateConfigs[StepsState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.stepsApi.commit&lt;S extends StepsState&gt;(el: HTMLElement, name: S, config?: StepsStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>StepsStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.stepsStates: StepsState[]</code> | The declared states, 'default' first: <code>default</code>. |
 
 ---
 

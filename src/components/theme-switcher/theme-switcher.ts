@@ -18,7 +18,19 @@ import { defussGlobals, defussQuery, loadTheme, safeShowPopover, componentState,
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
 const themeSwitcherStates = ['default', 'open'];
+
+/** setState() configs per state - the theme switcher's states take none. */
+export interface ThemeSwitcherStateConfigs {
+  /** The menu closed. */
+  default: {};
+  /** The menu shown (a popover, top layer). */
+  open: {};
+}
 
 const STORAGE_KEY = 'defuss-shadcn-color-theme';
 const LINK_ID = 'theme-css';
@@ -136,8 +148,12 @@ export const themeSwitcherApi = Object.assign(componentState({
   apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
   markup: (el, state) => applyMarkup(el, state.name),
 }), {
-  /** Apply a theme on the switcher owning `menu` (link swap, see above). */
-  select(menu: HTMLElement, id: string) {
+  /**
+   * Apply a theme on the switcher owning `menu` (link swap, see above).
+   * @param menu - the switcher's menu (any element inside its .theme-switcher root)
+   * @param id - the theme id, one of the switcher's options
+   */
+  select(menu: HTMLElement, id: string): void {
     const root = menu.closest('.theme-switcher') as HTMLElement | null;
     if (!root) throw new Error('theme-switcher: menu is not inside a .theme-switcher root');
     applyThemeId(root, id);

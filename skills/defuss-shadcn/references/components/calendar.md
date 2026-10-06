@@ -73,11 +73,11 @@ supportedStates: default
 The heading is a **button** (a plain `<span class="calendar-heading">` is
 upgraded to one by the JS): it switches the calendar's view.
 
-| View (`data-view` on the root) | Heading shows | Arrows step | A pick… |
+| View (`data-view` on the root) | Heading shows | Arrows step | A pick... |
 | --- | --- | --- | --- |
 | days (no attribute) | September 2026 | a month | selects the day |
 | `months` | 2026 | a year | shows that month's days |
-| `years` | 2016 – 2027 | 12 years | shows that year's months |
+| `years` | `2016 – 2027` | 12 years | shows that year's months |
 
 The heading cycles days → months → years → days; `Escape` returns to the
 days; arrow keys walk the 4-column month / year grid. Months and years
@@ -182,23 +182,54 @@ The api is bound per calendar; the registry global is
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.calendarApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`, `setDays(cal, days, options = {})`; `df$.shadcn.calendarStates` = `default`.
+<code>type CalendarState = 'default'</code> - `setState(name, config)` takes the config of the state it names (`CalendarStateConfigs[name]`).
 
-| `df$.shadcn.calendarApi` | Description |
+| State | Description |
 |---|---|
-| `setDays(cal, days, options = {})` | Day data for this calendar (a range picker: for its whole .calendar-range): { 'YYYY-MM-DD': { mark?, note?, label?, disabled? } }. Replaces the map unless { merge: true }; re-renders without moving the view. |
+| `default` | The month view; without a config it shows today's month. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>year?</code></td><td><code>number</code></td><td>the year to show</td></tr><tr><td><code>month?</code></td><td><code>number</code></td><td>the month to show, 0-11</td></tr><tr><td><code>day?</code></td><td><code>number</code></td><td>the day of that month to select</td></tr><tr><td><code>selected?</code></td><td><code>number \| null</code></td><td>the selected day (what getState() reports; setState accepts it back)</td></tr><tr><td><code>date?</code></td><td><code>string</code></td><td>'YYYY-MM' or 'YYYY-MM-DD': show that month (and select that day) - instead of year / month / day</td></tr><tr><td><code>minDate?</code></td><td><code>string \| null</code></td><td>the earliest selectable day, 'YYYY-MM-DD' ('' clears it)</td></tr><tr><td><code>maxDate?</code></td><td><code>string \| null</code></td><td>the latest selectable day, 'YYYY-MM-DD' ('' clears it)</td></tr><tr><td><code>start?</code></td><td><code>string \| null</code></td><td>a range picker: the range's first day, 'YYYY-MM-DD' (null clears the range) - moves the view to it</td></tr><tr><td><code>end?</code></td><td><code>string \| null</code></td><td>a range picker: the range's last day, 'YYYY-MM-DD' (never before start)</td></tr><tr><td><code>view?</code></td><td><code>'days' \| 'months' \| 'years'</code></td><td>reported by getState(): the panel shown</td></tr><tr><td><code>rangeStart?</code></td><td><code>string \| null</code></td><td>reported by getState() in a range picker: the range's first day</td></tr><tr><td><code>rangeEnd?</code></td><td><code>string \| null</code></td><td>reported by getState() in a range picker: the range's last day</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends CalendarState&gt;(name: S, config?: CalendarStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>CalendarStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: CalendarState; config: CalendarStateConfigs[CalendarState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.calendarApi.setState&lt;S extends CalendarState&gt;(el: HTMLElement, name: S, config?: CalendarStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>CalendarStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.calendarApi.getState(el: HTMLElement): { name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.calendarApi.render(state: { name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: CalendarState; config: CalendarStateConfigs[CalendarState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.calendarApi.store(el: HTMLElement): Store&lt;{ name: CalendarState; config: CalendarStateConfigs[CalendarState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: CalendarState; config: CalendarStateConfigs[CalendarState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.calendarApi.commit&lt;S extends CalendarState&gt;(el: HTMLElement, name: S, config?: CalendarStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>CalendarStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.calendarApi.setDays(cal: HTMLElement, days: Record&lt;string, CalendarDay&gt;, options: { merge?: boolean } = {}): void</code> | Day data for this calendar (a range picker: for its whole .calendar-range). Replaces the map unless { merge: true }; re-renders without moving the view. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>cal</code></td><td><code>HTMLElement</code></td><td>the .calendar element</td></tr><tr><td><code>days</code></td><td><code>Record&lt;string, CalendarDay&gt;</code></td><td>the day data by ISO date ('YYYY-MM-DD')</td></tr><tr><td><code>options</code></td><td><code>{ merge?: boolean }</code> = <code>{}</code></td><td>merge: true adds to the current map instead of replacing it</td></tr></table> |
+| <code>df$.shadcn.calendarStates: CalendarState[]</code> | The declared states, 'default' first: <code>default</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `calendar:range` | `start`, `end`, `startIso`, `endIso` | Fires when a range is complete (its second date) - start and end as Dates and as ISO dates. |
-| `calendar:select` | `date` | /* Dispatch custom event |
-| `calendar:view` | `view`, `year`, `month` | Fires when the panel changes - the view (days, months, years) and the year and month it shows. |
+| Event | Description |
+|---|---|
+| `calendar:range` | Fires when a range is complete (its second date) - start and end as Dates and as ISO dates. <code>detail</code>: <code>CalendarRangeDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>start</code></td><td><code>Date \| null</code></td><td>the first date as a Date (local midnight), null while unset</td></tr><tr><td><code>end</code></td><td><code>Date \| null</code></td><td>the last date as a Date, null while unset</td></tr><tr><td><code>startIso</code></td><td><code>string \| null</code></td><td>the first date as YYYY-MM-DD, null while unset</td></tr><tr><td><code>endIso</code></td><td><code>string \| null</code></td><td>the last date as YYYY-MM-DD, null while unset</td></tr></table> |
+| `calendar:select` | Fires when a day is picked (click or Enter) - the date. <code>detail</code>: <code>CalendarSelectDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>date</code></td><td><code>Date</code></td><td>the selected day, local midnight</td></tr></table> |
+| `calendar:view` | Fires when the panel changes - the view (days, months, years) and the year and month it shows. <code>detail</code>: <code>CalendarViewDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>view</code></td><td><code>'days' \| 'months' \| 'years'</code></td><td>the panel shown: days of a month, the months of a year, or a page of years</td></tr><tr><td><code>year</code></td><td><code>number</code></td><td>the year it shows</td></tr><tr><td><code>month</code></td><td><code>number</code></td><td>the month it shows, 0-11</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `CalendarDay` | One day's data - from the calendar's JSON &lt;script class="calendar-days"&gt; or setDays(). <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>mark?</code></td><td><code>string</code></td><td>a mark name: 'holiday' (red number), 'event' (primary dot), 'booked' (struck through) or any name (a neutral dot, style it yourself)</td></tr><tr><td><code>note?</code></td><td><code>string \| number</code></td><td>a second line under the number (a price, a count)</td></tr><tr><td><code>label?</code></td><td><code>string</code></td><td>added to the day's title and accessible name</td></tr><tr><td><code>disabled?</code></td><td><code>boolean</code></td><td>true: the day cannot be picked</td></tr></table> |
+| `CalendarRangeDetail` | What calendar:range carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>start</code></td><td><code>Date \| null</code></td><td>the first date as a Date (local midnight), null while unset</td></tr><tr><td><code>end</code></td><td><code>Date \| null</code></td><td>the last date as a Date, null while unset</td></tr><tr><td><code>startIso</code></td><td><code>string \| null</code></td><td>the first date as YYYY-MM-DD, null while unset</td></tr><tr><td><code>endIso</code></td><td><code>string \| null</code></td><td>the last date as YYYY-MM-DD, null while unset</td></tr></table> |
+| `CalendarSelectDetail` | What calendar:select carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>date</code></td><td><code>Date</code></td><td>the selected day, local midnight</td></tr></table> |
+| `CalendarViewDetail` | What calendar:view carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>view</code></td><td><code>'days' \| 'months' \| 'years'</code></td><td>the panel shown: days of a month, the months of a year, or a page of years</td></tr><tr><td><code>year</code></td><td><code>number</code></td><td>the year it shows</td></tr><tr><td><code>month</code></td><td><code>number</code></td><td>the month it shows, 0-11</td></tr></table> |
 
 
 ## Density

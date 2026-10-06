@@ -7,8 +7,13 @@ import { auditUtilities, walk } from './lib/audit.ts';
 import { componentFingerprints, declaredStates } from './lib/inputs.ts';
 import { statFigureProblems } from './lib/stat-figures.ts';
 import { statSources } from './stat-figures.ts';
-import { BUNDLE_ARTIFACTS, isAppArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
+import { BUNDLE_ARTIFACTS, isBundleDirArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
 import { EXTRA_BUNDLES, extraBundleOf, inAllBundle } from './lib/bundles.ts';
+import { sectionArtifacts } from './lib/sections.ts';
+import { zipPlans } from './lib/release-zips.ts';
+import { tscErrorCounts, typeRatchetProblems } from './lib/type-check.ts';
+import { TYPE_BASELINE } from './lib/type-baseline.ts';
+import { sections, type Section } from './lib/sections-files.ts';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
@@ -36,7 +41,7 @@ import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from '.
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
-import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile } from './lib/docs-ssg.ts';
+import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile, STANDALONE_DOCS, standaloneDocFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
 import { versionDrift, PIN_GLOBS, PIN_IGNORE, pinDrift } from './lib/version-sites.ts';
 import { apiGaps, apiMarkdown, apiSectionOf, readComponentApi } from '../src/documentation/lib/component-api.ts';
@@ -276,10 +281,10 @@ check(
 );
 
 // 8. every doc page is reachable from the sidebar (lib/nav.ts NAV) - except
-// the chrome-free standalone decks, which are frames of a page that IS in the
+// the chrome-free standalone pages (decks, scaffold apps, documents), views of a page that IS in the
 // sidebar (their own .mdx), never navigation targets themselves
 const navSrc = readFileSync(join(DOCS, 'lib/nav.ts'), 'utf8');
-const standaloneDeckPages = new Set([...STANDALONE_DECKS.map(standaloneDeckFile), ...STANDALONE_APPS.map(standaloneAppFile)]);
+const standaloneDeckPages = new Set([...STANDALONE_DECKS.map(standaloneDeckFile), ...STANDALONE_APPS.map(standaloneAppFile), ...STANDALONE_DOCS.map(standaloneDocFile)]);
 check(
   'sidebar coverage',
   docPages.filter((p) => !standaloneDeckPages.has(p) && !navSrc.includes(`'${p}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
@@ -328,7 +333,7 @@ if (!existsSync(DIST)) {
     // single-file bundle - none of them are orphans
     // scripts/build.ts publishes schema sidecars to dist/schemas/ from a
     // DIFFERENT src path (components/<n>/<n>.schema.json) - allow-listed, not orphans
-    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || isAppArtifact(rel) || rel === STATS_FILE || isSchemaArtifact(rel)) continue;
+    if (isDerivedArtifact(rel) || BUNDLE_ARTIFACTS.has(rel) || isBundleDirArtifact(rel) || rel === STATS_FILE || isSchemaArtifact(rel)) continue;
     if (!srcSet.has(rel)) {
       // docs pages/assets originate from the SSG authoring tree
       // (pages/*.mdx, public/*, runtime/*.ts) - resolve before flagging
@@ -607,11 +612,58 @@ check(
       if (!members.includes(c) && existsSync(join(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${bundle}.js embeds "${c}", which is not one of its members`);
     if (/(^|\n)\s*import[\s({]|import\(/.test(js)) artifactProblems.push(`${bundle}.js contains a runtime import - the payload must be self-contained`);
   }
+  // the section bundles (scripts/lib/sections.ts): the same members-only
+  // contract per sidebar section, and dist/sections/ holds exactly the plan
+  let sectionList: Section[] = [];
+  try {
+    sectionList = sections();
+  } catch (err) {
+    artifactProblems.push(err instanceof Error ? err.message : String(err));
+  }
+  const planned = new Set(sectionList.filter((s) => s.dir === 'sections').flatMap((s) => sectionArtifacts(s).filter((a) => !a.endsWith('.map'))));
+  for (const f of existsSync(join(DIST, 'sections')) ? readdirSync(join(DIST, 'sections')) : []) {
+    const rel = `sections/${f}`;
+    if (/^[a-z0-9-]+\.(css|js)$/.test(f) && !planned.has(rel)) artifactProblems.push(`dist/${rel} belongs to no sidebar section - rebuild`);
+  }
+  for (const s of sectionList.filter((p) => p.dir === 'sections')) {
+    const file = `sections/${s.name}`;
+    if (!existsSync(join(DIST, `${file}.css`))) artifactProblems.push(`dist/${file}.css missing - run \`bun run build\``);
+    if (!s.hasJs) continue;
+    const raw = readDist(`${file}.js`);
+    if (!raw) { artifactProblems.push(`dist/${file}.js missing - run \`bun run build\``); continue; }
+    const js = withoutVendorImports(raw, s.members.filter((m) => m in VENDOR_IMPORTS), `${s.name}.js`);
+    for (const m of s.members)
+      if (existsSync(join(COMPS, m, `${m}.ts`)) && !new RegExp(`\\b${camel(m)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js is missing its component "${m}"`);
+    if (js.includes('queryVersion') || js.includes('htmlStringToVNodes')) artifactProblems.push(`${file}.js embeds the core runtime - a section bundle carries only its components`);
+    for (const c of componentDirs)
+      if (!s.members.includes(c) && existsSync(join(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js embeds "${c}", which is in another section`);
+    if (/(^|\n)\s*import[\s({]|import\(/.test(js)) artifactProblems.push(`${file}.js contains a runtime import - the payload must be self-contained`);
+  }
   check(
     'artifact contract (core/all)',
     artifactProblems,
     'run `bun run build` - core = morph+query+shared only; all = core first + every shipping component, both import-free (see plans/defuss-query-morph-integration.md §2.3)',
   );
+}
+// 10f2. the Bundles & Downloads page links the release ZIPs by name - the
+// docs component renders those names from a copy of the naming rule (the SSG
+// cannot import scripts/), so compare its links with what release-zips.ts
+// will attach: same set, same release.
+{
+  const zipProblems: string[] = [];
+  const page = join(DIST, 'documentation', 'bundles.html');
+  const statsDoc = existsSync(join(DIST, STATS_FILE)) ? (JSON.parse(readFileSync(join(DIST, STATS_FILE), 'utf8')) as StatsDoc) : null;
+  if (!existsSync(page) || !statsDoc) zipProblems.push('dist/documentation/bundles.html or dist/stats.json missing - run `bun run build`');
+  else {
+    const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')) as { version: string; homepage: string };
+    const html = readFileSync(page, 'utf8');
+    const linked = new Set([...html.matchAll(/href="([^"]*\/releases\/download\/[^"]+\.zip)"/g)].map((m) => m[1]));
+    const plans = zipPlans(Object.entries(statsDoc.sections).map(([name, s]) => ({ name, ...s })), pkg.version, pkg.homepage);
+    const expected = new Set(plans.map((p) => [...linked].find((l) => l.endsWith(`/releases/download/v${pkg.version}/${p.zip}`)) ?? `MISSING ${p.zip}`));
+    for (const e of expected) if (e.startsWith('MISSING ')) zipProblems.push(`bundles.html does not link ${e.slice(8)} (releases/download/v${pkg.version}/)`);
+    for (const l of linked) if (![...expected].includes(l)) zipProblems.push(`bundles.html links ${l}, which release-zips.ts does not build`);
+  }
+  check('bundles page ↔ release ZIPs', zipProblems, 'rebuild the docs; keep zipUrl() in lib/components/section-bundles.tsx equal to the naming in scripts/lib/release-zips.ts');
 }
 check(
   'vendor imports (pinned, allow-listed)',
@@ -631,6 +683,11 @@ check(
     ...walk(SRC, ['.ts']),
     ...walk(join(ROOT, 'tests'), ['.ts']),
     ...walk(join(ROOT, 'scripts'), ['.ts']),
+    // the docs agents and readers act on - a stale name there is a wrong instruction
+    // (the otp-input skill named the old registry until this scan covered it)
+    ...walk(SRC, ['.md', '.mdx']),
+    join(ROOT, 'README.md'),
+    join(ROOT, 'AGENTS.md'),
   ]) {
     if (readFileSync(f, 'utf8').includes(legacyMarker))
       legacyProblems.push(`${relative(ROOT, f)} still uses the legacy runtime namespace`);
@@ -1027,8 +1084,11 @@ check(
 // README must exist - renaming a script or make target silently rots the docs
 // that agents follow as instructions.
 const pkgScripts = new Set(Object.keys(JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts));
+// VERIFIED: a rule may name several targets - the Makefile's `start stop restart
+// status log: ;` service stubs do - and `:=` is an assignment, not a rule.
 const makeTargets = new Set(
-  [...readFileSync(join(ROOT, 'Makefile'), 'utf8').matchAll(/^([a-z][a-z0-9_-]*):/gm)].map((m) => m[1]),
+  [...readFileSync(join(ROOT, 'Makefile'), 'utf8').matchAll(/^([a-z][a-z0-9_-]*(?: +[a-z][a-z0-9_-]*)*) *:(?!=)/gm)]
+    .flatMap((m) => m[1].split(/ +/)),
 );
 const refProblems: string[] = [];
 for (const md of ['AGENTS.md', 'README.md']) {
@@ -1521,9 +1581,11 @@ check(
     // rendered on its page by <ApiSection>. el.api / el.store come only from
     // bindComponent() - or, replaced by an instance, from a declared
     // interface <Name>Instance the docs can read.
+    // the shared State API (el.api, the registry): every page documents those members from its JSDoc
+    const sharedStateSrc = readFileSync(join(ROOT, 'src', 'shared', 'component-state.ts'), 'utf8');
     const apiProblems = jsComponents.flatMap((c) => {
       const src = sources.get(`src/components/${c}/${c}.ts`)!;
-      const api = readComponentApi(c, src);
+      const api = readComponentApi(c, src, sharedStateSrc);
       const out = apiGaps(api).map((g) => `${c}: ${g}`);
       const skillFile = join(ROOT, 'src', 'components', c, 'component-skill.md');
       const skill = existsSync(skillFile) ? readFileSync(skillFile, 'utf8') : '';
@@ -1543,7 +1605,14 @@ check(
       if (/\.api\s*=[^=]/.test(code) && !api.instance) out.push(`${c}: replaces el.api without a declared interface <Name>Instance`);
       return out;
     });
-    check('API docs (JS components)', apiProblems, 'describe every df$.shadcn member with JSDoc in the .ts and every event with a comment directly above the line that creates it (new CustomEvent), then `bun run api-docs` (rewrites each skill\'s ## API section below ## States) and put <ApiSection component="name" /> after </StatesSection> on the page (AGENTS.md "API section")');
+    check('API docs (JS components)', apiProblems, 'give every documented member a TypeScript type on each argument and its return value, a JSDoc description, an @param per argument and an @returns for a value; type every event detail (new CustomEvent<Detail>(…), each Detail field with a /** description */) and describe each declared type it names; describe every event with a comment directly above the line that creates it - then `bun run api-docs` (rewrites each skill\'s ## API section below ## States) and put <ApiSection component="name" /> after </StatesSection> on the page (AGENTS.md "API section")');
+    // the types those docs state are claims: the compiler checks them (a ratchet - scripts/lib/type-check.ts)
+    {
+      const tsc = Bun.spawnSync({ cmd: ['bunx', 'tsc', '-p', 'tsconfig.components.json'], cwd: ROOT });
+      const out = tsc.stdout.toString() + tsc.stderr.toString();
+      const problems = /error TS\d+/.test(out) || tsc.exitCode === 0 ? typeRatchetProblems(tscErrorCounts(out), TYPE_BASELINE) : [`tsc did not run: ${out.slice(0, 300)}`];
+      check('component types (tsc ratchet)', problems, 'fix the type the error names (a documented argument / return / detail type must hold where the code uses it); when a file got cleaner, lower its TYPE_BASELINE entry to the new count');
+    }
     check('store contract (JS components)', storeProblems, 'build the State API with componentState({ component, states, apply, read?, markup? }) and bind each element with bindComponent(el, api) - el.store + el.api (AGENTS.md "State through stores"; toggle.ts is the reference)');
     check('df$ adoption (JS components)', adoption, 'every JS component imports defussQuery (shared state-api module) and does its DOM work through it; DF_ADOPTION_LEGACY in scripts/lib/dom-discipline.ts only shrinks');
     check(`df$ adoption debt (${adoptionDebt.length} components)`, adoptionDebt.length ? [adoptionDebt.join(', ')] : [], 'migrate each to df$ (toggle.ts / accordion.ts) and drop it from DF_ADOPTION_LEGACY', true);

@@ -92,7 +92,7 @@ four corners. `start` / `end` are logical: in RTL, start is the right.
 
 Image, fallback and ring inherit the shape. For silhouettes, put a `shape-*`
 class from `theme/utils/shapes.css` (`shape-heart`, `shape-squircle`,
-`shape-hexagon-2`, `shape-decagon`, `shape-star-2` …) on the
+`shape-hexagon-2`, `shape-decagon`, `shape-star-2` ...) on the
 `.avatar-image` - only the photo is cut, so a badge still sits on top, and a
 loaded photo drops the muted plate behind it.
 
@@ -113,7 +113,7 @@ or `"neutral"` (foreground plate) puts them on a solid plate.
 
 ## Custom sizes
 
-Beyond `xs`–`xl`, sizing utilities set any size (`w-32 h-32` = 8rem); the
+Beyond the `xs` to `xl` sizes, sizing utilities set any size (`w-32 h-32` = 8rem); the
 badge keeps its size - set a `data-size` for a matching badge.
 
 ## Group (`.avatar-group`)
@@ -137,14 +137,40 @@ The registry global is `df$.shadcn.avatarApi` / `df$.shadcn.avatarStates`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.avatarApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.avatarStates` = `default`, `error`.
+<code>type AvatarState = 'default' | 'error'</code> - `setState(name, config)` takes the config of the state it names (`AvatarStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The image shows (or only the fallback is authored). No config. |
+| `error` | The image failed to load - the fallback (initials, an icon) shows instead. No config. |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends AvatarState&gt;(name: S, config?: AvatarStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>AvatarStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: AvatarState; config: AvatarStateConfigs[AvatarState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.avatarApi.setState&lt;S extends AvatarState&gt;(el: HTMLElement, name: S, config?: AvatarStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>AvatarStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.avatarApi.getState(el: HTMLElement): { name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.avatarApi.render(state: { name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: AvatarState; config: AvatarStateConfigs[AvatarState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.avatarApi.store(el: HTMLElement): Store&lt;{ name: AvatarState; config: AvatarStateConfigs[AvatarState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: AvatarState; config: AvatarStateConfigs[AvatarState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.avatarApi.commit&lt;S extends AvatarState&gt;(el: HTMLElement, name: S, config?: AvatarStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>AvatarStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.avatarStates: AvatarState[]</code> | The declared states, 'default' first: <code>default</code>, <code>error</code>. |
 
 ## Accessibility
 
 - `<img>` must have an `alt` attribute describing the user
 - Fallback text should be initials or a meaningful abbreviation
-- A status badge needs `role="img"` + `aria-label` ("Online", "Busy" …) - `aria-label` on a role-less `<span>` is ignored by screen readers. Where there is room, repeat the state as visible text too.
+- A status badge needs `role="img"` + `aria-label` ("Online", "Busy" ...) - `aria-label` on a role-less `<span>` is ignored by screen readers. Where there is room, repeat the state as visible text too.

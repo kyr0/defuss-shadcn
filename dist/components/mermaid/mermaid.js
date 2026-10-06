@@ -41,6 +41,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.5') {
 const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
 // 'default' = the source (not rendered yet / shown as text), 'rendered' =
 // the SVG, 'error' = the source + an error message
 const mermaidStates = ['default', 'rendered', 'error'];
@@ -55,6 +58,8 @@ let moduleUrl = '';
  * self-hosted copy of the same build); without it: <meta name=
  * "mermaid-module">, else the pinned jsDelivr build. A failed import can be
  * retried (the next call imports again).
+ * @param url - a module URL to import instead (same build, self-hosted)
+ * @returns the Mermaid module, imported once per URL
  */
 function load(url) {
     const vendorUrl = url || (dfDollar('meta[name="mermaid-module"]').get(0) ?? null)?.content || MERMAID_URL;
@@ -94,7 +99,11 @@ export function toHex(css) {
     const hex = (n) => n.toString(16).padStart(2, '0');
     return `#${hex(r)}${hex(g)}${hex(b)}${a < 255 ? hex(a) : ''}`;
 }
-/** Mermaid "base" themeVariables from the tokens the figure resolves. */
+/**
+ * Mermaid "base" themeVariables from the tokens the figure resolves.
+ * @param el - the element whose computed tokens (colors, fonts, radius) the theme reads
+ * @returns Mermaid themeVariables: colors as hex, the font family
+ */
 export function mermaidTheme(el) {
     const cs = getComputedStyle(el);
     const tok = (name, fallback) => toHex(cs.getPropertyValue(name).trim()) || fallback;
@@ -217,7 +226,11 @@ function showError(fig, message) {
 let seq = 0;
 /** Mermaid's config is global - renders run one at a time, each with its own theme. */
 let queue = Promise.resolve();
-/** Render one diagram from its source (queued). Resolves true on success. */
+/**
+ * Render one diagram from its source (queued).
+ * @param fig - the .mermaid-diagram figure
+ * @returns true when the SVG rendered, false when the source failed (the figure shows the error)
+ */
 function renderDiagram(fig) {
     // until the first render lands the source is a placeholder (mermaid.css hides
     // its text - no flash of raw markup); a re-render keeps the old SVG meanwhile
@@ -286,7 +299,10 @@ function renderDiagram(fig) {
     queue = job.catch(() => undefined);
     return job;
 }
-/** Render every diagram on the page again - resolves with one result per diagram. */
+/**
+ * Render every diagram on the page again.
+ * @returns one result per diagram, in page order - true where it rendered
+ */
 function renderAll() {
     return Promise.all([...dfDollar('.mermaid-diagram[data-init]').toArray()].map(renderDiagram));
 }

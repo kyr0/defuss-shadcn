@@ -13,6 +13,18 @@ const dfDollar = defussQuery();
 
 const accordionStates = ['default', 'all-open', 'all-closed'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the accordion's states take none. */
+export interface AccordionStateConfigs {
+  /** The items open as authored (each <details open>). */
+  default: {};
+  /** Every item open. */
+  'all-open': {};
+  /** Every item closed. */
+  'all-closed': {};
+}
+
 /**
  * The markup of a state - the one place a state becomes `open` attributes.
  * setState runs it on the live accordion, render() on a detached copy of the

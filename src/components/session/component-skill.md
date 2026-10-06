@@ -142,29 +142,65 @@ s.api.getState(); // → { name: 'detached', config: { to: 'start' } }
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.sessionApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sessionStates` = `default`, `detached`, `streaming`.
+<code>type SessionState = 'default' | 'detached' | 'streaming'</code> - `setState(name, config)` takes the config of the state it names (`SessionStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | Following the live edge - new messages scroll into view (scrolls to the end). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>smooth?</code></td><td><code>boolean</code></td><td>false jumps to the end instead of scrolling smoothly</td></tr></table> |
+| `detached` | Not following: the reader scrolled away, or a turn anchored. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>to?</code></td><td><code>string</code></td><td>where to scroll: 'start', or a message's data-message-id</td></tr></table> |
+| `streaming` | A reply is being written: aria-busy on the log; it follows the reply while the reader is at the end - default ends it. No config. |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends SessionState&gt;(name: S, config?: SessionStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>SessionStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: SessionState; config: SessionStateConfigs[SessionState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.sessionApi.setState&lt;S extends SessionState&gt;(el: HTMLElement, name: S, config?: SessionStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>SessionStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.sessionApi.getState(el: HTMLElement): { name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.sessionApi.render(state: { name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: SessionState; config: SessionStateConfigs[SessionState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.sessionApi.store(el: HTMLElement): Store&lt;{ name: SessionState; config: SessionStateConfigs[SessionState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: SessionState; config: SessionStateConfigs[SessionState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.sessionApi.commit&lt;S extends SessionState&gt;(el: HTMLElement, name: S, config?: SessionStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>SessionStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.sessionStates: SessionState[]</code> | The declared states, 'default' first: <code>default</code>, <code>detached</code>, <code>streaming</code>. |
 
 ### `df$.shadcn.session`
 
 | Member | Description |
 |---|---|
-| `append(t, content, options)` | Adds a message at the end; follows (or anchors) as the session decides. |
-| `prepend(t, content, options)` | Adds older messages at the start; the reader's place is kept. |
-| `scrollToEnd(t, o)` | Scroll to the newest message and follow again (options: { behavior }). |
-| `scrollToStart(t, o)` | Scroll to the oldest message (the session stops following). |
-| `scrollToMessage(t, id, o)` | Bring a message into view by id - false when there is none. |
-| `isAtEnd(t)` | Whether the reader is at the end (within data-threshold, 48px by default). |
+| <code>append(target: string \| HTMLElement, content: string \| Node, options?: SessionItemOptions): HTMLElement</code> | Adds a message at the end; follows (or anchors) as the session decides. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .session element, its id or a selector</td></tr><tr><td><code>content</code></td><td><code>string \| Node</code></td><td>the message: markup, a node, or a ready .session-item</td></tr><tr><td><code>options?</code></td><td><code>SessionItemOptions</code></td><td>its id and whether it is an anchor</td></tr></table> <b>Returns</b> <code>HTMLElement</code> - the .session-item added |
+| <code>prepend(target: string \| HTMLElement, content: string \| Node \| Array&lt;string \| Node&gt;, options?: SessionItemOptions): HTMLElement[]</code> | Adds older messages at the start; the reader's place is kept. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .session element, its id or a selector</td></tr><tr><td><code>content</code></td><td><code>string \| Node \| Array&lt;string \| Node&gt;</code></td><td>one message or several (markup, nodes or .session-items), oldest first</td></tr><tr><td><code>options?</code></td><td><code>SessionItemOptions</code></td><td>an id and the anchor flag for every message added</td></tr></table> <b>Returns</b> <code>HTMLElement[]</code> - the .session-items added, in order |
+| <code>scrollToEnd(target: string \| HTMLElement, options?: SessionScrollOptions): void</code> | Scroll to the newest message and follow again. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .session element, its id or a selector</td></tr><tr><td><code>options?</code></td><td><code>SessionScrollOptions</code></td><td>smooth: false jumps instead of scrolling smoothly (default true)</td></tr></table> |
+| <code>scrollToStart(target: string \| HTMLElement, options?: SessionScrollOptions): void</code> | Scroll to the oldest message (the session stops following). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .session element, its id or a selector</td></tr><tr><td><code>options?</code></td><td><code>SessionScrollOptions</code></td><td>smooth: false jumps instead of scrolling smoothly (default true)</td></tr></table> |
+| <code>scrollToMessage(target: string \| HTMLElement, id: string, options?: SessionScrollOptions): boolean</code> | Bring a message into view by id. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .session element, its id or a selector</td></tr><tr><td><code>id</code></td><td><code>string</code></td><td>the message's data-message-id</td></tr><tr><td><code>options?</code></td><td><code>SessionScrollOptions</code></td><td>smooth: false jumps instead of scrolling smoothly (default true)</td></tr></table> <b>Returns</b> <code>boolean</code> - false when the session has no such message |
+| <code>isAtEnd(target: string \| HTMLElement): boolean</code> | Whether the reader is at the end (within data-threshold, 48px by default). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .session element, its id or a selector</td></tr></table> <b>Returns</b> <code>boolean</code> - true when following is on - new messages scroll into view |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `session-drop` | `files` | Fires when files are dropped on the session (data-drop) - the accepted files. |
-| `session-visibility` | `currentAnchorId`, `visibleMessageIds` | Fires when the messages in view change - the current anchor's id and the ids of the visible messages. |
+| Event | Description |
+|---|---|
+| `session-drop` | Fires when files are dropped on the session (data-drop) - the accepted files. <code>detail</code>: <code>SessionDropDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>files</code></td><td><code>File[]</code></td><td>the dropped files data-drop accepts</td></tr></table> |
+| `session-visibility` | Fires when the messages in view change - the current anchor's id and the ids of the visible messages. <code>detail</code>: <code>SessionVisibilityDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>currentAnchorId</code></td><td><code>string \| null</code></td><td>the id of the anchor the reader is in, null when none has an id</td></tr><tr><td><code>visibleMessageIds</code></td><td><code>string[]</code></td><td>the ids of the messages in view, in order</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `SessionDropDetail` | What session-drop carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>files</code></td><td><code>File[]</code></td><td>the dropped files data-drop accepts</td></tr></table> |
+| `SessionItemOptions` | How an added message is marked. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>id?</code></td><td><code>string</code></td><td>its data-message-id - what scrollToMessage() and session-visibility name it by</td></tr><tr><td><code>anchor?</code></td><td><code>boolean</code></td><td>true: an anchor - a turn the reader lands on and the visibility event reports</td></tr></table> |
+| `SessionScrollOptions` | How a scroll moves. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>smooth?</code></td><td><code>boolean</code></td><td>false jumps instead of scrolling smoothly (default true)</td></tr></table> |
+| `SessionVisibilityDetail` | What session-visibility carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>currentAnchorId</code></td><td><code>string \| null</code></td><td>the id of the anchor the reader is in, null when none has an id</td></tr><tr><td><code>visibleMessageIds</code></td><td><code>string[]</code></td><td>the ids of the messages in view, in order</td></tr></table> |
 
 ---
 

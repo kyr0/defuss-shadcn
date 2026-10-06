@@ -1,0 +1,502 @@
+// dist/components/bibtex/bibtex.js
+var __df$core = globalThis.df$;
+var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
+if (!__df$shared || __df$shared.abi !== "0.9.5") {
+  throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
+}
+var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+var df$ = defussGlobals();
+var dfDollar = defussQuery();
+var bibtexStates = ["default", "copied"];
+var FORMATS = ["bibtex", "apa", "mla", "chicago", "harvard", "ieee"];
+var LABELS = { bibtex: "BibTeX", apa: "APA", mla: "MLA", chicago: "Chicago", harvard: "Harvard", ieee: "IEEE" };
+var COPIED_MS = 2000;
+function skipGroup(s, i) {
+  const open = s[i];
+  if (open === '"') {
+    let depth = 0;
+    for (let j = i + 1;j < s.length; j++) {
+      if (s[j] === "\\") {
+        j++;
+        continue;
+      }
+      if (s[j] === "{")
+        depth++;
+      else if (s[j] === "}")
+        depth--;
+      else if (s[j] === '"' && depth === 0)
+        return j + 1;
+    }
+    return s.length;
+  }
+  let depth = 0;
+  for (let j = i;j < s.length; j++) {
+    if (s[j] === "\\") {
+      j++;
+      continue;
+    }
+    if (s[j] === "{" || s[j] === "(")
+      depth++;
+    else if (s[j] === "}" || s[j] === ")") {
+      depth--;
+      if (depth === 0)
+        return j + 1;
+    }
+  }
+  return s.length;
+}
+function parse(text) {
+  const s = String(text ?? "");
+  const entries = [];
+  let i = 0;
+  while ((i = s.indexOf("@", i)) !== -1) {
+    const head = /^@\s*([a-zA-Z]+)\s*([{(])/.exec(s.slice(i));
+    if (!head) {
+      i++;
+      continue;
+    }
+    const type = head[1].toLowerCase();
+    const start = i + head[0].length - 1;
+    const end = skipGroup(s, start);
+    if (type === "comment" || type === "preamble" || type === "string") {
+      i = end;
+      continue;
+    }
+    const body = s.slice(start + 1, end - 1);
+    const comma = body.indexOf(",");
+    const key = (comma < 0 ? body : body.slice(0, comma)).trim();
+    const fields = {};
+    const order = [];
+    const bare = {};
+    let p = comma < 0 ? body.length : comma + 1;
+    while (p < body.length) {
+      const m = /^[\s,]*([A-Za-z][\w:-]*)\s*=\s*/.exec(body.slice(p));
+      if (!m)
+        break;
+      p += m[0].length;
+      let value = "";
+      let pieces = 0;
+      let bareOnly = true;
+      for (;; ) {
+        pieces++;
+        if (body[p] === "{" || body[p] === '"') {
+          const q = skipGroup(body, p);
+          value += body.slice(p + 1, q - 1);
+          p = q;
+          bareOnly = false;
+        } else {
+          const bare = /^[^,#}\s]+/.exec(body.slice(p));
+          if (bare) {
+            value += bare[0];
+            p += bare[0].length;
+          }
+        }
+        const more = /^\s*#\s*/.exec(body.slice(p));
+        if (!more)
+          break;
+        p += more[0].length;
+      }
+      const name = m[1].toLowerCase();
+      if (!(name in fields))
+        order.push(name);
+      fields[name] = name === "month" && bareOnly ? MONTHS[value.trim().toLowerCase().slice(0, 3)] ?? value.trim() : value.trim();
+      if (bareOnly && pieces === 1)
+        bare[name] = value.trim();
+      else
+        delete bare[name];
+    }
+    entries.push({ type, key, fields, order, bare });
+    i = end;
+  }
+  return entries;
+}
+var MONTHS = { jan: "January", feb: "February", mar: "March", apr: "April", may: "May", jun: "June", jul: "July", aug: "August", sep: "September", oct: "October", nov: "November", dec: "December" };
+var IEEE_MONTH = { January: "Jan.", February: "Feb.", March: "Mar.", April: "Apr.", May: "May", June: "Jun.", July: "Jul.", August: "Aug.", September: "Sep.", October: "Oct.", November: "Nov.", December: "Dec." };
+var ACCENTS = { '"': "̈", "'": "́", "`": "̀", "^": "̂", "~": "̃", "=": "̄", ".": "̇", c: "̧", v: "̌", u: "̆", H: "̋", k: "̨" };
+var SYMBOLS = { ss: "ß", o: "ø", O: "Ø", aa: "å", AA: "Å", ae: "æ", AE: "Æ", l: "ł", L: "Ł", i: "ı", oe: "œ", OE: "Œ" };
+function clean(value) {
+  return String(value ?? "").replace(/\{?\\([`'"^~=.])\s*\{?([A-Za-z])\}?\}?/g, (_m, a, ch) => (ch + ACCENTS[a]).normalize("NFC")).replace(/\{?\\([cvuHk])\s*\{([A-Za-z])\}\}?/g, (_m, a, ch) => (ch + ACCENTS[a]).normalize("NFC")).replace(/\{?\\(ss|aa|AA|ae|AE|oe|OE|o|O|l|L|i)\b\s*\}?/g, (_m, c) => SYMBOLS[c]).replace(/\\(TeX|LaTeX|BibTeX|XeTeX|LuaTeX)\b\s*(\{\})?/g, "$1").replace(/\\([&%$#_{}])/g, "$1").replace(/---/g, "—").replace(/--/g, "–").replace(/~/g, " ").replace(/\\[A-Za-z]+\s*/g, "").replace(/[{}]/g, "").replace(/\s+/g, " ").trim();
+}
+function splitTop(value, sep) {
+  const out = [];
+  let depth = 0;
+  let cur = "";
+  const s = String(value);
+  for (let i = 0;i < s.length; i++) {
+    const ch = s[i];
+    if (ch === "{")
+      depth++;
+    else if (ch === "}")
+      depth--;
+    if (depth === 0 && sep.test(s.slice(i))) {
+      const m = sep.exec(s.slice(i));
+      out.push(cur);
+      cur = "";
+      i += m[0].length - 1;
+      continue;
+    }
+    cur += ch;
+  }
+  out.push(cur);
+  return out.map((x) => x.trim()).filter(Boolean);
+}
+function parseName(raw) {
+  const r = raw.trim();
+  if (r.startsWith("{") && skipGroup(r, 0) === r.length)
+    return { first: "", last: clean(r), corporate: true };
+  const parts = splitTop(r, /^,/);
+  if (parts.length >= 2)
+    return { first: clean(parts[parts.length - 1]), last: clean(parts[0]) };
+  const words = splitTop(r, /^\s+/);
+  if (words.length === 1)
+    return { first: "", last: clean(words[0]) };
+  let k = words.length - 1;
+  while (k > 1 && /^[a-z]/.test(clean(words[k - 1])))
+    k--;
+  return { first: clean(words.slice(0, k).join(" ")), last: clean(words.slice(k).join(" ")) };
+}
+var names = (value) => value ? splitTop(value, /^\s+and\s+/i).map(parseName) : [];
+var initials = (first) => first.split(/\s+/).filter(Boolean).map((w) => w.split("-").map((p) => p ? `${p[0].toUpperCase()}.` : "").join("-")).join(" ");
+var esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+var it = (s) => `<i>${esc(s)}</i>`;
+var end = (s, mark = ".") => /[.?!]$/.test(s) ? s : s + mark;
+var list = (items, sep, last) => items.length < 2 ? items.join("") : `${items.slice(0, -1).join(sep)}${last}${items[items.length - 1]}`;
+var pages = (p) => clean(p).replace(/\s*[-–]+\s*/g, "–");
+function facts(entry) {
+  const f = entry.fields;
+  const c = (k) => f[k] ? clean(f[k]) : "";
+  return {
+    type: entry.type,
+    authors: names(f.author),
+    editors: names(f.editor),
+    title: c("title"),
+    container: c("journal") || c("booktitle") || c("series"),
+    year: c("year") || (f.date ? clean(f.date).slice(0, 4) : ""),
+    month: c("month"),
+    volume: c("volume"),
+    number: c("number") || c("issue"),
+    pages: f.pages ? pages(f.pages) : "",
+    publisher: c("publisher") || c("institution") || c("school") || c("organization"),
+    address: c("address") || c("location"),
+    edition: c("edition"),
+    doi: c("doi").replace(/^https?:\/\/(dx\.)?doi\.org\//, ""),
+    url: f.url ? clean(f.url).replace(/\s/g, "") : "",
+    note: c("note") || c("howpublished")
+  };
+}
+var isArticle = (t) => t === "article";
+var isPart = (t) => t === "inproceedings" || t === "incollection" || t === "inbook" || t === "conference";
+var anchor = (href, text = href) => /^https?:\/\//i.test(href) ? `<a class="bibtex-link" href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+var doiUrl = (doi) => `https://doi.org/${doi}`;
+var link = (x) => x.doi ? ` ${anchor(doiUrl(x.doi))}` : x.url ? ` ${anchor(x.url)}` : "";
+var STYLES = {
+  apa(x) {
+    const who = x.authors.length ? x.authors : x.editors;
+    const one = (n) => n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(initials(n.first))}`;
+    let out = who.length ? end(who.length > 1 ? list(who.map(one), ", ", ", &amp; ") : one(who[0])) : "";
+    if (!x.authors.length && x.editors.length)
+      out = out.replace(/\.$/, "") + ` (Ed${x.editors.length > 1 ? "s" : ""}.).`;
+    out += ` (${esc(x.year || "n.d.")}). `;
+    if (isArticle(x.type)) {
+      out += `${esc(end(x.title))} ${x.container ? it(x.container) : ""}${x.volume ? `, ${it(x.volume)}` : ""}${x.number ? `(${esc(x.number)})` : ""}${x.pages ? `, ${esc(x.pages)}` : ""}.`;
+    } else if (isPart(x.type)) {
+      out += `${esc(end(x.title))} In ${x.container ? it(x.container) : ""}${x.pages ? ` (pp. ${esc(x.pages)})` : ""}.${x.publisher ? ` ${esc(end(x.publisher))}` : ""}`;
+    } else {
+      out += `${it(x.title)}${x.type === "techreport" && x.number ? ` (Report No. ${esc(x.number)})` : ""}${x.edition ? ` (${esc(x.edition)} ed.)` : ""}.${x.publisher ? ` ${esc(end(x.publisher))}` : ""}`;
+    }
+    return out + link(x);
+  },
+  mla(x) {
+    const a = x.authors;
+    const full = (n) => n.corporate || !n.first ? esc(n.last) : `${esc(n.first)} ${esc(n.last)}`;
+    const inv = (n) => n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(n.first)}`;
+    let out = a.length === 0 ? "" : a.length === 1 ? inv(a[0]) : a.length === 2 ? `${inv(a[0])}, and ${full(a[1])}` : `${inv(a[0])}, et al`;
+    if (out)
+      out = `${end(out)} `;
+    const bits = [];
+    if (isArticle(x.type) || isPart(x.type)) {
+      out += `“${esc(end(x.title))}” `;
+      if (x.container)
+        bits.push(it(x.container));
+      if (x.volume)
+        bits.push(`vol. ${esc(x.volume)}`);
+      if (x.number)
+        bits.push(`no. ${esc(x.number)}`);
+      if (x.publisher && isPart(x.type))
+        bits.push(esc(x.publisher));
+      if (x.year)
+        bits.push(esc(x.year));
+      if (x.pages)
+        bits.push(`pp. ${esc(x.pages)}`);
+    } else {
+      out += `${it(end(x.title))} `;
+      if (x.publisher)
+        bits.push(esc(x.publisher));
+      if (x.year)
+        bits.push(esc(x.year));
+    }
+    out += bits.length ? `${bits.join(", ")}.` : "";
+    return out.trim() + link(x).replace(/^ (.+)$/, " $1.");
+  },
+  chicago(x) {
+    const a = x.authors;
+    const full = (n) => n.corporate || !n.first ? esc(n.last) : `${esc(n.first)} ${esc(n.last)}`;
+    const inv = (n) => n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(n.first)}`;
+    const who = a.length ? [inv(a[0]), ...a.slice(1).map(full)] : [];
+    let out = who.length ? `${end(list(who, ", ", who.length > 2 ? ", and " : " and "))} ` : "";
+    out += `${esc(x.year || "n.d.")}. `;
+    if (isArticle(x.type)) {
+      out += `“${esc(end(x.title))}” ${x.container ? it(x.container) : ""}${x.volume ? ` ${esc(x.volume)}` : ""}${x.number ? ` (${esc(x.number)})` : ""}${x.pages ? `: ${esc(x.pages)}` : ""}.`;
+    } else if (isPart(x.type)) {
+      out += `“${esc(end(x.title))}” In ${x.container ? it(x.container) : ""}${x.pages ? `, ${esc(x.pages)}` : ""}.${x.publisher ? ` ${x.address ? `${esc(x.address)}: ` : ""}${esc(end(x.publisher))}` : ""}`;
+    } else {
+      out += `${it(end(x.title))}${x.publisher ? ` ${x.address ? `${esc(x.address)}: ` : ""}${esc(end(x.publisher))}` : ""}`;
+    }
+    return out + link(x).replace(/^ (.+)$/, " $1.");
+  },
+  harvard(x) {
+    const a = x.authors;
+    const one = (n) => n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(initials(n.first).replace(/ /g, ""))}`;
+    let out = a.length ? `${list(a.map(one), ", ", " and ")} ` : "";
+    out += `(${esc(x.year || "n.d.")}) `;
+    if (isArticle(x.type)) {
+      out += `‘${esc(x.title)}’, ${x.container ? it(x.container) : ""}${x.volume ? `, ${esc(x.volume)}` : ""}${x.number ? `(${esc(x.number)})` : ""}${x.pages ? `, pp. ${esc(x.pages)}` : ""}.`;
+    } else if (isPart(x.type)) {
+      out += `‘${esc(x.title)}’, in ${x.container ? it(x.container) : ""}${x.pages ? `, pp. ${esc(x.pages)}` : ""}.${x.publisher ? ` ${esc(end(x.publisher))}` : ""}`;
+    } else {
+      out += `${it(x.title)}.${x.publisher ? ` ${x.address ? `${esc(x.address)}: ` : ""}${esc(end(x.publisher))}` : ""}`;
+    }
+    if (x.doi)
+      out += ` doi:${anchor(doiUrl(x.doi), x.doi)}.`;
+    else if (x.url)
+      out += ` Available at: ${anchor(x.url)}.`;
+    return out;
+  },
+  ieee(x, n) {
+    const a = x.authors;
+    const one = (p) => p.corporate || !p.first ? esc(p.last) : `${esc(initials(p.first))} ${esc(p.last)}`;
+    const who = a.length > 6 ? `${one(a[0])} <i>et al.</i>` : list(a.map(one), ", ", a.length > 2 ? ", and " : " and ");
+    let out = `<span class="bibtex-num">[${n}]</span> ${who ? `${who}, ` : ""}`;
+    const when = [IEEE_MONTH[x.month] ?? x.month, x.year].filter(Boolean).map(esc).join(" ");
+    if (isArticle(x.type)) {
+      out += `“${esc(x.title)},” ${[x.container ? it(x.container) : "", x.volume && `vol. ${esc(x.volume)}`, x.number && `no. ${esc(x.number)}`, x.pages && `pp. ${esc(x.pages)}`, when].filter(Boolean).join(", ")}`;
+    } else if (isPart(x.type)) {
+      out += `“${esc(x.title)},” in ${[x.container ? it(x.container) : "", x.address && esc(x.address), when, x.pages && `pp. ${esc(x.pages)}`].filter(Boolean).join(", ")}`;
+    } else if (x.type === "techreport") {
+      out += `“${esc(x.title)},” ${[x.publisher && esc(x.publisher), x.address && esc(x.address), `Tech. Rep.${x.number ? ` ${esc(x.number)}` : ""}`, when].filter(Boolean).join(", ")}`;
+    } else {
+      out += `${it(x.title)}${x.edition ? `, ${esc(x.edition)} ed` : ""}. ${[x.address && esc(x.address), x.publisher && esc(x.publisher)].filter(Boolean).join(": ")}${x.publisher || x.address ? ", " : ""}${esc(x.year)}`;
+    }
+    out = end(out);
+    if (x.doi)
+      out = `${out.replace(/\.$/, "")}, doi: ${anchor(doiUrl(x.doi), x.doi)}.`;
+    else if (x.url)
+      out += ` [Online]. Available: ${anchor(x.url)}`;
+    return out;
+  }
+};
+var sortKey = (x) => `${(x.authors[0] ?? x.editors[0])?.last ?? x.title}`.toLowerCase() + " " + x.year;
+function bibtexOut(entries, { align = true, highlight = true } = {}) {
+  const span = (cls, s) => highlight ? `<span class="bibtex-${cls}">${esc(s)}</span>` : esc(s);
+  const html = [];
+  const text = [];
+  for (const e of entries) {
+    const width = align ? Math.max(0, ...e.order.map((k) => k.length)) : 0;
+    const lines = e.order.map((k) => {
+      const pad = " ".repeat(Math.max(0, width - k.length));
+      const raw = e.bare?.[k];
+      const value = raw ?? e.fields[k];
+      const href = k === "doi" ? doiUrl(value.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")) : /^https?:\/\/\S+$/.test(value) ? value : null;
+      const shown = href && highlight ? `<span class="bibtex-value">${anchor(href, value)}</span>` : span("value", value);
+      const [open, close] = raw === undefined ? ["{", "}"] : ["", ""];
+      return { html: `  ${span("field", k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`, text: `  ${k}${pad} = ${open}${value}${close},` };
+    });
+    html.push([`@${span("type", e.type)}{${span("key", e.key)},`, ...lines.map((l) => l.html), "}"].join(`
+`));
+    text.push([`@${e.type}{${e.key},`, ...lines.map((l) => l.text), "}"].join(`
+`));
+  }
+  return { html: html.join(`
+
+`), text: text.join(`
+
+`) };
+}
+var plain = (html) => html.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+function format(entries, style, { align = true, highlight = true } = {}) {
+  if (style === "bibtex")
+    return { ...bibtexOut(entries, { align, highlight }), list: false };
+  const fn = STYLES[style];
+  if (!fn)
+    throw new Error(`bibtex: unknown format "${style}" (supported: ${FORMATS.join(", ")})`);
+  let rows = entries.map((e, i) => ({ x: facts(e), i }));
+  if (style !== "ieee")
+    rows = rows.sort((a, b) => sortKey(a.x).localeCompare(sortKey(b.x)));
+  const refs = rows.map(({ x, i }) => fn(x, i + 1));
+  return { html: refs, text: refs.map(plain).join(`
+
+`), list: refs.length > 1 };
+}
+var isStyle = (f) => FORMATS.includes(f);
+function formatsOf(el) {
+  const own = String(dfDollar(el).attr("data-formats") ?? "").split(/[\s,]+/).filter(isStyle);
+  return own.length ? own : FORMATS;
+}
+function formatFor(el, state, authored) {
+  const offered = formatsOf(el);
+  const want = state?.config?.format;
+  if (want && offered.includes(want))
+    return want;
+  return authored && offered.includes(authored) ? authored : offered[0];
+}
+function applyMarkup(el, state, authored) {
+  dfDollar(el).attr("data-format", formatFor(el, state, authored));
+  dfDollar(el).attr("data-copied", state.name === "copied" ? "" : null);
+}
+var COPY_ICON = '<svg class="bibtex-icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+var DONE_ICON = '<svg class="bibtex-icon-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+function build(root) {
+  const inline = root.tagName === "SPAN";
+  const tag = inline ? "span" : "div";
+  const variant = dfDollar(root).attr("data-variant");
+  const offered = formatsOf(root);
+  const tabs = offered.length > 1 && variant !== "minimal" && variant !== "inline" ? `<${tag} class="bibtex-tabs" role="tablist" aria-label="Citation format">${offered.map((f) => `<button type="button" class="bibtex-tab" role="tab" data-format="${f}" aria-selected="false" tabindex="-1">${LABELS[f]}</button>`).join("")}</${tag}>` : "";
+  const copy = dfDollar(root).attr("data-copy") === "none" ? "" : `<button type="button" class="bibtex-copy">${COPY_ICON}${DONE_ICON}<span class="bibtex-copy-label">Copy</span></button>`;
+  const bar = `<${tag} class="bibtex-bar">${tabs}${copy}<${tag} class="bibtex-status" role="status"></${tag}></${tag}>`;
+  const view = `<${tag} class="bibtex-view"${tabs ? ' role="tabpanel"' : ""}></${tag}>`;
+  const caption = dfDollar(root).children("figcaption").get(0);
+  if (inline) {
+    dfDollar(root).append(dfDollar(view));
+    dfDollar(root).append(dfDollar(bar));
+  } else {
+    if (caption)
+      dfDollar(caption).after(dfDollar(bar));
+    else
+      dfDollar(root).append(dfDollar(bar));
+    dfDollar(root).append(dfDollar(view));
+  }
+  root._bar = dfDollar(root).children(".bibtex-bar").get(0);
+  root._view = dfDollar(root).children(".bibtex-view").get(0);
+  const tablist = dfDollar(root._bar).find('[role="tablist"]').get(0);
+  if (tablist) {
+    dfDollar(root._view).attr("id", root._view.id || `${root.id || "bibtex"}-view-${Math.random().toString(36).slice(2, 7)}`);
+    dfDollar(tablist).find('[role="tab"]').attr("aria-controls", root._view.id);
+  }
+}
+function show(root, fmt) {
+  const out = format(root._entries, fmt, {
+    align: dfDollar(root).attr("data-align") !== "none",
+    highlight: dfDollar(root).attr("data-highlight") !== "none"
+  });
+  root._text = out.text;
+  const inline = root.tagName === "SPAN";
+  let markup;
+  if (fmt === "bibtex")
+    markup = inline ? `<code class="bibtex-code">${out.html}</code>` : `<pre class="bibtex-code"><code>${out.html}</code></pre>`;
+  else if (out.list && !inline)
+    markup = `<ol class="bibtex-list">${out.html.map((r) => `<li class="bibtex-ref">${r}</li>`).join("")}</ol>`;
+  else
+    markup = inline ? `<span class="bibtex-ref">${out.html.join(" ")}</span>` : `<p class="bibtex-ref">${out.html.join(" ")}</p>`;
+  dfDollar(root._view).html(markup);
+  dfDollar(root._bar).find(".bibtex-tab").each((_i, tab) => {
+    const on = dfDollar(tab).attr("data-format") === fmt;
+    dfDollar(tab).attr("aria-selected", String(on)).attr("tabindex", on ? "0" : "-1");
+  });
+  dfDollar(root._bar).find(".bibtex-copy").attr("aria-label", `Copy ${LABELS[fmt]}`);
+}
+function triggerStateChange(root, state) {
+  if (state.name === "copied" && !state.config?.format && root._shown)
+    state = { ...state, config: { ...state.config, format: root._shown } };
+  applyMarkup(root, state, root._authored);
+  const fmt = dfDollar(root).attr("data-format");
+  if (fmt !== root._shown) {
+    root._shown = fmt;
+    show(root, fmt);
+    root.dispatchEvent(new CustomEvent("bibtex-format", { bubbles: true, detail: { format: fmt, text: root._text } }));
+  }
+  const copied = state.name === "copied";
+  dfDollar(root._bar).find(".bibtex-copy-label").text(copied ? "Copied" : "Copy");
+  dfDollar(root._bar).find(".bibtex-status").text(copied ? `${LABELS[fmt]} copied to the clipboard` : "");
+  clearTimeout(root._copiedTimer);
+  if (copied) {
+    root._copiedTimer = setTimeout(() => {
+      if (root.isConnected && root.store?.value.name === "copied")
+        root.api.setState("default", { format: fmt });
+    }, COPIED_MS);
+  }
+}
+var bibtexApi = componentState({
+  component: "bibtex",
+  states: bibtexStates,
+  apply: (root, state) => triggerStateChange(root, state),
+  read: (root, state) => ({ name: dfDollar(root).attr("data-state-name") || state.name, config: { ...state.config, format: dfDollar(root).attr("data-format") } }),
+  markup: (el, state) => {
+    const authored = state.model.attrs.find(([name]) => name === "data-format");
+    applyMarkup(el, state, authored ? authored[1] : null);
+  }
+});
+df$.bibtexApi = bibtexApi;
+df$.bibtexStates = bibtexStates;
+async function copy(root) {
+  const fmt = dfDollar(root).attr("data-format");
+  let ok = true;
+  try {
+    await navigator.clipboard.writeText(root._text ?? "");
+  } catch {
+    ok = false;
+    globalThis.getSelection?.()?.selectAllChildren(root._view);
+  }
+  if (ok)
+    root.api.setState("copied", { format: fmt });
+  root.dispatchEvent(new CustomEvent("bibtex-copy", { bubbles: true, detail: { format: fmt, text: root._text, ok } }));
+  return ok;
+}
+var resolve = (target) => typeof target === "string" ? dfDollar(target).get(0) : target;
+df$.bibtex = {
+  formats: FORMATS,
+  parse,
+  format: (entries, style, options) => format(typeof entries === "string" ? parse(entries) : entries, style, options),
+  show: (target, fmt) => {
+    resolve(target)?.api.setState("default", { format: fmt });
+  },
+  copy: (target) => copy(resolve(target)),
+  text: (target) => resolve(target)?._text ?? "",
+  entries: (target) => structuredClone(resolve(target)?._entries ?? [])
+};
+function init() {
+  dfDollar(".bibtex:not([data-init])").each((_i, root) => {
+    dfDollar(root).data("init", "");
+    const src = dfDollar(root).find(".bibtex-source").get(0);
+    root._entries = parse(src ? dfDollar(src).text() : "");
+    root._authored = dfDollar(root).attr("data-format") ?? null;
+    build(root);
+    bindComponent(root, bibtexApi, { name: "default", config: { format: formatFor(root, null, root._authored) } });
+    triggerStateChange(root, root.store.value);
+    dfDollar(root._bar).on("click", (e) => {
+      const tab = e.target.closest?.(".bibtex-tab");
+      if (tab)
+        root.api.setState("default", { format: dfDollar(tab).attr("data-format") });
+      else if (e.target.closest?.(".bibtex-copy"))
+        copy(root);
+    });
+    dfDollar(root._bar).on("keydown", (e) => {
+      const tab = e.target.closest?.(".bibtex-tab");
+      if (!tab)
+        return;
+      const tabs = dfDollar(root._bar).find(".bibtex-tab").toArray();
+      const at = tabs.indexOf(tab);
+      const to = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (to === undefined)
+        return;
+      e.preventDefault();
+      const next = tabs[(to + tabs.length) % tabs.length];
+      root.api.setState("default", { format: dfDollar(next).attr("data-format") });
+      next.focus();
+    });
+  });
+}
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });
+
+//# debugId=D5F9D13C0FAE50D064756E2164756E21
+//# sourceMappingURL=papers.js.map

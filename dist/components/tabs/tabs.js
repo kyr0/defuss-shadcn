@@ -22,6 +22,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.5') {
 const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
 // per tab:     'default' = enabled, not picked (the authored selection stands),
 //              'active' = selected, 'disabled' = not selectable
 // per tablist: 'default' = everything as authored (selection, disabled flags,
@@ -266,10 +269,11 @@ export const tabsApi = componentState({
 df$.tabsApi = tabsApi;
 df$.tabsStates = tabsStates;
 function init() {
-    dfDollar('[role="tablist"]:not([data-init])').toArray().forEach((tablist) => {
+    // only tablists built from .tab-trigger are this component's - another
+    // component's tablist stays unclaimed. VERIFIED: (section-bundles.e2e, Papers)
+    // stamping every tablist marked BibTeX's format tabs data-init
+    dfDollar('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
         tablist.dataset.init = '';
-        if (!dfDollar(tablist).find('.tab-trigger').get(0))
-            return;
         const triggers = Array.from(dfDollar(tablist).find('[role="tab"]').toArray());
         // remember the authored tab so setState('default') restores it
         triggers.forEach((t) => {

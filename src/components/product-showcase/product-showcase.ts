@@ -13,6 +13,16 @@ const dfDollar = defussQuery();
 
 const productShowcaseStates = ['default', 'playing'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the showcase's states take none. */
+export interface ProductShowcaseStateConfigs {
+  /** The poster and the play button; the video hidden and unloaded. */
+  default: {};
+  /** The video visible and playing (muted); poster and button hidden. */
+  playing: {};
+}
+
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
  * to a detached copy of the authored markup ('default' IS the authored

@@ -18,7 +18,52 @@ import { defussGlobals, defussQuery, anim, componentState, bindComponent } from 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What show() takes (a plain string is the title). */
+interface ToastOptions {
+  /** the bold first line */
+  title?: string;
+  /** the second line */
+  description?: string;
+  /** the look and the icon; 'destructive' is announced assertively (role="alert") */
+  variant?: 'success' | 'warning' | 'info' | 'destructive';
+  /** ms until it dismisses itself (default 4000); Infinity keeps it until dismissed */
+  duration?: number;
+  /** one action button: its label and what a click does (the toast closes after) */
+  action?: { label: string; onClick: () => void };
+  /** called when the toast is dismissed by its close button or its timer */
+  onDismiss?: () => void;
+  /** the width envelope */
+  size?: 'sm' | 'md' | 'lg';
+  /** the whitespace policy */
+  density?: 'compact' | 'comfortable' | 'spacious';
+  /** a df$.anim entrance (fadeIn, slideIn, popIn, ...), or { in, out, direction, duration } for both ways */
+  animation?: string | { in?: string; out?: string; direction?: string; duration?: number };
+  /** a ring of light around it (shapes.css .aura): true, or the aura style name */
+  aura?: boolean | string;
+}
+
+/** The toast region's options (configure() takes and returns them). */
+interface ToastRegionOptions {
+  /** 'list': every toast visible; 'pile': the newest in front, the others as sheets behind it */
+  stack?: 'list' | 'pile';
+  /** the corner the toasts appear in */
+  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' | 'top-center' | 'bottom-center';
+}
+
 const toastStates = ['default'];
+
+/** setState() configs per state (getState() reports how many toasts show). */
+export interface ToastStateConfigs {
+  /** The region as authored - setting it dismisses every visible toast. */
+  default: {
+    /** reported by getState(): the toasts in the region now */
+    count?: number;
+  };
+}
 
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
@@ -128,7 +173,12 @@ const toastDismiss = (el, callback) => {
   ).finished.then(() => { try { el.hidePopover(); } catch {} dfDollar(el).remove(); stackToasts(container); if (callback) callback(); });
 };
 
-const toastCreate = (options) => {
+/**
+ * Show a toast - a title string or { title, description, variant, duration, action ... }.
+ * @param options - the title, or the toast options
+ * @returns the toast element (a manual popover in the region)
+ */
+const toastCreate = (options: string | ToastOptions): HTMLElement => {
   const o = typeof options === 'string' ? { title: options } : options;
   const { title, description, variant, action, onDismiss, size, density, animation, aura } = o;
   const duration = o.duration != null ? o.duration : DURATION;
@@ -189,7 +239,7 @@ const toastCreate = (options) => {
   // mount through query's exact .append() - the node itself is inserted
   // (identity + delegated listeners kept, §3 toast row of the morph plan)
   // animation: { in, out, direction, duration } - names from df$.anim
-  // (fadeIn, slideIn, popIn, zoomIn, flipIn, blurIn, …); the CSS entrance
+  // (fadeIn, slideIn, popIn, zoomIn, flipIn, blurIn, ...); the CSS entrance
   // stands down while a named one plays
   if (animation) {
     el._animation = typeof animation === 'string' ? { in: animation } : animation;
@@ -245,29 +295,50 @@ function init() {
 init();
 new MutationObserver(init).observe(document.body, { childList: true, subtree: true });
 
-/** Region options: stack 'list' (default, every toast visible) or 'pile'
+/**
+ * Region options: stack 'list' (default, every toast visible) or 'pile'
  * (the newest in front, the others as sheets behind it - hover / focus fans
  * them out); position = the corner (bottom-right, bottom-left, top-right,
- * top-left, top-center, bottom-center). */
-const toastConfigure = (opts = {}) => {
+ * top-left, top-center, bottom-center).
+ * @param opts - the options to change; omitted keys stay as they are
+ * @returns the region's options now
+ */
+const toastConfigure = (opts: ToastRegionOptions = {}): ToastRegionOptions => {
   if (opts.stack) toastContainer.dataset.stack = opts.stack;
   if (opts.position) toastContainer.setAttribute('data-position', opts.position);
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || 'list', position: toastContainer.dataset.position };
 };
 
-df$.toast = {
+/** df$.shadcn.toast - show and dismiss toasts in the page's region. */
+export const toastActions = {
   configure: toastConfigure,
-  /** Show a toast - a title string or { title, description, variant, duration, action … }; returns its element. */
   show: toastCreate,
-  /** show() as a success toast. */
-  success: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'success' })),
-  /** show() as a warning toast. */
-  warning: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'warning' })),
-  /** show() as an info toast. */
-  info: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'info' })),
-  /** show() as an error (destructive) toast. */
-  error: (o) => toastCreate(Object.assign(typeof o === 'string' ? { title: o } : o, { variant: 'destructive' })),
+  /**
+   * show() as a success toast.
+   * @param options - the title, or the toast options (the variant is set for you)
+   * @returns the toast element
+   */
+  success: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'success' as const })),
+  /**
+   * show() as a warning toast.
+   * @param options - the title, or the toast options (the variant is set for you)
+   * @returns the toast element
+   */
+  warning: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'warning' as const })),
+  /**
+   * show() as an info toast.
+   * @param options - the title, or the toast options (the variant is set for you)
+   * @returns the toast element
+   */
+  info: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'info' as const })),
+  /**
+   * show() as an error (destructive) toast.
+   * @param options - the title, or the toast options (the variant is set for you)
+   * @returns the toast element
+   */
+  error: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'destructive' as const })),
   /** Dismiss every toast. */
-  dismiss: () => { dfDollar(toastContainer).find('.toast').toArray().forEach((el) => { toastDismiss(el); }); }
+  dismiss: (): void => { dfDollar(toastContainer).find('.toast').toArray().forEach((el) => { toastDismiss(el); }); }
 };
+df$.toast = toastActions;

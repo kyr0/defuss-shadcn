@@ -104,8 +104,8 @@ slider's `data-size` as its next sibling; elsewhere give it the same
 
 ### Units
 `data-unit` (any Intl unit: `celsius`, `percent`, `kilometer-per-hour`,
-`megabyte` …; `data-unit-display="long"` spells it out) or `data-currency`
-(`EUR`, `USD` …) formats the value - in the element's `lang` - into every
+`megabyte` ...; `data-unit-display="long"` spells it out) or `data-currency`
+(`EUR`, `USD` ...) formats the value - in the element's `lang` - into every
 `<output for="id">` and into `aria-valuetext`, so a screen reader says
 "21 °C", not "21". Fraction digits follow `step`.
 
@@ -141,7 +141,7 @@ it into `--slider-thumb-image` (any image works there) and sets
 | `data-unit` / `data-currency` | an Intl unit / an ISO currency | Formats `output[for]` + `aria-valuetext` |
 | `data-thumb-emoji` | one emoji or a list | Emoji thumb (sets `data-thumb="emoji"`) |
 | `data-min-gap` | a number | On `.slider-range`: the smallest distance between the thumbs |
-| `data-size` | `xs` … `xl` | On `.slider-marks` placed apart from its slider: keeps the ticks aligned to that size |
+| `data-size` | `xs` ... `xl` | On `.slider-marks` placed apart from its slider: keeps the ticks aligned to that size |
 
 ---
 
@@ -205,11 +205,37 @@ The api is bound per input; the registry global is
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.sliderApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.sliderStates` = `default`, `disabled`.
+<code>type SliderState = 'default' | 'disabled'</code> - `setState(name, config)` takes the config of the state it names (`SliderStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | Enabled. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>number \| string</code></td><td>the value to set (the range input's value); getState() reports it</td></tr></table> |
+| `disabled` | Disabled - not draggable, dimmed. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>number \| string</code></td><td>the value to set; getState() reports it</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends SliderState&gt;(name: S, config?: SliderStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>SliderStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: SliderState; config: SliderStateConfigs[SliderState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.sliderApi.setState&lt;S extends SliderState&gt;(el: HTMLElement, name: S, config?: SliderStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>SliderStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.sliderApi.getState(el: HTMLElement): { name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.sliderApi.render(state: { name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: SliderState; config: SliderStateConfigs[SliderState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.sliderApi.store(el: HTMLElement): Store&lt;{ name: SliderState; config: SliderStateConfigs[SliderState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: SliderState; config: SliderStateConfigs[SliderState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.sliderApi.commit&lt;S extends SliderState&gt;(el: HTMLElement, name: S, config?: SliderStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>SliderStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.sliderStates: SliderState[]</code> | The declared states, 'default' first: <code>default</code>, <code>disabled</code>. |
 
 ## Notes
 

@@ -119,8 +119,8 @@ Mark directional icons `data-rtl-flip` - they mirror under `dir="rtl"`:
 
 ## Notes
 
-- `secondary` darkens on hover via `color-mix()` instead of an opacity fade —
-  `--secondary` is near-white in light themes, so fading would push the button
+- `secondary` darkens on hover via `color-mix()` instead of an opacity fade,
+  because `--secondary` is near-white in light themes, so fading would push the button
   *towards* the page background and make the hover effect invisible.
 - The `link` variant resets height and padding - it flows inline.
 - SVGs inside buttons auto-size to 1rem unless they have a `size-*` class.

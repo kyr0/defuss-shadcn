@@ -15,13 +15,39 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What panel-change carries. */
+interface PanelChangeDetail {
+  /** the state the panel is in now (a panelStates name: the State API throws on any other, so the dispatch casts its string) */
+  state: 'default' | 'minimized' | 'maximized' | 'closed';
+  /** the state it left */
+  previous: 'default' | 'minimized' | 'maximized' | 'closed';
+  /** the border-layout region it sits in, null outside a border layout */
+  region: 'north' | 'south' | 'west' | 'east' | 'center' | null;
+}
+
 /** default = title bar + body; minimized = the title bar only (in a border
  *  layout region the region shrinks with it); maximized = fills its host;
  *  closed = gone (hidden - a .panel-close tool or close(); open() or a
  *  [data-panel-open] trigger brings it back). */
 const panelStates = ['default', 'minimized', 'maximized', 'closed'];
 
-const SIDES = ['north', 'south', 'west', 'east', 'center'];
+/** setState() configs per state - the panel's states take none. */
+export interface PanelStateConfigs {
+  /** The title bar and body at the authored size. */
+  default: {};
+  /** The title bar only - in a border layout region, the region folds with it. */
+  minimized: {};
+  /** Fills its border layout, [data-panel-host] or the viewport. */
+  maximized: {};
+  /** Gone (hidden) - in a border layout, its region and divider go too. */
+  closed: {};
+}
+
+const SIDES = ['north', 'south', 'west', 'east', 'center'] as const;
 
 const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
 const toolInput = (panel, tool) => dfDollar(panel).find(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
@@ -109,7 +135,7 @@ export const panelApi = componentState({
     queueMicrotask(() => syncToggles(panel));
     if (from !== state.name) {
       // Fires when the panel changes state - the new state, the previous one and the border-layout region it sits in.
-      panel.dispatchEvent(new CustomEvent('panel-change', { bubbles: true, detail: { state: state.name, previous: from, region: sideOf(regionOf(panel)) } }));
+      panel.dispatchEvent(new CustomEvent<PanelChangeDetail>('panel-change', { bubbles: true, detail: { state: state.name as PanelChangeDetail['state'], previous: from as PanelChangeDetail['state'], region: sideOf(regionOf(panel)) } }));
     }
   },
   markup: (el, state) => applyMarkup(el, state.name),
@@ -192,25 +218,51 @@ const act = (t, state) => {
   return panel ?? null;
 };
 
-df$.panel = {
-  /** Title bar only - in a border layout region, the region shrinks with it. */
-  minimize: (t) => act(t, 'minimized'),
-  /** Fills its border layout / [data-panel-host] / the viewport. */
-  maximize: (t) => act(t, 'maximized'),
-  /** Back to title bar + body at the authored size. */
-  restore: (t) => act(t, 'default'),
-  /** Closes the panel (hidden; in a border layout its region goes too). */
-  close: (t) => act(t, 'closed'),
-  /** Opens a closed panel again (title bar + body). */
-  open: (t) => act(t, 'default'),
-  /** Minimizes or restores; returns whether it is now minimized. */
-  toggle: (t) => {
-    const panel = resolve(t);
+/** df$.shadcn.panel - the panel actions, by element, id or selector. */
+export const panelActions = {
+  /**
+   * Title bar only - in a border layout region, the region shrinks with it.
+   * @param target - the .panel element, its id or a selector
+   * @returns the panel, null when the target matches none
+   */
+  minimize: (target: string | HTMLElement): HTMLElement | null => act(target, 'minimized'),
+  /**
+   * Fills its border layout / [data-panel-host] / the viewport.
+   * @param target - the .panel element, its id or a selector
+   * @returns the panel, null when the target matches none
+   */
+  maximize: (target: string | HTMLElement): HTMLElement | null => act(target, 'maximized'),
+  /**
+   * Back to title bar + body at the authored size.
+   * @param target - the .panel element, its id or a selector
+   * @returns the panel, null when the target matches none
+   */
+  restore: (target: string | HTMLElement): HTMLElement | null => act(target, 'default'),
+  /**
+   * Closes the panel (hidden; in a border layout its region goes too).
+   * @param target - the .panel element, its id or a selector
+   * @returns the panel, null when the target matches none
+   */
+  close: (target: string | HTMLElement): HTMLElement | null => act(target, 'closed'),
+  /**
+   * Opens a closed panel again (title bar + body).
+   * @param target - the .panel element, its id or a selector
+   * @returns the panel, null when the target matches none
+   */
+  open: (target: string | HTMLElement): HTMLElement | null => act(target, 'default'),
+  /**
+   * Minimizes or restores.
+   * @param target - the .panel element, its id or a selector
+   * @returns true when it is minimized now (false also when the target matches no panel)
+   */
+  toggle: (target: string | HTMLElement): boolean => {
+    const panel = resolve(target);
     if (!panel?.api) return false;
     panel.api.setState(panel.hasAttribute('data-minimized') ? 'default' : 'minimized');
     return panel.hasAttribute('data-minimized');
   },
 };
+df$.panel = panelActions;
 
 // [data-panel-open="id"] anywhere opens that panel again (and puts focus on its
 // first tool); [data-panel-toggle="id"] closes an open panel, opens a closed one

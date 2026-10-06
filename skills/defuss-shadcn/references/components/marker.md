@@ -2,7 +2,7 @@
 name: Marker
 type: ATM
 why: A small flex row of icon + words is all an inline status needs; separators draw their rules with pseudo-elements, the shimmer is background-clip text, links and buttons are real <a>/<button>.
-when: Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking…", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
+when: Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking...", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
 where: dist/components/marker/marker.css
 supportedStates: default
 ---

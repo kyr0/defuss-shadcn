@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Social Login
 
 ## Native basis
-A group of outline Buttons (`<a href>` to your OAuth start URLs), each with the provider's mark and "Continue with …"; the icon variant keeps the text as `aria-label`. `.mk-social-login-divider` separates them from the email form.
+A group of outline Buttons (`<a href>` to your OAuth start URLs), each with the provider's mark and "Continue with ..."; the icon variant keeps the text as `aria-label`. `.mk-social-login-divider` separates them from the email form.
 
 Built from: [Button](button.md).
 
@@ -48,7 +48,7 @@ Built from: [Button](button.md).
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| buttons | visible "Continue with …" | The provider is in the name |
+| buttons | visible "Continue with ..." | The provider is in the name |
 | icon buttons | `aria-label="Continue with Google"` | Never icon-only without a name |
 | marks | `aria-hidden="true"` | Decorative |
 

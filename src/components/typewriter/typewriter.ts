@@ -12,7 +12,43 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What typewriter-typed carries. */
+interface TypewriterTypedDetail {
+  /** the index of the string just completed */
+  index: number;
+  /** that string */
+  text: string;
+}
+
+/** What typewriter-done carries. */
+interface TypewriterDoneDetail {
+  /** the index of the last string - the run ends on it */
+  index: number;
+}
+
 const typewriterStates = ['default', 'paused', 'done'];
+
+/** setState() configs per state. */
+export interface TypewriterStateConfigs {
+  /** Running - typing, holding, deleting. Setting it restarts (from paused without an index it resumes). */
+  default: {
+    /** the string to start from, 0-based */
+    index?: number;
+    /** true: start without the data-start-delay */
+    immediate?: boolean;
+  };
+  /** Frozen where it is; the cursor blinks. */
+  paused: {};
+  /** Stopped with a string in full - entered at the end of a run without data-loop. */
+  done: {
+    /** the string to show, 0-based (default: the current one) */
+    index?: number;
+  };
+}
 
 const num = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
@@ -82,7 +118,7 @@ function step(tw) {
   }
 
   // the string is complete
-  tw.dispatchEvent(new CustomEvent('typewriter-typed', { bubbles: true, detail: { index: tw._index, text: src.text } }));
+  tw.dispatchEvent(new CustomEvent<TypewriterTypedDetail>('typewriter-typed', { bubbles: true, detail: { index: tw._index, text: src.text } }));
   if (last && !loop) return finish(tw);
   phase(tw, 'holding');
   tw._deleting = true;
@@ -93,7 +129,7 @@ function step(tw) {
 function finish(tw) {
   typewriterApi.setState(tw, 'done', { index: tw._index });
   // Fires when a run ends on its last string - that string's index.
-  tw.dispatchEvent(new CustomEvent('typewriter-done', { bubbles: true, detail: { index: tw._index } }));
+  tw.dispatchEvent(new CustomEvent<TypewriterDoneDetail>('typewriter-done', { bubbles: true, detail: { index: tw._index } }));
 }
 
 /** Reduced motion: whole strings swap in place on the pause rhythm - no typing. */

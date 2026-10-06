@@ -14,9 +14,39 @@ import { defussGlobals, defussQuery, componentState, bindComponent, textLocale }
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What file-drop:rejected carries. */
+interface FileDropRejectedDetail {
+  /** the files that were refused */
+  files: File[];
+  /** the message the component shows for them */
+  message: string;
+}
+
 /** default = empty; dragover = files hover the zone; selected = files
  * chosen; error = some files were rejected (config.message). */
 const fileInputStates = ['default', 'dragover', 'selected', 'error'];
+
+/** setState() configs per state (getState() reports the rejection message shown). */
+export interface FileInputStateConfigs {
+  /** No files - setting it clears the selection. */
+  default: {};
+  /** Files are dragged over the zone. */
+  dragover: {};
+  /** Files chosen. */
+  selected: {
+    /** placeholder entries for the list (a name, or name + size in bytes + MIME type) */
+    files?: Array<string | { name: string; size?: number; type?: string }>;
+  };
+  /** Some files were refused. */
+  error: {
+    /** the message shown (getState() reports the live one) */
+    message?: string;
+  };
+}
 
 const inputOf = (el) => dfDollar(el).find('.file-drop-input').get(0);
 
@@ -114,7 +144,7 @@ function apply(el, rejected, quiet = false) {
   el.dataset.stateName = rejected.length ? 'error' : input.files.length ? 'selected' : 'default';
   renderList(el);
   // Fires when chosen or dropped files are refused (type, size, count) - the files and the message shown.
-  if (!quiet && rejected.length) el.dispatchEvent(new CustomEvent('file-drop:rejected', { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
+  if (!quiet && rejected.length) el.dispatchEvent(new CustomEvent<FileDropRejectedDetail>('file-drop:rejected', { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
 }
 
 /** Merge the new pick into the kept files, filter, write input.files back. */

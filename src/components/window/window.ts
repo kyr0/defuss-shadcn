@@ -13,7 +13,86 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A window's place inside its desktop, px. */
+interface WindowPosition {
+  /** from the desktop's left edge */
+  x: number;
+  /** from the desktop's top edge */
+  y: number;
+}
+
+/** What create() takes - the shape the skill documents. */
+interface WindowCreateOptions {
+  /** the title bar text (default 'Untitled') */
+  title?: string;
+  /** a Lucide icon name for the title bar */
+  icon?: string;
+  /** the body: a node, or text */
+  content?: Node | string;
+  /** the body as markup (used when content is not a node) */
+  html?: string;
+  /** a status bar line */
+  statusbar?: string;
+  /** the window's id */
+  id?: string;
+  /** left edge: px, or a CSS length (default: cascaded from the windows before it) */
+  x?: number | string;
+  /** top edge: px, or a CSS length */
+  y?: number | string;
+  /** width: px, or a CSS length */
+  width?: number | string;
+  /** height: px, or a CSS length */
+  height?: number | string;
+  /** the look of the title bar */
+  chrome?: 'windows' | 'mac' | 'linux' | 'retro';
+  /** the native resize handle (default true) */
+  resizable?: boolean;
+  /** the desktop to open in: element, id or selector (default: the .window-desktop, else the body) */
+  parent?: HTMLElement | string;
+  /** open in front, active (default true) */
+  focus?: boolean;
+  /** a body without padding (an app inside) */
+  flush?: boolean;
+}
+
+/** What window-focus carries. */
+interface WindowFocusDetail {
+  /** the title of the window now in front */
+  title: string;
+}
+
 const windowStates = ['default', 'maximized', 'minimized', 'closed'];
+
+/** setState() configs per state. */
+export interface WindowStateConfigs {
+  /** Open at its normal size (opens a closed window). */
+  default: {
+    /** move it: the left edge, px inside its desktop (with y) */
+    x?: number;
+    /** move it: the top edge, px inside its desktop (with x) */
+    y?: number;
+  };
+  /** Fills the desktop. */
+  maximized: {
+    /** reported by getState() until it closes: the left edge set last, px */
+    x?: number;
+    /** reported by getState() until it closes: the top edge set last, px */
+    y?: number;
+  };
+  /** Rolled up to its title bar. */
+  minimized: {
+    /** reported by getState() until it closes: the left edge set last, px */
+    x?: number;
+    /** reported by getState() until it closes: the top edge set last, px */
+    y?: number;
+  };
+  /** Closed - also after the close button or close(); it reopens at its normal size. */
+  closed: {};
+}
 
 /** Stacking order is shared by every window on the page - a counter, not state. */
 let topZ = 10;
@@ -29,7 +108,7 @@ const resolve = (target) =>
 const titleOf = (w) => dfDollar(w).find('.window-title').get(0)?.textContent?.trim() ?? '';
 
 /** The window's position inside its desktop, in px. */
-const posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
+const posOf = (w): WindowPosition => ({ x: w.offsetLeft, y: w.offsetTop });
 
 /**
  * Moves a window, keeping it reachable: at least KEEP px of GRABBABLE title
@@ -61,7 +140,7 @@ function raise(w) {
   dfDollar('.window[data-active]').toArray().forEach((o) => { if (o !== w) o.removeAttribute('data-active'); });
   w.setAttribute('data-active', '');
   // Fires when a window comes to the front - its title.
-  w.dispatchEvent(new CustomEvent('window-focus', { bubbles: true, detail: { title: titleOf(w) } }));
+  w.dispatchEvent(new CustomEvent<WindowFocusDetail>('window-focus', { bubbles: true, detail: { title: titleOf(w) } }));
 }
 
 /**
@@ -190,7 +269,7 @@ function bindDrag(w, bar) {
       bar.removeEventListener('pointercancel', onUp);
       w.removeAttribute('data-dragging');
       // Fires after a window was dragged (or moved with the keyboard) - its position.
-      w.dispatchEvent(new CustomEvent('window-move', { bubbles: true, detail: posOf(w) }));
+      w.dispatchEvent(new CustomEvent<WindowPosition>('window-move', { bubbles: true, detail: posOf(w) }));
     };
     bar.addEventListener('pointermove', onMove);
     bar.addEventListener('pointerup', onUp);
@@ -211,7 +290,7 @@ function bindDrag(w, bar) {
     e.preventDefault();
     const p = posOf(w);
     moveTo(w, p.x + d[0], p.y + d[1]);
-    w.dispatchEvent(new CustomEvent('window-move', { bubbles: true, detail: posOf(w) }));
+    w.dispatchEvent(new CustomEvent<WindowPosition>('window-move', { bubbles: true, detail: posOf(w) }));
   });
 }
 
@@ -279,8 +358,12 @@ function init() {
   });
 }
 
-/** Builds a window element from options - the shape the skill documents. */
-function create(options = {}) {
+/**
+ * Builds a window element from options - the shape the skill documents.
+ * @param options - title, body, place, size, look and where it opens
+ * @returns the new window (a <dialog class="window">), open unless focus is false
+ */
+function create(options: WindowCreateOptions = {}): HTMLDialogElement {
   const {
     title = 'Untitled', icon, content, html, statusbar, id,
     x, y, width, height, chrome, resizable = true, parent, focus = true, flush = false,
@@ -343,19 +426,31 @@ function create(options = {}) {
   return w;
 }
 
-/** Windows (open unless `all`) inside `scope` (default: the page). */
-const list = (scope, all = false) =>
+/**
+ * Windows (open unless `all`) inside `scope` (default: the page).
+ * @param scope - a desktop element, its id or a selector (default: the page)
+ * @param all - true: closed windows too
+ * @returns the windows, in document order
+ */
+const list = (scope?: HTMLElement | string, all: boolean = false): HTMLDialogElement[] =>
   dfDollar(resolve(scope) ?? document).find(all ? '.window' : '.window[open]').toArray();
 
-/** Steps the open windows diagonally from the top-left, front-most last. */
-function cascade(scope, step = 28) {
+/**
+ * Steps the open windows diagonally from the top-left, front-most last.
+ * @param scope - a desktop element, its id or a selector (default: the page)
+ * @param step - px between two windows (default 28)
+ */
+function cascade(scope?: HTMLElement | string, step: number = 28): void {
   list(scope)
     .sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0))
     .forEach((w, i) => { windowApi.setState(w, 'default', {}); moveTo(w, 16 + i * step, 16 + i * step); });
 }
 
-/** Lays the open windows side by side in a grid that fills their desktop. */
-function tile(scope) {
+/**
+ * Lays the open windows side by side in a grid that fills their desktop.
+ * @param scope - a desktop element, its id or a selector (default: the page)
+ */
+function tile(scope?: HTMLElement | string): void {
   const wins = list(scope);
   if (!wins.length) return;
   const cols = Math.ceil(Math.sqrt(wins.length));
@@ -375,19 +470,45 @@ function tile(scope) {
 
 // the imperative API: df$.shadcn.win.* - every method takes an element,
 // an id or a selector
-df$.win = {
+/** df$.shadcn.win - create, arrange and drive windows. */
+export const windowActions = {
   create,
-  /** Open a window (closed, minimized or not shown yet) - config is the state's config. */
-  open: (t, config = {}) => { const w = resolve(t); if (w) windowApi.setState(w, 'default', config); return w; },
-  /** Close it (the closed state). */
-  close: (t) => { const w = resolve(t); if (w) windowApi.setState(w, 'closed', {}); return w; },
-  /** Bring it to the front (the active window). */
-  focus: (t) => { const w = resolve(t); if (w?.open) raise(w); return w; },
-  /** Move it to x, y (px, inside its desktop). */
-  move: (t, x, y) => { const w = resolve(t); return w ? moveTo(w, x, y) : null; },
-  /** Size it: width (and height) as px numbers or CSS lengths. */
-  resize: (t, width, height) => {
-    const w = resolve(t);
+  /**
+   * Open a window (closed, minimized or not shown yet) - config is the state's config.
+   * @param target - the .window element, its id or a selector
+   * @param config - where it opens: { x, y } px
+   * @returns the window, null when the target matches none
+   */
+  open: (target: string | HTMLElement, config: { x?: number; y?: number } = {}): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'default', config); return w; },
+  /**
+   * Close it (the closed state).
+   * @param target - the .window element, its id or a selector
+   * @returns the window, null when the target matches none
+   */
+  close: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'closed', {}); return w; },
+  /**
+   * Bring it to the front (the active window).
+   * @param target - the .window element, its id or a selector
+   * @returns the window, null when the target matches none
+   */
+  focus: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w?.open) raise(w); return w; },
+  /**
+   * Move it to x, y (px, inside its desktop).
+   * @param target - the .window element, its id or a selector
+   * @param x - the left edge, px
+   * @param y - the top edge, px
+   * @returns where it landed (kept reachable inside its desktop), null when the target matches none
+   */
+  move: (target: string | HTMLElement, x: number, y: number): WindowPosition | null => { const w = resolve(target); return w ? moveTo(w, x, y) : null; },
+  /**
+   * Size it: width (and height) as px numbers or CSS lengths.
+   * @param target - the .window element, its id or a selector
+   * @param width - px, or a CSS length
+   * @param height - px, or a CSS length; omitted, the height stays
+   * @returns the window, null when the target matches none
+   */
+  resize: (target: string | HTMLElement, width: number | string, height?: number | string): HTMLDialogElement | null => {
+    const w = resolve(target);
     if (!w) return null;
     w.style.width = '';
     w.style.height = '';
@@ -395,24 +516,44 @@ df$.win = {
     if (height !== undefined) w.style.setProperty('--window-h', typeof height === 'number' ? `${height}px` : height);
     return w;
   },
-  /** Fill the desktop. */
-  maximize: (t) => { const w = resolve(t); if (w) windowApi.setState(w, 'maximized', {}); return w; },
-  /** Minimize it to the taskbar. */
-  minimize: (t) => { const w = resolve(t); if (w) windowApi.setState(w, 'minimized', {}); return w; },
-  /** Back to its normal size and place. */
-  restore: (t) => { const w = resolve(t); if (w) windowApi.setState(w, 'default', {}); return w; },
-  /** Maximize it, or restore it when it is maximized. */
-  toggleMaximize: (t) => {
-    const w = resolve(t);
+  /**
+   * Fill the desktop.
+   * @param target - the .window element, its id or a selector
+   * @returns the window, null when the target matches none
+   */
+  maximize: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'maximized', {}); return w; },
+  /**
+   * Minimize it to the taskbar.
+   * @param target - the .window element, its id or a selector
+   * @returns the window, null when the target matches none
+   */
+  minimize: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'minimized', {}); return w; },
+  /**
+   * Back to its normal size and place.
+   * @param target - the .window element, its id or a selector
+   * @returns the window, null when the target matches none
+   */
+  restore: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'default', {}); return w; },
+  /**
+   * Maximize it, or restore it when it is maximized.
+   * @param target - the .window element, its id or a selector
+   * @returns the window, null when the target matches none
+   */
+  toggleMaximize: (target: string | HTMLElement): HTMLDialogElement | null => {
+    const w = resolve(target);
     if (w) windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {});
     return w;
   },
-  /** The window in front, if any. */
-  active: () => dfDollar('.window[open][data-active]').get(0),
+  /**
+   * The window in front.
+   * @returns the active open window, undefined when none is open
+   */
+  active: (): HTMLDialogElement | undefined => dfDollar('.window[open][data-active]').get(0),
   list,
   cascade,
   tile,
 };
+df$.win = windowActions;
 
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });

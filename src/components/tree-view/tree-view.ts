@@ -13,7 +13,45 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What tree-select carries. */
+interface TreeSelectDetail {
+  /** the selected treeitem */
+  item: HTMLElement;
+}
+
+/** What tree-check carries. */
+interface TreeCheckDetail {
+  /** the treeitem whose checkbox was toggled */
+  item: HTMLElement;
+  /** whether it is checked now */
+  checked: boolean;
+  /** every fully checked item's value (the checkbox value, else the item's label) */
+  values: string[];
+}
+
+/** What tree-reorder carries. */
+interface TreeReorderDetail {
+  /** the treeitem that moved */
+  item: HTMLElement;
+  /** its new parent treeitem - the tree itself at the top level */
+  parent: HTMLElement;
+  /** its index among the parent's children */
+  index: number;
+}
+
 const treeViewStates = ['default', 'expanded'];
+
+/** setState() configs per state - bound on every branch (a <details>); the states take none. */
+export interface TreeViewStateConfigs {
+  /** The branch closed. */
+  default: {};
+  /** The branch open. */
+  expanded: {};
+}
 
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
@@ -78,7 +116,7 @@ function selectItem(tree, item) {
   dfDollar(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute('aria-selected', 'false'));
   item.setAttribute('aria-selected', 'true');
   // Fires when an item is selected - the item.
-  tree.dispatchEvent(new CustomEvent('tree-select', { bubbles: true, detail: { item } }));
+  tree.dispatchEvent(new CustomEvent<TreeSelectDetail>('tree-select', { bubbles: true, detail: { item } }));
 }
 
 
@@ -139,7 +177,7 @@ function onCheck(tree, item) {
   }
   syncAria(tree);
   // Fires when a checkbox is toggled - the item, whether it is checked, and every checked value.
-  tree.dispatchEvent(new CustomEvent('tree-check', { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
+  tree.dispatchEvent(new CustomEvent<TreeCheckDetail>('tree-check', { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
 }
 function initChecks(tree) {
   let n = 0;
@@ -179,7 +217,7 @@ function announceMove(tree, item) {
   const parentItem = item.parentElement.closest('[role="treeitem"]');
   const index = [...item.parentElement.children].indexOf(item);
   // Fires after an item is moved - the item, its new parent and its index there.
-  tree.dispatchEvent(new CustomEvent('tree-reorder', { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
+  tree.dispatchEvent(new CustomEvent<TreeReorderDetail>('tree-reorder', { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
 }
 function initSortable(tree) {
   let dragged = null;

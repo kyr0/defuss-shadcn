@@ -13,11 +13,136 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, defussQuery, componentState, bindComponent, dataSource, safeShowPopover, textLocale } from '../../shared/state-api.js';
+import type { DataviewFilter, DataviewRow, DataviewSorter } from '../../shared/dataview.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** One request to the loader - a dataview request, one page of one query. */
+interface AutocompleteRequest {
+  /** the text typed */
+  query: string;
+  /** the configured filters, plus the query as a filter on the search field */
+  filters: DataviewFilter[];
+  /** the configured sort order */
+  sorters: DataviewSorter[];
+  /** the page asked for, 0-based (scrolling to the end of the list asks for the next) */
+  page: number;
+  /** records per page */
+  pageSize: number;
+}
+
+/** A loader's answer: the records, or the records with paging facts (items / data / results are read as rows too). */
+type AutocompleteAnswer = DataviewRow[] | { rows: DataviewRow[]; hasMore?: boolean; total?: number };
+
+/** What configure() takes - every key optional; data attributes set the defaults. */
+interface AutocompleteConfig {
+  /** local records: a dataview source, filtered and sorted in the browser */
+  rows?: DataviewRow[];
+  /** a JSON endpoint the default client GETs with ?q=&page=&pageSize=&sort=, or a function building the URL per request */
+  url?: string | ((request: AutocompleteRequest) => string);
+  /** your own client: answers a request (abort with the signal when the next keystroke supersedes it) */
+  load?: (request: AutocompleteRequest, options: { signal: AbortSignal }) => AutocompleteAnswer | Promise<AutocompleteAnswer>;
+  /** the default client's fetch, extra headers and a parse step from the JSON to an answer */
+  client?: { fetch?: typeof fetch; headers?: Record<string, string>; parse?: (json: unknown, request: AutocompleteRequest) => AutocompleteAnswer };
+  /** the field the query matches (default: the label field) */
+  searchField?: string;
+  /** how the query matches: anywhere in the field, or at its start */
+  match?: 'contains' | 'startsWith';
+  /** the sort order of the results */
+  sorters?: DataviewSorter[];
+  /** filters every request carries */
+  filters?: DataviewFilter[];
+  /** records per page (default 20) */
+  pageSize?: number;
+  /** ms to wait after a keystroke before asking (default 200) */
+  debounce?: number;
+  /** characters before the first request (default 1) */
+  minChars?: number;
+  /** the field shown as the option text (default 'label') */
+  labelField?: string;
+  /** the field written to the hidden value input (default 'id') */
+  valueField?: string;
+  /** compute the option text instead of reading labelField */
+  label?: (record: DataviewRow) => string;
+  /** compute the value instead of reading valueField */
+  value?: (record: DataviewRow) => unknown;
+  /** fill an option element yourself (after the default label markup) */
+  render?: (option: HTMLElement, record: DataviewRow, context: { query: string; index: number }) => void;
+}
+
+/** What autocomplete-request carries. */
+interface AutocompleteRequestDetail {
+  /** the request the loader receives next */
+  request: AutocompleteRequest;
+}
+
+/** What autocomplete-select carries. */
+interface AutocompleteSelectDetail {
+  /** the record taken */
+  record: DataviewRow;
+  /** its value (valueField or value()) - also in the hidden value input */
+  value: unknown;
+  /** its label - now the input's text */
+  label: string;
+}
+
 const autocompleteStates = ['default', 'open', 'loading', 'empty', 'error'];
+
+/** setState() configs per state - merged into the stored one (a state change keeps the query and the choice). */
+export interface AutocompleteStateConfigs {
+  /** Closed, nothing in flight. */
+  default: {
+    /** the query: a string shows it in the input and searches for it; getState() reports the last one */
+    query?: string;
+    /** reported by getState(): the chosen suggestion's value, null before a choice */
+    value?: unknown;
+    /** reported by getState(): the chosen suggestion's label */
+    label?: string;
+  };
+  /** The list shows suggestions - opening with nothing listed searches for what is typed. */
+  open: {
+    /** the query: a string shows it in the input and searches for it; getState() reports the last one */
+    query?: string;
+    /** reported by getState(): the chosen suggestion's value, null before a choice */
+    value?: unknown;
+    /** reported by getState(): the chosen suggestion's label */
+    label?: string;
+  };
+  /** The first page is on its way: placeholder rows, aria-busy on the input. */
+  loading: {
+    /** the query: a string shows it in the input and searches for it; getState() reports the last one */
+    query?: string;
+    /** reported by getState(): the chosen suggestion's value, null before a choice */
+    value?: unknown;
+    /** reported by getState(): the chosen suggestion's label */
+    label?: string;
+  };
+  /** The query matched nothing - the data-empty-text shows. */
+  empty: {
+    /** the query: a string shows it in the input and searches for it; getState() reports the last one */
+    query?: string;
+    /** reported by getState(): the chosen suggestion's value, null before a choice */
+    value?: unknown;
+    /** reported by getState(): the chosen suggestion's label */
+    label?: string;
+  };
+  /** The source failed: its message and a Retry button. */
+  error: {
+    /** the message shown (default "Something went wrong.") */
+    message?: string;
+    /** the query: a string shows it in the input and searches for it; getState() reports the last one */
+    query?: string;
+    /** reported by getState(): the chosen suggestion's value, null before a choice */
+    value?: unknown;
+    /** reported by getState(): the chosen suggestion's label */
+    label?: string;
+  };
+}
 /** the states that show the popup */
 const SHOWN = new Set(['open', 'loading', 'empty', 'error']);
 let uid = 0;
@@ -246,7 +371,7 @@ async function fetchPage(root, page) {
   root._controller = controller;
   const request = requestFor(cfg, run.query, page);
   // Fires before every request (each page) - detail.request is the dataview request the loader receives.
-  root.dispatchEvent(new CustomEvent('autocomplete-request', { bubbles: true, detail: { request } }));
+  root.dispatchEvent(new CustomEvent<AutocompleteRequestDetail>('autocomplete-request', { bubbles: true, detail: { request } }));
   try {
     const answer = normalize(await runLoad(root, cfg, request, controller.signal), request);
     if (controller.signal.aborted || seq !== root._run.seq) return; // a newer query owns the list
@@ -304,7 +429,7 @@ function choose(root, index) {
   abort(root);
   autocompleteApi.setState(root, 'default', { query: label, value: value ?? null, label });
   // Fires when a suggestion is taken - its record, value and label.
-  root.dispatchEvent(new CustomEvent('autocomplete-select', { bubbles: true, detail: { record, value, label } }));
+  root.dispatchEvent(new CustomEvent<AutocompleteSelectDetail>('autocomplete-select', { bubbles: true, detail: { record, value, label } }));
 }
 
 // -- State API ---------------------------------------------------------------------------
@@ -370,23 +495,37 @@ df$.autocomplete = {
    * searchField, match ('contains' | 'startsWith'), sorters, filters,
    * pageSize, debounce (ms), minChars. Display: label / value (field names
    * or functions), render(option, record, { query, index }).
+   * @param target - the .autocomplete element or its selector
+   * @param config - data source, query and display options, merged into the current config
    */
-  configure(target, config = {}) {
+  configure(target: string | HTMLElement, config: AutocompleteConfig = {}): void {
     const root = resolve(target);
     root._config = { ...root._config, ...config };
     if (config.labelField) root._config.labelField = config.labelField;
     root._source = null;
   },
-  /** search for a query now (no debounce) */
-  search: (target, query) => {
+  /**
+   * Search for a query now (no debounce): the input shows it and the list loads.
+   * @param target - the .autocomplete element or its selector
+   * @param query - the text to search for
+   * @returns settles when the first page has loaded (or the request failed)
+   */
+  search: (target: string | HTMLElement, query: string): Promise<void> => {
     const root = resolve(target);
     inputOf(root).value = query;
     return search(root, query);
   },
-  /** close the popup and cancel what is in flight */
-  close: (target) => autocompleteApi.setState(resolve(target), 'default'),
-  /** the records the list holds now */
-  records: (target) => [...(resolve(target)._run?.records ?? [])],
+  /**
+   * Close the popup and cancel what is in flight.
+   * @param target - the .autocomplete element or its selector
+   */
+  close: (target: string | HTMLElement): void => { autocompleteApi.setState(resolve(target), 'default'); },
+  /**
+   * The records the list holds now.
+   * @param target - the .autocomplete element or its selector
+   * @returns a copy of the loaded records, every page so far, in list order
+   */
+  records: (target: string | HTMLElement): DataviewRow[] => [...(resolve(target)._run?.records ?? [])],
 };
 
 // -- init --------------------------------------------------------------------------------------

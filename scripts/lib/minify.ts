@@ -40,11 +40,14 @@ export const BUNDLE_ARTIFACTS: ReadonlySet<string> = new Set([
   ...extraBundleArtifacts(),
 ]);
 
-/** The per-app bundles (bundle.ts step 3): dist/apps/{app}.css + .js and
- *  the CSS map minify.ts writes for them - generated, no src/ counterpart
- *  (their .min.* / .js.map twins are DERIVED_ARTIFACT matches already). */
-export function isAppArtifact(relPath: string): boolean {
-  return /^apps\/[a-z0-9-]+\.(css|js|min\.css\.map)$/.test(relPath.replace(/\\/g, '/'));
+/** The generated bundle directories: the per-app bundles (bundle.ts step 3,
+ *  dist/apps/{app}.*) and the section bundles (step 2c, dist/sections/
+ *  {section}.*) - {name}.css + .js and the CSS map minify.ts writes for them;
+ *  generated, no src/ counterpart (their .min.* / .js.map twins are
+ *  DERIVED_ARTIFACT matches already). VERIFIED: (verify `dist 1:1` +
+ *  `minified artifacts`) dist/sections/ passes both after a build. */
+export function isBundleDirArtifact(relPath: string): boolean {
+  return /^(apps|sections)\/[a-z0-9-]+\.(css|js|min\.css\.map)$/.test(relPath.replace(/\\/g, '/'));
 }
 
 /** True for `x.min.css`, `x.min.js`, `x.js.map` and `x.min.js.map`. */
@@ -84,6 +87,15 @@ export function minifyArtifactProblems(present: ReadonlySet<string>): string[] {
     for (const need of ['components/core.min.css', 'components/core.min.css.map']) {
       if (!present.has(need)) problems.push(`dist/${need} missing`);
     }
+  }
+  // the section bundles (bundle.ts step 2c) are loaded like all.*: min twins
+  // + maps, the CSS one included (minify.ts maps every generated bundle)
+  for (const rel of present) {
+    const m = rel.match(/^sections\/([a-z0-9-]+)\.(css|js)$/);
+    if (!m) continue;
+    const base = `sections/${m[1]}`;
+    const required = m[2] === 'css' ? [`${base}.min.css`, `${base}.min.css.map`] : [`${base}.min.js`, `${base}.js.map`, `${base}.min.js.map`];
+    for (const need of required) if (!present.has(need)) problems.push(`dist/${need} missing`);
   }
   return problems.sort();
 }

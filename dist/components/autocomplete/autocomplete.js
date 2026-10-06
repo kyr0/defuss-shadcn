@@ -379,6 +379,8 @@ df$.autocomplete = {
      * searchField, match ('contains' | 'startsWith'), sorters, filters,
      * pageSize, debounce (ms), minChars. Display: label / value (field names
      * or functions), render(option, record, { query, index }).
+     * @param target - the .autocomplete element or its selector
+     * @param config - data source, query and display options, merged into the current config
      */
     configure(target, config = {}) {
         const root = resolve(target);
@@ -387,15 +389,27 @@ df$.autocomplete = {
             root._config.labelField = config.labelField;
         root._source = null;
     },
-    /** search for a query now (no debounce) */
+    /**
+     * Search for a query now (no debounce): the input shows it and the list loads.
+     * @param target - the .autocomplete element or its selector
+     * @param query - the text to search for
+     * @returns settles when the first page has loaded (or the request failed)
+     */
     search: (target, query) => {
         const root = resolve(target);
         inputOf(root).value = query;
         return search(root, query);
     },
-    /** close the popup and cancel what is in flight */
-    close: (target) => autocompleteApi.setState(resolve(target), 'default'),
-    /** the records the list holds now */
+    /**
+     * Close the popup and cancel what is in flight.
+     * @param target - the .autocomplete element or its selector
+     */
+    close: (target) => { autocompleteApi.setState(resolve(target), 'default'); },
+    /**
+     * The records the list holds now.
+     * @param target - the .autocomplete element or its selector
+     * @returns a copy of the loaded records, every page so far, in list order
+     */
     records: (target) => [...(resolve(target)._run?.records ?? [])],
 };
 // -- init --------------------------------------------------------------------------------------

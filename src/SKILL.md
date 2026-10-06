@@ -112,7 +112,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Address Form
 
 **Type:** BLK
-**Why:** The autocomplete tokens (name, address-line1, postal-code, country…) let browsers and password managers fill the whole form in one tap - no script.
+**Why:** The autocomplete tokens (name, address-line1, postal-code, country...) let browsers and password managers fill the whole form in one tap - no script.
 **When:** Checkout, account settings, event shipping. Payment details are payment-form.
 **Files:** dist/components/address-form/address-form.css
 **Supported states:** default
@@ -483,7 +483,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** MOL
 **Why:** Apache ECharts does the drawing; the component is the thin token bridge - the tokens become an ECharts theme (resolved to sRGB), options may name tokens as var(--x), and theme or dark-mode switches re-theme live.
-**When:** Any data visualization (bar/line/pie/scatter…) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
+**When:** Any data visualization (bar/line/pie/scatter...) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
 **Files:** dist/components/chart/chart.css + dist/components/chart/chart.js
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/chart.png
@@ -1102,8 +1102,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Kbd
 
 **Type:** ATM
-**Why:** Native <kbd>, and a combination is <kbd> nested inside <kbd> exactly as the HTML spec prescribes — the markup already says "these keys together".
-**When:** Showing a shortcut — in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
+**Why:** Native <kbd>, and a combination is <kbd> nested inside <kbd> exactly as the HTML spec prescribes, so the markup already says "these keys together".
+**When:** Showing a shortcut in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
 **Files:** dist/components/kbd/kbd.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/kbd.png
@@ -1183,7 +1183,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** A small flex row of icon + words is all an inline status needs; separators draw their rules with pseudo-elements, the shimmer is background-clip text, links and buttons are real <a>/<button>.
-**When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking…", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
+**When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking...", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
 **Files:** dist/components/marker/marker.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/marker.png
@@ -1372,8 +1372,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## OTP Input
 
 **Type:** MOL
-**Why:** One real input under a row of slots — paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
-**When:** Short codes typed once — SMS verification, email confirmation, a PIN. Use input for anything longer or free-form.
+**Why:** One real input under a row of slots, so paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
+**When:** Short codes typed once (SMS verification, email confirmation, a PIN). Use input for anything longer or free-form.
 **Files:** dist/components/otp-input/otp-input.css + dist/components/otp-input/otp-input.js
 **Supported states:** default, filled, invalid
 **Screenshots:** screenshots/{light,dark}/otp-input.png, screenshots/{light,dark}/otp-input-filled.png, screenshots/{light,dark}/otp-input-invalid.png
@@ -1632,8 +1632,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Rating
 
 **Type:** MOL
-**Why:** Native radio group styled as stars — keyboard, form submission and exclusivity are the browser's, so no JavaScript.
-**When:** Collecting or displaying a score out of five — reviews, feedback, quality scores. Use radio for a general small choice set.
+**Why:** Native radio group styled as stars; keyboard, form submission and exclusivity are the browser's, so no JavaScript.
+**When:** Collecting or displaying a score out of five (reviews, feedback, quality scores). Use radio for a general small choice set.
 **Files:** dist/components/rating/rating.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/rating.png
@@ -2052,8 +2052,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Swap
 
 **Type:** ATM
-**Why:** A hidden <input type="checkbox"> inside a <label> is the whole state machine — :checked, :indeterminate and :has() pick the visible face, CSS transforms animate it.
-**When:** Toggling between two (or three) glyphs or words in place — theme icons, play/pause, hamburger/close; use toggle or switch when the control needs a pressed button or form-field appearance.
+**Why:** A hidden <input type="checkbox"> inside a <label> is the whole state machine; :checked, :indeterminate and :has() pick the visible face, and CSS transforms animate it.
+**When:** Toggling between two (or three) glyphs or words in place (theme icons, play/pause, hamburger/close); use toggle or switch when the control needs a pressed button or form-field appearance.
 **Files:** dist/components/swap/swap.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/swap.png
@@ -2333,7 +2333,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same; records behind a defuss-dataview source filter and sort locally.
-**When:** Lists too long to render — search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
+**When:** Lists too long to render, such as search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
 **Files:** dist/components/virtual-list/virtual-list.css + dist/components/virtual-list/virtual-list.js
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/virtual-list.png, screenshots/{light,dark}/virtual-list-loading.png, screenshots/{light,dark}/virtual-list-empty.png

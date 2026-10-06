@@ -27,6 +27,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.5') {
 const { defussGlobals, defussQuery, loadTheme, safeShowPopover, componentState, bindComponent, persisted } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
 const themeSwitcherStates = ['default', 'open'];
 const STORAGE_KEY = 'defuss-shadcn-color-theme';
 const LINK_ID = 'theme-css';
@@ -147,7 +150,11 @@ export const themeSwitcherApi = Object.assign(componentState({
     apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
     markup: (el, state) => applyMarkup(el, state.name),
 }), {
-    /** Apply a theme on the switcher owning `menu` (link swap, see above). */
+    /**
+     * Apply a theme on the switcher owning `menu` (link swap, see above).
+     * @param menu - the switcher's menu (any element inside its .theme-switcher root)
+     * @param id - the theme id, one of the switcher's options
+     */
     select(menu, id) {
         const root = menu.closest('.theme-switcher');
         if (!root)

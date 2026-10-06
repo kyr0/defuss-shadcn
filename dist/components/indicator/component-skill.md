@@ -52,7 +52,7 @@ an input, a card, an image. Several `.indicator-item`s may share one wrapper.
 
 One attribute, two axes: vertical `top` (default) / `middle` / `bottom`
 and horizontal `start` / `center` / `end` (default), joined with a dash -
-`top-start`, `middle-center`, `bottom-end` …. A single word sets one axis
+`top-start`, `middle-center`, `bottom-end` .... A single word sets one axis
 (`start` = top-start, `bottom` = bottom-end). `start` / `end` are logical:
 in RTL, start is the right edge.
 

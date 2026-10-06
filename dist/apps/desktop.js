@@ -6175,10 +6175,8 @@ var tabsApi = componentState({
 df$12.tabsApi = tabsApi;
 df$12.tabsStates = tabsStates;
 function init12() {
-  dfDollar12('[role="tablist"]:not([data-init])').toArray().forEach((tablist) => {
+  dfDollar12('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    if (!dfDollar12(tablist).find(".tab-trigger").get(0))
-      return;
     const triggers = Array.from(dfDollar12(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
@@ -6491,19 +6489,20 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$13.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar13(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$13.toast = toastActions;
 
 // src/components/toggle/toggle.ts
 var df$14 = defussGlobals();
@@ -6859,32 +6858,32 @@ function tile(scope) {
     moveTo(w, i % cols * cw, Math.floor(i / cols) * ch);
   });
 }
-df$15.win = {
+var windowActions = {
   create,
-  open: (t, config = {}) => {
-    const w = resolve(t);
+  open: (target, config = {}) => {
+    const w = resolve(target);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
-  close: (t) => {
-    const w = resolve(t);
+  close: (target) => {
+    const w = resolve(target);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
-  focus: (t) => {
-    const w = resolve(t);
+  focus: (target) => {
+    const w = resolve(target);
     if (w?.open)
       raise(w);
     return w;
   },
-  move: (t, x, y) => {
-    const w = resolve(t);
+  move: (target, x, y) => {
+    const w = resolve(target);
     return w ? moveTo(w, x, y) : null;
   },
-  resize: (t, width, height) => {
-    const w = resolve(t);
+  resize: (target, width, height) => {
+    const w = resolve(target);
     if (!w)
       return null;
     w.style.width = "";
@@ -6894,26 +6893,26 @@ df$15.win = {
       w.style.setProperty("--window-h", typeof height === "number" ? `${height}px` : height);
     return w;
   },
-  maximize: (t) => {
-    const w = resolve(t);
+  maximize: (target) => {
+    const w = resolve(target);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
-  minimize: (t) => {
-    const w = resolve(t);
+  minimize: (target) => {
+    const w = resolve(target);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
-  restore: (t) => {
-    const w = resolve(t);
+  restore: (target) => {
+    const w = resolve(target);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
-  toggleMaximize: (t) => {
-    const w = resolve(t);
+  toggleMaximize: (target) => {
+    const w = resolve(target);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
@@ -6923,9 +6922,10 @@ df$15.win = {
   cascade,
   tile
 };
+df$15.win = windowActions;
 init15();
 new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
-//# debugId=F5BC58249D5AD02C64756E2164756E21
+//# debugId=5DE19D3AF7827E8264756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

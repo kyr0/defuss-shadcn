@@ -13,9 +13,58 @@ import { defussGlobals, defussQuery, componentState, bindComponent, textLocale }
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What progress:change carries. */
+interface ProgressChangeDetail {
+  /** the <progress> value */
+  value: number;
+  /** its max */
+  max: number;
+  /** value / max, 0 to 1 */
+  percent: number;
+}
+
 /** default = determinate at a value (as authored, or config.value);
  * indeterminate = no value (the moving sweep); complete = value == max. */
 const progressStates = ['default', 'indeterminate', 'complete'];
+
+/** setState() configs per state (getState() reports value, max and the fraction done). */
+export interface ProgressStateConfigs {
+  /** Determinate; no config restores the authored value. */
+  default: {
+    /** the value to show (clamped to 0..max); getState() reports it */
+    value?: number | null;
+    /** ms to glide there linearly (default: jump) */
+    duration?: number;
+    /** a new total; getState() reports it */
+    max?: number;
+    /** reported by getState(): value / max, 0 to 1 (null while indeterminate) */
+    percent?: number | null;
+  };
+  /** No value - the moving sweep. */
+  indeterminate: {
+    /** reported by getState(): null */
+    value?: number | null;
+    /** reported by getState(): the total */
+    max?: number;
+    /** reported by getState(): value / max, 0 to 1 (null while indeterminate) */
+    percent?: number | null;
+  };
+  /** The value at max - progress:completed fires. */
+  complete: {
+    /** ms to glide to max (default: jump) */
+    duration?: number;
+    /** a new total */
+    max?: number;
+    /** reported by getState(): max */
+    value?: number | null;
+    /** reported by getState(): value / max, 0 to 1 (null while indeterminate) */
+    percent?: number | null;
+  };
+}
 
 const SELECTOR = 'progress.progress';
 const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -101,7 +150,7 @@ function commit(el, v, emit = true) {
   const done = v >= maxOf(el);
   el.dataset.stateName = done ? 'complete' : 'default';
   // Fires when the value changes - value, max and the fraction done (0 to 1).
-  if (emit) el.dispatchEvent(new CustomEvent('progress:change', { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+  if (emit) el.dispatchEvent(new CustomEvent<ProgressChangeDetail>('progress:change', { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
   // Fires once when the value reaches max.
   if (done && before !== 'complete') el.dispatchEvent(new CustomEvent('progress:completed', { bubbles: true }));
 }

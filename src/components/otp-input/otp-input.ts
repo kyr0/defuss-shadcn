@@ -12,7 +12,36 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** What otp-complete carries. */
+interface OtpCompleteDetail {
+  /** the whole code, one character per slot */
+  value: string;
+}
+
 const otpInputStates = ['default', 'filled', 'invalid'];
+
+/** setState() configs per state (getState() reports the code typed). */
+export interface OtpInputStateConfigs {
+  /** Empty or partly filled. */
+  default: {
+    /** the code to put in the field - cleaned to the pattern (digits / alphanumeric) and the length; '' clears it */
+    value?: string;
+  };
+  /** A complete code is present - entered automatically the moment the field fills. */
+  filled: {
+    /** the code to put in the field (cleaned like in default) */
+    value?: string;
+  };
+  /** The code was rejected: aria-invalid on the input, the slots marked. */
+  invalid: {
+    /** the code to put in the field (cleaned like in default) */
+    value?: string;
+  };
+}
 
 /** Characters a field accepts, by data-pattern. */
 const PATTERNS = {
@@ -55,7 +84,7 @@ function paint(otp) {
 function announceComplete(otp) {
   // Fires when every cell is filled - the whole code.
   otp.dispatchEvent(
-    new CustomEvent('otp-complete', { bubbles: true, detail: { value: otp._field.value } }),
+    new CustomEvent<OtpCompleteDetail>('otp-complete', { bubbles: true, detail: { value: otp._field.value } }),
   );
 }
 

@@ -98,7 +98,7 @@ Built from: [Code Mockup](mockup-code.md), [Alert](alert.md), [Table](table.md),
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| headings | `<h2>`…`<h4>` | Keep the outline - the article header owns the h1 |
+| headings | `<h2>`...`<h4>` | Keep the outline - the article header owns the h1 |
 | figures | `<figure>` + `<figcaption>` | Images with captions; `alt` on the image |
 | embeds | `<iframe title>` | Every iframe needs a title |
 | tables | `<th scope>` | Header cells |

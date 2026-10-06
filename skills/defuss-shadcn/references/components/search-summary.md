@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Search Summary
 
 ## Native basis
-A `<div role="status">`: "<strong>248 results</strong> for “calm software”", the time, a "did you mean" link and a clear-search link.
+A `<div role="status">`: "<strong>248 results</strong> for 'calm software'", the time, a "did you mean" link and a clear-search link.
 
 ---
 

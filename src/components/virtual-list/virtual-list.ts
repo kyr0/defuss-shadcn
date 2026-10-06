@@ -13,11 +13,61 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, defussQuery, componentState, bindComponent, dataSource, parseFilter, virtualWindow, sizerHeight, scrollTopFor } from '../../shared/state-api.js';
+import type { DataviewFilter, DataviewRow, DataviewSorter } from '../../shared/dataview.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A query over the list's records - merged into the stored one. */
+type VirtualListQuery = {
+  /** filters over every record */
+  filters?: DataviewFilter[];
+  /** the order - several sorters sort by each in turn */
+  sorters?: DataviewSorter[];
+};
+
+/** What setSource() takes besides the records. */
+interface VirtualListSourceOptions {
+  /** fill a recycled row element for a record (default: the id as text) */
+  render?: (el: HTMLElement, record: DataviewRow, context: { index: number }) => void;
+  /** the id field (default 'id') */
+  idField?: string;
+  /** the first query */
+  query?: VirtualListQuery;
+}
+
 const virtualListStates = ['default', 'loading', 'empty'];
+
+/** setState() configs per state - merged into the stored one ({ index } keeps the query). */
+export interface VirtualListStateConfigs {
+  /** Rows rendered. */
+  default: {
+    /** scroll this row into view (a one-off: not kept in the stored config) */
+    index?: number;
+    /** with a source: filters over every record */
+    filters?: DataviewFilter[];
+    /** with a source: the order */
+    sorters?: DataviewSorter[];
+  };
+  /** Placeholder rows; the list is aria-busy. */
+  loading: {
+    /** with a source: filters over every record */
+    filters?: DataviewFilter[];
+    /** with a source: the order */
+    sorters?: DataviewSorter[];
+  };
+  /** No rows - the data-empty-text shows. */
+  empty: {
+    /** with a source: filters over every record */
+    filters?: DataviewFilter[];
+    /** with a source: the order */
+    sorters?: DataviewSorter[];
+  };
+}
 
 /** Items per row: 1 is a list, more is a grid. */
 const columnsOf = (list) => Math.max(1, parseInt(list.dataset.columns || '1', 10) || 1);
@@ -181,8 +231,13 @@ df$.virtualListStates = virtualListStates;
  * assume the element is empty or new.
  */
 df$.virtualList = {
-  /** An index range instead of records: count rows, renderRow(row, index) fills a recycled element - nothing is stored per row. */
-  setData(list, count, renderRow) {
+  /**
+   * An index range instead of records: count rows, renderRow(row, index) fills a recycled element - nothing is stored per row.
+   * @param list - the .virtual-list element
+   * @param count - how many rows (floored, at least 0; 0 shows the empty state)
+   * @param renderRow - fills the recycled element of row `index`; omitted, the last one given stays
+   */
+  setData(list: HTMLElement, count: number, renderRow?: (row: HTMLElement, index: number) => void): void {
     list._source = null;
     list._count = Math.max(0, Math.floor(count) || 0);
     if (renderRow) list._renderRow = renderRow;
@@ -193,8 +248,11 @@ df$.virtualList = {
    * Records instead of a count: `rows` is any array of objects, `render(el,
    * record, { index })` fills a recycled element. Filters and multisort run
    * over every row (defuss-dataview); `query` is the first one.
+   * @param list - the .virtual-list element
+   * @param rows - the records
+   * @param options - render, the id field and the first query
    */
-  setSource(list, rows, { render, idField = 'id', query = {} } = {}) {
+  setSource(list: HTMLElement, rows: DataviewRow[], { render, idField = 'id', query = {} }: VirtualListSourceOptions = {}): void {
     list._source = dataSource(rows, { idField });
     list._result = list._source.query(query);
     if (render) list._render = render;
@@ -202,12 +260,20 @@ df$.virtualList = {
     if (list.store) virtualListApi.setState(list, 'default', { filters: [], sorters: [], ...query });
     else list._pendingQuery = query;
   },
-  /** run a query (merged into the stored one): { filters?, sorters? } */
-  query(list, query) {
-    return virtualListApi.setState(list, 'default', query);
+  /**
+   * Run a query (merged into the stored one): { filters?, sorters? }.
+   * @param list - the .virtual-list element
+   * @param query - the keys to change
+   */
+  query(list: HTMLElement, query: VirtualListQuery): void {
+    virtualListApi.setState(list, 'default', query);
   },
-  /** the rows the current query shows (records, in order) */
-  rows(list) {
+  /**
+   * The rows the current query shows.
+   * @param list - the .virtual-list element
+   * @returns the records, in list order ([] for an index range from setData)
+   */
+  rows(list: HTMLElement): DataviewRow[] {
     return list._source ? list._result.entries.map((entry) => entry.row) : [];
   },
 };

@@ -29,3 +29,13 @@ src/documentation/public/js/
 
 # e2e fingerprints of the last passing runs (tests/e2e/run.ts)
 .cache/
+.env
+var/*
+output/*
+input/*
+
+# release ZIPs (scripts/release-zips.ts) - attached to the GitHub release by deploy.sh, never committed
+release/
+
+# Python bytecode (the defuss-vae policy file .agents/VERIFY.py is imported)
+__pycache__/

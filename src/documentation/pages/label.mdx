@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="label" title="Label" component="label">
-  Renders an accessible label associated with form controls. Built on the native <code>&lt;label&gt;</code> element with <code>:has()</code> for focus-reactive styling. No JavaScript required. The label’s <code>for</code> and the control’s <code>id</code> must carry the <strong>exact same value</strong> - that pairing <em>is</em> the association: it is what makes clicking the label focus the field and lets a screen reader announce the control’s name. Change one side and leave the other, and the label keeps looking right while quietly stopping working.
+  Renders an accessible label associated with form controls. Built on the native <code>&lt;label&gt;</code> element with <code>:has()</code> for focus-reactive styling. No JavaScript required. The label's <code>for</code> and the control's <code>id</code> must carry the <strong>exact same value</strong> - that pairing <em>is</em> the association: it is what makes clicking the label focus the field and lets a screen reader announce the control's name. Change one side and leave the other, and the label keeps looking right while quietly stopping working.
 </PageHeader>
 
 <SkillPanel component="label">
@@ -35,7 +35,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Accessibility">
-<SkillText dense>• <strong>One value, written twice:</strong> the label’s <code>for</code> and the control’s <code>id</code> must be the exact same string. A mismatch fails silently - the label renders and styles normally but no longer focuses the field or names it for assistive technology.</SkillText>
+<SkillText dense>• <strong>One value, written twice:</strong> the label's <code>for</code> and the control's <code>id</code> must be the exact same string. A mismatch fails silently - the label renders and styles normally but no longer focuses the field or names it for assistive technology.</SkillText>
   <SkillText dense>• Clicking the label focuses the associated input - this is native <code>&lt;label&gt;</code> behavior.</SkillText>
   <SkillText dense>• The required indicator <code>\*</code> uses <code>aria-hidden="true"</code> since the <code>required</code> attribute on the input already conveys the requirement to assistive technology.</SkillText>
   <SkillText dense>• Do not use <code>&lt;label&gt;</code> without a <code>for</code> attribute or a nested input.</SkillText>

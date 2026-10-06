@@ -18,6 +18,46 @@ const dfDollar = defussQuery();
  * running / paused / finished are the timer's life cycle. */
 const countdownStates = ['default', 'running', 'paused', 'finished'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the units shown - and a timer's remaining seconds). */
+export interface CountdownStateConfigs {
+  /** As authored: a timer restarts from data-until / data-duration; a plain countdown shows the given values, else its authored ones. */
+  default: {
+    /** a plain countdown: the first unit's value (0-999) */
+    value?: number;
+    /** a plain countdown: values by unit name (data-unit: days, hours, minutes, seconds) */
+    values?: Record<string, number>;
+    /** reported by getState() on a timer: the seconds left */
+    remaining?: number;
+  };
+  /** Ticking - resumes, or starts toward a new deadline. */
+  running: {
+    /** the deadline, a date Date.parse reads */
+    until?: string;
+    /** the deadline as seconds from now (used when until is not given) */
+    duration?: number;
+    /** reported by getState(): the values shown, by unit */
+    values?: Record<string, number>;
+    /** reported by getState(): the seconds left */
+    remaining?: number;
+  };
+  /** Frozen at the remaining time. */
+  paused: {
+    /** reported by getState(): the values shown, by unit */
+    values?: Record<string, number>;
+    /** reported by getState(): the seconds left */
+    remaining?: number;
+  };
+  /** At zero - countdown:finished fired. */
+  finished: {
+    /** reported by getState(): the values shown, by unit (all 0) */
+    values?: Record<string, number>;
+    /** reported by getState(): 0 */
+    remaining?: number;
+  };
+}
+
 const UNITS = [
   ['days', 86400],
   ['hours', 3600],

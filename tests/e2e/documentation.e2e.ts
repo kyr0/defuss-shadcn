@@ -330,6 +330,44 @@ try {
     assert.equal(other.maxWidth, 'none', 'a regular page main is still capped');
   });
 
+  // Why: on phones the drawer was `height: calc(100vh - 3.5rem)` - 100vh is the viewport with
+  // the browser toolbar HIDDEN, so while the toolbar showed, the drawer's end sat below the
+  // screen and its last links were out of the menu's scroll range (reported on a device).
+  // Emulation has no toolbar, so the check pins the cause: the drawer ends at the visible
+  // viewport's bottom edge (no vh height wins in the cascade), and the very last link scrolls into view.
+  await check('mobile drawer: anchored to the visible viewport, every link reachable', async () => {
+    const phone = await browser.newPage({ viewport: { width: 390, height: 664 }, isMobile: true, hasTouch: true });
+    try {
+      await phone.goto(`${server.url}/dist/documentation/button.html`, { waitUntil: 'load' });
+      await phone.click('#sidebar-toggle');
+      await phone.waitForFunction(() => document.querySelector('.site-sidebar')?.classList.contains('open'));
+      const r = await phone.evaluate(async () => {
+        const sb = document.querySelector('.site-sidebar') as HTMLElement;
+        for (const d of sb.querySelectorAll('details')) (d as HTMLDetailsElement).open = true;
+        const last = [...sb.querySelectorAll('a')].filter((a) => a.getClientRects().length).at(-1)!;
+        last.scrollIntoView({ block: 'end' });
+        await new Promise((res) => setTimeout(res, 300)); // the drawer's slide-in transition
+        // the DECLARED height that wins (computed values resolve to px and cannot tell vh from
+        // the visible viewport in emulation): the last unlayered rule for the drawer that sets one
+        let height = '';
+        const walk = (rules: CSSRuleList, layered: boolean) => {
+          for (const rule of rules) {
+            if (rule instanceof CSSMediaRule) { if (matchMedia(rule.conditionText).matches) walk(rule.cssRules, layered); }
+            else if (rule instanceof CSSLayerBlockRule) walk(rule.cssRules, true);
+            else if (rule instanceof CSSStyleRule && !layered && rule.style.height && sb.matches(rule.selectorText)) height = rule.style.height;
+          }
+        };
+        for (const sheet of document.styleSheets) { try { walk(sheet.cssRules, false); } catch { /* a cross-origin sheet */ } }
+        return { height, edge: Math.round(sb.getBoundingClientRect().bottom), vh: innerHeight, link: Math.round(last.getBoundingClientRect().bottom), text: last.textContent?.trim() };
+      });
+      assert.ok(!/(^|[^ds])vh\b/.test(r.height), `the drawer's height is "${r.height}" - 100vh is the viewport with the toolbar hidden; end it at the visible viewport (bottom: 0)`);
+      assert.equal(r.edge, r.vh, `drawer ends at ${r.edge}px in a ${r.vh}px viewport`);
+      assert.ok(r.link <= r.vh, `the last link "${r.text}" ends at ${r.link}px, below the ${r.vh}px viewport`);
+    } finally {
+      await phone.close();
+    }
+  });
+
   await check('architecture page renders from ARCH.md (h2s + proof-loop section)', async () => {
     await page.goto(`${server.url}/dist/documentation/architecture.html`);
     const state = await page.evaluate(() => ({

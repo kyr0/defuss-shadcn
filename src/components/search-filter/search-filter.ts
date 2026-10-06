@@ -15,6 +15,27 @@ const dfDollar = defussQuery();
 
 const searchFilterStates = ['default', 'filled', 'searching'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state. */
+export interface SearchFilterStateConfigs {
+  /** Empty - no clear button; setting it clears the field. */
+  default: {
+    /** a value to preset instead of clearing */
+    value?: string;
+  };
+  /** Has text - the clear button shows; entered automatically while typing. */
+  filled: {
+    /** the text to put in the field */
+    value?: string;
+  };
+  /** Has text and a lookup is pending: a spinner replaces the icon, aria-busy on the field - the page sets it and ends it (filled). */
+  searching: {
+    /** the text to put in the field */
+    value?: string;
+  };
+}
+
 /** Sets the field's value and lets listeners know, exactly as typing would. */
 function setValue(box, value) {
   const field = box._field;

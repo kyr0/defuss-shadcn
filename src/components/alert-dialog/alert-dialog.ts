@@ -12,6 +12,16 @@ const dfDollar = defussQuery();
 
 const alertDialogStates = ['default', 'open'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the alert dialog's states take none. */
+export interface AlertDialogStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open as a modal (showModal()) - the background is inert until it is answered. */
+  open: {};
+}
+
 /**
  * The markup of a state: 'open' carries `open`. render() applies it to a
  * detached copy; on the live element showModal()/close() (the native

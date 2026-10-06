@@ -24,7 +24,7 @@ is the accessible fallback. `countdown.js` is only needed for a ticking timer.
 - [`overflow: clip`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) - a one-digit window on one axis only
 - [`font-variant-numeric: tabular-nums`](https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric) - equal-width digits, no jitter
 - [`role="timer"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/timer_role) - a live timer that does not interrupt
-- [`Intl.DurationFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat) - the timer's spoken label ("2 days, 4 hours, …")
+- [`Intl.DurationFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat) - the timer's spoken label ("2 days, 4 hours, ...")
 - [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) - `countdown:finished`
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - values change without the roll
 
@@ -134,17 +134,45 @@ The registry global is `df$.shadcn.countdownApi` / `df$.shadcn.countdownStates`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.countdownApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.countdownStates` = `default`, `running`, `paused`, `finished`.
+<code>type CountdownState = 'default' | 'running' | 'paused' | 'finished'</code> - `setState(name, config)` takes the config of the state it names (`CountdownStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | As authored: a timer restarts from data-until / data-duration; a plain countdown shows the given values, else its authored ones. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>number</code></td><td>a plain countdown: the first unit's value (0-999)</td></tr><tr><td><code>values?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>a plain countdown: values by unit name (data-unit: days, hours, minutes, seconds)</td></tr><tr><td><code>remaining?</code></td><td><code>number</code></td><td>reported by getState() on a timer: the seconds left</td></tr></table> |
+| `running` | Ticking - resumes, or starts toward a new deadline. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>until?</code></td><td><code>string</code></td><td>the deadline, a date Date.parse reads</td></tr><tr><td><code>duration?</code></td><td><code>number</code></td><td>the deadline as seconds from now (used when until is not given)</td></tr><tr><td><code>values?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>reported by getState(): the values shown, by unit</td></tr><tr><td><code>remaining?</code></td><td><code>number</code></td><td>reported by getState(): the seconds left</td></tr></table> |
+| `paused` | Frozen at the remaining time. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>values?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>reported by getState(): the values shown, by unit</td></tr><tr><td><code>remaining?</code></td><td><code>number</code></td><td>reported by getState(): the seconds left</td></tr></table> |
+| `finished` | At zero - countdown:finished fired. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>values?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>reported by getState(): the values shown, by unit (all 0)</td></tr><tr><td><code>remaining?</code></td><td><code>number</code></td><td>reported by getState(): 0</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends CountdownState&gt;(name: S, config?: CountdownStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>CountdownStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: CountdownState; config: CountdownStateConfigs[CountdownState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.countdownApi.setState&lt;S extends CountdownState&gt;(el: HTMLElement, name: S, config?: CountdownStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>CountdownStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.countdownApi.getState(el: HTMLElement): { name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.countdownApi.render(state: { name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: CountdownState; config: CountdownStateConfigs[CountdownState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.countdownApi.store(el: HTMLElement): Store&lt;{ name: CountdownState; config: CountdownStateConfigs[CountdownState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: CountdownState; config: CountdownStateConfigs[CountdownState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.countdownApi.commit&lt;S extends CountdownState&gt;(el: HTMLElement, name: S, config?: CountdownStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>CountdownStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.countdownStates: CountdownState[]</code> | The declared states, 'default' first: <code>default</code>, <code>running</code>, <code>paused</code>, <code>finished</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `countdown:finished` | - | Fires once when the countdown reaches zero. |
+| Event | Description |
+|---|---|
+| `countdown:finished` | Fires once when the countdown reaches zero. No <code>detail</code>. |
 
 ## Notes
 

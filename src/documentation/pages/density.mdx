@@ -1,6 +1,6 @@
 ---
 title: "Density"
-description: "Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent."
+description: "Compactness is an explicit whitespace policy, not a global zoom factor. Keep typography, geometry and target sizes independent."
 slug: "density"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="density" title="Density" introStyle="max-width:38rem;">
-  Compactness is an explicit whitespace policy—not a global zoom factor. Keep typography, geometry and target sizes independent.
+  Compactness is an explicit whitespace policy, not a global zoom factor. Keep typography, geometry and target sizes independent.
 </PageHeader>
 
 <h2 id="presets" class="h2-display">Opt in to interface density</h2>
@@ -39,7 +39,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="sep" />
 
-<h2 id="what-changes" class="h2-display">What changes—and what does not</h2>
+<h2 id="what-changes" class="h2-display">What changes and what does not</h2>
 
 <div class="overflow-x-auto mb-6">
   <table class="table" data-variant="simple">
@@ -258,7 +258,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </table>
 </div>
 
-<DocText>Components already covered by a dedicated size ladder (Button, Input, Badge, …) deliberately stay out: their compactness is the size axis, and stacking a second whitespace axis on the same padding would make the two fight. Density stays the policy for <em>collections and surfaces</em>; sizes stay the policy for <em>controls</em>.</DocText>
+<DocText>Components already covered by a dedicated size ladder (Button, Input, Badge, ...) deliberately stay out: their compactness is the size axis, and stacking a second whitespace axis on the same padding would make the two fight. Density stays the policy for <em>collections and surfaces</em>; sizes stay the policy for <em>controls</em>.</DocText>
 
 <div class="sep" />
 
@@ -294,7 +294,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 
-<DocText>The example already keeps a 44px target baseline; the media query only adds breathing room. <code>any-pointer: coarse</code> can detect an available coarse pointer on a hybrid device, but it is not a complete description of a user’s access needs. Keep controls usable without that signal. <a href="https://www.w3.org/TR/mediaqueries-4/#any-input" target="_blank" rel="noopener">Media Queries: available pointer capabilities</a></DocText>
+<DocText>The example already keeps a 44px target baseline; the media query only adds breathing room. <code>any-pointer: coarse</code> can detect an available coarse pointer on a hybrid device, but it is not a complete description of a user's access needs. Keep controls usable without that signal. <a href="https://www.w3.org/TR/mediaqueries-4/#any-input" target="_blank" rel="noopener">Media Queries: available pointer capabilities</a></DocText>
 
 <DocText>The AA target-size criterion is 24 × 24 CSS pixels with exceptions; the enhanced AAA criterion uses 44 × 44 with exceptions. Check actual target geometry, not just icon dimensions. <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Minimum), AA</a> · <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html" target="_blank" rel="noopener">WCAG 2.2: Target Size (Enhanced), AAA</a></DocText>
 

@@ -27,11 +27,79 @@ import {
   sizerHeight,
   scrollIntoViewTop,
 } from '../../shared/state-api.js';
+import type { DataviewFilter, DataviewJsonValue, DataviewRow, DataviewSorter } from '../../shared/dataview.js';
+import type { ViewPersistence } from '../../shared/store.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** The tree's query - its state config (merged on every query()). */
+interface DataTreeQuery {
+  /** filters over every record (a match shows with its ancestors) */
+  filters?: DataviewFilter[];
+  /** the order of siblings */
+  sorters?: DataviewSorter[];
+  /** the ids of the open branches */
+  expanded?: DataviewJsonValue[];
+  /** while filtering: the branches the user closed again */
+  collapsed?: DataviewJsonValue[];
+  /** the selected record's id, null for none */
+  selected?: DataviewJsonValue | null;
+}
+
+/** Where a record sits in the tree - what render() and data-tree-select receive. */
+interface DataTreeMeta {
+  /** 0 for a root */
+  depth: number;
+  /** whether it has child records */
+  hasChildren: boolean;
+  /** whether its branch is open */
+  isExpanded: boolean;
+  /** whether it matches the filters (false for an ancestor shown for a match) */
+  isMatch: boolean;
+  /** whether it is the selected record */
+  isSelected: boolean;
+  /** its parent's id, null for a root */
+  parentId: DataviewJsonValue | null;
+}
+
+/** What setSource() takes besides the records. */
+interface DataTreeOptions {
+  /** the id field (default 'id', or data-id-field) */
+  idField?: string;
+  /** the parent-id field (default 'parentId', or data-parent-field) */
+  parentIdField?: string;
+  /** fill an item's label yourself (default: the data-label-field value as text) */
+  render?: (el: HTMLElement, record: DataviewRow, meta: DataTreeMeta) => void;
+  /** the starting view (a kept view wins over it) */
+  query?: DataTreeQuery;
+  /** where the view is kept between visits (default: session storage under a generated key) */
+  persist?: ViewPersistence;
+}
+
+/** What data-tree-select carries. */
+interface DataTreeSelectDetail {
+  /** the selected record */
+  record: DataviewRow;
+  /** where it sits in the tree */
+  meta: DataTreeMeta;
+}
+
 const dataTreeStates = ['default', 'loading', 'empty'];
+
+/** setState() configs per state - the config IS the tree's query, merged into the stored one ({ expanded } keeps the filters). */
+export interface DataTreeStateConfigs {
+  /** The visible items of the query; nothing visible lands in empty. */
+  default: DataTreeQuery;
+  /** Busy: placeholder rows, aria-busy - a tree without records starts here. */
+  loading: DataTreeQuery;
+  /** Nothing to show: the data-empty-text shows. */
+  empty: DataTreeQuery;
+}
 let uid = 0;
 
 // the config being shown: set first thing in apply (the store records it
@@ -225,8 +293,8 @@ function select(tree, index) {
   const entry = entryAt(tree, index);
   if (!entry) return;
   query(tree, { selected: entry.row[tree._source.idField] });
-  // Fires when an item is selected (click, Enter, Space) - its record and its tree meta (depth, hasChildren …).
-  tree.dispatchEvent(new CustomEvent('data-tree-select', { bubbles: true, detail: { record: entry.row, meta: entry.meta } }));
+  // Fires when an item is selected (click, Enter, Space) - its record and its tree meta (depth, hasChildren ...).
+  tree.dispatchEvent(new CustomEvent<DataTreeSelectDetail>('data-tree-select', { bubbles: true, detail: { record: entry.row, meta: entry.meta } }));
 }
 
 /** move the active item and keep it on screen */
@@ -316,8 +384,11 @@ df$.dataTree = {
    * ('parentId', or data-parent-field), render(el, record, meta) for the
    * label (default: the data-label-field value), query (the starting view),
    * persist ({ area: 'session' | 'local' | 'none', prefix, key }).
+   * @param target - the .data-tree element or its selector
+   * @param rows - the records, a flat list linked by parent id
+   * @param options - fields, label rendering, the starting view and its persistence
    */
-  setSource(target, rows, options = {}) {
+  setSource(target: string | HTMLElement, rows: DataviewRow[], options: DataTreeOptions = {}): void {
     const tree = resolve(target);
     const idField = options.idField || tree.dataset.idField || 'id';
     const parentIdField = options.parentIdField || tree.dataset.parentField || 'parentId';
@@ -327,21 +398,35 @@ df$.dataTree = {
     // options.query starts the view; a kept view (options.persist moves it) wins
     if (tree.store) dataTreeApi.setState(tree, 'default', { ...options.query, ...(options.persist ? attachPersistence(tree, options.persist) : {}) });
   },
-  /** merge into the query: { filters?, sorters?, expanded?, selected? } */
-  query: (target, patch) => query(resolve(target), patch),
-  /** Open every branch. */
-  expandAll(target) {
+  /**
+   * Merge into the query: { filters?, sorters?, expanded?, selected? }.
+   * @param target - the .data-tree element or its selector
+   * @param patch - the query keys to change
+   */
+  query: (target: string | HTMLElement, patch: DataTreeQuery): void => { query(resolve(target), patch); },
+  /**
+   * Open every branch.
+   * @param target - the .data-tree element or its selector
+   */
+  expandAll(target: string | HTMLElement): void {
     const tree = resolve(target);
     query(tree, { expanded: tree._source.branchIds(), collapsed: [] });
   },
-  /** Close every branch (while filtering: the ways to the matches too). */
-  collapseAll(target) {
+  /**
+   * Close every branch (while filtering: the ways to the matches too).
+   * @param target - the .data-tree element or its selector
+   */
+  collapseAll(target: string | HTMLElement): void {
     const tree = resolve(target);
     const filtering = (configOf(tree).filters || []).length > 0;
     query(tree, filtering ? { collapsed: tree._source.branchIds() } : { expanded: [] });
   },
-  /** the selected record (or null) */
-  selected(target) {
+  /**
+   * The selected record.
+   * @param target - the .data-tree element or its selector
+   * @returns the record whose id is selected, null when none is
+   */
+  selected(target: string | HTMLElement): DataviewRow | null {
     const tree = resolve(target);
     const id = configOf(tree).selected ?? null;
     return id === null ? null : (tree._source?.rows.find((r) => r[tree._source.idField] === id) ?? null);

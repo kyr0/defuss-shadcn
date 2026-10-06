@@ -1,6 +1,6 @@
 ---
-title: "Sankey — Presentation"
-description: "Industrial Schematic design language presenting a year of a city’s waste as a 13-slide deck — a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart."
+title: "Sankey - Presentation"
+description: "Industrial Schematic design language presenting a year of a city's waste as a 13-slide deck - a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart."
 slug: "sankey"
 ---
 
@@ -8,12 +8,12 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 
 <DocPage meta={meta}>
 <PageHeader slug="sankey" title="Sankey" component="presentation">
-  Industrial Schematic: grey drafting paper, condensed labels, rails and a warning orange — where 412,000 tonnes of a city’s waste go in one year, from doorstep to furnace, compost heap or new bottle.
+  Industrial Schematic: grey drafting paper, condensed labels, rails and a warning orange - where 412,000 tonnes of a city's waste go in one year, from doorstep to furnace, compost heap or new bottle.
 </PageHeader>
 
 ```html example label="Industrial Schematic" schema="none" height="26" hint="Slides run in and out like a conveyor (df$.anim slideIn / slideOut, declared on the deck); orange curtains mark the breaks. One deck-level chart (df$.shadcn.chart.deck): the Sankey isolates plastics, then gives way to outcome bars that morph into the recovery rate per stream. Use ← / → inside the deck. One interactive diagram slide (an Illustrative Diagram in the deck's palette) plays step by step on arrival - click its boxes." previewStyle="align-items:flex-start;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
-<section class="presentation" id="deck-sankey" data-anim-in="slideIn" data-anim-in-distance="140px" data-anim-out="slideOut" data-anim-out-distance="140px" style="--presentation-ink:#222A2F;--presentation-ink-foreground:#E7E2D7;--presentation-paper:#E7E2D7;--presentation-paper-foreground:#222A2F;--presentation-accent:#E0582D;font-family:Arial Narrow, Arial, sans-serif;" tabindex="-1" aria-label="Where a city’s waste goes — one year of material flows">
+<section class="presentation" id="deck-sankey" data-anim-in="slideIn" data-anim-in-distance="140px" data-anim-out="slideOut" data-anim-out-distance="140px" style="--presentation-ink:#222A2F;--presentation-ink-foreground:#E7E2D7;--presentation-paper:#E7E2D7;--presentation-paper-foreground:#222A2F;--presentation-accent:#E0582D;font-family:Arial Narrow, Arial, sans-serif;" tabindex="-1" aria-label="Where a city’s waste goes - one year of material flows">
   <!-- ONE chart for the whole deck: slides name the state they show via
        data-chart-state, and df$.shadcn.chart.deck() morphs between them -->
   <div class="chart presentation-stage" role="img" aria-label="A city’s 412 thousand tonnes of waste in one year as a Sankey diagram from three sources through six material streams to four outcomes: 144 thousand tonnes recycled, 68 composted, 159 burned for energy and 41 landfilled; then outcomes and recovery rate per stream"></div>
@@ -33,7 +33,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     </svg>
     <p class="presentation-eyebrow" data-df-entrance="fade" style="position:relative;">Sankey · Industrial Schematic</p>
     <h1 class="presentation-title" data-df-entrance="up" style="position:relative; max-width:1250px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:7rem; max-width:780px;">Where a city’s waste goes</h1>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px; max-width:700px;">412,000 tonnes a year — three sources, six streams, four ways out.</p>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:200ms; position:relative; max-width:1050px; max-width:700px;">412,000 tonnes a year - three sources, six streams, four ways out.</p>
     <p class="presentation-note">The schematic on the cover is the Sankey without numbers.</p>
   </section>
   <section class="slide" data-slide data-theme="paper" data-chart-state="flow" style="justify-content:flex-start;" aria-label="All flows">
@@ -46,7 +46,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <header class="presentation-header"><span>Flows 2025</span><span>Plastics highlighted</span></header>
     <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">Plastics: only 40% come back</h2>
     <span class="presentation-slide-number"></span>
-    <p class="presentation-note">Everything else fades — 25 of 42 kt of plastics are burned.</p>
+    <p class="presentation-note">Everything else fades - 25 of 42 kt of plastics are burned.</p>
   </section>
   <section class="slide" data-slide data-theme="paper" data-chart-state="outcomes" style="justify-content:flex-start;" aria-label="Outcomes">
     <header class="presentation-header"><span>Outcomes</span><span>Thousand tonnes per year</span></header>
@@ -78,7 +78,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div style="display:flex; gap:4.5rem; align-items:center; margin-top:3.5rem;">
       <div style="flex:1 1 0; min-width:0;">
         <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:3.6rem;">It starts under these roofs</h2>
-        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Households produce 58% of the city’s waste — 238,000 tonnes, about 650 tonnes every day.</p>
+        <p class="presentation-lede" data-df-entrance="fade" style="--df-motion-delay:300ms; font-size:1.7rem;">Households produce 58% of the city’s waste - 238,000 tonnes, about 650 tonnes every day.</p>
       </div>
       <figure class="image" data-ratio="4/3" data-df-entrance="zoom-out" style="--df-motion-delay:150ms; flex:0 0 700px; margin:0;">
         <img src="https://picsum.photos/id/188/960/720" alt="Snow-dusted rooftops of an old city under a grey winter sky, a church dome in the distance" loading="lazy" width="960" height="720" style="width:100%; height:100%; object-fit:cover;" />
@@ -114,17 +114,17 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
   <section class="slide" data-slide data-theme="paper" aria-label="Field note">
     <blockquote data-df-entrance="iris" style="margin:0; max-width:1250px;">
-      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:3.2rem; text-transform:none;">“A stacked bar told us the recycling rate. The Sankey told us which bin to fix — and that it is the grey one.”</p>
+      <p class="presentation-title" style="font-size:3.3rem; line-height:1.22; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:3.2rem; text-transform:none;">“A stacked bar told us the recycling rate. The Sankey told us which bin to fix - and that it is the grey one.”</p>
     </blockquote>
     <div data-df-entrance="fade" style="--df-motion-delay:600ms; display:flex; align-items:center; gap:1.75rem; margin-top:2.75rem;">
       <span class="avatar" data-size="xl" style="width:6.5rem; height:6.5rem; font-size:2.25rem; background:#222A2F; color:#E0582D;"><span class="avatar-fallback">JK</span></span>
-      <p class="presentation-lede" style="font-size:1.7rem;">Jonas Kranz<br /><span style="opacity:0.7; font-size:1.4rem;">Head of waste management — fictional</span></p>
+      <p class="presentation-lede" style="font-size:1.7rem;">Jonas Kranz<br /><span style="opacity:0.7; font-size:1.4rem;">Head of waste management - fictional</span></p>
     </div>
-    <p class="presentation-note">Flows beat totals — the study’s thesis.</p>
+    <p class="presentation-note">Flows beat totals - the study’s thesis.</p>
   </section>
   <section class="slide" data-slide data-theme="paper" data-chart-state="rates" style="justify-content:flex-start;" aria-label="Recovery rate">
     <header class="presentation-header"><span>Streams</span><span>Share recovered as material</span></header>
-    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">Four streams clear the target — plastics lag</h2>
+    <h2 class="presentation-title" data-df-entrance="up" style="font-size:3.4rem; margin-block:5.25rem 0.75rem; max-width:1300px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95;">Four streams clear the target - plastics lag</h2>
     <span class="presentation-slide-number"></span>
     <p class="presentation-note">The same bars, now per stream, against the 65% target.</p>
   </section>
@@ -134,7 +134,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="accordion" data-df-stagger style="--df-motion-stagger-step:160ms; max-width:1300px;">
       <details class="accordion-item" name="sk-qa" open data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>Why is burning counted separately?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Energy recovery makes heat and power, but the material is gone — so it does not count toward recycling.</p></div>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">Energy recovery makes heat and power, but the material is gone - so it does not count toward recycling.</p></div>
       </details>
       <details class="accordion-item" name="sk-qa" data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What is in the residual bin?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
@@ -142,7 +142,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       </details>
       <details class="accordion-item" name="sk-qa" data-df-entrance="up">
         <summary class="accordion-trigger" style="font-size:1.9rem; padding-block:1.4rem;"><span>What would moving that third change?</span><svg class="accordion-chevron" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">About 50 kt more compost — the combined rate would rise from 51% to 64%.</p></div>
+        <div class="accordion-content" style="font-size:1.6rem; line-height:1.5;"><p style="margin:0 0 1.4rem;">About 50 kt more compost - the combined rate would rise from 51% to 64%.</p></div>
       </details>
     </div>
     <span class="presentation-slide-number"></span>
@@ -201,7 +201,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <ul data-df-stagger style="--df-motion-stagger-step:180ms; margin:3rem 0 0; padding:0; list-style:none; font-size:2.1rem; line-height:1.5; max-width:1300px; display:grid; gap:1.1rem;">
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>A Sankey shows where things go, not just how much there is.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Half the waste is recycled or composted; a tenth is landfilled.</span></li>
-      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Plastics recover 40% — the weakest separate stream.</span></li>
+      <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Plastics recover 40% - the weakest separate stream.</span></li>
       <li data-df-entrance="up" style="display:flex; gap:1.25rem;"><span aria-hidden="true" style="color:var(--presentation-accent); flex:none;">▶</span><span>Fix the residual bin: 152 kt with zero material recovery.</span></li>
     </ul>
     <span class="presentation-slide-number"></span>
@@ -222,7 +222,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <path d="M0 520 H700" stroke="#222A2F" stroke-width="2" stroke-dasharray="10 8" />
     </svg>
     <h2 class="presentation-title" data-df-entrance="pop" style="--df-motion-ease:var(--presentation-spring); position:relative; max-width:1250px; font-family:DIN Condensed, Arial Narrow, Arial, sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em; line-height:0.95; font-size:7rem;">Follow the flow</h2>
-    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px; max-width:700px;">Synthetic tonnages for a fictional city — the Sankey is the real way to show where things go.</p>
+    <p class="presentation-lede" data-df-entrance="up" style="--df-motion-delay:300ms; position:relative; max-width:1100px; max-width:700px;">Synthetic tonnages for a fictional city - the Sankey is the real way to show where things go.</p>
     <p data-df-entrance="up" style="--df-motion-delay:550ms; position:relative; display:flex; gap:1rem; margin:2.5rem 0 0;">
       <button type="button" class="btn">Copy the deck</button>
       <button type="button" class="btn" data-variant="outline">Read the chart contract</button>
@@ -238,7 +238,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 </section>
 <script>
   // df$ exists only after all.js boots (it loads after example scripts in the
-  // sandbox) — build the stage in the load handler, never at parse time.
+  // sandbox) - build the stage in the load handler, never at parse time.
   window.addEventListener('load', () => {
     const deck = document.getElementById('deck-sankey');
     const INK = '#222A2F', MUTED = '#737C7E', GRID = 'rgba(34,42,47,.12)';
@@ -294,6 +294,6 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 </script>
 ```
 
-<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 20-sankey (Industrial Schematic) — synthetic tonnages for a fictional city.</p>
+<p class="text-sm text-muted-foreground m-0 mb-3">Design study adapted from echarts-feat 20-sankey (Industrial Schematic) - synthetic tonnages for a fictional city.</p>
 <SourceFiles component="presentation" />
 </DocPage>

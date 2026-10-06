@@ -1,0 +1,914 @@
+/* ── components/typography/typography.css ── */
+/* -- Typography component --------------------------------------- */
+
+/* -- Base text ---------------------------------------------- */
+/* Sets the default font size for the entire page.            */
+/* All typography classes are sized relative to this baseline. */
+@layer base {
+  body {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  /* -- Headings ---------------------------------------------- */
+  .h1 {
+    scroll-margin-top: 5rem;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    text-wrap: balance;
+    color: var(--foreground);
+  }
+
+  .h2 {
+    scroll-margin-top: 5rem;
+    font-size: 1.875rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    text-wrap: balance;
+    color: var(--foreground);
+    border-block-end: 1px solid var(--border);
+    padding-block-end: 0.5rem;
+
+    &:first-child { margin-block-start: 0; }
+  }
+
+  .h3 {
+    scroll-margin-top: 5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    text-wrap: balance;
+    color: var(--foreground);
+  }
+
+  .h4 {
+    scroll-margin-top: 5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-wrap: balance;
+    color: var(--foreground);
+  }
+
+  /* -- Paragraph --------------------------------------------- */
+  .p {
+    font-size: 0.875rem;
+    line-height: 1.75;
+    text-wrap: pretty;
+    color: var(--foreground);
+
+    &:not(:first-child) { margin-block-start: 1.5rem; }
+  }
+
+  /* -- Lead --------------------------------------------------- */
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  /* -- Large -------------------------------------------------- */
+  .large {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  /* -- Small -------------------------------------------------- */
+  .small {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--foreground);
+  }
+
+  /* -- Muted -------------------------------------------------- */
+  .muted {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  /* -- Blockquote --------------------------------------------- */
+  .blockquote {
+    margin-block-start: 1.5rem;
+    border-inline-start: 2px solid var(--border);
+    padding-inline-start: 1.5rem;
+    font-style: italic;
+    hanging-punctuation: first last;
+    color: var(--foreground);
+
+    & p { margin: 0; }
+  }
+
+  /* -- Inline code -------------------------------------------- */
+  .inline-code {
+    position: relative;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    padding: 0.2rem 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  /* -- CJK: Chinese, Japanese, Korean ------------------------------
+     Keyed on the lang attribute, so one set of classes serves every script.
+     Latin tuning is undone (negative tracking, faux italics); paragraphs
+     justify between characters with strict line breaking (kinsoku: no 。
+     or ， at a line start), and sentence-end punctuation may hang past the
+     edge (Safari: hanging-punctuation) or trims to half width
+     (Chromium: text-spacing-trim) so the justified edge stays straight.
+     text-autospace adds the thin gap between CJK and Latin /
+     digits that authors used to type by hand. */
+  :is(.h1, .h2, .h3, .h4, .lead, .large):is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) :is(.h1, .h2, .h3, .h4, .lead, .large) {
+    letter-spacing: 0;
+  }
+  /* Japanese headings break between phrases (bunsetsu), not mid-word */
+  :is(.h1, .h2, .h3, .h4, .lead):lang(ja),
+  :lang(ja) :is(.h1, .h2, .h3, .h4, .lead) {
+    word-break: auto-phrase;
+  }
+  :is(.p, .lead, .blockquote):is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) :is(.p, .lead, .blockquote) {
+    line-height: 1.9;
+    line-break: strict;
+    text-autospace: normal;
+  }
+  :is(.p, .blockquote):is(:lang(zh), :lang(ja)),
+  :is(:lang(zh), :lang(ja)) :is(.p, .blockquote) {
+    text-align: justify;
+    text-justify: inter-character;
+    /* the line-end 。，: Safari hangs it past the edge; Chromium trims the
+       fullwidth glyph's blank half (text-spacing-trim) - either way the
+       justified edge stays straight */
+    hanging-punctuation: allow-end;
+    text-spacing-trim: normal;
+  }
+  /* CJK has no italics - a slanted Han character is a synthetic oblique */
+  .blockquote:is(:lang(zh), :lang(ja), :lang(ko)),
+  :is(:lang(zh), :lang(ja), :lang(ko)) .blockquote {
+    font-style: normal;
+  }
+
+  /* -- Vertical text (tategaki / 直排) ----------------------------------
+     .text-vertical sets top-to-bottom lines flowing right to left. Latin
+     runs lie sideways (text-orientation: mixed); .text-upright stands a
+     short run (a two-digit number) upright in one cell - tate-chu-yoko.
+     The spacing above uses logical properties, so headings, paragraphs and
+     the blockquote rule turn with the text. Give the block a height. */
+  .text-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .text-upright {
+    text-combine-upright: all;
+  }
+
+  /* -- Emphasis marks (圈点 / 傍点) ---------------------------------------
+     Dots beside each character instead of italics: over the text in
+     Japanese (right of it when vertical), under it in Chinese. */
+  .text-emphasis {
+    font-style: normal;
+    text-emphasis: filled dot;
+    text-emphasis-position: over right;
+  }
+  .text-emphasis:lang(ja) { text-emphasis-style: filled sesame; }
+  .text-emphasis:lang(zh) { text-emphasis-position: under right; }
+
+  /* ruby annotations (furigana, pinyin, zhuyin) read as small, muted type */
+  :is(.p, .lead, .blockquote, .h1, .h2, .h3, .h4) rt {
+    font-size: 0.5em;
+    color: var(--muted-foreground);
+    letter-spacing: 0;
+  }
+
+  /* -- Accessibility ------------------------------------------ */
+
+  @media (prefers-contrast: more) {
+    .h1, .h2, .h3, .h4 {
+      letter-spacing: 0;
+    }
+
+    .blockquote {
+      border-inline-start-width: 3px;
+    }
+
+    .inline-code {
+      outline: 1px solid var(--border);
+    }
+
+    .muted {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .blockquote {
+      border-inline-start-color: CanvasText;
+    }
+
+    .inline-code {
+      background: Canvas;
+      outline: 1px solid CanvasText;
+      color: CanvasText;
+    }
+  }
+}
+
+/* ── components/text-rotate/text-rotate.css ── */
+/* -- Text Rotate component ------------------------------------------ */
+
+@layer components {
+  /* daisyUI's text-rotate, CSS only: a .text-rotate holds one <span> of 2-6
+     lines (each a child element); one line shows at a time and the stack
+     rolls on to the next - an infinite loop that pauses while hovered. The
+     window is one line tall (1lh), so it works at any font-size and
+     line-height, inline in a sentence or as a headline. The keyframes are
+     picked from the line count (:has()); --text-rotate-duration sets one
+     full round (default 10s). data-direction="down" rolls the other way,
+     data-effect="fade" crossfades in place, data-pause="none" keeps it
+     running under the pointer. Reduced motion shows the first line only. */
+  .text-rotate {
+    --_n: 1;
+    --_dur: var(--text-rotate-duration, 10s);
+    display: inline-grid;
+    height: 1lh;
+    overflow: hidden;
+    vertical-align: bottom;
+
+    & > span {
+      display: flex;
+      flex-direction: column;
+      animation: var(--_name, none) var(--_dur) cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+    & > span > * {
+      display: block;
+      height: 1lh;
+      white-space: nowrap;
+    }
+    &[data-align="center"] > span > * { text-align: center; }
+    &[data-align="end"] > span > * { text-align: end; }
+
+    &:hover > span,
+    &:focus-within > span { animation-play-state: paused; }
+    &[data-pause="none"]:hover > span,
+    &[data-pause="none"]:focus-within > span { animation-play-state: running; }
+
+    &[data-direction="down"] > span { flex-direction: column-reverse; animation-name: var(--_down, none); }
+
+    /* fade: every line in the same cell, each fades through its slot */
+    &[data-effect="fade"] > span {
+      display: grid;
+      animation: none;
+    }
+    &[data-effect="fade"] > span > * {
+      grid-area: 1 / 1;
+      opacity: 0;
+      animation: var(--_fade, none) var(--_dur) ease infinite both;
+    }
+    &[data-effect="fade"]:hover > span > *,
+    &[data-effect="fade"]:focus-within > span > * { animation-play-state: paused; }
+    &[data-effect="fade"][data-pause="none"]:hover > span > * { animation-play-state: running; }
+  }
+
+  /* the line count picks the keyframes */
+  .text-rotate:has(> span > :nth-child(2):last-child) { --_n: 2; --_name: text-rotate-2; --_down: text-rotate-2-down; --_fade: text-rotate-fade-2; }
+  .text-rotate:has(> span > :nth-child(3):last-child) { --_n: 3; --_name: text-rotate-3; --_down: text-rotate-3-down; --_fade: text-rotate-fade-3; }
+  .text-rotate:has(> span > :nth-child(4):last-child) { --_n: 4; --_name: text-rotate-4; --_down: text-rotate-4-down; --_fade: text-rotate-fade-4; }
+  .text-rotate:has(> span > :nth-child(5):last-child) { --_n: 5; --_name: text-rotate-5; --_down: text-rotate-5-down; --_fade: text-rotate-fade-5; }
+  .text-rotate:has(> span > :nth-child(6):last-child) { --_n: 6; --_name: text-rotate-6; --_down: text-rotate-6-down; --_fade: text-rotate-fade-6; }
+
+  /* fade: line k starts its slot k-1 slots later */
+  .text-rotate[data-effect="fade"] > span > :nth-child(2) { animation-delay: calc(var(--_dur) * 1 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(3) { animation-delay: calc(var(--_dur) * 2 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(4) { animation-delay: calc(var(--_dur) * 3 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(5) { animation-delay: calc(var(--_dur) * 4 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(6) { animation-delay: calc(var(--_dur) * 5 / var(--_n)); }
+
+  @keyframes text-rotate-2 {
+    0%, 46% { translate: 0 0; }
+    50%, 96% { translate: 0 -50%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-2-down {
+    0%, 46% { translate: 0 -50%; }
+    50%, 96% { translate: 0 0; }
+    100% { translate: 0 -50%; }
+  }
+  @keyframes text-rotate-fade-2 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    4%, 46% { opacity: 1; translate: 0 0; }
+    50%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-3 {
+    0%, 30.667% { translate: 0 0; }
+    33.333%, 64% { translate: 0 -33.3333%; }
+    66.667%, 97.333% { translate: 0 -66.6667%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-3-down {
+    0%, 30.667% { translate: 0 -66.6667%; }
+    33.333%, 64% { translate: 0 -33.3333%; }
+    66.667%, 97.333% { translate: 0 0; }
+    100% { translate: 0 -66.6667%; }
+  }
+  @keyframes text-rotate-fade-3 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    2.667%, 30.667% { opacity: 1; translate: 0 0; }
+    33.333%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-4 {
+    0%, 23% { translate: 0 0; }
+    25%, 48% { translate: 0 -25%; }
+    50%, 73% { translate: 0 -50%; }
+    75%, 98% { translate: 0 -75%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-4-down {
+    0%, 23% { translate: 0 -75%; }
+    25%, 48% { translate: 0 -50%; }
+    50%, 73% { translate: 0 -25%; }
+    75%, 98% { translate: 0 0; }
+    100% { translate: 0 -75%; }
+  }
+  @keyframes text-rotate-fade-4 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    2%, 23% { opacity: 1; translate: 0 0; }
+    25%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-5 {
+    0%, 18.4% { translate: 0 0; }
+    20%, 38.4% { translate: 0 -20%; }
+    40%, 58.4% { translate: 0 -40%; }
+    60%, 78.4% { translate: 0 -60%; }
+    80%, 98.4% { translate: 0 -80%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-5-down {
+    0%, 18.4% { translate: 0 -80%; }
+    20%, 38.4% { translate: 0 -60%; }
+    40%, 58.4% { translate: 0 -40%; }
+    60%, 78.4% { translate: 0 -20%; }
+    80%, 98.4% { translate: 0 0; }
+    100% { translate: 0 -80%; }
+  }
+  @keyframes text-rotate-fade-5 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    1.6%, 18.4% { opacity: 1; translate: 0 0; }
+    20%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+  @keyframes text-rotate-6 {
+    0%, 15.333% { translate: 0 0; }
+    16.667%, 32% { translate: 0 -16.6667%; }
+    33.333%, 48.667% { translate: 0 -33.3333%; }
+    50%, 65.333% { translate: 0 -50%; }
+    66.667%, 82% { translate: 0 -66.6667%; }
+    83.333%, 98.667% { translate: 0 -83.3333%; }
+    100% { translate: 0 0; }
+  }
+  @keyframes text-rotate-6-down {
+    0%, 15.333% { translate: 0 -83.3333%; }
+    16.667%, 32% { translate: 0 -66.6667%; }
+    33.333%, 48.667% { translate: 0 -50%; }
+    50%, 65.333% { translate: 0 -33.3333%; }
+    66.667%, 82% { translate: 0 -16.6667%; }
+    83.333%, 98.667% { translate: 0 0; }
+    100% { translate: 0 -83.3333%; }
+  }
+  @keyframes text-rotate-fade-6 {
+    0% { opacity: 0; translate: 0 0.25lh; }
+    1.333%, 15.333% { opacity: 1; translate: 0 0; }
+    16.667%, 100% { opacity: 0; translate: 0 -0.25lh; }
+  }
+
+  /* -- Accessibility ----------------------------------------------------
+     Reduced motion: no rolling - the first line stays. All lines stay in
+     the DOM, so assistive tech reads the full list. */
+  @media (prefers-reduced-motion: reduce) {
+    .text-rotate > span,
+    .text-rotate[data-effect="fade"] > span > * { animation: none; }
+    .text-rotate[data-effect="fade"] > span > :first-child { opacity: 1; }
+  }
+}
+
+/* ── components/typewriter/typewriter.css ── */
+/* -- Typewriter component ---------------------------------------
+   A line typed character by character behind a cursor, deleted and
+   cycled through a list of strings. The authored strings stay in the DOM
+   for assistive tech (visually hidden); the runtime paints an aria-hidden
+   copy. Without script, the first string shows as plain text. */
+
+@layer components {
+  .typewriter {
+    --_cursor: var(--typewriter-cursor-color, currentColor);
+    position: relative;
+    display: inline;
+
+    /* no script (or not yet initialized): the first string, as text */
+    &:not([data-init]) > :not(:first-child) { display: none; }
+
+    /* initialized: the authored strings are read, not seen */
+    & > .typewriter-source {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    & > .typewriter-line { white-space: pre-wrap; }
+
+    /* -- Cursor: a bar by default; solid while typing, blinking idle -- */
+    & .typewriter-cursor {
+      display: inline-block;
+      width: max(2px, 0.08em);
+      height: 1.1em;
+      margin-inline-start: 0.06em;
+      vertical-align: -0.15em;
+      background: var(--_cursor);
+      animation: typewriter-blink 1s steps(1) infinite;
+    }
+    &:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor { animation: none; }
+
+    &[data-cursor="block"] .typewriter-cursor { width: 0.55em; opacity: 0.85; }
+    &[data-cursor="underscore"] .typewriter-cursor {
+      width: 0.6em;
+      height: max(2px, 0.1em);
+      vertical-align: -0.1em;
+    }
+    &[data-cursor="none"] .typewriter-cursor { display: none; }
+    /* data-cursor-hide: "typing" = only while idle; "done" = gone at the end */
+    &[data-cursor-hide="typing"]:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor,
+    &[data-cursor-hide="done"][data-state-name="done"] .typewriter-cursor { visibility: hidden; }
+
+    /* -- data-reserve: as wide as the longest string from the start --- */
+    &[data-reserve] {
+      display: inline-grid;
+      justify-items: start;
+      vertical-align: bottom;
+      & > :is(.typewriter-line, .typewriter-ghost) { grid-area: 1 / 1; }
+      & > .typewriter-ghost {
+        display: grid;
+        visibility: hidden;
+        pointer-events: none;
+        /* room for the cursor after the longest string */
+        padding-inline-end: 0.2em;
+        & > span { grid-area: 1 / 1; white-space: pre; }
+      }
+      & > .typewriter-line { white-space: pre; }
+    }
+    &[data-reserve][data-align="center"] { justify-items: center; }
+    &[data-reserve][data-align="end"] { justify-items: end; }
+  }
+
+  @keyframes typewriter-blink {
+    50% { opacity: 0; }
+  }
+
+  /* -- Accessibility -------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    /* the runtime swaps whole strings instead of typing; the cursor stays still */
+    .typewriter .typewriter-cursor { animation: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .typewriter[data-cursor="block"] .typewriter-cursor { opacity: 1; }
+  }
+
+  @media (forced-colors: active) {
+    .typewriter .typewriter-cursor { background: CanvasText; forced-color-adjust: none; }
+  }
+}
+
+/* ── components/separator/separator.css ── */
+/* -- Separator component ---------------------------------------- */
+
+@layer components {
+  /* One element, three looks:
+     - empty: a plain line (1px, --border) - horizontal, or vertical with
+       data-orientation="vertical" (inside a flex row)
+     - with text inside: the text sits ON the line - two pseudo-element lines
+       left and right of it (above and below when vertical)
+     Knobs: data-variant (line color), data-size (thickness), data-gap (space
+     between text and lines), data-align="start|end" (text position),
+     data-orientation-md / -lg="vertical" (switch to a vertical line from
+     48 / 64rem). --_line / --_thick / --_gap are private. */
+  .separator {
+    --_line: var(--border);
+    --_thick: 1px;
+    --_gap: 0.75rem;
+    border: none;
+    margin: 0;
+    flex-shrink: 0;
+    background: var(--_line);
+
+    /* Horizontal (default) */
+    height: var(--_thick);
+    width: 100%;
+
+    /* Vertical */
+    &[data-orientation="vertical"] {
+      height: auto;
+      width: var(--_thick);
+      align-self: stretch;
+    }
+
+    /* Decorative - hidden from assistive technology */
+    &[aria-hidden="true"],
+    &[role="none"] {
+      /* No visual change - purely semantic */
+    }
+
+    /* -- Text on the line ------------------------------------ */
+    &:not(:empty) {
+      display: flex;
+      align-items: center;
+      gap: var(--_gap);
+      height: auto;
+      background: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.25rem;
+      letter-spacing: 0.02em;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+
+      &::before,
+      &::after {
+        content: '';
+        flex: 1 1 0;
+        height: var(--_thick);
+        background: var(--_line);
+      }
+
+      /* text position along the line */
+      &[data-align="start"]::before { display: none; }
+      &[data-align="end"]::after { display: none; }
+
+      &[data-orientation="vertical"] {
+        flex-direction: column;
+        width: auto;
+        align-self: stretch;
+
+        &::before,
+        &::after {
+          width: var(--_thick);
+          height: auto;
+          min-height: 0.5rem;
+        }
+      }
+    }
+
+    /* -- Colors (the line; the text stays muted) -------------- */
+    &[data-variant="neutral"] { --_line: var(--foreground); }
+    &[data-variant="primary"] { --_line: var(--primary); }
+    /* the tweakcn --secondary / --accent are pale surfaces, too faint for a
+       line: the theme's vivid chart colors instead (like the status dot) */
+    &[data-variant="secondary"] { --_line: var(--chart-2); }
+    &[data-variant="accent"] { --_line: var(--chart-4); }
+    &[data-variant="destructive"],
+    &[data-variant="error"] { --_line: var(--destructive); }
+    /* success / warning / info: literals - the token set has no such pairs */
+    &[data-variant="success"] { --_line: #16a34a; }
+    &[data-variant="warning"] { --_line: #f59e0b; }
+    &[data-variant="info"] { --_line: #0ea5e9; }
+
+    /* -- Thickness -------------------------------------------- */
+    &[data-size="sm"] { --_thick: 1px; }
+    &[data-size="md"] { --_thick: 2px; }
+    &[data-size="lg"] { --_thick: 4px; }
+    &[data-size="xl"] { --_thick: 8px; }
+
+    /* -- Gap between the text and the lines ------------------- */
+    &[data-gap="none"] { --_gap: 0; }
+    &[data-gap="sm"] { --_gap: 0.375rem; }
+    &[data-gap="md"] { --_gap: 0.75rem; }
+    &[data-gap="lg"] { --_gap: 1.5rem; }
+    &[data-gap="xl"] { --_gap: 2.5rem; }
+
+    /* -- Responsive: a vertical line from a breakpoint up (DaisyUI's
+       lg:divider-horizontal). The PARENT must turn into a row at the
+       same width - the separator only follows it. */
+    @media (min-width: 48rem) {
+      &[data-orientation-md="vertical"] {
+        height: auto;
+        width: var(--_thick);
+        align-self: stretch;
+
+        &:not(:empty) {
+          flex-direction: column;
+          width: auto;
+
+          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+        }
+      }
+    }
+    @media (min-width: 64rem) {
+      &[data-orientation-lg="vertical"] {
+        height: auto;
+        width: var(--_thick);
+        align-self: stretch;
+
+        &:not(:empty) {
+          flex-direction: column;
+          width: auto;
+
+          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+        }
+      }
+    }
+  }
+
+  /* -- Labeled separator (the older wrapper form) --------------
+     Still supported; text inside .separator itself is the simpler form. */
+  .separator-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    & .separator { flex: 1; }
+
+    & span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+  }
+
+  /* -- Accessibility ----------------------------------------- */
+  @media (forced-colors: active) {
+    /* system colors would erase the line (a background) - keep it */
+    .separator {
+      forced-color-adjust: none;
+      --_line: CanvasText;
+      color: CanvasText;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .separator:not([data-variant]) { --_line: var(--foreground); }
+    .separator:not([data-size]) { --_thick: 2px; }
+  }
+}
+
+/* ── components/icon/icon.css ── */
+/* -- Icon component ---------------------------------------- */
+/* Styling for Lucide CDN icons (<i data-lucide="name">).     */
+/* Lucide replaces <i> with <svg>, these styles target that.  */
+
+@layer components {
+  [data-lucide] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
+
+    /* -- Sizes via data-size --------------------------------- */
+    &[data-size="xs"] { width: 0.75rem; height: 0.75rem; }
+    &[data-size="sm"] { width: 0.875rem; height: 0.875rem; }
+    &[data-size="md"] { width: 1.25rem; height: 1.25rem; }
+    &[data-size="lg"] { width: 1.5rem; height: 1.5rem; }
+    &[data-size="xl"] { width: 2rem; height: 2rem; }
+
+    /* -- Spin animation ------------------------------------- */
+    &[data-animate="spin"] {
+      animation: icon-spin 1s linear infinite;
+    }
+  }
+
+  @keyframes icon-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ---- Accessibility ---------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-lucide] {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    [data-lucide] {
+      stroke-width: 2.5;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-lucide] {
+      color: CanvasText;
+    }
+  }
+}
+
+/* ── components/kbd/kbd.css ── */
+/* -- Kbd ---------------------------------------------------------- */
+/* Keyboard keys. Built on the native <kbd> element; a combination is a  */
+/* <kbd> holding one <kbd> per key, which is what the HTML spec          */
+/* prescribes — so the markup already says "these keys together".        */
+
+@layer components {
+  .kbd {
+    --kbd-size: 1.375rem;
+
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--kbd-size);
+    height: var(--kbd-size);
+    padding-inline: 0.375rem;
+    border: 1px solid var(--border);
+    /* the bottom edge is thicker, which is what reads as a physical key */
+    border-bottom-width: 2px;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+    transition: translate 0.08s ease-out, border-bottom-width 0.08s ease-out, background-color 0.08s ease-out;
+
+    &[data-size="sm"] {
+      --kbd-size: 1.125rem;
+      padding-inline: 0.25rem;
+      font-size: 0.6875rem;
+    }
+
+    &[data-size="lg"] {
+      --kbd-size: 1.75rem;
+      padding-inline: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    /* pressed: the key goes down - the heavy bottom edge collapses and the
+       face drops by the same pixel, so the key's outer box never moves.
+       A page sets data-pressed while its shortcut runs (the global-keys
+       handler that performs it), so the key shows it was heard. */
+    &[data-pressed] {
+      translate: 0 1px;
+      border-bottom-width: 1px;
+      background: color-mix(in oklch, var(--muted) 80%, var(--foreground));
+      color: var(--foreground);
+    }
+  }
+
+  /* A key combination: an outer <kbd> holding one <kbd> per key. The outer
+     element is not a key itself, so it keeps none of the key styling. */
+  .kbd-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    vertical-align: middle;
+    font-family: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+
+  /* Optional "+" between keys. Absolutely placed in the gap so it never sits
+     inside a key's box. */
+  .kbd-group[data-separator] {
+    gap: 0.875rem;
+
+    & > .kbd + .kbd {
+      position: relative;
+
+      &::before {
+        content: "+";
+        position: absolute;
+        inset-inline-start: -0.625rem;
+        color: var(--muted-foreground);
+        font-size: 0.6875rem;
+        line-height: 1;
+        pointer-events: none;
+      }
+    }
+  }
+
+  /* Inside a control - or on a tooltip's inverted surface - the key should
+     not out-shout its label: it drops its own surface and borrows the
+     text colour around it. */
+  .btn .kbd,
+  .command-item .kbd,
+  .dropdown-item .kbd,
+  .menubar-trigger .kbd,
+  .tooltip .kbd {
+    background: transparent;
+    border-color: color-mix(in oklch, currentColor 25%, transparent);
+    color: inherit;
+    opacity: 0.75;
+
+    &[data-pressed] {
+      background: color-mix(in oklch, currentColor 18%, transparent);
+      opacity: 1;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .kbd,
+    .kbd *,
+    .kbd::before,
+    .kbd::after,
+    .kbd *::before,
+    .kbd *::after,
+    .kbd-group,
+    .kbd-group::before,
+    .kbd-group::after {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .kbd {
+      border-color: var(--foreground);
+      color: var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .kbd {
+      border-color: ButtonText;
+      color: ButtonText;
+      background: ButtonFace;
+    }
+
+    .kbd[data-pressed] {
+      border-color: Highlight;
+      color: HighlightText;
+      background: Highlight;
+    }
+
+    .kbd-group[data-separator] > .kbd + .kbd::before {
+      color: ButtonText;
+    }
+  }
+}
+
+/* ── components/heading-anchor/heading-anchor.css ── */
+/* -- Heading Anchor component ------------------------------- */
+
+@layer components {
+  .heading-anchor {
+    color: var(--muted-foreground);
+    text-decoration: none;
+    font-weight: 400;
+    margin-right: 0.375rem;
+
+    &[data-placement="after"] {
+      margin-right: 0;
+      margin-left: 0.375rem;
+    }
+
+    &[data-size="xs"] { font-size: 0.75rem; }
+    &[data-size="sm"] { font-size: 0.875rem; }
+    &[data-size="md"] { font-size: 1rem; }
+    &[data-size="lg"] { font-size: 1.125rem; }
+    &[data-size="xl"] { font-size: 1.25rem; }
+
+    &:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heading-anchor {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .heading-anchor { color: LinkText; }
+  }
+}

@@ -32,16 +32,36 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
 // 'default' = the source (not rendered yet / shown as text), 'rendered' =
 // the SVG, 'error' = the source + an error message
 const mermaidStates = ['default', 'rendered', 'error'];
+
+/** setState() configs per state (getState() reports the error message shown). */
+export interface MermaidStateConfigs {
+  /** The source, shown as text (not rendered, or reset). */
+  default: {};
+  /** The SVG, rendered from the source (setState renders it again); the source stays in the DOM, hidden. */
+  rendered: {};
+  /** The source plus the error message (an output with role="alert"). */
+  error: {
+    /** the message shown (default: "This diagram could not be rendered."); getState() reports the live one */
+    message?: string;
+  };
+}
 
 /** The pinned, tested official build - never @latest (tests/e2e pin it). */
 /** The pinned official Mermaid build the component loads (never @latest). */
 export const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@12.0.0/dist/mermaid.esm.min.mjs';
 
+/** The part of the official Mermaid module this component uses. */
 interface MermaidLike {
+  /** set Mermaid's global config (the component passes the theme it derived from the tokens) */
   initialize(config: Record<string, unknown>): void;
+  /** render a diagram source to SVG markup under a unique id */
   render(id: string, text: string): Promise<{ svg: string; bindFunctions?: (el: Element) => void }>;
 }
 
@@ -55,6 +75,8 @@ let moduleUrl = '';
  * self-hosted copy of the same build); without it: <meta name=
  * "mermaid-module">, else the pinned jsDelivr build. A failed import can be
  * retried (the next call imports again).
+ * @param url - a module URL to import instead (same build, self-hosted)
+ * @returns the Mermaid module, imported once per URL
  */
 function load(url?: string): Promise<MermaidLike> {
   const vendorUrl = url || ((dfDollar('meta[name="mermaid-module"]').get(0) ?? null) as HTMLMetaElement | null)?.content || MERMAID_URL;
@@ -93,7 +115,11 @@ export function toHex(css: string): string {
   return `#${hex(r)}${hex(g)}${hex(b)}${a < 255 ? hex(a) : ''}`;
 }
 
-/** Mermaid "base" themeVariables from the tokens the figure resolves. */
+/**
+ * Mermaid "base" themeVariables from the tokens the figure resolves.
+ * @param el - the element whose computed tokens (colors, fonts, radius) the theme reads
+ * @returns Mermaid themeVariables: colors as hex, the font family
+ */
 export function mermaidTheme(el: Element): Record<string, unknown> {
   const cs = getComputedStyle(el);
   const tok = (name: string, fallback: string) => toHex(cs.getPropertyValue(name).trim()) || fallback;
@@ -222,7 +248,11 @@ let seq = 0;
 /** Mermaid's config is global - renders run one at a time, each with its own theme. */
 let queue: Promise<unknown> = Promise.resolve();
 
-/** Render one diagram from its source (queued). Resolves true on success. */
+/**
+ * Render one diagram from its source (queued).
+ * @param fig - the .mermaid-diagram figure
+ * @returns true when the SVG rendered, false when the source failed (the figure shows the error)
+ */
 function renderDiagram(fig: HTMLElement): Promise<boolean> {
   // until the first render lands the source is a placeholder (mermaid.css hides
   // its text - no flash of raw markup); a re-render keeps the old SVG meanwhile
@@ -285,7 +315,10 @@ function renderDiagram(fig: HTMLElement): Promise<boolean> {
   return job;
 }
 
-/** Render every diagram on the page again - resolves with one result per diagram. */
+/**
+ * Render every diagram on the page again.
+ * @returns one result per diagram, in page order - true where it rendered
+ */
 function renderAll(): Promise<boolean[]> {
   return Promise.all([...(dfDollar('.mermaid-diagram[data-init]').toArray() as HTMLElement[])].map(renderDiagram));
 }

@@ -23,7 +23,227 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A tone: a node's or an edge's color role (none: the ink). */
+type DiagramTone = 'none' | 'accent' | 'link' | 'ink' | 'muted' | 'external' | 'warn' | 'ok' | 'danger';
+/** What a delta (diff) marks on a node, a group or an edge. */
+type DiagramChange = 'added' | 'removed' | 'changed' | 'moved' | 'rewired';
+
+/** Where an element sits: grid cells, or free / radial positions. */
+interface DiagramPlace {
+  /** grid: the first column (1-based) */
+  col?: number;
+  /** grid: the first row (1-based) */
+  row?: number;
+  /** grid: how many columns it spans */
+  span?: number;
+  /** grid: how many rows it spans */
+  rspan?: number;
+  /** free canvas: the center's left, % of the canvas */
+  x?: number;
+  /** free canvas: the center's top, % of the canvas */
+  y?: number;
+  /** radial canvas: its index around the hub */
+  i?: number;
+  /** more inline CSS */
+  style?: string;
+}
+
+/** One field row of a node (an entity's column, a class's attribute). */
+interface DiagramField {
+  /** its name */
+  name: string;
+  /** a key marker ('pk', 'fk', ...) - a wire to a field leaves and enters at its row */
+  key?: string;
+  /** its type, shown at the right */
+  type?: string;
+  /** a delta mark */
+  change?: DiagramChange;
+}
+
+/** A node of a spec. */
+interface DiagramNodeSpec extends DiagramPlace {
+  /** its data-node: what edges and activation name it by */
+  id: string;
+  /** the main text */
+  name?: string;
+  /** the small text above the name */
+  eyebrow?: string;
+  /** the small text under the name */
+  meta?: string;
+  /** its shape (default 'box') */
+  shape?: 'box' | 'pill' | 'diamond' | 'store' | 'circle' | 'dot' | 'bar' | 'note' | 'activity' | 'class' | 'start' | 'end' | 'ghost';
+  /** its color role */
+  tone?: DiagramTone;
+  /** a status word (data-status) */
+  status?: string;
+  /** a corner badge */
+  badge?: string;
+  /** field rows (a string is a field name) */
+  fields?: Array<string | DiagramField>;
+  /** operation rows (a class's methods) */
+  ops?: string[];
+  /** the step it appears in (data-steps) */
+  step?: number;
+  /** the group it sits in */
+  parent?: string;
+  /** a delta mark */
+  change?: DiagramChange;
+  /** the delta's note on the change */
+  note?: string;
+  /** a delta: the text and place it had before */
+  before?: Partial<Pick<DiagramNodeSpec, 'name' | 'eyebrow' | 'meta' | 'col' | 'row' | 'span' | 'rspan' | 'x' | 'y'>>;
+}
+
+/** A group (a zone, a lane, a column) of a spec. */
+interface DiagramGroupSpec extends DiagramPlace {
+  /** its data-node: what nodes name as their parent */
+  id: string;
+  /** its label */
+  label: string;
+  /** its shape ('column' for a kanban column, ...) */
+  shape?: string;
+  /** its color role */
+  tone?: DiagramTone;
+  /** the step it appears in */
+  step?: number;
+  /** the group it sits in */
+  parent?: string;
+  /** a delta mark */
+  change?: DiagramChange;
+}
+
+/** An edge of a spec. */
+interface DiagramEdgeSpec {
+  /** its data-edge (default "from->to") */
+  id?: string;
+  /** the node it leaves ("node" or "node.field") */
+  from: string;
+  /** the node it reaches */
+  to: string;
+  /** its label */
+  label?: string;
+  /** its stroke (default 'solid') */
+  line?: 'solid' | 'dashed' | 'dotted' | 'thick';
+  /** its color role */
+  tone?: DiagramTone;
+  /** the end at `to` (default 'arrow') */
+  head?: 'arrow' | 'open' | 'triangle' | 'diamond' | 'dot' | 'one' | 'many' | 'none';
+  /** the end at `from` (default 'none') */
+  tail?: 'arrow' | 'open' | 'triangle' | 'diamond' | 'dot' | 'one' | 'many' | 'none';
+  /** its route (default 'elbow') */
+  curve?: 'elbow' | 'straight' | 'curve' | 'around';
+  /** the step it appears in */
+  step?: number;
+  /** data moving along it: true, or the number of tokens */
+  flow?: boolean | string;
+  /** a label at the `from` end (a cardinality) */
+  fromLabel?: string;
+  /** a label at the `to` end */
+  toLabel?: string;
+  /** a delta mark */
+  change?: DiagramChange;
+  /** a delta: its label or ends before */
+  before?: { label?: string; from?: string; to?: string };
+}
+
+/** A diagram as JSON - the same figure an author writes as markup. */
+interface DiagramSpec {
+  /** the diagram type (data-type: architecture, flow, state, er, sequence, ...) */
+  type?: string;
+  /** the caption's title */
+  title?: string;
+  /** the caption's eyebrow */
+  eyebrow?: string;
+  /** the caption's text under the title */
+  caption?: string;
+  /** grid columns */
+  cols?: number;
+  /** more inline CSS on the canvas */
+  style?: string;
+  /** a phase header row (a string is a phase name) */
+  phases?: Array<string | { name: string; span?: number }>;
+  /** the groups */
+  groups?: DiagramGroupSpec[];
+  /** the nodes */
+  nodes?: DiagramNodeSpec[];
+  /** the edges */
+  edges?: DiagramEdgeSpec[];
+  /** reveal it step by step (data-steps; a number: the step time in ms) */
+  steps?: boolean | number;
+  /** play the steps on its own (data-autoplay; a number: the delay in ms) */
+  autoplay?: boolean | number;
+  /** clickable: boxes and wires activate (data-interactive) */
+  interactive?: boolean;
+}
+
+/** Two specs - build() and markup() render the delta between them. */
+interface DiagramDelta {
+  /** the diagram before */
+  before: DiagramSpec;
+  /** the diagram after */
+  after: DiagramSpec;
+}
+
+/** What is active - active() returns it, diagram-activate carries it (null fields when cleared). */
+interface DiagramActivation {
+  /** the reference: a node's data-node, an edge's reference */
+  ref: string | null;
+  /** what it is */
+  kind: 'node' | 'edge' | null;
+  /** its element */
+  element: HTMLElement | null;
+  /** its name (an edge: "from → to · label") */
+  label: string;
+  /** its data-detail, else a node's meta */
+  detail: string;
+}
+
+/** What diagram-drawn carries. */
+interface DiagramDrawnDetail {
+  /** how many edges were drawn */
+  edges: number;
+  /** the delta panel drawn, null outside a delta */
+  panel: 'before' | 'changes' | 'after' | null;
+}
+
+/** What diagram-step carries. */
+interface DiagramStepDetail {
+  /** the step shown now, 1-based */
+  step: number;
+  /** the number of steps */
+  max: number;
+  /** the step's label (data-step-label), '' when it has none */
+  label: string;
+  /** whether the steps are playing or paused */
+  state: 'playing' | 'paused';
+}
+
 const diagramStates = ['default', 'playing', 'paused', 'active'];
+
+/** setState() configs per state. */
+export interface DiagramStateConfigs {
+  /** The complete, static figure. */
+  default: {};
+  /** Playing the steps: the clock moves on once a step's elements have appeared. */
+  playing: {
+    /** the step on screen, 1-based (default 1) */
+    step?: number;
+  };
+  /** Stopped on a step. */
+  paused: {
+    /** the step shown, 1-based (default: the last) */
+    step?: number;
+  };
+  /** A node or an edge is active - the complete figure, the rest dimmed. */
+  active: {
+    /** the node's data-node, or the edge's data-edge (else "from->to") */
+    ref: string;
+  };
+}
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const RUNTIME = '.diagram-delta, .diagram-controls, .diagram-wire-labels, .diagram-wires';
 const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -133,7 +353,7 @@ function beat(el, i) {
 
 /**
  * Inside a step every element gets its own beat: boxes one after another in
- * markup order (--step-i 0, 1, 2 …, each --diagram-element-ms after the last),
+ * markup order (--step-i 0, 1, 2 ..., each --diagram-element-ms after the last),
  * an edge just after its later end has appeared. Returns how many beats the
  * step takes - the clock holds the step that long.
  */
@@ -165,7 +385,7 @@ const edgeRef = (edge) => edge.dataset.edge || `${edge.dataset.from}->${edge.dat
 const activatable = (root) => authored(root, '[data-node]').filter((n) => !n.classList.contains('diagram-group') && n.dataset.shape !== 'ghost');
 
 /** the element a reference names: a node (data-node) or an edge (edgeRef) */
-function refTarget(root, ref) {
+function refTarget(root, ref): { kind: 'node' | 'edge'; el: HTMLElement } | null {
   if (ref == null || ref === '') return null;
   const node = activatable(root).find((n) => n.dataset.node === ref);
   if (node) return { kind: 'node', el: node };
@@ -214,7 +434,7 @@ const tablePart = (el) => /^(TR|TD|TH)$/.test(el.tagName);
 const pressedAttr = (el) => (tablePart(el) ? 'aria-selected' : 'aria-pressed');
 
 /** what an activation is about - for outputs and the diagram-activate event */
-function describe(root, ref) {
+function describe(root, ref): DiagramActivation | null {
   const target = refTarget(root, ref);
   if (!target) return null;
   const { kind, el } = target;
@@ -372,7 +592,7 @@ function bestSides(a, b, fixedA, fixedB, obstacles, texts = []) {
         const r = o.rect;
         if (crosses(pts, { x: r.x - 8, y: r.y - 8, w: r.w + 16, h: r.h + 16 })) score += 10000;
       }
-      // nor through text (group labels, cells, a dot's label …)
+      // nor through text (group labels, cells, a dot's label ...)
       for (const t of texts) if (crosses(pts, t)) score += 4000;
       // the route must not run back through its own ends
       if (crosses(pts.slice(1), a.rect) || crosses(pts.slice(0, -1), b.rect)) score += 5000;
@@ -619,6 +839,13 @@ function fit(root, canvas) {
  */
 function draw(root, canvas) {
   if (!canvas.isConnected || !canvas.getClientRects().length) return;
+  // every draw starts from the stylesheet's padding: clear() below may grow it again
+  if (!canvas._clearPass) {
+    for (const side of SIDES) {
+      canvas.style.removeProperty(`padding-${side}`);
+      canvas.style.removeProperty(`--_inset-${side}`);
+    }
+  }
   fit(root, canvas);
   const { nodes, rectOf } = measure(canvas);
   const panel = panelOf(canvas);
@@ -640,7 +867,7 @@ function draw(root, canvas) {
   // the elbow corners follow the theme's rounding (a square theme draws square elbows)
   const sample = dfDollar(canvas).find('.diagram-node:not([data-shape])').get(0) ?? canvas;
   corner = Math.min(14, Math.max(0, parseFloat(getComputedStyle(sample).borderTopLeftRadius) || 0) * 1.2);
-  // text a wire or a label must not cover: node boxes, group labels, cells, tags, axes …
+  // text a wire or a label must not cover: node boxes, group labels, cells, tags, axes ...
   const texts = textRects(canvas, nodes, rectOf);
   const queue = [];
   // labels wait until every wire exists - then each finds a spot clear of nodes, text, other labels and other wires
@@ -678,8 +905,63 @@ function draw(root, canvas) {
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
   if (panel === 'changes') badges(canvas, labels, rectOf);
   flowTokens(labels, wires);
+  if (clear(root, canvas, rectOf)) return; // grew its padding and drew again - that draw announced itself
   // Fires after a canvas's wires are drawn (init, resize, state change) - how many edges, and which delta panel ('before' / 'changes' / 'after', null outside a delta).
-  root.dispatchEvent(new CustomEvent('diagram-drawn', { detail: { edges: drawn.length, panel } }));
+  root.dispatchEvent(new CustomEvent<DiagramDrawnDetail>('diagram-drawn', { detail: { edges: drawn.length, panel } }));
+}
+
+/**
+ * The least distance (px, unscaled) anything drawn keeps from a framed
+ * canvas's border. Zones reach into the canvas padding (their negative
+ * margins wrap their nodes) and wire labels are placed around the boxes at
+ * draw time, so no padding in the stylesheet can promise it for every
+ * diagram. VERIFIED: (diagram.e2e "clearance") every framed fixture diagram
+ * keeps it after a draw.
+ */
+const CLEARANCE = 20;
+const SIDES = ['top', 'right', 'bottom', 'left'];
+
+/**
+ * After a draw: measure everything on the canvas - nodes, zones and their
+ * labels, wire labels, wire paths - and grow the padding of each side that
+ * comes closer than CLEARANCE, then draw once more on the new layout. A
+ * frameless canvas (no border) has no edge to keep away from. True when it
+ * redrew. Up to three passes: a canvas that fits its figure (zoom) re-scales
+ * when its padding grows, so one pass can land a pixel short. Flow tokens
+ * ride on their wires (animated, measured through the wire) - not counted.
+ */
+function clear(root, canvas, rectOf) {
+  if ((canvas._clearPass ?? 0) >= 3) return false;
+  const cs = getComputedStyle(canvas);
+  if (!parseFloat(cs.borderTopWidth)) return false;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  const gap = { top: Infinity, right: Infinity, bottom: Infinity, left: Infinity };
+  for (const el of dfDollar(canvas).find('*').toArray()) {
+    if (el.matches('.diagram-wires, .diagram-wire-labels, .diagram-wire-hit, .diagram-token, g') || !el.getClientRects().length) continue;
+    const r = rectOf(el);
+    if (!r.w && !r.h) continue;
+    gap.top = Math.min(gap.top, r.y);
+    gap.left = Math.min(gap.left, r.x);
+    gap.bottom = Math.min(gap.bottom, h - (r.y + r.h));
+    gap.right = Math.min(gap.right, w - (r.x + r.w));
+  }
+  const grow = SIDES.filter((side) => gap[side] < CLEARANCE - 0.5);
+  if (!grow.length) return false;
+  // absolutely placed content ignores padding (its box is the padding box): grow the inset it is placed in
+  const absolute = dfDollar(canvas).children().toArray().some((c) => getComputedStyle(c).position === 'absolute' && !c.matches('.diagram-wires, .diagram-wire-labels'));
+  for (const side of grow) {
+    const more = Math.ceil(CLEARANCE - gap[side]);
+    if (absolute) canvas.style.setProperty(`--_inset-${side}`, `${Math.ceil(parseFloat(canvas.style.getPropertyValue(`--_inset-${side}`)) || 0) + more}px`);
+    else canvas.style.setProperty(`padding-${side}`, `${Math.ceil(parseFloat(cs.getPropertyValue(`padding-${side}`))) + more}px`);
+  }
+  canvas._clearPass = (canvas._clearPass ?? 0) + 1;
+  try {
+    draw(root, canvas);
+  } finally {
+    canvas._clearPass -= 1;
+  }
+  return true;
 }
 
 /** the boxes of the text in a canvas that wires and labels keep clear of (canvas-local) */
@@ -1015,7 +1297,7 @@ function spreadChannels(plans) {
 
 /** a sequence: lifelines under the participants, one message per list row */
 function drawSequence(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn) {
-  const bottom = canvas.clientHeight - 12;
+  const bottom = canvas.clientHeight - CLEARANCE;
   for (const node of nodes.values()) {
     if (node.el.dataset.shape === 'ghost') continue;
     const c = center(node.rect);
@@ -1147,7 +1429,7 @@ function panelCanvas(source, panel) {
     for (const el of [copy, ...dfDollar(copy).find('[data-before-style]').toArray()]) {
       if (el.dataset.beforeStyle != null) el.setAttribute('style', el.dataset.beforeStyle);
     }
-    // a status, tone, badge or shape that changed: data-before-status="skip" …
+    // a status, tone, badge or shape that changed: data-before-status="skip" ...
     for (const key of ['status', 'tone', 'badge', 'shape']) {
       for (const el of dfDollar(copy).find(`[data-before-${key}]`).toArray()) {
         const old = el.getAttribute(`data-before-${key}`);
@@ -1409,11 +1691,11 @@ function triggerStateChange(root, state) {
   queueMicrotask(() => {
     if (state.name === 'playing' || state.name === 'paused') {
       // Fires on every step change - the step, the number of steps and the step's label.
-      root.dispatchEvent(new CustomEvent('diagram-step', { bubbles: true, detail: { step, max, label: stepLabel(root, step), state: state.name } }));
+      root.dispatchEvent(new CustomEvent<DiagramStepDetail>('diagram-step', { bubbles: true, detail: { step, max, label: stepLabel(root, step), state: state.name as DiagramStepDetail['state'] } }));
     }
     if (String(ref ?? '') !== String(wasActive ?? '')) {
       // Fires when the activation moves (a click, the keyboard, an outside control, setState) - the reference, 'node' or 'edge', the element, its label and detail; null detail fields when it is cleared.
-      root.dispatchEvent(new CustomEvent('diagram-activate', { bubbles: true, detail: about ?? { ref: null, kind: null, element: null, label: '', detail: '' } }));
+      root.dispatchEvent(new CustomEvent<DiagramActivation>('diagram-activate', { bubbles: true, detail: about ?? { ref: null, kind: null, element: null, label: '', detail: '' } }));
     }
   });
 }
@@ -1547,6 +1829,9 @@ function diffSpecs(before, after) {
 
 const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
 
+/** { before, after } - two specs for a delta, not one diagram */
+const isDelta = (spec: DiagramSpec | DiagramDelta): spec is DiagramDelta => !!(spec as DiagramDelta)?.before && !!(spec as DiagramDelta)?.after;
+
 /** a spec's figure switches: steps, autoplay, interactive (the same data-* an author writes) */
 function specFlags(root, spec) {
   for (const flag of ['steps', 'autoplay', 'interactive']) if (spec[flag]) root.setAttribute(`data-${flag}`, typeof spec[flag] === 'number' ? String(spec[flag]) : '');
@@ -1663,13 +1948,16 @@ df$.diagram = {
   /**
    * Build a diagram from a spec (see markup) into a .diagram figure, replacing
    * what it holds - or from { before, after } (two specs → one delta diagram,
-   * see diff). Returns the figure.
+   * see diff).
+   * @param target - the .diagram figure or its selector
+   * @param spec - the diagram, or { before, after } for a delta
+   * @returns the figure, null when the target matches none
    */
-  build(target, spec) {
+  build(target: string | HTMLElement, spec: DiagramSpec | DiagramDelta): HTMLElement | null {
     const root = resolve(target);
     if (!root) return null;
-    const delta = spec?.before && spec?.after;
-    const merged = delta ? diffSpecs(spec.before, spec.after) : spec;
+    const delta = isDelta(spec);
+    const merged = isDelta(spec) ? diffSpecs(spec.before, spec.after) : spec;
     if (merged.type) dfDollar(root).attr('data-type', merged.type);
     specFlags(root, merged);
     if (delta) dfDollar(root).attr('data-delta', root.getAttribute('data-delta') ?? '');
@@ -1681,57 +1969,121 @@ df$.diagram = {
     if (root.api) triggerStateChange(root, root.store?.value ?? { name: 'default', config: {} });
     return root;
   },
-  /** The HTML of a spec - the same markup an author writes (server-side rendering, copy-paste). */
-  markup: (spec) => markupOf(spec?.before && spec?.after ? diffSpecs(spec.before, spec.after) : spec),
-  /** Two specs → one spec annotated with added / removed / changed / moved / rewired (the delta source). */
-  diff: (before, after) => diffSpecs(before, after),
-  /** Measure the nodes again and redraw every wire (after you moved or resized nodes yourself). */
-  redraw(target) {
+  /**
+   * The HTML of a spec - the same markup an author writes (server-side rendering, copy-paste).
+   * @param spec - the diagram, or { before, after } for a delta
+   * @returns the figure's inner markup (caption, canvas, edge list)
+   */
+  markup: (spec: DiagramSpec | DiagramDelta): string => markupOf(isDelta(spec) ? diffSpecs(spec.before, spec.after) : spec),
+  /**
+   * Two specs → one spec annotated with added / removed / changed / moved / rewired (the delta source).
+   * @param before - the diagram before
+   * @param after - the diagram after
+   * @returns one spec: the after state, every element marked with its change
+   */
+  diff: (before: DiagramSpec, after: DiagramSpec): DiagramSpec => diffSpecs(before, after),
+  /**
+   * Measure the nodes again and redraw every wire (after you moved or resized nodes yourself).
+   * @param target - the .diagram figure or its selector
+   */
+  redraw(target: string | HTMLElement): void {
     const root = resolve(target);
     if (root) for (const canvas of canvasesOf(root)) draw(root, canvas);
   },
-  /** Play the steps from the first (or from `step`). */
-  play: (target, step = 1) => resolve(target)?.api.setState('playing', { step }),
-  /** Pause on the current step. */
-  pause: (target) => control(resolve(target), 'pause'),
-  /** One step forward (pauses). */
-  next: (target) => control(resolve(target), 'next'),
-  /** One step back (pauses). */
-  prev: (target) => control(resolve(target), 'prev'),
-  /** The complete figure again (state 'default'). */
-  reset: (target) => resolve(target)?.api.setState('default'),
-  /** Activate a node (its data-node) or an edge (its data-edge, else "from->to"); null clears. */
-  activate(target, ref) {
+  /**
+   * Play the steps from the first (or from `step`).
+   * @param target - the .diagram figure or its selector
+   * @param step - the step to start at, 1-based
+   */
+  play: (target: string | HTMLElement, step: number = 1): void => { resolve(target)?.api.setState('playing', { step }); },
+  /**
+   * Pause on the current step.
+   * @param target - the .diagram figure or its selector
+   */
+  pause: (target: string | HTMLElement): void => { control(resolve(target), 'pause'); },
+  /**
+   * One step forward (pauses).
+   * @param target - the .diagram figure or its selector
+   */
+  next: (target: string | HTMLElement): void => { control(resolve(target), 'next'); },
+  /**
+   * One step back (pauses).
+   * @param target - the .diagram figure or its selector
+   */
+  prev: (target: string | HTMLElement): void => { control(resolve(target), 'prev'); },
+  /**
+   * The complete figure again (state 'default').
+   * @param target - the .diagram figure or its selector
+   */
+  reset: (target: string | HTMLElement): void => { resolve(target)?.api.setState('default'); },
+  /**
+   * Activate a node (its data-node) or an edge (its data-edge, else "from->to"); null clears.
+   * @param target - the .diagram figure or its selector
+   * @param ref - null or '' clears; else a node (its data-node) or an edge (its data-edge, else "from->to")
+   */
+  activate(target: string | HTMLElement, ref: string | null): void {
     const root = resolve(target);
     if (!root) return;
     if (ref == null || ref === '') root.api.setState('default');
     else root.api.setState('active', { ref: String(ref) });
   },
-  /** Activate the next node in the activation order (step order, then markup order; wraps around). */
-  activateNext: (target) => stepActivation(resolve(target), 1),
-  /** Activate the previous node in the activation order (wraps around). */
-  activatePrev: (target) => stepActivation(resolve(target), -1),
-  /** What is active: { ref, kind ('node' / 'edge'), element, label, detail } - or null. */
-  active(target) {
+  /**
+   * Activate the next node in the activation order (step order, then markup order; wraps around).
+   * @param target - the .diagram figure or its selector
+   */
+  activateNext: (target: string | HTMLElement): void => { stepActivation(resolve(target), 1); },
+  /**
+   * Activate the previous node in the activation order (wraps around).
+   * @param target - the .diagram figure or its selector
+   */
+  activatePrev: (target: string | HTMLElement): void => { stepActivation(resolve(target), -1); },
+  /**
+   * What is active: { ref, kind ('node' / 'edge'), element, label, detail } - or null.
+   * @param target - the .diagram figure or its selector
+   * @returns the active node or edge, null when nothing is active
+   */
+  active(target: string | HTMLElement): DiagramActivation | null {
     const root = resolve(target);
     const state = root?._shown ?? root?.store?.value;
     return state?.name === 'active' ? describe(root, state.config?.ref) : null;
   },
-  /** The activation order - the node references next / previous walk through. */
-  order: (target) => activationOrder(resolve(target)),
+  /**
+   * The activation order - the node references next / previous walk through.
+   * @param target - the .diagram figure or its selector
+   * @returns the nodes' data-node values, in that order
+   */
+  order: (target: string | HTMLElement): string[] => activationOrder(resolve(target)),
   /**
    * A node's or an edge's properties as plain JSON - a node: { id, eyebrow,
    * name, meta, tone, shape }; an edge: { from, to, label, line, tone, head,
-   * tail, curve }; a matrix row: { row, <column>: text … }. null when the
+   * tail, curve }; a matrix row: { row, <column>: text ... }. null when the
    * reference names nothing. Feed it to a property grid to inspect it.
+   * @param target - the .diagram figure or its selector
+   * @param ref - a node (its data-node) or an edge (its data-edge, else "from->to")
+   * @returns its properties as strings, null when the reference names nothing
    */
-  properties: (target, ref) => propertiesOf(resolve(target), ref),
-  /** The property grid sourceConfig for properties(): the options for tone, shape, line, ends, curve; ids and ends read-only. */
-  propertySchema: (target, ref) => propertySchemaOf(resolve(target), ref),
-  /** Write properties back onto the node / edge / row (only what differs) and redraw - a property grid's change, applied. */
-  setProperties: (target, ref, props) => setPropertiesOf(resolve(target), ref, props),
-  /** The step plan: { max, current } - current is max in the complete figure. */
-  steps(target) {
+  properties: (target: string | HTMLElement, ref: string): Record<string, string> | null => propertiesOf(resolve(target), ref),
+  /**
+   * The property grid sourceConfig for properties(): the options for tone, shape, line, ends, curve; ids and ends read-only.
+   * @param target - the .diagram figure or its selector
+   * @param ref - a node (its data-node) or an edge (its data-edge, else "from->to")
+   * @returns per property: readOnly, or the options to choose from ({} when the reference names nothing)
+   */
+  propertySchema: (target: string | HTMLElement, ref: string): Record<string, { readOnly?: boolean; options?: string[] }> => propertySchemaOf(resolve(target), ref),
+  /**
+   * Write properties back onto the node / edge / row (only what differs) and redraw - a property grid's change, applied.
+   * @param target - the .diagram figure or its selector
+   * @param ref - a node (its data-node) or an edge (its data-edge, else "from->to")
+   * @param props - the properties to write (properties() names them)
+   * @returns false when the reference names nothing
+   */
+  setProperties: (target: string | HTMLElement, ref: string, props: Record<string, string>): boolean => setPropertiesOf(resolve(target), ref, props),
+  /**
+   * The step plan: { max, current } - current is max in the complete figure.
+   * @param target - the .diagram figure or its selector
+   * @returns the number of steps and the step shown
+   */
+  steps(target: string | HTMLElement): { max: number; current: number } {
     const root = resolve(target);
     const { max } = stepPlan(root);
     const state = root.store?.value ?? { name: 'default' };

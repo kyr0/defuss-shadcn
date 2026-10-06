@@ -128,18 +128,52 @@ tw.api.getState(); // → { name: 'done', config: { index: 2 } }
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.typewriterApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.typewriterStates` = `default`, `paused`, `done`.
+<code>type TypewriterState = 'default' | 'paused' | 'done'</code> - `setState(name, config)` takes the config of the state it names (`TypewriterStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | Running - typing, holding, deleting. Setting it restarts (from paused without an index it resumes). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>the string to start from, 0-based</td></tr><tr><td><code>immediate?</code></td><td><code>boolean</code></td><td>true: start without the data-start-delay</td></tr></table> |
+| `paused` | Frozen where it is; the cursor blinks. No config. |
+| `done` | Stopped with a string in full - entered at the end of a run without data-loop. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>the string to show, 0-based (default: the current one)</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends TypewriterState&gt;(name: S, config?: TypewriterStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TypewriterStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.typewriterApi.setState&lt;S extends TypewriterState&gt;(el: HTMLElement, name: S, config?: TypewriterStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TypewriterStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.typewriterApi.getState(el: HTMLElement): { name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.typewriterApi.render(state: { name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.typewriterApi.store(el: HTMLElement): Store&lt;{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: TypewriterState; config: TypewriterStateConfigs[TypewriterState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.typewriterApi.commit&lt;S extends TypewriterState&gt;(el: HTMLElement, name: S, config?: TypewriterStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>TypewriterStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.typewriterStates: TypewriterState[]</code> | The declared states, 'default' first: <code>default</code>, <code>paused</code>, <code>done</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `typewriter-done` | `index` | Fires when a run ends on its last string - that string's index. |
-| `typewriter-typed` | `index`, `text` | the string is complete |
+| Event | Description |
+|---|---|
+| `typewriter-done` | Fires when a run ends on its last string - that string's index. <code>detail</code>: <code>TypewriterDoneDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index</code></td><td><code>number</code></td><td>the index of the last string - the run ends on it</td></tr></table> |
+| `typewriter-typed` | the string is complete <code>detail</code>: <code>TypewriterTypedDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index</code></td><td><code>number</code></td><td>the index of the string just completed</td></tr><tr><td><code>text</code></td><td><code>string</code></td><td>that string</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `TypewriterDoneDetail` | What typewriter-done carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index</code></td><td><code>number</code></td><td>the index of the last string - the run ends on it</td></tr></table> |
+| `TypewriterTypedDetail` | What typewriter-typed carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index</code></td><td><code>number</code></td><td>the index of the string just completed</td></tr><tr><td><code>text</code></td><td><code>string</code></td><td>that string</td></tr></table> |
 
 ---
 

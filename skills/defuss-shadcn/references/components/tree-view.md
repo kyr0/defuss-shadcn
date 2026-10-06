@@ -138,19 +138,53 @@ The registry global is `df$.shadcn.treeViewApi` / `df$.shadcn.treeViewStates` (c
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.treeViewApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.treeViewStates` = `default`, `expanded`.
+<code>type TreeViewState = 'default' | 'expanded'</code> - `setState(name, config)` takes the config of the state it names (`TreeViewStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The branch closed. No config. |
+| `expanded` | The branch open. No config. |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends TreeViewState&gt;(name: S, config?: TreeViewStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TreeViewStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.treeViewApi.setState&lt;S extends TreeViewState&gt;(el: HTMLElement, name: S, config?: TreeViewStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TreeViewStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.treeViewApi.getState(el: HTMLElement): { name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.treeViewApi.render(state: { name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.treeViewApi.store(el: HTMLElement): Store&lt;{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: TreeViewState; config: TreeViewStateConfigs[TreeViewState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.treeViewApi.commit&lt;S extends TreeViewState&gt;(el: HTMLElement, name: S, config?: TreeViewStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>TreeViewStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.treeViewStates: TreeViewState[]</code> | The declared states, 'default' first: <code>default</code>, <code>expanded</code>. |
 
 ### Events
 
-| Event | `detail` | Description |
-|---|---|---|
-| `tree-check` | `item`, `checked`, `values` | Fires when a checkbox is toggled - the item, whether it is checked, and every checked value. |
-| `tree-reorder` | `item`, `parent`, `index` | Fires after an item is moved - the item, its new parent and its index there. |
-| `tree-select` | `item` | Fires when an item is selected - the item. |
+| Event | Description |
+|---|---|
+| `tree-check` | Fires when a checkbox is toggled - the item, whether it is checked, and every checked value. <code>detail</code>: <code>TreeCheckDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>item</code></td><td><code>HTMLElement</code></td><td>the treeitem whose checkbox was toggled</td></tr><tr><td><code>checked</code></td><td><code>boolean</code></td><td>whether it is checked now</td></tr><tr><td><code>values</code></td><td><code>string[]</code></td><td>every fully checked item's value (the checkbox value, else the item's label)</td></tr></table> |
+| `tree-reorder` | Fires after an item is moved - the item, its new parent and its index there. <code>detail</code>: <code>TreeReorderDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>item</code></td><td><code>HTMLElement</code></td><td>the treeitem that moved</td></tr><tr><td><code>parent</code></td><td><code>HTMLElement</code></td><td>its new parent treeitem - the tree itself at the top level</td></tr><tr><td><code>index</code></td><td><code>number</code></td><td>its index among the parent's children</td></tr></table> |
+| `tree-select` | Fires when an item is selected - the item. <code>detail</code>: <code>TreeSelectDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>item</code></td><td><code>HTMLElement</code></td><td>the selected treeitem</td></tr></table> |
+
+### Types
+
+| Type | Description |
+|---|---|
+| `TreeCheckDetail` | What tree-check carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>item</code></td><td><code>HTMLElement</code></td><td>the treeitem whose checkbox was toggled</td></tr><tr><td><code>checked</code></td><td><code>boolean</code></td><td>whether it is checked now</td></tr><tr><td><code>values</code></td><td><code>string[]</code></td><td>every fully checked item's value (the checkbox value, else the item's label)</td></tr></table> |
+| `TreeReorderDetail` | What tree-reorder carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>item</code></td><td><code>HTMLElement</code></td><td>the treeitem that moved</td></tr><tr><td><code>parent</code></td><td><code>HTMLElement</code></td><td>its new parent treeitem - the tree itself at the top level</td></tr><tr><td><code>index</code></td><td><code>number</code></td><td>its index among the parent's children</td></tr></table> |
+| `TreeSelectDetail` | What tree-select carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>item</code></td><td><code>HTMLElement</code></td><td>the selected treeitem</td></tr></table> |
 
 ## Density
 

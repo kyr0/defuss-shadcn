@@ -26,7 +26,82 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A stylesheet for the previews: a URL, or CSS text. */
+type CodeExampleStyle = string | { css: string };
+/** A script for the previews: a URL (fetched once), or JS text. */
+type CodeExampleScript = string | { js: string };
+
+/** What configure() takes - every key optional, kept for every preview built afterwards. */
+interface CodeExampleConfig {
+  /** the previews' stylesheets, or a function of the source returning them (default: the page's own stylesheets) */
+  styles?: CodeExampleStyle[] | ((source: string) => CodeExampleStyle[] | Promise<CodeExampleStyle[]>) | null;
+  /** the previews' scripts, or a function of the source returning them (default: the page's all / core bundle, inlined) */
+  scripts?: CodeExampleScript[] | ((source: string) => CodeExampleScript[] | Promise<CodeExampleScript[]>) | null;
+  /** markup after the runtime (an icon library), or a function of the source returning it */
+  tail?: string | ((source: string) => string);
+  /** theme CSS layered last in every preview, or a function returning it - refreshTheme() re-reads it */
+  theme?: string | (() => string | Promise<string>) | null;
+  /** your own highlighter: code and a language → the HTML of coloured spans (null: show it plain) */
+  highlight?: ((code: string, language: string) => string | null | Promise<string | null>) | null;
+  /** the ESM URL Shiki is imported from (the default highlighter) */
+  shiki?: string;
+  /** the Shiki themes for light and dark */
+  themes?: { light: string; dark: string };
+}
+
+/** What code-example-change carries. */
+interface CodeExampleChangeDetail {
+  /** the source now */
+  source: string;
+  /** 'input': typed in the editor; 'api': setSource(), reset() or setState() */
+  origin: 'input' | 'api';
+}
+
+/** What code-example-error carries. */
+interface CodeExampleErrorDetail {
+  /** the error message shown under the preview */
+  message: string;
+  /** the stack, when the preview's script threw */
+  stack?: string;
+}
+
+/** What code-example-ready carries. */
+interface CodeExampleReadyDetail {
+  /** the source the preview ran */
+  source: string;
+}
+
 const codeExampleStates = ['default', 'code', 'state', 'fullscreen'];
+
+/** setState() configs per state (getState() reports the source - and in fullscreen the open panel). */
+export interface CodeExampleStateConfigs {
+  /** The preview alone - both panels closed. */
+  default: {
+    /** replace the source and rerun the preview (getState() reports the source now) */
+    source?: string;
+  };
+  /** The source editor is open (and painted). */
+  code: {
+    /** replace the source and rerun the preview */
+    source?: string;
+  };
+  /** The state controls are open (a card with data-schema; without one it lands in default). */
+  state: {
+    /** replace the source and rerun the preview */
+    source?: string;
+  };
+  /** The card fills the screen (data-fullscreen). */
+  fullscreen: {
+    /** replace the source and rerun the preview */
+    source?: string;
+    /** the panel kept open below the stage, null for none */
+    panel?: 'code' | 'state' | null;
+  };
+}
 
 /** The Shiki build the default highlighter loads on first use (pinned ESM). */
 const SHIKI_URL = 'https://esm.sh/shiki@3.0.0';
@@ -74,7 +149,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
  * its stylesheets as <link>s, its all / core (+ wysiwyg when the source uses
  * this component) bundle fetched and inlined.
  */
-const config = {
+const config: Required<CodeExampleConfig> = {
   styles: null,
   scripts: null,
   tail: '',
@@ -460,7 +535,7 @@ function showError(root, message, stack) {
   dfDollar(box).text(message ? message + (stack ? `\n${stack}` : '') : '');
   if (message) {
     // The preview reported an error - the source's own script threw, or failed to load - or the preview could not be built.
-    root.dispatchEvent(new CustomEvent('code-example-error', { bubbles: true, detail: { message, stack } }));
+    root.dispatchEvent(new CustomEvent<CodeExampleErrorDetail>('code-example-error', { bubbles: true, detail: { message, stack } }));
   }
 }
 
@@ -536,7 +611,13 @@ function loadShiki(shikiUrl) {
 }
 
 /** code → HTML of coloured spans (no wrapper), or null for plain text */
-function highlight(code, language) {
+/**
+ * The configured highlighter: code and a language → a Promise of HTML (coloured spans), or null.
+ * @param code - the source text
+ * @param language - a Shiki language id ('html', 'css', 'ts', ...)
+ * @returns the HTML of coloured spans, null when the highlighter gives none
+ */
+function highlight(code: string, language: string): Promise<string | null> {
   if (typeof config.highlight === 'function') return Promise.resolve().then(() => config.highlight(code, language));
   return loadShiki(config.shiki).then((m) =>
     m.codeToHtml(code, { lang: language, themes: config.themes, defaultColor: false, cssVariablePrefix: '--code-example-' }),
@@ -780,7 +861,7 @@ function onMessage(root, d) {
     c.ready = true;
     if (!root.preview) root.preview = previewHandle(root);
     // The preview finished loading the source - its state can be driven (el.preview) from now on.
-    root.dispatchEvent(new CustomEvent('code-example-ready', { bubbles: true, detail: { source: c.lastRun } }));
+    root.dispatchEvent(new CustomEvent<CodeExampleReadyDetail>('code-example-ready', { bubbles: true, detail: { source: c.lastRun } }));
   } else if (d.kind === 'state') {
     c.observed = d.values || {};
     dfDollar(root).attr('data-state-values', JSON.stringify(c.observed));
@@ -811,61 +892,103 @@ function debounce(fn, wait) {
   return () => { clearTimeout(t); t = setTimeout(fn, wait); };
 }
 
-function vpZoomApply(root) {
-  const c = root._ce;
-  const vpZ = c.vpZ;
-  if (!vpZ) return;
-  const canvas = c.resizer || c.device;
-  const manual = clamp(Math.round(Number(vpZ.value) || 0), 0, 100);
-  let z;
-  if (manual >= 25) z = Math.min(manual, 100);
-  else if (c.fitFrozen) return; // a user-sized canvas tracks 1:1 - the stage scrolls instead
-  else {
-    // natural width = unzoomed box (CSS zoom feeds back into layout)
-    const prev = canvas.style.zoom;
-    canvas.style.zoom = '';
-    const box = canvas.getBoundingClientRect();
+// VERIFIED: (CPU profile of diagram.html, 12 cards) layout reads and style writes run in separate
+// passes over every card at once: a read after a write forces a synchronous layout of the whole
+// page, and one per card cost ~5 s of main thread before load; batched, the page loads in ~2 s.
+
+/** fit each card's canvas into its stage (Auto) or apply the typed Zoom % */
+function vpZoomAll(roots) {
+  const plan = [];
+  for (const root of roots) {
+    const c = root._ce;
+    if (!c.vpZ) continue;
+    const canvas = c.resizer || c.device;
+    const manual = clamp(Math.round(Number(c.vpZ.value) || 0), 0, 100);
+    if (manual >= 25) plan.push({ root, canvas, z: Math.min(manual, 100) });
+    else if (!c.fitFrozen) plan.push({ root, canvas, z: 0 }); // a user-sized canvas tracks 1:1 - the stage scrolls instead
+  }
+  // natural width = unzoomed box (CSS zoom feeds back into layout): clear every fitted zoom, then read
+  for (const p of plan) if (!p.z) p.canvas.style.zoom = '';
+  for (const p of plan) {
+    if (p.z) continue;
+    const c = p.root._ce;
+    const box = p.canvas.getBoundingClientRect();
     let fit = Math.max(c.stage.clientWidth - 24, 120) / (box.width || 1);
-    if (dfDollar(root).attr('data-fullscreen') != null && (c.vpMode === 'phone' || c.vpMode === 'tablet') && box.height) {
+    if (dfDollar(p.root).attr('data-fullscreen') != null && (c.vpMode === 'phone' || c.vpMode === 'tablet') && box.height) {
       fit = Math.min(fit, Math.max(c.stage.clientHeight - 24, 120) / box.height);
     }
-    canvas.style.zoom = prev;
-    z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
+    p.z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
   }
-  canvas.style.zoom = z < 100 ? String(z / 100) : '';
-  dfDollar(root).attr('data-vp-zoom', String(z));
+  for (const p of plan) {
+    p.canvas.style.zoom = p.z < 100 ? String(p.z / 100) : '';
+    dfDollar(p.root).attr('data-vp-zoom', String(p.z));
+  }
+}
+
+function vpZoomApply(root) {
+  vpZoomAll([root]);
+}
+
+/** size each card's canvas for its viewport mode, fit it, then align a wider canvas to the stage start */
+function vpApplyAll(roots) {
+  for (const root of roots) {
+    const c = root._ce;
+    const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
+    const rawW = Number(c.vpW.value);
+    const w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
+    const rawH = Number(c.vpH.value);
+    const h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
+    if (c.resizer) c.resizer.style.cssText = '';
+    c.device.style.cssText = '';
+    c.frame.style.width = '100%';
+    if (dev) {
+      if (c.resizer && w) c.resizer.style.width = `${w}px`;
+      if (c.resizer && h) c.resizer.style.height = `${h}px`;
+      c.frame.style.height = '100%';
+    } else {
+      if (c.resizer && w) c.resizer.style.width = `${w}px`;
+      if (c.frame.style.height === '100%') c.frame.style.height = '';
+      send(root, 'measure');
+    }
+  }
+  vpZoomAll(roots);
+  // a device box may overflow the stage vertically; a wider measured canvas scrolls from its start
+  // (overflow first: a scrollbar changes the stage's clientWidth the measure compares against)
+  for (const root of roots) {
+    const c = root._ce;
+    c.stage.style.overflow = c.vpMode === 'phone' || c.vpMode === 'tablet' ? 'visible' : 'auto';
+  }
+  const wide = roots.map((root) => {
+    const c = root._ce;
+    const canvas = c.resizer || c.device;
+    return canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr('data-vp-zoom')) || 100) / 100) > c.stage.clientWidth - 24;
+  });
+  roots.forEach((root, i) => {
+    const c = root._ce;
+    const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
+    c.stage.style.justifyContent = !dev && wide[i] ? 'flex-start' : '';
+    dfDollar(root).attr('data-vp-mode', c.vpMode);
+    dfDollar(c.screen).attr('data-mode', c.vpMode);
+    if (c.resizer) {
+      const axis = dev ? 'both' : 'w';
+      if (dfDollar(c.resizer).attr('data-axis') !== axis) dfDollar(c.resizer).attr('data-axis', axis);
+    }
+  });
 }
 
 function vpApply(root) {
-  const c = root._ce;
-  const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
-  const rawW = Number(c.vpW.value);
-  const w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
-  const rawH = Number(c.vpH.value);
-  const h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
-  if (c.resizer) c.resizer.style.cssText = '';
-  c.device.style.cssText = '';
-  c.frame.style.width = '100%';
-  if (dev) {
-    if (c.resizer && w) c.resizer.style.width = `${w}px`;
-    if (c.resizer && h) c.resizer.style.height = `${h}px`;
-    c.frame.style.height = '100%';
-  } else {
-    if (c.resizer && w) c.resizer.style.width = `${w}px`;
-    if (c.frame.style.height === '100%') c.frame.style.height = '';
-    send(root, 'measure');
-  }
-  vpZoomApply(root);
-  // a device box may overflow the stage vertically; a wider measured canvas scrolls from its start
-  const canvas = c.resizer || c.device;
-  c.stage.style.overflow = dev ? 'visible' : 'auto';
-  c.stage.style.justifyContent = !dev && canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr('data-vp-zoom')) || 100) / 100) > c.stage.clientWidth - 24 ? 'flex-start' : '';
-  dfDollar(root).attr('data-vp-mode', c.vpMode);
-  dfDollar(c.screen).attr('data-mode', c.vpMode);
-  if (c.resizer) {
-    const axis = dev ? 'both' : 'w';
-    if (dfDollar(c.resizer).attr('data-axis') !== axis) dfDollar(c.resizer).attr('data-axis', axis);
-  }
+  vpApplyAll([root]);
+}
+
+/** the cards initialized in one pass get their first fit together, in one microtask */
+const fitQueue = new Set<HTMLElement>();
+function scheduleFit(root) {
+  if (!fitQueue.size) queueMicrotask(() => {
+    const roots = [...fitQueue].filter((r) => r.isConnected);
+    fitQueue.clear();
+    vpApplyAll(roots);
+  });
+  fitQueue.add(root);
 }
 
 function vpSetMode(root, mode) {
@@ -941,7 +1064,7 @@ function initViewport(root) {
     });
   }
   if (c.resizer) {
-    vpApply(root);
+    scheduleFit(root);
     const settle = debounce(() => vpApply(root), 120);
     // the resizer component (all.js) owns the gesture; the toolbar owns the size
     dfDollar(c.resizer).on('resizer-resize', (ev) => {
@@ -1021,7 +1144,7 @@ function triggerStateChange(root, state, incoming) {
 /** the source changed - typing settles first (data-debounce, default the rerun delay) */
 function emitChange(root, origin) {
   // Fires after the source changed and the preview reran - typing (debounced), setSource(), reset(), setState() with a { source }; the source and where the change came from: 'input' or 'api'.
-  root.dispatchEvent(new CustomEvent('code-example-change', { bubbles: true, detail: { source: root._ce.src.value, origin } }));
+  root.dispatchEvent(new CustomEvent<CodeExampleChangeDetail>('code-example-change', { bubbles: true, detail: { source: root._ce.src.value, origin } }));
 }
 
 /** Registry-level API; pass the card explicitly. Unknown names throw. */
@@ -1064,50 +1187,82 @@ function leaveOverlays() {
 }
 
 df$.codeExample = {
-  /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it. */
-  configure(options = {}) {
+  /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it.
+   * @param options - the keys to change; the cards on the page repaint their source
+   */
+  configure(options: CodeExampleConfig = {}): void {
     for (const k of Object.keys(options)) if (k in config) config[k] = options[k];
     dfDollar('.code-example[data-init]').each((_i, root) => {
       if (root._ce) { root._ce.painted = null; paint(root); }
     });
   },
-  /** The card's current source. */
-  source: (target) => resolveCard(target)?._ce?.src.value ?? '',
-  /** Replace the source and rerun the preview (the state stays; data-edited follows). */
-  setSource(target, source) {
+  /**
+   * The card's current source.
+   * @param target - the .code-example card or its selector
+   * @returns the editor's text ('' when the target is not a card)
+   */
+  source: (target: string | HTMLElement): string => resolveCard(target)?._ce?.src.value ?? '',
+  /**
+   * Replace the source and rerun the preview (the state stays; data-edited follows).
+   * @param target - the .code-example card or its selector
+   * @param source - the new source
+   */
+  setSource(target: string | HTMLElement, source: string): void {
     const root = resolveCard(target);
     if (root?.api) root.api.setState(readState(root).name, { ...readState(root).config, source: String(source ?? '') });
   },
-  /** Back to the authored source, rerun. */
-  reset(target) {
+  /**
+   * Back to the authored source, rerun.
+   * @param target - the .code-example card or its selector
+   */
+  reset(target: string | HTMLElement): void {
     const root = resolveCard(target);
     if (root?._ce) df$.codeExample.setSource(root, root._ce.original);
   },
-  /** Rebuild the preview from the current source now. */
-  run(target) {
+  /**
+   * Rebuild the preview from the current source now.
+   * @param target - the .code-example card or its selector
+   */
+  run(target: string | HTMLElement): void {
     const root = resolveCard(target);
     if (root?._ce) run(root, root._ce.src.value);
   },
-  /** Switch the preview device: 'phone' | 'tablet' | 'desktop' | 'full'. */
-  viewport(target, mode) {
+  /**
+   * Switch the preview device: 'phone' | 'tablet' | 'desktop' | 'full'.
+   * @param target - the .code-example card or its selector
+   * @param mode - the device width the preview takes
+   */
+  viewport(target: string | HTMLElement, mode: 'phone' | 'tablet' | 'desktop' | 'full'): void {
     const root = resolveCard(target);
     if (root?._ce && VP_MODES.includes(mode)) vpSetMode(root, mode);
   },
-  /** Drive a state of the previewed component (a state of its schema) - the State tab's controls do the same. */
-  setPreviewState(target, name, value) {
+  /**
+   * Drive a state of the previewed component (a state of its schema) - the State tab's controls do the same.
+   * @param target - the .code-example card or its selector
+   * @param name - the state's name in the component's schema
+   * @param value - its new value (the schema's type for it)
+   */
+  setPreviewState(target: string | HTMLElement, name: string, value: string | number | boolean): void {
     const root = resolveCard(target);
     if (root?._ce) send(root, 'set-state', { state: name, value });
   },
-  /** The previewed component's observed state values (as the State tab shows them). */
-  previewState: (target) => ({ ...resolveCard(target)?._ce?.observed }),
+  /**
+   * The previewed component's observed state values (as the State tab shows them).
+   * @param target - the .code-example card or its selector
+   * @returns a copy of the values the preview reported, by state name
+   */
+  previewState: (target: string | HTMLElement): Record<string, string | number | boolean> => ({ ...resolveCard(target)?._ce?.observed }),
   /** Re-read the configured theme and hand it to every preview (no rebuild - the previews keep their state). */
-  refreshTheme() {
+  refreshTheme(): void {
     resolveTheme().then((css) => { for (const root of registry.values()) send(root, 'set-theme', { css }); });
   },
-  /** The configured highlighter: code and a language → a Promise of HTML (coloured spans), or null. */
   highlight,
-  /** Copy the card's source to the clipboard - resolves true when the clipboard took it. */
-  async copy(target) {
+  /**
+   * Copy the card's source to the clipboard.
+   * @param target - the .code-example card or its selector
+   * @returns true when the clipboard took it
+   */
+  async copy(target: string | HTMLElement): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(resolveCard(target)?._ce?.src.value ?? '');
       return true;
@@ -1146,7 +1301,7 @@ if (!document.__codeExampleInit) {
     if (e.key === 'Escape') leaveOverlays();
   });
   addEventListener('resize', debounce(() => {
-    for (const root of registry.values()) if (root._ce.vpZ && !root._ce.vpZ.value) vpZoomApply(root);
+    vpZoomAll([...registry.values()].filter((root) => root._ce.vpZ && !root._ce.vpZ.value));
   }, 120));
 }
 

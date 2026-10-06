@@ -15,8 +15,153 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A JSON value - what a property holds. */
+type PropertyGridValue = string | number | boolean | null | PropertyGridValue[] | { [key: string]: PropertyGridValue };
+/** The object a grid shows and edits. */
+type PropertyGridSource = { [key: string]: PropertyGridValue };
+/** How a property edits; without one it follows its value (a #rrggbb string: color, YYYY-MM-DD: date, multi-line: text). */
+type PropertyGridType = 'string' | 'number' | 'boolean' | 'enum' | 'color' | 'date' | 'text' | 'json';
+
+/** One key's settings in sourceConfig - by its path ("owner.team"), else by its own key. */
+interface PropertyGridKeyConfig {
+  /** shown instead of the key */
+  displayName?: string;
+  /** how it edits */
+  type?: PropertyGridType;
+  /** the choices of an enum: values, or { value, label } */
+  options?: Array<string | number | { value: string | number; label: string }>;
+  /** shown, not editable */
+  readOnly?: boolean;
+  /** not shown */
+  hidden?: boolean;
+  /** the key's tooltip */
+  description?: string;
+  /** a value is needed */
+  required?: boolean;
+  /** numbers: the smallest allowed */
+  min?: number;
+  /** numbers: the largest allowed */
+  max?: number;
+  /** numbers: whole numbers only */
+  integer?: boolean;
+  /** numbers: the editor's step */
+  step?: number;
+  /** text: the fewest characters */
+  minLength?: number;
+  /** text: the most characters */
+  maxLength?: number;
+  /** text: a regular expression (source) the whole value must match */
+  pattern?: string;
+  /** arrays: the fewest items */
+  minItems?: number;
+  /** arrays: the most items */
+  maxItems?: number;
+  /** replaces the message of whichever rule fails */
+  message?: string;
+}
+
+/** Where a hook is called for: what keyRenderFn / valueRenderFn / getEditorFn / validateFn receive. */
+interface PropertyGridContext {
+  /** the property's path */
+  path: string[];
+  /** how deep it is nested (render hooks) */
+  depth?: number;
+  /** the type it edits as */
+  type: string;
+  /** its sourceConfig settings, undefined when it has none */
+  config: PropertyGridKeyConfig | undefined;
+  /** the whole object the grid holds */
+  source: PropertyGridSource;
+  /** the grid element */
+  grid: HTMLElement;
+}
+
+/** A custom editor getEditorFn may return (an input / select element works too). */
+interface PropertyGridEditor {
+  /** the editor element, placed in the value cell */
+  el: HTMLElement;
+  /** the value it holds now */
+  getValue(): PropertyGridValue;
+  /** a message when the value is not acceptable, '' when it is */
+  validate?(): string;
+  /** focus the editor (default: el.focus()) */
+  focus?(): void;
+  /** commit on every change (a checkbox, a select) instead of on Enter / blur */
+  immediate?: boolean;
+  /** Enter belongs to the editor (Ctrl / Cmd + Enter commits) */
+  ownsEnter?: boolean;
+}
+
+/** What configure() takes - every key optional, merged into the grid's options. */
+interface PropertyGridOptions {
+  /** the object to show and edit (a copy is kept) */
+  source?: PropertyGridSource;
+  /** per key or path: label, type, choices, rules */
+  sourceConfig?: Record<string, PropertyGridKeyConfig>;
+  /** refuse a value: return a message, or false for a generic one; anything else accepts it */
+  validateFn?: (key: string, value: PropertyGridValue, ctx: PropertyGridContext) => string | false | null | undefined;
+  /** the key cell's content: text or a node; null keeps the default */
+  keyRenderFn?: (key: string, value: PropertyGridValue, ctx: PropertyGridContext) => string | Node | null;
+  /** the value cell's content: text or a node; null keeps the default */
+  valueRenderFn?: (value: PropertyGridValue, key: string, ctx: PropertyGridContext) => string | Node | null;
+  /** an editor for a property: an element or a PropertyGridEditor; null: the built-in one; false: read-only */
+  getEditorFn?: (key: string, value: PropertyGridValue, ctx: PropertyGridContext) => HTMLElement | PropertyGridEditor | null | false;
+}
+
+/** What property-grid-beforechange carries. */
+interface PropertyGridBeforeChangeDetail {
+  /** the property's path, dotted ("owner.team") */
+  path: string;
+  /** its own key */
+  key: string;
+  /** the value about to be written */
+  value: PropertyGridValue;
+  /** the value it holds now */
+  oldValue: PropertyGridValue;
+}
+
+/** What property-grid-change carries. */
+interface PropertyGridChangeDetail {
+  /** the property's path, dotted ("owner.team") */
+  path: string;
+  /** its own key */
+  key: string;
+  /** the value written */
+  value: PropertyGridValue;
+  /** the value it held */
+  oldValue: PropertyGridValue;
+  /** a copy of the whole new object */
+  source: PropertyGridSource;
+}
+
 /** default = the table; editing = one value open in its editor (config.editing is its path). */
 const propertyGridStates = ['default', 'editing'];
+
+/** setState() configs per state - the config IS the grid's data, merged into the stored one. */
+export interface PropertyGridStateConfigs {
+  /** The table - every key and value of the source. */
+  default: {
+    /** the object shown (a copy is kept); replacing it rebuilds the table */
+    source?: PropertyGridSource;
+    /** the open editor's path - null closes it */
+    editing?: string | null;
+    /** the paths of the collapsed groups */
+    collapsed?: string[];
+  };
+  /** One value open in its editor (data-editing on the grid). */
+  editing: {
+    /** the path of the property to edit ("owner.team") */
+    editing?: string | null;
+    /** the object shown */
+    source?: PropertyGridSource;
+    /** the paths of the collapsed groups */
+    collapsed?: string[];
+  };
+}
 
 const isGroup = (v) => v !== null && typeof v === 'object';
 const pathKey = (path) => path.join('.');
@@ -425,7 +570,7 @@ function commit(root, then = 'stay') {
   closeEditor(root);
   const same = JSON.stringify(value) === JSON.stringify(oldValue);
   // Fires before a committed value is written - cancelable: preventDefault() keeps the old value. detail.path is the property's path ("owner.team").
-  const before = new CustomEvent('property-grid-beforechange', { bubbles: true, cancelable: true, detail: { path, key, value, oldValue } });
+  const before = new CustomEvent<PropertyGridBeforeChangeDetail>('property-grid-beforechange', { bubbles: true, cancelable: true, detail: { path, key, value, oldValue } });
   if (same || !root.dispatchEvent(before)) {
     root.api.setState('default', { editing: null });
     restoreFocus(root, path, then);
@@ -434,7 +579,7 @@ function commit(root, then = 'stay') {
   const source = setAt(configOf(root).source, row._path, value);
   root.api.setState('default', { source, editing: null });
   // Fires after a value was written - its path, key, the new and the old value and the whole new source object.
-  root.dispatchEvent(new CustomEvent('property-grid-change', { bubbles: true, detail: { path, key, value, oldValue, source: clone(source) } }));
+  root.dispatchEvent(new CustomEvent<PropertyGridChangeDetail>('property-grid-change', { bubbles: true, detail: { path, key, value, oldValue, source: clone(source) } }));
   restoreFocus(root, path, then);
   return true;
 }
@@ -503,8 +648,11 @@ df$.propertyGrid = {
    * getEditorFn(key, value, ctx) returns an editor - an input / select element,
    * or { el, getValue(), validate?(), focus?(), immediate?, ownsEnter? } - null for the
    * built-in one, false for read-only. ctx = { path, depth, type, config, source, grid }.
+   * @param target - the .property-grid element or its selector
+   * @param options - the source and the hooks to set (merged into the current options)
+   * @returns the grid, null when the target matches none
    */
-  configure(target, options = {}) {
+  configure(target: string | HTMLElement, options: PropertyGridOptions = {}): HTMLElement | null {
     const root = resolve(target);
     if (!root) return null;
     const { source, ...rest } = options;
@@ -518,41 +666,78 @@ df$.propertyGrid = {
     else root.api.setState(root.store.value.name, { collapsed: configOf(root).collapsed ?? [] });
     return root;
   },
-  /** Show another object (a copy is kept - the grid never mutates what you pass). */
-  setSource(target, source) {
+  /**
+   * Show another object (a copy is kept - the grid never mutates what you pass).
+   * @param target - the .property-grid element or its selector
+   * @param source - the object to show
+   */
+  setSource(target: string | HTMLElement, source: PropertyGridSource): void {
     const root = resolve(target);
     if (!root) return;
     if (!root.api) root._pendingSource = clone(source ?? {});
     else root.api.setState('default', { source: clone(source ?? {}), editing: null, collapsed: [] });
   },
-  /** A copy of the object the grid holds now - every committed edit included. */
-  getSource: (target) => clone(configOf(resolve(target)).source ?? {}),
-  /** Write one property ("a.b" or ['a', 'b']) - fires property-grid-change like an edit. */
-  setProperty(target, path, value) {
+  /**
+   * A copy of the object the grid holds now - every committed edit included.
+   * @param target - the .property-grid element or its selector
+   * @returns the object, with every committed edit
+   */
+  getSource: (target: string | HTMLElement): PropertyGridSource => clone(configOf(resolve(target)).source ?? {}),
+  /**
+   * Write one property ("a.b" or ['a', 'b']) - fires property-grid-change like an edit.
+   * @param target - the .property-grid element or its selector
+   * @param path - the property: "a.b" or ['a', 'b']
+   * @param value - the new value (a copy is written)
+   */
+  setProperty(target: string | HTMLElement, path: string | string[], value: PropertyGridValue): void {
     const root = resolve(target);
     if (!root) return;
     const p = toPath(path);
     const oldValue = getAt(configOf(root).source, p);
     const source = setAt(configOf(root).source, p, clone(value));
     root.api.setState(root.store.value.name === 'editing' ? 'default' : root.store.value.name, { source, editing: null });
-    root.dispatchEvent(new CustomEvent('property-grid-change', { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
+    root.dispatchEvent(new CustomEvent<PropertyGridChangeDetail>('property-grid-change', { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
   },
-  /** One property's value ("a.b" or ['a', 'b']). */
-  getProperty: (target, path) => clone(getAt(configOf(resolve(target)).source, toPath(path))),
-  /** Open a property's editor (state 'editing'). */
-  edit: (target, path) => resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) }),
-  /** Commit the open editor; false when its value is invalid. */
-  commit: (target) => commit(resolve(target)),
-  /** Close the open editor without writing. */
-  cancel: (target) => resolve(target)?.api.setState('default', { editing: null }),
-  /** Expand a group (an object / array property). */
-  expand(target, path) {
+  /**
+   * One property's value ("a.b" or ['a', 'b']).
+   * @param target - the .property-grid element or its selector
+   * @param path - the property: "a.b" or ['a', 'b']
+   * @returns a copy of its value (undefined when there is no such property)
+   */
+  getProperty: (target: string | HTMLElement, path: string | string[]): PropertyGridValue => clone(getAt(configOf(resolve(target)).source, toPath(path))),
+  /**
+   * Open a property's editor (state 'editing').
+   * @param target - the .property-grid element or its selector
+   * @param path - the property: "a.b" or ['a', 'b']
+   */
+  edit: (target: string | HTMLElement, path: string | string[]): void => { resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) }); },
+  /**
+   * Commit the open editor.
+   * @param target - the .property-grid element or its selector
+   * @returns false when its value is invalid (the editor stays open with the message); true otherwise
+   */
+  commit: (target: string | HTMLElement): boolean => commit(resolve(target)),
+  /**
+   * Close the open editor without writing.
+   * @param target - the .property-grid element or its selector
+   */
+  cancel: (target: string | HTMLElement): void => { resolve(target)?.api.setState('default', { editing: null }); },
+  /**
+   * Expand a group (an object / array property).
+   * @param target - the .property-grid element or its selector
+   * @param path - the property: "a.b" or ['a', 'b']
+   */
+  expand(target: string | HTMLElement, path: string | string[]): void {
     const root = resolve(target);
     const key = pathKey(toPath(path));
     root?.api.setState(root.store.value.name, { collapsed: (configOf(root).collapsed ?? []).filter((p) => p !== key) });
   },
-  /** Collapse a group. */
-  collapse(target, path) {
+  /**
+   * Collapse a group.
+   * @param target - the .property-grid element or its selector
+   * @param path - the property: "a.b" or ['a', 'b']
+   */
+  collapse(target: string | HTMLElement, path: string | string[]): void {
     const root = resolve(target);
     const key = pathKey(toPath(path));
     const collapsed = new Set(configOf(root)?.collapsed ?? []);

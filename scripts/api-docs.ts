@@ -8,6 +8,9 @@
  * are the JSDoc in the .ts. verify's `API docs` gate fails when a section
  * lags; run `bun run api-docs` to rewrite them.
  *
+ * VERIFIED: (verify's API docs gate re-renders every section with the same
+ * reader and fails on any difference) the sections it writes are current.
+ *
  *   bun scripts/api-docs.ts           write every skill's ## API section
  *   bun scripts/api-docs.ts --check   list the stale ones (exit 1)
  */
@@ -18,13 +21,15 @@ import { apiMarkdown, apiSectionOf, readComponentApi, withApiSection } from '../
 const ROOT = join(import.meta.dirname, '..');
 const COMPONENTS = join(ROOT, 'src', 'components');
 const check = process.argv.includes('--check');
+// the shared State API (el.api, the registry) - its JSDoc documents those members on every page
+const SHARED = readFileSync(join(ROOT, 'src', 'shared', 'component-state.ts'), 'utf8');
 const stale: string[] = [];
 
 for (const name of readdirSync(COMPONENTS).sort()) {
   const ts = join(COMPONENTS, name, `${name}.ts`);
   const md = join(COMPONENTS, name, 'component-skill.md');
   if (!existsSync(ts) || !existsSync(md)) continue;
-  const section = apiMarkdown(readComponentApi(name, readFileSync(ts, 'utf8')));
+  const section = apiMarkdown(readComponentApi(name, readFileSync(ts, 'utf8'), SHARED));
   const skill = readFileSync(md, 'utf8');
   if (apiSectionOf(skill) === section) continue;
   stale.push(name);

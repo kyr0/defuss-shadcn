@@ -11,6 +11,16 @@ const dfDollar = defussQuery();
 
 const dialogStates = ['default', 'open'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the dialog's states take none. */
+export interface DialogStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open as a modal (showModal()) - Escape and a backdrop click close it. */
+  open: {};
+}
+
 /**
  * The markup of a state: an open dialog carries `open`. render() applies it
  * to a detached copy; on the live dialog showModal()/close() (the native

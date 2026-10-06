@@ -12,6 +12,16 @@ const dfDollar = defussQuery();
 
 const sheetStates = ['default', 'open'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the sheet's states take none. */
+export interface SheetStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open as a modal panel from its side (showModal()). */
+  open: {};
+}
+
 /**
  * The markup of a state: 'open' carries `open`. render() applies it to a
  * detached copy; on the live element showModal()/close() (the native

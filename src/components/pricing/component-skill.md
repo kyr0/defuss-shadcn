@@ -11,8 +11,8 @@ supportedStates: default
 
 ## Native basis
 `display: grid; align-items: stretch` keeps plan cards equal height
-across content differences. The billing toggle is a radio group —
-`<input type="radio">` in `<label>`s - and `:has(input:checked)` swaps
+across content differences. The billing toggle is a radio group
+(`<input type="radio">` in `<label>`s), and `:has(input:checked)` swaps
 every plan's yearly/monthly price rows. Keyboard, screen readers, and
 form semantics are browser-provided.
 

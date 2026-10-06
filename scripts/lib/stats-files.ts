@@ -3,7 +3,8 @@ import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 import { skillEntries } from './skill-files.ts';
 import { EXTRA_BUNDLES } from './bundles.ts';
-import { aggregateStats, buildStatsText, STATS_FILE, type AppStats, type BundleStats, type StatsDoc } from './stats.ts';
+import { aggregateStats, buildStatsText, STATS_FILE, type AppStats, type BundleStats, type SectionStats, type StatsDoc } from './stats.ts';
+import { sections } from './sections-files.ts';
 import { appPlans } from './apps-files.ts';
 import { standaloneAppFile } from './docs-ssg.ts';
 import type { ComponentType } from './taxonomy.ts';
@@ -118,6 +119,20 @@ export function measureBundle(componentsDir: string, name = 'all'): BundleStats 
   };
 }
 
+/** the section bundles (scripts/lib/sections.ts), each measured like all.*,
+ *  with the plan the page needs - a section that IS an extra bundle is
+ *  measured from dist/components/ (its files live there). VERIFIED: (verify's
+ *  `stats.json fresh` re-measures with this function and compares) the
+ *  published sizes are the built files'. */
+export function measureSections(distDir: string): Record<string, SectionStats> {
+  return Object.fromEntries(
+    sections().map((s) => {
+      const files = [`${s.dir}/${s.name}.css`, ...(s.hasJs ? [`${s.dir}/${s.name}.js`] : [])];
+      return [s.name, { heading: s.heading, members: s.members, needs: s.needs, files, ...measureBundle(join(distDir, s.dir), s.name) }];
+    }),
+  );
+}
+
 /** the extra bundles (scripts/lib/bundles.ts), each measured like all.* */
 export function measureExtraBundles(componentsDir: string): Record<string, BundleStats> {
   return Object.fromEntries(Object.keys(EXTRA_BUNDLES).map((b) => [b, measureBundle(componentsDir, b)]));
@@ -181,7 +196,7 @@ export function measureApps(distDir: string): Record<string, AppStats> {
 export function buildStatsFileText(distDir: string): string {
   const componentsDir = join(distDir, 'components');
   const measures = measureComponents(componentsDir);
-  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(componentsDir) });
+  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(componentsDir), sections: measureSections(distDir) });
 }
 
 /** Write dist/stats.json and return the document (for the CLI summary line). */
@@ -191,7 +206,7 @@ export function writeStatsFile(distDir: string): StatsDoc {
   const bundle = measureBundle(componentsDir);
   const core = measureCore(componentsDir);
   const pages = countTemplatePages(measures.map((m) => m.name));
-  const extra = { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(join(distDir, 'components')) };
+  const extra = { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(join(distDir, 'components')), sections: measureSections(distDir) };
   writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle, core, pages, extra));
   return aggregateStats(measures, bundle, core, pages, extra);
 }

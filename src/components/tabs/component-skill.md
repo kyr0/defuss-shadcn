@@ -19,7 +19,7 @@ panel switching. Follows the WAI-ARIA Tabs design pattern.
 ## Native Web APIs
 - [WAI-ARIA Tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) - role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation
 - [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - auto-detects vertical orientation for layout switching
-- [`text-overflow: ellipsis`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow) - long labels shorten to "…" when the list runs out of room (the trigger is a block box so its own line can ellipsize)
+- [`text-overflow: ellipsis`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow) - long labels shorten to "..." when the list runs out of room (the trigger is a block box so its own line can ellipsize)
 - [`writing-mode`](https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode) - vertical labels for `data-side="left|right"` (`sideways-lr` on the left where supported)
 - [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on tabs and panels
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses tab transition animations
@@ -88,7 +88,7 @@ always points along the reading direction).
 </button>
 ```
 
-A trigger is a block box: a label longer than the room it gets ends in "…"
+A trigger is a block box: a label longer than the room it gets ends in "..."
 (the full text stays the accessible name). Horizontal tab lists never grow
 wider than their container; left / right columns never taller than the panel
 beside them.
@@ -257,11 +257,38 @@ The registry global is `df$.shadcn.tabsApi` / `df$.shadcn.tabsStates`.
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.tabsApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.tabsStates` = `default`, `active`, `disabled`.
+<code>type TabsState = 'default' | 'active' | 'disabled'</code> - `setState(name, config)` takes the config of the state it names (`TabsStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | Tablist: everything as authored (selection, disabled flags, labels, icons). A tab: enabled, not picked. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>label?</code></td><td><code>string</code></td><td>a tab: its label text</td></tr><tr><td><code>icon?</code></td><td><code>string</code></td><td>a tab: its icon (a Lucide name)</td></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>reported by getState() on the tablist: the selected tab's index</td></tr><tr><td><code>id?</code></td><td><code>string</code></td><td>reported by getState() on the tablist: the selected tab's id</td></tr></table> |
+| `active` | Tablist: the tab at index (or with id) selected. A tab: selected, its panel shown (no-op while disabled). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>index?</code></td><td><code>number</code></td><td>the tablist: the tab to select, 0-based</td></tr><tr><td><code>id?</code></td><td><code>string</code></td><td>the tablist: the tab to select, by id (when index is not given)</td></tr><tr><td><code>label?</code></td><td><code>string</code></td><td>a tab: its label text</td></tr><tr><td><code>icon?</code></td><td><code>string</code></td><td>a tab: its icon (a Lucide name)</td></tr></table> |
+| `disabled` | Tablist: every tab disabled. A tab: not selectable, skipped by the arrow keys (a selected one hands the selection on). <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>label?</code></td><td><code>string</code></td><td>a tab: its label text</td></tr><tr><td><code>icon?</code></td><td><code>string</code></td><td>a tab: its icon (a Lucide name)</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends TabsState&gt;(name: S, config?: TabsStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TabsStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: TabsState; config: TabsStateConfigs[TabsState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.tabsApi.setState&lt;S extends TabsState&gt;(el: HTMLElement, name: S, config?: TabsStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>TabsStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.tabsApi.getState(el: HTMLElement): { name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.tabsApi.render(state: { name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: TabsState; config: TabsStateConfigs[TabsState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.tabsApi.store(el: HTMLElement): Store&lt;{ name: TabsState; config: TabsStateConfigs[TabsState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: TabsState; config: TabsStateConfigs[TabsState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.tabsApi.commit&lt;S extends TabsState&gt;(el: HTMLElement, name: S, config?: TabsStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>TabsStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.tabsStates: TabsState[]</code> | The declared states, 'default' first: <code>default</code>, <code>active</code>, <code>disabled</code>. |
 
 ## Notes
 

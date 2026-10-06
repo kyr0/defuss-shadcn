@@ -101,11 +101,36 @@ The api is bound per wrapper; the registry global is
 
 ## API
 
-<!-- generated from the source by `bun run api-docs` - edit the JSDoc in the .ts, not this section -->
+<!-- generated from the source by `bun run api-docs` - edit the JSDoc and the types in the .ts, not this section -->
 
-**Every element:** `el.api.setState(name, config?)` · `el.api.getState()` · `el.api.render(state?)` · `el.api.settled()`; `el.store` - a defuss-store store of `{ name, config }` (subscribe to follow, set to drive).
+### States
 
-**Registry:** `df$.shadcn.numberInputApi` - `setState(el, name, config?)`, `getState(el)`, `render(state)`, `store(el)`, `commit(el, name, config?)`; `df$.shadcn.numberInputStates` = `default`.
+<code>type NumberInputState = 'default'</code> - `setState(name, config)` takes the config of the state it names (`NumberInputStateConfigs[name]`).
+
+| State | Description |
+|---|---|
+| `default` | The field with its value. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>value?</code></td><td><code>string \| number</code></td><td>the value - the text the field shows (a currency field reads it as a number)</td></tr><tr><td><code>number?</code></td><td><code>string \| number</code></td><td>a currency field: the machine number (1234.5), formatted per its locale</td></tr><tr><td><code>currency?</code></td><td><code>string</code></td><td>reported by getState() on a currency field: the ISO currency code</td></tr><tr><td><code>locale?</code></td><td><code>string</code></td><td>reported by getState() on a currency field: the locale it formats in</td></tr></table> |
+
+### Every element
+
+| Member | Description |
+|---|---|
+| <code>el.api.setState&lt;S extends NumberInputState&gt;(name: S, config?: NumberInputStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>NumberInputStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (or await settled()) |
+| <code>el.api.getState(): { name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <b>Returns</b> <code>{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>el.api.render(state?: { name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state?</code></td><td><code>{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }</code></td><td>a state as getState() returns it (default: the current one)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>el.api.settled(): Promise&lt;void&gt;</code> | Wait for the last state's DOM work (async states: a diagram rendering, a chart mounting). <b>Returns</b> <code>Promise&lt;void&gt;</code> - resolves when nothing is pending |
+| <code>el.store: Store&lt;{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState] }&gt;</code> | A defuss-store store of the element's state - subscribe to follow every change (also the user's), set it to drive the component. |
+
+### Registry
+
+| Member | Description |
+|---|---|
+| <code>df$.shadcn.numberInputApi.setState&lt;S extends NumberInputState&gt;(el: HTMLElement, name: S, config?: NumberInputStateConfigs[S]): unknown</code> | Enter a state: the DOM work runs (also when it is the current state), the store records it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>a declared state (an unknown name throws)</td></tr><tr><td><code>config?</code></td><td><code>NumberInputStateConfigs[S]</code></td><td>that state's config (merged into the stored one when the component merges)</td></tr></table> <b>Returns</b> <code>unknown</code> - what the state's DOM work returned - a Promise for an async state (await it, or el.api.settled()) |
+| <code>df$.shadcn.numberInputApi.getState(el: HTMLElement): { name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }</code> | The state the element shows now - read back from the DOM, so it includes what the user changed. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }</code> - the state's name, its config and the authored markup model render() starts from |
+| <code>df$.shadcn.numberInputApi.render(state: { name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }): string</code> | The element's markup in a state - the authored markup with that state applied; a pure function of the state. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>state</code></td><td><code>{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState]; model?: ElementModel }</code></td><td>a state as getState() returns it (with its model)</td></tr></table> <b>Returns</b> <code>string</code> - the element's outer HTML in that state |
+| <code>df$.shadcn.numberInputApi.store(el: HTMLElement): Store&lt;{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState] }&gt;</code> | The element's store (bindComponent made it). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr></table> <b>Returns</b> <code>Store&lt;{ name: NumberInputState; config: NumberInputStateConfigs[NumberInputState] }&gt;</code> - a defuss-store store of { name, config } - subscribe to follow every change, set it to drive the component |
+| <code>df$.shadcn.numberInputApi.commit&lt;S extends NumberInputState&gt;(el: HTMLElement, name: S, config?: NumberInputStateConfigs[S]): void</code> | Record a state the element reached on its own (no DOM work) - for a component's own handlers. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>el</code></td><td><code>HTMLElement</code></td><td>the component's element</td></tr><tr><td><code>name</code></td><td><code>S</code></td><td>the state it is in</td></tr><tr><td><code>config?</code></td><td><code>NumberInputStateConfigs[S]</code></td><td>its config</td></tr></table> |
+| <code>df$.shadcn.numberInputStates: NumberInputState[]</code> | The declared states, 'default' first: <code>default</code>. |
 
 ## Notes
 

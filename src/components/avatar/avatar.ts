@@ -12,6 +12,16 @@ const dfDollar = defussQuery();
 
 const avatarStates = ['default', 'error'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state - the avatar's states take none. */
+export interface AvatarStateConfigs {
+  /** The image shows (or only the fallback is authored). */
+  default: {};
+  /** The image failed to load - the fallback (initials, an icon) shows instead. */
+  error: {};
+}
+
 /**
  * The markup of a state, for render(): the attributes every state writes -
  * the same as triggerStateChange does on the live element - applied to a

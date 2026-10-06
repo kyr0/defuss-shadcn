@@ -15,6 +15,19 @@ const dfDollar = defussQuery();
 
 const toolbarStates = ['default'];
 
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state (getState() reports the roving focus). */
+export interface ToolbarStateConfigs {
+  /** The toolbar with one item in the tab order (roving tabindex). */
+  default: {
+    /** the item to focus and put in the tab order, 0-based (default 0) */
+    focus?: number;
+    /** reported by getState(): the index of the item in the tab order */
+    rovingIndex?: number;
+  };
+}
+
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
  * to a detached copy of the authored markup ('default' IS the authored

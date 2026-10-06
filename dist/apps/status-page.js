@@ -5384,10 +5384,8 @@ var tabsApi = componentState({
 df$5.tabsApi = tabsApi;
 df$5.tabsStates = tabsStates;
 function init5() {
-  dfDollar5('[role="tablist"]:not([data-init])').toArray().forEach((tablist) => {
+  dfDollar5('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    if (!dfDollar5(tablist).find(".tab-trigger").get(0))
-      return;
     const triggers = Array.from(dfDollar5(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
@@ -5700,19 +5698,20 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$6.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar6(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$6.toast = toastActions;
 
 // src/components/toggle/toggle.ts
 var df$7 = defussGlobals();
@@ -5848,6 +5847,6 @@ function init8() {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=F4133881CD9A5BA564756E2164756E21
+//# debugId=4B70B43F44DB295564756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=status-page.js.map

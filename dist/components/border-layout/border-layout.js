@@ -321,29 +321,51 @@ function init() {
 }
 // -- df$.shadcn.borderLayout: the imperative surface ----------------------------------
 df$.borderLayout = {
-    /** Folds a region away. */
-    collapse: (t, side) => { const l = resolve(t); if (l)
+    /**
+     * Folds a region away (its divider stays).
+     * @param target - the .border-layout element, its id or a selector
+     * @param side - the region
+     */
+    collapse: (target, side) => { const l = resolve(target); if (l)
         collapse(l, side, true); },
-    /** Brings a folded region back. */
-    expand: (t, side) => { const l = resolve(t); if (l)
+    /**
+     * Brings a folded region back.
+     * @param target - the .border-layout element, its id or a selector
+     * @param side - the region
+     */
+    expand: (target, side) => { const l = resolve(target); if (l)
         collapse(l, side, false); },
-    /** Folds or unfolds; returns whether it is now collapsed. */
-    toggle: (t, side) => {
-        const l = resolve(t);
+    /**
+     * Folds or unfolds a region.
+     * @param target - the .border-layout element, its id or a selector
+     * @param side - the region
+     * @returns true when the region is collapsed now (false also when the layout has no such region)
+     */
+    toggle: (target, side) => {
+        const l = resolve(target);
         const region = l && regionOf(l, side);
         if (!region)
             return false;
         collapse(l, side, !region.hasAttribute('data-collapsed'));
         return region.hasAttribute('data-collapsed');
     },
-    /** Sets a region's size in px (clamped by the resizer). */
-    resize: (t, side, px) => { const l = resolve(t); const r = l && regionOf(l, side); if (r) {
+    /**
+     * Sets a region's size (clamped by the resizer's limits).
+     * @param target - the .border-layout element, its id or a selector
+     * @param side - the region
+     * @param px - the width (west / east) or height (north / south) in px
+     */
+    resize: (target, side, px) => { const l = resolve(target); const r = l && regionOf(l, side); if (r) {
         clamp(l);
         setSize(r, side, px);
     } },
-    /** The current sizes: { west: 240, east: 0 (collapsed), … }. */
-    sizes: (t) => {
-        const l = resolve(t);
+    /**
+     * The current sizes: { west: 240, east: 0 (collapsed), ... }.
+     * @param target - the .border-layout element, its id or a selector
+     * @returns px per region the layout has - 0 for a collapsed one
+     */
+    sizes: (target) => {
+        const l = resolve(target);
         const out = {};
         if (l)
             for (const side of REGIONS) {

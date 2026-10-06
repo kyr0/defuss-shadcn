@@ -5151,7 +5151,9 @@ df$4.dataGrid = {
     }
     dataGridApi.setState(grid, "default", patch);
   },
-  query: (target, patch) => query(resolve(target), patch),
+  query: (target, patch) => {
+    query(resolve(target), patch);
+  },
   rows: (target) => (resolve(target)._result?.entries ?? []).map((e) => e.row),
   selected(target) {
     const grid = resolve(target);
@@ -5159,7 +5161,9 @@ df$4.dataGrid = {
     return (grid._source?.rows ?? []).filter((r) => ids.has(r[grid._source.idField]));
   },
   selectAll: (target) => selectAll(resolve(target)),
-  clearSelection: (target) => query(resolve(target), { selected: [] }),
+  clearSelection: (target) => {
+    query(resolve(target), { selected: [] });
+  },
   expandAll(target) {
     const grid = resolve(target);
     query(grid, { expanded: grid._source.branchIds(), collapsed: [] });
@@ -6745,19 +6749,20 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$11.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar11(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$11.toast = toastActions;
 
 // src/components/toggle/toggle.ts
 var df$12 = defussGlobals();
@@ -6893,6 +6898,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=FFB5D1E11B9E136164756E2164756E21
+//# debugId=F52B4B46A9E0544064756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

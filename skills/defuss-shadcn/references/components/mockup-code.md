@@ -111,7 +111,7 @@ numbers, a cursor, git-style diffs, wrapping, surface variants and sizes. CSS on
 |------|--------|
 | The window | Plain text - a screen reader reads the commands; give the block a heading or `aria-label` when its purpose isn't clear from the text around it |
 | Prompts / numbers | Generated content - not read as part of the command text in most readers, never copied |
-| Status lines | Say it in the words ("Error: …"), not only the tone |
+| Status lines | Say it in the words ("Error: ..."), not only the tone |
 | Diff lines | The +/- signs are generated; mark word changes with `<ins>` / `<del>` (announced by some readers) and say what changed in the text around the window |
 
 ## Notes

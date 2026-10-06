@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Session Item
 
 ## Native basis
-An `<article>`: a time column (`<time>` start, end, duration), the track (colored by `--mk-session-color`), title, description, speakers (Avatars) and room, and a checkbox labelled "Add … to my schedule".
+An `<article>`: a time column (`<time>` start, end, duration), the track (colored by `--mk-session-color`), title, description, speakers (Avatars) and room, and a checkbox labelled "Add ... to my schedule".
 
 Built from: [Avatar](avatar.md).
 

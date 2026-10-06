@@ -13,6 +13,9 @@ if (!__df$shared || __df$shared.abi !== '0.9.5') {
 const { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent, persisted, reload, forget, persistOk } = __df$shared;
 const df$ = defussGlobals();
 const q = defussQuery();
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
 const cookieConsentStates = ['default', 'open', 'preferences', 'services'];
 /** The built-in languages. */
 export const builtInLanguages = ['en', 'de'];
@@ -166,7 +169,7 @@ class Controller {
             }
         }
         this.storage = storage;
-        // the record is the store's value; its own checks (revision, age, …) run
+        // the record is the store's value; its own checks (revision, age, ...) run
         // in readStored - the store only guarantees an object or null
         this.saved = storage
             ? persisted(this.key, null, {
@@ -185,7 +188,7 @@ class Controller {
         q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
         this.dialog = q('.cookie-consent-dialog', root)[0];
         // el.store (AGENTS.md "State through stores"); the controller stays
-        // el.api - its open() / acceptAll() / … are the documented surface, and
+        // el.api - its open() / acceptAll() / ... are the documented surface, and
         // its setState / getState run through the store
         // registered before the first state: the store's apply reaches the
         // controller through the registry (create() sets the same entry again)
@@ -806,7 +809,12 @@ export const cookieConsentApi = componentState({
     // runtime (data-ce-chrome) - the authored host is the markup of each state
 });
 export const cookieConsent = {
-    /** Start a consent manager on root with a config (cookieOrigins, texts, storage …) - returns its instance (also el.api); a second call returns the same one. */
+    /**
+     * Start a consent manager on root with a config (cookieOrigins, texts, storage ...); a second call returns the same one.
+     * @param root - the .cookie-consent element (connected to the document)
+     * @param config - the services, texts, storage and callbacks
+     * @returns its instance - also root's el.api
+     */
     create(root, config) {
         if (controllers.has(root))
             return controllers.get(root);
@@ -819,7 +827,11 @@ export const cookieConsent = {
         controllers.set(root, controller);
         return controller;
     },
-    /** The instance a root already has, if any. */
+    /**
+     * The instance a root already has.
+     * @param root - the .cookie-consent element
+     * @returns its instance, undefined before create()
+     */
     get(root) { return controllers.get(root); },
     init,
 };

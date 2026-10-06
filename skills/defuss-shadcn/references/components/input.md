@@ -187,7 +187,7 @@ When does a field turn red? Three sources, from loudest to quietest:
 | Source | Shows | Use |
 | --- | --- | --- |
 | `aria-invalid="true"` | Always, immediately | The page's own verdict: custom rules, server errors |
-| `:user-invalid` (browser checks: `required`, `type="email"`, `pattern`, `min`/`max`…) inside a `<form>` | Once the user leaves a changed field | Default native feedback |
+| `:user-invalid` (browser checks: `required`, `type="email"`, `pattern`, `min`/`max`...) inside a `<form>` | Once the user leaves a changed field | Default native feedback |
 | same, inside `<form data-validate="submit">` | Only after the page stamps `data-submitted` on the form (a submit attempt) | "Check when they're finished" - leaving a half-typed field is not an error |
 
 - **A text field outside any `<form>` is never judged automatically** (`.input`, `textarea.input`, `.textarea`, `.input-group`): there is nothing to submit, so a half-typed value is not an error. Use `aria-invalid` if such a field must show one.

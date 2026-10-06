@@ -5065,7 +5065,9 @@ df$4.autocomplete = {
     inputOf(root).value = query;
     return search(root, query);
   },
-  close: (target) => autocompleteApi.setState(resolve(target), "default"),
+  close: (target) => {
+    autocompleteApi.setState(resolve(target), "default");
+  },
   records: (target) => [...resolve(target)._run?.records ?? []]
 };
 function init4() {
@@ -5615,8 +5617,9 @@ function format2(entries, style, { align = true, highlight = true } = {}) {
 
 `), list: refs.length > 1 };
 }
+var isStyle = (f) => FORMATS.includes(f);
 function formatsOf(el) {
-  const own = String(dfDollar6(el).attr("data-formats") ?? "").split(/[\s,]+/).filter((f) => FORMATS.includes(f));
+  const own = String(dfDollar6(el).attr("data-formats") ?? "").split(/[\s,]+/).filter(isStyle);
   return own.length ? own : FORMATS;
 }
 function formatFor(el, state, authored) {
@@ -5733,7 +5736,9 @@ df$6.bibtex = {
   formats: FORMATS,
   parse,
   format: (entries, style, options) => format2(typeof entries === "string" ? parse(entries) : entries, style, options),
-  show: (target, fmt) => resolve2(target)?.api.setState("default", { format: fmt }),
+  show: (target, fmt) => {
+    resolve2(target)?.api.setState("default", { format: fmt });
+  },
   copy: (target) => copy(resolve2(target)),
   text: (target) => resolve2(target)?._text ?? "",
   entries: (target) => structuredClone(resolve2(target)?._entries ?? [])
@@ -6033,34 +6038,34 @@ function init7() {
   });
 }
 df$7.borderLayout = {
-  collapse: (t, side) => {
-    const l = resolve3(t);
+  collapse: (target, side) => {
+    const l = resolve3(target);
     if (l)
       collapse(l, side, true);
   },
-  expand: (t, side) => {
-    const l = resolve3(t);
+  expand: (target, side) => {
+    const l = resolve3(target);
     if (l)
       collapse(l, side, false);
   },
-  toggle: (t, side) => {
-    const l = resolve3(t);
+  toggle: (target, side) => {
+    const l = resolve3(target);
     const region = l && regionOf(l, side);
     if (!region)
       return false;
     collapse(l, side, !region.hasAttribute("data-collapsed"));
     return region.hasAttribute("data-collapsed");
   },
-  resize: (t, side, px) => {
-    const l = resolve3(t);
+  resize: (target, side, px) => {
+    const l = resolve3(target);
     const r = l && regionOf(l, side);
     if (r) {
       clamp(l);
       setSize(r, side, px);
     }
   },
-  sizes: (t) => {
-    const l = resolve3(t);
+  sizes: (target) => {
+    const l = resolve3(target);
     const out = {};
     if (l)
       for (const side of REGIONS) {
@@ -10019,7 +10024,9 @@ df$17.dataGrid = {
     }
     dataGridApi.setState(grid, "default", patch);
   },
-  query: (target, patch) => query(resolve4(target), patch),
+  query: (target, patch) => {
+    query(resolve4(target), patch);
+  },
   rows: (target) => (resolve4(target)._result?.entries ?? []).map((e) => e.row),
   selected(target) {
     const grid = resolve4(target);
@@ -10027,7 +10034,9 @@ df$17.dataGrid = {
     return (grid._source?.rows ?? []).filter((r) => ids.has(r[grid._source.idField]));
   },
   selectAll: (target) => selectAll(resolve4(target)),
-  clearSelection: (target) => query(resolve4(target), { selected: [] }),
+  clearSelection: (target) => {
+    query(resolve4(target), { selected: [] });
+  },
   expandAll(target) {
     const grid = resolve4(target);
     query(grid, { expanded: grid._source.branchIds(), collapsed: [] });
@@ -10402,7 +10411,9 @@ df$18.dataTree = {
     if (tree.store)
       dataTreeApi.setState(tree, "default", { ...options.query, ...options.persist ? attachPersistence3(tree, options.persist) : {} });
   },
-  query: (target, patch) => query2(resolve5(target), patch),
+  query: (target, patch) => {
+    query2(resolve5(target), patch);
+  },
   expandAll(target) {
     const tree = resolve5(target);
     query2(tree, { expanded: tree._source.branchIds(), collapsed: [] });
@@ -10989,6 +11000,12 @@ function fit(root, canvas) {
 function draw2(root, canvas) {
   if (!canvas.isConnected || !canvas.getClientRects().length)
     return;
+  if (!canvas._clearPass) {
+    for (const side of SIDES2) {
+      canvas.style.removeProperty(`padding-${side}`);
+      canvas.style.removeProperty(`--_inset-${side}`);
+    }
+  }
   fit(root, canvas);
   const { nodes, rectOf } = measure(canvas);
   const panel = panelOf(canvas);
@@ -11049,7 +11066,50 @@ function draw2(root, canvas) {
   if (panel === "changes")
     badges(canvas, labels, rectOf);
   flowTokens(labels, wires);
+  if (clear(root, canvas, rectOf))
+    return;
   root.dispatchEvent(new CustomEvent("diagram-drawn", { detail: { edges: drawn.length, panel } }));
+}
+var CLEARANCE = 20;
+var SIDES2 = ["top", "right", "bottom", "left"];
+function clear(root, canvas, rectOf) {
+  if ((canvas._clearPass ?? 0) >= 3)
+    return false;
+  const cs = getComputedStyle(canvas);
+  if (!parseFloat(cs.borderTopWidth))
+    return false;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  const gap = { top: Infinity, right: Infinity, bottom: Infinity, left: Infinity };
+  for (const el of dfDollar18(canvas).find("*").toArray()) {
+    if (el.matches(".diagram-wires, .diagram-wire-labels, .diagram-wire-hit, .diagram-token, g") || !el.getClientRects().length)
+      continue;
+    const r = rectOf(el);
+    if (!r.w && !r.h)
+      continue;
+    gap.top = Math.min(gap.top, r.y);
+    gap.left = Math.min(gap.left, r.x);
+    gap.bottom = Math.min(gap.bottom, h - (r.y + r.h));
+    gap.right = Math.min(gap.right, w - (r.x + r.w));
+  }
+  const grow = SIDES2.filter((side) => gap[side] < CLEARANCE - 0.5);
+  if (!grow.length)
+    return false;
+  const absolute = dfDollar18(canvas).children().toArray().some((c) => getComputedStyle(c).position === "absolute" && !c.matches(".diagram-wires, .diagram-wire-labels"));
+  for (const side of grow) {
+    const more = Math.ceil(CLEARANCE - gap[side]);
+    if (absolute)
+      canvas.style.setProperty(`--_inset-${side}`, `${Math.ceil(parseFloat(canvas.style.getPropertyValue(`--_inset-${side}`)) || 0) + more}px`);
+    else
+      canvas.style.setProperty(`padding-${side}`, `${Math.ceil(parseFloat(cs.getPropertyValue(`padding-${side}`))) + more}px`);
+  }
+  canvas._clearPass = (canvas._clearPass ?? 0) + 1;
+  try {
+    draw2(root, canvas);
+  } finally {
+    canvas._clearPass -= 1;
+  }
+  return true;
 }
 function textRects(canvas, nodes, rectOf) {
   const out = [];
@@ -11395,7 +11455,7 @@ function spreadChannels(plans) {
   }
 }
 function drawSequence(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn) {
-  const bottom = canvas.clientHeight - 12;
+  const bottom = canvas.clientHeight - CLEARANCE;
   for (const node of nodes.values()) {
     if (node.el.dataset.shape === "ghost")
       continue;
@@ -11892,6 +11952,7 @@ function diffSpecs(before, after) {
   };
 }
 var resolve6 = (target) => typeof target === "string" ? dfDollar18(target).get(0) : target;
+var isDelta = (spec) => !!spec?.before && !!spec?.after;
 function specFlags(root, spec) {
   for (const flag of ["steps", "autoplay", "interactive"])
     if (spec[flag])
@@ -12019,8 +12080,8 @@ df$19.diagram = {
     const root = resolve6(target);
     if (!root)
       return null;
-    const delta = spec?.before && spec?.after;
-    const merged = delta ? diffSpecs(spec.before, spec.after) : spec;
+    const delta = isDelta(spec);
+    const merged = isDelta(spec) ? diffSpecs(spec.before, spec.after) : spec;
     if (merged.type)
       dfDollar18(root).attr("data-type", merged.type);
     specFlags(root, merged);
@@ -12035,7 +12096,7 @@ df$19.diagram = {
       triggerStateChange19(root, root.store?.value ?? { name: "default", config: {} });
     return root;
   },
-  markup: (spec) => markupOf(spec?.before && spec?.after ? diffSpecs(spec.before, spec.after) : spec),
+  markup: (spec) => markupOf(isDelta(spec) ? diffSpecs(spec.before, spec.after) : spec),
   diff: (before, after) => diffSpecs(before, after),
   redraw(target) {
     const root = resolve6(target);
@@ -12043,11 +12104,21 @@ df$19.diagram = {
       for (const canvas of canvasesOf(root))
         draw2(root, canvas);
   },
-  play: (target, step = 1) => resolve6(target)?.api.setState("playing", { step }),
-  pause: (target) => control(resolve6(target), "pause"),
-  next: (target) => control(resolve6(target), "next"),
-  prev: (target) => control(resolve6(target), "prev"),
-  reset: (target) => resolve6(target)?.api.setState("default"),
+  play: (target, step = 1) => {
+    resolve6(target)?.api.setState("playing", { step });
+  },
+  pause: (target) => {
+    control(resolve6(target), "pause");
+  },
+  next: (target) => {
+    control(resolve6(target), "next");
+  },
+  prev: (target) => {
+    control(resolve6(target), "prev");
+  },
+  reset: (target) => {
+    resolve6(target)?.api.setState("default");
+  },
   activate(target, ref) {
     const root = resolve6(target);
     if (!root)
@@ -12057,8 +12128,12 @@ df$19.diagram = {
     else
       root.api.setState("active", { ref: String(ref) });
   },
-  activateNext: (target) => stepActivation(resolve6(target), 1),
-  activatePrev: (target) => stepActivation(resolve6(target), -1),
+  activateNext: (target) => {
+    stepActivation(resolve6(target), 1);
+  },
+  activatePrev: (target) => {
+    stepActivation(resolve6(target), -1);
+  },
   active(target) {
     const root = resolve6(target);
     const state = root?._shown ?? root?.store?.value;
@@ -14223,7 +14298,7 @@ new MutationObserver(init30).observe(document, { childList: true, subtree: true 
 var df$31 = defussGlobals();
 var dfDollar30 = defussQuery();
 var panelStates = ["default", "minimized", "maximized", "closed"];
-var SIDES2 = ["north", "south", "west", "east", "center"];
+var SIDES3 = ["north", "south", "west", "east", "center"];
 var resolve7 = (t) => typeof t === "string" ? dfDollar30("#" + CSS.escape(t)).get(0) ?? dfDollar30(t).get(0) : t;
 var toolInput = (panel, tool) => dfDollar30(panel).find(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
 function regionOf2(panel) {
@@ -14238,7 +14313,7 @@ function regionOf2(panel) {
     return parent;
   return null;
 }
-var sideOf = (region) => region ? SIDES2.find((s) => region.classList.contains(`border-layout-${s}`)) ?? null : null;
+var sideOf = (region) => region ? SIDES3.find((s) => region.classList.contains(`border-layout-${s}`)) ?? null : null;
 var hostOf = (panel) => panel.parentElement?.closest(".border-layout, [data-panel-host]") ?? null;
 function applyMarkup30(el, stateName) {
   dfDollar30(el).attr("data-minimized", stateName === "minimized" ? "" : null).attr("data-maximized", stateName === "maximized" ? "" : null);
@@ -14350,20 +14425,21 @@ var act = (t, state) => {
     panel.api.setState(state);
   return panel ?? null;
 };
-df$31.panel = {
-  minimize: (t) => act(t, "minimized"),
-  maximize: (t) => act(t, "maximized"),
-  restore: (t) => act(t, "default"),
-  close: (t) => act(t, "closed"),
-  open: (t) => act(t, "default"),
-  toggle: (t) => {
-    const panel = resolve7(t);
+var panelActions = {
+  minimize: (target) => act(target, "minimized"),
+  maximize: (target) => act(target, "maximized"),
+  restore: (target) => act(target, "default"),
+  close: (target) => act(target, "closed"),
+  open: (target) => act(target, "default"),
+  toggle: (target) => {
+    const panel = resolve7(target);
     if (!panel?.api)
       return false;
     panel.api.setState(panel.hasAttribute("data-minimized") ? "default" : "minimized");
     return panel.hasAttribute("data-minimized");
   }
 };
+df$31.panel = panelActions;
 var openersBound = false;
 function bindOpeners() {
   if (openersBound)
@@ -15675,9 +15751,13 @@ df$36.propertyGrid = {
     root.dispatchEvent(new CustomEvent("property-grid-change", { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
   },
   getProperty: (target, path) => clone(getAt(configOf4(resolve8(target)).source, toPath(path))),
-  edit: (target, path) => resolve8(target)?.api.setState("editing", { editing: pathKey(toPath(path)) }),
+  edit: (target, path) => {
+    resolve8(target)?.api.setState("editing", { editing: pathKey(toPath(path)) });
+  },
   commit: (target) => commit2(resolve8(target)),
-  cancel: (target) => resolve8(target)?.api.setState("default", { editing: null }),
+  cancel: (target) => {
+    resolve8(target)?.api.setState("default", { editing: null });
+  },
   expand(target, path) {
     const root = resolve8(target);
     const key = pathKey(toPath(path));
@@ -17535,11 +17615,13 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("lostpointercapture", onUp);
 }
 function init39() {
-  dfDollar38(".resizer:not([data-init])").toArray().forEach((wrapper) => {
+  const fresh = dfDollar38(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
     wrapper.dataset.init = "";
-    if (!targetOf(wrapper))
-      return;
+    return !!targetOf(wrapper);
+  });
+  for (const wrapper of fresh)
     wrapper._defaultSize = [currentPx(wrapper, "w"), currentPx(wrapper, "h")];
+  fresh.forEach((wrapper) => {
     bindComponent(wrapper, resizerApi);
     syncHandles(wrapper);
     const target = targetOf(wrapper);
@@ -17608,7 +17690,7 @@ var searchFilterApi = componentState({
 });
 df$40.searchFilterApi = searchFilterApi;
 df$40.searchFilterStates = searchFilterStates;
-function clear(box) {
+function clear2(box) {
   searchFilterApi.setState(box, "default", {});
   box._field.focus();
   box.dispatchEvent(new CustomEvent("search-clear", { bubbles: true }));
@@ -17635,10 +17717,10 @@ function init40() {
       if (e.key === "Escape" && field.value !== "") {
         e.preventDefault();
         e.stopPropagation();
-        clear(box);
+        clear2(box);
       }
     });
-    dfDollar39(box).find(":scope > .search-box-clear").get(0)?.addEventListener("click", () => clear(box));
+    dfDollar39(box).find(":scope > .search-box-clear").get(0)?.addEventListener("click", () => clear2(box));
     box.addEventListener("mousedown", (e) => {
       if (e.target !== field && !e.target.closest("button, a")) {
         e.preventDefault();
@@ -18000,34 +18082,34 @@ function toItem(content, { id, anchor } = {}) {
   return item;
 }
 df$41.session = {
-  append(t, content, options) {
-    const s = resolve10(t);
+  append(target, content, options) {
+    const s = resolve10(target);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
-  prepend(t, content, options) {
-    const s = resolve10(t);
+  prepend(target, content, options) {
+    const s = resolve10(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
-  scrollToEnd: (t, o) => {
-    const s = resolve10(t);
+  scrollToEnd: (target, options) => {
+    const s = resolve10(target);
     if (s)
-      follow(s, o);
+      follow(s, options);
   },
-  scrollToStart: (t, o) => {
-    const s = resolve10(t);
+  scrollToStart: (target, options) => {
+    const s = resolve10(target);
     if (s)
-      scrollToStart(s, o);
+      scrollToStart(s, options);
   },
-  scrollToMessage: (t, id, o) => {
-    const s = resolve10(t);
-    return s ? scrollToMessage(s, id, o) : false;
+  scrollToMessage: (target, id, options) => {
+    const s = resolve10(target);
+    return s ? scrollToMessage(s, id, options) : false;
   },
-  isAtEnd: (t) => {
-    const s = resolve10(t);
+  isAtEnd: (target) => {
+    const s = resolve10(target);
     return !!s && fromEnd(s._parts.viewport) <= num4(s, "threshold", 48);
   }
 };
@@ -19290,10 +19372,8 @@ var tabsApi = componentState({
 df$48.tabsApi = tabsApi;
 df$48.tabsStates = tabsStates;
 function init48() {
-  dfDollar47('[role="tablist"]:not([data-init])').toArray().forEach((tablist) => {
+  dfDollar47('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    if (!dfDollar47(tablist).find(".tab-trigger").get(0))
-      return;
     const triggers = Array.from(dfDollar47(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
@@ -19773,19 +19853,20 @@ var toastConfigure = (opts = {}) => {
   stackToasts(toastContainer);
   return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
 };
-df$50.toast = {
+var toastActions = {
   configure: toastConfigure,
   show: toastCreate,
-  success: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "success" })),
-  warning: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "warning" })),
-  info: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "info" })),
-  error: (o) => toastCreate(Object.assign(typeof o === "string" ? { title: o } : o, { variant: "destructive" })),
+  success: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "success" })),
+  warning: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "warning" })),
+  info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
+  error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
     dfDollar49(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
+df$50.toast = toastActions;
 
 // src/components/toggle/toggle.ts
 var df$51 = defussGlobals();
@@ -20752,7 +20833,7 @@ df$57.virtualList = {
       list._pendingQuery = query;
   },
   query(list, query) {
-    return virtualListApi.setState(list, "default", query);
+    virtualListApi.setState(list, "default", query);
   },
   rows(list) {
     return list._source ? list._result.entries.map((entry) => entry.row) : [];
@@ -21153,32 +21234,32 @@ function tile(scope) {
     moveTo(w, i % cols * cw, Math.floor(i / cols) * ch);
   });
 }
-df$58.win = {
+var windowActions = {
   create,
-  open: (t, config = {}) => {
-    const w = resolve11(t);
+  open: (target, config = {}) => {
+    const w = resolve11(target);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
-  close: (t) => {
-    const w = resolve11(t);
+  close: (target) => {
+    const w = resolve11(target);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
-  focus: (t) => {
-    const w = resolve11(t);
+  focus: (target) => {
+    const w = resolve11(target);
     if (w?.open)
       raise(w);
     return w;
   },
-  move: (t, x, y) => {
-    const w = resolve11(t);
+  move: (target, x, y) => {
+    const w = resolve11(target);
     return w ? moveTo(w, x, y) : null;
   },
-  resize: (t, width, height) => {
-    const w = resolve11(t);
+  resize: (target, width, height) => {
+    const w = resolve11(target);
     if (!w)
       return null;
     w.style.width = "";
@@ -21188,26 +21269,26 @@ df$58.win = {
       w.style.setProperty("--window-h", typeof height === "number" ? `${height}px` : height);
     return w;
   },
-  maximize: (t) => {
-    const w = resolve11(t);
+  maximize: (target) => {
+    const w = resolve11(target);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
-  minimize: (t) => {
-    const w = resolve11(t);
+  minimize: (target) => {
+    const w = resolve11(target);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
-  restore: (t) => {
-    const w = resolve11(t);
+  restore: (target) => {
+    const w = resolve11(target);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
-  toggleMaximize: (t) => {
-    const w = resolve11(t);
+  toggleMaximize: (target) => {
+    const w = resolve11(target);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
@@ -21217,9 +21298,10 @@ df$58.win = {
   cascade,
   tile
 };
+df$58.win = windowActions;
 init58();
 new MutationObserver(init58).observe(document, { childList: true, subtree: true });
 
-//# debugId=56E52A8D29C073B464756E2164756E21
+//# debugId=35F885BA1C7D414664756E2164756E21
 /* defuss-shadcn v0.9.5 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

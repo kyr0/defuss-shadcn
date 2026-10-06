@@ -1,0 +1,1178 @@
+/* ── components/virtual-list/virtual-list.css ── */
+/* -- Virtual List ----------------------------------------------- */
+/* Windowed list: only the rows on screen exist in the DOM. The     */
+/* sizer supplies the scrollbar length, the pool rides inside it.   */
+
+@layer components {
+  .virtual-list {
+    --virtual-list-row-height: 40px;
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+
+    /* the rows are absolutely placed inside the sizer — tell the browser it
+       need not look outside this box when painting or laying out */
+    contain: strict;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Row height is set with --virtual-list-row-height rather than a data-size
+     scale: it is a continuous measurement the scroll maths reads, and every
+     real use picks its own (a grid tile needs a different height from a text
+     row). A three-value scale would only get in the way. */
+
+  /* Height stands in for every row that could exist, so the scrollbar has the
+     right length and feel. */
+  .virtual-list-sizer {
+    position: relative;
+    width: 100%;
+  }
+
+  /* The recycled pool. Translated as a block once per frame rather than
+     repositioning every row individually. */
+  .virtual-list-rows {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    will-change: translate;
+  }
+
+  .virtual-list-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: var(--virtual-list-row-height);
+    padding-inline: 0.875rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  /* -- Grid (several items per row) --------------------------- */
+  /* data-columns turns each recycled row into a grid of cells. The row height
+     still governs the scroll maths, so make it tall enough for a whole tile. */
+  .virtual-list[data-columns] {
+    & .virtual-list-row {
+      display: grid;
+      grid-template-columns: repeat(var(--virtual-list-columns, 3), 1fr);
+      gap: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border-bottom: none;
+      background: transparent;
+
+      &:hover {
+        background: transparent;
+        color: inherit;
+      }
+    }
+  }
+
+  .virtual-list-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    font-size: 0.75rem;
+    text-align: center;
+
+    & > span {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+    }
+
+    & svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: var(--foreground);
+    }
+
+    /* Composed .image keeps its own aspect ratio and object-fit; the cell only
+       says how wide it may be. Fixed dimensions matter here because a recycled
+       cell swaps the src rather than the element — without them every scroll
+       frame would reflow the row as each new picture arrives. */
+    & > .image {
+      width: 2.75rem;
+      flex-shrink: 0;
+      background: var(--muted);
+    }
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  /* Secondary text inside a row. */
+  .virtual-list-row-meta {
+    margin-inline-start: auto;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- Loading and empty states ------------------------------- */
+  /* Both replace the rows entirely, so the pool is simply hidden. */
+  .virtual-list[data-state="loading"],
+  .virtual-list[data-state="empty"] {
+    & .virtual-list-rows {
+      display: none;
+    }
+
+    & .virtual-list-sizer {
+      height: 100% !important; /* no scrollable content in these states */
+    }
+  }
+
+  /* Both overlays hang off .virtual-list itself, not the sizer: attr() reads
+     the attribute of the element the pseudo-element belongs to, and
+     data-empty-text is authored on the list. */
+  .virtual-list[data-state="loading"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* placeholder rows, drawn rather than built from elements */
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--muted) 0,
+        var(--muted) calc(var(--virtual-list-row-height) - 1px),
+        transparent calc(var(--virtual-list-row-height) - 1px),
+        transparent var(--virtual-list-row-height)
+      );
+    opacity: 0.6;
+    animation: virtual-list-pulse 1.6s ease-in-out infinite;
+  }
+
+  .virtual-list[data-state="empty"]::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  @keyframes virtual-list-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .virtual-list,
+    .virtual-list *,
+    .virtual-list::before,
+    .virtual-list::after,
+    .virtual-list *::before,
+    .virtual-list *::after,
+    .virtual-list-row,
+    .virtual-list-row::before,
+    .virtual-list-row::after {
+      transition: none;
+      animation: none;
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .virtual-list-row {
+      border-bottom-color: var(--muted-foreground);
+    }
+
+    .virtual-list:focus-visible {
+      outline-width: 3px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .virtual-list {
+      border-color: ButtonText;
+    }
+
+    .virtual-list-row {
+      border-bottom-color: ButtonText;
+
+      &:hover {
+        background: Highlight;
+        color: HighlightText;
+      }
+    }
+
+    .virtual-list:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
+
+/* ── components/data-tree/data-tree.css ── */
+/* -- Data Tree --------------------------------------------------- */
+/* A windowed tree: the sizer gives the scrollbar its length, a      */
+/* recycled pool of items rides inside it. Depth is one custom       */
+/* property per item - indentation is CSS.                           */
+
+@layer components {
+  .data-tree {
+    --data-tree-row-height: 32px;
+    --data-tree-indent: 1.25rem;
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.875rem;
+    contain: strict;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .data-tree-sizer {
+    position: relative;
+    width: 100%;
+  }
+
+  .data-tree-items {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    padding-inline: 0.25rem;
+    will-change: translate;
+  }
+
+  .data-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: var(--data-tree-row-height);
+    padding-inline-start: calc(var(--depth, 0) * var(--data-tree-indent) + 0.25rem);
+    padding-inline-end: 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: default;
+    user-select: none;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &[aria-selected="true"] {
+      background: color-mix(in oklch, var(--primary) 14%, var(--card));
+      color: var(--foreground);
+      font-weight: 500;
+    }
+
+    /* a filter's own hits, among the ancestors kept to reach them */
+    &[data-match] .data-tree-label {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+  }
+
+  .data-tree:focus-visible .data-tree-item[data-active] {
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+
+  .data-tree-toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--radius-sm);
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      width: 0.375rem;
+      height: 0.375rem;
+      border-inline-end: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      rotate: -45deg;
+      transition: rotate 150ms ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklch, var(--foreground) 8%, transparent);
+    }
+  }
+
+  /* a leaf has no toggle - only its place, so labels line up */
+  .data-tree-item:not([aria-expanded]) .data-tree-toggle {
+    cursor: default;
+
+    &::before {
+      content: none;
+    }
+  }
+
+  .data-tree-item[aria-expanded="true"] .data-tree-toggle::before {
+    rotate: 45deg;
+  }
+
+  .data-tree-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* secondary text inside a label (counts, sizes) */
+  .data-tree-meta {
+    margin-inline-start: auto;
+    padding-inline-start: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- loading and empty -------------------------------------- */
+  .data-tree[data-state="loading"],
+  .data-tree[data-state="empty"] {
+    & .data-tree-items {
+      display: none;
+    }
+
+    & .data-tree-sizer {
+      height: 100% !important; /* nothing to scroll in these states */
+    }
+  }
+
+  .data-tree[data-state="loading"]::before {
+    content: "";
+    position: absolute;
+    inset: 0.25rem;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--muted) 0,
+      var(--muted) calc(var(--data-tree-row-height) - 6px),
+      transparent calc(var(--data-tree-row-height) - 6px),
+      transparent var(--data-tree-row-height)
+    );
+    opacity: 0.6;
+    animation: data-tree-pulse 1.6s ease-in-out infinite;
+  }
+
+  .data-tree[data-state="empty"]::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--muted-foreground);
+  }
+
+  .data-tree:not([data-empty-text])[data-state="empty"]::after {
+    content: "Nothing matches.";
+  }
+
+  @keyframes data-tree-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .data-tree,
+    .data-tree *,
+    .data-tree::before,
+    .data-tree::after,
+    .data-tree *::before,
+    .data-tree *::after,
+    .data-tree[data-state="loading"]::before {
+      transition: none;
+      animation: none;
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .data-tree {
+      border-color: var(--muted-foreground);
+    }
+
+    .data-tree:focus-visible .data-tree-item[data-active] {
+      box-shadow: inset 0 0 0 2px var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .data-tree {
+      border-color: ButtonText;
+    }
+
+    .data-tree-item[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .data-tree:focus-visible .data-tree-item[data-active] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .data-tree-toggle::before {
+      border-color: ButtonText;
+    }
+  }
+}
+
+/* ── components/data-grid/data-grid.css ── */
+/* -- Data Grid --------------------------------------------------- */
+/* One scroll container holds a sticky head and the windowed body,   */
+/* so the head and every row scroll sideways together and locked     */
+/* columns stick with position: sticky - no JS scroll syncing.       */
+
+@layer components {
+  .data-grid {
+    --data-grid-row-height: 36px;
+    --data-grid-template: repeat(4, minmax(8rem, 1fr));
+
+    display: flex;
+    flex-direction: column;
+    min-height: 12rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    font-size: 0.875rem;
+    overflow: hidden;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  /* the one scroll container: both axes */
+  .data-grid-viewport {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .data-grid-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    width: max-content;
+    min-width: 100%;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* every row - head, filters, body - lays out the same tracks */
+  .data-grid-row {
+    display: grid;
+    grid-template-columns: var(--data-grid-template);
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .data-grid-header,
+  .data-grid-cell,
+  .data-grid-filter-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    padding-inline: 0.75rem;
+    background: inherit;
+
+    &[data-locked] {
+      position: sticky;
+      z-index: 1;
+    }
+
+    &[data-align="end"] {
+      justify-content: flex-end;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  /* the last locked column draws the edge the rest scrolls under */
+  .data-grid[data-has-locked] :is(.data-grid-header, .data-grid-cell, .data-grid-filter-cell)[data-locked]:not(:has(~ [data-locked])) {
+    box-shadow: 1px 0 0 var(--border), 6px 0 8px -6px color-mix(in oklch, var(--foreground) 25%, transparent);
+  }
+
+  .data-grid-header {
+    height: var(--data-grid-row-height);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    background: var(--muted);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+
+    &[data-type="number"] {
+      justify-content: flex-end;
+    }
+
+    &[data-sortable="false"] {
+      cursor: default;
+    }
+
+    /* the sort direction, and the priority of a multisort (1, 2, …) */
+    &[aria-sort]::after {
+      content: "";
+      flex: none;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-inline-end: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      rotate: 45deg;
+      translate: 0 -0.125rem;
+      color: var(--foreground);
+    }
+
+    &[aria-sort="ascending"]::after {
+      rotate: -135deg;
+      translate: 0 0.125rem;
+    }
+
+    &[data-sort-index]::before {
+      content: attr(data-sort-index);
+      order: 2;
+      font-size: 0.6875rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--foreground);
+    }
+
+    &[aria-sort] {
+      color: var(--foreground);
+    }
+
+    &:hover {
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  /* the lock toggle: a pin that shows on hover / focus and stays when locked */
+  .data-grid-pin {
+    order: 3;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    margin-inline-start: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 120ms ease;
+
+    /* the icon is a mask over currentColor (pin), so it follows the theme */
+    &::before {
+      content: "";
+      width: 0.875rem;
+      height: 0.875rem;
+      background: currentColor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 17v5'/%3E%3Cpath d='M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z'/%3E%3C/svg%3E") center / contain no-repeat;
+      rotate: 45deg;
+    }
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .data-grid-header:is(:hover, :focus-within, [data-locked]) .data-grid-pin {
+    opacity: 1;
+  }
+
+  .data-grid-header[data-locked] .data-grid-pin {
+    color: var(--primary);
+
+    &::before {
+      rotate: 0deg;
+    }
+  }
+
+  .data-grid-header[data-type="number"] .data-grid-pin {
+    order: -1;
+    margin-inline: 0 auto;
+  }
+
+  /* -- the filter row ------------------------------------------ */
+  .data-grid-filters {
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .data-grid-filter-cell {
+    height: calc(var(--data-grid-row-height) + 4px);
+    padding-inline: 0.375rem;
+    background: var(--card);
+  }
+
+  .data-grid-filter {
+    width: 100%;
+    min-width: 0;
+    height: 1.75rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -1px;
+      border-color: var(--ring);
+    }
+  }
+
+  /* -- the windowed body ----------------------------------------- */
+  .data-grid-body {
+    position: relative;
+    width: max-content;
+    min-width: 100%;
+    contain: layout paint;
+  }
+
+  .data-grid-rows {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: max-content;
+    min-width: 100%;
+    will-change: translate;
+  }
+
+  .data-grid-body .data-grid-row {
+    height: var(--data-grid-row-height);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+
+    &:hover {
+      background: color-mix(in oklch, var(--accent) 60%, var(--card));
+    }
+
+    &[aria-selected="true"] {
+      background: color-mix(in oklch, var(--primary) 12%, var(--card));
+    }
+  }
+
+  .data-grid-cell {
+    white-space: nowrap;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  .data-grid-content {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* -- tree grid: the first column indents and carries the toggle --- */
+  .data-grid-toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-inline-start: calc(var(--depth, 0) * 1.25rem);
+    border-radius: var(--radius-sm);
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      width: 0.375rem;
+      height: 0.375rem;
+      border-inline-end: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      rotate: -45deg;
+      transition: rotate 150ms ease;
+    }
+
+    &[data-leaf] {
+      cursor: default;
+
+      &::before {
+        content: none;
+      }
+    }
+
+    &:not([data-leaf]):hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .data-grid-row[aria-expanded="true"] .data-grid-toggle::before {
+    rotate: 45deg;
+  }
+
+  /* -- footer: counts + pager --------------------------------------- */
+  .data-grid-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .data-grid-pager {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .data-grid-page-label {
+    padding-inline: 0.5rem;
+    color: var(--foreground);
+  }
+
+  .data-grid-page-btn {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+
+    /* chevrons as masks over currentColor */
+    &::before {
+      content: "";
+      width: 1rem;
+      height: 1rem;
+      background: currentColor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    &[data-page="first"]::before { mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m11 17-5-5 5-5'/%3E%3Cpath d='m18 17-5-5 5-5'/%3E%3C/svg%3E"); }
+    &[data-page="next"]::before { mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
+    &[data-page="last"]::before { mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 17 5-5-5-5'/%3E%3Cpath d='m13 17 5-5-5-5'/%3E%3C/svg%3E"); }
+
+    &:dir(rtl)::before {
+      scale: -1 1;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  /* infinite: the next page is on its way */
+  .data-grid[data-loading-more] .data-grid-status::after {
+    content: " · loading more…";
+  }
+
+  /* -- loading and empty -------------------------------------------- */
+  .data-grid[data-state="loading"],
+  .data-grid[data-state="empty"] {
+    & .data-grid-rows {
+      display: none;
+    }
+
+    & .data-grid-body {
+      height: auto !important; /* nothing to scroll in these states */
+      min-height: calc(var(--data-grid-row-height) * 4);
+    }
+  }
+
+  .data-grid[data-state="loading"] .data-grid-body {
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--muted) 0,
+      var(--muted) calc(var(--data-grid-row-height) - 1px),
+      transparent calc(var(--data-grid-row-height) - 1px),
+      transparent var(--data-grid-row-height)
+    );
+    opacity: 0.6;
+    animation: data-grid-pulse 1.6s ease-in-out infinite;
+  }
+
+  /* attr() reads the body's own attribute: init copies the grid's
+     data-empty-text onto it */
+  .data-grid[data-state="empty"] .data-grid-body::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--muted-foreground);
+  }
+
+  @keyframes data-grid-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .data-grid,
+    .data-grid *,
+    .data-grid *::before,
+    .data-grid *::after,
+    .data-grid[data-state="loading"] .data-grid-body {
+      transition: none;
+      animation: none;
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .data-grid,
+    .data-grid-head,
+    .data-grid-body .data-grid-row,
+    .data-grid-filter,
+    .data-grid-page-btn {
+      border-color: var(--muted-foreground);
+    }
+
+    .data-grid-header,
+    .data-grid-footer {
+      color: var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .data-grid,
+    .data-grid-head,
+    .data-grid-body .data-grid-row,
+    .data-grid-filter,
+    .data-grid-page-btn {
+      border-color: ButtonText;
+    }
+
+    .data-grid-body .data-grid-row[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .data-grid-cell:focus-visible,
+    .data-grid-header:focus-visible {
+      outline-color: Highlight;
+    }
+
+    .data-grid-header[aria-sort]::after,
+    .data-grid-toggle::before {
+      border-color: ButtonText;
+    }
+
+    /* masked icons paint their background - keep it the text color */
+    .data-grid-pin::before,
+    .data-grid-page-btn::before {
+      forced-color-adjust: none;
+      background: ButtonText;
+    }
+  }
+}
+
+/* ── components/autocomplete/autocomplete.css ── */
+/* -- Autocomplete ------------------------------------------------ */
+/* An input and a manual popover under it (CSS anchor positioning):  */
+/* the listbox, a status line, and the empty / error notes - which   */
+/* one shows is the root's data-state.                               */
+
+@layer components {
+  .autocomplete {
+    position: relative;
+    display: grid;
+    gap: 0.375rem;
+    width: 100%;
+  }
+
+  .autocomplete-input {
+    width: 100%;
+  }
+
+  .autocomplete-popover {
+    position: fixed;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    width: anchor-size(width);
+    min-width: 12rem;
+    max-height: min(22rem, 60dvh);
+    margin: 0.25rem 0 0;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    position-try-fallbacks: flip-block;
+
+    /* open: fade + slide in; closed: out of the layout */
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity 120ms ease, translate 120ms ease, display 120ms allow-discrete, overlay 120ms allow-discrete;
+
+    &:popover-open {
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+      translate: 0 0;
+
+      @starting-style {
+        opacity: 0;
+        translate: 0 -4px;
+      }
+    }
+  }
+
+  .autocomplete-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .autocomplete-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    cursor: default;
+    user-select: none;
+
+    &[data-active] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .autocomplete-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* secondary text in an option (a country, a count) */
+  .autocomplete-meta {
+    margin-inline-start: auto;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .autocomplete-match {
+    background: transparent;
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .autocomplete-status {
+    padding: 0.375rem 0.5rem 0.125rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .autocomplete-empty,
+  .autocomplete-error {
+    display: none;
+    padding: 0.75rem 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .autocomplete[data-state="empty"] .autocomplete-empty {
+    display: block;
+  }
+
+  .autocomplete[data-state="error"] .autocomplete-error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--destructive);
+  }
+
+  .autocomplete[data-state="empty"] .autocomplete-list,
+  .autocomplete[data-state="error"] .autocomplete-list,
+  .autocomplete[data-state="loading"] .autocomplete-list {
+    display: none;
+  }
+
+  /* first page on its way: placeholder rows, drawn rather than built */
+  .autocomplete[data-state="loading"] .autocomplete-popover::before {
+    content: "";
+    display: block;
+    height: 6rem;
+    margin: 0.25rem;
+    border-radius: var(--radius-sm);
+    background: repeating-linear-gradient(to bottom, var(--muted) 0 1.5rem, transparent 1.5rem 2rem);
+    animation: autocomplete-pulse 1.4s ease-in-out infinite;
+  }
+
+  .autocomplete-retry {
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  @keyframes autocomplete-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.35; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .autocomplete-popover,
+    .autocomplete[data-state="loading"] .autocomplete-popover::before {
+      transition: none;
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .autocomplete-popover {
+      border-color: var(--foreground);
+    }
+
+    .autocomplete-option[data-active] {
+      outline: 2px solid var(--foreground);
+      outline-offset: -2px;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .autocomplete-popover {
+      border-color: CanvasText;
+    }
+
+    .autocomplete-option[data-active] {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .autocomplete-match {
+      text-decoration: underline;
+    }
+  }
+}

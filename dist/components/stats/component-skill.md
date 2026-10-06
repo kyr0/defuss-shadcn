@@ -77,4 +77,4 @@ Link CTAs compose the [Button](../button/component-skill.md) `link` variant; `.m
 - Values are prose (`12,500+`, `38% faster`) - use `Intl.NumberFormat` in JS only if values must be localized at runtime.
 - The metric's left rule is decorative; don't reach for [Separator](../separator/component-skill.md) per item - borders scale with the text.
 - Keep metric CTA links to ≤1 per stat; more turns proof into navigation.
-- Each metric gets an accent from the chart palette (`--chart-1`…`--chart-4`, by position) on its edge rule; `.mk-stat-trend` (`data-trend="up|down"`) is a trend chip in the Statistic component's colours.
+- Each metric gets an accent from the chart palette (`--chart-1`...`--chart-4`, by position) on its edge rule; `.mk-stat-trend` (`data-trend="up|down"`) is a trend chip in the Statistic component's colours.

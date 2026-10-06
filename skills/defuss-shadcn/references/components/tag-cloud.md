@@ -10,7 +10,7 @@ supportedStates: default
 # Pattern: Tag Cloud
 
 ## Native basis
-A `<ul>` of tag links with `data-weight="1"`…`"5"` (frequency buckets) and the count in the link text for screen readers.
+A `<ul>` of tag links with `data-weight="1"`...`"5"` (frequency buckets) and the count in the link text for screen readers.
 
 ---
 

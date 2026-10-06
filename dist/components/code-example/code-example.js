@@ -579,6 +579,12 @@ function loadShiki(shikiUrl) {
     return shikiModule;
 }
 /** code → HTML of coloured spans (no wrapper), or null for plain text */
+/**
+ * The configured highlighter: code and a language → a Promise of HTML (coloured spans), or null.
+ * @param code - the source text
+ * @param language - a Shiki language id ('html', 'css', 'ts', ...)
+ * @returns the HTML of coloured spans, null when the highlighter gives none
+ */
 function highlight(code, language) {
     if (typeof config.highlight === 'function')
         return Promise.resolve().then(() => config.highlight(code, language));
@@ -881,70 +887,112 @@ function debounce(fn, wait) {
     let t = 0;
     return () => { clearTimeout(t); t = setTimeout(fn, wait); };
 }
-function vpZoomApply(root) {
-    const c = root._ce;
-    const vpZ = c.vpZ;
-    if (!vpZ)
-        return;
-    const canvas = c.resizer || c.device;
-    const manual = clamp(Math.round(Number(vpZ.value) || 0), 0, 100);
-    let z;
-    if (manual >= 25)
-        z = Math.min(manual, 100);
-    else if (c.fitFrozen)
-        return; // a user-sized canvas tracks 1:1 - the stage scrolls instead
-    else {
-        // natural width = unzoomed box (CSS zoom feeds back into layout)
-        const prev = canvas.style.zoom;
-        canvas.style.zoom = '';
-        const box = canvas.getBoundingClientRect();
+// VERIFIED: (CPU profile of diagram.html, 12 cards) layout reads and style writes run in separate
+// passes over every card at once: a read after a write forces a synchronous layout of the whole
+// page, and one per card cost ~5 s of main thread before load; batched, the page loads in ~2 s.
+/** fit each card's canvas into its stage (Auto) or apply the typed Zoom % */
+function vpZoomAll(roots) {
+    const plan = [];
+    for (const root of roots) {
+        const c = root._ce;
+        if (!c.vpZ)
+            continue;
+        const canvas = c.resizer || c.device;
+        const manual = clamp(Math.round(Number(c.vpZ.value) || 0), 0, 100);
+        if (manual >= 25)
+            plan.push({ root, canvas, z: Math.min(manual, 100) });
+        else if (!c.fitFrozen)
+            plan.push({ root, canvas, z: 0 }); // a user-sized canvas tracks 1:1 - the stage scrolls instead
+    }
+    // natural width = unzoomed box (CSS zoom feeds back into layout): clear every fitted zoom, then read
+    for (const p of plan)
+        if (!p.z)
+            p.canvas.style.zoom = '';
+    for (const p of plan) {
+        if (p.z)
+            continue;
+        const c = p.root._ce;
+        const box = p.canvas.getBoundingClientRect();
         let fit = Math.max(c.stage.clientWidth - 24, 120) / (box.width || 1);
-        if (dfDollar(root).attr('data-fullscreen') != null && (c.vpMode === 'phone' || c.vpMode === 'tablet') && box.height) {
+        if (dfDollar(p.root).attr('data-fullscreen') != null && (c.vpMode === 'phone' || c.vpMode === 'tablet') && box.height) {
             fit = Math.min(fit, Math.max(c.stage.clientHeight - 24, 120) / box.height);
         }
-        canvas.style.zoom = prev;
-        z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
+        p.z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
     }
-    canvas.style.zoom = z < 100 ? String(z / 100) : '';
-    dfDollar(root).attr('data-vp-zoom', String(z));
+    for (const p of plan) {
+        p.canvas.style.zoom = p.z < 100 ? String(p.z / 100) : '';
+        dfDollar(p.root).attr('data-vp-zoom', String(p.z));
+    }
+}
+function vpZoomApply(root) {
+    vpZoomAll([root]);
+}
+/** size each card's canvas for its viewport mode, fit it, then align a wider canvas to the stage start */
+function vpApplyAll(roots) {
+    for (const root of roots) {
+        const c = root._ce;
+        const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
+        const rawW = Number(c.vpW.value);
+        const w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
+        const rawH = Number(c.vpH.value);
+        const h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
+        if (c.resizer)
+            c.resizer.style.cssText = '';
+        c.device.style.cssText = '';
+        c.frame.style.width = '100%';
+        if (dev) {
+            if (c.resizer && w)
+                c.resizer.style.width = `${w}px`;
+            if (c.resizer && h)
+                c.resizer.style.height = `${h}px`;
+            c.frame.style.height = '100%';
+        }
+        else {
+            if (c.resizer && w)
+                c.resizer.style.width = `${w}px`;
+            if (c.frame.style.height === '100%')
+                c.frame.style.height = '';
+            send(root, 'measure');
+        }
+    }
+    vpZoomAll(roots);
+    // a device box may overflow the stage vertically; a wider measured canvas scrolls from its start
+    // (overflow first: a scrollbar changes the stage's clientWidth the measure compares against)
+    for (const root of roots) {
+        const c = root._ce;
+        c.stage.style.overflow = c.vpMode === 'phone' || c.vpMode === 'tablet' ? 'visible' : 'auto';
+    }
+    const wide = roots.map((root) => {
+        const c = root._ce;
+        const canvas = c.resizer || c.device;
+        return canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr('data-vp-zoom')) || 100) / 100) > c.stage.clientWidth - 24;
+    });
+    roots.forEach((root, i) => {
+        const c = root._ce;
+        const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
+        c.stage.style.justifyContent = !dev && wide[i] ? 'flex-start' : '';
+        dfDollar(root).attr('data-vp-mode', c.vpMode);
+        dfDollar(c.screen).attr('data-mode', c.vpMode);
+        if (c.resizer) {
+            const axis = dev ? 'both' : 'w';
+            if (dfDollar(c.resizer).attr('data-axis') !== axis)
+                dfDollar(c.resizer).attr('data-axis', axis);
+        }
+    });
 }
 function vpApply(root) {
-    const c = root._ce;
-    const dev = c.vpMode === 'phone' || c.vpMode === 'tablet';
-    const rawW = Number(c.vpW.value);
-    const w = rawW > 0 ? clamp(rawW, 240, 1600) : 0;
-    const rawH = Number(c.vpH.value);
-    const h = rawH > 0 ? clamp(rawH, 240, 1400) : 0;
-    if (c.resizer)
-        c.resizer.style.cssText = '';
-    c.device.style.cssText = '';
-    c.frame.style.width = '100%';
-    if (dev) {
-        if (c.resizer && w)
-            c.resizer.style.width = `${w}px`;
-        if (c.resizer && h)
-            c.resizer.style.height = `${h}px`;
-        c.frame.style.height = '100%';
-    }
-    else {
-        if (c.resizer && w)
-            c.resizer.style.width = `${w}px`;
-        if (c.frame.style.height === '100%')
-            c.frame.style.height = '';
-        send(root, 'measure');
-    }
-    vpZoomApply(root);
-    // a device box may overflow the stage vertically; a wider measured canvas scrolls from its start
-    const canvas = c.resizer || c.device;
-    c.stage.style.overflow = dev ? 'visible' : 'auto';
-    c.stage.style.justifyContent = !dev && canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr('data-vp-zoom')) || 100) / 100) > c.stage.clientWidth - 24 ? 'flex-start' : '';
-    dfDollar(root).attr('data-vp-mode', c.vpMode);
-    dfDollar(c.screen).attr('data-mode', c.vpMode);
-    if (c.resizer) {
-        const axis = dev ? 'both' : 'w';
-        if (dfDollar(c.resizer).attr('data-axis') !== axis)
-            dfDollar(c.resizer).attr('data-axis', axis);
-    }
+    vpApplyAll([root]);
+}
+/** the cards initialized in one pass get their first fit together, in one microtask */
+const fitQueue = new Set();
+function scheduleFit(root) {
+    if (!fitQueue.size)
+        queueMicrotask(() => {
+            const roots = [...fitQueue].filter((r) => r.isConnected);
+            fitQueue.clear();
+            vpApplyAll(roots);
+        });
+    fitQueue.add(root);
 }
 function vpSetMode(root, mode) {
     const c = root._ce;
@@ -1029,7 +1077,7 @@ function initViewport(root) {
         });
     }
     if (c.resizer) {
-        vpApply(root);
+        scheduleFit(root);
         const settle = debounce(() => vpApply(root), 120);
         // the resizer component (all.js) owns the gesture; the toolbar owns the size
         dfDollar(c.resizer).on('resizer-resize', (ev) => {
@@ -1150,7 +1198,9 @@ function leaveOverlays() {
             exitFullscreen(root);
 }
 df$.codeExample = {
-    /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it. */
+    /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it.
+     * @param options - the keys to change; the cards on the page repaint their source
+     */
     configure(options = {}) {
         for (const k of Object.keys(options))
             if (k in config)
@@ -1162,48 +1212,78 @@ df$.codeExample = {
             }
         });
     },
-    /** The card's current source. */
+    /**
+     * The card's current source.
+     * @param target - the .code-example card or its selector
+     * @returns the editor's text ('' when the target is not a card)
+     */
     source: (target) => resolveCard(target)?._ce?.src.value ?? '',
-    /** Replace the source and rerun the preview (the state stays; data-edited follows). */
+    /**
+     * Replace the source and rerun the preview (the state stays; data-edited follows).
+     * @param target - the .code-example card or its selector
+     * @param source - the new source
+     */
     setSource(target, source) {
         const root = resolveCard(target);
         if (root?.api)
             root.api.setState(readState(root).name, { ...readState(root).config, source: String(source ?? '') });
     },
-    /** Back to the authored source, rerun. */
+    /**
+     * Back to the authored source, rerun.
+     * @param target - the .code-example card or its selector
+     */
     reset(target) {
         const root = resolveCard(target);
         if (root?._ce)
             df$.codeExample.setSource(root, root._ce.original);
     },
-    /** Rebuild the preview from the current source now. */
+    /**
+     * Rebuild the preview from the current source now.
+     * @param target - the .code-example card or its selector
+     */
     run(target) {
         const root = resolveCard(target);
         if (root?._ce)
             run(root, root._ce.src.value);
     },
-    /** Switch the preview device: 'phone' | 'tablet' | 'desktop' | 'full'. */
+    /**
+     * Switch the preview device: 'phone' | 'tablet' | 'desktop' | 'full'.
+     * @param target - the .code-example card or its selector
+     * @param mode - the device width the preview takes
+     */
     viewport(target, mode) {
         const root = resolveCard(target);
         if (root?._ce && VP_MODES.includes(mode))
             vpSetMode(root, mode);
     },
-    /** Drive a state of the previewed component (a state of its schema) - the State tab's controls do the same. */
+    /**
+     * Drive a state of the previewed component (a state of its schema) - the State tab's controls do the same.
+     * @param target - the .code-example card or its selector
+     * @param name - the state's name in the component's schema
+     * @param value - its new value (the schema's type for it)
+     */
     setPreviewState(target, name, value) {
         const root = resolveCard(target);
         if (root?._ce)
             send(root, 'set-state', { state: name, value });
     },
-    /** The previewed component's observed state values (as the State tab shows them). */
+    /**
+     * The previewed component's observed state values (as the State tab shows them).
+     * @param target - the .code-example card or its selector
+     * @returns a copy of the values the preview reported, by state name
+     */
     previewState: (target) => ({ ...resolveCard(target)?._ce?.observed }),
     /** Re-read the configured theme and hand it to every preview (no rebuild - the previews keep their state). */
     refreshTheme() {
         resolveTheme().then((css) => { for (const root of registry.values())
             send(root, 'set-theme', { css }); });
     },
-    /** The configured highlighter: code and a language → a Promise of HTML (coloured spans), or null. */
     highlight,
-    /** Copy the card's source to the clipboard - resolves true when the clipboard took it. */
+    /**
+     * Copy the card's source to the clipboard.
+     * @param target - the .code-example card or its selector
+     * @returns true when the clipboard took it
+     */
     async copy(target) {
         try {
             await navigator.clipboard.writeText(resolveCard(target)?._ce?.src.value ?? '');
@@ -1250,9 +1330,7 @@ if (!document.__codeExampleInit) {
             leaveOverlays();
     });
     addEventListener('resize', debounce(() => {
-        for (const root of registry.values())
-            if (root._ce.vpZ && !root._ce.vpZ.value)
-                vpZoomApply(root);
+        vpZoomAll([...registry.values()].filter((root) => root._ce.vpZ && !root._ce.vpZ.value));
     }, 120));
 }
 // -- init -----------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ An `<article>`: the publication and a `<time>`, an optional `<blockquote>`, and 
 
 | Attribute | Behavior |
 |-----------|----------|
-| Default | A card: outlet and date, the headline, "Read on …" |
+| Default | A card: outlet and date, the headline, "Read on ..." |
 | `data-variant="quote"` | A pull quote from the article leads, in the serif face |
 | `data-variant="compact"` | A list row: outlet, headline and date on one line |
 

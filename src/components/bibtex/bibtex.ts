@@ -14,10 +14,73 @@ import { defussGlobals, defussQuery, componentState, bindComponent } from '../..
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds
+// against its code: a wrong one is a new type error and fails the build.
+
+/** A citation format - the tab order. */
+type BibtexStyle = 'bibtex' | 'apa' | 'mla' | 'chicago' | 'harvard' | 'ieee';
+
+/** One parsed BibTeX entry. */
+interface BibtexEntry {
+  /** the entry type, lowercase (article, inproceedings, book, misc, ...) */
+  type: string;
+  /** the citation key */
+  key: string;
+  /** every field's raw value as written (braces and quotes removed, macros kept) */
+  fields: Record<string, string>;
+  /** the field names in source order */
+  order: string[];
+  /** the fields written without braces or quotes (a macro like jan, a number) */
+  bare: Record<string, string>;
+}
+
+/** What format() returns. */
+interface BibtexOutput {
+  /** the formatted markup: one string for bibtex, else one reference per entry */
+  html: string | string[];
+  /** the same as plain text - what a copy takes */
+  text: string;
+  /** true when several entries became a list */
+  list: boolean;
+}
+
+/** What bibtex-format carries. */
+interface BibtexFormatDetail {
+  /** the format shown now (the element's data-format - always one it offers) */
+  format: BibtexStyle;
+  /** the text a copy takes in it */
+  text: string;
+}
+
+/** What bibtex-copy carries. */
+interface BibtexCopyDetail {
+  /** the format that was copied (the element's data-format - always one it offers) */
+  format: BibtexStyle;
+  /** the text copied */
+  text: string;
+  /** true when the clipboard took it; false: the view was selected for a manual copy */
+  ok: boolean;
+}
+
 const bibtexStates = ['default', 'copied'];
 
+/** setState() configs per state (getState() reports the format shown). */
+export interface BibtexStateConfigs {
+  /** The source shown in one format. */
+  default: {
+    /** the format to show (one the element offers); default: the authored data-format, else the first offered */
+    format?: BibtexStyle;
+  };
+  /** The copy feedback - the button says Copied and the status announces it; back to default after two seconds. */
+  copied: {
+    /** the format that was copied (default: the one shown) */
+    format?: BibtexStyle;
+  };
+}
+
 /** every format, in the order the tabs show them */
-const FORMATS = ['bibtex', 'apa', 'mla', 'chicago', 'harvard', 'ieee'];
+const FORMATS: BibtexStyle[] = ['bibtex', 'apa', 'mla', 'chicago', 'harvard', 'ieee'];
 const LABELS = { bibtex: 'BibTeX', apa: 'APA', mla: 'MLA', chicago: 'Chicago', harvard: 'Harvard', ieee: 'IEEE' };
 /** how long the copy button says "Copied" */
 const COPIED_MS = 2000;
@@ -49,8 +112,12 @@ function skipGroup(s, i) {
   return s.length;
 }
 
-/** BibTeX text → [{ type, key, fields: { name: raw value }, order: [names], bare: { name: value written without braces } }] - @comment / @preamble / @string are skipped */
-function parse(text) {
+/**
+ * BibTeX text → [{ type, key, fields: { name: raw value }, order: [names], bare: { name: value written without braces } }] - @comment / @preamble / @string are skipped
+ * @param text - BibTeX source, any number of entries
+ * @returns the entries, in source order
+ */
+function parse(text: string): BibtexEntry[] {
   const s = String(text ?? '');
   const entries = [];
   let i = 0;
@@ -75,7 +142,7 @@ function parse(text) {
       let value = '';
       let pieces = 0;
       let bareOnly = true;
-      // a value: {…}, "…", a number or a macro - pieces joined with #
+      // a value: {...}, "...", a number or a macro - pieces joined with #
       for (;;) {
         pieces++;
         if (body[p] === '{' || body[p] === '"') {
@@ -103,7 +170,7 @@ function parse(text) {
   return entries;
 }
 
-/** the month macros of BibTeX (jan … dec) */
+/** the month macros of BibTeX (jan ... dec) */
 const MONTHS = { jan: 'January', feb: 'February', mar: 'March', apr: 'April', may: 'May', jun: 'June', jul: 'July', aug: 'August', sep: 'September', oct: 'October', nov: 'November', dec: 'December' };
 /** IEEE's month abbreviations */
 const IEEE_MONTH = { January: 'Jan.', February: 'Feb.', March: 'Mar.', April: 'Apr.', May: 'May', June: 'Jun.', July: 'Jul.', August: 'Aug.', September: 'Sep.', October: 'Oct.', November: 'Nov.', December: 'Dec.' };
@@ -354,9 +421,12 @@ function format(entries, style, { align = true, highlight = true } = {}) {
 
 // -- the element ---------------------------------------------------------------------------------
 
+/** a known format name */
+const isStyle = (f: string): f is BibtexStyle => (FORMATS as readonly string[]).includes(f);
+
 /** the formats an element offers (data-formats, else every one) */
-function formatsOf(el) {
-  const own = String(dfDollar(el).attr('data-formats') ?? '').split(/[\s,]+/).filter((f) => FORMATS.includes(f));
+function formatsOf(el): BibtexStyle[] {
+  const own = String(dfDollar(el).attr('data-formats') ?? '').split(/[\s,]+/).filter(isStyle);
   return own.length ? own : FORMATS;
 }
 /** the format a state shows: its config, else the authored data-format, else the first offered */
@@ -445,7 +515,7 @@ function triggerStateChange(root, state) {
     root._shown = fmt;
     show(root, fmt);
     // Fires when the shown format changes - by a tab, the keyboard or setState; the format and the text a copy takes.
-    root.dispatchEvent(new CustomEvent('bibtex-format', { bubbles: true, detail: { format: fmt, text: root._text } }));
+    root.dispatchEvent(new CustomEvent<BibtexFormatDetail>('bibtex-format', { bubbles: true, detail: { format: fmt as BibtexStyle, text: root._text } }));
   }
   const copied = state.name === 'copied';
   dfDollar(root._bar).find('.bibtex-copy-label').text(copied ? 'Copied' : 'Copy');
@@ -486,7 +556,7 @@ async function copy(root) {
   }
   if (ok) root.api.setState('copied', { format: fmt });
   // Fires after a copy - the format, the text copied and whether the clipboard took it (false: the view was selected instead).
-  root.dispatchEvent(new CustomEvent('bibtex-copy', { bubbles: true, detail: { format: fmt, text: root._text, ok } }));
+  root.dispatchEvent(new CustomEvent<BibtexCopyDetail>('bibtex-copy', { bubbles: true, detail: { format: fmt as BibtexStyle, text: root._text, ok } }));
   return ok;
 }
 
@@ -497,16 +567,38 @@ df$.bibtex = {
   formats: FORMATS,
   /** Parse BibTeX text into entries - [{ type, key, fields, order }]; @comment, @preamble and @string are skipped. */
   parse,
-  /** Format entries (or BibTeX text) in one style - { html, text, list }: html is a string for bibtex, else one reference per entry. Options: align, highlight (bibtex). */
-  format: (entries, style, options) => format(typeof entries === 'string' ? parse(entries) : entries, style, options),
-  /** Show a format on an element (state 'default' with that format). */
-  show: (target, fmt) => resolve(target)?.api.setState('default', { format: fmt }),
-  /** Copy what an element shows - resolves true when the clipboard took it. */
-  copy: (target) => copy(resolve(target)),
-  /** The text a copy of the element takes now. */
-  text: (target) => resolve(target)?._text ?? '',
-  /** The element's parsed entries. */
-  entries: (target) => structuredClone(resolve(target)?._entries ?? []),
+  /**
+   * Format entries (or BibTeX text) in one style - { html, text, list }: html is a string for bibtex, else one reference per entry. Options: align, highlight (bibtex).
+   * @param entries - parsed entries, or BibTeX text to parse first
+   * @param style - the citation format
+   * @param options - bibtex only: align the = signs (default true), highlight the parts (default true)
+   * @returns the markup, the plain text and whether it is a list
+   */
+  format: (entries: BibtexEntry[] | string, style: BibtexStyle, options?: { align?: boolean; highlight?: boolean }): BibtexOutput => format(typeof entries === 'string' ? parse(entries) : entries, style, options),
+  /**
+   * Show a format on an element (state 'default' with that format).
+   * @param target - the .bibtex element or its selector
+   * @param fmt - the format to show (one the element offers)
+   */
+  show: (target: string | HTMLElement, fmt: BibtexStyle): void => { resolve(target)?.api.setState('default', { format: fmt }); },
+  /**
+   * Copy what an element shows.
+   * @param target - the .bibtex element or its selector
+   * @returns true when the clipboard took it; false when the view was selected for a manual copy
+   */
+  copy: (target: string | HTMLElement): Promise<boolean> => copy(resolve(target)),
+  /**
+   * The text a copy of the element takes now.
+   * @param target - the .bibtex element or its selector
+   * @returns the shown format as plain text ('' before the first render)
+   */
+  text: (target: string | HTMLElement): string => resolve(target)?._text ?? '',
+  /**
+   * The element's parsed entries.
+   * @param target - the .bibtex element or its selector
+   * @returns a copy of the entries its source holds
+   */
+  entries: (target: string | HTMLElement): BibtexEntry[] => structuredClone(resolve(target)?._entries ?? []),
 };
 
 function init() {

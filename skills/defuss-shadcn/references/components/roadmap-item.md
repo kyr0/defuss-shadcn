@@ -89,7 +89,7 @@ Built from: [Progress](progress.md).
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| vote | checkbox + sr-only "votes - vote for …" | Announced checked / not checked |
+| vote | checkbox + sr-only "votes - vote for ..." | Announced checked / not checked |
 | progress | labelled `<progress>` | "60% done" |
 
 ---

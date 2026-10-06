@@ -17,7 +17,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
    - The target project has a `package.json` / package manager → **Path A: npm**.
    - No package manager, or the goal is a standalone `.html` prototype → **Path B: jsDelivr CDN** (plain HTML, **no TypeScript, no build step**).
 2. **Include exactly three files, in this order:**
-   1. `components/core.css` - design tokens + the layout/sizing/accessibility utilities the examples use (`flex`, `gap-4`, `stack`, `sr-only` …),
+   1. `components/core.css` - design tokens + the layout/sizing/accessibility utilities the examples use (`flex`, `gap-4`, `stack`, `sr-only` ...),
    2. `components/all.css` - every component's styles,
    3. `components/all.js` as an ES module - the `df$` runtime + every component's behavior.
    (`all.css` holds component styles only: without `core.css` there are no tokens and no utilities.)
@@ -104,11 +104,11 @@ Copy this skeleton and put component markup inside `<body>`. Replace `@latest` w
 
 - **Markup from the skills, verbatim.** Every component's `component-skill.md` has a Structure section: copy it, change only content and documented attributes. One base class per component (`.btn`, `.card`, `.dialog`); variants and sizes are `data-variant` / `data-size` / `data-side` - never modifier classes (`.btn-outline` does not exist).
 - **Native elements first.** `<dialog>` for modals, the `popover` attribute for menus/tooltips, `<details>` for accordions/trees, native form controls. If you are about to write JavaScript for open/close/toggle/focus, the component already does it - re-read its skill.
-- **Colors, radius, shadows, fonts come from tokens.** Use `var(--primary)`, `var(--border)`, `var(--radius-md)`, `var(--shadow-sm)` … (the tweakcn set). Never hardcode brand colors into markup; re-theme by loading a preset from `dist/theme/` after core.
+- **Colors, radius, shadows, fonts come from tokens.** Use `var(--primary)`, `var(--border)`, `var(--radius-md)`, `var(--shadow-sm)` ... (the tweakcn set). Never hardcode brand colors into markup; re-theme by loading a preset from `dist/theme/` after core.
 - **State through the State API.** Interactive components expose `el.api.setState(name, config?)` / `el.api.getState()` per element, plus `df$.shadcn.{name}Api` / `df$.shadcn.{name}States`. Supported state names are listed per component in §4.
 - **One runtime: `df$`.** `core.js` (or `all.js`) installs the callable `df$` (defuss-query + defuss-morph) once; your own scripts may use it (`df$(sel).attr()`, `df$(container).morph(html)`), but never replace it and never define your own `window` globals. Imperative component APIs live under `df$.shadcn.*` (e.g. `df$.shadcn.toast.show({...})`).
 - **Dynamic content just works.** Every component initializes new elements automatically (MutationObserver) - insert markup, no re-init call.
-- **Layout helpers ship in `core.css`.** Sizing + layout + accessibility utilities (`flex`, `grid`, `stack`, `container`, `gap-4`, `p-6`, `w-full`, `sr-only` …) - use them instead of inline layout CSS. `shapes.css` is opt-in.
+- **Layout helpers ship in `core.css`.** Sizing + layout + accessibility utilities (`flex`, `grid`, `stack`, `container`, `gap-4`, `p-6`, `w-full`, `sr-only` ...) - use them instead of inline layout CSS. `shapes.css` is opt-in.
 - **Accessibility is built in.** Keep the ARIA attributes from the skill (roles, `aria-*`, labels with `for`); icon-only buttons need `aria-label`.
 
 ## 3. Documentation map - guides and live examples
