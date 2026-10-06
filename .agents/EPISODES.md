@@ -55,3 +55,4 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T14:07:19Z s=c273a037 FINDING package.json packageManager (bun@1.3.9) learn=none: CI itself is the check - setup-bun reads the version from package.json, so a mismatch fails stats.json fresh on the next run.
 2026-10-06T14:15:59Z s=c273a037 DONE fp=0fc3aba24cdf cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
 2026-10-06T14:15:59Z s=c273a037 FINDING vitest.config.ts / tests/helpers.ts timeouts learn=none: the CI run itself; CI=1 locally passes the diagram test with the scaled limits.
+2026-10-06T14:41:07Z s=c273a037 DONE fp=fd2ca951b1e6 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
