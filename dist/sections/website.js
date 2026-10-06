@@ -210,6 +210,7 @@ class Controller {
   off = [];
   id;
   observer;
+  bound;
   state;
   draft = new Set;
   view = "default";
@@ -250,7 +251,7 @@ class Controller {
     q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
     this.dialog = q(".cookie-consent-dialog", root)[0];
     controllers.set(root, this);
-    bindComponent2(root, cookieConsentApi);
+    this.bound = bindComponent2(root, cookieConsentApi);
     root.api = this;
     this.repaint();
     this.listen(root, "click", (event) => this.onClick(event));
@@ -366,6 +367,9 @@ class Controller {
   }
   render(state) {
     return cookieConsentApi.render(state ?? this.getState());
+  }
+  settled() {
+    return this.bound.settled();
   }
   setState(name, config = {}) {
     cookieConsentApi.setState(this.root, name, config);
@@ -881,5 +885,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=21B3FC34D4E3B0EB64756E2164756E21
+//# debugId=4433FAF8035FED1064756E2164756E21
 //# sourceMappingURL=website.js.map

@@ -142,6 +142,8 @@ class Controller {
     off = [];
     id;
     observer;
+    /** the element State API bindComponent gave the root - its settled() is the controller's */
+    bound;
     state;
     draft = new Set();
     view = 'default';
@@ -193,7 +195,7 @@ class Controller {
         // registered before the first state: the store's apply reaches the
         // controller through the registry (create() sets the same entry again)
         controllers.set(root, this);
-        bindComponent(root, cookieConsentApi);
+        this.bound = bindComponent(root, cookieConsentApi);
         root.api = this;
         this.repaint();
         this.listen(root, 'click', event => this.onClick(event));
@@ -312,6 +314,9 @@ class Controller {
      *  → render: the authored host; the dialog the views paint is runtime chrome. */
     render(state) {
         return cookieConsentApi.render(state ?? this.getState());
+    }
+    settled() {
+        return this.bound.settled();
     }
     setState(name, config = {}) {
         cookieConsentApi.setState(this.root, name, config);

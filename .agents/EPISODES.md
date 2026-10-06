@@ -46,3 +46,8 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T10:36:18Z s=c273a037 FAIL tests.unit,tests.integration.1,tests.e2e.1,coverage
 2026-10-06T10:51:22Z s=c273a037 DONE fp=cc61044c5727 cov=31.6% paths=.claude-plugin/plugin.json,AGENTS.md,Makefile,README.md(+733)
 2026-10-06T10:51:22Z s=c273a037 FINDING session process (release v0.9.6) learn=memory: a second occurrence of .agents/MEMORY.md "ending a turn while a heavy background job runs"; no repo check can see a turn ending - the release now waits in the f
+2026-10-06T13:37:26Z s=c273a037 DONE fp=8922bfa911e6 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+735)
+2026-10-06T13:37:26Z s=c273a037 FINDING src/components/cookie-consent/cookie-consent.ts Controller learn=test: tests/state-contract.test.ts calls el.api.settled() on every bound element of every interactive fixture.
+2026-10-06T13:37:26Z s=c273a037 FINDING vitest.config.ts coverage.exclude (reverted) learn=none: nothing to guard - the measurement definition is stated in .agents/VERIFY.py and the paper.
+2026-10-06T13:37:26Z s=c273a037 FINDING tests/state-contract.test.ts fixture discovery learn=test: the count assertion and the typecheck gate.
+2026-10-06T13:37:26Z s=c273a037 FINDING .github/workflows/verify.yml (new) learn=none: unobserved until its first run on GitHub (YAML parses; every step passes locally) - the run URL is reported after the push.

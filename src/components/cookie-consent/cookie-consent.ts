@@ -252,6 +252,11 @@ export interface CookieConsentInstance {
    * @returns the root's markup in that state
    */
   render(state?: DefussShadcnComponentState): string;
+  /**
+   * Wait for the last state's DOM work - the State API every element has (el.api.settled).
+   * @returns resolves once the view is painted
+   */
+  settled(): Promise<void>;
   /** Open the consent dialog. */
   open(): void;
   /** Close the dialog. */
@@ -377,6 +382,8 @@ class Controller implements CookieConsentInstance {
   readonly off: Array<() => void> = [];
   readonly id: string;
   readonly observer: MutationObserver;
+  /** the element State API bindComponent gave the root - its settled() is the controller's */
+  readonly bound: ReturnType<typeof bindComponent>;
   state: CookieConsentState;
   draft = new Set<string>();
   view: ConsentView = 'default';
@@ -423,7 +430,7 @@ class Controller implements CookieConsentInstance {
     // registered before the first state: the store's apply reaches the
     // controller through the registry (create() sets the same entry again)
     controllers.set(root, this);
-    bindComponent(root, cookieConsentApi);
+    this.bound = bindComponent(root, cookieConsentApi);
     root.api = this;
     this.repaint();
     this.listen(root, 'click', event => this.onClick(event));
@@ -530,6 +537,9 @@ class Controller implements CookieConsentInstance {
    *  → render: the authored host; the dialog the views paint is runtime chrome. */
   render(state?: DefussShadcnComponentState): string {
     return cookieConsentApi.render(state ?? this.getState());
+  }
+  settled(): Promise<void> {
+    return this.bound.settled();
   }
   setState(name: ConsentView, config: { language?: Language } = {}): void {
     cookieConsentApi.setState(this.root, name, config);

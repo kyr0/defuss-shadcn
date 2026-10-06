@@ -1,0 +1,29 @@
+# CI: the checks the local gate runs, on a clean checkout - lint, the unit tests and the static verifier.
+# WHY its own workflow, not the defuss-vae template: this repository's `make setup` assumes bun is installed,
+# and `make verify` checks a screenshot for every declared state while screenshots/ is gitignored (built
+# locally), so they are generated here first. The end-to-end suite (~250 browser files) stays local and in
+# releases (deploy.sh runs it in full); CI keeps to what a push must not break.
+name: verify
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # verify reads git history (README ↔ index commit window, changelog ↔ version)
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run lint
+      - run: bun run test:run
+      - run: bun run screenshots
+        env:
+          PAGE_TIMEOUT_MS: "60000"
+      - run: make verify

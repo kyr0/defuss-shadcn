@@ -8507,6 +8507,7 @@ class Controller {
   off = [];
   id;
   observer;
+  bound;
   state;
   draft = new Set;
   view = "default";
@@ -8547,7 +8548,7 @@ class Controller {
     q(root).append(`<dialog class="dialog cookie-consent-dialog" data-init data-ce-chrome aria-labelledby="${this.id}-title" aria-describedby="${this.id}-description"><div class="dialog-content cookie-consent-content"></div></dialog>`);
     this.dialog = q(".cookie-consent-dialog", root)[0];
     controllers2.set(root, this);
-    bindComponent(root, cookieConsentApi);
+    this.bound = bindComponent(root, cookieConsentApi);
     root.api = this;
     this.repaint();
     this.listen(root, "click", (event) => this.onClick(event));
@@ -8663,6 +8664,9 @@ class Controller {
   }
   render(state) {
     return cookieConsentApi.render(state ?? this.getState());
+  }
+  settled() {
+    return this.bound.settled();
   }
   setState(name, config = {}) {
     cookieConsentApi.setState(this.root, name, config);
@@ -21302,6 +21306,6 @@ df$58.win = windowActions;
 init58();
 new MutationObserver(init58).observe(document, { childList: true, subtree: true });
 
-//# debugId=8B7733A8D23F392964756E2164756E21
+//# debugId=63C1FBC1C9D3990A64756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map
