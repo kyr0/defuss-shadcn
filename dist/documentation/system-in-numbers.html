@@ -187,7 +187,7 @@
   :is(#sys-vae, #sys-gate) .sys-credit a { font-weight: 700; text-underline-offset: 3px; }
   /* S12-S15 skills: one pitch each - a claim, three panels, the call */
   #sys-deck .sys-skill-sub { position: absolute; left: 120px; top: 190px; width: 1240px; margin: 0; font-size: 32px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
-  #sys-deck .sys-skill-grid { position: absolute; left: 120px; top: 330px; width: 1360px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  #sys-deck .sys-skill-grid { position: absolute; left: 120px; top: 372px; width: 1360px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
   #sys-deck .sys-skill-grid &gt; div { padding: 24px 26px; border: 2px solid currentColor; border-radius: 18px; background: color-mix(in oklab, currentColor 7%, transparent); box-shadow: 0 10px 0 -4px color-mix(in oklab, currentColor 14%, transparent); font-size: 21px; font-weight: 500; line-height: 1.4; }
   :is(#sys-vae, #sys-gate, #sys-vae-skill) .sys-dg { position: absolute; left: 120px; transform-origin: 0 0; }
   :is(#sys-vae, #sys-gate, #sys-vae-skill) .sys-dg .diagram { margin: 0; }
@@ -216,6 +216,8 @@
   #sys-watch .sys-rec code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 20px; }
 
   /* S10 how to use: branching route + 4 trains */
+  /* the route sits 60px above its drawn coordinates: the bottom branch stays clear of the deck's prev / next controls */
+  #sys-wege .sys-fx, #sys-wege .sys-tl, #sys-wege .sys-trn { translate: 0 -60px; }
   #sys-wege .sys-br { fill: none; stroke: #0A1E4A; stroke-width: 14; stroke-linejoin: round; stroke-linecap: round; }
   #sys-wege .sys-term { fill: #FFFFFF; stroke: #0A1E4A; stroke-width: 7; transform-box: fill-box; transform-origin: center; }
   #sys-wege .sys-tl { position: absolute; left: 950px; width: 560px; font-size: 36px; font-weight: 800; line-height: 1.1; transform: translateY(-50%); }
@@ -507,7 +509,7 @@
     &lt;div class="sys-rows"&gt;
       &lt;div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.7s"&gt;&lt;span&gt;Verify gates&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;b data-stat="verify.gates"&gt;78&lt;/b&gt;&lt;/div&gt;
       &lt;div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"&gt;&lt;span&gt;E2E test files&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;b data-stat="verify.e2eFiles"&gt;242&lt;/b&gt;&lt;/div&gt;
-      &lt;div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"&gt;&lt;span&gt;Unit test files&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;b data-stat="stats.unitTestFiles"&gt;35&lt;/b&gt;&lt;/div&gt;
+      &lt;div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"&gt;&lt;span&gt;Unit tests&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;b data-stat="tests.tests"&gt;599&lt;/b&gt;&lt;/div&gt;
       &lt;div class="sys-row" data-df-entrance="left" style="--df-motion-delay:1.06s"&gt;&lt;span&gt;Components covered&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;b data-stat="stats.total"&gt;231&lt;/b&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;p class="sys-rec" data-df-entrance="fade" style="--df-motion-delay:1.4s"&gt;&lt;code&gt;bun scripts/verify.ts&lt;/code&gt; - &lt;span data-stat="verify.seconds" data-stat-format="s"&gt;10.2&lt;/span&gt; s on a &lt;span data-stat="verify.machine" data-stat-format="text"&gt;MacBook Air&lt;/span&gt; · &lt;span data-stat="verify.chip" data-stat-format="text"&gt;Apple M4&lt;/span&gt; (&lt;span data-stat="verify.memoryGB"&gt;24&lt;/span&gt; GB, &lt;span data-stat="verify.os" data-stat-format="text"&gt;macOS 15.7.3&lt;/span&gt;, Bun &lt;span data-stat="verify.bun" data-stat-format="text"&gt;1.4.2&lt;/span&gt;), run by &lt;span data-stat="verify.agent" data-stat-format="text"&gt;Claude Code · Opus 5.5 (high effort)&lt;/span&gt; on &lt;span data-stat="verify.date" data-stat-format="text"&gt;2026-10-05&lt;/span&gt;. Recorded by scripts/time-verify.ts - and this slide is checked against the record.&lt;/p&gt;
@@ -515,7 +517,7 @@
   &lt;/section&gt;
   &lt;!-- 11 · Use - how to use: branching route with 4 trains --&gt;
   &lt;section class="slide" data-slide id="sys-wege" data-theme="paper" data-sec="5" aria-label="How to use"&gt;
-    &lt;h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:100px"&gt;How to use?&lt;/h2&gt;
+    &lt;h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:100px"&gt;Setup&lt;/h2&gt;
     &lt;svg class="sys-fx" viewBox="0 0 1600 900" role="img" aria-label="Branching route: four ways to use defuss-shadcn"&gt;
       &lt;path class="sys-br" data-df-draw pathLength="1" style="--df-motion-delay:.2s; --df-motion-duration:.8s" d="M -20 540 H 600"&gt;&lt;/path&gt;
       &lt;path class="sys-br" data-df-draw pathLength="1" style="--df-motion-delay:.9s; --df-motion-duration:.9s" d="M 600 540 L 820 320 H 900"&gt;&lt;/path&gt;
@@ -536,7 +538,7 @@
     &lt;div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 670 470 H 900'); --d:3.5s"&gt;&lt;/div&gt;
     &lt;div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 670 610 H 900'); --d:4.6s"&gt;&lt;/div&gt;
     &lt;div class="sys-trn" style="offset-path:path('M -20 540 H 600 L 820 760 H 900'); --d:5.7s"&gt;&lt;/div&gt;
-    &lt;p class="presentation-note"&gt;How to use it: hand SKILL.md to your agent (vibe coding), add one &amp;lt;link&amp;gt; and one &amp;lt;script&amp;gt;, npm install - or vendor the component folders into your repo, the classic shadcn/ui way.&lt;/p&gt;
+    &lt;p class="presentation-note"&gt;Setup: hand SKILL.md to your agent (vibe coding), add one &amp;lt;link&amp;gt; and one &amp;lt;script&amp;gt;, npm install - or vendor the component folders into your repo, the classic shadcn/ui way.&lt;/p&gt;
   &lt;/section&gt;
   &lt;!-- 12-15 · Use - the four skills, one pitch each: the reference, plan, theme, review --&gt;
   &lt;section class="slide" data-slide id="sys-skill-ref" data-theme="ink" data-sec="5" aria-label="Skill: defuss-shadcn, the reference"&gt;

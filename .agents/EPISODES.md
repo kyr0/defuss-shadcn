@@ -4,13 +4,6 @@
 Agents append `<UTC ISO> s=<session> LESSON <VAE-DIALECT>` only for a falsified HYPOTHESIS, a dead end, or a root cause.
 A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then delete its lines. -->
 
-2026-10-06T10:27:19Z s=c273a037 DONE fp=dad739255404 cov=31.6% paths=AGENTS.md,Makefile,README.md,package.json(+348)
-2026-10-06T10:27:19Z s=c273a037 FINDING src/documentation/public/css/layout.css .site-sidebar (drawer) learn=test: documentation.e2e "mobile drawer" reads the winning declared height from the cascade (computed px cannot tell vh apart in emulation): fails on the old CSS ("cal
-2026-10-06T10:27:19Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts demoBox learn=test: the e2e itself: failed once, then 3 of 3 passes.
-2026-10-06T10:27:19Z s=c273a037 FINDING .env.example (missing) learn=verifier: the defuss-vae env.example check.
-2026-10-06T10:27:19Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.6 (self-review) learn=none: claim precision is a reading judgment; the prose catalog review is the check, no program can.
-2026-10-06T10:27:19Z s=c273a037 FINDING src/documentation/pages/paper.mdx sections 6, 7, 5.7, 12 learn=none: a reading judgment; no mechanical check distinguishes an anecdote from a result.
-2026-10-06T10:27:19Z s=c273a037 FINDING session figures supplied by the user (not written) learn=none: the figure came from a person, not a check; the paper cites the transcript as its source.
 2026-10-06T10:36:18Z s=c273a037 FAIL tests.unit,tests.integration.1,tests.e2e.1,coverage
 2026-10-06T10:51:22Z s=c273a037 DONE fp=cc61044c5727 cov=31.6% paths=.claude-plugin/plugin.json,AGENTS.md,Makefile,README.md(+733)
 2026-10-06T10:51:22Z s=c273a037 FINDING session process (release v0.9.6) learn=memory: a second occurrence of .agents/MEMORY.md "ending a turn while a heavy background job runs"; no repo check can see a turn ending - the release now waits in the f
@@ -104,3 +97,10 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T16:54:31Z s=c273a037 FINDING the previous review (process) learn=test: api-docs.e2e runs whenever src/ or scripts/ change.
 2026-10-07T16:54:31Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts inDemo learn=test: the e2e itself: failed 1 of 2 runs before, passed 4 of 4 after.
 2026-10-07T16:54:31Z s=c273a037 FINDING state config reads (limitation) learn=none: typing each apply() with its StateConfigs would let tsc check it - a change across 59 components, not made here.
+2026-10-07T17:29:50Z s=c273a037 DONE fp=fea4b93550f7 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1486)
+2026-10-07T17:29:50Z s=c273a037 FINDING src/components/code-example/code-example.ts vpApply / vpZoomApply learn=test: code-example-docs.e2e check I traces diagram.html and fails when the bundles force as many style recalcs as there are cards (HEAD bundles: 40 for 12 - fails; no
+2026-10-07T17:29:50Z s=c273a037 FINDING src/components/resizer/resizer.ts init learn=test: the same e2e check I counts forced recalcs from all.js too.
+2026-10-07T17:29:50Z s=c273a037 FINDING src/components/code-example/code-example.ts vpApplyAll (self-review) learn=none: no fixture shows a stage whose scrollbar flips the justify decision; the order is documented inline.
+2026-10-07T17:29:50Z s=c273a037 FINDING 59 src/components/*/*.ts StateConfigs + diagram.ts draw() learn=none: lint is non-blocking by project rule (AGENTS.md: no --deny-warnings), so only the clean-log discipline catches a new warning.
+2026-10-07T17:29:50Z s=c273a037 FINDING slide 10: 599 unit tests, not 35 files (user request) learn=verifier: bun run test:run wrote files 35 / tests 599 / passed 599; verify's stat figures gate checks the slide against the record.
+2026-10-07T17:29:50Z s=c273a037 FINDING slides 11-15 layout (user request) learn=none: renders of slides 10, 11 (after its entrances), 12 and 15 inspected (tmp/papers/deck-*.png); documentation e2e green.

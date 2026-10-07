@@ -115,6 +115,7 @@ defuss-shadcn/
 │   │                                     (pre-paint dark mode, SPA router, palette, nav persistence, TOC) +
 │   │                                     prefs.ts - every remembered docs choice as a persisted() store
 │   ├── data/changelog.json            ← release entries (deploy.sh writes via scripts/changelog-entry.ts)
+│   ├── data/unit-tests.json           ← the last full Vitest run's totals (files, tests, passed) - written by tests/lib/count-reporter.ts, read as the `tests.*` figure source
 │   └── public/                        ← copied verbatim to dist/documentation/: css/ fonts/ images/ videos/
 │
 ├── .github/
@@ -1429,7 +1430,10 @@ current figures verbatim as one sentence - generated from stats.json by
 footprint without a sentence that could drift.
 A figure on a doc page that states a measurement is a **`data-stat` figure**:
 `<b data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">54.0</b>`
-(`stats.*` = dist/stats.json, `verify.*` = src/documentation/data/verify-timing.json;
+(`stats.*` = dist/stats.json, `verify.*` = src/documentation/data/verify-timing.json,
+`tests.*` = src/documentation/data/unit-tests.json - the totals of the last FULL unit run,
+recorded by tests/lib/count-reporter.ts on every `bun run test:run`, since `it.each` tables
+expand at run time and no static count equals what runs;
 formats `int` `kib` `kib0` (whole KiB - cards and slides) `mib` `s` `min` `pct` `text`; a path may end in `.length`).
 `bun run figures` (scripts/stat-figures.ts) writes them all; verify's **`stat figures`**
 gate fails on any that disagrees. The flagship deck (system-in-numbers.mdx) carries

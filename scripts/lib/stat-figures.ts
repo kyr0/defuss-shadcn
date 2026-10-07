@@ -8,7 +8,10 @@
  *   <span data-stat="verify.seconds" data-stat-format="s">142.3</span>
  *
  * `stats.*` reads dist/stats.json, `verify.*` src/documentation/data/
- * verify-timing.json (scripts/time-verify.ts); a path may end in `.length`.
+ * verify-timing.json (scripts/time-verify.ts), `tests.*` src/documentation/data/
+ * unit-tests.json (tests/lib/count-reporter.ts); a path may end in `.length`.
+ * VERIFIED: (tests/stat-figures.test.ts) a figure resolves through any source prefix the
+ * caller passes; an unknown source or path is reported by name.
  * scripts/stat-figures.ts rewrites every marked figure in pages/*.mdx;
  * verify's `stat figures` gate fails when one disagrees. Pure module (no fs)
  * - tests/stat-figures.test.ts pins it.

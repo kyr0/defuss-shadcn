@@ -5,8 +5,10 @@ import { rewriteStatFigures, type StatSources } from './lib/stat-figures.ts';
 
 /**
  * Why: write every `data-stat` figure on the doc pages from its measurement
- * (scripts/lib/stat-figures.ts) - dist/stats.json (`bun run stats`) and
- * src/documentation/data/verify-timing.json (`bun scripts/time-verify.ts`).
+ * (scripts/lib/stat-figures.ts) - dist/stats.json (`bun run stats`),
+ * src/documentation/data/verify-timing.json (`bun scripts/time-verify.ts`) and
+ * src/documentation/data/unit-tests.json (recorded by every full `bun run test:run`).
+ * VERIFIED: (verify's `stat figures` gate after `bun run figures`) every page figure equals its source.
  * Run after either changes; verify's `stat figures` gate names this script
  * when a figure lags.
  */
@@ -20,6 +22,7 @@ export function statSources(root: string): StatSources {
   return {
     stats: json(join(root, 'dist', 'stats.json')),
     verify: json(join(root, 'src', 'documentation', 'data', 'verify-timing.json')),
+    tests: json(join(root, 'src', 'documentation', 'data', 'unit-tests.json')),
   };
 }
 

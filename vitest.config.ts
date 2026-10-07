@@ -29,5 +29,7 @@ export default defineConfig({
       instances: [{ browser: 'chromium' }],
     },
     testTimeout: 10000 * TIMEOUT_SCALE, // 10 seconds; 30 on CI
+    // a full run records its totals as src/documentation/data/unit-tests.json (tests/lib/count-reporter.ts)
+    reporters: ['default', './tests/lib/count-reporter.ts'],
   },
 });
