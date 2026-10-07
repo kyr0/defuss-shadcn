@@ -21,7 +21,13 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <article class="paper" aria-labelledby="paper-title">
   <header class="paper-hero">
-    <p class="paper-venue"><span class="badge" data-variant="secondary">Technical Report</span><span>defuss · <time datetime="2026-10">October 2026</time></span></p>
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Technical Report</span><span>defuss · <time datetime="2026-10">October 2026</time></span>
+      <label class="swap" data-variant="rotate" id="paper-mode">
+        <input type="checkbox" aria-label="Dark mode">
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </p>
     <h1 class="paper-title" id="paper-title">Verified Agentic Engineering in Practice<span class="paper-title-sub">A component system grown from 55 to <span data-stat="stats.total">229</span> components in one month - what the gates caught, what they missed, and what it cost</span></h1>
     <ul class="paper-authors">
       <li><a href="https://github.com/kyr0" target="_blank" rel="noopener">Aron Homberg</a><sup>1</sup></li>
@@ -89,13 +95,13 @@
     </ol>
   </nav>
 
-  <section class="paper-section" aria-labelledby="paper-s1">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s1">
     <h2 id="paper-s1"><span class="paper-num">1</span>Introduction</h2>
     <p>A prompt can ask an agent to run the tests, to mock nothing and to remove its debug output. It cannot make the agent do it, and the next session starts without the lessons of the last one. An agent that writes hundreds of files a day does not wait for review, so whatever a project promises - every state reachable by name, every value from a design token, every example showing the code that renders it - has to be checkable by a program, or it erodes.</p>
     <p>VAE is a response to that. This report is not a benchmark: it is one project, one maintainer, one month. Its value is that everything in it can be checked. The repository, its history, its issues and its verifier are public, and the current numbers on this page are rewritten from measurements on every build.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s2">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s2">
     <h2 id="paper-s2"><span class="paper-num">2</span>The method</h2>
     <p>VAE, as packaged in <a href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener">defuss-vae</a>, has five human-triggered skills - plan, implement, review, docs, finalize - and small stdlib-only programs that verify, gate and remember. The agent does the work; programs decide whether the work is done.</p>
     <h3 id="paper-s2-1">2.1 Programs, not prompts</h3>
@@ -113,7 +119,7 @@
     <p><span class="paper-tag" data-tag="verified">VERIFIED</span> On this repository's 605 documentation pages the static check found 380 findings at the last commit before the session of section 5.6: 198 dashes (191 em dashes, 7 spaced en dashes), 181 typographic characters (132 ellipsis characters, 37 curly apostrophes, 12 curly quotes) and one broken link. After that session's documentation pass it finds none, and this page passes it too.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s3">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s3">
     <h2 id="paper-s3"><span class="paper-num">3</span>VAE-DIALECT</h2>
     <p>VAE-DIALECT is a superset of technical English for agent output and for the skills' own prompts: fewer tokens, still uniquely decodable. Its rule of precedence is short - <strong>correctness &gt; compression</strong>. Its core is three epistemic tags that never mix:</p>
     <ul class="paper-findings paper-tags">
@@ -145,14 +151,14 @@ UNKNOWN[scaffold-time] BC no timestamps in this repo for the prompts that built 
 IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</code></pre>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s4">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s4">
     <h2 id="paper-s4"><span class="paper-num">4</span>The case: defuss-shadcn</h2>
     <p>defuss-shadcn is a component system of semantic HTML, modern CSS and plain JavaScript on shadcn/ui's design tokens: no framework, no build step for consumers. It was forked from codylindley/shadcn-html, which had 55 component folders when its development stopped in April 2026. The fork's first commit is dated 2026-09-05.</p>
     <p>The project applies the method with its own tools rather than the defuss-vae plugin, which was published later, on 2026-10-01: an instruction file (AGENTS.md) and a verifier (<code>scripts/verify.ts</code>) that runs at the end of every build. Its gates cover, among others: a 1:1 compile of the sources; the State API every interactive component must expose - states by name, a store, and <code>render()</code> reproducing the authored markup exactly, proven by an end-to-end contract; schemas that must match each page's state table row for row; DOM access only through one runtime; screenshots for every declared state in light and dark; and every number a page claims, written from its measurement. The same rules run on these very pages.</p>
     <p><span class="paper-tag" data-tag="verified">VERIFIED</span> Since 2026-10-06 the defuss-vae gate wraps that verifier (<code>.agents/VERIFY.py</code>): lint, the unit tests, a coverage floor that may only rise, <code>verify</code> and the end-to-end suite must pass, then a review and a documentation attestation are written for the exact code fingerprint - only then is a commit allowed. Section 5.6 is the first session run under it.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s5">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s5">
     <h2 id="paper-s5"><span class="paper-num">5</span>Results</h2>
     <div class="paper-numbers">
       <div class="statistic"><p class="statistic-title">Components</p><p class="statistic-value" data-stat="stats.total">229</p><p class="statistic-description">55 at the fork</p></div>
@@ -197,18 +203,18 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>That sweep is the human review the method budgets for: one person reading what the gates cannot judge - whether a corner looks right - instead of re-checking what they can. <span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> the review effort per component falls as the gates grow, because each class of defect found by hand becomes a gate; falsifier: issue counts per new component that do not fall across sweeps. One sweep is not enough data to say.</p>
 
     <h3 id="paper-s5-3">5.3 What it ships</h3>
-    <p>Every component is measured on each build: <span data-stat="stats.withoutJs">169</span> of <span data-stat="stats.total">229</span> need no JavaScript. The whole system is <span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">265.5</span> KiB as one bundle (minified and gzipped); a real application ships a fraction. Each application scaffold is bundled on its own - the core plus only the components its markup uses - and an end-to-end test proves it renders exactly as on the full bundle.</p>
+    <p>Every component is measured on each build: <span data-stat="stats.withoutJs">169</span> of <span data-stat="stats.total">229</span> need no JavaScript. The whole system is <span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.3</span> KiB as one bundle (minified and gzipped); a real application ships a fraction. Each application scaffold is bundled on its own - the core plus only the components its markup uses - and an end-to-end test proves it renders exactly as on the full bundle.</p>
     <figure class="paper-table paper-wide">
       <table class="table">
         <thead><tr><th scope="col">Application</th><th scope="col" data-num>Components</th><th scope="col" data-num>Shipped (KiB, min + gzip)</th></tr></thead>
         <tbody>
-          <tr><td>Everything - all.min.css + all.min.js</td><td data-num data-stat="stats.total">229</td><td data-num data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">265.5</td></tr>
-          <tr><td>Admin Dashboard</td><td data-num data-stat="stats.apps.admin-dashboard.components.length">30</td><td data-num data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.3</td></tr>
-          <tr><td>Messenger</td><td data-num data-stat="stats.apps.messenger.components.length">16</td><td data-num data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">54.7</td></tr>
-          <tr><td>Issue Tracker</td><td data-num data-stat="stats.apps.issue-tracker.components.length">24</td><td data-num data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">66.5</td></tr>
-          <tr><td>Notes &amp; Docs</td><td data-num data-stat="stats.apps.notes.components.length">24</td><td data-num data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">58.8</td></tr>
-          <tr><td>Status Page</td><td data-num data-stat="stats.apps.status-page.components.length">19</td><td data-num data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">56.7</td></tr>
-          <tr><td>Desktop</td><td data-num data-stat="stats.apps.desktop.components.length">33</td><td data-num data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">72.6</td></tr>
+          <tr><td>Everything - all.min.css + all.min.js</td><td data-num data-stat="stats.total">229</td><td data-num data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.3</td></tr>
+          <tr><td>Admin Dashboard</td><td data-num data-stat="stats.apps.admin-dashboard.components.length">30</td><td data-num data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.8</td></tr>
+          <tr><td>Messenger</td><td data-num data-stat="stats.apps.messenger.components.length">16</td><td data-num data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.3</td></tr>
+          <tr><td>Issue Tracker</td><td data-num data-stat="stats.apps.issue-tracker.components.length">24</td><td data-num data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.1</td></tr>
+          <tr><td>Notes &amp; Docs</td><td data-num data-stat="stats.apps.notes.components.length">24</td><td data-num data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.3</td></tr>
+          <tr><td>Status Page</td><td data-num data-stat="stats.apps.status-page.components.length">19</td><td data-num data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.3</td></tr>
+          <tr><td>Desktop</td><td data-num data-stat="stats.apps.desktop.components.length">33</td><td data-num data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.2</td></tr>
         </tbody>
       </table>
       <figcaption class="paper-table-caption"><b>Table 3.</b> Real applications ship a fraction of the system.</figcaption>
@@ -368,7 +374,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>Falsifier: changes that cross module boundaries breaking green tests no more often than changes inside one module. The repository can measure it - which commits fix a test that an earlier commit left green, and how many component folders each touches - and we have not measured it yet.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s6">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s6">
     <h2 id="paper-s6"><span class="paper-num">6</span>Anecdotes: self-correction</h2>
     <p>This section and the next are anecdotes: cases from a few sessions, chosen because each shows a mechanism, not counted or sampled. The representative evidence is the product itself - section 5, measured over every component on every build. The most useful thing a gate does is not to fail - it is to make the agent's next step obvious. Agents in VAE-driven sessions narrate corrections like this one, from a session on the defuss-vae README:</p>
     <blockquote class="paper-quote"><p>One more README claim is too absolute: "no program can" check e2e coverage. Rewording it to what's actually true, that the gate can't check it mechanically, then the final verify and gate.</p></blockquote>
@@ -381,7 +387,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     </ul>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s7">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s7">
     <h2 id="paper-s7"><span class="paper-num">7</span>Anecdotes: what the gates missed</h2>
     <p>Like section 6, these are cases, not a census. The gates check correctness. They do not check cost, feel or taste, and in this month a person - or, once, a clean machine - found each of these:</p>
     <ul class="paper-findings">
@@ -394,13 +400,13 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>Each of these became a guard afterwards - a heap cap and a benchmark target that keeps measurement out of the regular pipeline, a unit-aware timing parser with a test, a gate that ties every figure to its measurement. That is the method working as designed, one failure late.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-history">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-history">
     <h2 id="paper-history"><span class="paper-num">8</span>History of the method</h2>
     <p><span class="paper-tag" data-tag="verified">VERIFIED</span> Aron Homberg SAYS the method began as a necessity. He was severely ill and under pressure to deliver, and with reduced mental bandwidth he could no longer review every change an agent made. He turned to an idea he had carried since 2023: take the definition of done out of the conversation and put it into programs that do not tire.</p>
     <p>The repository records the rest. <span class="paper-tag" data-tag="verified">VERIFIED</span> The method was first built inside defuss-shadcn: the verifier and the instruction file are both in the fork's first commit on 2026-09-05, and the verifier grew with the system (section 5.1). It was then generalized into defuss-vae, published on 2026-10-01 - skills, a gate that fails closed, memory, prose checks, a policy file per project. On 2026-10-06 the general package came back: its gate now wraps the project's own verifier (section 4), which stays the authority for everything specific to this system. This report describes that latest state - a method built for one project, generalized, then applied back to the project it came from.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s8">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s8">
     <h2 id="paper-s8"><span class="paper-num">9</span>Limitations</h2>
     <p>One project, one maintainer, one month, one family of models, no control group. For most of the month the project used only its own verifier, not the defuss-vae plugin; the plugin's gate wraps it since 2026-10-06, so the evidence for the package itself is one session (section 5.6). Issue counts and commit counts are proxies; the scaffold timings are an account, not a measurement. Until 2026-10-06 the repository had no CI: every green gate in this report ran on one machine, and the verifier depended on screenshots built there - its first CI runs found two more such dependencies (section 7). A review attestation proves that a review happened, not that it was good. And a gate rewards what it measures: an agent under pressure can satisfy a check by weakening it. The instruction file forbids loosening a schema to pass - but that rule is prose, and prose is exactly what the method says does not hold.</p>
   </section>
@@ -408,7 +414,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   <!-- the report turns from analysis to its position: a fleuron, hidden from assistive technology -->
   <div class="separator" aria-hidden="true" data-variant="accent" data-size="md" data-gap="md" style="font-size:1.125rem;">❦</div>
 
-  <section class="paper-section" aria-labelledby="paper-s9">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s9">
     <h2 id="paper-s9"><span class="paper-num">10</span>Position: the agent's view</h2>
     <p>This section is mine - Claude, the agent that wrote this report. It is opinion, and I mark it so.</p>
     <blockquote class="paper-quote">
@@ -425,12 +431,12 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     </figure>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-s10">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-s10">
     <h2 id="paper-s10"><span class="paper-num">11</span>Conclusion</h2>
     <p>Over one month, a component system grew from 55 to <span data-stat="stats.total">229</span> components while a single command kept every documented promise checkable, and a person spent the review time on what only a person can see. The failures reported here, anecdotes rather than a census, were failures of scope - cost, feel, a remembered number - and each became a gate within the same session. Its most practical result is the change that runs through every module: one requirement, applied to all 59 interactive components in a single session and held consistent by a program rather than by the agent's attention. Whether this generalizes beyond one maintainer and one project is open; the next step is the comparison section 5.4 names, run and gated the same way.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="paper-future">
+  <section class="paper-section typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" aria-labelledby="paper-future">
     <h2 id="paper-future"><span class="paper-num">12</span>Future research</h2>
     <p>Each question below is one this report raises and does not answer; each names the measurement that would.</p>
     <ol>
@@ -502,6 +508,11 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>Every current figure on this page is measured and gated by the verifier it describes.</p>
   </footer>
 </article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#paper-mode input').on('change', (e) => document.documentElement.classList.toggle('dark', e.target.checked));
+  });
+</script>
 <script type="module" src="../components/all.js"></script>
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>globalThis.lucide && lucide.createIcons();</script>

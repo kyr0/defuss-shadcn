@@ -31,8 +31,18 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <p>A theme that is round in light mode and square in dark mode is two themes. defuss-shadcn treats light and dark as two palettes of one identity: every preset declares its radius in both blocks with the same value, a verifier gate fails the build otherwise, and the reading pairs reach 4.5:1 in both modes.</p>
   </section>
 
+  <nav class="paper-toc" aria-labelledby="pd-toc">
+    <h2 id="pd-toc">Contents</h2>
+    <ol>
+      <li><a href="#pd-s1"><span class="paper-num">1</span>The shape stays</a></li>
+      <li><a href="#pd-s2"><span class="paper-num">2</span>The switch</a></li>
+      <li><a href="#pd-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
   <section class="paper-section" aria-labelledby="pd-s1">
-    <h2 id="pd-s1">The shape stays</h2>
+    <h2 id="pd-s1"><span class="paper-num">1</span>The shape stays</h2>
     <p>Five of the 43 presets, as their files declare them:</p>
     <figure class="paper-table">
       <table class="table">
@@ -50,8 +60,47 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   </section>
 
   <section class="paper-section" aria-labelledby="pd-s2">
-    <h2 id="pd-s2">The switch</h2>
+    <h2 id="pd-s2"><span class="paper-num">2</span>The switch</h2>
     <p>The Swap is a label around a checkbox; CSS turns the sun into the moon. The page listens to the checkbox and toggles <code>.dark</code> on the root element - the token file's dark block matches it, so every component follows without a second stylesheet.</p>
+  </section>
+  <section class="paper-bibtex" aria-labelledby="pd-cite">
+    <h2 id="pd-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026darkmode,
+  title = {One Identity, Two Palettes},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-dark-mode.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@misc{w3c2023wcag22,
+  author = {{W3C}},
+  title = {Web Content Accessibility Guidelines (WCAG) 2.2},
+  year = {2023},
+  howpublished = {W3C Recommendation},
+  url = {https://www.w3.org/TR/WCAG22/}
+}
+
+@misc{shadcn2023ui,
+  author = {shadcn},
+  title = {shadcn/ui},
+  year = {2023},
+  url = {https://ui.shadcn.com}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
   </section>
 </article>
 <script>

@@ -62,6 +62,14 @@
       &[data-align="start"]::before { display: none; }
       &[data-align="end"]::after { display: none; }
 
+      /* a bare glyph - an asterism, a dinkus, a fleuron - without the lines.
+         VERIFIED: (separator.e2e "data-line=none") no pseudo lines, centred */
+      &[data-line="none"] {
+        justify-content: center;
+
+        &::before, &::after { display: none; }
+      }
+
       &[data-orientation="vertical"] {
         flex-direction: column;
         width: auto;

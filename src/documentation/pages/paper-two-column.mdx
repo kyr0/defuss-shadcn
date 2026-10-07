@@ -13,6 +13,7 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
 </PageHeader>
 
 ```html example label="Movable type on the web" schema="none" hint="The body is one .typeset in the paper's wide track: data-columns='2' data-rule data-align='justify' data-indent data-initial='drop' data-lead='smallcaps' data-ligatures='classic', lang='en' for the hyphenation. Headings and the figure carry .typeset-span and cross both columns. Switch the preview to Phone."
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <article class="paper" data-variant="classic" aria-labelledby="p2-title">
   <header class="paper-hero">
     <p class="paper-venue"><span>Journal of Web Typography · Vol. 1 · <time datetime="2026-10">October 2026</time></span></p>
@@ -25,11 +26,22 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <p>Book typography set its text by rules a compositor applied by hand: justified columns, hyphenation, an indent instead of a blank line, an initial at the opening, small capitals for its first line, ligatures and old-style figures. Each rule now has a CSS property. We collect them in one typesetting block and show that a two-column page set with them reads like print on a wide screen and like a book page on a phone.</p>
   </section>
 
-  <div class="typeset paper-wide" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic">
-    <h2 class="h3 typeset-span"><span class="paper-num">1</span> The column</h2>
+  <nav class="paper-toc" aria-labelledby="p2-toc">
+    <h2 id="p2-toc">Contents</h2>
+    <ol>
+      <li><a href="#p2-s1"><span class="paper-num">1</span>The column</a></li>
+      <li><a href="#p2-s2"><span class="paper-num">2</span>The paragraph</a></li>
+      <li><a href="#p2-s3"><span class="paper-num">3</span>The letter</a></li>
+      <li><a href="#p2-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
+  <div class="typeset typeset-numbered paper-wide" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic">
+    <h2 class="h3 typeset-span" id="p2-s1"><span class="paper-num">1</span> The column</h2>
     <p>A printed column is a measure of even grey. The compositor justified each line by adding space between words and, where the space grew too wide, broke a word at a syllable. On the web the same work is done by text-align: justify and hyphens: auto, provided the block names its language; the browser then hyphenates by the rules of that language and keeps the last line of each paragraph flush to the start.</p>
     <p>Two columns halve the measure and keep the line within the sixty to seventy characters a reader takes in at a glance. The column property takes a count and a minimum width; when the page grows too narrow for two columns of that width, the block sets one, and the phone reads a single column without a separate layout.</p>
-    <h2 class="h3 typeset-span"><span class="paper-num">2</span> The paragraph</h2>
+    <h2 class="h3 typeset-span" id="p2-s2"><span class="paper-num">2</span> The paragraph</h2>
     <p>A book separates its paragraphs by an indent of one em, not by a blank line: the column stays whole, and the eye finds a new thought by its first line alone. The first paragraph after a heading starts flush - the heading has already opened it. The initial-letter property sinks the first letter of the opening paragraph three lines deep, and the first line follows in small capitals.</p>
     <figure class="paper-table typeset-span">
       <table class="table">
@@ -42,13 +54,75 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
           <tr><td>Ligatures, old-style figures</td><td><code>font-variant-ligatures</code>, <code>font-variant-numeric</code></td></tr>
         </tbody>
       </table>
-      <figcaption class="paper-table-caption"><b>Table 1.</b> Each rule is one data attribute of the typeset block.</figcaption>
+      <figcaption class="typeset-caption" data-align="center">Each rule is one data attribute of the typeset block.</figcaption>
     </figure>
-    <h2 class="h3 typeset-span"><span class="paper-num">3</span> The letter</h2>
+    <div class="separator typeset-span" aria-hidden="true" data-line="none">⁂</div>
+    <h2 class="h3 typeset-span" id="p2-s3"><span class="paper-num">3</span> The letter</h2>
     <p>Ligatures such as fi, fl and ffi, discretionary ones such as ct and st, and old-style figures that sit in the line like lowercase letters - 1450, 1469, 2026 - render where the font carries them; a font without the features sets the plain forms and loses nothing else.</p>
+    <figure class="typeset-group typeset-span">
+      <figure>
+        <div class="chart" style="height: 8rem;" role="img" aria-label="Bar chart: lines per page in this paper's two settings - one column 38, two columns 76" data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["One column","Two columns"]},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[38,76],"label":{"show":true,"position":"top"}}]}'></div>
+        <figcaption class="typeset-subcaption">Lines per page, illustrative.</figcaption>
+      </figure>
+      <figure>
+        <img src="images/mk-wide.png" alt="A placeholder scene, neutral grey">
+        <figcaption class="typeset-subcaption">A picture spanning its cell.</figcaption>
+      </figure>
+      <figure>
+        <table class="table"><tbody><tr><td>Measure</td><td>60-70 ch</td></tr><tr><td>Leading</td><td>1.65</td></tr><tr><td>Indent</td><td>1 em</td></tr></tbody></table>
+        <figcaption class="typeset-subcaption">The setting in numbers.</figcaption>
+      </figure>
+      <figcaption class="typeset-caption" data-align="justify">A chart, a picture and a table in one dense box across both columns; each part lettered, the whole numbered with the paper's figures.</figcaption>
+    </figure>
   </div>
+  <section class="paper-bibtex" aria-labelledby="p2-cite">
+    <h2 id="p2-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026movabletype,
+  title = {Movable Type on the Web: The Compositor's Rules as Stylesheet Properties},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-two-column.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@book{bringhurst2004elements,
+  author = {Bringhurst, Robert},
+  title = {The Elements of Typographic Style},
+  edition = {3},
+  publisher = {Hartley \& Marks},
+  address = {Vancouver},
+  year = {2004}
+}
 
-  <footer class="paper-footer"><p>Set with Modern Paper (classic) and Typography's typeset block.</p></footer>
+@book{tschichold1928typographie,
+  author = {Tschichold, Jan},
+  title = {Die neue Typographie},
+  publisher = {Verlag des Bildungsverbandes der Deutschen Buchdrucker},
+  address = {Berlin},
+  year = {1928}
+}
+
+@misc{w3c-css-inline-3,
+  author = {{W3C}},
+  title = {CSS Inline Layout Module Level 3},
+  howpublished = {W3C Working Draft},
+  url = {https://www.w3.org/TR/css-inline-3/}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
+  </section>
 </article>
 ```
 

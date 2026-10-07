@@ -30,6 +30,17 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <p>A research page, a journal article and a lab note share their parts: a title block, an abstract, numbered sections, tables. What differs is the house style. Modern Paper keeps the parts and lets one attribute choose the style, so an author can change the look of a finished paper without touching its markup.</p>
   </section>
 
+  <nav class="paper-toc" aria-labelledby="ps-toc">
+    <h2 id="ps-toc">Contents</h2>
+    <ol>
+      <li><a href="#ps-s1"><span class="paper-num">1</span>Modern</a></li>
+      <li><a href="#ps-s2"><span class="paper-num">2</span>Classic</a></li>
+      <li><a href="#ps-s3"><span class="paper-num">3</span>Minimal</a></li>
+      <li><a href="#ps-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
   <section class="paper-section" aria-labelledby="ps-s1">
     <h2 id="ps-s1"><span class="paper-num">1</span>Modern</h2>
     <p>The default is a project page: a centred title block, serif headings over a sans body, ruled section heads and a tinted abstract with an accent edge.</p>
@@ -43,6 +54,47 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   <section class="paper-section" aria-labelledby="ps-s3">
     <h2 id="ps-s3"><span class="paper-num">3</span>Minimal</h2>
     <p>The minimal style is a lab note: everything flush start, a sans title, the abstract under a hairline instead of a tint, no rules under the heads.</p>
+  </section>
+  <section class="paper-bibtex" aria-labelledby="ps-cite">
+    <h2 id="ps-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026housestyles,
+  title = {Three House Styles: One Set of Parts, Three Ways to Set Them},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-styles.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@book{bringhurst2004elements,
+  author = {Bringhurst, Robert},
+  title = {The Elements of Typographic Style},
+  edition = {3},
+  publisher = {Hartley \& Marks},
+  address = {Vancouver},
+  year = {2004}
+}
+
+@inproceedings{park2021nerfies,
+  author = {Keunhong Park and Utkarsh Sinha and Jonathan T. Barron and Sofien Bouaziz and Dan B. Goldman and Steven M. Seitz and Ricardo Martin-Brualla},
+  title = {Nerfies: Deformable Neural Radiance Fields},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages = {5865--5874},
+  year = {2021}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
   </section>
 </article>
 <script>

@@ -141,16 +141,18 @@ await cssSmoke('typography', [
     },
   },
   {
-    label: 'typeset: a drop initial over three lines, the opening line in small capitals, classic ligatures and old-style figures',
+    label: 'typeset: a drop initial over three lines with its gap; beside it the small-caps lead sets capitals (the line top meets the initial); classic ligatures, old-style figures',
     run: async (page) => {
       const r = await page.evaluate(() => {
         const p = document.getElementById('ty-set-p1')!;
         const letter = getComputedStyle(p, '::first-letter');
         const set = getComputedStyle(document.getElementById('ty-set')!);
-        return { initial: letter.getPropertyValue('initial-letter'), caps: getComputedStyle(p, '::first-line').fontVariantCaps, lig: set.fontVariantLigatures, num: set.fontVariantNumeric };
+        const line = getComputedStyle(p, '::first-line');
+        return { initial: letter.getPropertyValue('initial-letter'), gap: letter.marginInlineEnd, caps: line.fontVariantCaps, upper: line.textTransform, lig: set.fontVariantLigatures, num: set.fontVariantNumeric };
       });
       assert.equal(r.initial, '3');
-      assert.equal(r.caps, 'all-small-caps');
+      assert.ok(parseFloat(r.gap) > 0, `the initial keeps a gap to the text: ${r.gap}`);
+      assert.deepEqual([r.caps, r.upper], ['normal', 'uppercase']);
       assert.ok(/discretionary-ligatures/.test(r.lig) && /historical-ligatures/.test(r.lig), r.lig);
       assert.ok(/oldstyle-nums/.test(r.num), r.num);
     },
@@ -164,6 +166,59 @@ await cssSmoke('typography', [
       });
       assert.ok(r.wide > 200, `the wide block should set a second column: ${JSON.stringify(r)}`);
       assert.equal(r.narrow, 0);
+    },
+  },
+  {
+    label: 'typeset: the lead without an initial - small capitals, or letterspaced capitals',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const line = (id: string) => getComputedStyle(document.getElementById(id)!, '::first-line');
+        return [line('ty-lead-sc-p').fontVariantCaps, line('ty-lead-caps-p').textTransform, line('ty-lead-caps-p').letterSpacing];
+      });
+      assert.equal(r[0], 'all-small-caps');
+      assert.equal(r[1], 'uppercase');
+      assert.ok(parseFloat(r[2]) > 0, r[2]);
+    },
+  },
+  {
+    label: 'typeset: leading tight / normal / loose with matched tracking (-0.01em / 0 / +0.01em)',
+    run: async (page) => {
+      const r = await page.evaluate(() => ['ty-tight', 'ty-normal', 'ty-loose'].map((id) => { const cs = getComputedStyle(document.getElementById(id)!); return [Math.round(parseFloat(cs.lineHeight) * 100) / 100, cs.letterSpacing === 'normal' ? 0 : Math.round(parseFloat(cs.letterSpacing) * 1000) / 1000]; }));
+      // 14px body: 1.45 / 1.65 / 1.9 line height, -0.14 / 0 / +0.14 px tracking
+      assert.deepEqual(r, [[20.3, -0.14], [23.1, 0], [26.6, 0.14]]);
+    },
+  },
+  {
+    label: 'typeset: every block keeps --typeset-gap (1.5em) from the text, figures span the measure',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        return { fig: [cs('ty-cap-fig').marginTop, cs('ty-cap-fig').marginBottom, cs('ty-cap-fig').marginLeft], tbl: cs('ty-cap-tbl').marginTop, sep: cs('ty-sep-asterism').marginTop, group: cs('ty-group').marginTop };
+      });
+      assert.deepEqual(r, { fig: ['21px', '21px', '0px'], tbl: '21px', sep: '21px', group: '21px' });
+    },
+  },
+  {
+    label: 'captions: numbered in order, figures and tables apart, aligned start / centre / justify',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const before = (id: string) => getComputedStyle(document.getElementById(id)!, '::before').content;
+        const align = (id: string) => getComputedStyle(document.getElementById(id)!).textAlign;
+        return { labels: ['ty-cap-1', 'ty-cap-t1', 'ty-cap-2', 'ty-cap-3'].map(before), align: ['ty-cap-1', 'ty-cap-t1', 'ty-cap-2'].map(align) };
+      });
+      assert.deepEqual(r.labels, ['"Figure " counter(typeset-figure) ". "', '"Table " counter(typeset-table) ". "', '"Figure " counter(typeset-figure) ". "', '"Figure " counter(typeset-figure) ". "']);
+      assert.deepEqual(r.align, ['start', 'center', 'justify']);
+      // generated content is not in innerText: pin the counter wiring - one reset on the numbered container, one increment per caption
+      const wiring = await page.evaluate(() => ({ reset: getComputedStyle(document.getElementById('ty-cap')!).counterReset, inc: ['ty-cap-1', 'ty-cap-t1', 'ty-cap-2', 'ty-cap-3'].map((id) => getComputedStyle(document.getElementById(id)!, '::before').counterIncrement) }));
+      assert.deepEqual(wiring, { reset: 'typeset-figure 0 typeset-table 0', inc: ['typeset-figure 1', 'typeset-table 1', 'typeset-figure 1', 'typeset-figure 1'] });
+    },
+  },
+  {
+    label: 'figure groups: lettered sub-captions (a), (b) in one bordered box',
+    run: async (page) => {
+      const r = await page.evaluate(() => ({ reset: getComputedStyle(document.getElementById('ty-group')!).counterReset, sub: getComputedStyle(document.getElementById('ty-sub-a')!, '::before').content }));
+      assert.deepEqual(r, { reset: 'typeset-sub 0', sub: '"(" counter(typeset-sub, lower-alpha) ") "' });
+      assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById('ty-group')!).borderTopStyle), 'solid');
     },
   },
 ]);

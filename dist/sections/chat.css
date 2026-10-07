@@ -686,7 +686,11 @@
     &[data-current] { scroll-margin-block-start: 1rem; }
   }
 
-  /* data-animate: new rows rise in */
+  /* data-animate: new rows enter - rise (the default) from below, fade in
+     place, or slide from their own side (a sent message from the end, a
+     reply from the start). @starting-style: rows present at load never
+     animate, only rows added later. VERIFIED: (session.e2e "data-animate")
+     slide from each row's own side, fade, tokens; none under reduced motion. */
   .session[data-animate] .session-item {
     transition: opacity 250ms ease, translate 250ms ease;
 
@@ -694,6 +698,26 @@
       opacity: 0;
       translate: 0 0.5rem;
     }
+  }
+  .session[data-animate="fade"] .session-item {
+    @starting-style { translate: none; }
+  }
+  .session[data-animate="slide"] .session-item {
+    transition-duration: 320ms;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    @starting-style { translate: -1.5rem 0; }
+  }
+  .session[data-animate="slide"] .session-item:has(> .message[data-align="end"]) {
+    @starting-style { translate: 1.5rem 0; }
+  }
+
+  /* a streamed word: wrap each in .session-token as it arrives and it fades
+     in - the reply writes itself instead of jumping word by word */
+  .session[data-animate] .session-token {
+    transition: opacity 180ms ease;
+
+    @starting-style { opacity: 0; }
   }
 
   /* -- Scroll buttons: float over the transcript, stuck to its edge -- */
@@ -790,7 +814,7 @@
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .session-scroll-button,
-    .session[data-animate] .session-item { transition: none; }
+    .session[data-animate] :is(.session-item, .session-token) { transition: none; }
   }
 
   @media (prefers-contrast: more) {

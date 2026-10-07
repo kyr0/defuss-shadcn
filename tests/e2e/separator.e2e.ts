@@ -30,6 +30,19 @@ await cssSmoke('separator', [
     css: { display: 'flex', gap: '12px' },
   },
   {
+    label: 'data-line="none": a bare glyph - no lines, centred',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const el = document.getElementById('sep-bare')!;
+        const box = el.getBoundingClientRect();
+        const range = document.createRange(); range.selectNodeContents(el);
+        const t = range.getBoundingClientRect();
+        return { before: getComputedStyle(el, '::before').display, after: getComputedStyle(el, '::after').display, offset: Math.abs((t.left + t.width / 2) - (box.left + box.width / 2)) };
+      });
+      if (r.before !== 'none' || r.after !== 'none' || r.offset > 1) throw new Error(JSON.stringify(r));
+    },
+  },
+  {
     label: 'text on the line: two pseudo-element lines flank it, centered by default',
     run: async (page) => {
       const r = await page.evaluate(() => {

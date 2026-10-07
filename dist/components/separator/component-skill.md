@@ -61,6 +61,8 @@ a text separator (`:not(:empty)`). `<hr>` is void, so text separators are a
 <!-- an ornamental section break: the glyph is decoration, never read out -->
 <div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
 <div class="separator" aria-hidden="true" data-variant="accent" data-size="md" style="font-size:1.125rem;">❦</div>
+<!-- a bare glyph, no lines: an asterism, a dinkus -->
+<div class="separator" aria-hidden="true" data-line="none">⁂</div>
 <!-- a short accent rule: role="none" drops the <hr>'s separator semantics -->
 <hr class="separator" role="none" data-variant="primary" data-size="lg" style="width:3rem;margin-inline:auto;">
 ```
@@ -108,6 +110,7 @@ our `data-orientation="vertical"` (the LINE is vertical).
 | `data-align` | `start`, `end` (default center) | Where the text sits along the line (vertical: start = top) |
 | `data-size` | `sm` 1px (default), `md` 2px, `lg` 4px, `xl` 8px | Thickness - with or without text |
 | `data-gap` | `none`, `sm`, `md` (default 0.75rem), `lg`, `xl` | Space between the text and the lines |
+| `data-line` | `none` | A text separator without its lines - a bare, centred glyph: an asterism (⁂), a dinkus (\* \* \*), a fleuron (❦) |
 | `data-orientation-md` / `-lg` | `vertical` | A vertical line from 48 / 64rem up - the parent must switch to a row at the same width |
 
 For space AROUND a separator use the margin utilities (`my-4`, `my-8` ...).

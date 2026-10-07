@@ -11,7 +11,7 @@
 
 **A UI component system that scales with AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**229 components - 60 with JavaScript, 169 CSS-only - 395.1 KiB minified + compressed - 265.5 KiB as the all.css/all.js bundle.**
+**229 components - 60 with JavaScript, 169 CSS-only - 396.0 KiB minified + compressed - 266.3 KiB as the all.css/all.js bundle.**
 169 of 229 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
@@ -27,7 +27,7 @@ Why this system exists, from the agents who built it: [ARCH.md](ARCH.md).
 
 A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) token model.
 
-- **Themeable** - full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files - swap one and every component updates instantly
+- **Themeable** - full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files - swap one and every component updates instantly; light and dark are two palettes of one identity (the same radius in both, gated)
 - **Component Skills** - every component includes a structured skill - markup, variants, sizes, density, named states, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced; three task skills - `shadcn-plan`, `shadcn-theme`, `shadcn-review` - plan UI from the existing components, write themes and review markup, each with a bundled checker where a program can decide
 - **Observable state** - interactive components expose a State API (`el.api.setState('open')`, `el.api.getState()`), so agents and tests can drive every documented state by name without knowing the implementation
 - **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists). Keyboard navigation, focus management, and screen reader support by default

@@ -213,6 +213,42 @@ try {
     });
     assert.deepEqual(r, { below: true, status: '12px' });
   });
+  await check('data-animate: rows slide in from their own side or fade in place; streamed tokens fade in; reduced motion stops all of it', async () => {
+    const enter = (reduce: boolean) => page.evaluate(async (reduceMotion) => {
+      const session = (globalThis as any).df$.shadcn.session;
+      const add = (id: string, align: string) => session.append(id, `<div class="message"${align}><div class="message-content"><div class="bubble"><div class="bubble-content">x</div></div></div></div>`);
+      const props = (el: Element) => el.getAnimations().map((a) => (a as CSSTransition).transitionProperty).sort();
+      // rows off screen are skipped by content-visibility - nothing would transition
+      // (content-visibility needs a moment to count them on screen after the scroll)
+      document.getElementById('s-slide')!.scrollIntoView({ block: 'start' });
+      await new Promise((r) => setTimeout(r, 150));
+      const sent = add('#s-slide', ' data-align="end"');
+      const reply = add('#s-slide', '');
+      const faded = add('#s-fade', '');
+      const token = document.createElement('span');
+      token.className = 'session-token';
+      token.textContent = 'word ';
+      reply.querySelector('.bubble-content')!.append(token);
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      const out = { sent: props(sent), reply: props(reply), faded: props(faded), token: props(token), sentFrom: '', replyFrom: '' };
+      // the starting side: read the running transition's from-keyframe
+      const from = (el: Element) => ((el.getAnimations().find((a) => (a as CSSTransition).transitionProperty === 'translate') as any)?.effect?.getKeyframes?.()[0]?.translate ?? '');
+      out.sentFrom = from(sent);
+      out.replyFrom = from(reply);
+      for (const el of [sent, reply, faded]) el.remove();
+      return { reduceMotion, ...out };
+    }, reduce);
+    // this context runs with reduced motion (deterministic scrolling) - allow motion for the first half
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const r = await enter(false);
+    assert.deepEqual([r.sent, r.reply, r.faded, r.token], [['opacity', 'translate'], ['opacity', 'translate'], ['opacity'], ['opacity']]);
+    assert.ok(r.sentFrom.startsWith('24px') && r.replyFrom.startsWith('-24px'), JSON.stringify(r));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const still = await enter(true);
+    await page.emulateMedia({ reducedMotion: null });
+    assert.deepEqual([still.sent, still.reply, still.faded, still.token], [[], [], [], []]);
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await assertRenderContract(page, '.session[id]', ['default','detached','streaming'], { runtimeAttrs: ['data-pending-scroll','data-autoscrolling','style','data-stick'] });
   });

@@ -41,7 +41,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-default-position</code> (<code>end</code>, <code>start</code>, <code>last-anchor</code>), <code>data-threshold</code>, <code>data-peek</code>, <code>data-anchor</code> (item), <code>data-message-id</code> (item), <code>data-track</code>, <code>data-drop</code> + <code>data-drop-accept</code> / <code>data-drop-label</code>, <code>data-animate</code>; set by the runtime: <code>data-stick</code>, <code>data-scrollable</code>, <code>data-autoscrolling</code>, <code>data-drop-active</code>; events <code>session-drop</code>, <code>session-visibility</code>; API <code>df$.shadcn.session</code>.</SkillText>
+<SkillText><code>data-default-position</code> (<code>end</code>, <code>start</code>, <code>last-anchor</code>), <code>data-threshold</code>, <code>data-peek</code>, <code>data-anchor</code> (item), <code>data-message-id</code> (item), <code>data-track</code>, <code>data-drop</code> + <code>data-drop-accept</code> / <code>data-drop-label</code>, <code>data-animate</code> (<code>rise</code>, <code>fade</code>, <code>slide</code>; <code>.session-token</code> for streamed words); set by the runtime: <code>data-stick</code>, <code>data-scrollable</code>, <code>data-autoscrolling</code>, <code>data-drop-active</code>; events <code>session-drop</code>, <code>session-visibility</code>; API <code>df$.shadcn.session</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -208,6 +208,54 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         if (n >= words.length) { clearInterval(tick); chat.api.setState(session.isAtEnd(chat) ? 'default' : 'detached'); }
       }, 90);
     });
+  });
+</script>
+```
+
+```html example label="Replay a conversation" schema="none" height="34" hint="A recorded exchange replayed at reading speed: data-animate='slide' slides each bubble in from its own side - the question from the end, the reply from the start - and the reply streams word by word, each word a .session-token that fades in. Replay restarts it; reduced motion shows every step without the motion."
+<section class="session" id="replay" aria-label="A replayed conversation" data-animate="slide" style="height:26rem;">
+  <div class="session-viewport" aria-label="Conversation">
+    <div class="session-content"></div>
+    <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+  </div>
+  <div class="session-footer">
+    <p class="flex items-center gap-3 m-0"><button class="btn" data-variant="outline" data-size="sm" type="button" id="replay-again">Replay</button><output id="replay-status" class="text-sm text-muted-foreground">Replaying...</output></p>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#replay').get(0);
+    const session = df$.shadcn.session;
+    const turns = [
+      { q: 'Can a session replay a conversation that already happened?', a: 'Yes - append each turn at reading speed. The question anchors near the top, the reply streams in under the streaming state, and every word fades in as it arrives.' },
+      { q: 'And the bubbles themselves?', a: 'data-animate on the session lets every new row enter: rise from below, fade in place, or slide from its own side, as here. Rows that were there at load stay still.' },
+    ];
+    const user = (text) => `<div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">${text}</div></div></div></div>`;
+    const bot = '<div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content"></div></div></div></div>';
+    let run = 0;
+    // resolves false once a newer replay has started - the older one stops
+    const wait = (ms, mine) => new Promise((done) => setTimeout(() => done(mine === run), ms));
+    async function replay() {
+      const mine = ++run;
+      df$('#replay .session-content').html('');
+      df$('#replay-status').text('Replaying...');
+      for (const [i, turn] of turns.entries()) {
+        if (!(await wait(600, mine))) return;
+        session.append(chat, user(turn.q), { id: `r-q${i}`, anchor: true });
+        if (!(await wait(500, mine))) return;
+        const reply = session.append(chat, bot, { id: `r-a${i}` });
+        const out = df$(reply).find('.bubble-content');
+        chat.api.setState('streaming');
+        for (const word of turn.a.split(' ')) {
+          if (!(await wait(55, mine))) return;
+          out.append(df$(`<span class="session-token">${word} </span>`));
+        }
+        chat.api.setState(session.isAtEnd(chat) ? 'default' : 'detached');
+      }
+      df$('#replay-status').text(`Replayed - ${turns.length} turns.`);
+    }
+    df$('#replay-again').on('click', replay);
+    replay();
   });
 </script>
 ```

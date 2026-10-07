@@ -249,6 +249,32 @@
       padding-inline-start: 1.25rem;
     }
   }
+  /* a block in a section keeps more room from the text than one paragraph
+     from the next: the grid gap plus this margin (1.75rem in all).
+     VERIFIED: (full-paper viewport probe 2026-10-07) no horizontal overflow
+     at 1280 and 390 px with every section typeset; paper.e2e pins the
+     variants and the two-column composition. */
+  .paper-section > :is(figure, table, blockquote, pre, hr, .separator, .paper-table, .paper-figure, .paper-numbers, .paper-quote, .paper-code, .paper-findings, .typeset-group, .chart, .diagram, .mockup-code, .iframe, .data-grid, .data-tree, .session, .table-container) {
+    margin-block: 0.75rem;
+  }
+
+  /* a section set as Typography's .typeset (Book page): the setting's own
+     rhythm - Einzug, a lead, the gap around every block - replaces the grid
+     gap, at the paper's measure */
+  .paper-section.typeset {
+    --typeset-measure: none;
+
+    display: block;
+
+    & > h2 { margin-block: 0 1rem; }
+    & > h3 { margin-block: var(--typeset-gap, 1.5em) 0.5em; }
+    & > p { margin-block: 0 1em; }
+    &[data-indent] > p { margin-block: 0; }
+    & > :is(figure, table, blockquote, pre, hr, .separator, .paper-table, .paper-figure, .paper-numbers, .paper-quote, .paper-code, .paper-findings, .typeset-group, .chart, .diagram, .mockup-code, .iframe, .data-grid, .data-tree, .session, .table-container, ul, ol) {
+      margin-block: var(--typeset-gap, 1.5em); /* Typography's knob, with its default */
+    }
+  }
+
   /* inside a section, .paper-wide breaks out of the reading column to the
      wide track (100cqi = the paper's width - it is the container) */
   .paper-section > .paper-wide {

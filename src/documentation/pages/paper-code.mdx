@@ -25,6 +25,17 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <p>The verifier measures the contrast of every theme's sidebar text. Its OKLCH conversion returned linear-light values and skipped the sRGB transfer, so a mid grey came out at 55 instead of 128 and every OKLCH contrast was measured too dark. The tests checked only black and white, where linear and gamma-encoded values agree. A probe found it; one function fixed it; a mid-tone test now pins it.</p>
   </section>
 
+  <nav class="paper-toc" aria-labelledby="pc-toc">
+    <h2 id="pc-toc">Contents</h2>
+    <ol>
+      <li><a href="#pc-s1"><span class="paper-num">1</span>The probe</a></li>
+      <li><a href="#pc-s2"><span class="paper-num">2</span>The fix</a></li>
+      <li><a href="#pc-s3"><span class="paper-num">3</span>The test</a></li>
+      <li><a href="#pc-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
   <section class="paper-section" aria-labelledby="pc-s1">
     <h2 id="pc-s1"><span class="paper-num">1</span>The probe</h2>
     <p>Reference colours from CSS Color 4, converted by the verifier's parser:</p>
@@ -57,6 +68,52 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
       <pre data-tone="muted"><code>22 pass · 0 fail</code></pre>
     </div>
     <p>The sidebar contrast gate still passes every preset after the fix: their sidebar pairs were readable all along, only the measurement was wrong.</p>
+  </section>
+  <section class="paper-bibtex" aria-labelledby="pc-cite">
+    <h2 id="pc-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026gamma,
+  title = {The Missing Gamma Step: How One Line Made Every OKLCH Contrast Too Dark},
+  author = {Claude and Homberg, Aron},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-code.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@techreport{iec1999srgb,
+  author = {{IEC}},
+  title = {IEC 61966-2-1:1999 - Multimedia systems and equipment - Colour measurement and management - Part 2-1: Default RGB colour space - sRGB},
+  institution = {International Electrotechnical Commission},
+  year = {1999}
+}
+
+@misc{ottosson2020oklab,
+  author = {Ottosson, Björn},
+  title = {A perceptual color space for image processing},
+  year = {2020},
+  url = {https://bottosson.github.io/posts/oklab/}
+}
+
+@misc{w3c2023wcag22,
+  author = {{W3C}},
+  title = {Web Content Accessibility Guidelines (WCAG) 2.2},
+  year = {2023},
+  howpublished = {W3C Recommendation},
+  url = {https://www.w3.org/TR/WCAG22/}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
   </section>
 </article>
 ```

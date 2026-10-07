@@ -25,7 +25,17 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <p>A word error rate is an average; the errors are in the utterances. We show how a reader can browse all of them in the paper: a grid of 100,000 utterances with their speaker, source, duration and errors, and a tree of the corpus they come from. The data here is synthetic - generated deterministically - so that the page stays small and every reader sees the same rows.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="pb-s1">
+  <nav class="paper-toc" aria-labelledby="pb-toc">
+    <h2 id="pb-toc">Contents</h2>
+    <ol>
+      <li><a href="#pb-s1"><span class="paper-num">1</span>Every utterance</a></li>
+      <li><a href="#pb-s2"><span class="paper-num">2</span>The corpus</a></li>
+      <li><a href="#pb-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
+  <section class="paper-section typeset" lang="en" data-leading="tight" data-align="justify" aria-labelledby="pb-s1">
     <h2 id="pb-s1"><span class="paper-num">1</span>Every utterance</h2>
     <div class="paper-wide">
       <div class="data-grid" id="pb-grid" aria-label="Evaluation utterances" data-empty-text="No utterance matches." style="height: 22rem;">
@@ -48,10 +58,50 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <p>Sorting by WER puts the hardest utterances first; filtering a source and a minimum duration narrows the analysis without leaving the page.</p>
   </section>
 
-  <section class="paper-section" aria-labelledby="pb-s2">
+  <section class="paper-section typeset" lang="en" data-leading="tight" data-align="justify" aria-labelledby="pb-s2">
     <h2 id="pb-s2"><span class="paper-num">2</span>The corpus</h2>
     <div class="data-tree" id="pb-tree" aria-label="Corpus" data-empty-text="Nothing matches." style="height: 16rem;"></div>
     <p>Three sources, a hundred speaker groups each, ten speakers per group and thirty utterances per speaker - 93,303 nodes - the hierarchy a reviewer walks to find where the errors cluster.</p>
+  </section>
+  <section class="paper-bibtex" aria-labelledby="pb-cite">
+    <h2 id="pb-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026corpus,
+  title = {Error Analysis at Corpus Scale},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-big-data.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@inproceedings{ardila2020commonvoice,
+  author = {Ardila, Rosana and Branson, Megan and Davis, Kelly and Henretty, Michael and Kohler, Michael and Meyer, Josh and Morais, Reuben and Saunders, Lindsay and Tyers, Francis M. and Weber, Gregor},
+  title = {Common Voice: A Massively-Multilingual Speech Corpus},
+  booktitle = {Proceedings of the 12th Language Resources and Evaluation Conference},
+  pages = {4218--4222},
+  year = {2020}
+}
+
+@misc{homberg2026redeschrift,
+  author = {Homberg, Aron},
+  title = {Redeschrift 1.0: German speech recognition for every device},
+  year = {2026},
+  howpublished = {Hugging Face},
+  url = {https://huggingface.co/kyr0/redeschrift-1.0}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
   </section>
 </article>
 <script>

@@ -167,42 +167,172 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <H2 id="typesetting">Typesetting (Satz)</H2>
 
-<p class="text-sm text-muted-foreground mb-3">Continuous text set like a book or a journal page: one <code>.typeset</code> block, plain paragraphs inside, and each classic rule of the compositor's craft an opt-in attribute - columns, Blocksatz, Einzug, an Initiale, a small-caps opening line, classic ligatures. The <code>--typeset-*</code> properties tune them per block; they are this component's knobs, not theme tokens, so a theme stays the tweakcn token set.</p>
+<p class="text-sm text-muted-foreground mb-3">Continuous text set like a book or a journal page: one <code>.typeset</code> block, plain paragraphs inside, and each classic rule of the compositor's craft an opt-in attribute. The examples show every rule on its own first, then captions, separators, leading and figure groups, and only then pages that combine them. The <code>--typeset-*</code> properties tune each block; they are this component's knobs, not theme tokens, so a theme stays the tweakcn token set.</p>
 
-```html example label="Book page" hint="All rules at once: two ruled columns, justified and hyphenated (lang='en'), a drop initial over three lines, the opening line in small capitals, Einzug instead of paragraph gaps, discretionary ligatures and old-style figures where the serif font has them. Narrow the preview: below two columns of 18rem the block sets one - no media query." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="Columns" hint="data-columns='2' sets two columns, data-rule a hairline between them. No column is narrower than --typeset-column-width (18rem): switch the preview to Phone and the block sets one column - no media query." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-columns="2" data-rule style="font-family: var(--font-serif);">
+  <p>A printed column is a measure of even grey. Two columns halve the measure and keep a line within the sixty to seventy characters a reader takes in at a glance.</p>
+  <p>The column property takes a count and a minimum width; when the page grows too narrow for two columns of that width, the block sets one, and a phone reads a single column.</p>
+</div>
+```
+
+```html example label="Blocksatz (justified)" hint="data-align='justify' justifies the lines and hyphenates long words by the rules of the block's language (lang='en'); the last line of each paragraph stays flush to the start." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-align="justify" style="font-family: var(--font-serif); max-width: 28rem;">
+  <p>The compositor justified each line by adding space between words and, where the space grew too wide, broke a word at a syllable. Typographically, interdisciplinary and internationalization break where the language allows them to.</p>
+</div>
+```
+
+```html example label="Einzug (indent)" hint="data-indent: paragraphs follow without a gap and indent their first line by --typeset-indent (1em). The first paragraph after a heading starts flush (stumpf) - the heading has already opened it." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-indent style="font-family: var(--font-serif); max-width: 28rem;">
+  <h3 class="h4">Einzug</h3>
+  <p>A book keeps the column whole and marks a new paragraph by its indent alone.</p>
+  <p>The second paragraph steps in by one em; there is no blank line between the two.</p>
+  <p>Nor between the second and the third.</p>
+</div>
+```
+
+```html example label="Initiale: drop" hint="data-initial='drop' sinks the first letter three lines deep (initial-letter); its top is level with the top of the first line, and --typeset-initial-gap keeps it clear of the text to its right." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-initial="drop" style="font-family: var(--font-serif); max-width: 28rem;">
+  <p>Printing is the art of multiplying writing by movable type. The first letter of a chapter was once painted by hand into a space the printer left free; a drop initial keeps that space, three lines deep.</p>
+</div>
+```
+
+```html example label="Initiale: raised" hint="data-initial='raised' stands the letter on the first baseline and lets it rise above the line - here two lines tall (--typeset-initial-lines) in chart colour 1 (--typeset-initial-color)." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-initial="raised" style="font-family: var(--font-serif); max-width: 28rem; --typeset-initial-lines: 2; --typeset-initial-color: var(--chart-1);">
+  <p>Raised: the initial stands on the first baseline and rises above the line, a lighter opening than the drop, used where the column starts high on the page.</p>
+</div>
+```
+
+```html example label="Opening line: small capitals or capitals" hint="data-lead='smallcaps' sets the first line in small capitals (Kapitälchen); data-lead='caps' in letterspaced capitals (Versalien). Either opens a chapter without an initial." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));">
+  <div class="typeset" lang="en" data-lead="smallcaps" style="font-family: var(--font-serif);">
+    <p>Small capitals carry the opening line at the height of the lowercase, so the chapter begins quietly and the eye slides into the text.</p>
+  </div>
+  <div class="typeset" lang="en" data-lead="caps" style="font-family: var(--font-serif);">
+    <p>Letterspaced capitals give the opening line more weight - the classic Versalien opening of a title page or a chapter.</p>
+  </div>
+</div>
+```
+
+```html example label="Classic ligatures and old-style figures" hint="data-ligatures='classic' turns on discretionary and historical ligatures (ct, st) and old-style figures (1450, 1469) - where the font carries the features; a font without them sets the plain forms." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-ligatures="classic" style="font-family: var(--font-serif); max-width: 28rem;">
+  <p>The fine office of the compositor, strict in its rules, reached Mainz in 1450 and Venice by 1469.</p>
+</div>
+```
+
+```html example label="Leading: tight, normal, loose" hint="data-leading moves the line height and the tracking together: tight (1.45, -0.01em) for dense columns, the default (1.65), loose (1.9, +0.01em) for airy reading. Tracking that follows the leading keeps the grey of the column even." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));">
+  <div class="typeset" lang="en" data-leading="tight" data-align="justify" style="font-family: var(--font-serif);">
+    <p>Tight leading closes the lines up and the tracking closes a little with it: a dense column for notes, tables of contents and long reference lists.</p>
+  </div>
+  <div class="typeset" lang="en" data-align="justify" style="font-family: var(--font-serif);">
+    <p>The default leading suits continuous reading: one line flows into the next without the eye losing its place at the start of the line.</p>
+  </div>
+  <div class="typeset" lang="en" data-leading="loose" data-align="justify" style="font-family: var(--font-serif);">
+    <p>Loose leading opens the lines and the tracking opens with them: an airy setting for introductions, abstracts and short pieces.</p>
+  </div>
+</div>
+```
+
+```html example label="Separators" hint="A pause in the text is the Separator component - a short rule, a glyph between lines, or a bare glyph (data-line='none'): asterism, dinkus, fleuron. aria-hidden marks the ones that only decorate. Inside .typeset each keeps --typeset-gap from the text, like a figure." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" style="font-family: var(--font-serif); max-width: 28rem;">
+  <p>A short rule, centred:</p>
+  <hr class="separator" role="none" style="width: 4rem; margin-inline: auto;">
+  <p>An asterism, the oldest mark of a section break:</p>
+  <div class="separator" aria-hidden="true" data-line="none" style="font-size: 1.125rem;">⁂</div>
+  <p>A dinkus, three spaced asterisks:</p>
+  <div class="separator" aria-hidden="true" data-line="none" data-gap="lg">* * *</div>
+  <p>A fleuron, the printer's flower:</p>
+  <div class="separator" aria-hidden="true" data-line="none" style="font-size: 1.25rem;">❦</div>
+  <p>An ornament, the glyph between two lines:</p>
+  <div class="separator" aria-hidden="true" data-gap="lg" style="width: 14rem; margin-inline: auto;">◆</div>
+  <p>And the text resumes.</p>
+</div>
+```
+
+```html example label="Numbered captions: picture, table, video, chart" hint=".typeset-numbered numbers every .typeset-caption in order - figures (pictures, videos, charts) and tables on their own counters. Captions are flush start (picture), centred (table, data-align='center') or justified (video, chart, data-align='justify'). Every figure keeps --typeset-gap from the text." previewStyle="justify-content:flex-start;text-align:left;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div class="typeset typeset-numbered" lang="en" data-align="justify" style="font-family: var(--font-serif); max-width: 34rem;">
+  <p>A paragraph before the picture: the figure keeps the same distance above as below.</p>
+  <figure>
+    <img src="images/mk-wide2.png" alt="A placeholder scene in cool blue-grey" style="width: 100%; border-radius: var(--radius-md);">
+    <figcaption class="typeset-caption">This picture shows a placeholder scene in a cool tone; the caption is flush start.</figcaption>
+  </figure>
+  <p>Between the picture and the table the text keeps the gap on both sides.</p>
+  <figure>
+    <table class="table">
+      <thead><tr><th>Format</th><th>Sheet folded</th><th>Leaves</th></tr></thead>
+      <tbody><tr><td>Folio</td><td>once</td><td>2</td></tr><tr><td>Quarto</td><td>twice</td><td>4</td></tr><tr><td>Octavo</td><td>three times</td><td>8</td></tr></tbody>
+    </table>
+    <figcaption class="typeset-caption" data-align="center">Two book formats and the folds behind them.</figcaption>
+  </figure>
+  <p>The video and the chart that follow are figures too, so they continue the figure count.</p>
+  <figure>
+    <video controls preload="metadata" playsinline poster="images/mk-wide3.png" style="width: 100%; border-radius: var(--radius-md);">
+      <source src="videos/demo.webm" type="video/webm">
+      <source src="videos/demo.mp4" type="video/mp4">
+    </video>
+    <figcaption class="typeset-caption" data-align="justify">A six-second clip; a justified caption sets its longer lines flush on both sides and its last line flush start.</figcaption>
+  </figure>
+  <figure>
+    <div class="chart" style="height: 12rem;" role="img" aria-label="Bar chart: leaves per sheet - folio 2, quarto 4, octavo 8" data-chart='{"grid":{"left":40,"right":16,"top":16,"bottom":28},"xAxis":{"type":"category","data":["Folio","Quarto","Octavo"]},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[2,4,8],"label":{"show":true,"position":"top"}}]}'></div>
+    <figcaption class="typeset-caption" data-align="justify">Leaves per sheet: each fold doubles them.</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Figure groups: two charts, and a chart, a picture and a table" hint="figure.typeset-group sets two or three figures densely in one box, each with a lettered .typeset-subcaption - (a), (b), (c) - and the group's own numbered caption. Narrow the preview: the figures stack." previewStyle="justify-content:flex-start;text-align:left;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div class="typeset typeset-numbered" lang="en" style="font-family: var(--font-serif); max-width: 40rem;">
+  <p>Two charts compared side by side:</p>
+  <figure class="typeset-group">
+    <figure>
+      <div class="chart" style="height: 9rem;" role="img" aria-label="Line chart, before: 4.1, 3.9, 3.8, 3.6" data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[4.1,3.9,3.8,3.6]}]}'></div>
+      <figcaption class="typeset-subcaption">Before the fix.</figcaption>
+    </figure>
+    <figure>
+      <div class="chart" style="height: 9rem;" role="img" aria-label="Line chart, after: 3.4, 3.3, 3.2, 3.1" data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[3.4,3.3,3.2,3.1]}]}'></div>
+      <figcaption class="typeset-subcaption">After the fix.</figcaption>
+    </figure>
+    <figcaption class="typeset-caption">An error rate before and after a fix, per week (synthetic).</figcaption>
+  </figure>
+  <p>And three different kinds of figure in one box:</p>
+  <figure class="typeset-group">
+    <figure>
+      <div class="chart" style="height: 8rem;" role="img" aria-label="Pie chart: text 60, figures 25, tables 15" data-chart='{"series":[{"type":"pie","radius":["40%","70%"],"data":[{"name":"Text","value":60},{"name":"Figures","value":25},{"name":"Tables","value":15}],"label":{"show":false}}]}'></div>
+      <figcaption class="typeset-subcaption">A page by area.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/mk-square.png" alt="A placeholder scene, square">
+      <figcaption class="typeset-subcaption">A square picture.</figcaption>
+    </figure>
+    <figure>
+      <table class="table"><tbody><tr><td>Text</td><td>60 %</td></tr><tr><td>Figures</td><td>25 %</td></tr><tr><td>Tables</td><td>15 %</td></tr></tbody></table>
+      <figcaption class="typeset-subcaption">The same as a table.</figcaption>
+    </figure>
+    <figcaption class="typeset-caption" data-align="center">A chart, a picture and a table in one dense box.</figcaption>
+  </figure>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Combined</p>
+<p class="text-sm text-muted-foreground mb-3">The rules compose. A book page puts them all together; the same page without the initial is the quieter setting the technical report on the <DocLink href="paper.html">Modern Paper</DocLink> page uses.</p>
+
+```html example label="Book page" hint="All rules at once: two ruled columns, Blocksatz, a drop initial, the opening line in capitals (beside an initial the small-caps lead sets capitals, so the line's top meets the initial's), Einzug, classic ligatures. Narrow the preview: below two columns of 18rem the block sets one." previewStyle="justify-content:flex-start;text-align:left;"
 <article class="typeset" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic" style="font-family: var(--font-serif);">
   <h2 class="h3 typeset-span">Of the Art of Printing</h2>
   <p>Printing is the art of multiplying writing by movable type. The compositor takes each letter from the case, sets it in the stick, justifies the line with spaces of different widths and locks the finished forme before a single sheet is pulled - a craft that reached Mainz in 1450 and Venice by 1469.</p>
   <p>Each following paragraph runs on without a gap; only its first line steps in by one em. The column therefore reads as one even grey, and the eye finds the start of a thought by the indent alone.</p>
   <p>A justified column hyphenates its longer words - typographical, interdisciplinary, internationalization - so that the spaces between words stay close to one width, and its last line stays flush to the start.</p>
-  <p>The first letter of a chapter was once painted by hand into a space the printer left free; a drop initial keeps that space, three lines deep, and the opening line follows in small capitals until the text settles into its own voice.</p>
 </article>
 ```
 
-```html example label="Initiale: drop and raised" hint="data-initial='drop' sinks the first letter into the first lines (initial-letter); 'raised' stands it on the first baseline and lets it rise. --typeset-initial-lines, -font and -color tune it - here two lines in chart colour 1. Browsers without initial-letter get a floated letter of the same height." previewStyle="justify-content:flex-start;text-align:left;"
-<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));">
-  <div class="typeset" lang="en" data-initial="drop" style="font-family: var(--font-serif);">
-    <p>Drop: the initial sinks three lines deep and the text wraps around it, the oldest form of the opening letter in a printed book.</p>
-  </div>
-  <div class="typeset" lang="en" data-initial="raised" style="font-family: var(--font-serif); --typeset-initial-lines: 2; --typeset-initial-color: var(--chart-1);">
-    <p>Raised: the initial stands on the first baseline and rises above the line - two lines tall here, in the first chart colour.</p>
-  </div>
-</div>
-```
-
-```html example label="Einzug or paragraph spacing" hint="Left: plain paragraphs, separated by space. Right: data-indent - no gap, the first line of each following paragraph indented by --typeset-indent (1.5em here); the first paragraph after a heading starts flush (stumpf), as in a book." previewStyle="justify-content:flex-start;text-align:left;"
-<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));">
-  <div class="typeset" lang="en">
-    <h3 class="h4">Spaced</h3>
-    <p>Web text separates its paragraphs with space. It is easy to scan in short pieces.</p>
-    <p>In long reading it breaks the column into blocks.</p>
-  </div>
-  <div class="typeset" lang="en" data-indent style="--typeset-indent: 1.5em;">
-    <h3 class="h4">Einzug</h3>
-    <p>A book keeps the column whole and marks a new paragraph by its indent alone.</p>
-    <p>The first paragraph after a heading needs no indent: the heading already opened it.</p>
-  </div>
-</div>
+```html example label="Book page without an initial" hint="The same rules without data-initial: Blocksatz, Einzug, the opening line in small capitals, classic ligatures - a quieter opening for a report or a paper, where a large letter would compete with the title. The Modern Paper's technical report sets its sections this way." previewStyle="justify-content:flex-start;text-align:left;"
+<article class="typeset" lang="en" data-align="justify" data-indent data-lead="smallcaps" data-ligatures="classic" style="font-family: var(--font-serif);">
+  <h2 class="h3">Of the Art of Printing</h2>
+  <p>Printing is the art of multiplying writing by movable type. The compositor takes each letter from the case, sets it in the stick and justifies the line with spaces of different widths before a single sheet is pulled.</p>
+  <p>Each following paragraph runs on without a gap; only its first line steps in by one em, and the opening line in small capitals marks the start without a large letter.</p>
+</article>
 ```
 
 <SourceFiles component="typography" section="css" />

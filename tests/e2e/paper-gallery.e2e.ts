@@ -90,14 +90,15 @@ try {
     await page.close();
   });
 
-  await check('Two Columns: the typeset body sets two columns with an initial and small capitals', async () => {
+  await check('Two Columns: the typeset body sets two columns with a drop initial; beside it the lead sets capitals', async () => {
     const { page, frame, errors } = await open('paper-two-column');
     const r = await frame.evaluate(() => {
       const set = document.querySelector('.typeset')!;
       const p = set.querySelector('p')!;
-      return { cols: getComputedStyle(set).columnCount, initial: getComputedStyle(p, '::first-letter').getPropertyValue('initial-letter'), caps: getComputedStyle(p, '::first-line').fontVariantCaps };
+      // beside an initial the small-caps lead sets letterspaced capitals (the line's top meets the initial's)
+      return { cols: getComputedStyle(set).columnCount, initial: getComputedStyle(p, '::first-letter').getPropertyValue('initial-letter'), lead: getComputedStyle(p, '::first-line').textTransform };
     });
-    assert.deepEqual(r, { cols: '2', initial: '3', caps: 'all-small-caps' });
+    assert.deepEqual(r, { cols: '2', initial: '3', lead: 'uppercase' });
     assert.deepEqual(errors, []);
     await page.close();
   });

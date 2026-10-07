@@ -20556,6 +20556,32 @@
       padding-inline-start: 1.25rem;
     }
   }
+  /* a block in a section keeps more room from the text than one paragraph
+     from the next: the grid gap plus this margin (1.75rem in all).
+     VERIFIED: (full-paper viewport probe 2026-10-07) no horizontal overflow
+     at 1280 and 390 px with every section typeset; paper.e2e pins the
+     variants and the two-column composition. */
+  .paper-section > :is(figure, table, blockquote, pre, hr, .separator, .paper-table, .paper-figure, .paper-numbers, .paper-quote, .paper-code, .paper-findings, .typeset-group, .chart, .diagram, .mockup-code, .iframe, .data-grid, .data-tree, .session, .table-container) {
+    margin-block: 0.75rem;
+  }
+
+  /* a section set as Typography's .typeset (Book page): the setting's own
+     rhythm - Einzug, a lead, the gap around every block - replaces the grid
+     gap, at the paper's measure */
+  .paper-section.typeset {
+    --typeset-measure: none;
+
+    display: block;
+
+    & > h2 { margin-block: 0 1rem; }
+    & > h3 { margin-block: var(--typeset-gap, 1.5em) 0.5em; }
+    & > p { margin-block: 0 1em; }
+    &[data-indent] > p { margin-block: 0; }
+    & > :is(figure, table, blockquote, pre, hr, .separator, .paper-table, .paper-figure, .paper-numbers, .paper-quote, .paper-code, .paper-findings, .typeset-group, .chart, .diagram, .mockup-code, .iframe, .data-grid, .data-tree, .session, .table-container, ul, ol) {
+      margin-block: var(--typeset-gap, 1.5em); /* Typography's knob, with its default */
+    }
+  }
+
   /* inside a section, .paper-wide breaks out of the reading column to the
      wide track (100cqi = the paper's width - it is the container) */
   .paper-section > .paper-wide {
@@ -26117,6 +26143,14 @@
       &[data-align="start"]::before { display: none; }
       &[data-align="end"]::after { display: none; }
 
+      /* a bare glyph - an asterism, a dinkus, a fleuron - without the lines.
+         VERIFIED: (separator.e2e "data-line=none") no pseudo lines, centred */
+      &[data-line="none"] {
+        justify-content: center;
+
+        &::before, &::after { display: none; }
+      }
+
       &[data-orientation="vertical"] {
         flex-direction: column;
         width: auto;
@@ -26364,7 +26398,11 @@
     &[data-current] { scroll-margin-block-start: 1rem; }
   }
 
-  /* data-animate: new rows rise in */
+  /* data-animate: new rows enter - rise (the default) from below, fade in
+     place, or slide from their own side (a sent message from the end, a
+     reply from the start). @starting-style: rows present at load never
+     animate, only rows added later. VERIFIED: (session.e2e "data-animate")
+     slide from each row's own side, fade, tokens; none under reduced motion. */
   .session[data-animate] .session-item {
     transition: opacity 250ms ease, translate 250ms ease;
 
@@ -26372,6 +26410,26 @@
       opacity: 0;
       translate: 0 0.5rem;
     }
+  }
+  .session[data-animate="fade"] .session-item {
+    @starting-style { translate: none; }
+  }
+  .session[data-animate="slide"] .session-item {
+    transition-duration: 320ms;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    @starting-style { translate: -1.5rem 0; }
+  }
+  .session[data-animate="slide"] .session-item:has(> .message[data-align="end"]) {
+    @starting-style { translate: 1.5rem 0; }
+  }
+
+  /* a streamed word: wrap each in .session-token as it arrives and it fades
+     in - the reply writes itself instead of jumping word by word */
+  .session[data-animate] .session-token {
+    transition: opacity 180ms ease;
+
+    @starting-style { opacity: 0; }
   }
 
   /* -- Scroll buttons: float over the transcript, stuck to its edge -- */
@@ -26468,7 +26526,7 @@
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .session-scroll-button,
-    .session[data-animate] .session-item { transition: none; }
+    .session[data-animate] :is(.session-item, .session-token) { transition: none; }
   }
 
   @media (prefers-contrast: more) {
@@ -33566,22 +33624,32 @@
                                  indent their first line; the first one after
                                  a heading starts flush (stumpf)
        data-initial="drop|raised"  Initiale over --typeset-initial-lines lines
-       data-lead="smallcaps"     the opening line in small capitals
+       data-lead="smallcaps|caps"  the opening line in small capitals or in
+                                 letterspaced capitals (Versalien)
        data-ligatures="classic"  discretionary and historical ligatures,
                                  old-style figures - where the font has them
-     .typeset-span spans every column (a heading, a figure). */
+       data-leading="tight|loose"  compact or airy lines, the tracking matched
+     .typeset-span spans every column (a heading, a figure). Figures, tables,
+     quotes, groups and Separator breaks keep --typeset-gap from the text -
+     the Separator component draws the break, this block only spaces it.
+     VERIFIED: (typography.e2e, the typeset checks) every rule as a computed
+     style, the gaps, the captions' counters, 44rem two columns vs 20rem one. */
   .typeset {
     --typeset-measure: 68ch;
     --typeset-column-width: 18rem;
     --typeset-column-gap: 2.5em;
     --typeset-indent: 1em;
     --typeset-leading: 1.65;
+    --typeset-tracking: 0em;
+    --typeset-gap: 1.5em;
     --typeset-initial-lines: 3;
+    --typeset-initial-gap: 0.3em;
     --typeset-initial-font: var(--font-serif);
     --typeset-initial-color: var(--primary);
 
     max-inline-size: var(--typeset-measure);
     line-height: var(--typeset-leading);
+    letter-spacing: var(--typeset-tracking);
     text-wrap: pretty;
     hanging-punctuation: first allow-end last;
     font-kerning: normal;
@@ -33589,7 +33657,15 @@
     widows: 2;
 
     & > p { margin-block: 0 1em; }
-    & :is(figure, blockquote, table, pre) { break-inside: avoid; }
+    /* every block keeps the same distance from the text around it */
+    & > :is(figure, table, blockquote, pre, hr, .separator, .typeset-group, .chart, .diagram, .mockup-code, .table-container) {
+      margin-block: var(--typeset-gap);
+    }
+    /* a figure spans the measure (the browser indents it 40px by default) */
+    & > :is(figure, blockquote) { margin-inline: 0; }
+    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { margin-block: var(--typeset-gap) 0.5em; }
+    & > :first-child { margin-block-start: 0; }
+    & :is(figure, blockquote, table, pre, .typeset-group) { break-inside: avoid; }
     & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { break-after: avoid; }
     & .typeset-span { column-span: all; }
 
@@ -33605,14 +33681,21 @@
       hyphenate-limit-chars: 6 3 2;
     }
 
+    /* leading and tracking move together: tight lines close up a little,
+       airy lines open up a little, so the grey of the column stays even */
+    &[data-leading="tight"] { --typeset-leading: 1.45; --typeset-tracking: -0.01em; }
+    &[data-leading="loose"] { --typeset-leading: 1.9; --typeset-tracking: 0.01em; }
+
     &[data-indent] > p { margin-block: 0; }
     &[data-indent] > p + p { text-indent: var(--typeset-indent); }
 
+    /* the gap is a margin: Chromium ignores logical padding on ::first-letter
+       (VERIFIED: probe 2026-10-07 - padding-inline-end computed 0, margin-inline-end 2.52px) */
     &[data-initial] > p:first-of-type::first-letter {
+      margin-inline-end: var(--typeset-initial-gap);
       font-family: var(--typeset-initial-font);
       font-weight: 600;
       color: var(--typeset-initial-color);
-      margin-inline-end: 0.08em;
     }
     &[data-initial="drop"] > p:first-of-type::first-letter {
       -webkit-initial-letter: var(--typeset-initial-lines);
@@ -33627,6 +33710,14 @@
       font-variant-caps: all-small-caps;
       letter-spacing: 0.04em;
     }
+    /* letterspaced capitals - and the small-caps lead beside an initial:
+       a first line in small capitals moves the initial down a line
+       (Chromium), capitals keep its top level with the line's */
+    &:is([data-lead="caps"], [data-initial][data-lead="smallcaps"]) > p:first-of-type::first-line {
+      font-variant-caps: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
 
     &[data-ligatures="classic"] {
       font-variant-ligatures: common-ligatures discretionary-ligatures historical-ligatures contextual;
@@ -33640,6 +33731,79 @@
       font-size: calc(var(--typeset-initial-lines) * var(--typeset-leading) * 1em * 0.82);
       line-height: 0.8;
       padding-block-start: 0.08em;
+    }
+  }
+
+  /* -- Captions (Bildunterschriften), numbered in order ------------------
+     .typeset-caption on a figcaption (a picture, a video, a chart) or a
+     table's caption. Inside .typeset-numbered, figures and tables count on
+     their own: "Figure 1.", "Table 1." - the words are --typeset-figure-label
+     and --typeset-table-label ("" leaves the bare number: "1."). A caption
+     is flush start; data-align="justify" or "center" sets it otherwise. */
+  .typeset-numbered {
+    --typeset-figure-label: "Figure ";
+    --typeset-table-label: "Table ";
+
+    counter-reset: typeset-figure typeset-table;
+  }
+  .typeset-caption {
+    margin-block-start: 0.6em;
+    color: var(--muted-foreground);
+    font-size: 0.875em;
+    line-height: 1.5;
+    text-align: start;
+    text-align-last: auto;
+    text-wrap: pretty;
+    caption-side: top;
+
+    &[data-align="justify"] { text-align: justify; text-align-last: start; hyphens: auto; }
+    &[data-align="center"] { text-align: center; text-wrap: balance; }
+    table > & { margin-block: 0 0.6em; }
+  }
+  .typeset-numbered :is(figcaption.typeset-caption)::before {
+    counter-increment: typeset-figure;
+    content: var(--typeset-figure-label) counter(typeset-figure) ". ";
+    color: var(--foreground);
+    font-weight: 600;
+  }
+  .typeset-numbered :is(caption.typeset-caption, figure:has(> table) > figcaption.typeset-caption, figure:has(> .table-container) > figcaption.typeset-caption)::before {
+    counter-increment: typeset-table;
+    content: var(--typeset-table-label) counter(typeset-table) ". ";
+  }
+
+  /* -- Figure groups: several figures in one box ---------------------------
+     .typeset-group holds two or three figures (charts, pictures, tables)
+     side by side, densely, in one bordered box; each figure's caption is
+     lettered "(a)", "(b)" (.typeset-subcaption), the group's own
+     figcaption numbers the whole. Narrow pages stack them. */
+  .typeset-group {
+    --typeset-group-min: 12rem;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--typeset-group-min)), 1fr));
+    gap: 0.75rem;
+    margin-inline: 0;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    counter-reset: typeset-sub;
+
+    & > figure { margin: 0; min-inline-size: 0; }
+    & > figcaption { grid-column: 1 / -1; margin-block-start: 0.25em; }
+    & img, & video { display: block; inline-size: 100%; block-size: auto; border-radius: var(--radius-md); }
+  }
+  .typeset-subcaption {
+    margin-block-start: 0.4em;
+    color: var(--muted-foreground);
+    font-size: 0.8125em;
+    line-height: 1.45;
+
+    &::before {
+      counter-increment: typeset-sub;
+      content: "(" counter(typeset-sub, lower-alpha) ") ";
+      color: var(--foreground);
+      font-weight: 600;
     }
   }
 

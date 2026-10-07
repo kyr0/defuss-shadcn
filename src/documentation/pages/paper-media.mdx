@@ -9,11 +9,11 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
 <DocPage meta={meta}>
 
 <PageHeader slug="paper-media" title="Images and Video" component="paper">
-  A paper with media: <DocLink href="image.html">Image</DocLink> figures that open in a lightbox, a <DocLink href="image-gallery.html">hover gallery</DocLink> that previews a series as the pointer crosses it, and the <DocLink href="video-player.html">Video Player</DocLink> with captions and chapters. The pictures are the system's own placeholders, and the paper says so.
+  A paper with media: <DocLink href="image.html">Image</DocLink> figures that open in a lightbox, a <DocLink href="image-gallery.html">hover gallery</DocLink> that previews a series as the pointer crosses it, and a captioned video - every caption numbered by Typography (.typeset-numbered). The pictures are the system's own placeholders, and the paper says so.
 </PageHeader>
 
-```html example label="Figures that load well" schema="none" hint="Click a figure: data-preview opens it in the lightbox (zoom and rotate inside). Move the pointer across the hover gallery - each quarter of the frame shows the next image. Play the video: the captions track is on by default. Everything sits in the paper's grid; .paper-wide breaks out to the wide track."
-<article class="paper" aria-labelledby="pm-title">
+```html example label="Figures that load well" schema="none" hint="Click a figure: data-preview opens it in the lightbox (zoom and rotate inside). Move the pointer across the hover gallery - each quarter of the frame shows the next image. Play the video: the captions track is on by default. The three pictures are one Typography group (lettered parts), and every caption - group, gallery, video - is numbered by .typeset-numbered on the paper."
+<article class="paper typeset-numbered" aria-labelledby="pm-title">
   <header class="paper-hero">
     <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p>
     <h1 class="paper-title" id="pm-title">Figures That Load Well<span class="paper-title-sub">Images, galleries and video in a paper</span></h1>
@@ -25,56 +25,99 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <p>A figure in a paper should load lazily, keep its space while it loads, fail visibly and open larger on demand; a video should carry captions and chapters. Each of these is a native element with a few attributes. This paper uses three placeholder images - one scene in a neutral, a cool and a warm tone - and a six-second captioned clip.</p>
   </section>
 
+  <nav class="paper-toc" aria-labelledby="pm-toc">
+    <h2 id="pm-toc">Contents</h2>
+    <ol>
+      <li><a href="#pm-s1"><span class="paper-num">1</span>Figures</a></li>
+      <li><a href="#pm-s2"><span class="paper-num">2</span>A series</a></li>
+      <li><a href="#pm-s3"><span class="paper-num">3</span>A clip</a></li>
+      <li><a href="#pm-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
   <section class="paper-section" aria-labelledby="pm-s1">
     <h2 id="pm-s1"><span class="paper-num">1</span>Figures</h2>
-    <div class="grid gap-4 paper-wide" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));">
+    <p>Three versions of one placeholder scene, set densely in one box - each part lettered, the group numbered as one figure:</p>
+    <figure class="typeset-group paper-wide">
       <figure class="image" data-preview data-ratio="16/9">
         <img src="images/mk-wide.png" alt="Placeholder scene, neutral grey: a mountain and a sun" loading="lazy">
-        <figcaption class="image-caption"><b>Figure 1.</b> Neutral.</figcaption>
+        <figcaption class="typeset-subcaption">Neutral.</figcaption>
       </figure>
       <figure class="image" data-preview data-ratio="16/9">
         <img src="images/mk-wide2.png" alt="Placeholder scene, cool blue-grey: a mountain and a sun" loading="lazy">
-        <figcaption class="image-caption"><b>Figure 2.</b> Cool.</figcaption>
+        <figcaption class="typeset-subcaption">Cool.</figcaption>
       </figure>
       <figure class="image" data-preview data-ratio="16/9">
         <img src="images/mk-wide3.png" alt="Placeholder scene, warm sand: a mountain and a sun" loading="lazy">
-        <figcaption class="image-caption"><b>Figure 3.</b> Warm.</figcaption>
+        <figcaption class="typeset-subcaption">Warm.</figcaption>
       </figure>
-    </div>
+      <figcaption class="typeset-caption">One scene in a neutral, a cool and a warm tone; click a picture to open it larger.</figcaption>
+    </figure>
     <p>Each figure reserves its 16:9 box before the image arrives (<code>data-ratio</code>), so the column never jumps, and opens in a native dialog on click.</p>
   </section>
 
   <section class="paper-section" aria-labelledby="pm-s2">
     <h2 id="pm-s2"><span class="paper-num">2</span>A series</h2>
-    <figure class="hover-gallery" style="max-width: 28rem; margin: 0 auto;">
-      <img src="images/mk-wide.png" alt="The scene in neutral grey">
-      <img src="images/mk-wide2.png" alt="The scene in cool blue-grey">
-      <img src="images/mk-wide3.png" alt="The scene in warm sand">
-      <img src="images/mk-square.png" alt="The scene cropped square">
+    <figure>
+      <figure class="hover-gallery" style="max-width: 28rem; margin: 0 auto;">
+        <img src="images/mk-wide.png" alt="The scene in neutral grey">
+        <img src="images/mk-wide2.png" alt="The scene in cool blue-grey">
+        <img src="images/mk-wide3.png" alt="The scene in warm sand">
+        <img src="images/mk-square.png" alt="The scene cropped square">
+      </figure>
+      <figcaption class="typeset-caption" data-align="center">Four pictures in one frame: move the pointer across it.</figcaption>
     </figure>
     <p>A hover gallery shows a series in one frame: the pointer's position picks the image, and every image is decoded before the first switch, so nothing flashes.</p>
   </section>
 
   <section class="paper-section" aria-labelledby="pm-s3">
     <h2 id="pm-s3"><span class="paper-num">3</span>A clip</h2>
-    <figure class="mk-video-player">
-      <div class="mk-video-player-frame">
-        <video controls preload="metadata" playsinline poster="images/mk-wide3.png">
-          <source src="videos/demo.webm" type="video/webm">
-          <source src="videos/demo.mp4" type="video/mp4">
-          <track kind="captions" src="videos/demo.en.vtt" srclang="en" label="English" default>
-          Your browser does not support video. <a href="videos/demo.mp4">Download the clip</a>.
-        </video>
-      </div>
-      <figcaption class="mk-video-player-caption">
-        <h3>A board in six seconds</h3>
-        <p>The demonstration clip of the docs: three captioned scenes, two seconds each.</p>
-      </figcaption>
-      <ol class="mk-video-player-chapters" aria-label="Chapters">
-        <li><time datetime="PT0S">0:00</time>Plan the week</li>
-        <li><time datetime="PT2S">0:02</time>Link drafts and tasks</li>
-        <li><time datetime="PT4S">0:04</time>Ship it</li>
-      </ol>
+    <figure>
+      <video controls preload="metadata" playsinline poster="images/mk-wide3.png" style="width: 100%; border-radius: var(--radius-lg);">
+        <source src="videos/demo.webm" type="video/webm">
+        <source src="videos/demo.mp4" type="video/mp4">
+        <track kind="captions" src="videos/demo.en.vtt" srclang="en" label="English" default>
+        Your browser does not support video. <a href="videos/demo.mp4">Download the clip</a>.
+      </video>
+      <figcaption class="typeset-caption" data-align="justify">The demonstration clip of the docs: three captioned scenes of two seconds each - planning the week, linking drafts and tasks, shipping. A justified caption sets its longer lines flush on both sides.</figcaption>
+    </figure>
+    <p>The clip carries a captions track, on by default; its caption continues the paper's figure count, because a video is a figure like a picture or a chart.</p>
+  </section>
+  <section class="paper-bibtex" aria-labelledby="pm-cite">
+    <h2 id="pm-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026figures,
+  title = {Figures That Load Well: Images, Galleries and Video in a Paper},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-media.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@misc{whatwg_html,
+  author = {{WHATWG}},
+  title = {HTML Living Standard},
+  url = {https://html.spec.whatwg.org/}
+}
+
+@misc{w3c_webvtt,
+  author = {{W3C}},
+  title = {WebVTT: The Web Video Text Tracks Format},
+  url = {https://www.w3.org/TR/webvtt1/}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
     </figure>
   </section>
 </article>

@@ -12,7 +12,7 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
   A conversation as evidence: the paper replays it in a <DocLink href="session.html">Session</DocLink> - each question appended as an anchored turn, each reply streaming in word by word under the session's <code>streaming</code> state. The exchange is condensed from the session that built these pages; its numbers are the ones measured there.
 </PageHeader>
 
-```html example label="A session, replayed" schema="none" hint="The replay starts on its own; Replay restarts it. Questions are appended with df$.shadcn.session.append(..., { anchor: true }) and settle near the top; replies stream word by word while the session is in its streaming state (aria-busy on the log). Scroll up while it plays - the session lets go and the arrow brings you back."
+```html example label="A session, replayed" schema="none" hint="The replay starts on its own; Replay restarts it. Questions are appended with df$.shadcn.session.append(..., { anchor: true }) and settle near the top; replies stream word by word while the session is in its streaming state (aria-busy on the log). data-animate='slide' slides each bubble in from its own side, and every word is a .session-token that fades in. Scroll up while it plays - the session lets go and the arrow brings you back."
 <article class="paper" data-variant="minimal" aria-labelledby="pr-title">
   <header class="paper-hero">
     <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p>
@@ -25,7 +25,16 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <p>A transcript is the most direct record of agentic work, and the hardest to read as a wall of text. We replay three turns of one working session - a type-error sweep, a guideline, a set of skills - at reading speed, so the reader sees the request, then the measured answer, in the order they happened.</p>
   </section>
 
-  <section class="session paper-wide" id="pr-chat" aria-label="The replayed session" style="height: 24rem;">
+  <nav class="paper-toc" aria-labelledby="pr-toc">
+    <h2 id="pr-toc">Contents</h2>
+    <ol>
+      <li><a href="#pr-s1"><span class="paper-num">1</span>Why replay</a></li>
+      <li><a href="#pr-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
+
+  <section class="session paper-wide" id="pr-chat" aria-label="The replayed session" data-animate="slide" style="height: 24rem;">
     <div class="session-viewport" aria-label="Conversation">
       <div class="session-content"></div>
       <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
@@ -36,6 +45,47 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
   <section class="paper-section" aria-labelledby="pr-s1">
     <h2 id="pr-s1"><span class="paper-num">1</span>Why replay</h2>
     <p>Each reply in the replay states a measurement - minutes, tokens, files - not an impression. Replayed at reading speed, the order matters: the request is visible before the claim that answers it, as it was in the session.</p>
+  </section>
+  <section class="paper-bibtex" aria-labelledby="pr-cite">
+    <h2 id="pr-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026replay,
+  title = {A Session, Replayed: Three Requests and What an Agent Measured},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-chat.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026vaepractice,
+  title = {Verified Agentic Engineering in Practice: A Component System Grown in One Month},
+  author = {Homberg, Aron},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper.html}
+}
+
+@misc{homberg2026defussvae,
+  author = {Homberg, Aron},
+  title = {defuss-vae: Verified Agentic Engineering},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-vae}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
   </section>
 </article>
 <script>
@@ -63,10 +113,10 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
         const reply = session.append(chat, bot, { id: `a${i}` });
         const out = df$(reply).find('.bubble-content');
         chat.api.setState('streaming');
-        const words = turn.a.split(' ');
-        for (let n = 1; n <= words.length; n++) {
+        // each word a .session-token: it fades in as it arrives
+        for (const word of turn.a.split(' ')) {
           if (!(await wait(45, mine))) return;
-          out.text(words.slice(0, n).join(' '));
+          out.append(df$(`<span class="session-token">${word} </span>`));
         }
         chat.api.setState(session.isAtEnd(chat) ? 'default' : 'detached');
       }

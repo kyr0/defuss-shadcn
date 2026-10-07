@@ -38,7 +38,7 @@ turn is on screen; files dropped on the session become an event.
 - [`content-visibility: auto`](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility) + `contain-intrinsic-size` - off-screen rows skip rendering; long threads stay cheap
 - [`overflow-clip-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-clip-margin) - widens the paint clip `content-visibility` implies, so bubble tails, reactions and focus rings draw outside a row
 - [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky) - the scroll buttons float on the edge of the transcript
-- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - `data-animate` lets new rows rise in
+- [`@starting-style`](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) - `data-animate` lets new rows rise, fade or slide in and streamed words fade in
 - [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) - `data-drop`: files dropped on the transcript
 - [`inert`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert) - a scroll button with nothing to scroll to is out of reach
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - instant jumps, no rise-in
@@ -90,7 +90,7 @@ turn is on screen; files dropped on the session become an event.
 | `data-anchor` (on an item) | - | An appended turn settles near the top instead of following to the end |
 | `data-track` | - | Track the current turn and the visible messages (`session-visibility`, `data-current` on the current anchor) |
 | `data-drop` | - | Files dropped on the session → `session-drop`; overlay text from `data-drop-label`, filter with `data-drop-accept` (`image/*, .pdf`) |
-| `data-animate` | - | New rows rise in |
+| `data-animate` | (empty) / `rise`, `fade`, `slide` | New rows enter: rise from below (the default), fade in place, or slide in from their own side - a sent message (`data-align="end"`) from the end, a reply from the start. Rows present at load never animate. A streamed word wrapped in `<span class="session-token">` fades in as it arrives. Reduced motion: none of it |
 
 The runtime keeps these current for CSS and tests: `data-stick` (following
 the live edge), `data-scrollable="start end"` (content beyond each edge),
@@ -213,6 +213,7 @@ s.api.getState(); // → { name: 'detached', config: { to: 'start' } }
 | `.session-viewport` | `role="region"`, `aria-label`, `tabindex="0"` | A focusable, labelled scroll region (set by the runtime when missing) |
 | `.session-content` | `role="log"`, `aria-relevant="additions"`, `aria-busy` | New messages are announced; a streaming reply once it is done |
 | `.session-scroll-button` | `aria-label`, `inert` when inactive | "Scroll to the latest message" |
+| `.session-token` | - | A streamed word; decoration only - the log announces the finished reply, not each word |
 
 ## Notes
 

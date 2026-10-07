@@ -13,7 +13,8 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
 </PageHeader>
 
 ```html example label="Redeschrift 1.0" schema="none" sandbox="links" hint="Choose S, M or L inside the framed model card: it posts { type: 'defuss:iframe', kind: 'message', name: 'variant' } to the paper, the .iframe fires iframe-message, and the paper marks the table row and rewrites its three statistics. The frame follows its content's height (data-fit='content'). Numbers: the model card and ARCH.md on Hugging Face, 12 September 2026."
-<article class="paper" aria-labelledby="rs-title">
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<article class="paper typeset-numbered" aria-labelledby="rs-title">
   <header class="paper-hero">
     <p class="paper-venue"><span class="badge" data-variant="secondary">Model card</span><span>Automatic speech recognition · <time datetime="2026-09-12">12 September 2026</time></span></p>
     <h1 class="paper-title" id="rs-title">Redeschrift 1.0<span class="paper-title-sub">Efficient German speech recognition for every device</span></h1>
@@ -29,6 +30,17 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <h2 id="rs-abstract">Abstract</h2>
     <p>Redeschrift 1.0 transcribes German speech on an ordinary processor, offline and private. It is an ONNX export of a German fine-tune (primeline/parakeet-primeline) of NVIDIA's Parakeet TDT 0.6B v3, compressed into three shipping variants. On a German evaluation corpus of 9,799 utterances the word error rate is 3.27 % for the smallest variant (672 MiB) and 3.12 % for the largest, against 3.02 % for the uncompressed reference - one error in roughly thirty spoken words.</p>
   </section>
+
+  <nav class="paper-toc" aria-labelledby="rs-toc">
+    <h2 id="rs-toc">Contents</h2>
+    <ol>
+      <li><a href="#rs-s1"><span class="paper-num">1</span>Variants</a></li>
+      <li><a href="#rs-s2"><span class="paper-num">2</span>Gates</a></li>
+      <li><a href="#rs-s3"><span class="paper-num">3</span>Use</a></li>
+      <li><a href="#rs-cite"><span class="paper-num">·</span>Citation and references</a></li>
+    </ol>
+  </nav>
+
 
   <figure class="iframe" id="rs-card" data-fit="content">
     <iframe class="iframe-frame" title="Redeschrift model card" srcdoc="<!doctype html><html lang='en'><body style='margin:0;padding:1rem 1.25rem;font:0.875rem/1.5 system-ui,sans-serif;color:#1f2937;background:#fff'><p style='margin:0 0 .25rem;font-weight:600'>kyr0/redeschrift-1.0</p><p style='margin:0 0 .75rem;color:#6b7280'>automatic-speech-recognition · ONNX · sherpa-onnx · CC BY 4.0</p><p style='margin:0 0 .5rem'>Which variant fits your computer?</p><div style='display:flex;flex-wrap:wrap;gap:.5rem'><button type='button' data-id='S' style='font:inherit;padding:.35rem .8rem;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer'>S - smallest</button><button type='button' data-id='M' style='font:inherit;padding:.35rem .8rem;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer'>M - recommended</button><button type='button' data-id='L' style='font:inherit;padding:.35rem .8rem;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer'>L - most accurate</button></div><script>document.querySelectorAll('[data-id]').forEach((b) => b.addEventListener('click', () => { document.querySelectorAll('[data-id]').forEach((x) => x.style.background = x === b ? '#eef2ff' : '#fff'); parent.postMessage({ type: 'defuss:iframe', kind: 'message', name: 'variant', detail: { id: b.dataset.id } }, '*'); }));</script><script>const report = () => parent.postMessage({ type: 'defuss:iframe', kind: 'size', height: document.documentElement.getBoundingClientRect().height }, '*'); new ResizeObserver(report).observe(document.documentElement); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.kind === 'hello') report(); });</script></body></html>"></iframe>
@@ -54,9 +66,21 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
           <tr><td>Reference</td><td>fp32</td><td data-num>2,431.7 MiB</td><td data-num>3.02 %</td><td data-num>-</td><td data-num>0.031</td><td data-num>3,488 MB</td></tr>
         </tbody>
       </table>
-      <figcaption class="paper-table-caption"><b>Table 1.</b> From the model's ARCH.md. WER on the 9,799-utterance corpus (L: the 980-utterance set); real-time factor = seconds of compute per second of audio.</figcaption>
+      <figcaption class="typeset-caption">From the model's ARCH.md. WER on the 9,799-utterance corpus (L: the 980-utterance set); real-time factor = seconds of compute per second of audio.</figcaption>
     </figure>
   </section>
+
+  <figure class="typeset-group paper-wide">
+    <figure>
+      <div class="chart" style="height: 10rem;" role="img" aria-label="Bar chart, word error rate in percent: S 3.27, M 3.19, L 3.12, reference 3.02" data-chart='{"grid":{"left":36,"right":8,"top":16,"bottom":24},"xAxis":{"type":"category","data":["S","M","L","Ref."]},"yAxis":{"type":"value","min":2.8},"series":[{"type":"bar","data":[3.27,3.19,3.12,3.02],"label":{"show":true,"position":"top"}}]}'></div>
+      <figcaption class="typeset-subcaption">Word error rate, % (lower is better).</figcaption>
+    </figure>
+    <figure>
+      <div class="chart" style="height: 10rem;" role="img" aria-label="Bar chart, real-time factor: S 0.046, M 0.083, L 0.039, reference 0.031" data-chart='{"grid":{"left":40,"right":8,"top":16,"bottom":24},"xAxis":{"type":"category","data":["S","M","L","Ref."]},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[0.046,0.083,0.039,0.031],"label":{"show":true,"position":"top"}}]}'></div>
+      <figcaption class="typeset-subcaption">Real-time factor (lower is faster).</figcaption>
+    </figure>
+    <figcaption class="typeset-caption" data-align="justify">The variants of Table 1 side by side: accuracy and speed in one box. L is the most accurate shipped variant and, on a MacBook Air M4, also the fastest; M trades speed for the best accuracy of the 4-bit variants.</figcaption>
+  </figure>
 
   <section class="paper-section" aria-labelledby="rs-s2">
     <h2 id="rs-s2"><span class="paper-num">2</span>Gates</h2>
@@ -67,8 +91,67 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
     <h2 id="rs-s3"><span class="paper-num">3</span>Use</h2>
     <p>All variants run in sherpa-onnx with ONNX Runtime on a standard CPU - no graphics card, no network. Besides German, the model transcribes 24 more European languages, among them English, French, Spanish, Italian, Dutch, Polish and Russian; speech that switches into English mid-sentence is supported. The model is released under CC BY 4.0; dialect support is planned for version 2.</p>
   </section>
+  <section class="paper-bibtex" aria-labelledby="rs-cite">
+    <h2 id="rs-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026redeschriftnote,
+  title = {Redeschrift 1.0: Efficient German Speech Recognition for Every Device},
+  author = {Homberg, Aron},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-redeschrift.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@misc{homberg2026redeschrift,
+  author = {Homberg, Aron},
+  title = {Redeschrift 1.0: German speech recognition for every device},
+  year = {2026},
+  howpublished = {Hugging Face},
+  url = {https://huggingface.co/kyr0/redeschrift-1.0}
+}
 
-  <footer class="paper-footer"><p>Redeschrift 1.0 by Aron Homberg, building on primeline/parakeet-primeline (Florian Zimmermeister, primeLine Solutions) and nvidia/parakeet-tdt-0.6b-v3.</p></footer>
+@misc{zimmermeister_parakeet_primeline,
+  author = {Zimmermeister, Florian and {primeLine Solutions}},
+  title = {parakeet-primeline},
+  howpublished = {Hugging Face},
+  url = {https://huggingface.co/primeline/parakeet-primeline}
+}
+
+@misc{nvidia2025parakeetv3,
+  author = {{NVIDIA}},
+  title = {parakeet-tdt-0.6b-v3},
+  year = {2025},
+  howpublished = {Hugging Face},
+  url = {https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3}
+}
+
+@inproceedings{xu2023tdt,
+  author = {Xu, Hainan and Jia, Fei and Majumdar, Somshubra and Huang, He and Watanabe, Shinji and Ginsburg, Boris},
+  title = {Efficient Sequence Transduction by Jointly Predicting Tokens and Durations},
+  booktitle = {Proceedings of the 40th International Conference on Machine Learning},
+  year = {2023}
+}
+
+@inproceedings{ardila2020commonvoice,
+  author = {Ardila, Rosana and Branson, Megan and Davis, Kelly and Henretty, Michael and Kohler, Michael and Meyer, Josh and Morais, Reuben and Saunders, Lindsay and Tyers, Francis M. and Weber, Gregor},
+  title = {Common Voice: A Massively-Multilingual Speech Corpus},
+  booktitle = {Proceedings of the 12th Language Resources and Evaluation Conference},
+  pages = {4218--4222},
+  year = {2020}
+}
+
+@misc{k2fsa_sherpa_onnx,
+  author = {{k2-fsa}},
+  title = {sherpa-onnx},
+  howpublished = {GitHub},
+  url = {https://github.com/k2-fsa/sherpa-onnx}
+}</code></pre>
+    </figure>
+  </section>
 </article>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
