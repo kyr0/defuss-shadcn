@@ -1,7 +1,7 @@
 // dist/components/virtual-list/virtual-list.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.6") {
+if (!__df$shared || __df$shared.abi !== "0.9.7") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, dataSource, parseFilter, virtualWindow, sizerHeight, scrollTopFor } = __df$shared;
@@ -233,7 +233,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/data-tree/data-tree.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.6") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.7") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, persisted, viewPersistence, dataSource: dataSource2, parseFilter: parseFilter2, filterText, virtualWindow: virtualWindow2, sizerHeight: sizerHeight2, scrollIntoViewTop } = __df$shared2;
@@ -580,7 +580,7 @@ new MutationObserver(init2).observe(document, { childList: true, subtree: true }
 // dist/components/data-grid/data-grid.js
 var __df$core3 = globalThis.df$;
 var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
-if (!__df$shared3 || __df$shared3.abi !== "0.9.6") {
+if (!__df$shared3 || __df$shared3.abi !== "0.9.7") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, textLocale, componentState: componentState3, bindComponent: bindComponent3, persisted: persisted2, viewPersistence: viewPersistence2, dataSource: dataSource3, parseFilter: parseFilter3, filterText: filterText2, cycleSort, virtualWindow: virtualWindow3, sizerHeight: sizerHeight3, scrollIntoViewTop: scrollIntoViewTop2 } = __df$shared3;
@@ -1350,7 +1350,7 @@ new MutationObserver(init3).observe(document, { childList: true, subtree: true }
 // dist/components/autocomplete/autocomplete.js
 var __df$core4 = globalThis.df$;
 var __df$shared4 = __df$core4 && __df$core4.shadcn && __df$core4.shadcn.shared;
-if (!__df$shared4 || __df$shared4.abi !== "0.9.6") {
+if (!__df$shared4 || __df$shared4.abi !== "0.9.7") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals4, defussQuery: defussQuery4, componentState: componentState4, bindComponent: bindComponent4, dataSource: dataSource4, safeShowPopover, textLocale: textLocale2 } = __df$shared4;
@@ -1807,5 +1807,5 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-//# debugId=BB63E54639153DA764756E2164756E21
+//# debugId=348078B42999805F64756E2164756E21
 //# sourceMappingURL=big-data.js.map

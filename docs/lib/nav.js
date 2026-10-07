@@ -23,7 +23,7 @@ export const NAV = [
                 ],
             },
             { label: 'Vibe Coding / Agentic Engineering', href: 'vibe-coding.html', isNew: true },
-            { label: 'How to Use', href: 'how-to-use.html' },
+            { label: 'Anatomy of a Component', href: 'anatomy.html' },
             { label: 'Component Skills', href: 'component-skills.html' },
             { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
             { label: 'Changelog', href: 'changelog.html' },
@@ -130,6 +130,7 @@ export const NAV = [
     // component page, then its topics (sub-pages carry their badge here)
     { heading: 'WYSIWYG Editors', icon: 'square-pen', items: [
             { label: 'HTML Preview Editor', href: 'code-example.html', isNew: true },
+            { label: 'Editor.js', href: 'editorjs.html', isNew: true },
         ] },
     { heading: 'Questionnaire', icon: 'list-checks', items: [
             { label: 'Questionnaire', href: 'questionnaire.html', isNew: true },
@@ -152,7 +153,9 @@ export const NAV = [
                 href: 'image.html',
                 children: [{ label: 'Image Gallery', href: 'image-gallery.html', type: 'MOL' }],
             },
+            { label: 'Iframe', href: 'iframe.html', isNew: true },
             { label: 'Statistic', href: 'statistic.html' },
+            { label: 'QR Code', href: 'qr-code.html', isNew: true },
             { label: 'Table', href: 'table.html' },
             { label: 'Collapsible', href: 'collapsible.html' },
             { label: 'Timeline', href: 'timeline.html' },
@@ -258,6 +261,7 @@ export const NAV = [
             { label: 'Panel', href: 'panel.html', isNew: true },
             { label: 'Property Grid', href: 'property-grid.html', isNew: true },
             { label: 'Window', href: 'window.html', isNew: true },
+            { label: 'Document Comments', href: 'doc-comments.html', isNew: true },
             {
                 label: 'Scaffolds',
                 href: 'application-scaffolds.html',
@@ -270,6 +274,7 @@ export const NAV = [
                     { label: 'Notes & Docs', href: 'scaffold-notes.html', type: 'TPL', isNew: true },
                     { label: 'Status Page', href: 'scaffold-status-page.html', type: 'TPL', isNew: true },
                     { label: 'Desktop', href: 'scaffold-desktop.html', type: 'TPL', isNew: true },
+                    { label: 'Document Editor', href: 'scaffold-document-editor.html', type: 'TPL', isNew: true },
                 ],
             },
         ] },
@@ -322,6 +327,18 @@ export const NAV = [
         ] },
     { heading: 'Papers', icon: 'file-text', items: [
             { label: 'Modern Paper', href: 'paper.html', isNew: true },
+            { label: 'Paper Gallery', href: 'paper-gallery.html', isNew: true, children: [
+                    { label: 'Theme Chooser', href: 'paper-themes.html', type: 'TPL' },
+                    { label: 'Light and Dark', href: 'paper-dark-mode.html', type: 'TPL' },
+                    { label: 'House Styles', href: 'paper-styles.html', type: 'TPL' },
+                    { label: 'Two Columns', href: 'paper-two-column.html', type: 'TPL' },
+                    { label: 'Redeschrift 1.0', href: 'paper-redeschrift.html', type: 'TPL' },
+                    { label: 'Code Listings', href: 'paper-code.html', type: 'TPL' },
+                    { label: 'Database Schema', href: 'paper-schema.html', type: 'TPL' },
+                    { label: 'Images and Video', href: 'paper-media.html', type: 'TPL' },
+                    { label: 'Big Data', href: 'paper-big-data.html', type: 'TPL' },
+                    { label: 'Chat Replay', href: 'paper-chat.html', type: 'TPL' },
+                ] },
             { label: 'BibTeX', href: 'bibtex.html', isNew: true },
         ] },
     { heading: 'Website', icon: 'globe', items: [

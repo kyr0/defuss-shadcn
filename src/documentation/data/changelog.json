@@ -30,7 +30,8 @@
         "fix(ci): pin the Bun that builds dist/ - stats.json gzip sizes differ across Bun versions",
         "test: state + interaction contract over every interactive fixture (coverage 31.6% -&gt; 75.6%), CI workflow",
         "chore(agents): record the v0.9.6 gate episodes"
-      ]
+      ],
+      "hash": "3c7f27f7"
     },
     {
       "version": "v0.9.6",

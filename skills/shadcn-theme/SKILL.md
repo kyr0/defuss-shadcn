@@ -7,7 +7,7 @@ description: "Create or update a defuss-shadcn theme from instructions - text, c
 
 # defuss-shadcn / shadcn-theme
 
-Scope: one theme file for defuss-shadcn 0.9.6 - the agentic twin of the docs' Theme Designer, which imports the same file. Components never change for a theme: a theme is a value for each token, nothing else.
+Scope: one theme file for defuss-shadcn 0.9.7 - the agentic twin of the docs' Theme Designer, which imports the same file. Components never change for a theme: a theme is a value for each token, nothing else.
 
 ## Where things are
 

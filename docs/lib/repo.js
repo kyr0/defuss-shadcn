@@ -7,9 +7,18 @@
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { componentDirs, componentFile } from './component-dirs.ts';
 export const REPO_ROOT = process.env.DEFUSS_SHADCN_ROOT ?? join(import.meta.dirname, '..', '..', '..');
 export function repoFile(...parts) {
     return join(REPO_ROOT, ...parts);
+}
+/** A file of a component, wherever its section folder is (src/components/<section>/<name>/…). */
+export function componentPath(component, ...parts) {
+    return componentFile(repoFile('src', 'components'), component, ...parts);
+}
+/** Every component's name, sorted. */
+export function componentNames() {
+    return componentDirs(repoFile('src', 'components')).map((c) => c.name);
 }
 /**
  * The repository's GitHub web URL, derived from package.json "repository"
@@ -25,7 +34,7 @@ export function repoWebUrl() {
 /** Minimal YAML-frontmatter reader for component-skill.md files (flat
  * `key: value` pairs only - the skill contract bans anything fancier). */
 export function readSkillMeta(component) {
-    const file = repoFile('src', 'components', component, 'component-skill.md');
+    const file = componentPath(component, 'component-skill.md');
     if (!existsSync(file))
         return null;
     const text = readFileSync(file, 'utf8');
@@ -77,14 +86,14 @@ export function themeFiles() {
 }
 /** A component "has JS" when its interaction source exists (.ts in src/). */
 export function componentHasJs(component) {
-    return existsSync(repoFile('src', 'components', component, `${component}.ts`));
+    return existsSync(componentPath(component, `${component}.ts`));
 }
 /** Current component source text, exactly as shipped (CSS: the .css file;
  * JS: the .ts source, mirroring the old sync-js-snippets.ts preference). */
 export function readComponentSource(component, kind) {
     const file = kind === 'css'
-        ? repoFile('src', 'components', component, `${component}.css`)
-        : repoFile('src', 'components', component, `${component}.ts`);
+        ? componentPath(component, `${component}.css`)
+        : componentPath(component, `${component}.ts`);
     return existsSync(file) ? readFileSync(file, 'utf8') : null;
 }
 //# sourceMappingURL=repo.js.map

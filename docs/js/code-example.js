@@ -100,7 +100,7 @@
         return out;
     }
     var nests = function (source) {
-        return /\bcode-example\b/.test(source || '');
+        return /\b(?:code-example|editorjs)\b/.test(source || '');
     };
     var stylesPromise = null;
     /** the docs sheets, inlined once per page (bundles as their .min twins) */

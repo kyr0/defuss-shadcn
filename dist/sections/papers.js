@@ -1,7 +1,7 @@
 // dist/components/bibtex/bibtex.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.6") {
+if (!__df$shared || __df$shared.abi !== "0.9.7") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -498,5 +498,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=2DEF0B9635DCAE5B64756E2164756E21
+//# debugId=52FFD593B1E58A8064756E2164756E21
 //# sourceMappingURL=papers.js.map
