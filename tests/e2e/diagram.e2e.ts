@@ -591,6 +591,28 @@ try {
     assert.equal(r.during, r.after, 'the same path during and after the enter animation');
   });
 
+  await check('a redraw of an unchanged diagram is idempotent: every label stays put, the padding stays, and nothing draws again on its own (no 3 Hz flicker)', async () => {
+    const r = await page.evaluate(async () => {
+      const out: string[] = [];
+      const snap = (fig: Element) => [...fig.querySelectorAll<HTMLElement>('.diagram-wire-label')].map((l) => `${l.textContent}@${l.style.left},${l.style.top}`).join('|') + ' pad=' + (fig.querySelector('.diagram-canvas') as HTMLElement).style.paddingTop;
+      for (const fig of document.querySelectorAll('figure.diagram')) {
+        if (!fig.querySelector('.diagram-wire-label')) continue;
+        const redraw = () => (globalThis as any).df$.shadcn.diagram.redraw(fig);
+        redraw();
+        const a = snap(fig);
+        redraw();
+        const b = snap(fig);
+        if (a !== b) out.push(`${fig.id}: ${a} ≠ ${b}`);
+      }
+      let draws = 0;
+      document.addEventListener('diagram-drawn', () => draws++);
+      await new Promise((res) => setTimeout(res, 1500));
+      return { out, draws };
+    });
+    assert.deepEqual(r.out, []);
+    assert.equal(r.draws, 0, 'no draw while nothing changes');
+  });
+
   await check('clearance: in every framed diagram, nothing drawn comes closer than 20px to the border (zones, zone labels, wire labels, wires)', async () => {
     await page.evaluate(() => document.querySelectorAll('figure.diagram').forEach((f) => (globalThis as any).df$.shadcn.diagram.redraw(f)));
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));

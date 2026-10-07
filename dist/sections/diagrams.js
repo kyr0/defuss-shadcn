@@ -617,7 +617,9 @@ function draw(root, canvas) {
     drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn, texts);
   if (type === "fishbone")
     drawBones(nodes, wireGroup, line);
-  reconcileWires(wires);
+  const kept = reconcileWires(wires);
+  for (const item of queue)
+    item.g = kept.get(item.g) ?? item.g;
   sideDotLabels(nodes, wires, rectOf);
   labels._entered = entered;
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
@@ -631,6 +633,7 @@ function draw(root, canvas) {
 function reconcileWires(wires) {
   const sig = (g) => [...g.attributes].filter((a) => a.name !== "data-stale" && a.name !== "data-step-entered").map((a) => `${a.name}=${a.value}`).join(" ") + ">" + dfDollar(g).html();
   const stale = new Map;
+  const kept = new Map;
   for (const g of dfDollar(wires).children("[data-stale]").toArray())
     stale.set(`${g.dataset.edgeRef ?? ""}|${sig(g)}`, g);
   for (const g of dfDollar(wires).children(":not([data-stale])").toArray()) {
@@ -640,10 +643,12 @@ function reconcileWires(wires) {
       continue;
     stale.delete(key);
     old.removeAttribute("data-stale");
+    kept.set(g, old);
     g.remove();
   }
   for (const g of stale.values())
     g.remove();
+  return kept;
 }
 var CLEARANCE = 20;
 var SIDES = ["top", "right", "bottom", "left"];
@@ -2188,5 +2193,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=5EF5CC536F5A6FB964756E2164756E21
+//# debugId=8921B9D1B9ACB33C64756E2164756E21
 //# sourceMappingURL=diagrams.js.map

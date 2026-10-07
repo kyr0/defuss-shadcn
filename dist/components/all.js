@@ -11086,7 +11086,9 @@ function draw2(root, canvas) {
     drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn, texts);
   if (type === "fishbone")
     drawBones(nodes, wireGroup, line);
-  reconcileWires(wires);
+  const kept = reconcileWires(wires);
+  for (const item of queue)
+    item.g = kept.get(item.g) ?? item.g;
   sideDotLabels(nodes, wires, rectOf);
   labels._entered = entered;
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
@@ -11100,6 +11102,7 @@ function draw2(root, canvas) {
 function reconcileWires(wires) {
   const sig = (g) => [...g.attributes].filter((a) => a.name !== "data-stale" && a.name !== "data-step-entered").map((a) => `${a.name}=${a.value}`).join(" ") + ">" + dfDollar18(g).html();
   const stale = new Map;
+  const kept = new Map;
   for (const g of dfDollar18(wires).children("[data-stale]").toArray())
     stale.set(`${g.dataset.edgeRef ?? ""}|${sig(g)}`, g);
   for (const g of dfDollar18(wires).children(":not([data-stale])").toArray()) {
@@ -11109,10 +11112,12 @@ function reconcileWires(wires) {
       continue;
     stale.delete(key);
     old.removeAttribute("data-stale");
+    kept.set(g, old);
     g.remove();
   }
   for (const g of stale.values())
     g.remove();
+  return kept;
 }
 var CLEARANCE = 20;
 var SIDES2 = ["top", "right", "bottom", "left"];
@@ -21944,6 +21949,6 @@ df$60.win = windowActions;
 init60();
 new MutationObserver(init60).observe(document, { childList: true, subtree: true });
 
-//# debugId=97EDB56C24AD4B3764756E2164756E21
+//# debugId=CCF31D822279018D64756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -20,18 +20,18 @@
   "unitTestFiles": 35,
   "withJs": 62,
   "withoutJs": 169,
-  "totalSize": 2429497,
-  "totalSizeMinified": 1252026,
-  "totalSizeGz": 737295,
-  "totalSizeGzMinified": 417504,
+  "totalSize": 2430072,
+  "totalSizeMinified": 1252097,
+  "totalSizeGz": 737528,
+  "totalSizeGzMinified": 417541,
   "bundle": {
-    "jsSize": 828678,
-    "jsSizeMinified": 479506,
+    "jsSize": 828821,
+    "jsSizeMinified": 479577,
     "cssSize": 1251473,
     "cssSizeMinified": 764149,
-    "totalSizeGz": 446215,
-    "totalSizeGzMinified": 277783,
-    "jsSizeGzMinified": 146035,
+    "totalSizeGz": 446258,
+    "totalSizeGzMinified": 277825,
+    "jsSizeGzMinified": 146077,
     "cssSizeGzMinified": 131748
   },
   "core": {
@@ -324,13 +324,13 @@
         "sections/diagrams.css",
         "sections/diagrams.js"
       ],
-      "jsSize": 91271,
-      "jsSizeMinified": 54751,
+      "jsSize": 91414,
+      "jsSizeMinified": 54822,
       "cssSize": 60794,
       "cssSizeMinified": 42480,
-      "totalSizeGz": 36542,
-      "totalSizeGzMinified": 27371,
-      "jsSizeGzMinified": 19151,
+      "totalSizeGz": 36586,
+      "totalSizeGzMinified": 27406,
+      "jsSizeGzMinified": 19186,
       "cssSizeGzMinified": 8220
     },
     "feedback-status": {
@@ -712,7 +712,7 @@
     "count": 19,
     "minGzMinified": 1965,
     "maxGzMinified": 60511,
-    "meanGzMinified": 15259
+    "meanGzMinified": 15261
   },
   "components": {
     "about-intro": {
@@ -1564,14 +1564,14 @@
       "name": "diagram",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 109736,
-      "jsSizeMinified": 48167,
+      "jsSize": 110311,
+      "jsSizeMinified": 48238,
       "cssSize": 56798,
       "cssSizeMinified": 40563,
-      "totalSizeGz": 41131,
-      "totalSizeGzMinified": 24475,
-      "totalSize": 166534,
-      "totalSizeMinified": 88730
+      "totalSizeGz": 41364,
+      "totalSizeGzMinified": 24512,
+      "totalSize": 167109,
+      "totalSizeMinified": 88801
     },
     "dialog": {
       "name": "dialog",

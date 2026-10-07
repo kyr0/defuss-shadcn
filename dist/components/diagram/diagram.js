@@ -752,7 +752,13 @@ function draw(root, canvas) {
         drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn, texts);
     if (type === 'fishbone')
         drawBones(nodes, wireGroup, line);
-    reconcileWires(wires);
+    // the queued labels point at the groups just built - after the reconcile they must point at the
+    // groups that stayed, or a label measures a detached wire (its own wire no longer excluded, it
+    // landed elsewhere on every second draw, the clearance grew and shrank, the resize observer
+    // drew again: a 3 Hz flicker on the deck's proof-loop slide)
+    const kept = reconcileWires(wires);
+    for (const item of queue)
+        item.g = kept.get(item.g) ?? item.g;
     // a dot's name goes to the side its wires leave free; then the labels avoid it there
     sideDotLabels(nodes, wires, rectOf);
     labels._entered = entered;
@@ -778,6 +784,7 @@ function reconcileWires(wires) {
     // identity = the group's attributes (minus the two runtime marks) + its markup, read through df$
     const sig = (g) => [...g.attributes].filter((a) => a.name !== 'data-stale' && a.name !== 'data-step-entered').map((a) => `${a.name}=${a.value}`).join(' ') + '>' + dfDollar(g).html();
     const stale = new Map();
+    const kept = new Map(); // the dropped new group → the old one that stays
     for (const g of dfDollar(wires).children('[data-stale]').toArray())
         stale.set(`${g.dataset.edgeRef ?? ''}|${sig(g)}`, g);
     for (const g of dfDollar(wires).children(':not([data-stale])').toArray()) {
@@ -787,10 +794,12 @@ function reconcileWires(wires) {
             continue;
         stale.delete(key);
         old.removeAttribute('data-stale');
+        kept.set(g, old);
         g.remove();
     }
     for (const g of stale.values())
         g.remove();
+    return kept;
 }
 /**
  * The least distance (px, unscaled) anything drawn keeps from a framed
