@@ -4,8 +4,6 @@
 Agents append `<UTC ISO> s=<session> LESSON <VAE-DIALECT>` only for a falsified HYPOTHESIS, a dead end, or a root cause.
 A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then delete its lines. -->
 
-2026-10-06T09:29:46Z s=c273a037 FINDING src/shared/component-state.ts (el.api / registry) learn=verifier: the API docs gate runs memberGaps over the shared members on every component.
-2026-10-06T09:29:46Z s=c273a037 FINDING src/components/otp-input/component-skill.md learn=verifier: legacy namespace gate covers the docs agents read.
 2026-10-06T09:29:46Z s=c273a037 FINDING src/documentation/lib/component-api.ts typeMembers / typeEntries learn=test: tests/component-api.test.ts (17 cases) covers state contracts, quoted keys, nesting and the shared specialization.
 2026-10-06T09:29:46Z s=c273a037 FINDING the previous review (process) learn=test: api-docs.e2e runs whenever src/ or scripts/ change.
 2026-10-06T09:29:46Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts inDemo learn=test: the e2e itself: failed 1 of 2 runs before, passed 4 of 4 after.
@@ -104,3 +102,5 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T15:45:25Z s=c273a037 FINDING Illustrative Diagram wires: lag, jump, snap on slides (user finding) learn=test: diagram.e2e: "a redraw within a step keeps the current wire element" (same element, same Animation objects, advanced, no stale) and "a node mid enter-animation"
 2026-10-07T15:45:25Z s=c273a037 FINDING deck slide 4, index statistics, Standalone HTML, Anatomy page learn=test: tests/ui.test.ts index test (whole-KiB cards, no sentence); verify stats claim (README), README ↔ index parity + commit window, stat figures; slide 4 and index 
 2026-10-07T15:45:25Z s=c273a037 FINDING deck slide 17: the turning ? aliases mid-rotation (user finding) learn=none: falsifier: slide 17 mid-turn still shows stair-stepped edges on the stroke - sampling during motion was not measured, only the static 62-degree frame.
+2026-10-07T15:46:15Z s=c273a037 DONE fp=440412d0f3e1 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1483)
+2026-10-07T15:46:15Z s=c273a037 FINDING every JS component (state configs) learn=verifier: verify's API docs gate fails without the map, on a state it lacks or adds, an undescribed state or field, and a declared field the code never names (tests/compo
