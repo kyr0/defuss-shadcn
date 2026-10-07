@@ -299,7 +299,7 @@ working, to a viewer that can tell."
 }
 ```
 
-(The diagram is a JSON spec for the illustrative diagram component - on the docs site it plays step by step and every box and arrow can be clicked.)
+
 
 (Mechanically-enforced gates end at "all gates pass"; the screenshot set is
 the loop's guarantee of *evidence of appearance*. VLM reasoning over those
