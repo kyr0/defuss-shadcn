@@ -449,23 +449,19 @@ check(
   'run `bun scripts/stat-figures.ts` (after `bun run stats`, or `bun scripts/time-verify.ts --agent "…"` for the verify.* figures), then rebuild the docs',
 );
 
-// 10e. README + doc-site index must PROMINENTLY state the current numbers —
-// total, withJs, withoutJs and the KiB-formatted gzip sizes - as the exact
-// sentence generated from dist/stats.json (shared renderer in lib/stats.ts).
-// A stale or missing claim is misinformation: the docs promise the site's
-// data, so verify compares the rendered sentence, not hand-typed digits.
+// 10e. README must PROMINENTLY state the current numbers - total, withJs,
+// withoutJs and the KiB-formatted gzip sizes - as the exact sentence generated
+// from dist/stats.json (shared renderer in lib/stats.ts). A stale or missing
+// claim is misinformation, so verify compares the rendered sentence, not
+// hand-typed digits. The index shows the same numbers as StatsCards (generated
+// from stats.json at build time, whole KiB) - no sentence to drift there.
 // (Runs after the fresh gate, which already fails if stats.json lags dist/.)
 if (statsProblems.length === 0) {
   const statsDoc = JSON.parse(readFileSync(join(DIST, STATS_FILE), 'utf8')) as StatsDoc;
-  const claim = statsClaimProblems(readFileSync(join(ROOT, 'README.md'), 'utf8'), 'README.md', statsDoc).concat(
-    existsSync(join(DOCS_DIST, 'index.html'))
-      ? statsClaimProblems(readFileSync(join(DOCS_DIST, 'index.html'), 'utf8'), 'dist/documentation/index.html', statsDoc)
-      : ['dist/documentation/index.html missing - run `bun run build:docs`'],
-  );
   check(
-    'stats claim (README + index)',
-    claim,
-    'state the current footprint verbatim in both files - update the sentence to match dist/stats.json and run `bun run docs` (README.md and the rendered index page are a parity pair, commit them together)',
+    'stats claim (README)',
+    statsClaimProblems(readFileSync(join(ROOT, 'README.md'), 'utf8'), 'README.md', statsDoc),
+    'state the current footprint verbatim in README.md - update the sentence to match dist/stats.json (statsClaimText in scripts/lib/stats.ts)',
   );
 }
 

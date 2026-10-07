@@ -160,6 +160,39 @@ try {
     assert.equal(r.placeholder, 'Notes');
   });
 
+  await check('toolbar: the toggles report the caret - a heading is not bold, only its own level is pressed, bold only inside <b>', async () => {
+    assert.equal(await select(page, '#ed-md h1.ce-header', 'Design'), true);
+    await page.waitForTimeout(100);
+    let pressed = await page.$$eval('#ed-bar [aria-pressed="true"]', (b) => b.map((x) => x.getAttribute('data-editor-command')));
+    assert.deepEqual(pressed, [], 'a level-1 heading presses neither Heading 2 nor Bold');
+    assert.equal(await select(page, '#ed-md .ce-paragraph b', 'bold'), true);
+    await page.waitForTimeout(100);
+    pressed = await page.$$eval('#ed-bar [aria-pressed="true"]', (b) => b.map((x) => x.getAttribute('data-editor-command')));
+    assert.deepEqual(pressed, ['bold', 'paragraph']);
+  });
+
+  await check('dark mode: the editor\'s + popover and search paint from the tokens (no light surface, no light text on it)', async () => {
+    await page.evaluate(() => document.documentElement.classList.add('dark'));
+    await page.click('#ed-md .ce-paragraph');
+    await page.hover('#ed-md [data-id="b2"]');
+    await page.waitForFunction(() => document.querySelector('#ed-md .ce-toolbar__plus')?.checkVisibility());
+    await page.click('#ed-md .ce-toolbar__plus');
+    await page.waitForFunction(() => document.querySelector('#ed-md .ce-popover__container')?.checkVisibility());
+    const r = await page.evaluate(() => {
+      // any CSS colour (the tokens are oklch) read back as painted pixels
+      const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+      const lum = (c: string) => { ctx.clearRect(0, 0, 1, 1); ctx.fillStyle = c; ctx.fillRect(0, 0, 1, 1); const [r, g, bl, al] = ctx.getImageData(0, 0, 1, 1).data; return al ? (0.2126 * r + 0.7152 * g + 0.0722 * bl) / 255 : -1; };
+      const pick = (sel: string) => { const el = document.querySelector<HTMLElement>(sel)!; const cs = getComputedStyle(el); return { bg: lum(cs.backgroundColor), fg: lum(cs.color) }; };
+      return { popover: pick('#ed-md .ce-popover__container'), search: pick('#ed-md .cdx-search-field'), plus: pick('#ed-md .ce-toolbar__plus') };
+    });
+    for (const [name, v] of Object.entries(r)) {
+      assert.ok(v.bg < 0.5, `${name}: dark surface (${v.bg.toFixed(2)})`);
+      assert.ok(v.fg > 0.5, `${name}: light text (${v.fg.toFixed(2)})`);
+    }
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => document.documentElement.classList.remove('dark'));
+  });
+
   await check('toolbar: Bold on a selection wraps it; the toggle reports the formatting', async () => {
     assert.equal(await select(page, '#ed-md .ce-paragraph', 'paragraph'), true);
     await page.click('#ed-bar [data-editor-command="bold"]');

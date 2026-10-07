@@ -1,9 +1,7 @@
 ---
-# README ↔ index parity pair (AGENTS.md): keep README.md's footprint claim in
-# sync with the generated stats - this file's last commit must land with it.
-# (mirror anchor of the comment under README.md's CSS-only stat)
-# Claim it mirrors: 231 components - 62 with JavaScript, 169 CSS-only -
-# 407.0 KiB minified + compressed - 271.0 KiB as the all.css/all.js bundle.
+# README ↔ index parity pair (AGENTS.md): the pillar cards below mirror README's
+# pillar bullets and the CSS-only stat - this file's last commit must land with it.
+# The footprint numbers are the StatsCards (whole KiB); README states the claim sentence.
 title: "defuss-shadcn - Semantic HTML · Shadcn Tokens · Plain CSS"
 description: "A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform."
 slug: "index"
@@ -12,7 +10,7 @@ fullTitle: "defuss-shadcn - Semantic HTML · Shadcn Tokens · Plain CSS"
 
 import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, CssOnlyStat, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, DeckRail } from "../lib/components/index";
 
-<DocPage meta={meta} mainStyle="flex: 0 1 44rem; min-width: 0; max-width: 44rem; padding: 3rem 3.5rem 8rem;" aside={<DeckRail slug="system-in-numbers" title="The System in Numbers - defuss-shadcn presented as a slide deck"><p class="deck-rail-eyebrow">Statistics</p><StatsCards /><StatsClaim /></DeckRail>}>
+<DocPage meta={meta} mainStyle="flex: 0 1 44rem; min-width: 0; max-width: 44rem; padding: 3rem 3.5rem 8rem;" aside={<DeckRail slug="system-in-numbers" title="The System in Numbers - defuss-shadcn presented as a slide deck"><p class="deck-rail-eyebrow">Statistics</p><StatsCards /></DeckRail>}>
 
 <p class="text-sm text-muted-foreground mt-0 mb-3" style="font-family: var(--font-mono);">defuss-shadcn / Introduction / index</p>
 
@@ -34,8 +32,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.875rem;">Statistics</h2>
 
 <StatsCards />
-
-<StatsClaim />
 
 </div>
 
@@ -111,9 +107,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
         </div>
-        <h3 class="card-title card-title-sm">Framework Free</h3>
+        <h3 class="card-title card-title-sm">Standalone HTML</h3>
       </div>
-      <p class="card-description card-desc-sm">Runs in any browser, zero dependencies, no build pipeline required - and <CssOnlyStat /> components need no JavaScript at all. The few general helpers components share (e.g. <code>df$.shadcn.shared.debounce</code>) ship inside core, not as a utility library. The shipped footprint (counts per type, JS/CSS-only split, byte sizes raw/minified/gzipped) is published as <code>dist/stats.json</code>.</p>
+      <p class="card-description card-desc-sm">Plain HTML, CSS and ES modules - no framework, no build pipeline, and <CssOnlyStat /> components need no JavaScript at all. The interactive ones run on one tiny core runtime, <code>df$</code>: <a href="https://www.npmjs.com/package/defuss-query" target="_blank" rel="noopener">defuss-query</a> for DOM selection and events and <a href="https://www.npmjs.com/package/defuss-morph" target="_blank" rel="noopener">defuss-morph</a> for HTML reconciling, plus the shared State API helpers - shipped once as <code>core.js</code>, inside <code>all.js</code>. The footprint (counts per type, JS/CSS-only split, byte sizes) is published as <code>dist/stats.json</code>.</p>
     </div>
     <div style="height:1.25rem;" />
   </div>

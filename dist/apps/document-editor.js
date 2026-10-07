@@ -4973,15 +4973,29 @@ function syncToolbar(el) {
     return;
   const editor = el._editorjs;
   const current = editor ? currentBlock(el, editor) : undefined;
+  const anchor = globalThis.getSelection()?.anchorNode;
+  const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? anchor : anchor.parentElement);
+  const holder = node && el.contains(node) ? node.closest(".ce-block") : null;
+  const level = holder ? dfDollar4(holder).find(".ce-header").get(0)?.tagName.replace(/^H/i, "") ?? "" : "";
+  const listStyle = holder && dfDollar4(holder).find(".cdx-list").length ? dfDollar4(holder).find(".cdx-list--checklist").length ? "checklist" : dfDollar4(holder).find(".cdx-list--ordered").length ? "ordered" : "unordered" : "";
   dfDollar4(bar).find("[data-editor-command]").toArray().forEach((b) => {
     const name = b.dataset.editorCommand ?? "";
+    const [kind, arg] = name.split(":");
     let on = null;
-    if (name === "bold" || name === "italic" || name === "underline")
-      on = document.queryCommandState(name);
-    else if (name === "paragraph")
+    if (kind === "bold")
+      on = !!node?.closest("b, strong");
+    else if (kind === "italic")
+      on = !!node?.closest("i, em");
+    else if (kind === "underline")
+      on = !!node?.closest("u");
+    else if (kind === "paragraph")
       on = current?.name === "paragraph";
-    else if (name.startsWith("header") || name.startsWith("list") || name === "quote" || name === "code")
-      on = current?.name === name.split(":")[0];
+    else if (kind === "header")
+      on = current?.name === "header" && (!arg || arg === level);
+    else if (kind === "list")
+      on = current?.name === "list" && (!arg || arg === listStyle);
+    else if (kind === "quote" || kind === "code")
+      on = current?.name === kind;
     if (on !== null && b.hasAttribute("aria-pressed"))
       dfDollar4(b).attr("aria-pressed", String(on));
   });
@@ -5679,6 +5693,6 @@ function init9() {
 init9();
 new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
-//# debugId=64DB00E2EF89388B64756E2164756E21
+//# debugId=47EC2BDC99F9762764756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=document-editor.js.map

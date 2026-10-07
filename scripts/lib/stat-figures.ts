@@ -17,7 +17,7 @@
 export type StatSources = Record<string, unknown>;
 
 /** formats a figure may use */
-export const STAT_FORMATS = ['int', 'kib', 'mib', 's', 'min', 'pct', 'text'] as const;
+export const STAT_FORMATS = ['int', 'kib', 'kib0', 'mib', 's', 'min', 'pct', 'text'] as const;
 export type StatFormat = (typeof STAT_FORMATS)[number];
 
 /** `<tag … data-stat="path" …>figure</tag>` - the figure is plain text */
@@ -40,6 +40,8 @@ export function formatStat(value: unknown, format: StatFormat = 'int'): string {
   switch (format) {
     case 'kib':
       return (n / 1024).toFixed(1);
+    case 'kib0': // whole KiB - a card or a slide, where a decimal is clutter
+      return String(Math.round(n / 1024));
     case 'mib':
       return (n / 1024 / 1024).toFixed(2);
     case 's':

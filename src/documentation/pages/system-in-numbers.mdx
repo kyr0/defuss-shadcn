@@ -143,13 +143,14 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   #sys-bundles .sys-split { display: grid; gap: 10px; align-content: start; padding: 22px 22px 24px; border: 2px solid #0A1E4A; border-radius: 18px; background: #FFFFFF; box-shadow: 0 10px 0 -4px rgba(10,30,74,.12); }
   #sys-bundles .sys-split-kind { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; }
   #sys-bundles .sys-split-kind b { font-weight: 900; }
-  #sys-bundles .sys-split-kind span { padding: 2px 10px; border-radius: 999px; background: #0A1E4A; color: #FFFFFF; font-size: 16px; font-weight: 800; letter-spacing: .1em; }
+  #sys-bundles .sys-split-kind span { padding: 2px 10px; border-radius: 999px; background: #0A1E4A; color: #FFFFFF; font-size: 16px; font-weight: 800; letter-spacing: .1em; white-space: nowrap; }
   #sys-bundles .sys-split code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 18px; font-weight: 600; opacity: .75; }
   #sys-bundles .sys-split-num { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 0; font-size: 56px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
-  #sys-bundles .sys-split-num small { font-size: 18px; font-weight: 700; letter-spacing: .04em; opacity: .7; }
+  #sys-bundles .sys-split-num small { font-size: 18px; font-weight: 700; letter-spacing: .04em; opacity: .7; white-space: nowrap; }
   #sys-bundles .sys-split-what { margin: 0 0 8px; font-size: 18px; font-weight: 500; line-height: 1.35; opacity: .75; min-height: 2.7em; }
   #sys-bundles .sys-split-chart { display: grid; gap: 10px; padding-top: 16px; border-top: 2px solid rgba(10,30,74,.14); }
-  #sys-bundles .sys-split-chart > div { display: grid; grid-template-columns: 66px 1fr 58px; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+  #sys-bundles .sys-split-chart > div { display: grid; grid-template-columns: 66px minmax(0, 1fr) 48px; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+  #sys-bundles .sys-split-chart i { max-width: 100%; }
   #sys-bundles .sys-split-chart i { display: block; height: 14px; width: var(--w, 0%); background: rgba(10,30,74,.3); transform: scaleX(0); transform-origin: left; transition: transform 1s var(--presentation-out) var(--d, 0s); }
   #sys-bundles .sys-split-chart .gz i { background: #0A1E4A; }
   #sys-bundles.is-on .sys-split-chart i { transform: scaleX(1); }
@@ -238,9 +239,12 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   #sys-wege.is-on .sys-trn { animation: sys-ride 4.6s cubic-bezier(.45,0,.55,1) infinite; animation-delay: var(--d); }
 
   /* S11 discussion: outlined ? with a rotateY loop + one tick per component */
-  #sys-frage .sys-qm { position: absolute; left: 880px; top: 30px; width: 540px; height: 840px; line-height: 840px; text-align: center; font-size: 760px; font-weight: 900; color: transparent; -webkit-text-stroke: 3px #FFFFFF; }
+  /* the ? turns in 3D: a transformed layer is sampled from its raster, so it is rastered at
+     twice the size (1520px glyph, 6px stroke) and scaled down inside the same transform -
+     the edges stay smooth mid-turn; will-change keeps it on its own layer from the start */
+  #sys-frage .sys-qm { position: absolute; left: 610px; top: -390px; width: 1080px; height: 1680px; line-height: 1680px; text-align: center; font-size: 1520px; font-weight: 900; color: transparent; -webkit-text-stroke: 6px #FFFFFF; transform: perspective(2800px) rotateY(0) scale(.5); will-change: transform; }
   #sys-frage.is-on .sys-qm { animation: sys-spin-y 9s ease-in-out .6s infinite; }
-  @keyframes sys-spin-y { 0% { transform: perspective(1400px) rotateY(0); } 50% { transform: perspective(1400px) rotateY(180deg); } 100% { transform: perspective(1400px) rotateY(360deg); } }
+  @keyframes sys-spin-y { 0% { transform: perspective(2800px) rotateY(0) scale(.5); } 50% { transform: perspective(2800px) rotateY(180deg) scale(.5); } 100% { transform: perspective(2800px) rotateY(360deg) scale(.5); } }
   #sys-frage .sys-ring { transform-box: view-box; transform-origin: 1150px 450px; }
   #sys-frage.is-on .sys-ring { animation: sys-spin 80s linear infinite; }
   @keyframes sys-spin { to { transform: rotate(360deg); } }
@@ -286,7 +290,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.8s; left:120px; top:500px; width:520px; font-size:50px">From <span class="type-badge" data-type="ATM" title="Atom">ATM</span> to <span class="type-badge" data-type="TPL" title="Template">TPL</span></h2>
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:610px"><b>0</b><span>runtime dependencies</span></div>
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.35s; left:120px; top:680px"><b data-stat="stats.tokens">50</b><span>design tokens</span></div>
-    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b data-stat="stats.examples">1,593</b><span>live examples</span></div>
+    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b data-stat="stats.examples">1,594</b><span>live examples</span></div>
     <div class="sys-dots" id="sys-dots"></div>
     <div class="sys-collab" data-col="atm" style="left:620px"><b data-stat="stats.byType.ATM">68</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div>
     <div class="sys-collab" data-col="mol" style="left:795px"><b data-stat="stats.byType.MOL">26</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div>
@@ -368,45 +372,45 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.50s">
         <p class="sys-split-kind"><b>all</b><span>JS</span></p>
         <code>all.min.js</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">142.4</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">143</span><small>KiB gzip</small></p>
         <p class="sys-split-what">every component's script + the core</p>
         <div class="sys-split-chart" role="img" aria-label="all.min.js: source, minified and gzip size">
-          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib">808.0</b></div>
-          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib">467.4</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">142.4</b></div>
+          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib0">809</b></div>
+          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib0">468</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">143</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.65s">
         <p class="sys-split-kind"><b>all</b><span>CSS</span></p>
         <code>all.min.css</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">128.7</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">129</span><small>KiB gzip</small></p>
         <p class="sys-split-what">every component's stylesheet</p>
         <div class="sys-split-chart" role="img" aria-label="all.min.css: source, minified and gzip size">
-          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib">1222.1</b></div>
-          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib">746.2</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">128.7</b></div>
+          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib0">1222</b></div>
+          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib0">746</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">129</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.80s">
         <p class="sys-split-kind"><b>shared</b><span>JS</span></p>
         <code>core.min.js</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1000" data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib">24.8</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1000" data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib0">25</span><small>KiB gzip</small></p>
         <p class="sys-split-what">df$ - query, morph, state, stores</p>
         <div class="sys-split-chart" role="img" aria-label="core.min.js: source, minified and gzip size">
-          <div><span>source</span><i style="--d:1.00s"></i><b data-stat="stats.core.jsSize" data-stat-format="kib">141.1</b></div>
-          <div><span>minified</span><i style="--d:1.10s"></i><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib">72.2</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:1.20s"></i><b data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib">24.8</b></div>
+          <div><span>source</span><i style="--d:1.00s"></i><b data-stat="stats.core.jsSize" data-stat-format="kib0">141</b></div>
+          <div><span>minified</span><i style="--d:1.10s"></i><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib0">72</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.20s"></i><b data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib0">25</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.95s">
         <p class="sys-split-kind"><b>shared</b><span>CSS</span></p>
         <code>core.min.css</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1150" data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib">9.7</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1150" data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib0">10</span><small>KiB gzip</small></p>
         <p class="sys-split-what">tokens + sizing, layout, a11y</p>
         <div class="sys-split-chart" role="img" aria-label="core.min.css: source, minified and gzip size">
-          <div><span>source</span><i style="--d:1.15s"></i><b data-stat="stats.core.cssSize" data-stat-format="kib">124.9</b></div>
-          <div><span>minified</span><i style="--d:1.25s"></i><b data-stat="stats.core.cssSizeMinified" data-stat-format="kib">106.7</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:1.35s"></i><b data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib">9.7</b></div>
+          <div><span>source</span><i style="--d:1.15s"></i><b data-stat="stats.core.cssSize" data-stat-format="kib0">125</b></div>
+          <div><span>minified</span><i style="--d:1.25s"></i><b data-stat="stats.core.cssSizeMinified" data-stat-format="kib0">107</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.35s"></i><b data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib0">10</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:1.10s">
@@ -415,9 +419,9 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
         <p class="sys-split-num"><span data-count="" data-count-delay="1300" data-stat="stats.sectionBundles.count">19</span><small>bundles</small></p>
         <p class="sys-split-what">one per sidebar section - its members alone, after the shared code</p>
         <div class="sys-split-chart" role="img" aria-label="section bundles: the smallest, the mean and the largest gzip size">
-          <div><span>min</span><i style="--d:1.30s"></i><b data-stat="stats.sectionBundles.minGzMinified" data-stat-format="kib">1.9</b></div>
-          <div><span>mean</span><i style="--d:1.40s"></i><b data-stat="stats.sectionBundles.meanGzMinified" data-stat-format="kib">14.9</b></div>
-          <div class="gz"><span>max</span><i style="--d:1.50s"></i><b data-stat="stats.sectionBundles.maxGzMinified" data-stat-format="kib">59.1</b></div>
+          <div><span>min</span><i style="--d:1.30s"></i><b data-stat="stats.sectionBundles.minGzMinified" data-stat-format="kib0">2</b></div>
+          <div><span>mean</span><i style="--d:1.40s"></i><b data-stat="stats.sectionBundles.meanGzMinified" data-stat-format="kib0">15</b></div>
+          <div class="gz"><span>max</span><i style="--d:1.50s"></i><b data-stat="stats.sectionBundles.maxGzMinified" data-stat-format="kib0">59</b></div>
         </div>
       </div>
     </div>
@@ -440,7 +444,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:96px">Use cases · Application Scaffolds</p>
     <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:132px">Real apps ship a fraction.</h2>
     <div class="abs sys-bars" style="left:120px; top:268px; width:1360px; gap:8px; --sys-bar-label:520px">
-      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">231</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">271.0</span><span>KiB</span></b></div>
+      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">231</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">271.3</span><span>KiB</span></b></div>
       <a class="sys-bar" href="app-admin-dashboard.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.60s"><span>Admin Dashboard<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.admin-dashboard.components.length">30</span> components</small></span><i style="--d:0.70s"></i><b><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.9</span><span>KiB</span></b></a>
       <a class="sys-bar" href="app-messenger.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.72s"><span>Messenger<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.messenger.components.length">16</span> components</small></span><i style="--d:0.82s"></i><b><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.4</span><span>KiB</span></b></a>
       <a class="sys-bar" href="app-issue-tracker.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.84s"><span>Issue Tracker<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.issue-tracker.components.length">24</span> components</small></span><i style="--d:0.94s"></i><b><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.2</span><span>KiB</span></b></a>
@@ -552,7 +556,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   <section class="slide" data-slide id="sys-skill-ref" data-theme="ink" data-sec="5" aria-label="Skill: defuss-shadcn, the reference">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · 1 of 4 · the reference</p>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:100px">defuss-shadcn</h2>
-    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Your agent builds with the whole component system in mind - <span data-stat="stats.total">231</span> components, learning from the best practices shown in <span data-stat="stats.examples">1,593</span> live examples: expert guidance built in, AI slop left out.</p>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Your agent builds with the whole component system in mind - <span data-stat="stats.total">231</span> components, learning from the best practices shown in <span data-stat="stats.examples">1,594</span> live examples: expert guidance built in, AI slop left out.</p>
     <div class="sys-skill-grid">
       <div data-df-entrance="up" style="--df-motion-delay:.7s"><b>What it holds</b>The install paths (npm, CDN), the rules, a map of every documentation page - and every component skill next to it: markup, variants, sizes, ARIA, states.</div>
       <div data-df-entrance="up" style="--df-motion-delay:.9s"><b>Rules it keeps</b>Markup from the skills, verbatim. Native elements first. Every colour a token. State through the State API. One runtime: <code>df$</code>.</div>
@@ -726,7 +730,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     deck.querySelectorAll('#sys-bundles .sys-split-chart').forEach((chart) => {
       const rows = Array.from(chart.children);
       const values = rows.map((r) => num(r.querySelector('b')));
-      rows.forEach((r, i) => r.querySelector('i').style.setProperty('--w', (100 * values[i] / values[0]).toFixed(2) + '%'));
+      const top = Math.max(...values);
+      rows.forEach((r, i) => r.querySelector('i').style.setProperty('--w', (100 * values[i] / top).toFixed(2) + '%'));
     });
 
     // S5: the tanks fill to the shares of the two counts

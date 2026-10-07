@@ -16,22 +16,22 @@
     "Website": 12
   },
   "tokens": 50,
-  "examples": 1593,
+  "examples": 1594,
   "unitTestFiles": 35,
   "withJs": 62,
   "withoutJs": 169,
-  "totalSize": 2422501,
-  "totalSizeMinified": 1248348,
-  "totalSizeGz": 735606,
-  "totalSizeGzMinified": 416794,
+  "totalSize": 2429497,
+  "totalSizeMinified": 1252026,
+  "totalSizeGz": 737295,
+  "totalSizeGzMinified": 417504,
   "bundle": {
-    "jsSize": 827363,
-    "jsSizeMinified": 478645,
+    "jsSize": 828678,
+    "jsSizeMinified": 479506,
     "cssSize": 1251473,
     "cssSizeMinified": 764149,
-    "totalSizeGz": 445862,
-    "totalSizeGzMinified": 277541,
-    "jsSizeGzMinified": 145793,
+    "totalSizeGz": 446215,
+    "totalSizeGzMinified": 277783,
+    "jsSizeGzMinified": 146035,
     "cssSizeGzMinified": 131748
   },
   "core": {
@@ -46,14 +46,14 @@
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 66057,
-      "jsSizeMinified": 42211,
-      "cssSize": 20764,
-      "cssSizeMinified": 13642,
-      "totalSizeGz": 22991,
-      "totalSizeGzMinified": 17732,
-      "jsSizeGzMinified": 14463,
-      "cssSizeGzMinified": 3269
+      "jsSize": 66883,
+      "jsSizeMinified": 42659,
+      "cssSize": 23876,
+      "cssSizeMinified": 16011,
+      "totalSizeGz": 23649,
+      "totalSizeGzMinified": 18181,
+      "jsSizeGzMinified": 14581,
+      "cssSizeGzMinified": 3600
     }
   },
   "sections": {
@@ -192,14 +192,14 @@
         "components/wysiwyg.css",
         "components/wysiwyg.js"
       ],
-      "jsSize": 66057,
-      "jsSizeMinified": 42211,
-      "cssSize": 20764,
-      "cssSizeMinified": 13642,
-      "totalSizeGz": 22991,
-      "totalSizeGzMinified": 17732,
-      "jsSizeGzMinified": 14463,
-      "cssSizeGzMinified": 3269
+      "jsSize": 66883,
+      "jsSizeMinified": 42659,
+      "cssSize": 23876,
+      "cssSizeMinified": 16011,
+      "totalSizeGz": 23649,
+      "totalSizeGzMinified": 18181,
+      "jsSizeGzMinified": 14581,
+      "cssSizeGzMinified": 3600
     },
     "questionnaire": {
       "heading": "Questionnaire",
@@ -324,13 +324,13 @@
         "sections/diagrams.css",
         "sections/diagrams.js"
       ],
-      "jsSize": 89966,
-      "jsSizeMinified": 53891,
+      "jsSize": 91271,
+      "jsSizeMinified": 54751,
       "cssSize": 60794,
       "cssSizeMinified": 42480,
-      "totalSizeGz": 36189,
-      "totalSizeGzMinified": 27125,
-      "jsSizeGzMinified": 18905,
+      "totalSizeGz": 36542,
+      "totalSizeGzMinified": 27371,
+      "jsSizeGzMinified": 19151,
       "cssSizeGzMinified": 8220
     },
     "feedback-status": {
@@ -712,7 +712,7 @@
     "count": 19,
     "minGzMinified": 1965,
     "maxGzMinified": 60511,
-    "meanGzMinified": 15222
+    "meanGzMinified": 15259
   },
   "components": {
     "about-intro": {
@@ -1564,14 +1564,14 @@
       "name": "diagram",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 106946,
-      "jsSizeMinified": 47306,
+      "jsSize": 109736,
+      "jsSizeMinified": 48167,
       "cssSize": 56798,
       "cssSizeMinified": 40563,
-      "totalSizeGz": 40223,
-      "totalSizeGzMinified": 24232,
-      "totalSize": 163744,
-      "totalSizeMinified": 87869
+      "totalSizeGz": 41131,
+      "totalSizeGzMinified": 24475,
+      "totalSize": 166534,
+      "totalSizeMinified": 88730
     },
     "dialog": {
       "name": "dialog",
@@ -1694,14 +1694,14 @@
       "name": "editorjs",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 21866,
-      "jsSizeMinified": 9524,
-      "cssSize": 5775,
-      "cssSizeMinified": 4259,
-      "totalSizeGz": 8378,
-      "totalSizeGzMinified": 4977,
-      "totalSize": 27641,
-      "totalSizeMinified": 13783
+      "jsSize": 22960,
+      "jsSizeMinified": 9972,
+      "cssSize": 8887,
+      "cssSizeMinified": 6628,
+      "totalSizeGz": 9159,
+      "totalSizeGzMinified": 5444,
+      "totalSize": 31847,
+      "totalSizeMinified": 16600
     },
     "empty-state": {
       "name": "empty-state",
@@ -3974,14 +3974,14 @@
         "toolbar",
         "typography"
       ],
-      "jsSize": 203983,
-      "jsSizeMinified": 110402,
-      "cssSize": 255597,
-      "cssSizeMinified": 176844,
-      "totalSizeGz": 90996,
-      "totalSizeGzMinified": 59358,
-      "jsSizeGzMinified": 36266,
-      "cssSizeGzMinified": 23092
+      "jsSize": 204809,
+      "jsSizeMinified": 110850,
+      "cssSize": 258709,
+      "cssSizeMinified": 179213,
+      "totalSizeGz": 91699,
+      "totalSizeGzMinified": 59817,
+      "jsSizeGzMinified": 36391,
+      "cssSizeGzMinified": 23426
     }
   }
 }

@@ -58,10 +58,47 @@
     & .tc-table .tc-cell { border-color: var(--border); }
     & .tc-row--heading .tc-cell { font-weight: 600; background: var(--muted); }
 
+    /* Editor.js paints its popovers, toolbars and the table's popover from its own custom
+       properties, declared on those elements - redeclare them from the theme tokens (two
+       classes beat its one), so dark mode and every preset reach them.
+       VERIFIED: (editorjs.e2e "dark mode") no light surface or light-on-light text inside
+       the editor with the + popover open on a .dark page. */
+    & .ce-popover, & .ce-toolbar, & .ce-inline-toolbar, & .ce-conversion-toolbar, & .ce-settings, & .tc-popover, & .tc-toolbox, & .tc-wrap {
+      --color-background: var(--popover) !important;
+      --color-background-hover: var(--accent) !important;
+      --color-background-item-hover: var(--accent) !important;
+      --color-background-item-focus: var(--accent) !important;
+      --color-background-icon-active: var(--accent) !important;
+      --color-background-item-confirm: var(--destructive) !important;
+      --color-background-item-confirm-hover: color-mix(in oklab, var(--destructive) 85%, var(--foreground)) !important;
+      --color-background-confirm: var(--destructive) !important;
+      --color-background-confirm-hover: color-mix(in oklab, var(--destructive) 85%, var(--foreground)) !important;
+      --color-text-primary: var(--popover-foreground) !important;
+      --color-text-secondary: var(--muted-foreground) !important;
+      --color-text-icon-active: var(--accent-foreground) !important;
+      --color-text-confirm: var(--destructive-foreground) !important;
+      --color-border: var(--border) !important;
+      --color-border-icon: var(--border) !important;
+      --color-shadow: color-mix(in oklab, var(--foreground) 12%, transparent) !important;
+      --color-shadow-item-focus: color-mix(in oklab, var(--ring) 35%, transparent) !important;
+      --color-dark: var(--foreground) !important;
+      --color-active-icon: var(--primary) !important;
+      color-scheme: inherit;
+    }
+    & .ce-popover__container, & .ce-popover__search, & .cdx-search-field { background: var(--popover) !important; color: var(--popover-foreground) !important; border-color: var(--border) !important; }
+    & .cdx-search-field__input { color: var(--popover-foreground) !important; }
+    & .cdx-search-field__input::placeholder { color: var(--muted-foreground) !important; }
+    & .ce-popover-item__icon, & .ce-popover-item__icon svg, & .tc-toolbox__toggler svg { background: transparent !important; color: var(--popover-foreground) !important; }
+    & .cdx-list__checkbox-check { --checkbox-background: var(--card) !important; --color-border: var(--border) !important; --color-bg-checked: var(--primary) !important; }
+    & .cdx-list__checkbox--checked .cdx-list__checkbox-check svg { stroke: var(--primary-foreground) !important; }
+    & .tc-add-column, & .tc-add-row { background: var(--card) !important; color: var(--muted-foreground) !important; }
+    & .tc-add-column:hover, & .tc-add-row:hover { background: var(--accent) !important; color: var(--accent-foreground) !important; }
+    & .tc-table { --color-background: var(--card) !important; }
+
     /* the toolbars Editor.js shows: the + and the settings handle, the inline toolbar */
-    & .ce-toolbar__plus, & .ce-toolbar__settings-btn { color: var(--muted-foreground); background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-md); }
-    & .ce-toolbar__plus:hover, & .ce-toolbar__settings-btn:hover { background: var(--accent); color: var(--accent-foreground); }
-    & .ce-popover, & .ce-inline-toolbar, & .ce-conversion-toolbar { background: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+    & .ce-toolbar__plus, & .ce-toolbar__settings-btn { color: var(--muted-foreground) !important; background: var(--card) !important; border: 1px solid var(--border); border-radius: var(--radius-md); }
+    & .ce-toolbar__plus:hover, & .ce-toolbar__settings-btn:hover { background: var(--accent) !important; color: var(--accent-foreground) !important; }
+    & .ce-popover__container, & .ce-inline-toolbar, & .ce-conversion-toolbar { background: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
     & .ce-popover-item:hover, & .ce-inline-tool:hover, & .ce-conversion-tool:hover { background: var(--accent); color: var(--accent-foreground); }
     & .ce-popover-item--active, & .ce-inline-tool--active { background: var(--accent); color: var(--accent-foreground); }
     & .ce-popover-item__icon, & .ce-conversion-tool__icon { background: var(--muted); border: 0; box-shadow: none; }

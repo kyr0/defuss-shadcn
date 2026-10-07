@@ -10961,10 +10961,14 @@ function edgeIn(edge, panel) {
     to: before && edge.dataset.beforeTo || edge.dataset.to
   };
 }
-function layer(canvas, cls, make) {
+function layer(canvas, cls, make, keep = false) {
   const existing = dfDollar18(canvas).children(`.${cls}`).get(0);
   if (existing) {
-    dfDollar18(existing).empty();
+    if (keep)
+      for (const c of dfDollar18(existing).children().toArray())
+        c.setAttribute("data-stale", "");
+    else
+      dfDollar18(existing).empty();
     return existing;
   }
   const el = make();
@@ -10980,12 +10984,23 @@ function measure(canvas) {
     const r = el.getBoundingClientRect();
     return { x: (r.left - ox) / scale, y: (r.top - oy) / scale, w: r.width / scale, h: r.height / scale };
   };
+  const settling = [];
+  for (const el of dfDollar18(canvas).find('[data-step-state="current"]').toArray()) {
+    for (const a of el.getAnimations()) {
+      if (a.animationName !== "diagram-enter" || a.playState !== "running" || !a.effect)
+        continue;
+      settling.push([a, a.currentTime]);
+      a.currentTime = a.effect.getComputedTiming().endTime ?? 0;
+    }
+  }
   const nodes = new Map;
   for (const el of dfDollar18(canvas).find("[data-node]").toArray()) {
     if (el.closest(".diagram-edges") || !el.getClientRects().length)
       continue;
     nodes.set(el.dataset.node, { el, rect: rectOf(el), round: ROUND.has(el.dataset.shape) });
   }
+  for (const [a, t] of settling)
+    a.currentTime = t;
   return { nodes, rectOf };
 }
 var FIT_MIN = 0.7;
@@ -11020,7 +11035,7 @@ function draw2(root, canvas) {
   const wires = layer(canvas, "diagram-wires", () => {
     const el = svg("svg", { class: "diagram-wires", "aria-hidden": "true", focusable: "false" });
     return el;
-  });
+  }, true);
   const labels = layer(canvas, "diagram-wire-labels", () => {
     const el = document.createElement("div");
     el.className = "diagram-wire-labels";
@@ -11071,6 +11086,7 @@ function draw2(root, canvas) {
     drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn, texts);
   if (type === "fishbone")
     drawBones(nodes, wireGroup, line);
+  reconcileWires(wires);
   sideDotLabels(nodes, wires, rectOf);
   labels._entered = entered;
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
@@ -11080,6 +11096,23 @@ function draw2(root, canvas) {
   if (clear(root, canvas, rectOf))
     return;
   root.dispatchEvent(new CustomEvent("diagram-drawn", { detail: { edges: drawn.length, panel } }));
+}
+function reconcileWires(wires) {
+  const sig = (g) => [...g.attributes].filter((a) => a.name !== "data-stale" && a.name !== "data-step-entered").map((a) => `${a.name}=${a.value}`).join(" ") + ">" + dfDollar18(g).html();
+  const stale = new Map;
+  for (const g of dfDollar18(wires).children("[data-stale]").toArray())
+    stale.set(`${g.dataset.edgeRef ?? ""}|${sig(g)}`, g);
+  for (const g of dfDollar18(wires).children(":not([data-stale])").toArray()) {
+    const key = `${g.dataset.edgeRef ?? ""}|${sig(g)}`;
+    const old = stale.get(key);
+    if (!old)
+      continue;
+    stale.delete(key);
+    old.removeAttribute("data-stale");
+    g.remove();
+  }
+  for (const g of stale.values())
+    g.remove();
 }
 var CLEARANCE = 20;
 var SIDES2 = ["top", "right", "bottom", "left"];
@@ -21911,6 +21944,6 @@ df$60.win = windowActions;
 init60();
 new MutationObserver(init60).observe(document, { childList: true, subtree: true });
 
-//# debugId=46CCE81AEC1835EA64756E2164756E21
+//# debugId=97EDB56C24AD4B3764756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

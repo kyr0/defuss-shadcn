@@ -313,12 +313,24 @@ function syncToolbar(el: HTMLElement): void {
   if (!bar || !el.contains(document.activeElement)) return;
   const editor = el._editorjs as EditorLike | undefined;
   const current = editor ? currentBlock(el, editor) : undefined;
+  // the caret's inline formatting is an ancestor of the selection (queryCommandState('bold') reports
+  // the computed weight - true inside any heading); a heading's level is its tag, a list's style its class
+  const anchor = globalThis.getSelection()?.anchorNode;
+  const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? (anchor as HTMLElement) : anchor.parentElement);
+  const holder = node && el.contains(node) ? node.closest<HTMLElement>('.ce-block') : null;
+  const level = holder ? (dfDollar(holder).find('.ce-header').get(0)?.tagName.replace(/^H/i, '') ?? '') : '';
+  const listStyle = holder && dfDollar(holder).find('.cdx-list').length ? (dfDollar(holder).find('.cdx-list--checklist').length ? 'checklist' : dfDollar(holder).find('.cdx-list--ordered').length ? 'ordered' : 'unordered') : '';
   dfDollar(bar).find('[data-editor-command]').toArray().forEach((b: HTMLElement) => {
     const name = b.dataset.editorCommand ?? '';
+    const [kind, arg] = name.split(':');
     let on: boolean | null = null;
-    if (name === 'bold' || name === 'italic' || name === 'underline') on = document.queryCommandState(name);
-    else if (name === 'paragraph') on = current?.name === 'paragraph';
-    else if (name.startsWith('header') || name.startsWith('list') || name === 'quote' || name === 'code') on = current?.name === name.split(':')[0];
+    if (kind === 'bold') on = !!node?.closest('b, strong');
+    else if (kind === 'italic') on = !!node?.closest('i, em');
+    else if (kind === 'underline') on = !!node?.closest('u');
+    else if (kind === 'paragraph') on = current?.name === 'paragraph';
+    else if (kind === 'header') on = current?.name === 'header' && (!arg || arg === level);
+    else if (kind === 'list') on = current?.name === 'list' && (!arg || arg === listStyle);
+    else if (kind === 'quote' || kind === 'code') on = current?.name === kind;
     if (on !== null && b.hasAttribute('aria-pressed')) dfDollar(b).attr('aria-pressed', String(on));
   });
 }

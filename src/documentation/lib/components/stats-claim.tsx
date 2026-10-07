@@ -28,8 +28,8 @@ export function statsClaimText(doc: StatsDoc): string {
   );
 }
 
-/** Bytes as KiB with one decimal - the cards' description figures. */
-const kib = (bytes: number) => (bytes / 1024).toFixed(1);
+/** Bytes as whole KiB - the cards' figures (a decimal is clutter on a card; the claim sentence keeps one). */
+const kib = (bytes: number) => String(Math.round(bytes / 1024));
 
 /** Index page: the claim sentence, generated from dist/stats.json - one caption line under the
  * cards. VERIFIED: (verify's `stats claim` gate) the sentence is required verbatim here and in README.md. */
@@ -68,11 +68,11 @@ function CountUp({ value }: { value: number }) {
   );
 }
 function CountDown({ bytes }: { bytes: number }) {
-  const kib = Number((bytes / 1024).toFixed(1));
-  const from = 10 ** Math.ceil(Math.log10(Math.max(kib, 1.0001)));
+  const whole = Math.round(bytes / 1024);
+  const from = 10 ** Math.ceil(Math.log10(Math.max(whole, 1.0001)));
   return (
-    <span data-stat-count data-count={kib.toFixed(1)} data-count-from={String(from)} data-count-decimals="1">
-      {kib.toFixed(1)}
+    <span data-stat-count data-count={String(whole)} data-count-from={String(from)} data-count-decimals="0">
+      {String(whole)}
     </span>
   );
 }

@@ -34,8 +34,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
     color: var(--foreground);
     font-size: 0.875rem;
   }
-  .de .app-sidebar { position: relative; flex: none; height: 100%; }
-  .de .sidebar-link[data-de-doc] { justify-content: space-between; }
+  /* the document list is open or closed, never an icon rail, and sits in the flow (the page
+     narrows, nothing overlays it) - the trigger in the header stays visible either way */
+  .de .app-sidebar { position: relative; flex: none; height: 100%; display: flex; }
+  .de .app-sidebar[data-state="collapsed"] { display: none; }
   .de .sidebar-link[data-de-doc] .badge { margin-inline-start: auto; }
   .de-search { padding: 0.5rem 0.75rem 0.25rem; }
   .de-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
@@ -46,7 +48,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
   }
   .de-saved { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--muted-foreground); font-size: 0.75rem; white-space: nowrap; & svg { width: 0.875rem; height: 0.875rem; } }
   .de-saved[data-state="editing"] { color: var(--foreground); }
-  .de .toolbar { flex: none; margin: 0.5rem 0.75rem 0; }
+  .de .toolbar { flex: none; flex-wrap: wrap; margin: 0.5rem 0.75rem 0; }
   .de-body { display: flex; flex: 1; min-height: 0; }
   .de-page { flex: 1; min-width: 0; overflow: auto; overscroll-behavior: contain; padding: 2rem clamp(1rem, 6cqi, 4rem) 6rem; background: color-mix(in oklch, var(--muted) 40%, var(--background)); }
   .de-sheet { max-width: 46rem; min-height: 100%; margin-inline: auto; padding: 3rem clamp(1.5rem, 5cqi, 4rem) 4rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow-sm); }
@@ -61,10 +63,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
   .de-share-link { display: flex; gap: 0.5rem; }
   .de [hidden] { display: none !important; }
   .de-comments-toggle { display: none; }
-  @container de (width < 64rem) {
-    .de .app-sidebar { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 3; box-shadow: var(--shadow-lg); }
-    .de .app-sidebar[data-state="collapsed"] { display: none; }
-  }
   @container de (width < 56rem) {
     .de-comments-toggle { display: inline-flex; }
     .de .doc-comments { display: none; }
@@ -363,7 +361,7 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
   <li><strong>Navigation</strong> - click a mark to find its card, the card's excerpt to find its mark, ↑ ↓ to walk the comments, a quote to flash another span. <em>Reply</em> opens the <DocLink href="textarea.html">Textarea</DocLink> composer under the card.</li>
   <li><strong>Toasts</strong> - a <DocLink href="toast.html">Toast</DocLink> confirms a copied link and a new comment.</li>
   <li><strong>Autosave and words</strong> - <code>editorjs-change</code> flips the badge to <em>Editing...</em> and back to <em>Saved</em> with the time; the word count comes from the Markdown read-back, debounced.</li>
-  <li><strong>Narrow</strong> - below 64rem the sidebar is an overlay the panel button opens; below 56rem the comment column becomes an overlay too, toggled from the header.</li>
+  <li><strong>Narrow</strong> - the document list is open or closed (no icon rail) and sits in the flow, so the page narrows instead of being covered; below 56rem the comment column becomes an overlay toggled from the header.</li>
   <li><strong>Full screen</strong> - <DocLink href="app-document-editor.html">app-document-editor.html</DocLink> is generated from this page's example at build time and loads only this scaffold's bundle; the Editor.js builds come from jsDelivr, pinned.</li>
 </ul>
 

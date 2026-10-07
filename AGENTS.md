@@ -275,10 +275,11 @@ forget:
   `README CSS-only stat` / `index CSS-only stat` gates compare it against
   the actual `src/components/` tree (a component `.ts` = ships a `.js`).
 - **Stats claim** - the measured footprint sentence (total / withJs /
-  withoutJs + KiB-formatted gzip sizes) appears in both files, generated
-  from `dist/stats.json` by `statsClaimText()`; the index renders it via the
-  `StatsClaim`/`StatsCards` components; `verify`'s `stats claim`
-  gate fails when either file's sentence no longer matches the measurement.
+  withoutJs + KiB-formatted gzip sizes) appears in README, generated
+  from `dist/stats.json` by `statsClaimText()`; the index shows the same
+  numbers as the `StatsCards` (whole KiB, generated at build time - no
+  sentence); `verify`'s `stats claim (README)` gate fails when README's
+  sentence no longer matches the measurement.
 
 `verify` enforces the pillar set (`README ↔ index parity`, hard gate) and the
 **`README ↔ index commit window`** gate: if the two files' last-touch commits
@@ -1420,16 +1421,16 @@ lint → compile → bundle → minify → stats → screenshots → docs-mirror
 `make stats` regenerates `dist/stats.json` after minify - component counts per taxonomy type, the
 withJs/withoutJs split, and per-component + total byte sizes (`jsSize`/`cssSize`/`*Minified`/`*Gz`).
 Deterministic (no timestamps); verify's `stats.json fresh` gate fails when it lags `dist/components/`.
-Verify's **`stats claim` gate** additionally requires README.md and `src/documentation/index.html`
-to state the current figures verbatim as one sentence - generated from stats.json by
+Verify's **`stats claim (README)` gate** additionally requires README.md to state the
+current figures verbatim as one sentence - generated from stats.json by
 `statsClaimText()` (`scripts/lib/stats.ts`): `{total} components - {withJs} with JavaScript,
-{withoutJs} CSS-only - {KiB} minified + compressed`. When the numbers change, both
-files change with them (parity pair) - the index renders them through the shipped Statistic
-component, so the site always shows its own measured footprint.
+{withoutJs} CSS-only - {KiB} minified + compressed`. The index shows the same numbers as
+`StatsCards` (whole KiB, generated at build time), so the site always shows its own measured
+footprint without a sentence that could drift.
 A figure on a doc page that states a measurement is a **`data-stat` figure**:
 `<b data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">54.0</b>`
 (`stats.*` = dist/stats.json, `verify.*` = src/documentation/data/verify-timing.json;
-formats `int` `kib` `mib` `s` `min` `pct` `text`; a path may end in `.length`).
+formats `int` `kib` `kib0` (whole KiB - cards and slides) `mib` `s` `min` `pct` `text`; a path may end in `.length`).
 `bun run figures` (scripts/stat-figures.ts) writes them all; verify's **`stat figures`**
 gate fails on any that disagrees. The flagship deck (system-in-numbers.mdx) carries
 nothing but such figures - its geometry (dots, bars, tanks, donut, dial) is derived
@@ -1566,7 +1567,7 @@ index, and TOC pick the page up automatically.
 ## Sidebar nav order
 
 The sidebar is ordered by dependency (primitives first):
-1. Introduction (Getting Started, Installation → {Bundles & Downloads}, Vibe Coding / Agentic Engineering, How to Use, Component Skills, Verified Agentic Engineering (VAE), Changelog) - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
+1. Introduction (Getting Started, Installation → {Bundles & Downloads}, Vibe Coding / Agentic Engineering, Anatomy of a Component, Component Skills, Verified Agentic Engineering (VAE), Changelog) - Anatomy of a Component (`anatomy.mdx`) shows how one component's parts meet: the tokens it reads, its markup, its stylesheet, its script and the skill + schema that describe it - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
 2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris, Parallax}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Typewriter, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)

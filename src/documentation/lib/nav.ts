@@ -48,7 +48,7 @@ export const NAV: NavSection[] = [
       ],
     },
     { label: 'Vibe Coding / Agentic Engineering', href: 'vibe-coding.html', isNew: true },
-    { label: 'How to Use', href: 'how-to-use.html' },
+    { label: 'Anatomy of a Component', href: 'anatomy.html' },
     { label: 'Component Skills', href: 'component-skills.html' },
     { label: 'Verified Agentic Engineering (VAE)', href: 'architecture.html' },
     { label: 'Changelog', href: 'changelog.html' },

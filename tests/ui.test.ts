@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { clickSelector, openDocPage, waitFor } from './helpers.ts';
-import { statsClaimText, type StatsDoc } from '../scripts/lib/stats.ts';
+import type { StatsDoc } from '../scripts/lib/stats.ts';
 
 /** site.js/layout.js expose their globals under `df$` (no window globals). */
 type DocsGlobal = Window & { df$: { shadcn: { docs: { realignWhenSettled?: (id: string) => void } } } };
@@ -263,16 +263,19 @@ test('code-example component: every docs card IS the shipped HTML Preview Editor
   expect(panel.hidden).toBe(true);
 });
 
-test('index states the current stats.json footprint and dogfoods the Statistic component', async () => {
-  // the machine-checked claim (verify's `stats claim` gate) proven in the real
-  // browser too: what a visitor reads must equal what the build measured
+test('index shows the current stats.json footprint as whole-KiB cards and dogfoods the Statistic component', async () => {
+  // what a visitor reads must equal what the build measured: the cards carry
+  // the numbers (whole KiB - no decimal clutter); README states the claim
+  // sentence (verify's `stats claim (README)` gate), the index no longer does
   const stats = (await (await fetch('/dist/stats.json')).json()) as StatsDoc;
 
   const { doc } = await openDocPage('index.html');
   await waitFor(() => doc.querySelector('main h1') || doc.querySelector('.statistic'), 'index content');
 
   const normalized = doc.body!.textContent!.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ');
-  expect(normalized).toContain(statsClaimText(stats));
+  expect(normalized).not.toContain('minified + compressed');
+  expect(normalized).toContain(`${Math.round(stats.bundle.totalSizeGzMinified / 1024)} KiB`);
+  expect(normalized).toContain(`${Math.round(stats.core.totalSizeGzMinified / 1024)} KiB`);
 
   // dogfooding: the numbers render through the shipped Statistic component,
   // with its CSS applied (1.875rem value ⇒ 30px computed)

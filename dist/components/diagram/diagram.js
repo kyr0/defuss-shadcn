@@ -600,10 +600,15 @@ function edgeIn(edge, panel) {
         to: (before && edge.dataset.beforeTo) || edge.dataset.to,
     };
 }
-function layer(canvas, cls, make) {
+function layer(canvas, cls, make, keep = false) {
     const existing = dfDollar(canvas).children(`.${cls}`).get(0);
     if (existing) {
-        dfDollar(existing).empty();
+        // keep: the children stay, marked stale, until reconcileWires() decides which survive
+        if (keep)
+            for (const c of dfDollar(existing).children().toArray())
+                c.setAttribute('data-stale', '');
+        else
+            dfDollar(existing).empty();
         return existing;
     }
     const el = make();
@@ -620,12 +625,28 @@ function measure(canvas) {
         const r = el.getBoundingClientRect();
         return { x: (r.left - ox) / scale, y: (r.top - oy) / scale, w: r.width / scale, h: r.height / scale };
     };
+    // a node mid enter-animation is painted 0.5rem low (diagram-enter translates it in); a wire
+    // measured then ended low and jumped on the next draw - horizontal wires showed it. The stylesheet's
+    // static translates (a dot's name, a tick) are layout and must count, so only that animation is
+    // sampled at its end while measuring, then put back where it was - it keeps playing.
+    // VERIFIED: (diagram.e2e "a node mid enter-animation") a wire drawn during the animation equals the one after it.
+    const settling = [];
+    for (const el of dfDollar(canvas).find('[data-step-state="current"]').toArray()) {
+        for (const a of el.getAnimations()) {
+            if (a.animationName !== 'diagram-enter' || a.playState !== 'running' || !a.effect)
+                continue;
+            settling.push([a, a.currentTime]);
+            a.currentTime = a.effect.getComputedTiming().endTime ?? 0;
+        }
+    }
     const nodes = new Map();
     for (const el of dfDollar(canvas).find('[data-node]').toArray()) {
         if (el.closest('.diagram-edges') || !el.getClientRects().length)
             continue;
         nodes.set(el.dataset.node, { el, rect: rectOf(el), round: ROUND.has(el.dataset.shape) });
     }
+    for (const [a, t] of settling)
+        a.currentTime = t;
     return { nodes, rectOf };
 }
 /**
@@ -676,7 +697,7 @@ function draw(root, canvas) {
     const wires = layer(canvas, 'diagram-wires', () => {
         const el = svg('svg', { class: 'diagram-wires', 'aria-hidden': 'true', focusable: 'false' });
         return el;
-    });
+    }, true);
     const labels = layer(canvas, 'diagram-wire-labels', () => {
         const el = document.createElement('div');
         el.className = 'diagram-wire-labels';
@@ -731,6 +752,7 @@ function draw(root, canvas) {
         drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, drawn, texts);
     if (type === 'fishbone')
         drawBones(nodes, wireGroup, line);
+    reconcileWires(wires);
     // a dot's name goes to the side its wires leave free; then the labels avoid it there
     sideDotLabels(nodes, wires, rectOf);
     labels._entered = entered;
@@ -742,6 +764,33 @@ function draw(root, canvas) {
         return; // grew its padding and drew again - that draw announced itself
     // Fires after a canvas's wires are drawn (init, resize, state change) - how many edges, and which delta panel ('before' / 'changes' / 'after', null outside a delta).
     root.dispatchEvent(new CustomEvent('diagram-drawn', { detail: { edges: drawn.length, panel } }));
+}
+/**
+ * A wire that did not change keeps its element. Every draw builds the wires anew, but the one
+ * already on the layer that is identical to a new one (same edge, geometry, line, states) stays
+ * and the new copy goes - its enter animation keeps running. A step's redraw (the next node
+ * arriving) used to replace the wire still drawing in, which snapped it to complete; a resize or
+ * fonts loading restarted it. Stale wires that differ (new geometry, another state) are removed.
+ * VERIFIED: (diagram.e2e "a redraw within a step keeps the current wire element") the element
+ * and its running animations are the same objects after a redraw.
+ */
+function reconcileWires(wires) {
+    // identity = the group's attributes (minus the two runtime marks) + its markup, read through df$
+    const sig = (g) => [...g.attributes].filter((a) => a.name !== 'data-stale' && a.name !== 'data-step-entered').map((a) => `${a.name}=${a.value}`).join(' ') + '>' + dfDollar(g).html();
+    const stale = new Map();
+    for (const g of dfDollar(wires).children('[data-stale]').toArray())
+        stale.set(`${g.dataset.edgeRef ?? ''}|${sig(g)}`, g);
+    for (const g of dfDollar(wires).children(':not([data-stale])').toArray()) {
+        const key = `${g.dataset.edgeRef ?? ''}|${sig(g)}`;
+        const old = stale.get(key);
+        if (!old)
+            continue;
+        stale.delete(key);
+        old.removeAttribute('data-stale');
+        g.remove();
+    }
+    for (const g of stale.values())
+        g.remove();
 }
 /**
  * The least distance (px, unscaled) anything drawn keeps from a framed

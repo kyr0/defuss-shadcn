@@ -546,23 +546,49 @@ try {
     assert.deepEqual(bad, []);
   });
 
-  await check('a redraw within a step keeps the current wire: no animation restart, the wire stays drawn', async () => {
+  await check('a redraw within a step keeps the current wire element: the same node, its enter animation still running (no restart, no snap)', async () => {
     const r = await page.evaluate(async () => {
       const fig = document.querySelector('.diagram[data-steps]') as any;
       fig.api.setState('paused', { step: 2 });
-      await new Promise((res) => setTimeout(res, 120));
+      await new Promise((res) => setTimeout(res, 60));
       const current = () => fig.querySelector('.diagram-wire[data-step-state="current"]') as SVGGElement | null;
+      const anims = (g: SVGGElement | null) => (g ? [...g.querySelector('.diagram-wire-line')!.getAnimations(), ...g.getAnimations()] : []);
       const before = current();
-      const runningBefore = before ? before.querySelector('.diagram-wire-line')!.getAnimations().length + before.getAnimations().length : -1;
+      const beforeAnims = anims(before);
+      const times = beforeAnims.map((a) => Number(a.currentTime));
       (globalThis as any).df$.shadcn.diagram.redraw(fig);
       const after = current();
-      return { hadCurrent: !!before, runningBefore, entered: after?.hasAttribute('data-step-entered'), runningAfter: after ? after.querySelector('.diagram-wire-line')!.getAnimations().length + after.getAnimations().length : -1, opacity: after ? getComputedStyle(after).opacity : '' };
+      const afterAnims = anims(after);
+      return { hadCurrent: !!before, same: after === before, runningBefore: beforeAnims.length, sameAnims: afterAnims.length === beforeAnims.length && afterAnims.every((a, i) => a === beforeAnims[i]), advanced: afterAnims.every((a, i) => Number(a.currentTime) >= times[i]), stale: fig.querySelectorAll('[data-stale]').length };
     });
     assert.ok(r.hadCurrent, 'step 2 has a current wire');
-    assert.ok(r.runningBefore > 0, 'before the redraw its enter animation runs');
-    assert.equal(r.entered, true);
-    assert.equal(r.runningAfter, 0);
-    assert.equal(r.opacity, '1');
+    assert.equal(r.same, true, 'the wire element survives the redraw');
+    assert.ok(r.runningBefore > 0, 'its enter animation runs');
+    assert.equal(r.sameAnims, true, 'the same animation objects keep running');
+    assert.equal(r.advanced, true);
+    assert.equal(r.stale, 0, 'no stale wire left on the layer');
+  });
+
+  await check('a node mid enter-animation is measured where it lands: the wire drawn during the animation equals the one drawn after it (no jump)', async () => {
+    const r = await page.evaluate(async () => {
+      const fig = document.querySelector('.diagram[data-steps]') as any;
+      fig.style.setProperty('--diagram-step-ms', '600ms');
+      fig.api.setState('default');
+      fig.api.setState('paused', { step: 2 });
+      // the draw inside setState ran while the step's node slides in (diagram-enter, 600ms)
+      const during = [...fig.querySelectorAll('.diagram-wire[data-step-state="current"] .diagram-wire-line')].map((p: Element) => p.getAttribute('d')).join('|');
+      const node = fig.querySelector('.diagram-node[data-step-state="current"]') as HTMLElement;
+      const running = node.getAnimations().some((a) => (a as CSSAnimation).animationName === 'diagram-enter' && a.playState === 'running');
+      await new Promise((res) => setTimeout(res, 900));
+      (globalThis as any).df$.shadcn.diagram.redraw(fig);
+      const after = [...fig.querySelectorAll('.diagram-wire[data-step-state="current"] .diagram-wire-line')].map((p: Element) => p.getAttribute('d')).join('|');
+      fig.style.removeProperty('--diagram-step-ms');
+      fig.api.setState('default');
+      return { during, after, running };
+    });
+    assert.equal(r.running, true, 'the node was still animating in when the wire was drawn');
+    assert.ok(r.during.length > 10);
+    assert.equal(r.during, r.after, 'the same path during and after the enter animation');
   });
 
   await check('clearance: in every framed diagram, nothing drawn comes closer than 20px to the border (zones, zone labels, wire labels, wires)', async () => {
