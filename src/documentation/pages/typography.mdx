@@ -165,6 +165,46 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </p>
 ```
 
+<H2 id="typesetting">Typesetting (Satz)</H2>
+
+<p class="text-sm text-muted-foreground mb-3">Continuous text set like a book or a journal page: one <code>.typeset</code> block, plain paragraphs inside, and each classic rule of the compositor's craft an opt-in attribute - columns, Blocksatz, Einzug, an Initiale, a small-caps opening line, classic ligatures. The <code>--typeset-*</code> properties tune them per block; they are this component's knobs, not theme tokens, so a theme stays the tweakcn token set.</p>
+
+```html example label="Book page" hint="All rules at once: two ruled columns, justified and hyphenated (lang='en'), a drop initial over three lines, the opening line in small capitals, Einzug instead of paragraph gaps, discretionary ligatures and old-style figures where the serif font has them. Narrow the preview: below two columns of 18rem the block sets one - no media query." previewStyle="justify-content:flex-start;text-align:left;"
+<article class="typeset" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic" style="font-family: var(--font-serif);">
+  <h2 class="h3 typeset-span">Of the Art of Printing</h2>
+  <p>Printing is the art of multiplying writing by movable type. The compositor takes each letter from the case, sets it in the stick, justifies the line with spaces of different widths and locks the finished forme before a single sheet is pulled - a craft that reached Mainz in 1450 and Venice by 1469.</p>
+  <p>Each following paragraph runs on without a gap; only its first line steps in by one em. The column therefore reads as one even grey, and the eye finds the start of a thought by the indent alone.</p>
+  <p>A justified column hyphenates its longer words - typographical, interdisciplinary, internationalization - so that the spaces between words stay close to one width, and its last line stays flush to the start.</p>
+  <p>The first letter of a chapter was once painted by hand into a space the printer left free; a drop initial keeps that space, three lines deep, and the opening line follows in small capitals until the text settles into its own voice.</p>
+</article>
+```
+
+```html example label="Initiale: drop and raised" hint="data-initial='drop' sinks the first letter into the first lines (initial-letter); 'raised' stands it on the first baseline and lets it rise. --typeset-initial-lines, -font and -color tune it - here two lines in chart colour 1. Browsers without initial-letter get a floated letter of the same height." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));">
+  <div class="typeset" lang="en" data-initial="drop" style="font-family: var(--font-serif);">
+    <p>Drop: the initial sinks three lines deep and the text wraps around it, the oldest form of the opening letter in a printed book.</p>
+  </div>
+  <div class="typeset" lang="en" data-initial="raised" style="font-family: var(--font-serif); --typeset-initial-lines: 2; --typeset-initial-color: var(--chart-1);">
+    <p>Raised: the initial stands on the first baseline and rises above the line - two lines tall here, in the first chart colour.</p>
+  </div>
+</div>
+```
+
+```html example label="Einzug or paragraph spacing" hint="Left: plain paragraphs, separated by space. Right: data-indent - no gap, the first line of each following paragraph indented by --typeset-indent (1.5em here); the first paragraph after a heading starts flush (stumpf), as in a book." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));">
+  <div class="typeset" lang="en">
+    <h3 class="h4">Spaced</h3>
+    <p>Web text separates its paragraphs with space. It is easy to scan in short pieces.</p>
+    <p>In long reading it breaks the column into blocks.</p>
+  </div>
+  <div class="typeset" lang="en" data-indent style="--typeset-indent: 1.5em;">
+    <h3 class="h4">Einzug</h3>
+    <p>A book keeps the column whole and marks a new paragraph by its indent alone.</p>
+    <p>The first paragraph after a heading needs no indent: the heading already opened it.</p>
+  </div>
+</div>
+```
+
 <SourceFiles component="typography" section="css" />
 
 </DocPage>

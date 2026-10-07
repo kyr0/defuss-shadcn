@@ -119,6 +119,35 @@ same classes switch to CJK rules:
   the text in Japanese, dots under it in Chinese.
 - `<ruby>` / `<rt>` (furigana, pinyin, bopomofo) - `rt` is half size and muted.
 
+### Typesetting (Satz)
+
+Continuous text set like a book or a journal page: one `.typeset` block, plain
+`<p>` children, each classic rule an opt-in attribute. Set `lang` - justified
+text hyphenates by the language's rules.
+
+```html
+<div class="typeset" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic">
+  <h2 class="h3 typeset-span">Of the Art of Printing</h2>
+  <p>The first paragraph opens with a drop initial and its first line in small capitals ...</p>
+  <p>Following paragraphs carry no gap; their first line is indented by one em ...</p>
+  <figure class="typeset-span">...</figure>
+</div>
+```
+
+| Attribute | Rule | Default knob |
+|---|---|---|
+| `data-columns="2"` / `"3"` | multi-column; no column narrower than `--typeset-column-width`, so a phone gets one column | `--typeset-column-width: 18rem`, `--typeset-column-gap: 2.5em` |
+| `data-rule` | a hairline (`--border`) between the columns | - |
+| `data-align="justify"` | Blocksatz: justified, hyphenated, last line flush start | - |
+| `data-indent` | Einzug: no paragraph gap, first line indented; the paragraph after a heading starts flush | `--typeset-indent: 1em` |
+| `data-initial="drop"` / `"raised"` | Initiale: the first letter sunk into / rising above the first lines | `--typeset-initial-lines: 3`, `--typeset-initial-font: var(--font-serif)`, `--typeset-initial-color: var(--primary)` |
+| `data-lead="smallcaps"` | the opening line in small capitals (Kapitälchen) | - |
+| `data-ligatures="classic"` | discretionary and historical ligatures, old-style figures - rendered when the font carries the features | - |
+
+Without columns the block keeps a reading measure (`--typeset-measure: 68ch`);
+`--typeset-leading: 1.65` sets the line height. `.typeset-span` makes a
+heading or a figure span every column.
+
 ## Classes
 
 | Class | Element | Description |
@@ -134,6 +163,8 @@ same classes switch to CJK rules:
 | `.muted` | `<p>` or any | 0.875rem muted-foreground text |
 | `.blockquote` | `<blockquote>` | Italic block with inline-start border, hanging punctuation |
 | `.inline-code` | `<code>` | Monospace inline code with muted background |
+| `.typeset` | `<div>`, `<article>` | Continuous text set like a book: columns, Blocksatz, Einzug, Initiale, small-caps lead, classic ligatures - each a data attribute (see Typesetting) |
+| `.typeset-span` | inside `.typeset` | Spans every column (a heading, a figure) |
 
 ---
 
@@ -150,7 +181,8 @@ same classes switch to CJK rules:
 
 ## Notes
 
-- These are utility classes for prose content - not a component with variants/sizes.
+- These are utility classes for prose content - not a component with variants/sizes; `.typeset` takes its typesetting rules as data attributes.
+- The `--typeset-*` properties are this component's knobs, not theme tokens: a theme keeps the tweakcn token set, a page or a block tunes its setting (`style="--typeset-indent: 1.5em"`).
 - The `.h1` to `.h4` classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.
 - Typography classes compose freely with other components (Card content, Dialog body, Alert description).
 - `text-wrap: balance` is used on all headings (h1–h4) for better visual line distribution.

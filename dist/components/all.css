@@ -14998,6 +14998,101 @@
   }
 }
 
+/* ── components/iframe/iframe.css ── */
+/* -- Iframe component ----------------------------------------- */
+/* An embedded page as wide as its container; its height from a   */
+/* ratio (default), the container (data-fit="container") or the  */
+/* framed page's content (data-fit="content", --iframe-height     */
+/* written by iframe.js). A shimmer marks it until it loads.      */
+@layer components {
+  .iframe {
+    --iframe-ratio: 16 / 9;
+    --iframe-min-height: 8rem;
+    --iframe-border-width: 1px;
+
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    inline-size: 100%;
+    min-inline-size: 0;
+
+    /* border-box: a fit sizes the whole frame, border included */
+    & > .iframe-frame {
+      display: block;
+      box-sizing: border-box;
+      inline-size: 100%;
+      aspect-ratio: var(--iframe-ratio);
+      border: var(--iframe-border-width) solid var(--border);
+      border-radius: var(--radius-lg);
+      background-color: color-mix(in oklab, var(--muted) 60%, var(--background));
+    }
+
+    /* fill the element it lives in - give that element a height; a caption
+       takes an implicit row of its own height */
+    &[data-fit="container"] {
+      block-size: 100%;
+      grid-template-rows: minmax(0, 1fr);
+
+      & > .iframe-frame {
+        aspect-ratio: auto;
+        block-size: 100%;
+        min-block-size: var(--iframe-min-height);
+      }
+    }
+
+    /* follow the framed page's own height: the content plus the border */
+    &[data-fit="content"] > .iframe-frame {
+      aspect-ratio: auto;
+      block-size: calc(var(--iframe-height, var(--iframe-min-height)) + 2 * var(--iframe-border-width));
+    }
+
+    &[data-variant="bare"] {
+      --iframe-border-width: 0px;
+
+      & > .iframe-frame {
+        border-radius: 0;
+        background-color: transparent;
+      }
+    }
+  }
+
+  .iframe-caption {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    text-wrap: pretty;
+  }
+
+  /* motion only where the reader allows it */
+  @media (prefers-reduced-motion: no-preference) {
+    .iframe:not([data-loaded]) > .iframe-frame {
+      background-image: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 7%, transparent), transparent);
+      background-size: 200% 100%;
+      animation: iframe-shimmer 1.4s linear infinite;
+    }
+
+    .iframe[data-fit="content"] > .iframe-frame {
+      transition: block-size 0.2s ease;
+    }
+  }
+
+  @keyframes iframe-shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+
+  @media (prefers-contrast: more) {
+    .iframe > .iframe-frame {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .iframe > .iframe-frame {
+      border-color: CanvasText;
+    }
+  }
+}
+
 /* ── components/image/image.css ── */
 @layer components {
   .image {
@@ -20773,6 +20868,93 @@
     }
     .paper-section > h2 {
       font-size: 1.4rem;
+    }
+  }
+
+  /* -- variants: the same parts in two other house styles ------------------
+     classic - a printed journal: serif throughout, a narrower justified
+       column, centered small-caps section heads without rules, a plain
+       abstract set in from both sides;
+     minimal - a lab note: everything flush start, a sans title, no tinted
+       abstract and no rules under the section heads.
+     A two-column body composes Typography's .typeset (data-columns) in the
+     wide track - the paper needs no column mode of its own. */
+  .paper[data-variant="classic"] {
+    --paper-measure: 40rem;
+
+    font-family: var(--font-serif);
+
+    & :is(.paper-section, .paper-abstract) > p {
+      text-align: justify;
+      hyphens: auto;
+    }
+    & .paper-title {
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    & .paper-section > h2 {
+      justify-content: center;
+      padding-block-end: 0;
+      border-block-end: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      font-variant-caps: small-caps;
+      letter-spacing: 0.06em;
+    }
+    & .paper-abstract {
+      padding: 0 2.5rem;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      font-size: 0.9375rem;
+
+      & > h2 {
+        justify-self: center;
+        font-size: 1rem;
+        font-weight: 600;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.06em;
+      }
+    }
+  }
+  /* a narrow page keeps the classic abstract's full width */
+  @container (width < 32rem) {
+    .paper[data-variant="classic"] .paper-abstract {
+      padding-inline: 0;
+    }
+  }
+  .paper[data-variant="minimal"] {
+    & .paper-hero {
+      justify-items: start;
+      text-align: start;
+    }
+    & :is(.paper-venue, .paper-authors, .paper-affiliations, .paper-links) {
+      justify-content: flex-start;
+    }
+    & .paper-title {
+      font-family: var(--font-sans);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+    & .paper-abstract {
+      padding: 1rem 0 0;
+      border: 0;
+      border-block-start: 1px solid var(--border);
+      border-radius: 0;
+      background: none;
+
+      & > h2 {
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    }
+    & .paper-section > h2 {
+      padding-block-end: 0;
+      border-block-end: 0;
+      font-family: var(--font-sans);
+      font-size: 1.375rem;
+      font-weight: 600;
     }
   }
 
@@ -33370,11 +33552,106 @@
     letter-spacing: 0;
   }
 
+  /* -- Typesetting (Satz): book and journal setting ----------------------
+     .typeset holds continuous text set like a book or a journal page. Each
+     classic rule is an opt-in data attribute, tuned by a --typeset-* knob -
+     component properties, not theme tokens (the theme set stays the
+     tweakcn shape):
+       data-columns="2|3"        columns never narrower than
+                                 --typeset-column-width: a phone gets one
+       data-rule                 a hairline between the columns
+       data-align="justify"      Blocksatz: justified and hyphenated (set
+                                 lang=""), the last line flush start
+       data-indent               Einzug: paragraphs follow without a gap and
+                                 indent their first line; the first one after
+                                 a heading starts flush (stumpf)
+       data-initial="drop|raised"  Initiale over --typeset-initial-lines lines
+       data-lead="smallcaps"     the opening line in small capitals
+       data-ligatures="classic"  discretionary and historical ligatures,
+                                 old-style figures - where the font has them
+     .typeset-span spans every column (a heading, a figure). */
+  .typeset {
+    --typeset-measure: 68ch;
+    --typeset-column-width: 18rem;
+    --typeset-column-gap: 2.5em;
+    --typeset-indent: 1em;
+    --typeset-leading: 1.65;
+    --typeset-initial-lines: 3;
+    --typeset-initial-font: var(--font-serif);
+    --typeset-initial-color: var(--primary);
+
+    max-inline-size: var(--typeset-measure);
+    line-height: var(--typeset-leading);
+    text-wrap: pretty;
+    hanging-punctuation: first allow-end last;
+    font-kerning: normal;
+    orphans: 2;
+    widows: 2;
+
+    & > p { margin-block: 0 1em; }
+    & :is(figure, blockquote, table, pre) { break-inside: avoid; }
+    & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { break-after: avoid; }
+    & .typeset-span { column-span: all; }
+
+    &[data-columns] { max-inline-size: none; column-gap: var(--typeset-column-gap); }
+    &[data-columns="2"] { columns: 2 var(--typeset-column-width); }
+    &[data-columns="3"] { columns: 3 var(--typeset-column-width); }
+    &[data-rule] { column-rule: 1px solid var(--border); }
+
+    &[data-align="justify"] {
+      text-align: justify;
+      text-align-last: start;
+      hyphens: auto;
+      hyphenate-limit-chars: 6 3 2;
+    }
+
+    &[data-indent] > p { margin-block: 0; }
+    &[data-indent] > p + p { text-indent: var(--typeset-indent); }
+
+    &[data-initial] > p:first-of-type::first-letter {
+      font-family: var(--typeset-initial-font);
+      font-weight: 600;
+      color: var(--typeset-initial-color);
+      margin-inline-end: 0.08em;
+    }
+    &[data-initial="drop"] > p:first-of-type::first-letter {
+      -webkit-initial-letter: var(--typeset-initial-lines);
+      initial-letter: var(--typeset-initial-lines);
+    }
+    &[data-initial="raised"] > p:first-of-type::first-letter {
+      -webkit-initial-letter: var(--typeset-initial-lines) 1;
+      initial-letter: var(--typeset-initial-lines) 1;
+    }
+
+    &[data-lead="smallcaps"] > p:first-of-type::first-line {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.04em;
+    }
+
+    &[data-ligatures="classic"] {
+      font-variant-ligatures: common-ligatures discretionary-ligatures historical-ligatures contextual;
+      font-variant-numeric: oldstyle-nums proportional-nums;
+    }
+  }
+  /* no initial-letter (Firefox): a floated letter as tall as the lines */
+  @supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {
+    .typeset[data-initial] > p:first-of-type::first-letter {
+      float: inline-start;
+      font-size: calc(var(--typeset-initial-lines) * var(--typeset-leading) * 1em * 0.82);
+      line-height: 0.8;
+      padding-block-start: 0.08em;
+    }
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-contrast: more) {
     .h1, .h2, .h3, .h4 {
       letter-spacing: 0;
+    }
+
+    .typeset {
+      --typeset-initial-color: var(--foreground);
     }
 
     .blockquote {
@@ -33393,6 +33670,14 @@
   @media (forced-colors: active) {
     .blockquote {
       border-inline-start-color: CanvasText;
+    }
+
+    .typeset {
+      --typeset-initial-color: CanvasText;
+    }
+
+    .typeset[data-rule] {
+      column-rule-color: CanvasText;
     }
 
     .inline-code {

@@ -4718,11 +4718,106 @@
     letter-spacing: 0;
   }
 
+  /* -- Typesetting (Satz): book and journal setting ----------------------
+     .typeset holds continuous text set like a book or a journal page. Each
+     classic rule is an opt-in data attribute, tuned by a --typeset-* knob -
+     component properties, not theme tokens (the theme set stays the
+     tweakcn shape):
+       data-columns="2|3"        columns never narrower than
+                                 --typeset-column-width: a phone gets one
+       data-rule                 a hairline between the columns
+       data-align="justify"      Blocksatz: justified and hyphenated (set
+                                 lang=""), the last line flush start
+       data-indent               Einzug: paragraphs follow without a gap and
+                                 indent their first line; the first one after
+                                 a heading starts flush (stumpf)
+       data-initial="drop|raised"  Initiale over --typeset-initial-lines lines
+       data-lead="smallcaps"     the opening line in small capitals
+       data-ligatures="classic"  discretionary and historical ligatures,
+                                 old-style figures - where the font has them
+     .typeset-span spans every column (a heading, a figure). */
+  .typeset {
+    --typeset-measure: 68ch;
+    --typeset-column-width: 18rem;
+    --typeset-column-gap: 2.5em;
+    --typeset-indent: 1em;
+    --typeset-leading: 1.65;
+    --typeset-initial-lines: 3;
+    --typeset-initial-font: var(--font-serif);
+    --typeset-initial-color: var(--primary);
+
+    max-inline-size: var(--typeset-measure);
+    line-height: var(--typeset-leading);
+    text-wrap: pretty;
+    hanging-punctuation: first allow-end last;
+    font-kerning: normal;
+    orphans: 2;
+    widows: 2;
+
+    & > p { margin-block: 0 1em; }
+    & :is(figure, blockquote, table, pre) { break-inside: avoid; }
+    & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { break-after: avoid; }
+    & .typeset-span { column-span: all; }
+
+    &[data-columns] { max-inline-size: none; column-gap: var(--typeset-column-gap); }
+    &[data-columns="2"] { columns: 2 var(--typeset-column-width); }
+    &[data-columns="3"] { columns: 3 var(--typeset-column-width); }
+    &[data-rule] { column-rule: 1px solid var(--border); }
+
+    &[data-align="justify"] {
+      text-align: justify;
+      text-align-last: start;
+      hyphens: auto;
+      hyphenate-limit-chars: 6 3 2;
+    }
+
+    &[data-indent] > p { margin-block: 0; }
+    &[data-indent] > p + p { text-indent: var(--typeset-indent); }
+
+    &[data-initial] > p:first-of-type::first-letter {
+      font-family: var(--typeset-initial-font);
+      font-weight: 600;
+      color: var(--typeset-initial-color);
+      margin-inline-end: 0.08em;
+    }
+    &[data-initial="drop"] > p:first-of-type::first-letter {
+      -webkit-initial-letter: var(--typeset-initial-lines);
+      initial-letter: var(--typeset-initial-lines);
+    }
+    &[data-initial="raised"] > p:first-of-type::first-letter {
+      -webkit-initial-letter: var(--typeset-initial-lines) 1;
+      initial-letter: var(--typeset-initial-lines) 1;
+    }
+
+    &[data-lead="smallcaps"] > p:first-of-type::first-line {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.04em;
+    }
+
+    &[data-ligatures="classic"] {
+      font-variant-ligatures: common-ligatures discretionary-ligatures historical-ligatures contextual;
+      font-variant-numeric: oldstyle-nums proportional-nums;
+    }
+  }
+  /* no initial-letter (Firefox): a floated letter as tall as the lines */
+  @supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {
+    .typeset[data-initial] > p:first-of-type::first-letter {
+      float: inline-start;
+      font-size: calc(var(--typeset-initial-lines) * var(--typeset-leading) * 1em * 0.82);
+      line-height: 0.8;
+      padding-block-start: 0.08em;
+    }
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-contrast: more) {
     .h1, .h2, .h3, .h4 {
       letter-spacing: 0;
+    }
+
+    .typeset {
+      --typeset-initial-color: var(--foreground);
     }
 
     .blockquote {
@@ -4741,6 +4836,14 @@
   @media (forced-colors: active) {
     .blockquote {
       border-inline-start-color: CanvasText;
+    }
+
+    .typeset {
+      --typeset-initial-color: CanvasText;
+    }
+
+    .typeset[data-rule] {
+      column-rule-color: CanvasText;
     }
 
     .inline-code {

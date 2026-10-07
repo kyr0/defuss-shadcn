@@ -23,5 +23,15 @@
     <article id="ty-zh" lang="zh-Hans" style="width:13em;"><h3 class="h3" id="ty-zh-h">排版的细节</h3><p class="p" id="ty-zh-p">中文段落在窄栏中排版时，逗号、句号不能出现在行首。使用 CSS 3 与 HTML 5，<em class="text-emphasis" id="ty-zh-em">无需脚本</em>。</p><blockquote class="blockquote" id="ty-zh-q"><p>「设计是它如何运作。」</p></blockquote></article>
     <article class="text-vertical" id="ty-ja" lang="ja" style="inline-size:14em;"><h3 class="h3" id="ty-ja-h">縦書きの<ruby>美<rt id="ty-rt">うつく</rt></ruby>しさ</h3><p class="p" id="ty-ja-p"><span class="text-upright" id="ty-tcy">12</span>月、<em class="text-emphasis" id="ty-ja-em">傍点</em>です。</p><p class="p" id="ty-ja-p2">二段落目。</p></article>
     <p class="p" id="ty-en" lang="en">Latin paragraph.</p>
+    <div class="typeset" id="ty-set" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic" style="width:44rem;">
+      <h2 class="h3 typeset-span" id="ty-set-h">Of the Art of Printing</h2>
+      <p id="ty-set-p1">Printing is the art of multiplying writing by movable type: the compositor sets each letter, justifies each line and locks the forme before a single sheet is pulled. Ligatures such as fi, fl and ct, and old-style figures like 1468, belong to the craft.</p>
+      <p id="ty-set-p2">Each following paragraph runs on without a gap; only its first line steps in by one em, the classic indent of a book page, so the column reads as one even grey.</p>
+      <p id="ty-set-p3">A justified column hyphenates long words like typographically, interdisciplinary and internationalization, and its last line stays flush to the start.</p>
+    </div>
+    <div class="typeset" id="ty-set-narrow" lang="en" data-columns="2" style="width:20rem;">
+      <p id="ty-set-n1">A column of twenty rem is narrower than two columns of eighteen, so the block sets a single column - the responsive case, with no media query.</p>
+      <p id="ty-set-n2">The second paragraph therefore follows below the first, in the same column.</p>
+    </div>
   </body>
 </html>

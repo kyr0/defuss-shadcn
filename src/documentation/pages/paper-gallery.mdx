@@ -1,0 +1,29 @@
+---
+title: "Paper Gallery"
+description: "Ten short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, a database schema, images and video, big data and a replayed chat."
+slug: "paper-gallery"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-gallery" title="Paper Gallery" component="paper" introStyle="max-width:40rem;">
+  Ten short papers, each one <DocLink href="paper.html">Modern Paper</DocLink> composed with other components of the system - so a research page can carry a theme chooser, a classic two-column body, an embedded page that talks to it, code, a schema, media, a hundred thousand rows or a replayed conversation. Every paper is one example: open it, edit it, take it.
+</PageHeader>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));">
+  <a class="card" href="paper-themes.html"><div class="card-header"><h3 class="card-title">Theme Chooser</h3><p class="card-description">A paper with a Theme Switcher of four themes - the whole page rethemes from its tokens.</p></div></a>
+  <a class="card" href="paper-dark-mode.html"><div class="card-header"><h3 class="card-title">Light and Dark</h3><p class="card-description">Only a Swap: sun and moon toggle the dark palette of one theme.</p></div></a>
+  <a class="card" href="paper-styles.html"><div class="card-header"><h3 class="card-title">House Styles</h3><p class="card-description">One paper in three house styles - modern, classic, minimal - switched by a Toggle Group.</p></div></a>
+  <a class="card" href="paper-two-column.html"><div class="card-header"><h3 class="card-title">Two Columns</h3><p class="card-description">A classic journal page: two justified columns, an initial, small capitals - one column on a phone.</p></div></a>
+  <a class="card" href="paper-redeschrift.html"><div class="card-header"><h3 class="card-title">Redeschrift 1.0</h3><p class="card-description">A German speech recognition model; an embedded model card controls the paper around it (Iframe).</p></div></a>
+  <a class="card" href="paper-code.html"><div class="card-header"><h3 class="card-title">Code Listings</h3><p class="card-description">Terminal sessions and a diff in Code Mockup windows - the story of one colour bug.</p></div></a>
+  <a class="card" href="paper-schema.html"><div class="card-header"><h3 class="card-title">Database Schema</h3><p class="card-description">An ER diagram of a component's contract, drawn by the Illustrative Diagram component.</p></div></a>
+  <a class="card" href="paper-media.html"><div class="card-header"><h3 class="card-title">Images and Video</h3><p class="card-description">Figures with a lightbox, a hover gallery and a captioned video.</p></div></a>
+  <a class="card" href="paper-big-data.html"><div class="card-header"><h3 class="card-title">Big Data</h3><p class="card-description">A hundred thousand rows in a Data Grid and a corpus hierarchy in a Data Tree, inside the paper.</p></div></a>
+  <a class="card" href="paper-chat.html"><div class="card-header"><h3 class="card-title">Chat Replay</h3><p class="card-description">A conversation replayed turn by turn in a Session, the replies streaming in.</p></div></a>
+</div>
+
+<SourceFiles component="paper" />
+</DocPage>

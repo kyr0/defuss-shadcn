@@ -1183,7 +1183,7 @@ function applyThemeId(root, id) {
     dfDollar7(tokens).after(link);
   else
     dfDollar7(document.head).append(link);
-  loadTheme(id).catch(() => {
+  loadTheme(id, themeHref(root, id).replace(/\.css(?=$|[?#])/, ".json")).catch(() => {
     return;
   });
   syncTrigger(root, id);
@@ -1305,5 +1305,5 @@ document.addEventListener(THEME_EVENT, (e) => {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=5B39FBC084EEDB1B64756E2164756E21
+//# debugId=8ECC8F208BA1D3C664756E2164756E21
 //# sourceMappingURL=navigation.js.map

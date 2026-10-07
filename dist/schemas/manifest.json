@@ -27,6 +27,7 @@
     "diff": "./diff.schema.json",
     "dropdown": "./dropdown.schema.json",
     "file-input": "./file-input.schema.json",
+    "iframe": "./iframe.schema.json",
     "image": "./image.schema.json",
     "input": "./input.schema.json",
     "menubar": "./menubar.schema.json",

@@ -95,7 +95,9 @@ function applyThemeId(root, id) {
     // the theme's runtime resources (font <link>s from theme/<id>.json) ride
     // with the stylesheet - fire-and-forget: fonts are progressive enhancement
     // and the loader swallows missing sidecars (404 = theme declares none)
-    loadTheme(id).catch(() => undefined);
+    // the sidecar lives beside the stylesheet (data-theme-base, or the token sheet's folder).
+    // VERIFIED: (tests/theme-links.test.ts) without the href a page without a token sheet asked its own folder
+    loadTheme(id, themeHref(root, id).replace(/\.css(?=$|[?#])/, '.json')).catch(() => undefined);
     syncTrigger(root, id);
     document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }

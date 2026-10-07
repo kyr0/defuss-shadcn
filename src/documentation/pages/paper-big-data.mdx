@@ -1,0 +1,97 @@
+---
+title: "Big Data - Paper Gallery"
+description: "A short paper that carries its data: a Data Grid of 100,000 synthetic evaluation utterances to sort and filter, and a Data Tree of their corpus hierarchy - windowed, inside the paper."
+slug: "paper-big-data"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-big-data" title="Big Data" component="paper">
+  A paper can carry its data instead of a screenshot of it: a <DocLink href="data-grid.html">Data Grid</DocLink> of a hundred thousand rows and a <DocLink href="data-tree.html">Data Tree</DocLink> of their hierarchy, both windowed - only the rows in view exist in the page, every sort and filter runs over all of them.
+</PageHeader>
+
+```html example label="Error analysis at corpus scale" schema="none" hint="Sort the grid by a header, filter in the filter row (WER takes > 10, text matches anywhere) - each query runs over all 100,000 rows. Open branches in the tree with the chevrons or the arrow keys. The data is synthetic and deterministic: row i always reads the same."
+<article class="paper" aria-labelledby="pb-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p>
+    <h1 class="paper-title" id="pb-title">Error Analysis at Corpus Scale<span class="paper-title-sub">Browsing every utterance of an evaluation in the paper itself</span></h1>
+    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pb-abstract">
+    <h2 id="pb-abstract">Abstract</h2>
+    <p>A word error rate is an average; the errors are in the utterances. We show how a reader can browse all of them in the paper: a grid of 100,000 utterances with their speaker, source, duration and errors, and a tree of the corpus they come from. The data here is synthetic - generated deterministically - so that the page stays small and every reader sees the same rows.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pb-s1">
+    <h2 id="pb-s1"><span class="paper-num">1</span>Every utterance</h2>
+    <div class="paper-wide">
+      <div class="data-grid" id="pb-grid" aria-label="Evaluation utterances" data-empty-text="No utterance matches." style="height: 22rem;">
+        <div class="data-grid-viewport">
+          <div class="data-grid-head">
+            <div class="data-grid-row">
+              <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem" data-filter="number" data-locked>Utterance</div>
+              <div class="data-grid-header" data-field="source" data-width="10rem" data-filter="select">Source</div>
+              <div class="data-grid-header" data-field="speaker" data-width="8rem" data-filter="text">Speaker</div>
+              <div class="data-grid-header" data-field="seconds" data-type="number" data-width="6rem" data-filter="number">Seconds</div>
+              <div class="data-grid-header" data-field="words" data-type="number" data-width="6rem" data-filter="number">Words</div>
+              <div class="data-grid-header" data-field="errors" data-type="number" data-width="6rem" data-filter="number">Errors</div>
+              <div class="data-grid-header" data-field="wer" data-type="number" data-width="6rem" data-filter="number">WER %</div>
+            </div>
+          </div>
+          <div class="data-grid-body"></div>
+        </div>
+      </div>
+    </div>
+    <p>Sorting by WER puts the hardest utterances first; filtering a source and a minimum duration narrows the analysis without leaving the page.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pb-s2">
+    <h2 id="pb-s2"><span class="paper-num">2</span>The corpus</h2>
+    <div class="data-tree" id="pb-tree" aria-label="Corpus" data-empty-text="Nothing matches." style="height: 16rem;"></div>
+    <p>Three sources, a hundred speaker groups each, ten speakers per group and thirty utterances per speaker - 93,303 nodes - the hierarchy a reviewer walks to find where the errors cluster.</p>
+  </section>
+</article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sources = ['Common Voice', 'Tuda-De', 'Multilingual LibriSpeech'];
+    // deterministic synthetic data: utterance i always reads the same
+    const rows = Array.from({ length: 100_000 }, (_, i) => {
+      const words = 4 + ((i * 7) % 23);
+      const errors = (i * 13) % 29 === 0 ? 3 : (i * 11) % 7 === 0 ? 1 : 0;
+      return {
+        id: 1 + i,
+        source: sources[i % 3],
+        speaker: 'spk-' + String(1 + ((i * 17) % 3000)).padStart(4, '0'),
+        seconds: Math.round((1.5 + words * 0.42 + ((i * 3) % 10) / 10) * 10) / 10,
+        words,
+        errors,
+        wer: Math.round((errors / words) * 1000) / 10,
+      };
+    });
+    df$.shadcn.dataGrid.setSource(document.getElementById('pb-grid'), rows);
+
+    const nodes = [];
+    let id = 0;
+    for (const source of sources) {
+      const s = ++id;
+      nodes.push({ id: s, parentId: null, name: source });
+      for (let g = 1; g <= 100; g++) {
+        const group = ++id;
+        nodes.push({ id: group, parentId: s, name: 'Group ' + g });
+        for (let k = 1; k <= 10; k++) {
+          const speaker = ++id;
+          nodes.push({ id: speaker, parentId: group, name: 'Speaker ' + g + '.' + k });
+          for (let u = 1; u <= 30; u++) nodes.push({ id: ++id, parentId: speaker, name: 'Utterance ' + g + '.' + k + '.' + u });
+        }
+      }
+    }
+    df$.shadcn.dataTree.setSource(document.getElementById('pb-tree'), nodes);
+  });
+</script>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

@@ -128,6 +128,19 @@ Custom properties: `--paper-measure` (46rem), `--paper-wide` (64rem), `--paper-g
 
 ---
 
+## Variants
+
+| `data-variant` | House style |
+|---|---|
+| (none) | Modern project page: centered title block, serif headings over sans body, ruled section heads, a tinted abstract with an accent edge |
+| `classic` | Printed journal: serif throughout, a narrower justified column (`--paper-measure: 40rem`), centered small-caps section heads without rules, a plain abstract set in from both sides |
+| `minimal` | Lab note: title block flush start, a sans title, the abstract under a hairline instead of a tint, no rules under the section heads |
+
+Two columns are a composition, not a variant: put the body in a Typography
+`<div class="typeset paper-wide" data-columns="2" data-align="justify" lang="en">`
+(headings `.h3 typeset-span`, figures `.typeset-span`). Below two columns of
+`--typeset-column-width` it sets one column on its own - the phone case.
+
 ## ARIA
 
 | Element | Attribute | Notes |

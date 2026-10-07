@@ -1039,6 +1039,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/icon.png
 **Skill:** [components/primitives/icon/component-skill.md](components/primitives/icon/component-skill.md)
 
+## Iframe
+
+**Type:** ATM
+**Why:** The native iframe embeds a whole page in isolation; this adds what it lacks - a size that fits its container (ratio, the container's height, or the framed page's content height) and a checked postMessage bridge in both directions.
+**When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame.
+**Files:** dist/components/iframe/iframe.css + dist/components/iframe/iframe.js
+**Supported states:** default, loaded
+**Screenshots:** screenshots/{light,dark}/iframe.png, screenshots/{light,dark}/iframe-loaded.png
+**Skill:** [components/data-display/iframe/component-skill.md](components/data-display/iframe/component-skill.md)
+
 ## Image
 
 **Type:** ATM

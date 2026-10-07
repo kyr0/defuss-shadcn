@@ -1,0 +1,95 @@
+---
+title: "Redeschrift 1.0 - Paper Gallery"
+description: "A short paper on Redeschrift 1.0, a German speech recognition model that runs on the CPU: an embedded model card (Iframe) controls the paper around it - choose a variant inside the frame and the paper's table and statistics follow."
+slug: "paper-redeschrift"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-redeschrift" title="Redeschrift 1.0" component="paper">
+  A paper on a real model - <a href="https://huggingface.co/kyr0/redeschrift-1.0" target="_blank" rel="noopener">Redeschrift 1.0</a>, German speech recognition on the CPU - with an <DocLink href="iframe.html">Iframe</DocLink> at its centre. The framed model card is a page of its own; choosing a variant there sends a message, and the paper around it highlights the row and updates its numbers. Hugging Face sends <code>X-Frame-Options: DENY</code>, so the paper frames its own card and links to the original.
+</PageHeader>
+
+```html example label="Redeschrift 1.0" schema="none" sandbox="links" hint="Choose S, M or L inside the framed model card: it posts { type: 'defuss:iframe', kind: 'message', name: 'variant' } to the paper, the .iframe fires iframe-message, and the paper marks the table row and rewrites its three statistics. The frame follows its content's height (data-fit='content'). Numbers: the model card and ARCH.md on Hugging Face, 12 September 2026."
+<article class="paper" aria-labelledby="rs-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Model card</span><span>Automatic speech recognition · <time datetime="2026-09-12">12 September 2026</time></span></p>
+    <h1 class="paper-title" id="rs-title">Redeschrift 1.0<span class="paper-title-sub">Efficient German speech recognition for every device</span></h1>
+    <ul class="paper-authors"><li><a href="https://huggingface.co/kyr0" target="_blank" rel="noopener">Aron Homberg (kyr0)</a></li></ul>
+    <div class="paper-links">
+      <a class="btn" data-variant="default" href="https://huggingface.co/kyr0/redeschrift-1.0" target="_blank" rel="noopener">Model on Hugging Face</a>
+      <a class="btn" data-variant="outline" href="https://github.com/kyr0/redeschrift" target="_blank" rel="noopener">Project on GitHub</a>
+      <a class="btn" data-variant="outline" href="https://huggingface.co/primeline/parakeet-primeline" target="_blank" rel="noopener">Base model</a>
+    </div>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="rs-abstract">
+    <h2 id="rs-abstract">Abstract</h2>
+    <p>Redeschrift 1.0 transcribes German speech on an ordinary processor, offline and private. It is an ONNX export of a German fine-tune (primeline/parakeet-primeline) of NVIDIA's Parakeet TDT 0.6B v3, compressed into three shipping variants. On a German evaluation corpus of 9,799 utterances the word error rate is 3.27 % for the smallest variant (672 MiB) and 3.12 % for the largest, against 3.02 % for the uncompressed reference - one error in roughly thirty spoken words.</p>
+  </section>
+
+  <figure class="iframe" id="rs-card" data-fit="content">
+    <iframe class="iframe-frame" title="Redeschrift model card" srcdoc="<!doctype html><html lang='en'><body style='margin:0;padding:1rem 1.25rem;font:0.875rem/1.5 system-ui,sans-serif;color:#1f2937;background:#fff'><p style='margin:0 0 .25rem;font-weight:600'>kyr0/redeschrift-1.0</p><p style='margin:0 0 .75rem;color:#6b7280'>automatic-speech-recognition · ONNX · sherpa-onnx · CC BY 4.0</p><p style='margin:0 0 .5rem'>Which variant fits your computer?</p><div style='display:flex;flex-wrap:wrap;gap:.5rem'><button type='button' data-id='S' style='font:inherit;padding:.35rem .8rem;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer'>S - smallest</button><button type='button' data-id='M' style='font:inherit;padding:.35rem .8rem;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer'>M - recommended</button><button type='button' data-id='L' style='font:inherit;padding:.35rem .8rem;border:1px solid #d1d5db;border-radius:999px;background:#fff;cursor:pointer'>L - most accurate</button></div><script>document.querySelectorAll('[data-id]').forEach((b) => b.addEventListener('click', () => { document.querySelectorAll('[data-id]').forEach((x) => x.style.background = x === b ? '#eef2ff' : '#fff'); parent.postMessage({ type: 'defuss:iframe', kind: 'message', name: 'variant', detail: { id: b.dataset.id } }, '*'); }));</script><script>const report = () => parent.postMessage({ type: 'defuss:iframe', kind: 'size', height: document.documentElement.getBoundingClientRect().height }, '*'); new ResizeObserver(report).observe(document.documentElement); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.kind === 'hello') report(); });</script></body></html>"></iframe>
+    <figcaption class="iframe-caption">The model card, framed - its buttons control this paper. The original on huggingface.co cannot be framed (it sends <code>X-Frame-Options: DENY</code>): <a href="https://huggingface.co/kyr0/redeschrift-1.0" target="_blank" rel="noopener">open it in a new tab</a>.</figcaption>
+  </figure>
+
+  <div class="paper-numbers">
+    <div class="statistic"><p class="statistic-title">Model size</p><p class="statistic-value" id="rs-size">725.6 MiB</p><p class="statistic-description" id="rs-variant">variant M</p></div>
+    <div class="statistic"><p class="statistic-title">Word error rate</p><p class="statistic-value" id="rs-wer">3.19 %</p><p class="statistic-description">German, 9,799 utterances</p></div>
+    <div class="statistic"><p class="statistic-title">Speed</p><p class="statistic-value" id="rs-speed">~12×</p><p class="statistic-description">faster than real time, MacBook Air M4</p></div>
+  </div>
+
+  <section class="paper-section" aria-labelledby="rs-s1">
+    <h2 id="rs-s1"><span class="paper-num">1</span>Variants</h2>
+    <p>Three compressions of one encoder ship - two 4-bit quantizations (u4, block sizes 128 and 32) and fp16 weight storage; an uncompressed reference is the evaluation baseline. Each variant must stay within 0.25 percentage points of the reference's word error rate.</p>
+    <figure class="paper-table">
+      <table class="table" id="rs-variants">
+        <thead><tr><th scope="col">Variant</th><th scope="col">Encoder</th><th scope="col" data-num>Bundle</th><th scope="col" data-num>WER</th><th scope="col" data-num>Δ reference</th><th scope="col" data-num>Real-time factor</th><th scope="col" data-num>Peak RAM</th></tr></thead>
+        <tbody>
+          <tr data-variant-id="S"><td>S</td><td>4-bit (u4), block 128</td><td data-num>672.0 MiB</td><td data-num>3.27 %</td><td data-num>+0.25 pp</td><td data-num>0.046</td><td data-num>1,671 MB</td></tr>
+          <tr data-variant-id="M" data-best><td>M</td><td>4-bit (u4), block 32</td><td data-num>725.6 MiB</td><td data-num>3.19 %</td><td data-num>+0.17 pp</td><td data-num>0.083</td><td data-num>1,698 MB</td></tr>
+          <tr data-variant-id="L"><td>L</td><td>fp16 storage</td><td data-num>1,250.9 MiB</td><td data-num>3.12 %</td><td data-num>+0.00 pp</td><td data-num>0.039</td><td data-num>3,428 MB</td></tr>
+          <tr><td>Reference</td><td>fp32</td><td data-num>2,431.7 MiB</td><td data-num>3.02 %</td><td data-num>-</td><td data-num>0.031</td><td data-num>3,488 MB</td></tr>
+        </tbody>
+      </table>
+      <figcaption class="paper-table-caption"><b>Table 1.</b> From the model's ARCH.md. WER on the 9,799-utterance corpus (L: the 980-utterance set); real-time factor = seconds of compute per second of audio.</figcaption>
+    </figure>
+  </section>
+
+  <section class="paper-section" aria-labelledby="rs-s2">
+    <h2 id="rs-s2"><span class="paper-num">2</span>Gates</h2>
+    <p>Three gates measure a variant: a smoke test of 7 hand-picked recordings (89 words), a stratified set of 980 utterances and the full German corpus of 9,799. A gate fails when the variant's word error rate exceeds the reference's by more than 0.25 points. M passes the 980 set and the full corpus. S passes the full corpus by three thousandths of a point - labelled borderline - and missed the 980 set against its wider baseline, a trade made for the smaller download. L matches the reference on the 980 set; the full corpus was not run for it. Of the alternatives, a 4-bit block quantization failed both corpora, per-channel uint8 changed nothing measurable, and dynamic uint8 - the widest miss - serves only as the app's fallback until the 4-bit runtime is validated.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="rs-s3">
+    <h2 id="rs-s3"><span class="paper-num">3</span>Use</h2>
+    <p>All variants run in sherpa-onnx with ONNX Runtime on a standard CPU - no graphics card, no network. Besides German, the model transcribes 24 more European languages, among them English, French, Spanish, Italian, Dutch, Polish and Russian; speech that switches into English mid-sentence is supported. The model is released under CC BY 4.0; dialect support is planned for version 2.</p>
+  </section>
+
+  <footer class="paper-footer"><p>Redeschrift 1.0 by Aron Homberg, building on primeline/parakeet-primeline (Florian Zimmermeister, primeLine Solutions) and nvidia/parakeet-tdt-0.6b-v3.</p></footer>
+</article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const variants = {
+      S: { size: '672.0 MiB', wer: '3.27 %', speed: '~22×' },
+      M: { size: '725.6 MiB', wer: '3.19 %', speed: '~12×' },
+      L: { size: '1,250.9 MiB', wer: '3.12 %', speed: '~26×' },
+    };
+    df$('#rs-card').on('iframe-message', (e) => {
+      const id = e.detail.name === 'variant' && e.detail.detail.id;
+      const v = variants[id];
+      if (!v) return;
+      df$('#rs-variants tbody tr').each((_i, tr) => df$(tr).attr('data-best', tr.dataset.variantId === id ? '' : null));
+      df$('#rs-size').text(v.size);
+      df$('#rs-variant').text(`variant ${id}`);
+      df$('#rs-wer').text(v.wer);
+      df$('#rs-speed').text(v.speed);
+    });
+  });
+</script>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

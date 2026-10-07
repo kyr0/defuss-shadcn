@@ -101,6 +101,15 @@ describe('loadTheme', () => {
     expect(headLinks()).toHaveLength(0);
   });
 
+  it('fetches the sidecar from the href a caller passes - not from the page folder', async () => {
+    // no token sheet on this page: without the href the sidecar would resolve here
+    const href = new URL('/src/theme/kodama-grove.json', document.baseURI).href;
+    await loadTheme('kodama-grove', href);
+    expect(headLinks().some((l) => l.getAttribute('href')?.includes('Merriweather'))).toBe(true);
+    await loadTheme('default');
+    expect(headLinks()).toHaveLength(0);
+  });
+
   it('mounts the real generated sidecar (kodama-grove fonts)', async () => {
     // point the resolver at src/theme/utils/ so ../kodama-grove.json resolves
     // to the real generated file the Vite test server serves from the repo

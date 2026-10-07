@@ -177,6 +177,7 @@ export const NAV: NavSection[] = [
       href: 'image.html',
       children: [{ label: 'Image Gallery', href: 'image-gallery.html', type: 'MOL' }],
     },
+    { label: 'Iframe', href: 'iframe.html', isNew: true },
     { label: 'Statistic', href: 'statistic.html' },
     { label: 'Table', href: 'table.html' },
     { label: 'Collapsible', href: 'collapsible.html' },
@@ -347,6 +348,18 @@ export const NAV: NavSection[] = [
   ]},
   { heading: 'Papers', icon: 'file-text', items: [
     { label: 'Modern Paper', href: 'paper.html', isNew: true },
+    { label: 'Paper Gallery', href: 'paper-gallery.html', isNew: true, children: [
+      { label: 'Theme Chooser', href: 'paper-themes.html', type: 'TPL' },
+      { label: 'Light and Dark', href: 'paper-dark-mode.html', type: 'TPL' },
+      { label: 'House Styles', href: 'paper-styles.html', type: 'TPL' },
+      { label: 'Two Columns', href: 'paper-two-column.html', type: 'TPL' },
+      { label: 'Redeschrift 1.0', href: 'paper-redeschrift.html', type: 'TPL' },
+      { label: 'Code Listings', href: 'paper-code.html', type: 'TPL' },
+      { label: 'Database Schema', href: 'paper-schema.html', type: 'TPL' },
+      { label: 'Images and Video', href: 'paper-media.html', type: 'TPL' },
+      { label: 'Big Data', href: 'paper-big-data.html', type: 'TPL' },
+      { label: 'Chat Replay', href: 'paper-chat.html', type: 'TPL' },
+    ]},
     { label: 'BibTeX', href: 'bibtex.html', isNew: true },
   ]},
   { heading: 'Website', icon: 'globe', items: [

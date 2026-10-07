@@ -128,4 +128,42 @@ await cssSmoke('typography', [
       assert.equal(r.rt, 0.5);
     },
   },
+  {
+    label: 'typeset: two ruled columns of at least 18rem, Blocksatz with hyphenation',
+    selector: '#ty-set',
+    css: { 'column-count': '2', 'column-width': '288px', 'column-rule-style': 'solid', 'text-align': 'justify', 'hyphens': 'auto', 'text-align-last': 'start' },
+  },
+  {
+    label: 'typeset: Einzug - no paragraph gap, the first line of each following paragraph indented 1em',
+    run: async (page) => {
+      const r = await page.evaluate(() => ['ty-set-p1', 'ty-set-p2', 'ty-set-p3'].map((id) => { const cs = getComputedStyle(document.getElementById(id)!); return [cs.textIndent, cs.marginBlockStart, cs.marginBlockEnd]; }));
+      assert.deepEqual(r, [['0px', '0px', '0px'], ['14px', '0px', '0px'], ['14px', '0px', '0px']]);
+    },
+  },
+  {
+    label: 'typeset: a drop initial over three lines, the opening line in small capitals, classic ligatures and old-style figures',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const p = document.getElementById('ty-set-p1')!;
+        const letter = getComputedStyle(p, '::first-letter');
+        const set = getComputedStyle(document.getElementById('ty-set')!);
+        return { initial: letter.getPropertyValue('initial-letter'), caps: getComputedStyle(p, '::first-line').fontVariantCaps, lig: set.fontVariantLigatures, num: set.fontVariantNumeric };
+      });
+      assert.equal(r.initial, '3');
+      assert.equal(r.caps, 'all-small-caps');
+      assert.ok(/discretionary-ligatures/.test(r.lig) && /historical-ligatures/.test(r.lig), r.lig);
+      assert.ok(/oldstyle-nums/.test(r.num), r.num);
+    },
+  },
+  {
+    label: 'typeset: columns are responsive - 44rem sets two side by side, 20rem one (no media query)',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const x = (id: string) => document.getElementById(id)!.getBoundingClientRect().left;
+        return { wide: x('ty-set-p3') - x('ty-set-p1'), narrow: x('ty-set-n2') - x('ty-set-n1') };
+      });
+      assert.ok(r.wide > 200, `the wide block should set a second column: ${JSON.stringify(r)}`);
+      assert.equal(r.narrow, 0);
+    },
+  },
 ]);

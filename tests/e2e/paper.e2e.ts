@@ -78,6 +78,37 @@ await cssSmoke('paper', [
   { label: 'the teaser diagram draws its wires inside the paper', run: async (page) => {
     await page.waitForFunction(() => document.querySelectorAll('#paper-loop .diagram-wire').length >= 6, undefined, { timeout: 8000 });
   } },
+  { label: 'classic variant: serif body, untinted abstract, small-caps section heads without a rule', run: async (page) => {
+    const r = await page.evaluate(() => {
+      const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+      const probe = document.createElement('span');
+      probe.style.fontFamily = 'var(--font-serif)';
+      document.getElementById('pv-classic')!.append(probe);
+      const serif = getComputedStyle(probe).fontFamily;
+      probe.remove();
+      return { body: cs('pv-classic').fontFamily === serif, abstract: getComputedStyle(document.getElementById('pv-classic-ap')!.parentElement!).backgroundColor, caps: cs('pv-classic-s').fontVariantCaps, rule: cs('pv-classic-s').borderBottomStyle, align: cs('pv-classic-ap').textAlign };
+    });
+    if (!r.body || r.abstract !== 'rgba(0, 0, 0, 0)' || r.caps !== 'small-caps' || r.rule !== 'none' || r.align !== 'justify') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'minimal variant: the title block flush start, the abstract under a hairline', run: async (page) => {
+    const r = await page.evaluate(() => {
+      const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+      return { hero: cs('pv-minimal-hero').textAlign, authors: cs('pv-minimal-authors').justifyContent, top: cs('pv-minimal-abs').borderTopStyle, bg: cs('pv-minimal-abs').backgroundColor };
+    });
+    if (r.hero !== 'start' || r.authors !== 'flex-start' || r.top !== 'solid' || r.bg !== 'rgba(0, 0, 0, 0)') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'two-column composition: a typeset block in the wide track sets two columns wide, one on a phone', run: async (page) => {
+    const offset = () => page.evaluate(() => document.getElementById('pv-cols-p3')!.getBoundingClientRect().left - document.getElementById('pv-cols-p1')!.getBoundingClientRect().left);
+    const wide = await offset();
+    const pad = () => page.evaluate(() => getComputedStyle(document.getElementById('pv-classic-ap')!.parentElement!).paddingLeft);
+    const widePad = await pad();
+    await page.setViewportSize({ width: 390, height: 844 });
+    const phone = await offset();
+    // the classic abstract drops its side padding on a narrow paper (container query)
+    const phonePad = await pad();
+    await page.setViewportSize({ width: 1280, height: 900 });
+    if (!(wide > 200) || phone !== 0 || widePad !== '40px' || phonePad !== '0px') throw new Error(JSON.stringify({ wide, phone, widePad, phonePad }));
+  } },
   { label: 'narrow page: the abstract stops justifying (container query)', run: async (page) => {
     await page.setViewportSize({ width: 480, height: 900 });
     const align = await page.$eval('.paper-abstract > p', (p) => getComputedStyle(p).textAlign);

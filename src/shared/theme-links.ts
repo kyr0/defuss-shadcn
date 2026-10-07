@@ -112,8 +112,12 @@ export function applyThemeLinks(themeId: string, links: ThemeLinkNode[]): void {
  * in place; rejects only on a MALFORMED sidecar (fetch/404 mean "no
  * resources" and resolve after clearing, so an offline or theme-less page
  * still switches colors - fonts are progressive enhancement).
+ * `href` names the sidecar when the caller knows where its theme files live
+ * (a theme switcher with data-theme-base); without it the sidecar resolves
+ * beside the token sheet. VERIFIED: (tests/theme-links.test.ts) a page without
+ * a token sheet once fetched the sidecar from its own folder.
  */
-export function loadTheme(id: string): Promise<void> {
+export function loadTheme(id: string, href?: string): Promise<void> {
   if (!id || id === 'default') {
     clearThemeLinks();
     return Promise.resolve();
@@ -122,7 +126,7 @@ export function loadTheme(id: string): Promise<void> {
   if (!pending) {
     pending = (async (): Promise<ThemeLinksFile | null> => {
       try {
-        const res = await fetch(themeJsonHref(id));
+        const res = await fetch(href ?? themeJsonHref(id));
         // 404 (no sidecar = theme without resources) and network/offline
         // failures share one answer: nothing to mount. Only a MALFORMED
         // sidecar escapes as a rejection (a parseThemeLinks throw), so theme

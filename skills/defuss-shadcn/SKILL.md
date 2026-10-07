@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.6 - Agent Skill
 
-228 components (169 CSS-only, 59 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+229 components (169 CSS-only, 60 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -269,6 +269,20 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Violin - Custom Series](../../src/documentation/pages/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
   - [Custom Wind Vectors](../../src/documentation/pages/custom-wind-vectors.mdx) - Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations.
   - [Story State Machine](../../src/documentation/pages/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 13-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
+
+### Papers
+
+- [Paper Gallery](../../src/documentation/pages/paper-gallery.mdx) - Ten short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, a database schema, images and video, big data and a replayed chat.
+  - [Theme Chooser](../../src/documentation/pages/paper-themes.mdx) - A short paper with a Theme Switcher of four themes: the whole page - title, abstract, table, statistics - rethemes from its tokens.
+  - [Light and Dark](../../src/documentation/pages/paper-dark-mode.mdx) - A short paper with only a Swap in its title block: the sun and the moon toggle the dark palette of the same theme.
+  - [House Styles](../../src/documentation/pages/paper-styles.mdx) - One short paper in three house styles - modern, classic and minimal - switched in place by a Toggle Group.
+  - [Two Columns](../../src/documentation/pages/paper-two-column.mdx) - A classic two-column journal page: justified and hyphenated columns, a drop initial, a small-caps opening line and an indent instead of paragraph gaps - one column on a phone.
+  - [Redeschrift 1.0](../../src/documentation/pages/paper-redeschrift.mdx) - A short paper on Redeschrift 1.0, a German speech recognition model that runs on the CPU: an embedded model card (Iframe) controls the paper around it - choose a variant inside the frame and the paper's table and statistics follow.
+  - [Code Listings](../../src/documentation/pages/paper-code.mdx) - A short paper whose evidence is code: terminal sessions and a diff in Code Mockup windows, telling how one missing line made every OKLCH contrast too dark.
+  - [Database Schema](../../src/documentation/pages/paper-schema.mdx) - A short paper with an ER diagram at its centre: the contract of one defuss-shadcn component - its states, skill, schema, page, fixture and screenshots - drawn by the Illustrative Diagram component.
+  - [Images and Video](../../src/documentation/pages/paper-media.mdx) - A short paper with figures: Image figures with a lightbox, a hover gallery and a captioned video - all native elements, all inside the paper's grid.
+  - [Big Data](../../src/documentation/pages/paper-big-data.mdx) - A short paper that carries its data: a Data Grid of 100,000 synthetic evaluation utterances to sort and filter, and a Data Tree of their corpus hierarchy - windowed, inside the paper.
+  - [Chat Replay](../../src/documentation/pages/paper-chat.mdx) - A short paper whose evidence is a conversation: a Session replays it turn by turn, the questions anchoring near the top and the replies streaming in word by word.
 
 ### Website
 
@@ -566,6 +580,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Content image with lazy loading, aspect-ratio control, and an error-state fallback via the State API.
 - **When:** Remote images whose loading or failure must be visually controlled.
 - **States:** `default`, `error` · **Skill:** [references/components/image.md](references/components/image.md) · **Examples:** [src/documentation/pages/image.mdx](../../src/documentation/pages/image.mdx)
+
+#### Iframe · ATM · JS
+
+- **Why:** The native iframe embeds a whole page in isolation; this adds what it lacks - a size that fits its container (ratio, the container's height, or the framed page's content height) and a checked postMessage bridge in both directions.
+- **When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame.
+- **States:** `default`, `loaded` · **Skill:** [references/components/iframe.md](references/components/iframe.md) · **Examples:** [src/documentation/pages/iframe.mdx](../../src/documentation/pages/iframe.mdx)
 
 #### Statistic · ATM · CSS
 

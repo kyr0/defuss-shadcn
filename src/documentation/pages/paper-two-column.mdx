@@ -1,0 +1,56 @@
+---
+title: "Two Columns - Paper Gallery"
+description: "A classic two-column journal page: justified and hyphenated columns, a drop initial, a small-caps opening line and an indent instead of paragraph gaps - one column on a phone."
+slug: "paper-two-column"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-two-column" title="Two Columns" component="paper">
+  A journal page as it was printed: the classic house style of Modern Paper with its body in one Typography <DocLink href="typography.html#toc-typesetting-satz">typeset</DocLink> block - two ruled columns, Blocksatz, an Initiale, the opening line in small capitals, Einzug. Narrow the preview to Phone: below two columns of 18rem the body sets one, without a media query.
+</PageHeader>
+
+```html example label="Movable type on the web" schema="none" hint="The body is one .typeset in the paper's wide track: data-columns='2' data-rule data-align='justify' data-indent data-initial='drop' data-lead='smallcaps' data-ligatures='classic', lang='en' for the hyphenation. Headings and the figure carry .typeset-span and cross both columns. Switch the preview to Phone."
+<article class="paper" data-variant="classic" aria-labelledby="p2-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span>Journal of Web Typography · Vol. 1 · <time datetime="2026-10">October 2026</time></span></p>
+    <h1 class="paper-title" id="p2-title">Movable Type on the Web<span class="paper-title-sub">The compositor's rules as stylesheet properties</span></h1>
+    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="p2-abstract">
+    <h2 id="p2-abstract">Abstract</h2>
+    <p>Book typography set its text by rules a compositor applied by hand: justified columns, hyphenation, an indent instead of a blank line, an initial at the opening, small capitals for its first line, ligatures and old-style figures. Each rule now has a CSS property. We collect them in one typesetting block and show that a two-column page set with them reads like print on a wide screen and like a book page on a phone.</p>
+  </section>
+
+  <div class="typeset paper-wide" lang="en" data-columns="2" data-rule data-align="justify" data-indent data-initial="drop" data-lead="smallcaps" data-ligatures="classic">
+    <h2 class="h3 typeset-span"><span class="paper-num">1</span> The column</h2>
+    <p>A printed column is a measure of even grey. The compositor justified each line by adding space between words and, where the space grew too wide, broke a word at a syllable. On the web the same work is done by text-align: justify and hyphens: auto, provided the block names its language; the browser then hyphenates by the rules of that language and keeps the last line of each paragraph flush to the start.</p>
+    <p>Two columns halve the measure and keep the line within the sixty to seventy characters a reader takes in at a glance. The column property takes a count and a minimum width; when the page grows too narrow for two columns of that width, the block sets one, and the phone reads a single column without a separate layout.</p>
+    <h2 class="h3 typeset-span"><span class="paper-num">2</span> The paragraph</h2>
+    <p>A book separates its paragraphs by an indent of one em, not by a blank line: the column stays whole, and the eye finds a new thought by its first line alone. The first paragraph after a heading starts flush - the heading has already opened it. The initial-letter property sinks the first letter of the opening paragraph three lines deep, and the first line follows in small capitals.</p>
+    <figure class="paper-table typeset-span">
+      <table class="table">
+        <thead><tr><th scope="col">Rule</th><th scope="col">Property</th></tr></thead>
+        <tbody>
+          <tr><td>Blocksatz</td><td><code>text-align: justify</code>, <code>hyphens: auto</code></td></tr>
+          <tr><td>Einzug</td><td><code>text-indent: 1em</code> on following paragraphs</td></tr>
+          <tr><td>Initiale</td><td><code>initial-letter: 3</code></td></tr>
+          <tr><td>Kapitälchen</td><td><code>font-variant-caps: all-small-caps</code></td></tr>
+          <tr><td>Ligatures, old-style figures</td><td><code>font-variant-ligatures</code>, <code>font-variant-numeric</code></td></tr>
+        </tbody>
+      </table>
+      <figcaption class="paper-table-caption"><b>Table 1.</b> Each rule is one data attribute of the typeset block.</figcaption>
+    </figure>
+    <h2 class="h3 typeset-span"><span class="paper-num">3</span> The letter</h2>
+    <p>Ligatures such as fi, fl and ffi, discretionary ones such as ct and st, and old-style figures that sit in the line like lowercase letters - 1450, 1469, 2026 - render where the font carries them; a font without the features sets the plain forms and loses nothing else.</p>
+  </div>
+
+  <footer class="paper-footer"><p>Set with Modern Paper (classic) and Typography's typeset block.</p></footer>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

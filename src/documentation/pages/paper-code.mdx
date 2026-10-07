@@ -1,0 +1,65 @@
+---
+title: "Code Listings - Paper Gallery"
+description: "A short paper whose evidence is code: terminal sessions and a diff in Code Mockup windows, telling how one missing line made every OKLCH contrast too dark."
+slug: "paper-code"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-code" title="Code Listings" component="paper">
+  When the evidence is code, the paper shows it in <DocLink href="mockup-code.html">Code Mockup</DocLink> windows: a probe in a terminal, the fix as a diff, the test that pins it. The story is real - a missing gamma step in this system's own contrast measurement, found while calibrating the theme checker.
+</PageHeader>
+
+```html example label="The missing gamma step" schema="none" hint="Three Code Mockup windows: a terminal probe (data-prefix, data-tone), the fix as a numbered diff (data-diff remove / add with del and ins), and the test run. The windows scroll sideways on a phone; the prompts are generated content, so a copy takes only the command."
+<article class="paper" data-variant="minimal" aria-labelledby="pc-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Bug report</span><span>defuss-shadcn · <time datetime="2026-10-07">7 October 2026</time></span></p>
+    <h1 class="paper-title" id="pc-title">The Missing Gamma Step<span class="paper-title-sub">How one line made every OKLCH contrast too dark</span></h1>
+    <ul class="paper-authors"><li>Claude</li><li>Aron Homberg</li></ul>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pc-abstract">
+    <h2 id="pc-abstract">Abstract</h2>
+    <p>The verifier measures the contrast of every theme's sidebar text. Its OKLCH conversion returned linear-light values and skipped the sRGB transfer, so a mid grey came out at 55 instead of 128 and every OKLCH contrast was measured too dark. The tests checked only black and white, where linear and gamma-encoded values agree. A probe found it; one function fixed it; a mid-tone test now pins it.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pc-s1">
+    <h2 id="pc-s1"><span class="paper-num">1</span>The probe</h2>
+    <p>Reference colours from CSS Color 4, converted by the verifier's parser:</p>
+    <div class="mockup-code" data-chrome="mac" data-title="zsh - defuss-shadcn">
+      <pre data-prefix="$"><code>bun tmp/oklch-probe.ts</code></pre>
+      <pre><code>red   [ 255, 0, 0 ] want 255,0,0</code></pre>
+      <pre><code>green [ 0, 255, 0 ] want 0,255,0</code></pre>
+      <pre><code>blue  [ 0, 0, 255 ] want 0,0,255</code></pre>
+      <pre data-tone="destructive" data-highlight><code>white [ 255, 255, 255 ] gray50 [ 55, 55, 55 ] want ~128</code></pre>
+    </div>
+    <p>The primaries match because 0 and 1 are the same in linear and gamma space; only the mid tone exposes the error.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pc-s2">
+    <h2 id="pc-s2"><span class="paper-num">2</span>The fix</h2>
+    <div class="mockup-code" data-numbers data-title="scripts/lib/contrast.ts">
+      <pre><code>  const lin = [ /* LMS → linear sRGB */ ];</code></pre>
+      <pre data-diff="remove"><code>  return lin.map((v) =&gt; Math.round(Math.min(1, Math.max(0, v)) * 255)) as RGB;</code></pre>
+      <pre data-diff="add"><code>  const encode = (v: number) =&gt; (v &lt;= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);</code></pre>
+      <pre data-diff="add"><code>  return lin.map((v) =&gt; Math.round(Math.min(1, Math.max(0, <ins>encode</ins>(Math.min(1, Math.max(0, v))))) * 255)) as RGB;</code></pre>
+    </div>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pc-s3">
+    <h2 id="pc-s3"><span class="paper-num">3</span>The test</h2>
+    <div class="mockup-code" data-title="tests/contrast.test.ts">
+      <pre data-prefix="$"><code>bun test tests/contrast.test.ts</code></pre>
+      <pre data-tone="success"><code>✓ gamma-encodes oklch: mid tones match the CSS Color 4 reference</code></pre>
+      <pre data-tone="success"><code>✓ parses oklch percentages and alpha, and hsl</code></pre>
+      <pre data-tone="muted"><code>22 pass · 0 fail</code></pre>
+    </div>
+    <p>The sidebar contrast gate still passes every preset after the fix: their sidebar pairs were readable all along, only the measurement was wrong.</p>
+  </section>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

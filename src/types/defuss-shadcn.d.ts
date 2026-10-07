@@ -136,6 +136,14 @@ interface DefussShadcnRegistry {
    * takes a .code-example card, an id or a selector. Inline, not typeof import() (see toast).
    * configure's options are the component's CodeExampleConfig. VERIFIED: (bun run typecheck, tsc ratchet 0)
    * the members match df$.codeExample in that file. */
+  /** Iframe (src/components/data-display/iframe/iframe.ts): the message bridge across a frame. Inline,
+   * not typeof import() (see toast). VERIFIED: (bun run typecheck, tsc ratchet 0) the members match
+   * df$.iframe in that file. */
+  iframe?: {
+    post(target: string | HTMLElement, name: string, detail?: unknown): boolean;
+    send(name: string, detail?: unknown): boolean;
+    resize(target: string | HTMLElement): boolean;
+  };
   codeExample?: {
     configure(options?: Record<string, unknown>): void;
     source(target: string | HTMLElement): string;
@@ -248,6 +256,10 @@ interface HTMLElement {
   _defaultSize?: [number, number];
   /** The authored open state for 'default': the accordion keeps one flag per item, a tree-view branch its own. */
   _defaultOpen?: boolean[] | boolean;
+  /** Iframe-only: the last content height written to --iframe-height (data-fit="content"). */
+  _iframeHeight?: number;
+  /** Iframe-only: the observer following a same-origin framed document. */
+  _iframeObserver?: ResizeObserver;
   /** Accordion-only: set while triggerStateChange() is applying (suspends enforcement). */
   _applying?: boolean;
   /** Accordion-only: generation counter so queued toggle events can't clear a newer _applying. */

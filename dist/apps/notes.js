@@ -4016,7 +4016,7 @@ function applyThemeLinks(themeId, links) {
     document.head.append(link);
   }
 }
-function loadTheme(id) {
+function loadTheme(id, href) {
   if (!id || id === "default") {
     clearThemeLinks();
     return Promise.resolve();
@@ -4025,7 +4025,7 @@ function loadTheme(id) {
   if (!pending) {
     pending = (async () => {
       try {
-        const res = await fetch(themeJsonHref(id));
+        const res = await fetch(href ?? themeJsonHref(id));
         return res.ok ? parseThemeLinks(await res.text()) : null;
       } catch (e) {
         if (e instanceof SyntaxError || e instanceof Error && e.message.startsWith("theme links"))
@@ -6057,6 +6057,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=86A7F0D2C062213A64756E2164756E21
+//# debugId=8AD0B605CCFD087564756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=notes.js.map

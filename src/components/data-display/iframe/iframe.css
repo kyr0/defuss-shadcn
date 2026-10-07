@@ -1,0 +1,93 @@
+/* -- Iframe component ----------------------------------------- */
+/* An embedded page as wide as its container; its height from a   */
+/* ratio (default), the container (data-fit="container") or the  */
+/* framed page's content (data-fit="content", --iframe-height     */
+/* written by iframe.js). A shimmer marks it until it loads.      */
+@layer components {
+  .iframe {
+    --iframe-ratio: 16 / 9;
+    --iframe-min-height: 8rem;
+    --iframe-border-width: 1px;
+
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    inline-size: 100%;
+    min-inline-size: 0;
+
+    /* border-box: a fit sizes the whole frame, border included */
+    & > .iframe-frame {
+      display: block;
+      box-sizing: border-box;
+      inline-size: 100%;
+      aspect-ratio: var(--iframe-ratio);
+      border: var(--iframe-border-width) solid var(--border);
+      border-radius: var(--radius-lg);
+      background-color: color-mix(in oklab, var(--muted) 60%, var(--background));
+    }
+
+    /* fill the element it lives in - give that element a height; a caption
+       takes an implicit row of its own height */
+    &[data-fit="container"] {
+      block-size: 100%;
+      grid-template-rows: minmax(0, 1fr);
+
+      & > .iframe-frame {
+        aspect-ratio: auto;
+        block-size: 100%;
+        min-block-size: var(--iframe-min-height);
+      }
+    }
+
+    /* follow the framed page's own height: the content plus the border */
+    &[data-fit="content"] > .iframe-frame {
+      aspect-ratio: auto;
+      block-size: calc(var(--iframe-height, var(--iframe-min-height)) + 2 * var(--iframe-border-width));
+    }
+
+    &[data-variant="bare"] {
+      --iframe-border-width: 0px;
+
+      & > .iframe-frame {
+        border-radius: 0;
+        background-color: transparent;
+      }
+    }
+  }
+
+  .iframe-caption {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    text-wrap: pretty;
+  }
+
+  /* motion only where the reader allows it */
+  @media (prefers-reduced-motion: no-preference) {
+    .iframe:not([data-loaded]) > .iframe-frame {
+      background-image: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 7%, transparent), transparent);
+      background-size: 200% 100%;
+      animation: iframe-shimmer 1.4s linear infinite;
+    }
+
+    .iframe[data-fit="content"] > .iframe-frame {
+      transition: block-size 0.2s ease;
+    }
+  }
+
+  @keyframes iframe-shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+
+  @media (prefers-contrast: more) {
+    .iframe > .iframe-frame {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .iframe > .iframe-frame {
+      border-color: CanvasText;
+    }
+  }
+}

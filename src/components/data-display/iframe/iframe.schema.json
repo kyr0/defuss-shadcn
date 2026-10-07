@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "iframe",
+  "states": {
+    "loaded": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-loaded"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-loaded"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

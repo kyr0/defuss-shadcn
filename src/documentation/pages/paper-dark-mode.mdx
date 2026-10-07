@@ -1,0 +1,65 @@
+---
+title: "Light and Dark - Paper Gallery"
+description: "A short paper with only a Swap in its title block: the sun and the moon toggle the dark palette of the same theme."
+slug: "paper-dark-mode"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-dark-mode" title="Light and Dark" component="paper">
+  The smallest theming a paper needs: a Swap with a sun and a moon. Its hidden checkbox is the state; three lines of script put <code>.dark</code> on the page, and the theme's dark palette - the same identity, inverted - takes over.
+</PageHeader>
+
+```html example label="One identity, two palettes" schema="none" hint="Click the sun: the Swap turns into a moon and the page switches to the dark palette. Nothing else changes - not the radius, not the fonts, not the layout: dark mode is the same theme."
+<article class="paper" data-variant="minimal" aria-labelledby="pd-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span>
+      <label class="swap" data-variant="rotate" id="pd-mode">
+        <input type="checkbox" aria-label="Dark mode">
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </p>
+    <h1 class="paper-title" id="pd-title">One Identity, Two Palettes</h1>
+    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pd-abstract">
+    <h2 id="pd-abstract">Abstract</h2>
+    <p>A theme that is round in light mode and square in dark mode is two themes. defuss-shadcn treats light and dark as two palettes of one identity: every preset declares its radius in both blocks with the same value, a verifier gate fails the build otherwise, and the reading pairs reach 4.5:1 in both modes.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pd-s1">
+    <h2 id="pd-s1">The shape stays</h2>
+    <p>Five of the 43 presets, as their files declare them:</p>
+    <figure class="paper-table">
+      <table class="table">
+        <thead><tr><th scope="col">Preset</th><th scope="col" data-num>Radius, light / dark</th><th scope="col" data-num>Text contrast, light / dark</th></tr></thead>
+        <tbody>
+          <tr><td>Claude</td><td data-num>0.5rem / 0.5rem</td><td data-num>10.98 / 8.33</td></tr>
+          <tr><td>Catppuccin</td><td data-num>0.35rem / 0.35rem</td><td data-num>7.06 / 12.14</td></tr>
+          <tr><td>Notebook</td><td data-num>0.625rem / 0.625rem</td><td data-num>10.80 / 10.33</td></tr>
+          <tr><td>Doom 64</td><td data-num>0px / 0px</td><td data-num>10.26 / 13.18</td></tr>
+          <tr><td>Neo Brutalism</td><td data-num>0px / 0px</td><td data-num>21.00 / 21.00</td></tr>
+        </tbody>
+      </table>
+      <figcaption class="paper-table-caption"><b>Table 1.</b> Foreground on background, WCAG 2 ratio.</figcaption>
+    </figure>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pd-s2">
+    <h2 id="pd-s2">The switch</h2>
+    <p>The Swap is a label around a checkbox; CSS turns the sun into the moon. The page listens to the checkbox and toggles <code>.dark</code> on the root element - the token file's dark block matches it, so every component follows without a second stylesheet.</p>
+  </section>
+</article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#pd-mode input').on('change', (e) => document.documentElement.classList.toggle('dark', e.target.checked));
+  });
+</script>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

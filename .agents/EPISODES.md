@@ -86,3 +86,13 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T05:44:47Z s=c273a037 FINDING .codex-plugin/plugin.json version 0.9.0 (pre-existing drift) learn=verifier: verify's version sites gate; tests/version-sites.test.ts lists both.
 2026-10-07T05:44:47Z s=c273a037 FINDING src/skills/shadcn-theme/theme-preview.html learn=test: agent-skills.e2e "the theme preview renders the theme in light and dark, without an error".
 2026-10-07T05:54:44Z s=c273a037 DONE fp=97d726be5537 cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1419)
+2026-10-07T07:03:44Z s=c273a037 DONE fp=8ee43161a910 cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1445)
+2026-10-07T07:03:44Z s=c273a037 FINDING src/components/primitives/typography .typeset (new) learn=test: typography.e2e: 4 new typeset checks (columns + rule + justify, Einzug, initial/small caps/ligatures, 44rem two columns vs 20rem one).
+2026-10-07T07:03:44Z s=c273a037 FINDING src/components/papers/paper data-variant classic | minimal (new) learn=test: paper.e2e: classic, minimal and two-column checks incl. the phone padding (40px wide, 0px at 390px).
+2026-10-07T07:03:44Z s=c273a037 FINDING src/components/data-display/iframe (new component) learn=test: iframe.e2e (14 checks incl. render contract; 3/3 runs green) + paper-gallery.e2e bridge checks.
+2026-10-07T07:03:44Z s=c273a037 FINDING iframe.ts load + size races (self-found) learn=test: iframe.e2e: opaque-origin height via handshake, rejection without data-origins, container 300px, reduced motion; 3 consecutive green runs.
+2026-10-07T07:03:44Z s=c273a037 FINDING src/shared/theme-links.ts + theme-switcher.ts (pre-existing bug) learn=test: tests/theme-links.test.ts "fetches the sidecar from the href a caller passes" (fails on the old code: 404 from the page folder); theme-switcher.e2e green.
+2026-10-07T07:03:44Z s=c273a037 FINDING Paper Gallery: 10 TPL pages + parent (new) learn=test: paper-gallery.e2e drives each paper in its sandbox (12 checks); markup-check: 33 new example fences, 0 findings.
+2026-10-07T07:03:44Z s=c273a037 FINDING paper-gallery.mdx card titles (self-found) learn=test: paper-gallery.e2e checks every paper is linked exactly once.
+2026-10-07T07:03:44Z s=c273a037 FINDING README / index CSS-only stat + index pillar claim learn=verifier: verify's stats claim, CSS-only stat and README ↔ index gates.
+2026-10-07T07:03:44Z s=c273a037 FINDING known sandbox noise (not fixed) learn=none: production serves the docs assets from jsDelivr (CORS *); not verified in this session.

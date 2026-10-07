@@ -1,0 +1,82 @@
+---
+title: "Chat Replay - Paper Gallery"
+description: "A short paper whose evidence is a conversation: a Session replays it turn by turn, the questions anchoring near the top and the replies streaming in word by word."
+slug: "paper-chat"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-chat" title="Chat Replay" component="paper">
+  A conversation as evidence: the paper replays it in a <DocLink href="session.html">Session</DocLink> - each question appended as an anchored turn, each reply streaming in word by word under the session's <code>streaming</code> state. The exchange is condensed from the session that built these pages; its numbers are the ones measured there.
+</PageHeader>
+
+```html example label="A session, replayed" schema="none" hint="The replay starts on its own; Replay restarts it. Questions are appended with df$.shadcn.session.append(..., { anchor: true }) and settle near the top; replies stream word by word while the session is in its streaming state (aria-busy on the log). Scroll up while it plays - the session lets go and the arrow brings you back."
+<article class="paper" data-variant="minimal" aria-labelledby="pr-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p>
+    <h1 class="paper-title" id="pr-title">A Session, Replayed<span class="paper-title-sub">Three requests and what an agent measured</span></h1>
+    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pr-abstract">
+    <h2 id="pr-abstract">Abstract</h2>
+    <p>A transcript is the most direct record of agentic work, and the hardest to read as a wall of text. We replay three turns of one working session - a type-error sweep, a guideline, a set of skills - at reading speed, so the reader sees the request, then the measured answer, in the order they happened.</p>
+  </section>
+
+  <section class="session paper-wide" id="pr-chat" aria-label="The replayed session" style="height: 24rem;">
+    <div class="session-viewport" aria-label="Conversation">
+      <div class="session-content"></div>
+      <button type="button" class="session-scroll-button" data-to="end" aria-label="Scroll to the latest message"></button>
+    </div>
+  </section>
+  <p class="flex items-center gap-3"><button class="btn" data-variant="outline" data-size="sm" type="button" id="pr-replay">Replay</button><output id="pr-status" class="text-sm text-muted-foreground">Replaying...</output></p>
+
+  <section class="paper-section" aria-labelledby="pr-s1">
+    <h2 id="pr-s1"><span class="paper-num">1</span>Why replay</h2>
+    <p>Each reply in the replay states a measurement - minutes, tokens, files - not an impression. Replayed at reading speed, the order matters: the request is visible before the claim that answers it, as it was in the session.</p>
+  </section>
+</article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#pr-chat').get(0);
+    const session = df$.shadcn.session;
+    const turns = [
+      { q: 'Let\'s fix the type errors - the compiler ratchet - and measure again.', a: 'All 1,147 component type errors are fixed: 12.5 minutes and 71,958 output tokens to zero, and the 85 shipped minified files are byte for byte the same as before.' },
+      { q: 'Should the small-modules guideline become a strong recommendation in AGENTS.md?', a: 'Yes. One owner module removed 707 of the 1,147 errors on its own, and every cross-module failure so far came from an implicit contract - so the rule goes in, and a check where a program can hold it.' },
+      { q: 'Let\'s create skills to plan, theme and review with defuss-shadcn.', a: 'Three task skills ship next to the reference skill, generated from the release; the markup checker finds no false alarm on 234 fixtures and 1,553 docs examples.' },
+    ];
+    const user = (text) => `<div class="message" data-align="end" data-avatar="none"><div class="message-content"><div class="bubble"><div class="bubble-content">${text}</div></div></div></div>`;
+    const bot = '<div class="message" data-avatar="none"><div class="message-content"><div class="bubble" data-variant="ghost"><div class="bubble-content"></div></div></div></div>';
+    let run = 0;
+    // resolves false once a newer replay has started - the older one stops
+    const wait = (ms, mine) => new Promise((done) => setTimeout(() => done(mine === run), ms));
+    async function replay() {
+      const mine = ++run;
+      df$('#pr-chat .session-content').html('');
+      df$('#pr-status').text('Replaying...');
+      for (const [i, turn] of turns.entries()) {
+        if (!(await wait(700, mine))) return;
+        session.append(chat, user(turn.q), { id: `q${i}`, anchor: true });
+        if (!(await wait(600, mine))) return;
+        const reply = session.append(chat, bot, { id: `a${i}` });
+        const out = df$(reply).find('.bubble-content');
+        chat.api.setState('streaming');
+        const words = turn.a.split(' ');
+        for (let n = 1; n <= words.length; n++) {
+          if (!(await wait(45, mine))) return;
+          out.text(words.slice(0, n).join(' '));
+        }
+        chat.api.setState(session.isAtEnd(chat) ? 'default' : 'detached');
+      }
+      df$('#pr-status').text(`Replayed - ${turns.length} turns.`);
+    }
+    df$('#pr-replay').on('click', replay);
+    replay();
+  });
+</script>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

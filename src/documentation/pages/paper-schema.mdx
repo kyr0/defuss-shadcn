@@ -1,0 +1,93 @@
+---
+title: "Database Schema - Paper Gallery"
+description: "A short paper with an ER diagram at its centre: the contract of one defuss-shadcn component - its states, skill, schema, page, fixture and screenshots - drawn by the Illustrative Diagram component."
+slug: "paper-schema"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-schema" title="Database Schema" component="paper">
+  A paper whose figure is a schema: an <DocLink href="diagram-er.html">ER diagram</DocLink> drawn by the Illustrative Diagram component - plain HTML nodes on a grid and a list of edges with cardinalities. The model is real: what this system requires of every component it ships.
+</PageHeader>
+
+```html example label="The contract of a component" schema="none" hint="The figure is a .diagram data-type='er' in the paper's wide track: entities as .diagram-node with their fields (# identifier, → reference), relations as .diagram-edge with cardinality heads and labels at both ends. The wires are drawn from the measured layout, so the diagram re-routes when the column narrows."
+<article class="paper" data-variant="classic" aria-labelledby="pe-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span>defuss-shadcn · Architecture note · <time datetime="2026-10">October 2026</time></span></p>
+    <h1 class="paper-title" id="pe-title">The Contract of a Component<span class="paper-title-sub">Seven artifacts, one schema</span></h1>
+    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pe-abstract">
+    <h2 id="pe-abstract">Abstract</h2>
+    <p>A component of defuss-shadcn is more than its stylesheet. It declares its states, documents them in a skill, types them in a schema, shows them on a page, tests them in a fixture and is photographed in each of them, light and dark. We draw these artifacts as an entity-relationship model; the verifier checks every relation in it on every build.</p>
+  </section>
+
+  <figure class="diagram paper-wide" id="pe-er" data-type="er" aria-label="The artifacts of one component and their relations">
+    <figcaption class="diagram-caption">
+      <span class="diagram-eyebrow">ER · component contract</span>
+      <span class="diagram-title">What every component ships with</span>
+    </figcaption>
+    <div class="diagram-canvas" style="--cols:3;--diagram-gap-y:4rem">
+      <div class="diagram-node" data-node="skill" style="--col:1;--row:1">
+        <span class="diagram-node-eyebrow">Markdown</span>
+        <span class="diagram-node-name">Skill</span>
+        <ul class="diagram-node-fields"><li>→ component</li><li>type</li><li>section</li><li>supported states</li></ul>
+      </div>
+      <div class="diagram-node" data-node="component" data-tone="accent" style="--col:2;--row:1">
+        <span class="diagram-node-eyebrow">Entity</span>
+        <span class="diagram-node-name">Component</span>
+        <ul class="diagram-node-fields"><li># name</li><li>stylesheet</li><li>script (optional)</li></ul>
+      </div>
+      <div class="diagram-node" data-node="page" style="--col:3;--row:1">
+        <span class="diagram-node-eyebrow">MDX</span>
+        <span class="diagram-node-name">Page</span>
+        <ul class="diagram-node-fields"><li># slug</li><li>→ component</li><li>live examples</li></ul>
+      </div>
+      <div class="diagram-node" data-node="schema" style="--col:1;--row:2">
+        <span class="diagram-node-eyebrow">JSON</span>
+        <span class="diagram-node-name">Schema</span>
+        <ul class="diagram-node-fields"><li>→ component</li><li>state types</li><li>actions</li></ul>
+      </div>
+      <div class="diagram-node" data-node="state" style="--col:2;--row:2">
+        <span class="diagram-node-eyebrow">Entity</span>
+        <span class="diagram-node-name">State</span>
+        <ul class="diagram-node-fields"><li># name</li><li>→ component</li><li>config</li></ul>
+      </div>
+      <div class="diagram-node" data-node="fixture" style="--col:3;--row:2">
+        <span class="diagram-node-eyebrow">HTML + test</span>
+        <span class="diagram-node-name">Fixture</span>
+        <ul class="diagram-node-fields"><li>→ component</li><li>every configuration</li></ul>
+      </div>
+      <div class="diagram-node" data-node="shot" style="--col:2;--row:3">
+        <span class="diagram-node-eyebrow">PNG</span>
+        <span class="diagram-node-name">Screenshot</span>
+        <ul class="diagram-node-fields"><li>→ state</li><li>mode (light, dark)</li></ul>
+      </div>
+    </div>
+    <ol class="diagram-edges">
+      <li class="diagram-edge" data-from="component" data-to="skill" data-head="one" data-tail="one" data-from-label="1" data-to-label="1">documented by</li>
+      <li class="diagram-edge" data-from="component" data-to="page" data-head="one" data-tail="one" data-from-label="1" data-to-label="1">shown on</li>
+      <li class="diagram-edge" data-from="component" data-to="state" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="1..*">declares</li>
+      <li class="diagram-edge" data-from="component" data-to="schema" data-head="zero-one" data-tail="one" data-from-label="1" data-to-label="0..1">typed by</li>
+      <li class="diagram-edge" data-from="component" data-to="fixture" data-head="one" data-tail="one" data-from-label="1" data-to-label="1">tested by</li>
+      <li class="diagram-edge" data-from="state" data-to="shot" data-head="one-many" data-tail="one" data-from-label="1" data-to-label="2">captured as</li>
+    </ol>
+  </figure>
+
+  <section class="paper-section" aria-labelledby="pe-s1">
+    <h2 id="pe-s1"><span class="paper-num">1</span>Reading the model</h2>
+    <p>Every component declares at least one state - <code>default</code> - and every state is captured twice, once per colour mode. A schema types the states of 68 of the 229 components: every interactive one but the chart - which the verifier lists as open debt - and nine native form and disclosure controls whose state is an attribute, such as an input or a checkbox.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pe-s2">
+    <h2 id="pe-s2"><span class="paper-num">2</span>Who checks it</h2>
+    <p>Each relation is a gate of the verifier: a skill without its states fails, a schema whose states differ from the page's table fails, a declared state without a screenshot or an end-to-end assertion fails. The diagram is the documentation of rules a program already enforces.</p>
+  </section>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

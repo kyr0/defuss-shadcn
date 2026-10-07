@@ -1,0 +1,157 @@
+---
+title: "Iframe"
+description: "Iframe component - an embedded page that fits its container (ratio, the container's height or the framed page's content height) with a checked postMessage bridge in both directions."
+slug: "iframe"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="iframe" title="Iframe" component="iframe">
+  An embedded page that fits where it lives - the width of its container and a height from a ratio, from the container or from the framed page's own content - with a message bridge in both directions, so the framed page can control the page around it. Built on the native <code>&lt;iframe&gt;</code> and <code>postMessage</code>.
+</PageHeader>
+
+<SkillPanel component="iframe">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure class="iframe"&gt;</code> around a native <code>&lt;iframe class="iframe-frame"&gt;</code> and an optional <code>&lt;figcaption class="iframe-caption"&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe" title="the embedded browsing context"><code>&lt;iframe&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage" title="the message bridge, checked by source and origin"><code>postMessage()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="follows the framed document's height"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="the default fit"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options" title="whether a site may be framed at all"><code>X-Frame-Options</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.iframe</code>
+    <code>.iframe-frame</code>
+    <code>.iframe-caption</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-fit</code> - (none): full width, height from <code>--iframe-ratio</code>; <code>container</code>: fill the element it lives in; <code>content</code>: follow the framed page's height</SkillText>
+  <SkillText dense>• <code>data-origins</code> - space-separated origins whose messages are accepted besides the page's own (<code>null</code> for a sandboxed srcdoc)</SkillText>
+  <SkillText dense>• <code>data-variant="bare"</code> - no border, radius or placeholder</SkillText>
+  <SkillText dense>• on the framed page's <code>&lt;html&gt;</code>: <code>data-iframe-child</code> reports its height, <code>data-iframe-parent</code> names the only origin it posts to</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• The embedded site decides whether it can be framed: <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code> make the browser refuse it, and no script can tell - caption such embeds with a link. Messages are accepted only from a frame this element hosts and from an allowed origin.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Fit by ratio" hint="The default: as wide as its container, 16:9 tall (--iframe-ratio). The framed page here is a srcdoc; a src works the same. Switch the preview to Phone - the frame keeps its ratio at every width." previewStyle="justify-content:flex-start;"
+<figure class="iframe" id="iframe-ratio" data-state-demo style="max-inline-size: 36rem;">
+  <iframe class="iframe-frame" title="A framed page" srcdoc="<body style='margin:0;display:grid;place-items:center;height:100vh;font:600 1.25rem system-ui;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff'>A framed page</body>"></iframe>
+  <figcaption class="iframe-caption">A framed page at 16:9 - its own document, isolated from this one.</figcaption>
+</figure>
+```
+
+```html example label="Fill the container" hint="data-fit='container': the frame takes the height of the element it lives in - here a card body of 14rem. Give that element a height; the frame never shrinks below --iframe-min-height." previewStyle="justify-content:flex-start;"
+<div class="card" style="max-inline-size: 36rem;">
+  <div class="card-header"><h3 class="card-title">Dashboard</h3></div>
+  <div class="card-content" style="block-size: 14rem;">
+    <figure class="iframe" data-fit="container">
+      <iframe class="iframe-frame" title="A dashboard" srcdoc="<body style='margin:0;padding:1rem;font:0.875rem system-ui;background:#f8fafc'><b>Uptime</b> 99.98 %<br><b>Requests</b> 1.2 M/day<br><b>Errors</b> 0.02 %</body>"></iframe>
+    </figure>
+  </div>
+</div>
+```
+
+```html example label="Follow the content" hint="data-fit='content': the frame is as tall as the framed page; add lines inside and it grows - iframe-resize reports each height. A same-origin page is measured by the host. This one reports its own height with the size message, as a page from another origin must: the docs run every example in a sandbox, where each frame is an origin of its own." previewStyle="justify-content:flex-start;"
+<figure class="iframe" id="iframe-content" data-fit="content" style="max-inline-size: 36rem;">
+  <iframe class="iframe-frame" title="A growing page" srcdoc="<body style='margin:0;padding:1rem;font:0.875rem system-ui'><p style='margin:0 0 .5rem'>This page grows.</p><button type='button' id='more'>Add a line</button><script>document.getElementById('more').addEventListener('click', () => { const p = document.createElement('p'); p.textContent = 'Another line, and the frame follows.'; document.body.append(p); });</script><script>const report = () => parent.postMessage({ type: 'defuss:iframe', kind: 'size', height: document.documentElement.getBoundingClientRect().height }, '*'); new ResizeObserver(report).observe(document.documentElement); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.kind === 'hello') report(); });</script></body>"></iframe>
+  <figcaption class="iframe-caption">Content height: <output id="iframe-height">-</output></figcaption>
+</figure>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#iframe-content').on('iframe-resize', (e) => df$('#iframe-height').text(`${e.detail.height}px`));
+  });
+</script>
+```
+
+```html example label="The framed page controls the host" hint="The buttons live INSIDE the frame: each posts { type: 'defuss:iframe', kind: 'message', name: 'select' } to its parent, the host's .iframe fires iframe-message, and the host sets its own badge and statistic. The host's button posts back into the frame (df$.shadcn.iframe.post) - the framed page switches its own theme. Messages from any other window or origin are ignored." previewStyle="justify-content:flex-start;"
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); max-inline-size: 44rem;">
+  <figure class="iframe" id="iframe-bridge" data-fit="content">
+    <iframe class="iframe-frame" title="Variant picker" srcdoc="<body style='margin:0;padding:1rem;font:0.875rem system-ui'><p style='margin:0 0 .75rem'>Pick a model variant:</p><div style='display:flex;gap:.5rem'><button type='button' data-id='S'>S</button><button type='button' data-id='M'>M</button><button type='button' data-id='L'>L</button></div><script>document.querySelectorAll('[data-id]').forEach((b) => b.addEventListener('click', () => parent.postMessage({ type: 'defuss:iframe', kind: 'message', name: 'select', detail: { id: b.dataset.id } }, '*'))); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.name === 'dark') { document.body.style.background = e.data.detail.on ? '#0f172a' : ''; document.body.style.color = e.data.detail.on ? '#f8fafc' : ''; } });</script><script>const report = () => parent.postMessage({ type: 'defuss:iframe', kind: 'size', height: document.documentElement.getBoundingClientRect().height }, '*'); new ResizeObserver(report).observe(document.documentElement); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.kind === 'hello') report(); });</script></body>"></iframe>
+    <figcaption class="iframe-caption">The framed page</figcaption>
+  </figure>
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">The host page</h3></div>
+    <div class="card-content stack gap-3">
+      <p class="m-0">Selected: <span class="badge" data-variant="secondary" id="iframe-picked">none</span></p>
+      <div class="statistic"><p class="statistic-title">Word error rate</p><p class="statistic-value" id="iframe-wer">-</p></div>
+      <button class="btn" data-variant="outline" type="button" id="iframe-dark">Dark inside the frame</button>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const wer = { S: '3.27 %', M: '3.19 %', L: '3.12 %' };
+    df$('#iframe-bridge').on('iframe-message', (e) => {
+      if (e.detail.name !== 'select') return;
+      df$('#iframe-picked').text(e.detail.detail.id);
+      df$('#iframe-wer').text(wer[e.detail.detail.id] ?? '-');
+    });
+    let dark = false;
+    df$('#iframe-dark').on('click', () => {
+      dark = !dark;
+      df$.shadcn.iframe.post('#iframe-bridge', 'dark', { on: dark });
+    });
+  });
+</script>
+```
+
+<h2 id="security" class="h3 mt-10 mb-3">Origins, CSP and sites that refuse to be framed</h2>
+
+<p class="text-sm text-muted-foreground mb-3">The examples above frame <code>srcdoc</code> pages, which share this page's origin - so the host can measure them and their messages carry its own origin. Across origins, three things decide what works:</p>
+<ul class="text-sm text-muted-foreground mb-3 ps-5">
+  <li><strong>The embedded site</strong> decides whether it may be framed at all. <code>X-Frame-Options: DENY</code> or <code>SAMEORIGIN</code>, or a CSP <code>frame-ancestors</code> without your origin, makes the browser refuse the page and show its own error inside the frame - and no script on either side can detect it. Hugging Face model pages send <code>X-Frame-Options: DENY</code>; the <DocLink href="paper-redeschrift.html">Redeschrift paper</DocLink> therefore frames a model card of its own and links to the original.</li>
+  <li><strong>Your page's CSP</strong> must allow the frame's origin in <code>frame-src</code>. Messages need no CSP permission, but the framed page must be allowed to run scripts to send any.</li>
+  <li><strong>The bridge</strong> accepts a message only from the window of a frame this element hosts, and only from this page's origin or one listed in <code>data-origins</code> (<code>null</code> for a sandboxed srcdoc). Inside the framed page, set <code>data-iframe-parent</code> to the host's origin so nothing it sends goes elsewhere; never combine <code>allow-scripts</code> with <code>allow-same-origin</code> in <code>sandbox</code> for content you do not trust.</li>
+</ul>
+
+```html
+<!-- a site that refuses to be framed: caption it with the way out -->
+<figure class="iframe">
+  <iframe class="iframe-frame" src="https://huggingface.co/kyr0/redeschrift-1.0" title="Redeschrift 1.0 model card"></iframe>
+  <figcaption class="iframe-caption">huggingface.co sends X-Frame-Options: DENY - <a href="https://huggingface.co/kyr0/redeschrift-1.0" target="_blank" rel="noopener">open the model card</a>.</figcaption>
+</figure>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - not loaded yet: the placeholder shimmers (stopped under reduced motion)</li>
+    <li><code>loaded</code> - the framed page loaded: <code>data-loaded</code> on the figure (set by the frame's load event)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/iframe-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/iframe.schema.json"><code>iframe.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `loaded` | `boolean` | `true`, `false` | `false` | The framed page loaded (`data-loaded` on the figure). |
+```
+
+</StatesSection>
+
+<ApiSection component="iframe" />
+
+<SourceFiles component="iframe" section="css">
+  <SourceNote for="css">The three fits, the bare variant and the loading shimmer.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="iframe" section="js">
+  <SourceNote for="js">Load state, content-height following and the checked message bridge.</SourceNote>
+</SourceFiles>
+
+</DocPage>

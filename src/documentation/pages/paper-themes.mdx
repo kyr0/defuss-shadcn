@@ -1,0 +1,88 @@
+---
+title: "Theme Chooser - Paper Gallery"
+description: "A short paper with a Theme Switcher of four themes: the whole page - title, abstract, table, statistics - rethemes from its tokens."
+slug: "paper-themes"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-themes" title="Theme Chooser" component="paper">
+  A paper that lets its reader choose the look: a Theme Switcher with four of the 43 presets sits in the title block, and every part of the page - title, abstract, table, statistics - follows, because each one reads its colours, radius and fonts from the theme tokens.
+</PageHeader>
+
+```html example label="Readable by design" schema="none" sandbox="links" hint="Open the theme menu in the title block: Default, Claude, Catppuccin, Cyberpunk. The paper rethemes in place - it has no colour of its own. The four themes are four menu items; any preset or your own theme file is one more."
+<article class="paper" aria-labelledby="pt-title">
+  <header class="paper-hero">
+    <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p>
+    <h1 class="paper-title" id="pt-title">Readable by Design<span class="paper-title-sub">Contrast tiers for themes an agent writes</span></h1>
+    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+    <div class="paper-links">
+      <div class="theme-switcher" data-theme-base="../theme">
+        <button class="btn theme-switcher-trigger" id="pt-ts-trigger" popovertarget="pt-ts-menu" aria-expanded="false" aria-haspopup="menu">
+          <span class="theme-switcher-dot" aria-hidden="true"></span>
+          <span class="theme-switcher-label">Default</span>
+          <svg class="theme-switcher-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+        </button>
+        <div id="pt-ts-menu" class="theme-switcher-menu" popover="auto" role="menu" aria-labelledby="pt-ts-trigger">
+          <button class="theme-switcher-item" role="menuitemradio" aria-checked="true" data-theme-id="default" data-theme-label="Default">
+            <span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Default</span>
+            <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </button>
+          <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="claude" data-theme-label="Claude" data-theme-colors="#c96442,#e9e6dc,#e9e6dc,#141413,#ede9de">
+            <span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Claude</span>
+            <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </button>
+          <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="catppuccin" data-theme-label="Catppuccin" data-theme-colors="#f5c2e7,#cba6f7,#1e1e2e,#cdd6f4,#313244">
+            <span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Catppuccin</span>
+            <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </button>
+          <button class="theme-switcher-item" role="menuitemradio" aria-checked="false" data-theme-id="cyberpunk" data-theme-label="Cyberpunk" data-theme-colors="#fcee0a,#ff006e,#0a0a12,#e0e0e0,#16161f">
+            <span class="theme-switcher-dots" aria-hidden="true"></span><span class="theme-switcher-name">Cyberpunk</span>
+            <svg class="theme-switcher-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pt-abstract">
+    <h2 id="pt-abstract">Abstract</h2>
+    <p>A theme is a value for every token and nothing else - but a theme can still be unreadable. We measured the text pairs of the 43 presets that ship with defuss-shadcn and the default palette, 90 palettes in light and dark. Body text reaches 4.5:1 in every one of them; the labels on controls do not. From that measurement we derive three tiers for an automatic theme checker: body text must reach 4.5:1, control labels should and must reach 3:1, and the focus ring should reach 3:1 against the page.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pt-s1">
+    <h2 id="pt-s1"><span class="paper-num">1</span>Measurement</h2>
+    <p>For each palette we computed the WCAG 2 contrast ratio of a foreground token on its surface. The table counts the palettes in which a pair falls below 4.5:1 and below 3:1.</p>
+    <figure class="paper-table">
+      <table class="table">
+        <thead><tr><th scope="col">Pair</th><th scope="col" data-num>below 4.5:1</th><th scope="col" data-num>below 3:1</th></tr></thead>
+        <tbody>
+          <tr data-best><td>foreground on background (and card, popover, sidebar)</td><td data-num>0</td><td data-num>0</td></tr>
+          <tr><td>muted-foreground on background</td><td data-num>12</td><td data-num>0</td></tr>
+          <tr><td>primary-foreground on primary</td><td data-num>33</td><td data-num>8</td></tr>
+          <tr><td>destructive-foreground on destructive</td><td data-num>48</td><td data-num>6</td></tr>
+          <tr><td>ring on background</td><td data-num>46</td><td data-num>17</td></tr>
+        </tbody>
+      </table>
+      <figcaption class="paper-table-caption"><b>Table 1.</b> 90 palettes (43 presets and the default, light and dark).</figcaption>
+    </figure>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pt-s2">
+    <h2 id="pt-s2"><span class="paper-num">2</span>Tiers</h2>
+    <div class="paper-numbers">
+      <div class="statistic"><p class="statistic-title">Reading</p><p class="statistic-value">4.5:1</p><p class="statistic-description">an error below</p></div>
+      <div class="statistic"><p class="statistic-title">Control labels</p><p class="statistic-value">3:1</p><p class="statistic-description">an error below; 4.5:1 the goal</p></div>
+      <div class="statistic"><p class="statistic-title">Focus ring</p><p class="statistic-value">3:1</p><p class="statistic-description">a warning below</p></div>
+    </div>
+    <p>Choose another theme above: the table, the statistics and this text keep their structure; only the token values change. That is the whole contract of a theme.</p>
+  </section>
+
+  <footer class="paper-footer"><p>Measured with the shadcn-theme checker, October 2026.</p></footer>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

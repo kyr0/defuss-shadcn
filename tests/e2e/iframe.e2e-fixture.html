@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>iframe e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/iframe/iframe.css" />
+  </head>
+  <!-- mirrors the doc page: the three fits, the bare variant, both message
+       directions, the library child mode and the raw protocol from an opaque
+       (sandboxed) origin - accepted with data-origins="null", ignored without -->
+  <body style="padding:2rem;display:flex;flex-direction:column;gap:1.5rem;width:640px;">
+    <figure class="iframe" id="if-ratio">
+      <iframe class="iframe-frame" title="Ratio page" srcdoc="<body style='margin:0'>ratio</body>"></iframe>
+      <figcaption class="iframe-caption">Fit by ratio</figcaption>
+    </figure>
+    <div style="height:300px;" id="if-container-box">
+      <figure class="iframe" id="if-container" data-fit="container">
+        <iframe class="iframe-frame" title="Container page" srcdoc="<body style='margin:0'>container</body>"></iframe>
+      </figure>
+    </div>
+    <figure class="iframe" id="if-content" data-fit="content">
+      <iframe class="iframe-frame" title="Growing page" srcdoc="<body style='margin:0;padding:8px'><p style='margin:0;height:200px'>tall</p><button type='button' id='more'>more</button><script>document.getElementById('more').addEventListener('click', () => { const p = document.createElement('p'); p.style.height = '100px'; p.style.margin = '0'; document.body.append(p); });</script></body>"></iframe>
+    </figure>
+    <figure class="iframe" id="if-bridge" data-fit="content">
+      <iframe class="iframe-frame" title="Bridge page" srcdoc="<body style='margin:0'><button type='button' id='pick' data-id='M'>M</button><script>document.getElementById('pick').addEventListener('click', () => parent.postMessage({ type: 'defuss:iframe', kind: 'message', name: 'select', detail: { id: 'M' } }, '*')); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.name === 'dark') document.body.dataset.dark = String(e.data.detail.on); });</script></body>"></iframe>
+    </figure>
+    <figure class="iframe" id="if-child" data-fit="content">
+      <iframe class="iframe-frame" title="Library child page" srcdoc="<html data-iframe-child><body style='margin:0'><p style='margin:0;height:180px'>child</p><button type='button' id='send' onclick='df$.shadcn.iframe.send(&quot;hi&quot;, { n: 1 })'>send</button><script type='module' src='/dist/components/core.js'></script><script type='module' src='/dist/components/iframe/iframe.js'></script></body></html>"></iframe>
+    </figure>
+    <figure class="iframe" id="if-opaque" data-fit="content" data-origins="null">
+      <iframe class="iframe-frame" title="Sandboxed page" sandbox="allow-scripts" srcdoc="<body style='margin:0'><p style='margin:0;height:220px'>sandboxed</p><script>const report = () => parent.postMessage({ type: 'defuss:iframe', kind: 'size', height: document.documentElement.getBoundingClientRect().height }, '*'); new ResizeObserver(report).observe(document.documentElement); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.kind === 'hello') report(); }); setTimeout(() => parent.postMessage({ type: 'defuss:iframe', kind: 'message', name: 'ping', detail: 'opaque' }, '*'), 300);</script></body>"></iframe>
+    </figure>
+    <figure class="iframe" id="if-rejected" data-fit="content">
+      <iframe class="iframe-frame" title="Sandboxed page, not allowed" sandbox="allow-scripts" srcdoc="<body style='margin:0'><p style='margin:0;height:220px'>sandboxed</p><script>const report = () => parent.postMessage({ type: 'defuss:iframe', kind: 'size', height: document.documentElement.getBoundingClientRect().height }, '*'); new ResizeObserver(report).observe(document.documentElement); addEventListener('message', (e) => { if (e.source === parent && e.data && e.data.type === 'defuss:iframe' && e.data.kind === 'hello') report(); }); setTimeout(() => parent.postMessage({ type: 'defuss:iframe', kind: 'message', name: 'ping', detail: 'rejected' }, '*'), 300);</script></body>"></iframe>
+    </figure>
+    <figure class="iframe" id="if-bare" data-variant="bare">
+      <iframe class="iframe-frame" title="Bare page" srcdoc="<body style='margin:0'>bare</body>"></iframe>
+    </figure>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/iframe/iframe.js"></script>
+  </body>
+</html>
