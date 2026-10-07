@@ -155,6 +155,7 @@ export const NAV = [
             },
             { label: 'Iframe', href: 'iframe.html', isNew: true },
             { label: 'Statistic', href: 'statistic.html' },
+            { label: 'QR Code', href: 'qr-code.html', isNew: true },
             { label: 'Table', href: 'table.html' },
             { label: 'Collapsible', href: 'collapsible.html' },
             { label: 'Timeline', href: 'timeline.html' },

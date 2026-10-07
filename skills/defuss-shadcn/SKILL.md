@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.6 - Agent Skill
 
-231 components (169 CSS-only, 62 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+232 components (169 CSS-only, 63 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -599,6 +599,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Labelled metric with a delta indicator - tokens and plain text only.
 - **When:** Dashboards showing one value and its trend.
 - **States:** `default` · **Skill:** [references/components/statistic.md](references/components/statistic.md) · **Examples:** [src/documentation/pages/statistic.mdx](../../src/documentation/pages/statistic.mdx)
+
+#### QR Code · ATM · JS
+
+- **Why:** Native SVG renders a local QR matrix sharply at any size; the figure, accessible image label and output provide ordinary document semantics.
+- **When:** Share a URL or exact text with a scanning device. Keep an explicit link or text alternative beside the figure when the destination is actionable.
+- **States:** `default`, `empty`, `error` · **Skill:** [references/components/qr-code.md](references/components/qr-code.md) · **Examples:** [src/documentation/pages/qr-code.mdx](../../src/documentation/pages/qr-code.mdx)
 
 #### Table · ATM · JS
 

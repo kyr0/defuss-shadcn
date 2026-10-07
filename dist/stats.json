@@ -1,7 +1,7 @@
 {
-  "total": 231,
+  "total": 232,
   "byType": {
-    "ATM": 68,
+    "ATM": 69,
     "MOL": 26,
     "ORG": 6,
     "BLK": 128,
@@ -16,23 +16,23 @@
     "Website": 12
   },
   "tokens": 50,
-  "examples": 1594,
-  "unitTestFiles": 35,
-  "withJs": 62,
+  "examples": 1604,
+  "unitTestFiles": 36,
+  "withJs": 63,
   "withoutJs": 169,
-  "totalSize": 2430932,
-  "totalSizeMinified": 1252279,
-  "totalSizeGz": 737846,
-  "totalSizeGzMinified": 417608,
+  "totalSize": 2496345,
+  "totalSizeMinified": 1273072,
+  "totalSizeGz": 755677,
+  "totalSizeGzMinified": 425237,
   "bundle": {
-    "jsSize": 828821,
-    "jsSizeMinified": 479577,
-    "cssSize": 1252333,
-    "cssSizeMinified": 764331,
-    "totalSizeGz": 446581,
-    "totalSizeGzMinified": 277892,
-    "jsSizeGzMinified": 146077,
-    "cssSizeGzMinified": 131815
+    "jsSize": 864027,
+    "jsSizeMinified": 498413,
+    "cssSize": 1254812,
+    "cssSizeMinified": 765981,
+    "totalSizeGz": 456155,
+    "totalSizeGzMinified": 284925,
+    "jsSizeGzMinified": 152823,
+    "cssSizeGzMinified": 132102
   },
   "core": {
     "jsSize": 144474,
@@ -237,6 +237,7 @@
         "image",
         "iframe",
         "statistic",
+        "qr-code",
         "table",
         "collapsible",
         "timeline",
@@ -255,14 +256,14 @@
         "sections/data-display.css",
         "sections/data-display.js"
       ],
-      "jsSize": 101180,
-      "jsSizeMinified": 57702,
-      "cssSize": 121021,
-      "cssSizeMinified": 66656,
-      "totalSizeGz": 49605,
-      "totalSizeGzMinified": 30318,
-      "jsSizeGzMinified": 17061,
-      "cssSizeGzMinified": 13257
+      "jsSize": 136924,
+      "jsSizeMinified": 76839,
+      "cssSize": 123500,
+      "cssSizeMinified": 68306,
+      "totalSizeGz": 59399,
+      "totalSizeGzMinified": 37279,
+      "jsSizeGzMinified": 23727,
+      "cssSizeGzMinified": 13552
     },
     "big-data": {
       "heading": "Big Data",
@@ -712,7 +713,7 @@
     "count": 19,
     "minGzMinified": 1965,
     "maxGzMinified": 60511,
-    "meanGzMinified": 15264
+    "meanGzMinified": 15631
   },
   "components": {
     "about-intro": {
@@ -2716,6 +2717,19 @@
       "totalSizeGzMinified": 6731,
       "totalSize": 42754,
       "totalSizeMinified": 20342
+    },
+    "qr-code": {
+      "name": "qr-code",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 62986,
+      "jsSizeMinified": 19124,
+      "cssSize": 2427,
+      "cssSizeMinified": 1669,
+      "totalSizeGz": 17831,
+      "totalSizeGzMinified": 7629,
+      "totalSize": 65413,
+      "totalSizeMinified": 20793
     },
     "questionnaire": {
       "name": "questionnaire",

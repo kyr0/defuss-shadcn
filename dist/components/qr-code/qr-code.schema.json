@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "name": "qr-code",
+  "states": {
+    "value": {
+      "type": "string",
+      "default": "",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "default", "args": { "value": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-value" },
+      "editor": { "component": "text" }
+    },
+    "ecc": {
+      "type": "enum",
+      "values": ["L", "M", "Q", "H"],
+      "default": "M",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "default", "args": { "ecc": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-ecc" },
+      "editor": { "component": "select" }
+    },
+    "version": {
+      "type": "string",
+      "default": "auto",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "attribute", "name": "data-version" },
+      "observation": { "kind": "attribute", "name": "data-version" },
+      "editor": { "component": "text" }
+    },
+    "label": {
+      "type": "string",
+      "default": "QR code",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "default", "args": { "label": "@value" } },
+      "observation": { "kind": "api", "name": "label" },
+      "editor": { "component": "text" }
+    },
+    "size": {
+      "type": "enum",
+      "values": ["sm", "md", "lg"],
+      "default": "md",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "default", "args": { "size": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-size" },
+      "editor": { "component": "select" }
+    },
+    "variant": {
+      "type": "enum",
+      "values": ["plain", "outline"],
+      "default": "plain",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "default", "args": { "variant": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-variant" },
+      "editor": { "component": "select" }
+    },
+    "default": {
+      "type": "boolean",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "default", "args": {} },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    },
+    "empty": {
+      "type": "boolean",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "empty", "args": {} },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    },
+    "error": {
+      "type": "boolean",
+      "target": { "kind": "selector", "selector": ".qr-code" },
+      "mutation": { "kind": "api", "name": "error", "args": {} },
+      "observation": { "kind": "attribute", "name": "data-state-name" },
+      "editor": { "component": "checkbox" }
+    }
+  },
+  "actions": {}
+}

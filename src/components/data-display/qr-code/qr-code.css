@@ -1,0 +1,93 @@
+/* QR's frame follows the theme; the symbol keeps normal dark-on-light polarity. */
+@layer components {
+  .qr-code {
+    --qr-code-size: 12rem;
+    --qr-code-dark: #000;
+    --qr-code-light: #fff;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    max-inline-size: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    color: var(--card-foreground);
+    font-family: var(--font-sans);
+
+    &[data-variant="outline"] {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+    }
+
+    &[data-size="sm"] { --qr-code-size: 8rem; }
+    &[data-size="lg"] { --qr-code-size: 16rem; }
+
+    & > :is(.qr-code-symbol, .qr-code-status) {
+      inline-size: var(--qr-code-size);
+      max-inline-size: 100%;
+      box-sizing: border-box;
+    }
+
+    & > .qr-code-symbol {
+      aspect-ratio: 1;
+      flex: none;
+      forced-color-adjust: none;
+      print-color-adjust: exact;
+
+      & > svg {
+        display: block;
+        inline-size: 100%;
+        block-size: auto;
+        aspect-ratio: 1;
+        overflow: visible;
+
+        & > rect { fill: var(--qr-code-light); }
+        & > path { fill: var(--qr-code-dark); }
+      }
+    }
+
+    & > .qr-code-status {
+      display: grid;
+      place-items: center;
+      min-block-size: var(--qr-code-size);
+      margin: 0;
+      padding: 1rem;
+      border: 1px dashed var(--border);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    & > .qr-code-caption {
+      max-inline-size: 100%;
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    & > :is(.qr-code-symbol, .qr-code-status)[hidden] { display: none; }
+
+    @media (prefers-contrast: more) {
+      &[data-variant="outline"],
+      & > .qr-code-status { border-color: var(--foreground); }
+      & > :is(.qr-code-caption, .qr-code-status) { color: var(--foreground); }
+    }
+
+    @media (forced-colors: active) {
+      &[data-variant="outline"] {
+        border-color: CanvasText;
+        background: Canvas;
+        color: CanvasText;
+      }
+      & > .qr-code-status { border-color: CanvasText; }
+      & > :is(.qr-code-caption, .qr-code-status) { color: CanvasText; }
+    }
+  }
+}

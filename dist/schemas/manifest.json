@@ -44,6 +44,7 @@
     "product-showcase": "./product-showcase.schema.json",
     "progress": "./progress.schema.json",
     "property-grid": "./property-grid.schema.json",
+    "qr-code": "./qr-code.schema.json",
     "questionnaire": "./questionnaire.schema.json",
     "radial-progress": "./radial-progress.schema.json",
     "radio": "./radio.schema.json",

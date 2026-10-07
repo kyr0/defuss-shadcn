@@ -1619,6 +1619,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/property-grid.png, screenshots/{light,dark}/property-grid-editing.png
 **Skill:** [components/property-grid/component-skill.md](components/property-grid/component-skill.md)
 
+## QR Code
+
+**Type:** ATM
+**Why:** Native SVG renders a local QR matrix sharply at any size; the figure, accessible image label and output provide ordinary document semantics.
+**When:** Share a URL or exact text with a scanning device. Keep an explicit link or text alternative beside the figure when the destination is actionable.
+**Files:** dist/components/qr-code/qr-code.css + dist/components/qr-code/qr-code.js
+**Supported states:** default, empty, error
+**Screenshots:** screenshots/{light,dark}/qr-code.png, screenshots/{light,dark}/qr-code-empty.png, screenshots/{light,dark}/qr-code-error.png
+**Skill:** [components/qr-code/component-skill.md](components/qr-code/component-skill.md)
+
 ## Questionnaire
 
 **Type:** MOL

@@ -1,0 +1,240 @@
+---
+title: "QR Code"
+description: "QR Code component - local QR encoding, native SVG rendering and observable state in ordinary HTML."
+slug: "qr-code"
+---
+
+import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPill, DocText, DocLink, StatesSection, ApiSection, SourceFiles, SourceNote } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="qr-code" title="QR Code" component="qr-code">
+  Encode a URL or exact text locally and render it as a native SVG. The figure follows the theme's surface, border, radius and typography; the symbol keeps its dark-on-light colors and complete quiet zone. Change the payload through the State API, a store or declared attributes.
+</PageHeader>
+
+<SkillPanel component="qr-code">
+  <SkillField label="Native basis">
+    <SkillText>A <code>&lt;figure&gt;</code>, labelled image container, square <code>&lt;svg&gt;</code>, optional <code>&lt;figcaption&gt;</code> and native <code>&lt;output&gt;</code> for feedback. QR Model 2 encoding uses the vendored Nayuki TypeScript algorithm.</SkillText>
+  </SkillField>
+  <SkillField label="Web Platform APIs">
+    <SkillRow>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg" title="scalable native vector rendering"><code>&lt;svg&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure" title="symbol and caption"><code>&lt;figure&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output" title="computed empty and error feedback"><code>&lt;output&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/img_role" title="one accessible image name"><code>role="img"</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="inserted figures and attribute updates"><code>MutationObserver</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/forced-color-adjust" title="preserve scan contrast"><code>forced-color-adjust</code></ApiPill>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Classes">
+    <SkillRow><code>.qr-code</code><code>.qr-code-symbol</code><code>.qr-code-status</code><code>.qr-code-caption</code></SkillRow>
+  </SkillField>
+  <SkillField label="Data attributes">
+    <SkillText><code>data-value</code>, <code>data-ecc</code> (<code>L</code>, <code>M</code>, <code>Q</code>, <code>H</code>), <code>data-version</code> (<code>auto</code> or <code>1</code>–<code>40</code>), <code>data-size</code> (<code>sm</code>, <code>md</code>, <code>lg</code>), <code>data-variant</code> (<code>plain</code>, <code>outline</code>).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Project link" hint="A labelled QR with a visible caption. The link is an ordinary sibling so the destination is also available without a scanner." height="20"
+<div class="flex flex-col items-start gap-3">
+  <figure id="project-qr" class="qr-code" data-value="https://kyr0.github.io/defuss-shadcn/" data-ecc="M" data-version="auto" data-size="md" data-variant="outline" data-state-demo>
+    <div class="qr-code-symbol" role="img" aria-label="QR code for defuss-shadcn documentation"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Project documentation</figcaption>
+  </figure>
+  <a href="https://kyr0.github.io/defuss-shadcn/">Open documentation</a>
+</div>
+```
+
+```html example label="Sizes and variants" hint="sm = 8rem, md = 12rem, lg = 16rem. The plain variant has no outer frame; outline uses the theme's card, border and radius." height="23"
+<div class="flex flex-wrap items-start gap-4">
+  <figure class="qr-code" data-value="https://example.com" data-size="sm" data-variant="plain">
+    <div class="qr-code-symbol" role="img" aria-label="Small QR code for example.com"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Small · plain</figcaption>
+  </figure>
+  <figure class="qr-code" data-value="https://example.com" data-size="md" data-variant="outline">
+    <div class="qr-code-symbol" role="img" aria-label="Medium QR code for example.com"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Medium · outline</figcaption>
+  </figure>
+  <figure class="qr-code" data-value="https://example.com" data-size="lg" data-variant="outline">
+    <div class="qr-code-symbol" role="img" aria-label="Large QR code for example.com"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Large · outline</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Error correction" hint="The same payload at L, M, Q and H. The requested level is exact; more error correction can require a larger matrix." height="16"
+<div class="flex flex-wrap items-start gap-4">
+  <figure class="qr-code" data-value="https://example.com" data-ecc="L" data-size="sm">
+    <div class="qr-code-symbol" role="img" aria-label="QR code with error correction L"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">L</figcaption>
+  </figure>
+  <figure class="qr-code" data-value="https://example.com" data-ecc="M" data-size="sm">
+    <div class="qr-code-symbol" role="img" aria-label="QR code with error correction M"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">M · default</figcaption>
+  </figure>
+  <figure class="qr-code" data-value="https://example.com" data-ecc="Q" data-size="sm">
+    <div class="qr-code-symbol" role="img" aria-label="QR code with error correction Q"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Q</figcaption>
+  </figure>
+  <figure class="qr-code" data-value="https://example.com" data-ecc="H" data-size="sm">
+    <div class="qr-code-symbol" role="img" aria-label="QR code with error correction H"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">H</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Unicode" hint="UTF-8 with ECI 26 preserves umlauts, Cyrillic, Han characters, combining marks and emoji. No trimming or Unicode normalization is applied." height="20"
+<figure class="qr-code" data-value="Grüße, Мир, 漢字, é, 😀" data-ecc="Q" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="QR code with multilingual example text"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Grüße, Мир, 漢字, é, 😀</figcaption>
+</figure>
+```
+
+```html example label="Fixed version and custom size" hint="data-version fixes the matrix; --qr-code-size sets its display size. Increase the square for dense payloads and test with the intended scanner." height="31"
+<figure class="qr-code" data-value="Longer payloads need a larger printed or displayed square. Version 10 keeps a fixed matrix size for this example." data-version="10" data-ecc="M" data-variant="outline" style="--qr-code-size: 360px;">
+  <div class="qr-code-symbol" role="img" aria-label="Version 10 QR code with sizing guidance"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Version 10 · 360px</figcaption>
+</figure>
+```
+
+<DocText>The opaque background includes a <DocLink href="https://www.qrcode.com/en/howto/code.html">four-module quiet zone</DocLink> on every side. Outer padding and a rounded frame do not replace it. Keep that whole square visible; SVG sharpness does not make every payload readable at every CSS size. Local <code>--qr-code-dark</code> and <code>--qr-code-light</code> overrides need sufficient contrast and scanning checks.</DocText>
+
+```html example label="Dark surface" hint="The frame and caption follow dark-mode tokens while the QR stays black on white. A direct link remains available beside the figure." height="22"
+<div class="dark flex flex-col items-start gap-3 p-4" style="background:var(--background);color:var(--foreground);border-radius:var(--radius-lg);">
+  <figure class="qr-code" data-value="https://example.com" data-variant="outline">
+    <div class="qr-code-symbol" role="img" aria-label="QR code for example.com"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Continue on another device</figcaption>
+  </figure>
+  <a href="https://example.com">Open example.com</a>
+</div>
+```
+
+```html example label="Empty input" hint="An empty value shows plain-text feedback. Enter a value in the State tab to render a QR." height="19"
+<figure class="qr-code" data-value="" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="QR code awaiting data"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Empty input</figcaption>
+</figure>
+```
+
+```html example label="Capacity error" hint="This URL cannot fit version 1 at H. The error clears the symbol; change version to auto in the State tab to recover." height="19"
+<figure class="qr-code" data-value="https://example.com/this-payload-is-too-long-for-version-one-high-error-correction" data-version="1" data-ecc="H" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="QR code with insufficient capacity"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Capacity exceeded</figcaption>
+</figure>
+```
+
+```html example label="Live value, feedback and recovery" hint="Typing applies a partial state update. Empty and Error clear the symbol but retain its input; Render restores it. The controls are ordinary siblings of the QR atom." height="28"
+<div class="flex flex-col items-start gap-3">
+  <label class="label" for="qr-live-value">Text to encode</label>
+  <input class="input" id="qr-live-value" value="https://example.com/live" style="max-width:28rem;">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" type="button" id="qr-live-render">Render</button>
+    <button class="btn" type="button" data-variant="outline" id="qr-live-empty">Empty</button>
+    <button class="btn" type="button" data-variant="outline" id="qr-live-error">Error</button>
+  </div>
+  <figure id="qr-live" class="qr-code" data-value="https://example.com/live" data-variant="outline">
+    <div class="qr-code-symbol" role="img" aria-label="QR code for the entered text"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Live text</figcaption>
+  </figure>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const qr = df$('#qr-live').get(0);
+    df$('#qr-live-value').on('input', () => qr.api.setState('default', { value: df$('#qr-live-value').val() }));
+    df$('#qr-live-render').on('click', () => qr.api.setState('default'));
+    df$('#qr-live-empty').on('click', () => qr.api.setState('empty'));
+    df$('#qr-live-error').on('click', () => qr.api.setState('error'));
+  });
+</script>
+```
+
+```html example label="Store and markup replay" hint="Subscribe to the effective state, write a complete saved state back to the store, and render a snapshot without changing the live figure." height="39"
+<div class="flex flex-col items-start gap-3">
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" type="button" id="qr-store-change">Change payload</button>
+    <button class="btn" type="button" data-variant="outline" id="qr-store-restore">Restore snapshot</button>
+    <button class="btn" type="button" data-variant="outline" id="qr-store-render">Render markup</button>
+  </div>
+  <figure id="qr-store" class="qr-code" data-value="https://example.com/original" data-variant="outline">
+    <div class="qr-code-symbol" role="img" aria-label="QR code for the original page"></div>
+    <output class="qr-code-status" hidden></output>
+    <figcaption class="qr-code-caption">Observable state</figcaption>
+  </figure>
+  <output id="qr-store-summary"></output>
+  <label class="label" for="qr-store-markup">Rendered snapshot markup</label>
+  <textarea class="textarea" id="qr-store-markup" rows="5" readonly style="font-family:var(--font-mono);"></textarea>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const qr = df$('#qr-store').get(0);
+    const original = JSON.parse(JSON.stringify(qr.api.getState()));
+    const show = () => {
+      const state = qr.api.getState();
+      df$('#qr-store-summary').text(state.name + ' · ' + state.config.value);
+    };
+    qr.store.subscribe(show);
+    show();
+    df$('#qr-store-change').on('click', () => qr.api.setState('default', {
+      value: 'https://example.com/updated',
+      label: 'QR code for the updated page',
+      ecc: 'Q'
+    }));
+    df$('#qr-store-restore').on('click', () => qr.store.set({ name: original.name, config: original.config }));
+    df$('#qr-store-render').on('click', () => df$('#qr-store-markup').val(qr.api.render(qr.api.getState())));
+  });
+</script>
+```
+
+<DocText><code>setState()</code> merges partial config; <code>store.set()</code> replaces a complete typed, JSON-serializable state. Successful <code>getState()</code> results include <code>actualVersion</code> and <code>moduleCount</code>; failures include an <code>errorCode</code> and message. Pass snapshots back unchanged for replay. Unknown option names, invalid types and invalid option values throw before application, while capacity failures clear the symbol and enter <code>error</code>.</DocText>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states on every <code>.qr-code</code> figure:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - encode the effective input; empty input lands in <code>empty</code>, encoding failure in <code>error</code>.</li>
+    <li><code>empty</code> - clear the symbol and show <code>No QR code data.</code>; retain input.</li>
+    <li><code>error</code> - clear the symbol and show <code>QR code unavailable.</code> or controlled failure feedback; retain input.</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">Pass <code>message</code> to localize explicit empty/error feedback. Calling <code>setState('default')</code> recovers the retained payload. The first figure carries <code>data-state-demo</code>; screenshots exercise all three states without config in light and dark modes.</p>
+
+Machine contract - verified against <a href="../schemas/qr-code.schema.json"><code>qr-code.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `""` | Exact text; a partial default-state update, mirrored in data-value. |
+| `ecc` | `enum` | `L`, `M`, `Q`, `H` | `M` | Requested error-correction level, without automatic boosting. |
+| `version` | `string` | `—` | `auto` | Attribute editor for auto or a canonical decimal 1–40; the public API uses auto or a number. |
+| `label` | `string` | `—` | `QR code` | The accessible name on the image container. |
+| `size` | `enum` | `sm`, `md`, `lg` | `md` | Display size; a local --qr-code-size overrides it. |
+| `variant` | `enum` | `plain`, `outline` | `plain` | Unframed or themed outline presentation. |
+| `default` | `boolean` | `true`, `false` | `—` | Re-encode retained input; observation reports the actual landing state. |
+| `empty` | `boolean` | `true`, `false` | `—` | Explicit empty feedback; turning this control off returns to default. |
+| `error` | `boolean` | `true`, `false` | `—` | Explicit error feedback; turning this control off returns to default. |
+```
+
+</StatesSection>
+
+<ApiSection component="qr-code" />
+
+<SourceFiles component="qr-code" section="css">
+  <SourceNote for="css">Scoped size, frame, caption, status and scan-color rules using the existing theme tokens.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="qr-code" section="js">
+  <SourceNote for="js">Vendored Nayuki encoder, SVG geometry, validation, observable state and automatic initialization. Load core.js before the individual component module.</SourceNote>
+</SourceFiles>
+
+</DocPage>

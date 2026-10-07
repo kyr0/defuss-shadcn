@@ -1,0 +1,15 @@
+{
+  "name": "nayuki-qr-code-generator",
+  "version": "1.8.0",
+  "tag": "v1.8.0",
+  "commit": "720f62bddb7226106071d4728c292cb1df519ceb",
+  "source": "typescript-javascript/qrcodegen.ts",
+  "sourceSha256": "c4749095a91bf9696e3a303998b9905e467094f53041e64393e65e6d887737fd",
+  "sourceGitBlob": "4a2d0acce5a24760245d43c1644a4e1993d70834",
+  "license": "MIT",
+  "licenseSha256": "aa22f0fefb530552bfcc713e3791c80796c2a2e666ed61856bcf4767a6852984",
+  "licenseHashScope": "Leading comment of qrcodegen.ts, including the trailing LF",
+  "upstream": "https://github.com/nayuki/QR-Code-generator",
+  "homepage": "https://www.nayuki.io/page/qr-code-generator-library",
+  "sourceUrl": "https://github.com/nayuki/QR-Code-generator/blob/720f62bddb7226106071d4728c292cb1df519ceb/typescript-javascript/qrcodegen.ts"
+}

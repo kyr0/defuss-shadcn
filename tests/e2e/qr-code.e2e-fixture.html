@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR Code e2e fixture</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/qr-code/qr-code.css" />
+  </head>
+  <body style="margin:0;padding:2rem;font-family:var(--font-sans);background:var(--background);color:var(--foreground)">
+    <h1>QR Code</h1>
+    <section aria-label="Variants and sizes" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:start">
+      <figure id="qr-basic" class="qr-code" data-value="https://example.com/project" data-variant="outline" data-size="md" data-state-demo>
+        <div class="qr-code-symbol" role="img" aria-label="QR code for the project"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption"><a href="https://example.com/project">Project website</a></figcaption>
+      </figure>
+      <figure id="qr-sm" class="qr-code" data-value="SMALL" data-size="sm" data-variant="plain">
+        <div class="qr-code-symbol" role="img" aria-label="Small QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">Small, plain</figcaption>
+      </figure>
+      <figure id="qr-lg" class="qr-code" data-value="LARGE" data-size="lg" data-variant="outline">
+        <div class="qr-code-symbol" role="img" aria-label="Large QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">Large, outlined</figcaption>
+      </figure>
+    </section>
+
+    <section aria-label="Error correction levels" style="display:flex;flex-wrap:wrap;gap:1rem">
+      <figure id="qr-l" class="qr-code" data-value="Exact ECC" data-ecc="L" data-size="sm">
+        <div class="qr-code-symbol" role="img" aria-label="L correction QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">L</figcaption>
+      </figure>
+      <figure id="qr-m" class="qr-code" data-value="Exact ECC" data-ecc="M" data-size="sm">
+        <div class="qr-code-symbol" role="img" aria-label="M correction QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">M</figcaption>
+      </figure>
+      <figure id="qr-q" class="qr-code" data-value="Exact ECC" data-ecc="Q" data-size="sm">
+        <div class="qr-code-symbol" role="img" aria-label="Q correction QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">Q</figcaption>
+      </figure>
+      <figure id="qr-h" class="qr-code" data-value="Exact ECC" data-ecc="H" data-size="sm">
+        <div class="qr-code-symbol" role="img" aria-label="H correction QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">H</figcaption>
+      </figure>
+    </section>
+
+    <figure id="qr-unicode" class="qr-code" data-value="Grüße, Мир, 漢字, é, 😀" data-ecc="Q" data-variant="outline">
+      <div class="qr-code-symbol" role="img" aria-label="Multilingual QR code"></div>
+      <output class="qr-code-status" hidden></output>
+      <figcaption class="qr-code-caption">Grüße, Мир, 漢字, é, 😀</figcaption>
+    </figure>
+    <figure id="qr-dense" class="qr-code" data-value="Longer payloads need a larger printed or displayed square. Version 10 keeps a fixed matrix size for this example." data-version="10" data-variant="outline" style="--qr-code-size:360px">
+      <div class="qr-code-symbol" role="img" aria-label="Larger QR code with a fixed version"></div>
+      <output class="qr-code-status" hidden></output>
+      <figcaption class="qr-code-caption">Version 10, 360 pixels</figcaption>
+    </figure>
+    <figure id="qr-empty" class="qr-code" data-value="" data-variant="outline">
+      <div class="qr-code-symbol" role="img" aria-label="QR code awaiting data"></div>
+      <output class="qr-code-status" hidden></output>
+      <figcaption class="qr-code-caption">Add a value to recover.</figcaption>
+    </figure>
+    <figure id="qr-capacity" class="qr-code" data-value="This value does not fit version one with H correction." data-version="1" data-ecc="H" data-variant="outline">
+      <div class="qr-code-symbol" role="img" aria-label="QR code requiring a larger version"></div>
+      <output class="qr-code-status" hidden></output>
+      <figcaption class="qr-code-caption">Use automatic version selection to recover.</figcaption>
+    </figure>
+
+    <section class="dark" aria-label="Dark theme" style="background:var(--background);color:var(--foreground);padding:1rem">
+      <figure id="qr-dark" class="qr-code" data-value="https://example.com/dark" data-variant="outline">
+        <div class="qr-code-symbol" role="img" aria-label="QR code for the dark theme example"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption"><a href="https://example.com/dark">Open the dark theme example</a></figcaption>
+      </figure>
+    </section>
+
+    <section aria-label="Live API and store updates">
+      <label for="qr-input">QR code content</label>
+      <input id="qr-input" value="https://example.com/live" />
+      <button id="qr-update" type="button">Update QR</button>
+      <button id="qr-clear" type="button">Empty</button>
+      <button id="qr-error" type="button">Error</button>
+      <button id="qr-default" type="button">Default</button>
+      <button id="qr-save" type="button">Save snapshot</button>
+      <button id="qr-restore" type="button">Restore snapshot</button>
+      <figure id="qr-live" class="qr-code" data-value="https://example.com/live" data-variant="outline">
+        <div class="qr-code-symbol" role="img" aria-label="Live QR code"></div>
+        <output class="qr-code-status" hidden></output>
+        <figcaption class="qr-code-caption">Live value</figcaption>
+      </figure>
+      <output id="qr-observed" for="qr-input" aria-label="Observed state"></output>
+      <pre id="qr-rendered" aria-label="Rendered snapshot source"></pre>
+    </section>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/qr-code/qr-code.js"></script>
+    <script type="module">
+      const qr = document.getElementById('qr-live');
+      const input = document.getElementById('qr-input');
+      const output = document.getElementById('qr-observed');
+      let snapshot = JSON.parse(JSON.stringify(qr.api.getState()));
+      qr.store.subscribe((state) => { output.textContent = state.name + ': ' + state.config.value; });
+      document.getElementById('qr-update').addEventListener('click', () => qr.api.setState('default', { value: input.value }));
+      document.getElementById('qr-clear').addEventListener('click', () => qr.api.setState('empty'));
+      document.getElementById('qr-error').addEventListener('click', () => qr.api.setState('error'));
+      document.getElementById('qr-default').addEventListener('click', () => qr.api.setState('default'));
+      document.getElementById('qr-save').addEventListener('click', () => {
+        snapshot = JSON.parse(JSON.stringify(qr.api.getState()));
+        document.getElementById('qr-rendered').textContent = qr.api.render(snapshot);
+      });
+      document.getElementById('qr-restore').addEventListener('click', () => qr.store.set({ name: snapshot.name, config: snapshot.config }));
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 
 # Component catalog
 
-231 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+232 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.6/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -87,6 +87,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Image](../../defuss-shadcn/references/components/image.md) `image` | ATM | default, error | yes | Remote images whose loading or failure must be visually controlled. |
 | [Iframe](../../defuss-shadcn/references/components/iframe.md) `iframe` | ATM | default, loaded | yes | Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame. |
 | [Statistic](../../defuss-shadcn/references/components/statistic.md) `statistic` | ATM | default | - | Dashboards showing one value and its trend. |
+| [QR Code](../../defuss-shadcn/references/components/qr-code.md) `qr-code` | ATM | default, empty, error | yes | Share a URL or exact text with a scanning device. Keep an explicit link or text alternative beside the figure when the destination is actionable. |
 | [Table](../../defuss-shadcn/references/components/table.md) `table` | ATM | default, sorted, selected | yes | Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids. |
 | [Collapsible](../../defuss-shadcn/references/components/collapsible.md) `collapsible` | ATM | default | - | Revealing or hiding one content region - an accordion of exactly one item, e.g. advanced options. |
 | [Timeline](../../defuss-shadcn/references/components/timeline.md) `timeline` | ATM | default | - | Event history: activity logs, order tracking, changelog-style lists, roadmaps and release lines (horizontal) - for a process the user moves through, use steps. |
