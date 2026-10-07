@@ -1,6 +1,38 @@
 {
   "entries": [
     {
+      "version": "v0.9.7",
+      "date": "October 07, 2026",
+      "commits": [
+        "chore(agents): record the paper revision and QR Code gate episodes",
+        "feat: QR Code component; the VAE paper revised for defuss-vae 0.8.0",
+        "fix(verify): the README ↔ index commit window counts uncommitted edits",
+        "docs(arch): drop the diagram aside under the proof loop",
+        "fix(paper, typography): captions keep every line centered, tags keep no indent inside a justified setting",
+        "feat(deck): the verifier slide counts unit tests from the recorded run; Setup slide and skill cards laid out",
+        "chore(agents): record the proof-loop flicker episode",
+        "fix(diagram): a redraw keeps labels on their own wire - the proof-loop slide no longer flickers",
+        "chore(agents): record the editor, diagram and deck round's gate episodes",
+        "fix: editor dark mode + toolbar + sidebar, diagram wire timing, deck slide 4, index statistics, Anatomy page",
+        "feat: Editor.js integration, Document Comments, Document Editor scaffold",
+        "feat: figure groups, section-bundle statistics, diagram animation stability, deck and index",
+        "chore(agents): record the typesetting and deck round's gate episodes",
+        "feat(typography): book typesetting - captions, groups, leading, separators; papers, session replay, deck",
+        "feat: Paper Gallery, Iframe component, typesetting (Satz), paper house styles",
+        "feat(skills): task skills shadcn-plan, shadcn-theme, shadcn-review",
+        "docs: one owner per concern in AGENTS.md; paper position on cache cost and memory",
+        "fix(types): every component compiles without a type error (1,147 -&gt; 0)",
+        "chore(agents): record the structural change gate episodes",
+        "refactor: component sources live in their sidebar section (src/components/&lt;section&gt;/&lt;name&gt;/)",
+        "docs(paper): the coverage change as one headline - +44.0 pp, +10,420 lines covered, 20.6 min, 39,926 output tokens",
+        "docs(paper): the first CI runs - two dependencies on one machine, green on the third run",
+        "fix(ci): scale the unit suite's hang guards on CI runners",
+        "fix(ci): pin the Bun that builds dist/ - stats.json gzip sizes differ across Bun versions",
+        "test: state + interaction contract over every interactive fixture (coverage 31.6% -&gt; 75.6%), CI workflow",
+        "chore(agents): record the v0.9.6 gate episodes"
+      ]
+    },
+    {
       "version": "v0.9.6",
       "date": "October 06, 2026",
       "commits": [
