@@ -102,12 +102,12 @@ function fetchText(url) {
     return cache.get(url);
 }
 const BUNDLE_SCRIPT = /\/(all|core|wysiwyg)(?:\.min)?\.js(?:[?#]|$)/;
-/** the host's runtime bundles: all/core first, wysiwyg only when the source nests this component */
+/** the host's runtime bundles: all/core first, wysiwyg only when the source nests a wysiwyg component (this one, Editor.js) */
 function discoverScripts(source) {
     const out = [];
     dfDollar('script[src]').each((_i, s) => {
         const m = BUNDLE_SCRIPT.exec(s.src);
-        if (!m || (m[1] === 'wysiwyg' && !/\bcode-example\b/.test(source)))
+        if (!m || (m[1] === 'wysiwyg' && !/\b(?:code-example|editorjs)\b/.test(source)))
             return;
         if (!out.includes(s.src))
             out.push(s.src);

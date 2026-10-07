@@ -33,10 +33,10 @@ import { DocPage, PageHeader, CodeWindow, DocText, DocLink, TableCard, SectionBu
 
 <SectionBundleTable />
 
-```mermaid label="Load order" caption="core first, then every section in the Needs column, then the section itself."
+```mermaid label="Load order" caption="Fig 1. Every bundle expects the core to be loaded first; it bundles dependent code from the sections listed in the Needs column, then the section's code itself."
 flowchart LR
-    Core["core.css + core.js<br/>tokens, utilities, df$ runtime"] --> Needs["the sections<br/>in its Needs column"]
-    Needs --> Section["the section bundle"]
+    Core["core.css + core.js<br/>tokens, utilities, df$ runtime"] --> Needs["dependent code:<br/>everything from the section's Needs column"]
+    Needs --> Section["the complete section bundle"]
 ```
 
 <h2 id="cdn" class="h2-display">From the CDN</h2>

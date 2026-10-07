@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { startServer } from './server.ts';
+import { offlineJsdelivr, waitEditorsSettled } from './lib/vendor-offline.ts';
 
 /**
  * Why: dist/stats.json publishes what each Application Scaffold ships when it
@@ -61,19 +62,24 @@ async function open(href: string, full: boolean): Promise<{ page: Page; errors: 
   page.on('console', (m) => { if (m.type() === 'error' && !/lucide|unpkg|Failed to load resource/i.test(m.text())) errors.push(m.text()); });
   // the icons come from a CDN in both variants - stub it so the comparison never waits on the network
   await page.route('https://unpkg.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: '' }));
+  // the Editor.js builds too (the document editor): the pinned devDependencies, never the network
+  await offlineJsdelivr(page);
   const url = `${server.url}/dist/documentation/${href}`;
   if (full) {
-    // the same page on the whole system: core.css + all.css, all.js
+    // the same page on the whole system: core.css + all.css + the wysiwyg extra bundle (Editor.js lives there), all.js + wysiwyg.js - what every docs page loads
     await page.route(url, async (route) => {
       const body = (await (await route.fetch()).text())
-        .replace(/<link rel="stylesheet" href="\.\.\/apps\/[^"]+\.min\.css" id="tokens-css" \/>/, '<link rel="stylesheet" href="../components/core.css" id="tokens-css" /><link rel="stylesheet" href="../components/all.css" />')
-        .replace(/<script type="module" src="\.\.\/apps\/[^"]+\.min\.js"><\/script>/, '<script type="module" src="../components/all.js"></script>');
+        .replace(/<link rel="stylesheet" href="\.\.\/apps\/[^"]+\.min\.css" id="tokens-css" \/>/, '<link rel="stylesheet" href="../components/core.css" id="tokens-css" /><link rel="stylesheet" href="../components/all.css" /><link rel="stylesheet" href="../components/wysiwyg.css" />')
+        .replace(/<script type="module" src="\.\.\/apps\/[^"]+\.min\.js"><\/script>/, '<script type="module" src="../components/all.js"></script><script type="module" src="../components/wysiwyg.js"></script>');
       assert.ok(body.includes('../components/all.js'), 'the full variant swapped the bundle in');
       await route.fulfill({ contentType: 'text/html', body });
     });
   }
   await page.goto(url);
   await page.waitForFunction(() => !!(globalThis as any).df$?.shadcn, undefined, { timeout: 10_000 });
+  await page.clock.runFor(2000);
+  // an Editor.js document mounts after its builds arrive - compare once it did (the fake clock is advanced meanwhile)
+  await waitEditorsSettled(page, (ms) => page.clock.runFor(ms));
   await page.clock.runFor(2000);
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   return { page, errors };

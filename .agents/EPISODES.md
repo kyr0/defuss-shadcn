@@ -4,13 +4,6 @@
 Agents append `<UTC ISO> s=<session> LESSON <VAE-DIALECT>` only for a falsified HYPOTHESIS, a dead end, or a root cause.
 A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then delete its lines. -->
 
-2026-10-06T06:59:28Z s=c273a037 DONE fp=d54415f7d963 cov=31.2% paths=AGENTS.md,Makefile,README.md,package.json(+310)
-2026-10-06T06:59:28Z s=c273a037 FINDING src/components/tabs/tabs.ts:init learn=test: section-bundles.e2e compares data-init per element between a section load and the rest of the system (failed before, passes after).
-2026-10-06T06:59:28Z s=c273a037 FINDING scripts/bundle.ts CSS comment learn=test: section-bundles.e2e renders every section in README order against the full system.
-2026-10-06T06:59:28Z s=c273a037 FINDING scripts/deploy.sh (release ZIPs) learn=none: deploy.sh runs only on a real release; bash -n passes, behaviour unobserved until then.
-2026-10-06T06:59:28Z s=c273a037 FINDING src/documentation/lib/component-api.ts:entriesOf learn=test: tests/component-api.test.ts "a comma inside a generic does not split a member".
-2026-10-06T06:59:28Z s=c273a037 FINDING src/components/session/session.ts scroll members learn=verifier: API docs now render each argument type from the source; verify API docs + the tsc ratchet keep them true.
-2026-10-06T06:59:28Z s=c273a037 FINDING src/types/defuss-shadcn.d.ts (panel / toast / win) learn=verifier: tsc -p tsconfig.components.json checks each namespace object against its declaration (missing / extra members error) - the component types ratchet.
 2026-10-06T06:59:28Z s=c273a037 FINDING src/components/calendar/calendar.ts calendar:select learn=none: the gate checks that a description exists, not that it says something; reviewers judge wording.
 2026-10-06T06:59:28Z s=c273a037 FINDING src/components/diagram/diagram.ts draw() learn=test: diagram.e2e "clearance" asserts >= 20px for every framed fixture diagram; a probe over all 256 framed canvases on the docs pages found 0 under 20px.
 2026-10-06T07:51:05Z s=c273a037 FAIL tests.unit,coverage
@@ -104,3 +97,10 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T10:39:57Z s=c273a037 FINDING probe tooling (process) learn=none: why Playwright judged the elements unstable is not established; no product code depends on it.
 2026-10-07T10:39:57Z s=c273a037 FINDING AGENTS.md "Work packages before a verify run" (user request) learn=none: a process rule; the gate cannot count pipeline runs. Prose check 0 findings.
 2026-10-07T10:39:57Z s=c273a037 FINDING WebGL anti-aliasing (user request: FXAA for presentations) learn=none: grep over src/ (ts, tsx, mdx); any flicker on the CSS decks would need a named slide to measure.
+2026-10-07T12:20:09Z s=c273a037 FAIL prose
+2026-10-07T12:39:22Z s=c273a037 DONE fp=af96bf098461 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1478)
+2026-10-07T12:39:22Z s=c273a037 FINDING src/components/wysiwyg-editors/editorjs (new component) learn=test: editorjs.e2e: 16 checks (builds requested exactly once from node_modules, never @latest; round trip byte-equal; bold / marker / inline code / heading / paragrap
+2026-10-07T12:39:22Z s=c273a037 FINDING src/components/application/doc-comments (new component) learn=test: doc-comments.e2e: 13 checks (marks across <b>, 3rd occurrence, gone text; order by document position; reply nesting; escaped Markdown; mark / card / nav selecti
+2026-10-07T12:39:22Z s=c273a037 FINDING scaffold-document-editor (new app) + scaffold-lean learn=test: scaffold-document-editor.e2e: 12 checks on app-document-editor.html with the builds served offline; scaffold-lean: 7/7 apps render as on the whole system (docum
+2026-10-07T12:39:22Z s=c273a037 FINDING src/types/defuss-shadcn.d.ts stash name (self-found) learn=verifier: verify's component types ratchet: every file at baseline 0 again.
+2026-10-07T12:39:22Z s=c273a037 FINDING README / index footprint learn=verifier: verify's stats claim, CSS-only stat, README ↔ index parity and commit window gates.

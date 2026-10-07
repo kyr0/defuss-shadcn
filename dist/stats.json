@@ -1,38 +1,38 @@
 {
-  "total": 229,
+  "total": 231,
   "byType": {
     "ATM": 68,
-    "MOL": 25,
-    "ORG": 5,
+    "MOL": 26,
+    "ORG": 6,
     "BLK": 128,
     "TPL": 3
   },
-  "templatePages": 62,
-  "templates": 65,
+  "templatePages": 63,
+  "templates": 66,
   "templateGroups": {
-    "Application": 7,
+    "Application": 8,
     "Presentations": 33,
     "Papers": 10,
     "Website": 12
   },
   "tokens": 50,
-  "examples": 1585,
+  "examples": 1593,
   "unitTestFiles": 35,
-  "withJs": 60,
+  "withJs": 62,
   "withoutJs": 169,
-  "totalSize": 2361415,
-  "totalSizeMinified": 1216394,
-  "totalSizeGz": 717505,
-  "totalSizeGzMinified": 405811,
+  "totalSize": 2422501,
+  "totalSizeMinified": 1248348,
+  "totalSizeGz": 735606,
+  "totalSizeGzMinified": 416794,
   "bundle": {
-    "jsSize": 808491,
-    "jsSizeMinified": 466149,
-    "cssSize": 1244089,
-    "cssSizeMinified": 758692,
-    "totalSizeGz": 439964,
-    "totalSizeGzMinified": 272985,
-    "jsSizeGzMinified": 142069,
-    "cssSizeGzMinified": 130916
+    "jsSize": 827363,
+    "jsSizeMinified": 478645,
+    "cssSize": 1251473,
+    "cssSizeMinified": 764149,
+    "totalSizeGz": 445862,
+    "totalSizeGzMinified": 277541,
+    "jsSizeGzMinified": 145793,
+    "cssSizeGzMinified": 131748
   },
   "core": {
     "jsSize": 144474,
@@ -46,14 +46,14 @@
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 51069,
-      "jsSizeMinified": 32892,
-      "cssSize": 14935,
-      "cssSizeMinified": 9402,
-      "totalSizeGz": 17650,
-      "totalSizeGzMinified": 13646,
-      "jsSizeGzMinified": 11332,
-      "cssSizeGzMinified": 2314
+      "jsSize": 66057,
+      "jsSizeMinified": 42211,
+      "cssSize": 20764,
+      "cssSizeMinified": 13642,
+      "totalSizeGz": 22991,
+      "totalSizeGzMinified": 17732,
+      "jsSizeGzMinified": 14463,
+      "cssSizeGzMinified": 3269
     }
   },
   "sections": {
@@ -179,10 +179,12 @@
     "wysiwyg": {
       "heading": "WYSIWYG Editors",
       "members": [
-        "code-example"
+        "code-example",
+        "editorjs"
       ],
       "needs": [
         "Primitives",
+        "Actions",
         "Forms & Inputs",
         "Application"
       ],
@@ -190,14 +192,14 @@
         "components/wysiwyg.css",
         "components/wysiwyg.js"
       ],
-      "jsSize": 51069,
-      "jsSizeMinified": 32892,
-      "cssSize": 14935,
-      "cssSizeMinified": 9402,
-      "totalSizeGz": 17650,
-      "totalSizeGzMinified": 13646,
-      "jsSizeGzMinified": 11332,
-      "cssSizeGzMinified": 2314
+      "jsSize": 66057,
+      "jsSizeMinified": 42211,
+      "cssSize": 20764,
+      "cssSizeMinified": 13642,
+      "totalSizeGz": 22991,
+      "totalSizeGzMinified": 17732,
+      "jsSizeGzMinified": 14463,
+      "cssSizeGzMinified": 3269
     },
     "questionnaire": {
       "heading": "Questionnaire",
@@ -431,11 +433,13 @@
         "border-layout",
         "panel",
         "property-grid",
-        "window"
+        "window",
+        "doc-comments"
       ],
       "needs": [
         "Primitives",
         "Actions",
+        "Forms & Inputs",
         "Data Display",
         "Overlays"
       ],
@@ -443,14 +447,14 @@
         "sections/application.css",
         "sections/application.js"
       ],
-      "jsSize": 74272,
-      "jsSizeMinified": 44134,
-      "cssSize": 57255,
-      "cssSizeMinified": 32219,
-      "totalSizeGz": 29370,
-      "totalSizeGzMinified": 19767,
-      "jsSizeGzMinified": 13178,
-      "cssSizeGzMinified": 6589
+      "jsSize": 93446,
+      "jsSizeMinified": 56858,
+      "cssSize": 64639,
+      "cssSizeMinified": 37676,
+      "totalSizeGz": 35516,
+      "totalSizeGzMinified": 24615,
+      "jsSizeGzMinified": 17100,
+      "cssSizeGzMinified": 7515
     },
     "chat": {
       "heading": "Chat",
@@ -708,7 +712,7 @@
     "count": 19,
     "minGzMinified": 1965,
     "maxGzMinified": 60511,
-    "meanGzMinified": 14752
+    "meanGzMinified": 15222
   },
   "components": {
     "about-intro": {
@@ -1274,14 +1278,14 @@
       "name": "code-example",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 69993,
-      "jsSizeMinified": 32937,
+      "jsSize": 70033,
+      "jsSizeMinified": 32950,
       "cssSize": 14874,
       "cssSizeMinified": 9359,
-      "totalSizeGz": 23213,
-      "totalSizeGzMinified": 13575,
-      "totalSize": 84867,
-      "totalSizeMinified": 42296
+      "totalSizeGz": 23242,
+      "totalSizeGzMinified": 13589,
+      "totalSize": 84907,
+      "totalSizeMinified": 42309
     },
     "collapsible": {
       "name": "collapsible",
@@ -1608,6 +1612,19 @@
       "totalSize": 3210,
       "totalSizeMinified": 2303
     },
+    "doc-comments": {
+      "name": "doc-comments",
+      "type": "ORG",
+      "withJs": true,
+      "jsSize": 26083,
+      "jsSizeMinified": 12682,
+      "cssSize": 7322,
+      "cssSizeMinified": 5476,
+      "totalSizeGz": 9694,
+      "totalSizeGzMinified": 5992,
+      "totalSize": 33405,
+      "totalSizeMinified": 18158
+    },
     "dock": {
       "name": "dock",
       "type": "ATM",
@@ -1672,6 +1689,19 @@
       "totalSizeGzMinified": 3828,
       "totalSize": 26104,
       "totalSizeMinified": 12047
+    },
+    "editorjs": {
+      "name": "editorjs",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 21866,
+      "jsSizeMinified": 9524,
+      "cssSize": 5775,
+      "cssSizeMinified": 4259,
+      "totalSizeGz": 8378,
+      "totalSizeGzMinified": 4977,
+      "totalSize": 27641,
+      "totalSizeMinified": 13783
     },
     "empty-state": {
       "name": "empty-state",
@@ -3919,6 +3949,39 @@
       "totalSizeGzMinified": 75026,
       "jsSizeGzMinified": 41203,
       "cssSizeGzMinified": 33823
+    },
+    "document-editor": {
+      "page": "scaffold-document-editor",
+      "href": "app-document-editor.html",
+      "components": [
+        "avatar",
+        "badge",
+        "button",
+        "button-group",
+        "card",
+        "dialog",
+        "doc-comments",
+        "editorjs",
+        "icon",
+        "input",
+        "kbd",
+        "separator",
+        "sidebar",
+        "textarea",
+        "toast",
+        "toggle",
+        "toggle-group",
+        "toolbar",
+        "typography"
+      ],
+      "jsSize": 203983,
+      "jsSizeMinified": 110402,
+      "cssSize": 255597,
+      "cssSizeMinified": 176844,
+      "totalSizeGz": 90996,
+      "totalSizeGzMinified": 59358,
+      "jsSizeGzMinified": 36266,
+      "cssSizeGzMinified": 23092
     }
   }
 }

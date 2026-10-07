@@ -540,6 +540,11 @@ const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: str
     pinned: 'https://esm.sh/shiki@3.0.0',
     reason: 'loads the Shiki highlighter on the first paint of a source (pinned esm.sh ESM - the module the docs code blocks use; configure({ shiki }) self-hosts it)',
   },
+  editorjs: {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.31.7/dist/editorjs.mjs',
+    reason: 'loads the official Editor.js build, its tools and marked on the first editor (pinned jsDelivr ESM files; load(url) self-hosts the editor)',
+  },
 };
 const vendorProblems: string[] = [];
 /** `src` with the allow-listed vendor import call sites of `names` removed. */
@@ -551,7 +556,7 @@ function withoutVendorImports(src: string, names: string[], where: string): stri
     if (!v.site.test(out)) vendorProblems.push(`${where}: VENDOR_IMPORTS["${name}"] is stale - its call site is gone; remove the entry`);
     v.site.lastIndex = 0;
     if (!out.includes(v.pinned)) vendorProblems.push(`${where}: ${name}'s vendor URL is not the pinned ${v.pinned}`);
-    if (/(mermaid|shiki)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
+    if (/(mermaid|shiki|editorjs|marked)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
     out = out.replace(v.site, '/* vendor import */');
   }
   return out;

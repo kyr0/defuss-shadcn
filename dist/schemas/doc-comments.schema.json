@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "name": "doc-comments",
+  "states": {
+    "current": {
+      "type": "string",
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "current",
+        "args": {
+          "id": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-current"
+      },
+      "editor": {
+        "component": "text"
+      }
+    }
+  },
+  "actions": {}
+}

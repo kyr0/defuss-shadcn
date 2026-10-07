@@ -67,7 +67,7 @@ function discoverScripts(source) {
   const out = [];
   dfDollar("script[src]").each((_i, s) => {
     const m = BUNDLE_SCRIPT.exec(s.src);
-    if (!m || m[1] === "wysiwyg" && !/\bcode-example\b/.test(source))
+    if (!m || m[1] === "wysiwyg" && !/\b(?:code-example|editorjs)\b/.test(source))
       return;
     if (!out.includes(s.src))
       out.push(s.src);
@@ -1278,5 +1278,379 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=AA0A1802ECA4AE5664756E2164756E21
+// dist/components/editorjs/editorjs.js
+var __df$core2 = globalThis.df$;
+var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
+if (!__df$shared2 || __df$shared2.abi !== "0.9.6") {
+  throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
+}
+var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2 } = __df$shared2;
+var df$2 = defussGlobals2();
+var dfDollar2 = defussQuery2();
+var editorjsStates = ["default", "readonly"];
+var EDITORJS_URL = "https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.31.7/dist/editorjs.mjs";
+var EDITORJS_TOOLS = {
+  header: "https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.9/dist/header.mjs",
+  list: "https://cdn.jsdelivr.net/npm/@editorjs/list@2.0.9/dist/editorjs-list.mjs",
+  quote: "https://cdn.jsdelivr.net/npm/@editorjs/quote@2.7.6/dist/quote.mjs",
+  code: "https://cdn.jsdelivr.net/npm/@editorjs/code@2.9.4/dist/code.mjs",
+  delimiter: "https://cdn.jsdelivr.net/npm/@editorjs/delimiter@1.4.2/dist/delimiter.mjs",
+  marker: "https://cdn.jsdelivr.net/npm/@editorjs/marker@1.4.0/dist/marker.mjs",
+  inlineCode: "https://cdn.jsdelivr.net/npm/@editorjs/inline-code@1.5.2/dist/inline-code.mjs",
+  table: "https://cdn.jsdelivr.net/npm/@editorjs/table@2.4.6/dist/table.mjs"
+};
+var MARKED_URL = "https://cdn.jsdelivr.net/npm/marked@18.1.0/lib/marked.esm.js";
+var modules = new Map;
+function loadModule(vendorUrl) {
+  let pending = modules.get(vendorUrl);
+  if (!pending) {
+    pending = import(/* @vite-ignore */ vendorUrl).then((m) => m.default ?? m);
+    modules.set(vendorUrl, pending);
+  }
+  return pending;
+}
+async function loadVendor(toolNames) {
+  const [EditorJS, marked, ...tools] = await Promise.all([loadModule(EDITORJS_URL), loadModule(MARKED_URL), ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))]);
+  return { EditorJS, marked, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
+}
+function markdownToBlocks(md, marked) {
+  const inline = (t) => marked.parseInline(t).replace(/<code>/g, '<code class="inline-code">').replace(/<(\/?)strong>/g, "<$1b>").replace(/<(\/?)em>/g, "<$1i>");
+  const items = (list) => (list.items ?? []).map((it) => {
+    const own = (it.tokens ?? []).filter((t) => t.type !== "list");
+    const sub = (it.tokens ?? []).find((t) => t.type === "list");
+    return { content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()), meta: it.task ? { checked: !!it.checked } : {}, items: sub ? items(sub) : [] };
+  });
+  const blocks = [];
+  for (const t of marked.lexer(md)) {
+    switch (t.type) {
+      case "heading":
+        blocks.push({ type: "header", data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) } });
+        break;
+      case "paragraph":
+        blocks.push({ type: "paragraph", data: { text: inline(t.text ?? "") } });
+        break;
+      case "list":
+        blocks.push({ type: "list", data: { style: t.items?.some((i) => i.task) ? "checklist" : t.ordered ? "ordered" : "unordered", meta: {}, items: items(t) } });
+        break;
+      case "blockquote":
+        blocks.push({ type: "quote", data: { text: inline((t.tokens ?? []).map((x) => x.text ?? "").join(`
+`)), caption: "", alignment: "left" } });
+        break;
+      case "code":
+        blocks.push({ type: "code", data: { code: t.text ?? "" } });
+        break;
+      case "hr":
+        blocks.push({ type: "delimiter", data: {} });
+        break;
+      case "table":
+        blocks.push({ type: "table", data: { withHeadings: true, content: [(t.header ?? []).map((c) => inline(c.text)), ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))] } });
+        break;
+      case "html":
+        blocks.push({ type: "paragraph", data: { text: t.raw ?? "" } });
+        break;
+      default:
+        break;
+    }
+  }
+  blocks.forEach((b, i) => {
+    b.id = `b${i + 1}`;
+  });
+  return blocks;
+}
+function inlineToMarkdown(html) {
+  return html.replace(/<br\s*\/?>/gi, `  
+`).replace(/<(b|strong)>([\s\S]*?)<\/\1>/gi, "**$2**").replace(/<(i|em)>([\s\S]*?)<\/\1>/gi, "*$2*").replace(/<u>([\s\S]*?)<\/u>/gi, "$1").replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, "`$1`").replace(/<mark[^>]*>([\s\S]*?)<\/mark>/gi, "$1").replace(/<a [^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&").trim();
+}
+function blocksToMarkdown(blocks) {
+  const list = (items, style, depth) => items.map((it, i) => {
+    const bullet = style === "ordered" ? `${i + 1}.` : style === "checklist" ? `- [${it.meta?.checked ? "x" : " "}]` : "-";
+    const sub = it.items?.length ? `
+` + list(it.items, style, depth + 1) : "";
+    return `${"  ".repeat(depth)}${bullet} ${inlineToMarkdown(it.content)}${sub}`;
+  }).join(`
+`);
+  return blocks.map((b) => {
+    const d = b.data;
+    switch (b.type) {
+      case "header":
+        return `${"#".repeat(Number(d.level) || 2)} ${inlineToMarkdown(String(d.text ?? ""))}`;
+      case "paragraph":
+        return inlineToMarkdown(String(d.text ?? ""));
+      case "list":
+        return list(d.items ?? [], String(d.style ?? "unordered"), 0);
+      case "quote":
+        return inlineToMarkdown(String(d.text ?? "")).split(`
+`).map((l) => `> ${l}`).join(`
+`) + (d.caption ? `
+> - ${inlineToMarkdown(String(d.caption))}` : "");
+      case "code":
+        return "```\n" + String(d.code ?? "") + "\n```";
+      case "delimiter":
+        return "---";
+      case "table": {
+        const rows = d.content ?? [];
+        if (!rows.length)
+          return "";
+        const line = (r) => `| ${r.map(inlineToMarkdown).join(" | ")} |`;
+        const [head, ...body] = rows;
+        return d.withHeadings === false ? rows.map(line).join(`
+`) : [line(head), `| ${head.map(() => "---").join(" | ")} |`, ...body.map(line)].join(`
+`);
+      }
+      default:
+        return "";
+    }
+  }).filter(Boolean).join(`
+
+`) + `
+`;
+}
+function applyMarkup2(el, stateName) {
+  dfDollar2(el).attr("data-readonly", stateName === "readonly" ? "" : null);
+}
+function triggerStateChange2(el, stateName) {
+  applyMarkup2(el, stateName);
+  const editor = el._editorjs;
+  if (editor)
+    editor.isReady.then(() => editor.readOnly.toggle(stateName === "readonly")).catch(() => {
+      return;
+    });
+}
+var editorjsApi = componentState2({
+  component: "editorjs",
+  states: editorjsStates,
+  apply: (el, state) => triggerStateChange2(el, state.name),
+  read: (el, state) => ({ name: el.hasAttribute("data-readonly") ? "readonly" : "default", config: state.config }),
+  markup: (el, state) => applyMarkup2(el, state.name)
+});
+df$2.editorjsApi = editorjsApi;
+df$2.editorjsStates = editorjsStates;
+var DEFAULT_TOOLS = Object.keys(EDITORJS_TOOLS);
+function sourceOf(el) {
+  const script = dfDollar2(el).children("script.editorjs-source").get(0);
+  const text = script?.textContent ?? "";
+  if (!script || !text.trim())
+    return { markdown: "" };
+  if (/json/i.test(script.type)) {
+    try {
+      return { data: JSON.parse(text) };
+    } catch {
+      return { markdown: text };
+    }
+  }
+  return { markdown: text.replace(/^\n/, "") };
+}
+function inlineCommand(name) {
+  if (name === "bold" || name === "italic" || name === "underline")
+    return document.execCommand(name);
+  const sel = globalThis.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed)
+    return false;
+  const range = sel.getRangeAt(0);
+  const tag = name === "marker" ? "mark" : name === "inline-code" ? "code" : null;
+  if (!tag)
+    return false;
+  const wrapper = document.createElement(tag);
+  if (name === "marker")
+    wrapper.className = "cdx-marker";
+  if (name === "inline-code")
+    wrapper.className = "inline-code";
+  try {
+    range.surroundContents(wrapper);
+  } catch {
+    wrapper.append(range.extractContents());
+    range.insertNode(wrapper);
+  }
+  return true;
+}
+function currentBlock(el, editor) {
+  const anchor = globalThis.getSelection()?.anchorNode;
+  const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? anchor : anchor.parentElement);
+  const holder = node && el.contains(node) ? node.closest(".ce-block") : null;
+  if (holder)
+    return editor.blocks.getBlockByElement(holder);
+  const index = editor.blocks.getCurrentBlockIndex();
+  return index >= 0 ? editor.blocks.getBlockByIndex(index) : undefined;
+}
+async function runCommand(el, name) {
+  const editor = el._editorjs;
+  if (!editor)
+    return false;
+  await editor.isReady;
+  if (["bold", "italic", "underline", "marker", "inline-code"].includes(name))
+    return inlineCommand(name);
+  const [kind, arg] = name.split(":");
+  const current = currentBlock(el, editor);
+  if (kind === "delimiter" || kind === "table") {
+    const index = current ? editor.blocks.getBlockIndex(current.id) : editor.blocks.getBlocksCount() - 1;
+    editor.blocks.insert(kind, kind === "table" ? { withHeadings: true, content: [["", ""], ["", ""]] } : {}, {}, index + 1, true);
+    return true;
+  }
+  if (!current)
+    return false;
+  if (kind === "paragraph") {
+    await editor.blocks.convert(current.id, "paragraph");
+    return true;
+  }
+  if (kind === "header") {
+    const level = Math.min(6, Math.max(1, Number(arg) || 2));
+    if (current.name !== "header")
+      await editor.blocks.convert(current.id, "header", { level });
+    const block = editor.blocks.getById(current.id);
+    if (block)
+      await editor.blocks.update(block.id, { level });
+    return true;
+  }
+  if (kind === "list") {
+    const style = arg === "ordered" ? "ordered" : arg === "checklist" ? "checklist" : "unordered";
+    if (current.name !== "list")
+      await editor.blocks.convert(current.id, "list", { style });
+    else
+      await editor.blocks.update(current.id, { style });
+    return true;
+  }
+  if (kind === "quote" || kind === "code") {
+    await editor.blocks.convert(current.id, kind);
+    return true;
+  }
+  return false;
+}
+function syncToolbar(el) {
+  const bar = el._toolbar;
+  if (!bar || !el.contains(document.activeElement))
+    return;
+  const editor = el._editorjs;
+  const current = editor ? currentBlock(el, editor) : undefined;
+  dfDollar2(bar).find("[data-editor-command]").toArray().forEach((b) => {
+    const name = b.dataset.editorCommand ?? "";
+    let on = null;
+    if (name === "bold" || name === "italic" || name === "underline")
+      on = document.queryCommandState(name);
+    else if (name === "paragraph")
+      on = current?.name === "paragraph";
+    else if (name.startsWith("header") || name.startsWith("list") || name === "quote" || name === "code")
+      on = current?.name === name.split(":")[0];
+    if (on !== null && b.hasAttribute("aria-pressed"))
+      dfDollar2(b).attr("aria-pressed", String(on));
+  });
+}
+async function mount(el) {
+  const toolNames = (dfDollar2(el).attr("data-tools") ?? "").split(/\s+/).filter((n) => EDITORJS_TOOLS[n]);
+  const tools = toolNames.length ? toolNames : DEFAULT_TOOLS;
+  const { EditorJS, tools: loaded, marked } = await loadVendor(tools);
+  if (!el.isConnected)
+    return;
+  el._marked = marked;
+  const source = sourceOf(el);
+  const data = source.data ?? { blocks: markdownToBlocks(source.markdown ?? "", marked) };
+  let holder = dfDollar2(el).children(".editorjs-holder").get(0);
+  if (!holder) {
+    holder = document.createElement("div");
+    holder.className = "editorjs-holder";
+    dfDollar2(el).append(holder);
+  }
+  const config = {};
+  for (const name of tools) {
+    const cls = loaded[name];
+    config[name] = name === "list" ? { class: cls, inlineToolbar: true, config: { defaultStyle: "unordered" } } : name === "header" ? { class: cls, inlineToolbar: true, config: { levels: [1, 2, 3, 4], defaultLevel: 2 } } : name === "quote" || name === "table" ? { class: cls, inlineToolbar: true } : cls;
+  }
+  const Ctor = EditorJS;
+  const editor = new Ctor({
+    holder,
+    data,
+    tools: config,
+    readOnly: el.hasAttribute("data-readonly"),
+    placeholder: dfDollar2(el).attr("data-placeholder") ?? "Write...",
+    minHeight: 0,
+    onChange: async () => {
+      el.dispatchEvent(new CustomEvent("editorjs-change", { bubbles: true, detail: { blocks: editor.blocks.getBlocksCount() } }));
+    }
+  });
+  el._editorjs = editor;
+  await editor.isReady;
+  if (!el.isConnected)
+    return;
+  dfDollar2(el).attr("data-ready", "");
+  el.dispatchEvent(new CustomEvent("editorjs-ready", { bubbles: true, detail: { blocks: data.blocks.length } }));
+}
+function init2() {
+  dfDollar2(".editorjs:not([data-init])").toArray().forEach((el) => {
+    el.dataset.init = "";
+    bindComponent2(el, editorjsApi);
+    const barId = dfDollar2(el).attr("data-toolbar");
+    const bar = barId ? dfDollar2("#" + CSS.escape(barId)).get(0) : undefined;
+    if (bar) {
+      el._toolbar = bar;
+      dfDollar2(bar).on("mousedown", (e) => {
+        if (e.target.closest("[data-editor-command]"))
+          e.preventDefault();
+      });
+      dfDollar2(bar).on("click", (e) => {
+        const button = e.target.closest("[data-editor-command]");
+        if (!button)
+          return;
+        runCommand(el, button.dataset.editorCommand ?? "").then(() => syncToolbar(el));
+      });
+    }
+    mount(el).catch(() => {
+      dfDollar2(el).attr("data-error", "");
+    });
+  });
+}
+if (!document.__editorjsInit) {
+  document.__editorjsInit = true;
+  document.addEventListener("selectionchange", () => {
+    for (const el of dfDollar2(".editorjs[data-ready]").toArray())
+      syncToolbar(el);
+  });
+}
+var resolve = (target) => typeof target === "string" ? dfDollar2(target).get(0) : target;
+var editorOf = (target) => resolve(target)?._editorjs;
+df$2.editorjs = {
+  load: (url) => loadModule(url || EDITORJS_URL),
+  url: EDITORJS_URL,
+  markdown: async (target) => {
+    const editor = editorOf(target);
+    if (!editor)
+      return "";
+    await editor.isReady;
+    return blocksToMarkdown((await editor.save()).blocks);
+  },
+  setMarkdown: async (target, markdown) => {
+    const el = resolve(target);
+    const editor = el?._editorjs;
+    if (!el || !editor)
+      return;
+    await editor.isReady;
+    await editor.blocks.render({ blocks: markdownToBlocks(markdown, el._marked) });
+  },
+  blocks: async (target) => {
+    const editor = editorOf(target);
+    if (!editor)
+      return null;
+    await editor.isReady;
+    return editor.save();
+  },
+  setBlocks: async (target, data) => {
+    const editor = editorOf(target);
+    if (!editor)
+      return;
+    await editor.isReady;
+    await editor.blocks.render(data);
+  },
+  command: (target, name) => {
+    const el = resolve(target);
+    return el ? runCommand(el, name) : Promise.resolve(false);
+  },
+  editor: (target) => editorOf(target),
+  toBlocks: (target, markdown) => {
+    const marked = resolve(target)?._marked;
+    return marked ? markdownToBlocks(markdown, marked) : [];
+  },
+  toMarkdown: (blocks) => blocksToMarkdown(blocks)
+};
+init2();
+new MutationObserver(init2).observe(document, { childList: true, subtree: true });
+
+//# debugId=AFB95E7351A2887564756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>editorjs e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/toggle/toggle.css" />
+    <link rel="stylesheet" href="/dist/components/toggle-group/toggle-group.css" />
+    <link rel="stylesheet" href="/dist/components/separator/separator.css" />
+    <link rel="stylesheet" href="/dist/components/toolbar/toolbar.css" />
+    <link rel="stylesheet" href="/dist/components/editorjs/editorjs.css" />
+  </head>
+  <body style="padding:2rem;">
+    <!-- mirrors the doc page: a Markdown document driven by a Toolbar, a
+         read-only JSON document, a tool subset without a source -->
+    <div class="toolbar" role="toolbar" aria-label="Formatting" id="ed-bar" data-size="sm">
+      <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
+        <button class="toggle" aria-pressed="false" data-editor-command="bold" aria-label="Bold" type="button">B</button>
+        <button class="toggle" aria-pressed="false" data-editor-command="italic" aria-label="Italic" type="button">I</button>
+        <button class="toggle" aria-pressed="false" data-editor-command="underline" aria-label="Underline" type="button">U</button>
+      </div>
+      <div class="separator" data-orientation="vertical" role="separator"></div>
+      <div class="toggle-group" role="group" aria-label="Block" data-type="single">
+        <button class="toggle" aria-pressed="false" data-editor-command="paragraph" aria-label="Paragraph" type="button">P</button>
+        <button class="toggle" aria-pressed="false" data-editor-command="header:2" aria-label="Heading 2" type="button">H2</button>
+        <button class="toggle" aria-pressed="false" data-editor-command="list:unordered" aria-label="Bulleted list" type="button">UL</button>
+        <button class="toggle" aria-pressed="false" data-editor-command="quote" aria-label="Quote" type="button">Q</button>
+      </div>
+      <div class="separator" data-orientation="vertical" role="separator"></div>
+      <button class="btn" data-variant="ghost" data-size="sm" data-editor-command="marker" aria-label="Highlight" type="button">Mark</button>
+      <button class="btn" data-variant="ghost" data-size="sm" data-editor-command="inline-code" aria-label="Inline code" type="button">Code</button>
+      <button class="btn" data-variant="ghost" data-size="sm" data-editor-command="delimiter" aria-label="Divider" type="button">HR</button>
+      <button class="btn" data-variant="ghost" data-size="sm" data-editor-command="table" aria-label="Table" type="button">Table</button>
+    </div>
+    <div class="editorjs" id="ed-md" data-toolbar="ed-bar" data-placeholder="Write the brief...">
+      <script type="text/markdown" class="editorjs-source">
+# Design brief
+
+A paragraph with **bold**, *italic*, `code` and a [link](https://example.org).
+
+- a list
+- with items
+  - nested
+
+> A quote.
+
+```
+const x = 1;
+```
+
+---
+
+| Column | Value |
+| --- | --- |
+| a | 1 |
+      </script>
+    </div>
+
+    <div class="editorjs" id="ed-json" data-readonly>
+      <script type="application/json" class="editorjs-source">{"blocks":[{"id":"h1","type":"header","data":{"text":"Release notes","level":2}},{"id":"p1","type":"paragraph","data":{"text":"Saved <b>JSON</b>."}},{"id":"l1","type":"list","data":{"style":"ordered","meta":{},"items":[{"content":"one","meta":{},"items":[]},{"content":"two","meta":{},"items":[]}]}}]}</script>
+    </div>
+
+    <div class="editorjs" id="ed-sub" data-tools="header list" data-placeholder="Notes"></div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/toggle/toggle.js"></script>
+    <script type="module" src="/dist/components/toggle-group/toggle-group.js"></script>
+    <script type="module" src="/dist/components/toolbar/toolbar.js"></script>
+    <script type="module" src="/dist/components/editorjs/editorjs.js"></script>
+  </body>
+</html>

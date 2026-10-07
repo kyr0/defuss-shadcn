@@ -1913,5 +1913,453 @@ df$6.win = windowActions;
 init6();
 new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
-//# debugId=E90E9B12A01968D564756E2164756E21
+// dist/components/doc-comments/doc-comments.js
+var __df$core7 = globalThis.df$;
+var __df$shared7 = __df$core7 && __df$core7.shadcn && __df$core7.shadcn.shared;
+if (!__df$shared7 || __df$shared7.abi !== "0.9.6") {
+  throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
+}
+var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, componentState: componentState7, bindComponent: bindComponent7 } = __df$shared7;
+var df$7 = defussGlobals7();
+var dfDollar7 = defussQuery7();
+var docCommentsStates = ["default", "current"];
+var FLASH_MS = 1600;
+var ICONS = {
+  up: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>',
+  down: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+  reply: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>',
+  quote: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>'
+};
+var esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+function renderMarkdown(md) {
+  const inline = (t) => esc(t).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>').replace(/\n/g, "<br>");
+  return md.trim().split(/\n\s*\n/).map((p) => `<p>${inline(p.trim())}</p>`).join("");
+}
+var initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+function formatTime(iso) {
+  if (!iso)
+    return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime()))
+    return iso;
+  const sameDay = d.toDateString() === new Date().toDateString();
+  return new Intl.DateTimeFormat(undefined, sameDay ? { hour: "numeric", minute: "2-digit" } : { month: "short", day: "numeric" }).format(d);
+}
+function documentOf(el) {
+  const id = dfDollar7(el).attr("data-for");
+  return id ? dfDollar7("#" + CSS.escape(id)).get(0) ?? null : el.previousElementSibling;
+}
+function blockOf(root, id) {
+  return dfDollar7(root).find(`[data-id="${CSS.escape(id)}"]`).get(0) ?? dfDollar7(root).find("#" + CSS.escape(id)).get(0) ?? (root.id === id ? root : null);
+}
+function findRange(block, text, occurrence = 0) {
+  const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let all = "";
+  let n;
+  while (n = walker.nextNode()) {
+    nodes.push(n);
+    all += n.data;
+  }
+  let from = 0;
+  let at = -1;
+  for (let i = 0;i <= occurrence; i++) {
+    at = all.indexOf(text, from);
+    if (at < 0)
+      return null;
+    from = at + 1;
+  }
+  const range = document.createRange();
+  let offset = 0;
+  let started = false;
+  for (const node of nodes) {
+    const end = offset + node.data.length;
+    if (!started && at < end) {
+      range.setStart(node, at - offset);
+      started = true;
+    }
+    if (started && at + text.length <= end) {
+      range.setEnd(node, at + text.length - offset);
+      return range;
+    }
+    offset = end;
+  }
+  return null;
+}
+function wrapRange(range, make) {
+  const marks = [];
+  const walker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let n;
+  if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE)
+    nodes.push(range.commonAncestorContainer);
+  while (n = walker.nextNode())
+    if (range.intersectsNode(n))
+      nodes.push(n);
+  const { startContainer, startOffset, endContainer, endOffset } = range;
+  for (const node of nodes) {
+    let target = node;
+    let endCut = node === endContainer ? endOffset : -1;
+    if (node === startContainer && startOffset > 0) {
+      target = node.splitText(startOffset);
+      if (endCut >= 0)
+        endCut -= startOffset;
+    }
+    if (endCut >= 0 && endCut < target.data.length)
+      target.splitText(endCut);
+    if (!target.data)
+      continue;
+    const mark = make();
+    target.before(mark);
+    mark.append(target);
+    marks.push(mark);
+  }
+  return marks;
+}
+function unwrap(mark) {
+  const parent = mark.parentNode;
+  if (!parent)
+    return;
+  while (mark.firstChild)
+    dfDollar7(mark).before(mark.firstChild);
+  mark.remove();
+  parent.normalize();
+}
+function anchorOf(data, c) {
+  let cur = c;
+  const seen = new Set;
+  while (cur && !cur.anchor && cur.parent && !seen.has(cur.id)) {
+    seen.add(cur.id);
+    cur = data.comments.find((x) => x.id === cur.parent);
+  }
+  return cur?.anchor;
+}
+function placeMarks(el) {
+  const root = documentOf(el);
+  const data = runtimeOf(el).data;
+  if (!root)
+    return;
+  for (const c of data.comments) {
+    if (c.parent)
+      continue;
+    const anchor = anchorOf(data, c);
+    if (!anchor || dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).length)
+      continue;
+    const block = blockOf(root, anchor.block);
+    const range = block && findRange(block, anchor.text, anchor.occurrence ?? 0);
+    if (!range)
+      continue;
+    wrapRange(range, () => {
+      const m = document.createElement("mark");
+      m.className = "doc-comments-mark";
+      m.dataset.comment = c.id;
+      if (c.color)
+        m.dataset.color = c.color;
+      m.title = `Comment by ${c.author}`;
+      return m;
+    });
+  }
+}
+function clearMarks(el) {
+  const root = documentOf(el);
+  if (!root)
+    return;
+  dfDollar7(root).find("mark.doc-comments-mark, mark.doc-comments-flash").each((_i, m) => unwrap(m));
+}
+var runtimeOf = (el) => {
+  if (!el._comments)
+    el._comments = { data: { version: 1, comments: [] } };
+  return el._comments;
+};
+function ordered(el) {
+  const data = runtimeOf(el).data;
+  const root = documentOf(el);
+  const tops = data.comments.filter((c) => !c.parent || !data.comments.some((p) => p.id === c.parent));
+  const markOf = (c) => root ? dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).get(0) : undefined;
+  tops.sort((a, b) => {
+    const ma = markOf(a), mb = markOf(b);
+    if (!ma || !mb)
+      return ma ? -1 : mb ? 1 : 0;
+    return ma.compareDocumentPosition(mb) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+  });
+  return tops;
+}
+var cardMarkup = (data, c, depth) => {
+  const anchor = anchorOf(data, c);
+  const replies = data.comments.filter((r) => r.parent === c.id).sort((a, b) => String(a.time ?? "").localeCompare(String(b.time ?? "")));
+  const color = c.color ? ` data-color="${esc(c.color)}"` : "";
+  return `<li class="card doc-comments-card" data-id="${esc(c.id)}"${color} data-depth="${depth}">
+  <div class="card-header doc-comments-card-header">
+    <span class="avatar" data-size="sm"><span class="avatar-fallback">${esc(initials(c.author))}</span></span>
+    <div class="doc-comments-meta"><strong class="doc-comments-author">${esc(c.author)}</strong>${c.time ? ` <time class="doc-comments-time" datetime="${esc(c.time)}">${esc(formatTime(c.time))}</time>` : ""}</div>
+  </div>
+  ${depth === 0 && anchor ? `<button class="doc-comments-anchor" type="button" data-doc-comments-action="go" title="Scroll to the text">${esc(anchor.text)}</button>` : ""}
+  <div class="card-content doc-comments-body">${renderMarkdown(c.body)}</div>
+  ${(c.quotes ?? []).map((q, i) => `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc(q.text)}</q>${q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : ""}</button>`).join("")}
+  <div class="card-footer doc-comments-actions">
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" data-doc-comments-action="reply" aria-expanded="false">${ICONS.reply} Reply</button>
+  </div>
+  <form class="textarea-group doc-comments-reply" hidden aria-label="Reply">
+    <textarea class="textarea" data-rows="2" data-max-rows="6" aria-label="Your reply" placeholder="Reply..."></textarea>
+    <div class="textarea-group-actions">
+      <span class="textarea-group-spacer"></span>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-doc-comments-action="cancel">Cancel</button>
+      <button class="btn" data-size="sm" type="submit">Reply</button>
+    </div>
+  </form>
+  ${replies.length ? `<ol class="doc-comments-replies">${replies.map((r) => cardMarkup(data, r, depth + 1)).join("")}</ol>` : ""}
+</li>`;
+};
+function renderColumn(el) {
+  const data = runtimeOf(el).data;
+  const tops = ordered(el);
+  const head = `<div class="doc-comments-head">
+  <span class="doc-comments-title">Comments <span class="badge" data-variant="secondary" data-count>${data.comments.length}</span></span>
+  <div class="btn-group" role="group" aria-label="Go to comment">
+    <button class="btn" data-variant="outline" data-size="icon-sm" type="button" data-doc-comments-action="prev" aria-label="Previous comment">${ICONS.up}</button>
+    <button class="btn" data-variant="outline" data-size="icon-sm" type="button" data-doc-comments-action="next" aria-label="Next comment">${ICONS.down}</button>
+  </div>
+</div>
+<ol class="doc-comments-list">${tops.map((c) => cardMarkup(data, c, 0)).join("")}</ol>
+${data.comments.length ? "" : '<p class="doc-comments-empty">No comments yet.</p>'}`;
+  const keep = dfDollar7(el).children("script.doc-comments-source").get(0);
+  dfDollar7(el).html(head);
+  if (keep)
+    el.prepend(keep);
+  const current = dfDollar7(el).attr("data-current");
+  if (current)
+    markCurrent(el, current);
+}
+function applyMarkup7(el, name, config) {
+  dfDollar7(el).attr("data-current", name === "current" && config.id ? String(config.id) : null);
+}
+function markCurrent(el, id) {
+  dfDollar7(el).find(".doc-comments-card[aria-current]").each((_i, c) => dfDollar7(c).attr("aria-current", null));
+  const root = documentOf(el);
+  if (root)
+    dfDollar7(root).find("mark.doc-comments-mark[data-current]").each((_i, m) => dfDollar7(m).attr("data-current", null));
+  if (!id)
+    return;
+  dfDollar7(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).each((_i, c) => dfDollar7(c).attr("aria-current", "true"));
+  if (root)
+    dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).each((_i, m) => dfDollar7(m).attr("data-current", ""));
+}
+var reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+var scrollTo = (node, block) => node?.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block, inline: "nearest" });
+function triggerStateChange7(el, stateName, config) {
+  applyMarkup7(el, stateName, config);
+  const id = stateName === "current" ? String(config.id ?? "") : null;
+  markCurrent(el, id);
+  if (id) {
+    scrollTo(dfDollar7(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).get(0), "nearest");
+    const root = documentOf(el);
+    if (root)
+      scrollTo(dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).get(0), "center");
+  }
+}
+var docCommentsApi = componentState7({
+  component: "doc-comments",
+  states: docCommentsStates,
+  apply: (el, state) => triggerStateChange7(el, state.name, state.config),
+  read: (el) => {
+    const id = dfDollar7(el).attr("data-current");
+    return id ? { name: "current", config: { id } } : { name: "default", config: {} };
+  },
+  markup: (el, state) => applyMarkup7(el, state.name, state.config)
+});
+df$7.docCommentsApi = docCommentsApi;
+df$7.docCommentsStates = docCommentsStates;
+function emitChange(el, id) {
+  el.dispatchEvent(new CustomEvent("doc-comments-change", { bubbles: true, detail: { comments: runtimeOf(el).data.comments.length, id } }));
+}
+function select(el, id, source) {
+  if (!runtimeOf(el).data.comments.some((c) => c.id === id))
+    return false;
+  el.api?.setState("current", { id });
+  el.dispatchEvent(new CustomEvent("doc-comments-select", { bubbles: true, detail: { id, source } }));
+  return true;
+}
+var cardIds = (el) => dfDollar7(el).find(".doc-comments-card").toArray().map((c) => c.dataset.id ?? "");
+function step(el, dir, source) {
+  const ids = cardIds(el);
+  if (!ids.length)
+    return null;
+  const cur = dfDollar7(el).attr("data-current");
+  const at = cur ? ids.indexOf(cur) : -1;
+  const next = at < 0 ? dir > 0 ? 0 : ids.length - 1 : (at + dir + ids.length) % ids.length;
+  select(el, ids[next], source);
+  return ids[next];
+}
+function flash(el, quote) {
+  const root = documentOf(el);
+  const block = root && blockOf(root, quote.block);
+  const range = block && findRange(block, quote.text, quote.occurrence ?? 0);
+  const found = !!range;
+  if (range) {
+    const marks = wrapRange(range, () => {
+      const m = document.createElement("mark");
+      m.className = "doc-comments-flash";
+      return m;
+    });
+    scrollTo(marks[0], "center");
+    setTimeout(() => marks.forEach(unwrap), FLASH_MS);
+  }
+  el.dispatchEvent(new CustomEvent("doc-comments-flash", { bubbles: true, detail: { block: quote.block, text: quote.text, found } }));
+  return found;
+}
+function addComment(el, comment) {
+  const data = runtimeOf(el).data;
+  if (!comment.body || !comment.body.trim())
+    return null;
+  if (comment.parent && !data.comments.some((c) => c.id === comment.parent))
+    return null;
+  if (!comment.parent && !comment.anchor)
+    return null;
+  let id = comment.id || `c${data.comments.length + 1}`;
+  while (data.comments.some((c) => c.id === id))
+    id = `${id}-${Math.random().toString(36).slice(2, 6)}`;
+  const parent = comment.parent ? data.comments.find((c) => c.id === comment.parent) : undefined;
+  const full = { ...comment, id, author: comment.author || dfDollar7(el).attr("data-author") || "You", time: comment.time ?? new Date().toISOString(), body: comment.body.trim(), color: comment.color ?? parent?.color };
+  runtimeOf(el).data = { version: 1, comments: [...data.comments, full] };
+  placeMarks(el);
+  renderColumn(el);
+  emitChange(el, id);
+  return id;
+}
+function load(el, data) {
+  clearMarks(el);
+  const comments = Array.isArray(data?.comments) ? data.comments.filter((c) => c && typeof c.id === "string" && typeof c.body === "string").map((c) => ({ ...c, author: c.author || "Anonymous" })) : [];
+  runtimeOf(el).data = { version: 1, comments };
+  placeMarks(el);
+  renderColumn(el);
+  emitChange(el);
+}
+function sourceOf(el) {
+  const text = dfDollar7(el).children("script.doc-comments-source").get(0)?.textContent ?? "";
+  if (!text.trim())
+    return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+function onAction(el, button) {
+  const action = button.dataset.docCommentsAction;
+  const card = button.closest(".doc-comments-card");
+  const id = card?.dataset.id ?? "";
+  if (action === "prev")
+    step(el, -1, "nav");
+  else if (action === "next")
+    step(el, 1, "nav");
+  else if (action === "go" && id)
+    select(el, id, "card");
+  else if (action === "flash" && card) {
+    const c = runtimeOf(el).data.comments.find((x) => x.id === id);
+    const q = c?.quotes?.[Number(button.dataset.quote)];
+    if (q)
+      flash(el, q);
+  } else if (action === "reply" && card) {
+    const form = dfDollar7(card).children("form.doc-comments-reply").get(0);
+    if (!form)
+      return;
+    const open = form.hidden;
+    form.hidden = !open;
+    dfDollar7(button).attr("aria-expanded", String(open));
+    if (open)
+      dfDollar7(form).find("textarea").get(0)?.focus();
+  } else if (action === "cancel" && card) {
+    const form = dfDollar7(card).children("form.doc-comments-reply").get(0);
+    if (form) {
+      form.hidden = true;
+      form.reset();
+    }
+    dfDollar7(card).find('[data-doc-comments-action="reply"]').first().attr("aria-expanded", "false");
+  }
+}
+function init7() {
+  dfDollar7(".doc-comments:not([data-init])").toArray().forEach((el) => {
+    el.dataset.init = "";
+    bindComponent7(el, docCommentsApi);
+    const source = sourceOf(el);
+    runtimeOf(el).data = source ? { version: 1, comments: source.comments ?? [] } : { version: 1, comments: [] };
+    placeMarks(el);
+    renderColumn(el);
+    dfDollar7(el).on("click", (e) => {
+      const button = e.target.closest("[data-doc-comments-action]");
+      if (button && el.contains(button))
+        onAction(el, button);
+    });
+    dfDollar7(el).on("submit", (e) => {
+      const form = e.target.closest("form.doc-comments-reply");
+      if (!form)
+        return;
+      e.preventDefault();
+      const card = form.closest(".doc-comments-card");
+      const body = dfDollar7(form).find("textarea").get(0)?.value ?? "";
+      if (card && body.trim())
+        addComment(el, { parent: card.dataset.id, body });
+    });
+    const root = documentOf(el);
+    if (root) {
+      dfDollar7(root).on("click", (e) => {
+        const mark = e.target.closest("mark.doc-comments-mark");
+        if (mark?.dataset.comment)
+          select(el, mark.dataset.comment, "mark");
+      });
+      dfDollar7(root).on("editorjs-ready", () => {
+        placeMarks(el);
+        renderColumn(el);
+      });
+      dfDollar7(root).on("editorjs-change", () => placeMarks(el));
+    }
+  });
+}
+var resolve5 = (target) => typeof target === "string" ? dfDollar7(target).get(0) : target;
+df$7.docComments = {
+  load: (target, data) => {
+    const el = resolve5(target);
+    if (el)
+      load(el, data);
+  },
+  data: (target) => {
+    const el = resolve5(target);
+    return el ? structuredClone(runtimeOf(el).data) : { version: 1, comments: [] };
+  },
+  add: (target, comment) => {
+    const el = resolve5(target);
+    return el ? addComment(el, comment) : null;
+  },
+  reply: (target, parentId, body, author) => {
+    const el = resolve5(target);
+    return el ? addComment(el, { parent: parentId, body, author }) : null;
+  },
+  go: (target, id) => {
+    const el = resolve5(target);
+    return el ? select(el, id, "api") : false;
+  },
+  next: (target) => {
+    const el = resolve5(target);
+    return el ? step(el, 1, "api") : null;
+  },
+  prev: (target) => {
+    const el = resolve5(target);
+    return el ? step(el, -1, "api") : null;
+  },
+  flash: (target, quote) => {
+    const el = resolve5(target);
+    return el ? flash(el, quote) : false;
+  },
+  refresh: (target) => {
+    const el = resolve5(target);
+    if (el) {
+      placeMarks(el);
+      renderColumn(el);
+    }
+  }
+};
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+
+//# debugId=DB16E5FF6497991864756E2164756E21
 //# sourceMappingURL=application.js.map

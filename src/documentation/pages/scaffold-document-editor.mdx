@@ -1,0 +1,370 @@
+---
+title: "Document Editor"
+description: "Application scaffold: a Google-Docs-style document editor - Markdown documents in Editor.js with a formatting toolbar, a comment column that scrolls on its own with comments tied to spans of the text, replies and quotes, a document list, sharing and autosave - built only from the shipped components."
+slug: "scaffold-document-editor"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="scaffold-document-editor" title="Document Editor" introStyle="max-width:44rem;">
+  A Google-Docs-style editor as a clickdummy - "Margin". Three Markdown documents open in the <DocLink href="editorjs.html">Editor.js</DocLink> block editor, the <DocLink href="toolbar.html">Toolbar</DocLink> formats the selection and the current block, and the <DocLink href="doc-comments.html">Document Comments</DocLink> column on the right scrolls on its own: select text and press Comment to open a thread on it, click a highlight to find its card, click a card to find its text, walk the comments with ↑ ↓, reply in place, follow a quote to another span. Every control is a shipped component. Part of the <DocLink href="application-scaffolds.html">Application Scaffolds</DocLink>.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="app-document-editor.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+  <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
+</div>
+
+```html example label="Document editor" schema="none" height="50" mode="desktop" hint="The whole editor in one source. The documents are Markdown in a JSON script; opening one renders it in Editor.js and loads its comments; switching keeps the edits. Comments are a JSON model - comment on a selection with the toolbar's Comment button, reply under a card, follow a quote." previewStyle="align-items:stretch;padding:0;"
+<style>
+  /* Margin: the scaffold's own glue - the three-column layout and the page
+     look. Every control is a shipped component (Sidebar, Toolbar, Toggle
+     Group, Button, Badge, Avatar, Input, Kbd, Dialog, Textarea, Toast,
+     Editor.js, Document Comments) */
+  .de {
+    container: de / inline-size;
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: var(--scaffold-height, 50rem);
+    overflow: hidden;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.875rem;
+  }
+  .de .app-sidebar { position: relative; flex: none; height: 100%; }
+  .de .sidebar-link[data-de-doc] { justify-content: space-between; }
+  .de .sidebar-link[data-de-doc] .badge { margin-inline-start: auto; }
+  .de-search { padding: 0.5rem 0.75rem 0.25rem; }
+  .de-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
+  .de-top { display: flex; flex: none; align-items: center; gap: 0.5rem; height: 3.25rem; padding-inline: 0.75rem; border-block-end: 1px solid var(--border); }
+  .de-title { flex: 1; min-width: 0; margin: 0; padding: 0.25rem 0.5rem; border: 1px solid transparent; border-radius: var(--radius-md); background: none; color: inherit; font: inherit; font-size: 1.0625rem; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    &:hover { border-color: var(--border); }
+    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+  }
+  .de-saved { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--muted-foreground); font-size: 0.75rem; white-space: nowrap; & svg { width: 0.875rem; height: 0.875rem; } }
+  .de-saved[data-state="editing"] { color: var(--foreground); }
+  .de .toolbar { flex: none; margin: 0.5rem 0.75rem 0; }
+  .de-body { display: flex; flex: 1; min-height: 0; }
+  .de-page { flex: 1; min-width: 0; overflow: auto; overscroll-behavior: contain; padding: 2rem clamp(1rem, 6cqi, 4rem) 6rem; background: color-mix(in oklch, var(--muted) 40%, var(--background)); }
+  .de-sheet { max-width: 46rem; min-height: 100%; margin-inline: auto; padding: 3rem clamp(1.5rem, 5cqi, 4rem) 4rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow-sm); }
+  .de .editorjs { --editorjs-measure: 100%; --editorjs-min-height: 24rem; }
+  .de .doc-comments { flex: none; border-inline-start: 1px solid var(--border); background: var(--background); }
+  .de-status { display: flex; flex: none; align-items: center; gap: 0.75rem; height: 2rem; padding-inline: 0.75rem; border-block-start: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.75rem; & .badge { font-size: 0.6875rem; } }
+  .de-status-spacer { flex: 1; }
+  .de-quote { margin: 0 0 0.75rem; padding: 0.5rem 0.75rem; border-inline-start: 3px solid var(--primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--muted); color: var(--muted-foreground); font-style: italic; }
+  .de-colors .toggle { width: 2rem; padding: 0; }
+  .de-colors .toggle::before { content: ""; display: block; width: 0.875rem; height: 0.875rem; border-radius: 50%; background: var(--de-c); }
+  .de-colors .toggle[aria-pressed="true"] { outline: 2px solid var(--de-c); outline-offset: -2px; }
+  .de-share-link { display: flex; gap: 0.5rem; }
+  .de [hidden] { display: none !important; }
+  .de-comments-toggle { display: none; }
+  @container de (width < 64rem) {
+    .de .app-sidebar { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 3; box-shadow: var(--shadow-lg); }
+    .de .app-sidebar[data-state="collapsed"] { display: none; }
+  }
+  @container de (width < 56rem) {
+    .de-comments-toggle { display: inline-flex; }
+    .de .doc-comments { display: none; }
+    .de[data-comments] .doc-comments { display: flex; position: absolute; inset-block: 3.25rem 2rem; inset-inline-end: 0; z-index: 2; box-shadow: var(--shadow-lg); }
+    .de-page { padding-inline: 1rem; }
+    .de-sheet { padding: 2rem 1.25rem 3rem; }
+  }
+</style>
+<div class="de sidebar-layout" id="de">
+  <aside class="app-sidebar" id="de-sidebar" data-state="collapsed" aria-label="Documents">
+    <div class="sidebar-header">
+      <a class="sidebar-logo" href="#"><i data-lucide="file-pen-line"></i><span class="sidebar-logo-text">Margin</span></a>
+    </div>
+    <div class="de-search"><input class="input" type="search" placeholder="Search documents" aria-label="Search documents" data-size="sm"></div>
+    <div class="sidebar-content">
+      <details class="sidebar-group" open>
+        <summary><span>My documents</span><i data-lucide="chevron-right"></i></summary>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#" data-de-doc="launch" aria-current="page"><i data-lucide="file-text"></i> <span>Q4 launch plan</span><span class="badge" data-variant="secondary" data-de-count="launch">5</span></a>
+          <a class="sidebar-link" href="#" data-de-doc="brief"><i data-lucide="file-text"></i> <span>Design brief</span><span class="badge" data-variant="secondary" data-de-count="brief">2</span></a>
+          <a class="sidebar-link" href="#" data-de-doc="notes"><i data-lucide="file-text"></i> <span>Meeting notes</span><span class="badge" data-variant="secondary" data-de-count="notes" hidden>0</span></a>
+        </nav>
+      </details>
+      <details class="sidebar-group" open>
+        <summary><span>Shared with me</span><i data-lucide="chevron-right"></i></summary>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link" href="#" aria-disabled="true"><i data-lucide="users"></i> <span>Hiring loop</span></a>
+          <a class="sidebar-link" href="#" aria-disabled="true"><i data-lucide="users"></i> <span>Brand voice</span></a>
+        </nav>
+      </details>
+    </div>
+    <div class="sidebar-footer"><span class="avatar" data-size="sm"><span class="avatar-fallback">YO</span></span> You</div>
+  </aside>
+
+  <div class="de-main">
+    <header class="de-top">
+      <button class="sidebar-trigger" data-sidebar-trigger="de-sidebar" aria-label="Toggle documents"><i data-lucide="panel-left"></i></button>
+      <h1 class="de-title" id="de-title">Q4 launch plan</h1>
+      <span class="de-saved" id="de-saved" data-state="saved"><i data-lucide="cloud"></i> <span>Saved</span></span>
+      <div class="avatar-group" aria-label="Editing now">
+        <span class="avatar" data-size="sm"><span class="avatar-fallback">MC</span></span>
+        <span class="avatar" data-size="sm"><span class="avatar-fallback">JP</span></span>
+        <span class="avatar" data-size="sm"><span class="avatar-fallback">AN</span></span>
+      </div>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-dialog-trigger="de-share" aria-haspopup="dialog"><i data-lucide="share-2"></i> Share</button>
+      <button class="btn de-comments-toggle" data-variant="ghost" data-size="icon-sm" type="button" id="de-comments-toggle" aria-label="Toggle comments" aria-pressed="false"><i data-lucide="message-square-text"></i></button>
+    </header>
+
+    <div class="toolbar" role="toolbar" aria-label="Formatting" id="de-bar" data-size="sm">
+      <div class="toggle-group" role="group" aria-label="Block" data-type="single">
+        <button class="toggle" aria-pressed="false" data-editor-command="paragraph" aria-label="Paragraph" type="button"><i data-lucide="pilcrow"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="header:1" aria-label="Heading 1" type="button"><i data-lucide="heading-1"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="header:2" aria-label="Heading 2" type="button"><i data-lucide="heading-2"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="header:3" aria-label="Heading 3" type="button"><i data-lucide="heading-3"></i></button>
+      </div>
+      <div class="separator" data-orientation="vertical" role="separator"></div>
+      <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
+        <button class="toggle" aria-pressed="false" data-editor-command="bold" aria-label="Bold" type="button"><i data-lucide="bold"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="italic" aria-label="Italic" type="button"><i data-lucide="italic"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="underline" aria-label="Underline" type="button"><i data-lucide="underline"></i></button>
+      </div>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="marker" aria-label="Highlight" type="button"><i data-lucide="highlighter"></i></button>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="inline-code" aria-label="Inline code" type="button"><i data-lucide="code"></i></button>
+      <div class="separator" data-orientation="vertical" role="separator"></div>
+      <div class="toggle-group" role="group" aria-label="Lists" data-type="single">
+        <button class="toggle" aria-pressed="false" data-editor-command="list:unordered" aria-label="Bulleted list" type="button"><i data-lucide="list"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="list:ordered" aria-label="Numbered list" type="button"><i data-lucide="list-ordered"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="list:checklist" aria-label="Checklist" type="button"><i data-lucide="list-checks"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="quote" aria-label="Quote" type="button"><i data-lucide="quote"></i></button>
+        <button class="toggle" aria-pressed="false" data-editor-command="code" aria-label="Code block" type="button"><i data-lucide="square-code"></i></button>
+      </div>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="delimiter" aria-label="Divider" type="button"><i data-lucide="minus"></i></button>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="table" aria-label="Table" type="button"><i data-lucide="table"></i></button>
+      <div class="separator" data-orientation="vertical" role="separator"></div>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" id="de-comment" data-de-action="comment"><i data-lucide="message-square-plus"></i> Comment</button>
+    </div>
+
+    <div class="de-body">
+      <div class="de-page" id="de-page">
+        <div class="de-sheet">
+          <div class="editorjs" id="de-editor" data-toolbar="de-bar" data-placeholder="Start writing...">
+            <script type="text/markdown" class="editorjs-source">
+# Q4 launch plan
+
+This plan covers the **public launch** of the Document Editor on October 28. It is a living document - comment on anything that looks wrong, and reply in the thread rather than editing the text.
+
+## Goals
+
+- Ship the editor with comments to every workspace
+- Keep the first paint under one second on the docs CDN
+- Zero lost edits during a review session
+
+## Timeline
+
+| Milestone | Date | Owner |
+| --- | --- | --- |
+| Beta to design partners | Oct 14 | Mira |
+| Docs and scaffold | Oct 21 | Jon |
+| Public launch | Oct 28 | Ada |
+
+## Risks
+
+The comment column must scroll independently of the document, or a long review drags the reader away from the text. Marks must survive edits around them, because reviewers and authors work at the same time.
+
+> Ship the smallest thing that a reviewer can comment on, then widen.
+
+## Checklist
+
+- [x] Toolbar bound to the editor
+- [x] Comments anchored to text
+- [ ] Replies notify the thread
+- [ ] Export to Markdown from the share menu
+
+Owner: the platform team. Questions go to the thread on the first paragraph.
+            </script>
+          </div>
+        </div>
+      </div>
+      <aside class="doc-comments" id="de-comments" data-for="de-editor" data-author="You" aria-label="Comments">
+        <script type="application/json" class="doc-comments-source">
+        { "version": 1, "comments": [
+          { "id": "c1", "author": "Mira Chen", "time": "2026-10-06T09:12:00Z", "color": "chart-2", "anchor": { "block": "b2", "text": "living document" }, "body": "Say **who** owns it - a living document without an owner dies quietly.", "quotes": [{ "block": "b12", "text": "Owner: the platform team", "note": "it is at the very end - move it up here?" }] },
+          { "id": "c2", "author": "Jon Park", "time": "2026-10-06T09:30:00Z", "parent": "c1", "body": "Moving it into the first paragraph in the next revision." },
+          { "id": "c3", "author": "Ada Novak", "time": "2026-10-06T10:02:00Z", "color": "chart-5", "anchor": { "block": "b8", "text": "scroll independently" }, "body": "Already true here: the column has its own `overflow: auto` and `overscroll-behavior: contain`." },
+          { "id": "c4", "author": "Lin Osei", "time": "2026-10-06T10:15:00Z", "color": "chart-1", "anchor": { "block": "b8", "text": "Marks must survive edits around them" }, "body": "Anchors are block + text, *not* offsets - see [Document Comments](https://kyr0.github.io/defuss-shadcn/documentation/doc-comments.html)." },
+          { "id": "c5", "author": "Mira Chen", "time": "2026-10-06T11:40:00Z", "color": "chart-4", "anchor": { "block": "b9", "text": "smallest thing" }, "body": "Is a table a small thing? The timeline is one, and partners will comment on cells.", "quotes": [{ "block": "b6", "text": "Beta to design partners", "note": "this row" }] }
+        ] }
+        </script>
+      </aside>
+    </div>
+
+    <footer class="de-status">
+      <span id="de-words">0 words</span>
+      <span class="badge" data-variant="outline">Markdown</span>
+      <span class="de-status-spacer"></span>
+      <span><kbd class="kbd">⌘</kbd> <kbd class="kbd">K</kbd> comment on the selection</span>
+    </footer>
+  </div>
+
+  <dialog class="dialog" id="de-share" role="dialog" aria-modal="true" aria-labelledby="de-share-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="de-share-title">Share this document</h2>
+        <p class="dialog-description">Anyone with the link can comment. Editing stays with the workspace.</p>
+      </div>
+      <div class="dialog-body de-share-link">
+        <input class="input" type="url" readonly value="https://margin.example/d/q4-launch-plan" aria-label="Share link" id="de-share-url">
+        <button class="btn" data-variant="outline" type="button" id="de-share-copy"><i data-lucide="copy"></i> Copy</button>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" data-dialog-close>Done</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="dialog" id="de-new-comment" role="dialog" aria-modal="true" aria-labelledby="de-new-comment-title">
+    <form class="dialog-content" id="de-new-comment-form">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="de-new-comment-title">New comment</h2>
+        <p class="dialog-description">On the selected text. Markdown works in the comment.</p>
+      </div>
+      <div class="dialog-body">
+        <blockquote class="de-quote" id="de-new-comment-quote"></blockquote>
+        <textarea class="textarea" id="de-new-comment-body" data-rows="3" data-max-rows="8" required aria-label="Comment" placeholder="What should change?"></textarea>
+        <div class="flex items-center gap-2 mt-3">
+          <span class="text-sm text-muted-foreground">Colour</span>
+          <div class="toggle-group de-colors" role="group" aria-label="Comment colour" data-type="single" id="de-new-comment-colors">
+            <button class="toggle" type="button" aria-pressed="true" data-color="chart-1" aria-label="Red" style="--de-c: var(--chart-1)"></button>
+            <button class="toggle" type="button" aria-pressed="false" data-color="chart-2" aria-label="Blue" style="--de-c: var(--chart-2)"></button>
+            <button class="toggle" type="button" aria-pressed="false" data-color="chart-3" aria-label="Green" style="--de-c: var(--chart-3)"></button>
+            <button class="toggle" type="button" aria-pressed="false" data-color="chart-4" aria-label="Yellow" style="--de-c: var(--chart-4)"></button>
+            <button class="toggle" type="button" aria-pressed="false" data-color="chart-5" aria-label="Purple" style="--de-c: var(--chart-5)"></button>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" type="button" data-dialog-close>Cancel</button>
+        <button class="btn" type="submit">Comment</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="application/json" id="de-docs">
+  { "brief": { "title": "Design brief", "markdown": "# Design brief: the comment column\n\nThe Document Editor needs a comment column on the right-hand side that scrolls independently of the document. Comments are cards tied to highlighted parts of the text; clicking a highlight scrolls to the comment and clicking the comment scrolls to the highlight.\n\n## Must have\n\n- A JSON format that stores comments in relation to spans of the text\n- Replies under a comment, with an input box that opens in place\n- A quote section that points at another span and flashes it\n\n## Colours\n\nColours come from the chart tokens. One document maps them to severity, another to the author - the legend says which.\n", "comments": [
+    { "id": "d1", "author": "Ada Novak", "time": "2026-10-05T15:10:00Z", "color": "chart-3", "anchor": { "block": "b2", "text": "scrolls independently" }, "body": "Done in the scaffold - try the wheel over the column." },
+    { "id": "d2", "author": "Jon Park", "time": "2026-10-05T16:00:00Z", "color": "chart-2", "anchor": { "block": "b6", "text": "the legend says which" }, "body": "We have no legend yet. A small list under the title?", "quotes": [{ "block": "b4", "text": "A JSON format", "note": "the colour is one field of it" }] }
+  ] },
+  "notes": { "title": "Meeting notes", "markdown": "# Meeting notes - October 6\n\nPresent: Mira, Jon, Ada, Lin. Fifteen minutes.\n\n## Decisions\n\n1. The launch date stays October 28.\n2. Comments ship with the editor, not after it.\n3. Lin writes the anchoring section of the docs.\n\n## Open\n\n- Do replies notify the thread by email or in the app?\n\n> Next sync: Thursday, same slot.\n", "comments": [] } }
+  </script>
+</div>
+<script>
+  // Margin - the scaffold's glue: open documents, comment on a selection, autosave, word count, narrow layout
+  document.addEventListener('DOMContentLoaded', () => {
+    const $ = df$;
+    const editor = '#de-editor';
+    const column = '#de-comments';
+    const docs = JSON.parse($('#de-docs').text());
+    // the launch plan is the authored one: its Markdown and comments live in the markup
+    docs.launch = { title: 'Q4 launch plan', markdown: null, comments: null };
+    let current = 'launch';
+    let saveTimer = 0;
+    let wordTimer = 0;
+
+    const words = async () => {
+      const md = await $.shadcn.editorjs.markdown(editor);
+      const n = md.replace(/[#>*`|\-\[\]]/g, ' ').split(/\s+/).filter(Boolean).length;
+      $('#de-words').text(`${n} words`);
+    };
+    const saved = (state) => {
+      $('#de-saved').attr('data-state', state).find('span').text(state === 'editing' ? 'Editing...' : `Saved ${new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date())}`);
+    };
+    const counts = () => {
+      const n = $.shadcn.docComments.data(column).comments.length;
+      docs[current].count = n;
+      $(`[data-de-count="${current}"]`).text(String(n)).prop('hidden', n === 0);
+    };
+
+    // open a document: keep the current one's edits, render the next one and its comments
+    const open = async (id) => {
+      if (!docs[id] || id === current) return;
+      docs[current].markdown = await $.shadcn.editorjs.markdown(editor);
+      docs[current].comments = $.shadcn.docComments.data(column).comments;
+      current = id;
+      $('[data-de-doc]').each((_i, a) => $(a).attr('aria-current', a.dataset.deDoc === id ? 'page' : null));
+      $('#de-title').text(docs[id].title);
+      await $.shadcn.editorjs.setMarkdown(editor, docs[id].markdown);
+      $.shadcn.docComments.load(column, { version: 1, comments: docs[id].comments });
+      $('#de-page').get(0).scrollTop = 0;
+      words();
+      saved('saved');
+    };
+    $('[data-de-doc]').on('click', (e) => { e.preventDefault(); open(e.currentTarget.dataset.deDoc); });
+
+    // comment on the selection: the block the caret is in + the selected text
+    let pending = null;
+    const commentOnSelection = () => {
+      const sel = globalThis.getSelection();
+      const text = sel ? sel.toString().trim() : '';
+      const node = sel && sel.anchorNode ? (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement) : null;
+      const block = node && node.closest('#de-editor .ce-block');
+      if (!text || !block) { $('#de-words').text('Select some text to comment on it'); return; }
+      pending = { block: block.dataset.id, text };
+      $('#de-new-comment-quote').text(text);
+      $('#de-new-comment-body').val('');
+      $('#de-new-comment').get(0).showModal();
+      $('#de-new-comment-body').get(0).focus();
+    };
+    $('#de-comment').on('mousedown', (e) => e.preventDefault());
+    $('#de-comment').on('click', commentOnSelection);
+    document.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k' && $('#de-editor').get(0).contains(document.activeElement)) { e.preventDefault(); commentOnSelection(); } });
+    $('#de-new-comment-form').on('submit', (e) => {
+      e.preventDefault();
+      const body = $('#de-new-comment-body').val().trim();
+      if (!pending || !body) return;
+      const color = $('#de-new-comment-colors .toggle[aria-pressed="true"]').attr('data-color') || 'chart-1';
+      const id = $.shadcn.docComments.add(column, { author: 'You', color, anchor: pending, body });
+      $('#de-new-comment').get(0).close();
+      if (id) { $.shadcn.docComments.go(column, id); df$.shadcn.toast.show({ title: 'Comment added', description: `On "${pending.text.length > 40 ? pending.text.slice(0, 40) + '...' : pending.text}"` }); }
+      pending = null;
+    });
+
+    // autosave badge + word count follow the editor; the comment count follows the column
+    $(editor).on('editorjs-change', () => {
+      saved('editing');
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => saved('saved'), 1200);
+      clearTimeout(wordTimer);
+      wordTimer = setTimeout(words, 300);
+    });
+    $(editor).on('editorjs-ready', words);
+    $(column).on('doc-comments-change', counts);
+
+    // share: copy the link
+    $('#de-share-copy').on('click', async () => {
+      try { await navigator.clipboard.writeText($('#de-share-url').val()); df$.shadcn.toast.success('Link copied'); } catch { $('#de-share-url').get(0).select(); }
+    });
+    // narrow: the comment column as an overlay
+    $('#de-comments-toggle').on('click', () => {
+      const on = !$('#de').get(0).hasAttribute('data-comments');
+      $('#de').attr('data-comments', on ? '' : null);
+      $('#de-comments-toggle').attr('aria-pressed', String(on));
+    });
+    if ($(editor).get(0).hasAttribute('data-ready')) words();
+  });
+</script>
+```
+
+<h2 id="how-it-works" class="h2-display">How it works</h2>
+
+<DocText>A page, not a component: it composes the library and keeps its own glue small - open a document, comment on a selection, a status bar, the narrow layout.</DocText>
+
+<ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
+  <li><strong>Documents</strong> - Markdown. The open one is the <DocLink href="editorjs.html">Editor.js</DocLink> element's source; the others wait in a JSON script and are rendered with <code>setMarkdown</code> when their <DocLink href="sidebar.html">Sidebar</DocLink> link is clicked. Switching keeps the edits: the current document is read back as Markdown first. Block ids are deterministic (<code>b1</code>, <code>b2</code>, ...), so a comment can name the block its text lives in.</li>
+  <li><strong>Formatting</strong> - the <DocLink href="toolbar.html">Toolbar</DocLink> is bound with <code>data-toolbar</code>; every button carries a <code>data-editor-command</code>, and the toggles follow the caret (bold, italic, the current block's type). A toolbar button never takes the selection away.</li>
+  <li><strong>Comments</strong> - the <DocLink href="doc-comments.html">Document Comments</DocLink> column is a JSON model per document: author, colour, the anchored span (block + text), a Markdown body, quotes to other spans, replies. Select text and press <em>Comment</em> (or <kbd class="kbd">⌘</kbd> <kbd class="kbd">K</kbd>): a <DocLink href="dialog.html">Dialog</DocLink> shows the quote, takes the text and a colour from a <DocLink href="toggle-group.html">Toggle Group</DocLink>, and <code>docComments.add()</code> places the mark and the card. Marks are re-placed after every editor change.</li>
+  <li><strong>Navigation</strong> - click a mark to find its card, the card's excerpt to find its mark, ↑ ↓ to walk the comments, a quote to flash another span. <em>Reply</em> opens the <DocLink href="textarea.html">Textarea</DocLink> composer under the card.</li>
+  <li><strong>Toasts</strong> - a <DocLink href="toast.html">Toast</DocLink> confirms a copied link and a new comment.</li>
+  <li><strong>Autosave and words</strong> - <code>editorjs-change</code> flips the badge to <em>Editing...</em> and back to <em>Saved</em> with the time; the word count comes from the Markdown read-back, debounced.</li>
+  <li><strong>Narrow</strong> - below 64rem the sidebar is an overlay the panel button opens; below 56rem the comment column becomes an overlay too, toggled from the header.</li>
+  <li><strong>Full screen</strong> - <DocLink href="app-document-editor.html">app-document-editor.html</DocLink> is generated from this page's example at build time and loads only this scaffold's bundle; the Editor.js builds come from jsDelivr, pinned.</li>
+</ul>
+
+</DocPage>

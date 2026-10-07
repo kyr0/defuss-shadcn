@@ -22,7 +22,7 @@ export const STANDALONE_DECKS = ['system-in-numbers'];
 
 /** Application scaffolds with a generated full-screen page (same idea as the
  *  standalone decks: one example fence, two ways to view it). */
-export const STANDALONE_APPS = ['scaffold-admin-dashboard', 'scaffold-messenger', 'scaffold-issue-tracker', 'scaffold-notes', 'scaffold-status-page', 'scaffold-desktop'];
+export const STANDALONE_APPS = ['scaffold-admin-dashboard', 'scaffold-messenger', 'scaffold-issue-tracker', 'scaffold-notes', 'scaffold-status-page', 'scaffold-desktop', 'scaffold-document-editor'];
 
 /** The generated full-screen page name for a scaffold page slug. */
 export const standaloneAppFile = (slug: string): string => `app-${slug.replace(/^scaffold-/, '')}.html`;

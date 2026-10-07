@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "editorjs",
+  "states": {
+    "readonly": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-readonly"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-readonly"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -49,6 +49,15 @@
     "release-zips": "bun scripts/release-zips.ts"
   },
   "devDependencies": {
+    "@editorjs/code": "2.9.4",
+    "@editorjs/delimiter": "1.4.2",
+    "@editorjs/editorjs": "2.31.7",
+    "@editorjs/header": "2.8.9",
+    "@editorjs/inline-code": "1.5.2",
+    "@editorjs/list": "2.0.9",
+    "@editorjs/marker": "1.4.0",
+    "@editorjs/quote": "2.7.6",
+    "@editorjs/table": "2.4.6",
     "@types/bun": "^1.4.1",
     "@types/node": "^26.4.1",
     "@vitest/browser-playwright": "^5.0.0",
@@ -58,6 +67,7 @@
     "defuss-ssg": "^0.7.5",
     "lightningcss": "^1.33.0",
     "linkedom": "^0.18.13",
+    "marked": "18.1.0",
     "mermaid": "12.0.0",
     "oxc-minify": "^0.149.0",
     "oxlint": "^1.81.0",

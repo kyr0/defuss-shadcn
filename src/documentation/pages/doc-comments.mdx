@@ -1,0 +1,155 @@
+---
+title: "Document Comments"
+description: "Document Comments component - a comment column beside a document: comments as cards tied to spans of the text, marks in the document, up and down navigation, replies, quotes that scroll to and flash their span, one JSON model."
+slug: "doc-comments"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="doc-comments" title="Document Comments" component="doc-comments">
+  A column of comments beside a document, the way a Google Doc has one: every comment is a <DocLink href="card.html">Card</DocLink> tied to a span of the text, which the runtime wraps in a mark of the comment's colour. Click the mark and the column scrolls to the card; click the card's excerpt and the document scrolls to the mark; the <DocLink href="button-group.html">ButtonGroup</DocLink> at the top walks the comments up and down. A comment can quote another span - clicking the quote scrolls there and flashes it - and Reply opens a <DocLink href="textarea.html">Textarea</DocLink> composer whose answer nests under the comment. The whole thing is one JSON model. The <DocLink href="scaffold-document-editor.html">Document Editor</DocLink> scaffold puts it next to an <DocLink href="editorjs.html">Editor.js</DocLink> document.
+</PageHeader>
+
+<SkillPanel component="doc-comments">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;aside class="doc-comments" data-for="document-id"&gt;</code> with the model in a <code>&lt;script type="application/json" class="doc-comments-source"&gt;</code>; the document is any element whose blocks carry <code>data-id</code> (Editor.js) or <code>id</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Range" title="the anchored text wrapped across inline elements"><code>Range</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark" title="the highlighted span"><code>&lt;mark&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView" title="column and document scroll to each other's part"><code>scrollIntoView()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" title="the column scrolls on its own"><code>overscroll-behavior</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="one comment colour tints card, avatar and mark"><code>color-mix()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.doc-comments</code>
+    <code>.doc-comments-source</code>
+    <code>.doc-comments-head</code>
+    <code>.doc-comments-list</code>
+    <code>.doc-comments-card</code>
+    <code>.doc-comments-anchor</code>
+    <code>.doc-comments-body</code>
+    <code>.doc-comments-quote</code>
+    <code>.doc-comments-reply</code>
+    <code>.doc-comments-replies</code>
+    <code>.doc-comments-mark</code>
+    <code>.doc-comments-flash</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-for</code> - the document's id (default: the previous sibling); <code>data-author</code> - who writes replies in this column</SkillText>
+  <SkillText dense>• <code>data-current</code> - the current comment's id (the <code>current</code> state); on its card <code>aria-current</code>, on its mark <code>data-current</code></SkillText>
+  <SkillText dense>• a comment's <code>color</code> - <code>chart-1</code> ... <code>chart-5</code> on the card and the mark (<code>data-color</code>); map it to severity, priority or author</SkillText>
+  <SkillText dense>• <code>--doc-comments-width</code> (20rem), <code>--doc-comments-flash</code> (the search-highlight yellow)</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• The model stores block id + text, never DOM positions: marks are searched and placed at load and after an editor change, so they survive edits around them and disappear when the text does. There is no highlight token in the theme - the flash colour is the literal the Search Result block uses.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Comments on a document" hint="A rendered document with ids on its blocks and the column beside it. Click a mark in the text, the excerpt on a card, the ↑ ↓ buttons, the quote in the second comment, and Reply." previewStyle="justify-content:flex-start;align-items:stretch;"
+<div class="flex gap-4" style="block-size: 26rem; max-inline-size: 60rem;">
+  <article id="dc-doc" class="typeset" style="flex: 1 1 0; min-inline-size: 0; overflow: auto; padding: 1rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+    <h2 id="dc-h1" class="m-0 mb-3">Design brief: the comment column</h2>
+    <p id="dc-p1">The Document Editor needs a <b>comment column</b> on the right-hand side that scrolls on its own, independent of the document's scroll flow. Comments are cards tied to highlighted parts of the text.</p>
+    <p id="dc-p2">Clicking a highlight scrolls to its comment; clicking the comment scrolls to the highlight. Comments keep their place while the text around them is edited, because the model stores the block and the exact text, not a position.</p>
+    <p id="dc-p3">Replies nest under their parent. A comment may quote another span of the document - the quote scrolls there and flashes it for a moment, like a search hit.</p>
+    <p id="dc-p4">Colours come from the chart tokens, so a page can map them to severity, to priority or to the author. Every piece is a shipped component: Card, Avatar, Badge, ButtonGroup and the Textarea composer.</p>
+    <p id="dc-p5">The last paragraph is here so the document scrolls: the column stays where it is while this text moves.</p>
+  </article>
+  <aside class="doc-comments" id="dc-comments" data-for="dc-doc" data-author="You" data-state-demo aria-label="Comments" style="border: 1px solid var(--border); border-radius: var(--radius-lg);">
+    <script type="application/json" class="doc-comments-source">
+    {
+      "version": 1,
+      "comments": [
+        { "id": "c1", "author": "Mira Chen", "time": "2026-10-07T09:12:00Z", "color": "chart-2",
+          "anchor": { "block": "dc-p1", "text": "scrolls on its own" },
+          "body": "Independent scrolling is the **whole point** - a long document with many comments must not drag the column along.",
+          "quotes": [{ "block": "dc-p2", "text": "not a position", "note": "this is why the marks survive edits" }] },
+        { "id": "c2", "author": "Jon Park", "time": "2026-10-07T09:30:00Z", "parent": "c1",
+          "body": "Agreed. `overscroll-behavior: contain` keeps the wheel inside the column." },
+        { "id": "c3", "author": "Ada Novak", "time": "2026-10-07T10:02:00Z", "color": "chart-5",
+          "anchor": { "block": "dc-p3", "text": "flashes it for a moment" },
+          "body": "Yellow, like the search highlight - *not* the comment's own colour, so the two never get confused." },
+        { "id": "c4", "author": "Mira Chen", "time": "2026-10-07T10:15:00Z", "color": "chart-1",
+          "anchor": { "block": "dc-p4", "text": "severity, to priority or to the author" },
+          "body": "Pick one mapping per document and say which in the legend. See the [scaffold](https://kyr0.github.io/defuss-shadcn/documentation/scaffold-document-editor.html)." }
+      ]
+    }
+    </script>
+  </aside>
+</div>
+```
+
+```html example label="Marks across inline elements, the API" hint="An anchor may cross bold or code inside a block - every text node of the match gets its own mark, all with the comment's id. Add a comment through the API, follow a quote, read the model back." previewStyle="justify-content:flex-start;align-items:stretch;"
+<div class="stack gap-3" style="max-inline-size: 60rem;">
+  <div class="flex gap-4" style="block-size: 18rem;">
+    <article id="dc-api-doc" style="flex: 1 1 0; min-inline-size: 0; overflow: auto; padding: 1rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+      <p id="dc-api-p1">Anchors are <b>block id</b> plus <code>text</code> - a span that crosses a <b>bold</b> word or an <code>inline code</code> is wrapped piece by piece.</p>
+      <p id="dc-api-p2">The model is plain JSON. Load it, add to it, read it back - persist it wherever the document lives.</p>
+    </article>
+    <aside class="doc-comments" id="dc-api" data-for="dc-api-doc" data-author="Reviewer" aria-label="Comments" style="border: 1px solid var(--border); border-radius: var(--radius-lg);">
+      <script type="application/json" class="doc-comments-source">
+      { "version": 1, "comments": [
+        { "id": "a1", "author": "Lin Osei", "time": "2026-10-07T11:00:00Z", "color": "chart-3", "anchor": { "block": "dc-api-p1", "text": "crosses a bold word or an inline code" }, "body": "Three marks, one comment." }
+      ] }
+      </script>
+    </aside>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="dc-api-add">Add a comment on "plain JSON"</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="dc-api-flash">Flash "read it back"</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="dc-api-next">Next</button>
+    <span class="text-sm text-muted-foreground" id="dc-api-info"></span>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const info = (t) => df$('#dc-api-info').text(t);
+    df$('#dc-api').on('doc-comments-change', (e) => info(`${e.detail.comments} comments${e.detail.id ? `, added ${e.detail.id}` : ''}`));
+    df$('#dc-api').on('doc-comments-select', (e) => info(`current: ${e.detail.id} (${e.detail.source})`));
+    df$('#dc-api-add').on('click', () => df$.shadcn.docComments.add('#dc-api', { author: 'Reviewer', color: 'chart-4', anchor: { block: 'dc-api-p2', text: 'plain JSON' }, body: 'Versioned: `"version": 1`.' }));
+    df$('#dc-api-flash').on('click', () => df$.shadcn.docComments.flash('#dc-api', { block: 'dc-api-p2', text: 'read it back' }));
+    df$('#dc-api-next').on('click', () => df$.shadcn.docComments.next('#dc-api'));
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - no comment is current</li>
+    <li><code>current</code> - <code>{'{ id }'}</code>: that comment's card and mark highlighted and scrolled into view; <code>data-current</code> on the column</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/doc-comments-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/doc-comments.schema.json"><code>doc-comments.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `current` | `string` | — | — | The current comment's id (`data-current` on the column). |
+```
+
+</StatesSection>
+
+<ApiSection component="doc-comments" />
+
+<SourceFiles component="doc-comments" section="css">
+  <SourceNote for="css">The independent scroll, the sticky head, cards and marks tinted by the comment colour, the flash.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="doc-comments" section="js">
+  <SourceNote for="js">The model, mark placement across text nodes, the column rendering, navigation, replies, quotes and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

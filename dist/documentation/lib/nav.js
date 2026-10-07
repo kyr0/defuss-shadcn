@@ -130,6 +130,7 @@ export const NAV = [
     // component page, then its topics (sub-pages carry their badge here)
     { heading: 'WYSIWYG Editors', icon: 'square-pen', items: [
             { label: 'HTML Preview Editor', href: 'code-example.html', isNew: true },
+            { label: 'Editor.js', href: 'editorjs.html', isNew: true },
         ] },
     { heading: 'Questionnaire', icon: 'list-checks', items: [
             { label: 'Questionnaire', href: 'questionnaire.html', isNew: true },
@@ -259,6 +260,7 @@ export const NAV = [
             { label: 'Panel', href: 'panel.html', isNew: true },
             { label: 'Property Grid', href: 'property-grid.html', isNew: true },
             { label: 'Window', href: 'window.html', isNew: true },
+            { label: 'Document Comments', href: 'doc-comments.html', isNew: true },
             {
                 label: 'Scaffolds',
                 href: 'application-scaffolds.html',
@@ -271,6 +273,7 @@ export const NAV = [
                     { label: 'Notes & Docs', href: 'scaffold-notes.html', type: 'TPL', isNew: true },
                     { label: 'Status Page', href: 'scaffold-status-page.html', type: 'TPL', isNew: true },
                     { label: 'Desktop', href: 'scaffold-desktop.html', type: 'TPL', isNew: true },
+                    { label: 'Document Editor', href: 'scaffold-document-editor.html', type: 'TPL', isNew: true },
                 ],
             },
         ] },

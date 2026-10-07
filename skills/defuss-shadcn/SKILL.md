@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.6 - Agent Skill
 
-229 components (169 CSS-only, 60 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+231 components (169 CSS-only, 62 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -232,6 +232,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Notes & Docs](../../src/documentation/pages/scaffold-notes.mdx) - Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views - built only from the shipped components.
   - [Status Page](../../src/documentation/pages/scaffold-status-page.mdx) - Application scaffold: a Statuspage-style status page - overall status, active incidents with their timeline, scheduled maintenance with a countdown, component groups with 90-day uptime bars, response-time metrics, past incidents and history - plus the operator console that creates, updates and resolves incidents live; built only from the shipped components.
   - [Desktop](../../src/documentation/pages/scaffold-desktop.mdx) - Application scaffold: a Windows-style desktop - wallpaper and icons, movable windows, a taskbar with a start menu, quick settings and a clock with a calendar, context menus to change the layout and the theme, and working apps: an editor, a calculator, a browser, settings and a recycle bin - built only from the shipped components.
+  - [Document Editor](../../src/documentation/pages/scaffold-document-editor.mdx) - Application scaffold: a Google-Docs-style document editor - Markdown documents in Editor.js with a formatting toolbar, a comment column that scrolls on its own with comments tied to spans of the text, replies and quotes, a document list, sharing and autosave - built only from the shipped components.
 
 ### Presentations
 
@@ -522,6 +523,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** One source, two views - the `<textarea>` you edit is the srcdoc the sandboxed `<iframe>` runs, so the code shown and the code run cannot differ; the preview runs in an opaque origin, device emulation is CSS zoom over a real viewport, highlighting is Shiki.
 - **When:** Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea.
 - **States:** `default`, `code`, `state`, `fullscreen` · **Skill:** [references/components/code-example.md](references/components/code-example.md) · **Examples:** [src/documentation/pages/code-example.mdx](../../src/documentation/pages/code-example.mdx)
+
+#### Editor.js · MOL · JS
+
+- **Why:** The official Editor.js block editor - clean JSON blocks, a + menu, an inline toolbar - loaded on demand from a pinned build; the component adds the theme, Markdown in and out, a Toolbar binding and the State API.
+- **When:** Long-form documents people edit as blocks - notes, briefs, articles - that are stored as Markdown or as Editor.js JSON; for an editable live example of HTML use the HTML Preview Editor, for a single field a Textarea.
+- **States:** `default`, `readonly` · **Skill:** [references/components/editorjs.md](references/components/editorjs.md) · **Examples:** [src/documentation/pages/editorjs.mdx](../../src/documentation/pages/editorjs.mdx)
 
 ### Questionnaire
 
@@ -882,6 +889,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** A non-modal `<dialog>` - open / close, the close event and the × (a `<form method="dialog">` submit) are the browser's, and resizing is native CSS resize; the runtime only moves windows by their title bar, raises the clicked one to the front and maximizes / minimizes.
 - **When:** Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer.
 - **States:** `default`, `maximized`, `minimized`, `closed` · **Skill:** [references/components/window.md](references/components/window.md) · **Examples:** [src/documentation/pages/window.mdx](../../src/documentation/pages/window.mdx)
+
+#### Document Comments · ORG · JS
+
+- **Why:** Comments on spans of a document as Cards in a column that scrolls on its own - the anchors are marks the runtime wraps around the exact text (block id + text), so a click on the text finds the comment and a click on the comment finds the text; one JSON model carries it all.
+- **When:** Reviewing a document - a Google-Docs-style editor (the Document Editor scaffold on Editor.js), a rendered article, any markup whose blocks carry ids; for a chat about the whole thing use Session, for a plain list of remarks Comment Item.
+- **States:** `default`, `current` · **Skill:** [references/components/doc-comments.md](references/components/doc-comments.md) · **Examples:** [src/documentation/pages/doc-comments.mdx](../../src/documentation/pages/doc-comments.mdx)
 
 ### Chat
 

@@ -2,7 +2,7 @@
 
 # Component catalog
 
-229 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+231 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.6/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -65,6 +65,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | Component | Type | States | JS | When |
 | --- | --- | --- | --- | --- |
 | [HTML Preview Editor](../../defuss-shadcn/references/components/code-example.md) `code-example` | MOL | default, code, state, fullscreen | yes | Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea. |
+| [Editor.js](../../defuss-shadcn/references/components/editorjs.md) `editorjs` | MOL | default, readonly | yes | Long-form documents people edit as blocks - notes, briefs, articles - that are stored as Markdown or as Editor.js JSON; for an editable live example of HTML use the HTML Preview Editor, for a single field a Textarea. |
 
 ## Questionnaire
 
@@ -167,6 +168,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Panel](../../defuss-shadcn/references/components/panel.md) `panel` | MOL | default, minimized, maximized, closed | yes | Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window. |
 | [Property Grid](../../defuss-shadcn/references/components/property-grid.md) `property-grid` | ATM | default, editing | yes | Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form. |
 | [Window](../../defuss-shadcn/references/components/window.md) `window` | ATM | default, maximized, minimized, closed | yes | Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer. |
+| [Document Comments](../../defuss-shadcn/references/components/doc-comments.md) `doc-comments` | ORG | default, current | yes | Reviewing a document - a Google-Docs-style editor (the Document Editor scaffold on Editor.js), a rendered article, any markup whose blocks carry ids; for a chat about the whole thing use Session, for a plain list of remarks Comment Item. |
 
 ## Chat
 

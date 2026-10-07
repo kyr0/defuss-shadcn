@@ -769,6 +769,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/discount-form.png
 **Skill:** [components/website/discount-form/component-skill.md](components/website/discount-form/component-skill.md)
 
+## Document Comments
+
+**Type:** ORG
+**Why:** Comments on spans of a document as Cards in a column that scrolls on its own - the anchors are marks the runtime wraps around the exact text (block id + text), so a click on the text finds the comment and a click on the comment finds the text; one JSON model carries it all.
+**When:** Reviewing a document - a Google-Docs-style editor (the Document Editor scaffold on Editor.js), a rendered article, any markup whose blocks carry ids; for a chat about the whole thing use Session, for a plain list of remarks Comment Item.
+**Files:** dist/components/doc-comments/doc-comments.css + dist/components/doc-comments/doc-comments.js
+**Supported states:** default, current
+**Screenshots:** screenshots/{light,dark}/doc-comments.png, screenshots/{light,dark}/doc-comments-current.png
+**Skill:** [components/application/doc-comments/component-skill.md](components/application/doc-comments/component-skill.md)
+
 ## Dock
 
 **Type:** ATM
@@ -818,6 +828,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, open
 **Screenshots:** screenshots/{light,dark}/dropdown.png, screenshots/{light,dark}/dropdown-open.png
 **Skill:** [components/navigation/dropdown/component-skill.md](components/navigation/dropdown/component-skill.md)
+
+## Editor.js
+
+**Type:** MOL
+**Why:** The official Editor.js block editor - clean JSON blocks, a + menu, an inline toolbar - loaded on demand from a pinned build; the component adds the theme, Markdown in and out, a Toolbar binding and the State API.
+**When:** Long-form documents people edit as blocks - notes, briefs, articles - that are stored as Markdown or as Editor.js JSON; for an editable live example of HTML use the HTML Preview Editor, for a single field a Textarea.
+**Files:** dist/components/editorjs/editorjs.css + dist/components/editorjs/editorjs.js
+**Supported states:** default, readonly
+**Screenshots:** screenshots/{light,dark}/editorjs.png, screenshots/{light,dark}/editorjs-readonly.png
+**Skill:** [components/wysiwyg-editors/editorjs/component-skill.md](components/wysiwyg-editors/editorjs/component-skill.md)
 
 ## Empty State
 

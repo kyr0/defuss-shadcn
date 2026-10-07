@@ -1,0 +1,215 @@
+---
+title: "Editor.js"
+description: "Editor.js integration - the official block editor loaded from its pinned build, themed in the system tokens, with Markdown in and out, Editor.js JSON, a Toolbar binding for the formatting and the State API."
+slug: "editorjs"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="editorjs" title="Editor.js" component="editorjs">
+  The official <a href="https://editorjs.io" target="_blank" rel="noopener">Editor.js</a> block editor as a component: write the document as Markdown (or as Editor.js JSON) inside the element, the runtime loads the pinned builds of the editor and its tools on the first editor of a page, mounts it in the theme's tokens and hands the document back as Markdown or as blocks. A <DocLink href="toolbar.html">Toolbar</DocLink> drives the formatting through <code>data-editor-command</code> buttons. The <DocLink href="scaffold-document-editor.html">Document Editor</DocLink> scaffold builds a Google-Docs-style editor with a comment column on it.
+</PageHeader>
+
+<SkillPanel component="editorjs">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div class="editorjs"&gt;</code> with the document in a <code>&lt;script class="editorjs-source"&gt;</code> (<code>type="text/markdown"</code> or <code>application/json</code>); Editor.js mounts into <code>.editorjs-holder</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="the pinned vendor builds, loaded once"><code>import()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable" title="what Editor.js edits"><code>contenteditable</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand" title="bold, italic, underline on the selection"><code>execCommand()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Range" title="marker and inline code wrap the selection"><code>Range</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event" title="the toolbar follows the caret"><code>selectionchange</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.editorjs</code>
+    <code>.editorjs-source</code>
+    <code>.editorjs-holder</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-tools</code> - the tools to load (<code>header list quote code delimiter marker inlineCode table</code>, all by default)</SkillText>
+  <SkillText dense>• <code>data-readonly</code> - read only (the <code>readonly</code> state); <code>data-placeholder</code> - the empty document's hint</SkillText>
+  <SkillText dense>• <code>data-toolbar="id"</code> - the Toolbar whose <code>data-editor-command</code> buttons drive this editor: <code>bold</code> <code>italic</code> <code>underline</code> <code>marker</code> <code>inline-code</code> <code>paragraph</code> <code>header:1</code> ... <code>header:6</code> <code>list:unordered|ordered|checklist</code> <code>quote</code> <code>code</code> <code>delimiter</code> <code>table</code></SkillText>
+  <SkillText dense>• <code>data-ready</code> / <code>data-error</code> - written by the runtime once the editor mounted, or when the builds could not be loaded</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• The editor and its tools are the official packages, pinned (<code>@editorjs/editorjs@2.31.7</code>, <code>marked@18.1.0</code>) and requested from jsDelivr by the first editor on a page - a page without one never loads them. Until they arrive the element shows a shimmer; offline it reports the failure. <code>df$.shadcn.editorjs.load(url)</code> points it at a self-hosted copy.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Markdown in, Markdown out" hint="The document is Markdown inside the element. Edit it - the + menu adds blocks, the inline toolbar formats a selection - and read it back as Markdown: headings, lists (nested, checklists), quotes, code, rules, tables and the inline formatting survive the round trip." previewStyle="justify-content:flex-start;"
+<div class="stack gap-3" style="max-inline-size: 44rem;">
+  <div class="editorjs" id="ed-brief" data-state-demo data-placeholder="Write the brief...">
+    <script type="text/markdown" class="editorjs-source">
+# Design brief
+
+The **Document Editor** scaffold needs a block editor with a *comment column*. Comments anchor to `spans` of the text and keep their place while the text is edited - see the [scaffold](scaffold-document-editor.html).
+
+- Markdown in, Markdown out
+- a Toolbar for the formatting
+  - toggles follow the selection
+- [ ] comments as cards
+- [x] quotes that scroll to their span
+
+> Every control is a shipped component.
+
+| Part | Component |
+| --- | --- |
+| formatting | Toolbar |
+| comments | Document Comments |
+    </script>
+  </div>
+  <div class="flex items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ed-brief-read"><i data-lucide="file-text"></i> Read as Markdown</button>
+    <span class="text-sm text-muted-foreground" id="ed-brief-count"></span>
+  </div>
+  <textarea class="textarea" id="ed-brief-out" rows="8" readonly aria-label="The document as Markdown" placeholder="Click Read as Markdown"></textarea>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#ed-brief').on('editorjs-change', (e) => df$('#ed-brief-count').text(`${e.detail.blocks} blocks`));
+    df$('#ed-brief-read').on('click', async () => df$('#ed-brief-out').val(await df$.shadcn.editorjs.markdown('#ed-brief')));
+  });
+</script>
+```
+
+```html example label="Formatting from a Toolbar" hint="data-toolbar names a Toolbar; each of its buttons carries a data-editor-command. Select a word and press Bold, put the caret in a line and press Heading 2 - the toggles report the selection's formatting and the current block's type. A toolbar button never takes the selection away from the editor." previewStyle="justify-content:flex-start;"
+<div class="stack gap-3" style="max-inline-size: 44rem;">
+  <div class="toolbar" role="toolbar" aria-label="Formatting" id="ed-bar" data-size="sm">
+    <div class="toggle-group" role="group" aria-label="Text style" data-type="multiple">
+      <button class="toggle" aria-pressed="false" data-editor-command="bold" aria-label="Bold" type="button"><i data-lucide="bold"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="italic" aria-label="Italic" type="button"><i data-lucide="italic"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="underline" aria-label="Underline" type="button"><i data-lucide="underline"></i></button>
+    </div>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <div class="toggle-group" role="group" aria-label="Block" data-type="single">
+      <button class="toggle" aria-pressed="false" data-editor-command="paragraph" aria-label="Paragraph" type="button"><i data-lucide="pilcrow"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="header:1" aria-label="Heading 1" type="button"><i data-lucide="heading-1"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="header:2" aria-label="Heading 2" type="button"><i data-lucide="heading-2"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="header:3" aria-label="Heading 3" type="button"><i data-lucide="heading-3"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="list:unordered" aria-label="Bulleted list" type="button"><i data-lucide="list"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="list:ordered" aria-label="Numbered list" type="button"><i data-lucide="list-ordered"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="list:checklist" aria-label="Checklist" type="button"><i data-lucide="list-checks"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="quote" aria-label="Quote" type="button"><i data-lucide="quote"></i></button>
+      <button class="toggle" aria-pressed="false" data-editor-command="code" aria-label="Code block" type="button"><i data-lucide="square-code"></i></button>
+    </div>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="marker" aria-label="Highlight" type="button"><i data-lucide="highlighter"></i></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="inline-code" aria-label="Inline code" type="button"><i data-lucide="code"></i></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="delimiter" aria-label="Divider" type="button"><i data-lucide="minus"></i></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="table" aria-label="Table" type="button"><i data-lucide="table"></i></button>
+  </div>
+  <div class="editorjs" id="ed-toolbar" data-toolbar="ed-bar">
+    <script type="text/markdown" class="editorjs-source">
+## Formatting
+
+Select a word in this paragraph and press Bold, Italic or Highlight. Put the caret in a line and press a heading or a list button to convert the block.
+
+A second paragraph, to convert into a quote.
+    </script>
+  </div>
+</div>
+```
+
+```html example label="Editor.js JSON, read only" hint="A saved document - Editor.js output data with its block ids - authored as application/json. data-readonly shows it without editing; the readonly state toggles both the attribute and the editor's mode." previewStyle="justify-content:flex-start;"
+<div class="stack gap-3" style="max-inline-size: 44rem;">
+  <div class="editorjs" id="ed-json" data-readonly>
+    <script type="application/json" class="editorjs-source">{"time":1759800000000,"version":"2.31.7","blocks":[{"id":"h1","type":"header","data":{"text":"Release notes 1.4","level":2}},{"id":"p1","type":"paragraph","data":{"text":"The editor keeps the <b>block ids</b> it saved with, so comments and links into the document stay valid."}},{"id":"l1","type":"list","data":{"style":"ordered","meta":{},"items":[{"content":"load the saved JSON","meta":{},"items":[]},{"content":"render it read only","meta":{},"items":[]},{"content":"switch to editing when the reader may","meta":{},"items":[]}]}},{"id":"d1","type":"delimiter","data":{}},{"id":"c1","type":"code","data":{"code":"df$.shadcn.editorjs.blocks('#ed-json').then(console.log);"}}]}</script>
+  </div>
+  <div class="flex items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ed-json-toggle">Make editable</button>
+    <span class="badge" data-variant="secondary" id="ed-json-state">readonly</span>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#ed-json-toggle').on('click', () => {
+      const el = df$('#ed-json').get(0);
+      const next = el.api.getState().name === 'readonly' ? 'default' : 'readonly';
+      el.api.setState(next);
+      df$('#ed-json-state').text(next);
+      df$('#ed-json-toggle').text(next === 'readonly' ? 'Make editable' : 'Make read only');
+    });
+  });
+</script>
+```
+
+```html example label="A subset of tools, an empty document" hint="data-tools limits what the + menu offers - here headings and lists only - and a document without a source starts empty with its placeholder. Only the listed tools are requested." previewStyle="justify-content:flex-start;"
+<div class="editorjs" id="ed-notes" data-tools="header list" data-placeholder="Meeting notes - press / for a heading or a list" style="max-inline-size: 44rem; --editorjs-min-height: 8rem;"></div>
+```
+
+```html example label="Save and restore" hint="The blocks API: Save keeps the Editor.js data, Restore renders it again, Load Markdown replaces the document from a textarea - the same calls a page would make against its own storage." previewStyle="justify-content:flex-start;"
+<div class="stack gap-3" style="max-inline-size: 44rem;">
+  <div class="editorjs" id="ed-store">
+    <script type="text/markdown" class="editorjs-source">
+### Draft
+
+Type here, then Save. Change the text and Restore brings the saved version back.
+    </script>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ed-store-save"><i data-lucide="save"></i> Save</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ed-store-restore" disabled><i data-lucide="history"></i> Restore</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ed-store-load"><i data-lucide="file-input"></i> Load Markdown</button>
+    <span class="text-sm text-muted-foreground" id="ed-store-info"></span>
+  </div>
+  <textarea class="textarea" id="ed-store-md" rows="4" aria-label="Markdown to load">## From Markdown
+
+A document loaded from the textarea above - with a list:
+
+1. first
+2. second</textarea>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let saved = null;
+    df$('#ed-store-save').on('click', async () => {
+      saved = await df$.shadcn.editorjs.blocks('#ed-store');
+      df$('#ed-store-restore').prop('disabled', false);
+      df$('#ed-store-info').text(`saved ${saved.blocks.length} blocks`);
+    });
+    df$('#ed-store-restore').on('click', async () => { if (saved) await df$.shadcn.editorjs.setBlocks('#ed-store', saved); });
+    df$('#ed-store-load').on('click', async () => df$.shadcn.editorjs.setMarkdown('#ed-store', df$('#ed-store-md').val()));
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - editable: the editor accepts input, the toolbar commands apply</li>
+    <li><code>readonly</code> - <code>data-readonly</code> on the element and the editor's read-only mode: the document shows, its toolbars are hidden, nothing edits it</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/editorjs-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a href="../schemas/editorjs.schema.json"><code>editorjs.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `readonly` | `boolean` | `true`, `false` | `false` | Read only: `data-readonly` on the element, the editor in read-only mode. |
+```
+
+</StatesSection>
+
+<ApiSection component="editorjs" />
+
+<SourceFiles component="editorjs" section="css">
+  <SourceNote for="css">The loading shimmer, Editor.js's own classes in the tokens, the readonly look.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="editorjs" section="js">
+  <SourceNote for="js">The pinned vendor loader, Markdown to blocks and back, the Toolbar commands and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

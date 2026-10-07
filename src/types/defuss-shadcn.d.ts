@@ -139,6 +139,32 @@ interface DefussShadcnRegistry {
   /** Iframe (src/components/data-display/iframe/iframe.ts): the message bridge across a frame. Inline,
    * not typeof import() (see toast). VERIFIED: (bun run typecheck, tsc ratchet 0) the members match
    * df$.iframe in that file. */
+  /** Editor.js integration (src/components/wysiwyg-editors/editorjs/editorjs.ts). Inline, not typeof import()
+   * (see toast). VERIFIED: (bun run typecheck, tsc ratchet 0) the members match df$.editorjs in that file. */
+  editorjs?: {
+    load(url?: string): Promise<unknown>;
+    url: string;
+    markdown(target: string | HTMLElement): Promise<string>;
+    setMarkdown(target: string | HTMLElement, markdown: string): Promise<void>;
+    blocks(target: string | HTMLElement): Promise<unknown>;
+    setBlocks(target: string | HTMLElement, data: unknown): Promise<void>;
+    command(target: string | HTMLElement, name: string): Promise<boolean>;
+    editor(target: string | HTMLElement): unknown;
+    toBlocks(target: string | HTMLElement, markdown: string): unknown[];
+    toMarkdown(blocks: unknown[]): string;
+  };
+  /** Document comments (src/components/application/doc-comments/doc-comments.ts). Inline, not typeof import(). */
+  docComments?: {
+    load(target: string | HTMLElement, data: unknown): void;
+    data(target: string | HTMLElement): unknown;
+    add(target: string | HTMLElement, comment: unknown): string | null;
+    reply(target: string | HTMLElement, parentId: string, body: string, author?: string): string | null;
+    go(target: string | HTMLElement, id: string): boolean;
+    next(target: string | HTMLElement): string | null;
+    prev(target: string | HTMLElement): string | null;
+    flash(target: string | HTMLElement, quote: unknown): boolean;
+    refresh(target: string | HTMLElement): void;
+  };
   iframe?: {
     post(target: string | HTMLElement, name: string, detail?: unknown): boolean;
     send(name: string, detail?: unknown): boolean;
@@ -256,6 +282,14 @@ interface HTMLElement {
   _defaultSize?: [number, number];
   /** The authored open state for 'default': the accordion keeps one flag per item, a tree-view branch its own. */
   _defaultOpen?: boolean[] | boolean;
+  /** Editor.js-only: the mounted Editor.js instance. */
+  _editorjs?: unknown;
+  /** Editor.js-only: the Markdown parser the element loaded (marked). */
+  _marked?: unknown;
+  /** Editor.js-only: the toolbar whose data-editor-command buttons drive it. */
+  _toolbar?: HTMLElement;
+  /** Document comments-only: the model the column renders. */
+  _comments?: unknown;
   /** Iframe-only: the last content height written to --iframe-height (data-fit="content"). */
   _iframeHeight?: number;
   /** Iframe-only: the observer following a same-origin framed document. */

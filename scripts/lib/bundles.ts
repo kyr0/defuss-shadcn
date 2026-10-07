@@ -14,7 +14,11 @@
 export const EXTRA_BUNDLES: Readonly<Record<string, readonly string[]>> = {
   // the HTML Preview Editor (editor + sandboxed live preview + device
   // toolbar) - the WYSIWYG Editors section
-  wysiwyg: ['code-example'],
+  // toolbar) and the Editor.js integration (the official block editor, loaded
+  // from its pinned build on demand) - the WYSIWYG Editors section.
+  // VERIFIED: (tests/sections.test.ts; bundle.ts prints "wysiwyg.js (code-example,
+  // editorjs)") a section that IS an extra bundle must list exactly its members.
+  wysiwyg: ['code-example', 'editorjs'],
 };
 
 /** The extra bundle a component ships in, or null when it rides in all.*. */

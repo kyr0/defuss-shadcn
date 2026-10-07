@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>doc-comments e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/button-group/button-group.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/avatar/avatar.css" />
+    <link rel="stylesheet" href="/dist/components/card/card.css" />
+    <link rel="stylesheet" href="/dist/components/textarea/textarea.css" />
+    <link rel="stylesheet" href="/dist/components/doc-comments/doc-comments.css" />
+  </head>
+  <body style="padding:2rem;">
+    <!-- mirrors the doc page: a document with ids on its blocks, a column with
+         a thread (reply), a quote and three colours; a second, empty column -->
+    <div style="display:flex;gap:1rem;height:24rem;">
+      <article id="doc" style="flex:1;overflow:auto;">
+        <h2 id="h1">Design brief</h2>
+        <p id="p1">The editor needs a <b>comment column</b> beside the text that scrolls on its own.</p>
+        <p id="p2">Comments keep their place while the text is edited. The word place repeats: place.</p>
+        <p id="p3">Replies nest under their parent; a quote flashes its span.</p>
+        <p id="p4">Filler so the document scrolls.</p><p>Filler.</p><p>Filler.</p><p>Filler.</p><p>Filler.</p><p>Filler.</p><p>Filler.</p><p>Filler.</p>
+        <p id="p5">The last paragraph.</p>
+      </article>
+      <aside class="doc-comments" id="dc" data-for="doc" data-author="Tester" aria-label="Comments">
+        <script type="application/json" class="doc-comments-source">
+        { "version": 1, "comments": [
+          { "id": "c1", "author": "Mira Chen", "time": "2026-10-07T09:12:00Z", "color": "chart-2", "anchor": { "block": "p1", "text": "a comment column beside" }, "body": "Should this be **collapsible**? See `--doc-comments-width` and [the docs](https://example.org/docs).", "quotes": [{ "block": "p5", "text": "last paragraph", "note": "the quote target" }] },
+          { "id": "c2", "author": "Jon Park", "time": "2026-10-07T09:30:00Z", "parent": "c1", "body": "Yes." },
+          { "id": "c3", "author": "Ada Novak", "time": "2026-10-07T10:02:00Z", "color": "chart-5", "anchor": { "block": "h1", "text": "brief" }, "body": "Title comment - anchored first in the document." },
+          { "id": "c4", "author": "Lin Osei", "time": "2026-10-07T10:15:00Z", "color": "chart-1", "anchor": { "block": "p2", "text": "place", "occurrence": 2 }, "body": "<script>alert(1)<\/script> the third place." },
+          { "id": "c5", "author": "Gone Text", "anchor": { "block": "p3", "text": "not in the document" }, "body": "No mark for me." }
+        ] }
+        </script>
+      </aside>
+    </div>
+    <div style="display:flex;gap:1rem;height:10rem;margin-top:1rem;">
+      <article id="doc2"><p id="q1">A second document.</p></article>
+      <aside class="doc-comments" id="dc2" data-for="doc2" aria-label="Comments"></aside>
+    </div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/doc-comments/doc-comments.js"></script>
+  </body>
+</html>
