@@ -18,19 +18,19 @@
   "examples": 1553,
   "withJs": 59,
   "withoutJs": 169,
-  "totalSize": 2330348,
-  "totalSizeMinified": 1202890,
-  "totalSizeGz": 707874,
-  "totalSizeGzMinified": 401590,
+  "totalSize": 2330629,
+  "totalSizeMinified": 1202989,
+  "totalSizeGz": 707993,
+  "totalSizeGzMinified": 401616,
   "bundle": {
     "jsSize": 802047,
     "jsSizeMinified": 462097,
-    "cssSize": 1225357,
-    "cssSizeMinified": 749505,
-    "totalSizeGz": 433255,
-    "totalSizeGzMinified": 269715,
+    "cssSize": 1225638,
+    "cssSizeMinified": 749604,
+    "totalSizeGz": 433372,
+    "totalSizeGzMinified": 269736,
     "jsSizeGzMinified": 140945,
-    "cssSizeGzMinified": 128770
+    "cssSizeGzMinified": 128791
   },
   "core": {
     "jsSize": 144460,
@@ -535,12 +535,12 @@
       ],
       "jsSize": 23407,
       "jsSizeMinified": 15047,
-      "cssSize": 23168,
-      "cssSizeMinified": 14061,
-      "totalSizeGz": 12495,
-      "totalSizeGzMinified": 9252,
+      "cssSize": 23449,
+      "cssSizeMinified": 14160,
+      "totalSizeGz": 12613,
+      "totalSizeGzMinified": 9278,
       "jsSizeGzMinified": 5850,
-      "cssSizeGzMinified": 3402
+      "cssSizeGzMinified": 3428
     },
     "website": {
       "heading": "Website",
@@ -2435,12 +2435,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 14757,
-      "cssSizeMinified": 8798,
-      "totalSizeGz": 3519,
-      "totalSizeGzMinified": 2350,
-      "totalSize": 14757,
-      "totalSizeMinified": 8798
+      "cssSize": 15038,
+      "cssSizeMinified": 8897,
+      "totalSizeGz": 3638,
+      "totalSizeGzMinified": 2376,
+      "totalSize": 15038,
+      "totalSizeMinified": 8897
     },
     "parallax": {
       "name": "parallax",

@@ -188,6 +188,20 @@ warn-ratchets it still reports, e.g. `STATE_API_LEGACY`, are named migration
 debt with an explicit removal path - not permission to ignore them.) The
 full rationale lives in [ARCH.md](ARCH.md).
 
+### One owner per concern, explicit contracts (STRONGLY RECOMMENDED)
+
+- **One concern, one owner module; every other module asks it.**
+- **Contracts between modules are explicit and checked** (State API, store,
+  render(), schema, typed API, dialog ownership), because every cross-module
+  failure so far came from an implicit one.
+- **Compose, don't share state or inherit.** A component reaches another only
+  through its public `df$.shadcn.*` API or DOM events.
+- **A tool that reads source as text is a parser.** When the source syntax
+  changes (a type argument, a new call shape), find every scanner over it
+  (apps.ts, verify's regexes, component-api.ts) and test it with the new syntax.
+- **Significant behavior-neutral changes should be proven by the shipped
+  bytes**, not only by green tests: `cmp` the minified files against HEAD.
+
 ### Each component owns its dialog
 
 `dialog.js`'s init claims plain `<dialog>` elements for backdrop-click close,

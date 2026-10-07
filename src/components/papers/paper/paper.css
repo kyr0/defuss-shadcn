@@ -382,7 +382,7 @@
     vertical-align: 0.1em;
     white-space: nowrap;
 
-    &[data-tag="verified"] { --paper-tag: var(--chart-2); }
+    &[data-tag="verified"] { --paper-tag: var(--chart-2); color: #fff; }
     &[data-tag="hypothesis"] { --paper-tag: var(--chart-1); }
     &[data-tag="unknown"] { --paper-tag: var(--chart-5); }
   }
@@ -390,6 +390,13 @@
     .paper-tag {
       /* light fill → near-black text, dark fill → white text */
       color: oklch(from var(--paper-tag) clamp(0.12, (0.64 - l) * 100, 0.99) 0 0);
+
+      /* VERIFIED is always white on its fill; a light theme's fill is
+         darkened to L 0.55, where white bold text keeps ≥ 4.5:1 */
+      &[data-tag="verified"] {
+        --paper-tag: oklch(from var(--chart-2) min(l, 0.55) c h);
+        color: #fff;
+      }
     }
   }
   .paper-tags > li::before {

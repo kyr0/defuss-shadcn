@@ -71,3 +71,8 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T18:26:05Z s=c273a037 FINDING src/components/data-display/calendar CalendarViewState (self-correction) learn=verifier: the tsc ratchet.
 2026-10-06T18:26:05Z s=c273a037 FINDING src/types/defuss-shadcn.d.ts _defaultOpen learn=none: a shared stash name across components is a latent collision only if one element hosts both; no check looks for it.
 2026-10-06T18:26:05Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.9 learn=none: claim precision is a reading judgment; prose check 0 findings, the figures cite their sources.
+2026-10-07T04:38:45Z s=c273a037 DONE fp=2ff6f9ea4f2d cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1379)
+2026-10-07T04:38:45Z s=c273a037 FINDING AGENTS.md "One owner per concern, explicit contracts" learn=none: a recommendation, not a gate; only the path-ownership part could be enforced by verify, and that was offered, not built.
+2026-10-07T04:38:45Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 10 (user corrections) learn=none: the figures cite the transcript; claim precision is a reading judgment beyond the prose check.
+2026-10-07T04:38:45Z s=c273a037 FINDING src/components/papers/paper/paper.css .paper-tag[data-tag="verified"] learn=test: paper.e2e "VERIFIED is white text at >= 4.5:1, also on a theme whose chart-2 is light" - fails on the HEAD all.css (probe: 3.62 and black), passes now.
+2026-10-07T04:38:45Z s=c273a037 FINDING src/documentation/pages/paper.mdx Figures 7 + 8 learn=none: inspected in light and dark screenshots (tmp/fig7-*.png, tmp/fig8-*.png); paper.e2e checks only that every chart mounts.

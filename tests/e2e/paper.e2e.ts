@@ -57,6 +57,21 @@ await cssSmoke('paper', [
     if (r.missing.length || r.linked < r.sections || r.cols !== '2') throw new Error(JSON.stringify(r));
   } },
   { label: 'epistemic tags are solid chips in three distinct chart colors', distinct: [{ selector: '.paper-tag[data-tag="verified"]', prop: 'backgroundColor' }, { selector: '.paper-tag[data-tag="hypothesis"]', prop: 'backgroundColor' }, { selector: '.paper-tag[data-tag="unknown"]', prop: 'backgroundColor' }] },
+  { label: 'VERIFIED is white text at >= 4.5:1, also on a theme whose chart-2 is light', run: async (page) => {
+    const r = await page.evaluate(() => {
+      const tag = document.querySelector<HTMLElement>('.paper-tag[data-tag="verified"]')!;
+      const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+      const rgb = (css: string) => { ctx.clearRect(0, 0, 1, 1); ctx.fillStyle = css; ctx.fillRect(0, 0, 1, 1); return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3); };
+      const lum = (c: number[]) => { const [r, g, b] = c.map((v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+      const read = () => { const s = getComputedStyle(tag); const fg = rgb(s.color), bg = rgb(s.backgroundColor); const [a, b] = [lum(fg), lum(bg)].sort((x, y) => y - x); return { fg: fg.join(','), ratio: +((a + 0.05) / (b + 0.05)).toFixed(2) }; };
+      const base = read();
+      tag.style.setProperty('--chart-2', 'oklch(0.85 0.12 150)');
+      const light = read();
+      tag.style.removeProperty('--chart-2');
+      return { base, light };
+    });
+    for (const k of ['base', 'light'] as const) if (r[k].fg !== '255,255,255' || r[k].ratio < 4.5) throw new Error(JSON.stringify(r));
+  } },
   { label: 'the figures mount their charts (echarts, SVG)', run: async (page) => {
     await page.waitForFunction(() => document.querySelectorAll('.paper-chart svg').length === document.querySelectorAll('.paper-chart').length && document.querySelectorAll('.paper-chart').length >= 3, undefined, { timeout: 15000 });
   } },
