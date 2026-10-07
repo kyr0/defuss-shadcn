@@ -4,27 +4,11 @@
 Agents append `<UTC ISO> s=<session> LESSON <VAE-DIALECT>` only for a falsified HYPOTHESIS, a dead end, or a root cause.
 A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then delete its lines. -->
 
-2026-10-06T14:07:19Z s=c273a037 DONE fp=a598332f5a81 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+735)
 2026-10-06T14:07:19Z s=c273a037 FINDING package.json packageManager (bun@1.3.9) learn=none: CI itself is the check - setup-bun reads the version from package.json, so a mismatch fails stats.json fresh on the next run.
-2026-10-06T14:15:59Z s=c273a037 DONE fp=0fc3aba24cdf cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
 2026-10-06T14:15:59Z s=c273a037 FINDING vitest.config.ts / tests/helpers.ts timeouts learn=none: the CI run itself; CI=1 locally passes the diagram test with the scaled limits.
-2026-10-06T14:41:07Z s=c273a037 DONE fp=fd2ca951b1e6 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
-2026-10-06T15:34:51Z s=c273a037 DONE fp=94472c5f6937 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
-2026-10-06T16:16:20Z s=c273a037 FAIL prose,env.example
-2026-10-06T16:43:45Z s=c273a037 DONE fp=14d71d421379 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1480)
-2026-10-06T16:43:45Z s=c273a037 FINDING src/components/<section>/<name>/ (the move) learn=verifier: verify's new component sections gate (scripts/lib/component-sections.ts) fails a component outside its section, in another section or without section:, naming t
-2026-10-06T16:43:45Z s=c273a037 FINDING the move itself (process) learn=test: the link transforms are pinned in tests/skill.test.ts; verify's dist 1:1 gate compares the shipped skills and index through them.
 2026-10-06T16:43:45Z s=c273a037 FINDING scripts/lib/type-baseline.ts (re-keyed) learn=none: the re-key script refused any changed count; the ratchet itself guards the future.
-2026-10-06T16:46:15Z s=c273a037 DONE fp=15aa7f6de847 cov=75.7% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1375)
-2026-10-06T18:26:05Z s=c273a037 DONE fp=a7d10c5d0b08 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1378)
-2026-10-06T18:26:05Z s=c273a037 FINDING src/shared/query.ts HostQuery (type root) learn=verifier: verify's component types (tsc ratchet) gate with an empty TYPE_BASELINE: any new error in any component fails.
-2026-10-06T18:26:05Z s=c273a037 FINDING 45 components + component-state.ts + defuss-shadcn.d.ts (the 440 local errors) learn=verifier: the tsc ratchet (0 baseline) plus the strict typecheck; the byte comparison was a one-off probe for this change.
-2026-10-06T18:26:05Z s=c273a037 FINDING scripts/lib/apps.ts initHooks learn=test: tests/apps.test.ts "sees a typed query the same (a type argument once hid dialog.js from the Notes app bundle)".
-2026-10-06T18:26:05Z s=c273a037 FINDING scripts/verify.ts state API markers + dialog ownership claim learn=verifier: the gates failed by name on the typed source and pass now; verify runs on every build.
-2026-10-06T18:26:05Z s=c273a037 FINDING src/components/data-display/calendar CalendarViewState (self-correction) learn=verifier: the tsc ratchet.
 2026-10-06T18:26:05Z s=c273a037 FINDING src/types/defuss-shadcn.d.ts _defaultOpen learn=none: a shared stash name across components is a latent collision only if one element hosts both; no check looks for it.
 2026-10-06T18:26:05Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.9 learn=none: claim precision is a reading judgment; prose check 0 findings, the figures cite their sources.
-2026-10-07T04:38:45Z s=c273a037 DONE fp=2ff6f9ea4f2d cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+1379)
 2026-10-07T04:38:45Z s=c273a037 FINDING AGENTS.md "One owner per concern, explicit contracts" learn=none: a recommendation, not a gate; only the path-ownership part could be enforced by verify, and that was offered, not built.
 2026-10-07T04:38:45Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 10 (user corrections) learn=none: the figures cite the transcript; claim precision is a reading judgment beyond the prose check.
 2026-10-07T04:38:45Z s=c273a037 FINDING src/components/papers/paper/paper.css .paper-tag[data-tag="verified"] learn=test: paper.e2e "VERIFIED is white text at >= 4.5:1, also on a theme whose chart-2 is light" - fails on the HEAD all.css (probe: 3.62 and black), passes now.
@@ -104,3 +88,19 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx sections 6, 7, 5.7, 12 learn=none: a reading judgment; no mechanical check distinguishes an anecdote from a result.
 2026-10-07T17:57:06Z s=c273a037 FINDING session figures supplied by the user (not written) learn=none: the figure came from a person, not a check; the paper cites the transcript as its source.
 2026-10-07T17:57:06Z s=c273a037 FINDING paper: two-line captions off-center, tags with a blank inside (user finding) learn=test: paper.e2e: "a tag inside an indented paragraph is not indented itself" (text offset = padding) and "a wrapping caption keeps every line centered" (last line box
+2026-10-07T18:29:19Z s=029d0000 DONE fp=1f44c43cb601 cov=? paths=src/documentation/pages/paper.mdx
+2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx section 2 (B09) learn=none: a version pin in prose; no check can tell which release a page describes
+2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 5.1, 5.5, Figures 3-6, Table 2 (B09) learn=none: historical figures are dated snapshots by design; current figures are already data-stat elements the stat figures gate checks
+2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx Results tiles + 5.1 (L03) learn=none: the two sources are both correct for their dates; dating the record is the fix, not a rule
+2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx section 12 item 1 (T04) learn=none: section cross-references in prose are a reading judgment
+2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 2.1, 2.3, 5.2 (B02) learn=none: claim scope against a source is a reading judgment (walk + catalog)
+2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx section 3 (B01) learn=none: external sources; no local check applies
+2026-10-07T19:37:11Z s=029d0000 FAIL prose,tests.unit,tests.integration.1,tests.e2e.1
+2026-10-07T19:58:17Z s=029d0000 FAIL tests.integration.1
+2026-10-07T20:40:09Z s=029d0000 DONE fp=a6cd5b726598 cov=74.8% paths=README.md,bun.lock,package.json,scripts/lib/readme.ts(+25)
+2026-10-07T20:40:09Z s=029d0000 FINDING scripts/verify.ts section 27 (README <-> index commit window) learn=test: tests/readme.test.ts pins both-dirty, one-dirty, same-commit/within-window and the 63-minute case
+2026-10-07T20:40:09Z s=029d0000 FINDING README.md:14-15, src/documentation/pages/index.mdx:5 (front matter), pages/paper.mdx + system-in-numbers.mdx data-stat figures learn=verifier: the existing gates caught it; nothing new to encode
+2026-10-07T20:40:09Z s=029d0000 FINDING src/components/data-display/qr-code/component-skill.md:56 (T02) learn=verifier: the static prose check caught it
+2026-10-07T20:40:09Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 1-12 (B01, B02, L01, P06, R04, A01, S03) learn=none: claim scope and falsifier logic are reading judgments; the report states that the static check and the walk do not catch them
+2026-10-07T20:40:09Z s=029d0000 FINDING src/documentation/pages/paper.mdx section elements (data-lead=smallcaps) learn=none: whether a font has real small caps is not detectable in CSS or by a static check; the Typography option stays available for fonts that have them
+2026-10-07T20:40:09Z s=029d0000 FINDING src/components/data-display/qr-code/qr-code.ts encodeGeometry/applyMarkup (security review) learn=none: no finding to encode
