@@ -36,7 +36,7 @@ import {
   SKILL_OUTPUT_FILE,
   SKILL_TEMPLATE_FILE,
 } from './lib/skill.ts';
-import { readmeCssOnlyProblems } from './lib/readme.ts';
+import { commitWindowProblems, readmeCssOnlyProblems, type PairFile } from './lib/readme.ts';
 import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeatureProblems } from './lib/fields.ts';
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
@@ -1405,33 +1405,21 @@ check(
 // promises to humans and browser users, so touching one without the other
 // within 15 minutes of commit time is treated as an un-synced edit (the
 // hero paragraph diverged once: "No build step for consumers - dist/ is
-// committed…" vs "No build step."). Identity of the touching commit passes;
-// otherwise the two last-touch commits must be ≤ SYNC_WINDOW apart.
+// committed…" vs "No build step."). Uncommitted edits count too: both pass,
+// one alone fails before it is committed (commitWindowProblems, lib/readme.ts).
 {
   const SYNC_WINDOW = 15 * 60; // seconds
-  const PAIR: Array<[string, string]> = [
-    ['README.md', 'README.md'],
-    ['index page', 'src/documentation/pages/index.mdx'],
-  ];
-  const [readmeHash, readmeAt, indexHash, indexAt] = PAIR.flatMap(([, path]) =>
-    Bun.spawnSync({ cmd: ['git', 'log', '-1', '--format=%H %ct', '--', path], cwd: ROOT })
+  const side = (name: string, path: string): PairFile => {
+    const [hash = '', at = '0'] = Bun.spawnSync({ cmd: ['git', 'log', '-1', '--format=%H %ct', '--', path], cwd: ROOT })
       .stdout.toString()
       .trim()
-      .split(' '),
-  );
-  const problems: string[] = [];
-  if (readmeHash && indexHash && readmeHash !== indexHash) {
-    const gap = Math.abs(Number(readmeAt) - Number(indexAt));
-    if (gap > SYNC_WINDOW) {
-      const older = Number(readmeAt) < Number(indexAt) ? 'README.md' : 'pages/index.mdx';
-      problems.push(
-        `${older} was last committed ${Math.round(gap / 60)} min apart from the other (> ${SYNC_WINDOW / 60} min) - its statements may have drifted`,
-      );
-    }
-  }
+      .split(' ');
+    const dirty = Bun.spawnSync({ cmd: ['git', 'status', '--porcelain', '--', path], cwd: ROOT }).stdout.toString().trim() !== '';
+    return { name, hash, at: Number(at), dirty };
+  };
   check(
     'README ↔ index commit window',
-    problems,
+    commitWindowProblems(side('README.md', 'README.md'), side('pages/index.mdx', 'src/documentation/pages/index.mdx'), SYNC_WINDOW),
     'update README.md and src/documentation/pages/index.mdx in the same commit (or within 15 min of each other) so their shared claims stay true (AGENTS.md "README ↔ index parity")',
   );
   }

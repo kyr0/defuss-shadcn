@@ -31,3 +31,27 @@ export function readmeCssOnlyProblems(text: string, file: string, actual: Actual
     ];
   return [];
 }
+
+/** One side of the README ↔ index pair: its last commit (hash, Unix seconds) and whether it has uncommitted edits. */
+export type PairFile = { name: string; hash: string; at: number; dirty: boolean };
+
+/**
+ * Why: README.md and the index page state the same promises, so they land together. The check once read only
+ * commit history. VERIFIED: (2026-10-07, commit f33c7e73) a README-only edit passed it, got committed, and from then
+ * on failed every verify run - while the commit gate refused the commit that would land both files. Uncommitted
+ * edits therefore count: edits to both
+ * pass (they land in one commit), an edit to one alone fails before it is committed. With neither edited, the
+ * last commits touching each must be the same commit or at most `windowSeconds` apart.
+ */
+export function commitWindowProblems(a: PairFile, b: PairFile, windowSeconds: number): string[] {
+  if (a.dirty && b.dirty) return [];
+  if (a.dirty !== b.dirty) {
+    const [edited, other] = a.dirty ? [a, b] : [b, a];
+    return [`${edited.name} has uncommitted edits but ${other.name} has none - edit both so they land in one commit`];
+  }
+  if (!a.hash || !b.hash || a.hash === b.hash) return [];
+  const gap = Math.abs(a.at - b.at);
+  if (gap <= windowSeconds) return [];
+  const older = a.at < b.at ? a.name : b.name;
+  return [`${older} was last committed ${Math.round(gap / 60)} min apart from the other (> ${windowSeconds / 60} min) - its statements may have drifted`];
+}

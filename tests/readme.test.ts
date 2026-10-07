@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readmeCssOnlyProblems } from '../scripts/lib/readme.ts';
+import { commitWindowProblems, readmeCssOnlyProblems } from '../scripts/lib/readme.ts';
 
 /**
  * Why: verify.ts's "README/index CSS-only stat" gates compare the advertised
@@ -38,5 +38,33 @@ describe('readmeCssOnlyProblems', () => {
   it('tolerates whitespace and casing variants of the claim', () => {
     const text = '42 of 68 components need no javascript';
     expect(readmeCssOnlyProblems(text, 'x', actual)).toEqual([]);
+  });
+});
+
+describe('commitWindowProblems', () => {
+  const WINDOW = 15 * 60;
+  const readme = (at: number, dirty = false, hash = 'r') => ({ name: 'README.md', hash, at, dirty });
+  const index = (at: number, dirty = false, hash = 'i') => ({ name: 'pages/index.mdx', hash, at, dirty });
+
+  it('passes uncommitted edits to both files, however far apart their last commits are', () => {
+    expect(commitWindowProblems(readme(0, true), index(4 * 3600, true), WINDOW)).toEqual([]);
+  });
+
+  it('fails an uncommitted edit to one file alone, naming both', () => {
+    const problems = commitWindowProblems(readme(0, true), index(0, false, 'r'), WINDOW);
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain('README.md has uncommitted edits');
+    expect(problems[0]).toContain('pages/index.mdx');
+  });
+
+  it('passes a clean pair touched by the same commit or within the window', () => {
+    expect(commitWindowProblems(readme(0, false, 'x'), index(9999, false, 'x'), WINDOW)).toEqual([]);
+    expect(commitWindowProblems(readme(0), index(WINDOW), WINDOW)).toEqual([]);
+  });
+
+  it('fails a clean pair committed further apart, naming the older file', () => {
+    const problems = commitWindowProblems(readme(3780), index(0), WINDOW);
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain('pages/index.mdx was last committed 63 min apart');
   });
 });
