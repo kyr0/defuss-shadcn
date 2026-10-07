@@ -36,9 +36,14 @@ export function parseColor(c: string): RGB | null {
     const b = conv(parts[2], 255);
     return r === null || g === null || b === null ? null : [r, g, b];
   }
-  m = s.match(/^oklch\(\s*([^ ]+|[^a-z]+)\s+(-?[\d.]+|none)\s+(-?[\d.]+|none)(?:deg)?\s*\)$/i);
+  // hsl(h s% l%) / hsl(h, s%, l%) - older tweakcn exports; alpha ignored like oklch's
+  m = s.match(/^hsla?\(\s*(-?[\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%\s*(?:[,/][^)]*)?\)$/i);
+  if (m) return hslToRgb(parseFloat(m[1]), parseFloat(m[2]) / 100, parseFloat(m[3]) / 100);
+  // oklch(L C H) with L as a number or a percentage, an optional `/ alpha`
+  // (measured as opaque - the pairs a theme must keep readable are solid)
+  m = s.match(/^oklch\(\s*([\d.]+%?|none)\s+(-?[\d.]+|none)\s+(-?[\d.]+|none)(?:deg)?\s*(?:\/\s*[\d.]+%?\s*)?\)$/i);
   if (m) {
-    const L = parseFloat(m[1] === 'none' ? '0' : m[1]);
+    const L = m[1].endsWith('%') ? parseFloat(m[1]) / 100 : parseFloat(m[1] === 'none' ? '0' : m[1]);
     const C = parseFloat(m[2] === 'none' ? '0' : m[2]);
     let H = parseFloat(m[3] === 'none' ? '0' : m[3]);
     if (Number.isNaN(L) || Number.isNaN(C) || Number.isNaN(H)) return null;
@@ -48,9 +53,10 @@ export function parseColor(c: string): RGB | null {
 }
 
 /**
- * Why: OKLCH → linear sRGB (standard Björn Ottosson inverse: OKLab → LMS →
- * cube root → LMS-to-linear-RGB). Clamps to [0,255]; out-of-gamut colors land
+ * Why: OKLCH → sRGB (standard Björn Ottosson inverse: OKLab → LMS →
+ * cube → linear RGB → the sRGB transfer). Clamps to [0,255]; out-of-gamut colors land
  * on the nearest gamut edge, which is fine for contrast measurement.
+ * VERIFIED: (tests/contrast.test.ts) mid grey oklch(0.5998 0 0) → 128.
  */
 export function oklchToRgb(L: number, C: number, Hdeg: number): RGB {
   const h = (Hdeg * Math.PI) / 180;
@@ -67,11 +73,22 @@ export function oklchToRgb(L: number, C: number, Hdeg: number): RGB {
     -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
     -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
   ];
-  return lin.map((v) => Math.round(Math.min(1, Math.max(0, v)) * 255)) as RGB;
+  // linear → sRGB transfer (the gamma step): without it a mid grey came out
+  // at 55 instead of 128 and every OKLCH contrast was measured too dark
+  const encode = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
+  return lin.map((v) => Math.round(Math.min(1, Math.max(0, encode(Math.min(1, Math.max(0, v))))) * 255)) as RGB;
+}
+
+/** HSL (degrees, 0-1, 0-1) → sRGB 0-255 (CSS Color 4 algorithm). */
+function hslToRgb(h: number, s: number, l: number): RGB {
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+  return [f(0), f(8), f(4)].map((v) => Math.round(v * 255)) as RGB;
 }
 
 /** WCAG relative luminance (sRGB → linear → weighted sum). */
-function luminance([r, g, b]: RGB): number {
+export function luminance([r, g, b]: RGB): number {
   const chan = (v: number) => {
     const c = v / 255;
     return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;

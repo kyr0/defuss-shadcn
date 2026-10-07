@@ -5,6 +5,8 @@ import { PIN_GLOBS, PIN_IGNORE, VERSION_SITES, pinDrift, rewritePins, versionDri
 const files: Record<string, string> = {
   'package.json': '{\n  "name": "x",\n  "version": "1.2.3"\n}\n',
   '.claude-plugin/plugin.json': '{\n  "name": "x",\n  "version": "1.2.3"\n}\n',
+  '.codex-plugin/plugin.json': '{\n  "name": "x",\n  "version": "1.2.3"\n}\n',
+  'plugin.json': '{\n  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",\n  "name": "x",\n  "version": "1.2.3"\n}\n',
   'src/shared/version.ts': "export const SHARED_ABI = '1.2.3';\n",
   'src/documentation/pages/system-in-numbers.mdx': '<p class="sys-eyebrow">defuss-shadcn · v1.2.3</p>',
 };

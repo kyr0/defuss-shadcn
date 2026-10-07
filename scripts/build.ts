@@ -3,6 +3,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, r
 import { dirname, join, relative } from 'node:path';
 import { ROOT_SKILL_OUTPUT_FILE, SKILL_OUTPUT_FILE } from './lib/skill.ts';
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
+import { AGENT_SKILLS, agentSkillDir, buildAgentSkills } from './lib/agent-skills.ts';
 import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { schemaManifestText } from './lib/schema.ts';
@@ -73,6 +74,16 @@ writeFileSync(join(ROOT, ROOT_SKILL_OUTPUT_FILE), await buildRootSkillText(ROOT)
     writeFileSync(join(skillDir, rel), text);
   }
 }
+// …and the task skills (shadcn-plan / -theme / -review): SKILL.md, generated
+// references, bundled checkers - each folder rewritten whole, so nothing stale stays.
+// VERIFIED: (verify `agent skills ↔ sources` reports any stray file)
+{
+  for (const name of AGENT_SKILLS) rmSync(join(ROOT, agentSkillDir(name)), { recursive: true, force: true });
+  for (const [rel, text] of await buildAgentSkills(ROOT)) {
+    mkdirSync(dirname(join(ROOT, rel)), { recursive: true });
+    writeFileSync(join(ROOT, rel), text);
+  }
+}
 
 // 0b. regenerate one theme stylesheet per tweakcn preset into src/theme/,
 // from the themes.ts dataset (single source). The 1:1 copy below ships them
@@ -121,6 +132,8 @@ cpSync(SRC, DIST, {
   filter: (s) => {
     const rel = relative(SRC, s).replace(/\\/g, '/');
     if (rel === 'documentation' || rel.startsWith('documentation/')) return false;
+    // the task skills' templates: scripts/lib/agent-skills.ts renders them into skills/, never dist/
+    if (rel === 'skills' || rel.startsWith('skills/')) return false;
     return !s.endsWith('.ts');
   },
 });

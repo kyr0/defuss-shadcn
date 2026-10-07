@@ -41,6 +41,8 @@ import { ariaDescribedByProblems, fieldDescriptionOwnerProblems, fieldFeaturePro
 import { parseThemes, defaultTokenModes, sidebarContrastProblems, radiusConsistencyProblems } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { buildRootSkillText, buildSkillReferences, buildSkillText } from './lib/skill-files.ts';
+import { AGENT_SKILLS, agentSkillDir, buildAgentSkills } from './lib/agent-skills.ts';
+import { THEME_TOKENS, themeableTokens } from './lib/theme-tokens.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { componentDirs as componentDirsOf, componentFile } from '../src/documentation/lib/component-dirs.ts';
@@ -328,6 +330,8 @@ if (!existsSync(DIST)) {
     // docs SSG authoring inputs (pages/, lib/, runtime/, data/, config.ts)
     // are consumed by defuss-ssg, never copied 1:1
     if (isDocsSsgAuthoringSrc(rel)) continue;
+    // the task skills' templates render into skills/ (agent skills gate), never into dist/
+    if (rel === 'skills' || rel.startsWith(`skills${sep}`)) continue;
     if (rel.endsWith('.ts')) {
       const js = join(DIST, toDist(rel).replace(/\.ts$/, '.js'));
       if (!existsSync(js)) distProblems.push(`dist/${toDist(rel).replace(/\.ts$/, '.js')} missing - rebuild`);
@@ -1834,6 +1838,45 @@ check(
       'root SKILL.md ↔ sources',
       rootProblems,
       `run \`bun run build\` (build.ts regenerates the repo-root ${ROOT_SKILL_OUTPUT_FILE} from src/${ROOT_SKILL_TEMPLATE_FILE}; never edit it by hand)`,
+    );
+    // the task skills (shadcn-plan / -theme / -review): every generated file
+    // current, no stray file, every SKILL.md named after its folder - and the
+    // token semantics they teach equal to the tokens the system declares.
+    // VERIFIED: (a three-break probe: each break failed by name)
+    const agentProblems: string[] = [];
+    try {
+      const fresh = await buildAgentSkills(ROOT);
+      for (const [rel, text] of fresh) {
+        if (!existsSync(join(ROOT, rel))) agentProblems.push(`${rel} missing`);
+        else if (readFileSync(join(ROOT, rel), 'utf8') !== text) agentProblems.push(`${rel} is stale vs its sources`);
+      }
+      for (const name of AGENT_SKILLS) {
+        const dir = join(ROOT, agentSkillDir(name));
+        for (const f of existsSync(dir) ? walk(dir, ['']) : []) {
+          const rel = relative(ROOT, f);
+          if (!fresh.has(rel)) agentProblems.push(`${rel} is not generated - remove it, or generate it in scripts/lib/agent-skills.ts`);
+        }
+      }
+      for (const dir of readdirSync(join(ROOT, 'skills'))) {
+        const skill = join(ROOT, 'skills', dir, 'SKILL.md');
+        const named = existsSync(skill) ? readFileSync(skill, 'utf8').match(/^name:\s*(\S+)/m)?.[1] : undefined;
+        if (named !== dir) agentProblems.push(`skills/${dir}/SKILL.md is named "${named ?? '(none)'}" - harnesses address a skill by its folder, so name and folder must match`);
+      }
+      const declared = themeableTokens(readFileSync(join(SRC, 'theme/utils/default-semantic-tokens.css'), 'utf8'));
+      const roles = Object.keys(THEME_TOKENS);
+      for (const t of declared) if (!roles.includes(t)) agentProblems.push(`--${t}: declared by default-semantic-tokens.css, no role in scripts/lib/theme-tokens.ts THEME_TOKENS`);
+      for (const t of roles) if (!declared.includes(t)) agentProblems.push(`--${t}: in THEME_TOKENS, not declared by default-semantic-tokens.css`);
+      const switcher = readFileSync(join(DOCS, 'runtime/theme-switcher.ts'), 'utf8').match(/TOKEN_RE = \/\^\(([^)]+(?:\[[^\]]*\][^)]*)*)\)\$\//)?.[1];
+      const designerTokens = (switcher ?? '').split('|').flatMap((t) => (t === 'chart-[1-5]' ? [1, 2, 3, 4, 5].map((n) => `chart-${n}`) : [t]));
+      if (!switcher) agentProblems.push('runtime/theme-switcher.ts lost its TOKEN_RE - the gate cannot compare the Theme Designer whitelist');
+      else if ([...designerTokens].sort().join() !== [...roles].sort().join()) agentProblems.push(`the Theme Designer's TOKEN_RE (runtime/theme-switcher.ts) and THEME_TOKENS differ: ${designerTokens.filter((t) => !roles.includes(t)).concat(roles.filter((t) => !designerTokens.includes(t))).join(', ')}`);
+    } catch (e) {
+      agentProblems.push(`${(e as Error).message.split('\n')[0]} - the agent skills cannot be generated`);
+    }
+    check(
+      'agent skills ↔ sources',
+      agentProblems,
+      'run `bun run build` (scripts/lib/agent-skills.ts regenerates skills/shadcn-*/ from src/skills/ + the sources; never edit them by hand); a token change belongs in default-semantic-tokens.css, THEME_TOKENS and TOKEN_RE together',
     );
   }
 

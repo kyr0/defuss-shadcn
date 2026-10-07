@@ -60,6 +60,19 @@ function pageMeta(pagesDir: string, slug: string): { title: string; description:
   return { title: field('title'), description: field('description') };
 }
 
+/** The release version and the raw-file base at its tag - the fallback for a
+ *  skill folder copied alone (a skills-CLI install), shared by every skill.
+ *  VERIFIED: (verify `root SKILL.md ↔ sources` unchanged after the lift) */
+export function releaseInfo(root: string): { version: string; rawBase: string } {
+  const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+  const version = pkg.version as string;
+  const repo = String(typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? '')
+    .replace(/^git\+/, '')
+    .replace(/^git@github\.com:/, 'https://github.com/')
+    .replace(/\.git$/, '');
+  return { version, rawBase: `${repo.replace(/^https:\/\/github\.com\//, 'https://raw.githubusercontent.com/')}/v${version}/` };
+}
+
 /** Why: the repo-root SKILL.md - the whole project as ONE agent skill. Pure
  * function of the repo (template, sidebar nav, page + skill frontmatter,
  * package version), so build.ts writes it and verify.ts compares it. */
@@ -77,14 +90,7 @@ export async function buildRootSkillText(root: string): Promise<string> {
     ...e,
     hasJs: existsSync(componentFile(compsDir, e.folder, `${e.folder}.ts`)),
   }));
-  const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-  const version = pkg.version as string;
-  // fallback for a skill folder copied alone: raw files at THIS release's tag
-  const repo = String(typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? '')
-    .replace(/^git\+/, '')
-    .replace(/^git@github\.com:/, 'https://github.com/')
-    .replace(/\.git$/, '');
-  const rawBase = `${repo.replace(/^https:\/\/github\.com\//, 'https://raw.githubusercontent.com/')}/v${version}/`;
+  const { version, rawBase } = releaseInfo(root);
   return assembleRootSkillText(readFileSync(join(src, ROOT_SKILL_TEMPLATE_FILE), 'utf8'), {
     version,
     docsPrefix: '../../',

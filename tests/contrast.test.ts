@@ -38,6 +38,18 @@ describe('parseColor', () => {
     expect(b).toBeGreaterThan(100);
     expect(r).toBeLessThan(100);
   });
+  it('gamma-encodes oklch: mid tones match the CSS Color 4 reference (extremes alone hid a linear-light bug)', () => {
+    expect(parseColor('oklch(0.5998 0 0)')).toEqual([128, 128, 128]);
+    expect(parseColor('oklch(0.62796 0.25768 29.23)')).toEqual([255, 0, 0]);
+    // white text on oklch(0.62 0.19 260) - the paper's VERIFIED chip before its fix - is below AA
+    expect(contrastRatio('#fff', 'oklch(0.62 0.19 260)')!).toBeLessThan(4.5);
+  });
+  it('parses oklch percentages and alpha, and hsl', () => {
+    expect(parseColor('oklch(59.98% 0 0)')).toEqual([128, 128, 128]);
+    expect(parseColor('oklch(1 0 0 / 10%)')).toEqual([255, 255, 255]);
+    expect(parseColor('hsl(0 0% 100%)')).toEqual([255, 255, 255]);
+    expect(parseColor('hsl(240, 100%, 50%)')).toEqual([0, 0, 255]);
+  });
   it('returns null for unknown formats', () => {
     expect(parseColor('rebeccapurple')).toBeNull();
     expect(parseColor('')).toBeNull();

@@ -142,8 +142,13 @@ const camel = (name: string): string => name.replace(/-([a-z])/g, (_m, c: string
 const code = (ts: string): string =>
   ts.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').filter((l) => !/^\s*\/\/|Error\(/.test(l)).join('\n');
 
-/** A resolver over the system's components - build once, ask per app. */
-export function appResolver(components: readonly AppComponentSource[]) {
+/** The components one class belongs to: the component the class is named
+ *  after (`card-title` → card; website blocks `mk-<name>`) if its stylesheet
+ *  styles that class, else every component with a top-level rule for it. One
+ *  owner of class ownership - the app bundles and the review skill's markup
+ *  check (scripts/lib/markup-check.ts) both ask it.
+ *  VERIFIED: (tests/apps.test.ts; dist/apps unchanged after the lift) */
+export function classOwners(components: readonly AppComponentSource[]): (cls: string) => string[] {
   const byName = new Map(components.map((c) => [c.name, c]));
   const names = components.map((c) => c.name).sort((a, b) => b.length - a.length);
   const definers = new Map<string, Set<string>>();
@@ -153,22 +158,24 @@ export function appResolver(components: readonly AppComponentSource[]) {
       definers.get(cls)!.add(c.name);
     }
   }
-  const hooks = components.map((c) => {
-    const js = initHooks(c.ts);
-    return { name: c.name, tags: js.tags, attrs: [...new Set([...js.attrs, ...topLevelAttrs(c.css)])] };
-  });
-  const namespaces = new Map(components.map((c) => [camel(c.name), c.name]));
-
-  /** the components one class belongs to */
   const mentions = (name: string, cls: string): boolean => new RegExp(`\\.${cls}(?![\\w-])`).test(byName.get(name)!.css);
-  const owners = (cls: string): string[] => {
-    // the component named by the class (website blocks: `mk-<name>`) - if
-    // its stylesheet styles that class at all
+  return (cls: string): string[] => {
     const bare = cls.replace(/^mk-/, '');
     const prefix = names.find((n) => (bare === n || bare.startsWith(`${n}-`)) && mentions(n, cls));
     if (prefix) return [prefix];
     return [...(definers.get(cls) ?? [])];
   };
+}
+
+/** A resolver over the system's components - build once, ask per app. */
+export function appResolver(components: readonly AppComponentSource[]) {
+  const byName = new Map(components.map((c) => [c.name, c]));
+  const hooks = components.map((c) => {
+    const js = initHooks(c.ts);
+    return { name: c.name, tags: js.tags, attrs: [...new Set([...js.attrs, ...topLevelAttrs(c.css)])] };
+  });
+  const namespaces = new Map(components.map((c) => [camel(c.name), c.name]));
+  const owners = classOwners(components);
 
   /** the components one text (markup or a component's source) asks for */
   function direct(text: string): Set<string> {

@@ -67,4 +67,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <Terminal commands={"$defuss-shadcn build a settings page with a sidebar, tabs and a form"} prompt="›" title="Codex" />
 </div>
 
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 id="task-skills" style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Task skills: plan, theme, review</h2>
+  <p class="text-sm text-muted-foreground mb-3">The <code>defuss-shadcn</code> skill teaches the markup. Three task skills ship next to it, for three jobs. They add only what is specific to defuss-shadcn and leave the process - evidence, tests, gates - to the method a project already uses, such as <DocLink href="https://github.com/kyr0/defuss-vae" target="_blank">defuss-vae</DocLink>. Their names carry a <code>shadcn-</code> prefix so they install next to defuss-vae's <code>plan</code> and <code>review</code> in harnesses that copy skills by folder name. Each folder is self-contained and generated from the release it ships with: the catalog, the token roles and the checkers' vocabulary cannot drift from the components.</p>
+  <div class="table-container mb-3">
+    <table class="table">
+      <thead>
+        <tr class="table-row"><th class="table-head">Skill</th><th class="table-head">What it does</th><th class="table-head">What checks it</th></tr>
+      </thead>
+      <tbody>
+        <tr class="table-row"><td class="table-cell"><code>shadcn-plan</code></td><td class="table-cell">Plans a page, a whole frontend or a new component: it first finds the reusable units across the whole plan and composes the larger parts from them, prefers an existing component or one of its variants over a new one, and gives every unit a type (ATM to TPL), its tokens, states, APIs, boundaries, docs and examples.</td><td class="table-cell">A plan names a check for every invariant.</td></tr>
+        <tr class="table-row"><td class="table-cell"><code>shadcn-theme</code></td><td class="table-cell">Creates or updates a theme from text, colours, a design guide or images (when the agent can read them): every token in light and dark, in the format the <DocLink href="theme-designer.html">Theme Designer</DocLink> imports.</td><td class="table-cell"><code>scripts/theme-check.mjs</code>: unknown and missing tokens, one radius, WCAG contrast per pair - with the nearest lightness that passes.</td></tr>
+        <tr class="table-row"><td class="table-cell"><code>shadcn-review</code></td><td class="table-cell">Reviews markup or a new component against the guides: native elements first, the data-attribute API, the State API, composition and boundaries, tokens, accessibility - and fixes what it confirms.</td><td class="table-cell"><code>scripts/markup-check.mjs</code>: modifier classes, parts and values a component does not have, invented tokens, loading order, globals, unnamed icon buttons.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-sm text-muted-foreground mb-3">The checkers run with Node 18 or later (or Bun) and have no dependencies. In Claude Code the plugin installs all four skills; plan and review run when you ask for them:</p>
+  <Terminal commands={"/defuss-shadcn:shadcn-theme a calm Nordic theme: slate blues, a teal brand, soft corners\n/defuss-shadcn:shadcn-plan an issue tracker with a board, a list and a detail sheet\n/defuss-shadcn:shadcn-review src/pages/settings.html"} prompt="›" title="Claude Code" />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">With the skills CLI, add all four, or one by name:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn --skill '*'\nnpx skills add kyr0/defuss-shadcn --skill shadcn-theme"} />
+</div>
+
 </DocPage>

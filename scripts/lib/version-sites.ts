@@ -34,6 +34,8 @@ const site = (file: string, what: string, re: RegExp): VersionSite => ({
 export const VERSION_SITES: VersionSite[] = [
   site('package.json', 'npm package version', /^ {2}"version": "([^"]+)"/m),
   site('.claude-plugin/plugin.json', 'Claude Code plugin version', /^ {2}"version": "([^"]+)"/m),
+  site('.codex-plugin/plugin.json', 'Codex plugin version', /^ {2}"version": "([^"]+)"/m),
+  site('plugin.json', 'agent-plugins.org manifest version', /^ {2}"version": "([^"]+)"/m),
   site('src/shared/version.ts', 'shared ABI stamp (df$.shadcn.shared.abi)', /SHARED_ABI = '([^']+)'/),
   site('src/documentation/pages/system-in-numbers.mdx', 'deck cover eyebrow', /defuss-shadcn · v(\d+\.\d+\.\d+(?:-[\w.]+)?)</),
 ];

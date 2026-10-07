@@ -1,0 +1,102 @@
+<!doctype html>
+<!-- shadcn-theme preview (defuss-shadcn {{VERSION}}): put your theme next to this file as theme.css, serve the folder (npx serve .), open it. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theme preview</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v{{VERSION}}/dist/components/core.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v{{VERSION}}/dist/components/all.min.css">
+  <link rel="stylesheet" href="./theme.css">
+  <style>
+    body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+    .preview-swatch { inline-size: 2.5rem; block-size: 2.5rem; border-radius: var(--radius-md); border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <main class="container stack gap-6 py-8">
+    <header class="flex items-center justify-between gap-4">
+      <h1>Theme preview</h1>
+      <button class="btn" data-variant="outline" type="button" id="mode">Toggle dark mode</button>
+    </header>
+
+    <section class="flex flex-wrap items-center gap-3" aria-label="Buttons">
+      <button class="btn" data-variant="default">Primary</button>
+      <button class="btn" data-variant="secondary">Secondary</button>
+      <button class="btn" data-variant="outline">Outline</button>
+      <button class="btn" data-variant="ghost">Ghost</button>
+      <button class="btn" data-variant="destructive">Delete</button>
+      <button class="btn" data-variant="link">Link</button>
+      <span class="badge" data-variant="default">Badge</span>
+      <span class="badge" data-variant="secondary">Secondary</span>
+      <span class="badge" data-variant="outline">Outline</span>
+    </section>
+
+    <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Create an account</h2>
+          <p class="card-description">Card, label, input, switch - on --card.</p>
+        </div>
+        <div class="card-content stack gap-4">
+          <div>
+            <label class="label" for="email">Email</label>
+            <input class="input" type="email" id="email" placeholder="you@example.com">
+          </div>
+          <div class="switch-item flex items-center gap-2">
+            <input class="switch" type="checkbox" role="switch" id="news" checked>
+            <label for="news">Send me the newsletter</label>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn" data-variant="outline">Cancel</button>
+          <button class="btn" data-variant="default">Create</button>
+        </div>
+      </div>
+
+      <div class="stack gap-4">
+        <div class="alert" role="alert">
+          <div class="alert-content">
+            <h3 class="alert-title">Heads up</h3>
+            <p class="alert-description">Muted text reads on --background: <span style="color: var(--muted-foreground)">a description in --muted-foreground</span>.</p>
+          </div>
+        </div>
+        <div class="alert" data-variant="destructive" role="alert">
+          <div class="alert-content">
+            <h3 class="alert-title">Error</h3>
+            <p class="alert-description">Your session has expired.</p>
+          </div>
+        </div>
+        <div class="flex gap-2" aria-label="Chart colours">
+          <span class="preview-swatch" style="background: var(--chart-1)" title="--chart-1"></span>
+          <span class="preview-swatch" style="background: var(--chart-2)" title="--chart-2"></span>
+          <span class="preview-swatch" style="background: var(--chart-3)" title="--chart-3"></span>
+          <span class="preview-swatch" style="background: var(--chart-4)" title="--chart-4"></span>
+          <span class="preview-swatch" style="background: var(--chart-5)" title="--chart-5"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="table">
+        <caption class="table-caption">Recent invoices - rows hover in --accent.</caption>
+        <thead>
+          <tr class="table-row">
+            <th class="table-head">Invoice</th>
+            <th class="table-head">Status</th>
+            <th class="table-head" style="text-align:right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-row"><td class="table-cell">INV001</td><td class="table-cell"><span class="badge" data-variant="secondary">Paid</span></td><td class="table-cell" style="text-align:right">$250.00</td></tr>
+          <tr class="table-row"><td class="table-cell">INV002</td><td class="table-cell"><span class="badge" data-variant="outline">Pending</span></td><td class="table-cell" style="text-align:right">$150.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+  <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v{{VERSION}}/dist/components/all.min.js"></script>
+  <script>
+    document.getElementById('mode').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+  </script>
+</body>
+</html>

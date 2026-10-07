@@ -1,7 +1,8 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "defuss-shadcn",
-  "description": "Build web apps, charts, websites and presentations in plain HTML/CSS/JS with shadcn-style components and defuss - plus task skills to plan UI (shadcn-plan), create themes (shadcn-theme) and review markup (shadcn-review).",
   "version": "0.9.6",
+  "description": "Build web apps, charts, websites and presentations in plain HTML/CSS/JS with shadcn-style components and defuss - plus task skills to plan UI (shadcn-plan), create themes (shadcn-theme) and review markup (shadcn-review).",
   "author": {
     "name": "Aron Homberg",
     "url": "https://github.com/kyr0"
@@ -19,6 +20,9 @@
     "presentations",
     "charts",
     "visualization",
-    "animation"
+    "animation",
+    "themes",
+    "design-tokens",
+    "code-review"
   ]
 }

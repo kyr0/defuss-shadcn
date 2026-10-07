@@ -1,0 +1,15 @@
+:root {
+  --background: oklch(0.98 0.01 230);
+  --foreground: oklch(0.25 0.03 240);
+  --primary: oklch(0.72 0.12 220);
+  --primary-foreground: oklch(0.98 0.01 230);
+  --brand-glow: #00ffee;
+  --radius-md: 6px;
+  --radius: 0.5rem;
+  --font-sans: "Inter", ui-sans-serif, sans-serif;
+}
+.dark {
+  --background: oklch(0.2 0.02 240);
+  --foreground: oklch(0.95 0.01 230);
+  --radius: 0.75rem;
+}

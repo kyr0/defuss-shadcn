@@ -28,7 +28,7 @@ Why this system exists, from the agents who built it: [ARCH.md](ARCH.md).
 A portable UI component system built on the [shadcn/ui](https://ui.shadcn.com) token model.
 
 - **Themeable** - full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files - swap one and every component updates instantly
-- **Component Skills** - every component includes a structured skill - markup, variants, sizes, density, named states, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced
+- **Component Skills** - every component includes a structured skill - markup, variants, sizes, density, named states, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced; three task skills - `shadcn-plan`, `shadcn-theme`, `shadcn-review` - plan UI from the existing components, write themes and review markup, each with a bundled checker where a program can decide
 - **Observable state** - interactive components expose a State API (`el.api.setState('open')`, `el.api.getState()`), so agents and tests can drive every documented state by name without knowing the implementation
 - **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists). Keyboard navigation, focus management, and screen reader support by default
 - **Framework Free** - runs in any browser, zero dependencies, no build pipeline required
@@ -92,6 +92,14 @@ claude plugin install defuss-shadcn@defuss-shadcn
 # Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf, … (and Claude Code)
 npx skills add kyr0/defuss-shadcn --skill defuss-shadcn
 ```
+
+Three task skills ship next to it (`skills/shadcn-*/`, generated from the release like the SKILL.md) - the defuss-shadcn layer on top of a project's own method such as [defuss-vae](https://github.com/kyr0/defuss-vae), prefixed so they install beside its `plan` and `review`:
+
+- **`shadcn-plan`** - plans a page, a frontend or a new component: reusable units first, existing components and variants before new ones, a type (ATM to TPL), tokens, states, APIs, boundaries, docs and examples for each.
+- **`shadcn-theme`** - writes or updates a theme from text, colours, a design guide or images; `scripts/theme-check.mjs` checks tokens, radius and WCAG contrast and names the nearest passing lightness.
+- **`shadcn-review`** - reviews markup or a new component against the guides; `scripts/markup-check.mjs` finds modifier classes, unknown parts, values and tokens, loading mistakes, globals and unnamed icon buttons.
+
+`npx skills add kyr0/defuss-shadcn --skill '*'` installs all four; the Claude Code plugin carries them (`/defuss-shadcn:shadcn-theme`, ...).
 
 Per-agent flags, global installs and updates: [Vibe Coding / Agentic Engineering → Install as an AI Agent Skill](https://kyr0.github.io/defuss-shadcn/vibe-coding.html#install-as-an-ai-agent-skill).
 

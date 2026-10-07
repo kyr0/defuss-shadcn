@@ -1,7 +1,7 @@
 {
   "name": "defuss-shadcn",
-  "description": "Build beautiful web apps, charts, websites and presentations in pure HTML/CSS/JS with shadcn components and defuss",
-  "version": "0.9.0",
+  "description": "Build web apps, charts, websites and presentations in plain HTML/CSS/JS with shadcn-style components and defuss - plus task skills to plan UI (shadcn-plan), create themes (shadcn-theme) and review markup (shadcn-review).",
+  "version": "0.9.6",
   "author": {
     "name": "Aron Homberg",
     "url": "https://github.com/kyr0"
@@ -24,18 +24,19 @@
   "interface": {
     "displayName": "Defuss Shadcn",
     "shortDescription": "Create beautiful web apps, visualizations, charts, websites and presentations with standalone HTML/CSS/JS and shadcn components",
-    "longDescription": "",
+    "longDescription": "The defuss-shadcn skill teaches the markup of every component; shadcn-plan plans a page, a frontend or a new component from the existing ones, shadcn-theme writes and checks a theme from text, colours, a design guide or images, and shadcn-review checks markup with a bundled checker and the guides.",
     "developerName": "Aron Homberg",
     "category": "Productivity",
     "capabilities": [
+      "Instructions",
       "Read",
       "Write"
     ],
     "websiteURL": "https://github.com/kyr0/defuss-shadcn",
     "defaultPrompt": [
-      "Make an architecture diagram of my app.",
-      "Create a flowchart for this decision process.",
-      "Redraw this Mermaid diagram at the right size and detail level."
+      "Build a settings page with defuss-shadcn.",
+      "Create a defuss-shadcn theme from our brand colours.",
+      "Review this page against the defuss-shadcn guides."
     ],
     "brandColor": "#b5523a"
   }
