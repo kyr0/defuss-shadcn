@@ -188,6 +188,7 @@
     font-size: 0.875rem;
     line-height: 1.55;
     text-align: center;
+    text-align-last: auto; /* a justified section around the figure must not pull the last line left */
     text-wrap: balance;
 
     & b {
@@ -407,6 +408,7 @@
     letter-spacing: 0.04em;
     vertical-align: 0.1em;
     white-space: nowrap;
+    text-indent: 0; /* an inline-block inherits a paragraph's text-indent and indents its own first line */
 
     &[data-tag="verified"] { --paper-tag: var(--chart-2); color: #fff; }
     &[data-tag="hypothesis"] { --paper-tag: var(--chart-1); }

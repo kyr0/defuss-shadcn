@@ -313,6 +313,12 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>Paragraphs follow with an indent, justified and hyphenated by the language of the block.</p>
     <p id="pv-cols-p3">A third paragraph so that the second column has text to hold on a wide screen.</p>
   </div>
+  <!-- a justified, indented setting around a tag and a wrapping caption: what inherits must not leak -->
+  <div class="typeset" id="pv-inherit" lang="en" data-align="justify" data-indent style="max-inline-size: 28rem;">
+    <p>A first paragraph of a justified and indented setting, long enough to take two lines in the twenty-eight rem of this block.</p>
+    <p><span class="paper-tag" data-tag="hypothesis" id="pv-tag-indent">HYPOTHESIS</span> the second paragraph is indented, and the tag that opens it must not be.</p>
+    <figure class="paper-figure"><div style="block-size: 2rem; background: var(--muted);"></div><figcaption id="pv-cap-wrap"><b>Figure 9.</b> A caption long enough to wrap onto a second line inside the justified setting, so its last line must stay centered like the first.</figcaption></figure>
+  </div>
 </article>
 </body>
 </html>

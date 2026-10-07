@@ -20659,6 +20659,7 @@
     font-size: 0.875rem;
     line-height: 1.55;
     text-align: center;
+    text-align-last: auto; /* a justified section around the figure must not pull the last line left */
     text-wrap: balance;
 
     & b {
@@ -20878,6 +20879,7 @@
     letter-spacing: 0.04em;
     vertical-align: 0.1em;
     white-space: nowrap;
+    text-indent: 0; /* an inline-block inherits a paragraph's text-indent and indents its own first line */
 
     &[data-tag="verified"] { --paper-tag: var(--chart-2); color: #fff; }
     &[data-tag="hypothesis"] { --paper-tag: var(--chart-1); }
@@ -33842,6 +33844,11 @@
       text-align-last: start;
       hyphens: auto;
       hyphenate-limit-chars: 6 3 2;
+
+      /* text-align-last inherits: a centered caption or heading inside a justified
+         setting kept its last line flush left (a two-line figure caption looked
+         off-center) - what centers itself takes its last line from its own alignment */
+      & :where(figcaption, caption, .typeset-caption, h1, h2, h3, h4, h5, h6) { text-align-last: auto; }
     }
 
     /* leading and tracking move together: tight lines close up a little,
@@ -33851,6 +33858,10 @@
 
     &[data-indent] > p { margin-block: 0; }
     &[data-indent] > p + p { text-indent: var(--typeset-indent); }
+    /* text-indent inherits into an inline-block, which then indents ITS first line: a badge,
+       a key cap or an epistemic tag at the start of an indented paragraph grew a blank
+       inside its left edge */
+    &[data-indent] > p :where(.badge, kbd, .paper-tag) { text-indent: 0; }
 
     /* the gap is a margin: Chromium ignores logical padding on ::first-letter
        (VERIFIED: probe 2026-10-07 - padding-inline-end computed 0, margin-inline-end 2.52px) */

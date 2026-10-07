@@ -4,14 +4,6 @@
 Agents append `<UTC ISO> s=<session> LESSON <VAE-DIALECT>` only for a falsified HYPOTHESIS, a dead end, or a root cause.
 A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then delete its lines. -->
 
-2026-10-06T10:36:18Z s=c273a037 FAIL tests.unit,tests.integration.1,tests.e2e.1,coverage
-2026-10-06T10:51:22Z s=c273a037 DONE fp=cc61044c5727 cov=31.6% paths=.claude-plugin/plugin.json,AGENTS.md,Makefile,README.md(+733)
-2026-10-06T10:51:22Z s=c273a037 FINDING session process (release v0.9.6) learn=memory: a second occurrence of .agents/MEMORY.md "ending a turn while a heavy background job runs"; no repo check can see a turn ending - the release now waits in the f
-2026-10-06T13:37:26Z s=c273a037 DONE fp=8922bfa911e6 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+735)
-2026-10-06T13:37:26Z s=c273a037 FINDING src/components/cookie-consent/cookie-consent.ts Controller learn=test: tests/state-contract.test.ts calls el.api.settled() on every bound element of every interactive fixture.
-2026-10-06T13:37:26Z s=c273a037 FINDING vitest.config.ts coverage.exclude (reverted) learn=none: nothing to guard - the measurement definition is stated in .agents/VERIFY.py and the paper.
-2026-10-06T13:37:26Z s=c273a037 FINDING tests/state-contract.test.ts fixture discovery learn=test: the count assertion and the typecheck gate.
-2026-10-06T13:37:26Z s=c273a037 FINDING .github/workflows/verify.yml (new) learn=none: unobserved until its first run on GitHub (YAML parses; every step passes locally) - the run URL is reported after the push.
 2026-10-06T14:07:19Z s=c273a037 DONE fp=a598332f5a81 cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+735)
 2026-10-06T14:07:19Z s=c273a037 FINDING package.json packageManager (bun@1.3.9) learn=none: CI itself is the check - setup-bun reads the version from package.json, so a mismatch fails stats.json fresh on the next run.
 2026-10-06T14:15:59Z s=c273a037 DONE fp=0fc3aba24cdf cov=75.6% paths=.claude-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md,Makefile(+737)
@@ -104,3 +96,11 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T17:29:50Z s=c273a037 FINDING 59 src/components/*/*.ts StateConfigs + diagram.ts draw() learn=none: lint is non-blocking by project rule (AGENTS.md: no --deny-warnings), so only the clean-log discipline catches a new warning.
 2026-10-07T17:29:50Z s=c273a037 FINDING slide 10: 599 unit tests, not 35 files (user request) learn=verifier: bun run test:run wrote files 35 / tests 599 / passed 599; verify's stat figures gate checks the slide against the record.
 2026-10-07T17:29:50Z s=c273a037 FINDING slides 11-15 layout (user request) learn=none: renders of slides 10, 11 (after its entrances), 12 and 15 inspected (tmp/papers/deck-*.png); documentation e2e green.
+2026-10-07T17:57:06Z s=c273a037 DONE fp=5b4d72b431a3 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1486)
+2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/public/css/layout.css .site-sidebar (drawer) learn=test: documentation.e2e "mobile drawer" reads the winning declared height from the cascade (computed px cannot tell vh apart in emulation): fails on the old CSS ("cal
+2026-10-07T17:57:06Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts demoBox learn=test: the e2e itself: failed once, then 3 of 3 passes.
+2026-10-07T17:57:06Z s=c273a037 FINDING .env.example (missing) learn=verifier: the defuss-vae env.example check.
+2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.6 (self-review) learn=none: claim precision is a reading judgment; the prose catalog review is the check, no program can.
+2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx sections 6, 7, 5.7, 12 learn=none: a reading judgment; no mechanical check distinguishes an anecdote from a result.
+2026-10-07T17:57:06Z s=c273a037 FINDING session figures supplied by the user (not written) learn=none: the figure came from a person, not a check; the paper cites the transcript as its source.
+2026-10-07T17:57:06Z s=c273a037 FINDING paper: two-line captions off-center, tags with a blank inside (user finding) learn=test: paper.e2e: "a tag inside an indented paragraph is not indented itself" (text offset = padding) and "a wrapping caption keeps every line centered" (last line box

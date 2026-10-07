@@ -109,6 +109,14 @@ await cssSmoke('paper', [
     await page.setViewportSize({ width: 1280, height: 900 });
     if (!(wide > 200) || phone !== 0 || widePad !== '40px' || phonePad !== '0px') throw new Error(JSON.stringify({ wide, phone, widePad, phonePad }));
   } },
+  { label: 'a tag inside an indented paragraph is not indented itself (text-indent does not leak into the inline-block)', run: async (page) => {
+    const r = await page.$eval('#pv-tag-indent', (t) => { const range = document.createRange(); range.selectNodeContents(t); return { text: range.getBoundingClientRect().left - t.getBoundingClientRect().left, pad: parseFloat(getComputedStyle(t).paddingLeft), indent: getComputedStyle(t).textIndent }; });
+    if (Math.abs(r.text - r.pad) > 1 || r.indent !== '0px') throw new Error(JSON.stringify(r));
+  } },
+  { label: 'a wrapping caption inside a justified setting keeps every line centered (text-align-last does not leak)', run: async (page) => {
+    const r = await page.$eval('#pv-cap-wrap', (c) => { const range = document.createRange(); range.selectNodeContents(c); const lines = [...range.getClientRects()].filter((x) => x.width > 40); const box = c.getBoundingClientRect(); const last = lines[lines.length - 1]; return { lines: lines.length, off: Math.abs((last.left + last.right) / 2 - (box.left + box.right) / 2), lastAlign: getComputedStyle(c).textAlignLast }; });
+    if (r.lines < 2 || r.off > 2) throw new Error(JSON.stringify(r));
+  } },
   { label: 'narrow page: the abstract stops justifying (container query)', run: async (page) => {
     await page.setViewportSize({ width: 480, height: 900 });
     const align = await page.$eval('.paper-abstract > p', (p) => getComputedStyle(p).textAlign);
