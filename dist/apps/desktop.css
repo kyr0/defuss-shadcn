@@ -8431,29 +8431,72 @@
   }
 
   /* -- Figure groups: several figures in one box ---------------------------
-     .typeset-group holds two or three figures (charts, pictures, tables)
-     side by side, densely, in one bordered box; each figure's caption is
-     lettered "(a)", "(b)" (.typeset-subcaption), the group's own
-     figcaption numbers the whole. Narrow pages stack them. */
+     .typeset-group sets two or three figures (charts, pictures, tables) side
+     by side; each figure's caption is lettered "(a)", "(b)" (.typeset-subcaption),
+     the group's own figcaption numbers the whole. Every figure spans two
+     subgrid rows - media, then caption - so the captions of a row sit at one
+     height whatever the media's height. data-align="middle" centres the media
+     in their row; data-divided draws hairlines between the figures - the
+     1px grid gap over a border-coloured background, so the lines run between
+     columns and, once the figures stack, between rows, with no container
+     query (a size container would scope the caption counters to the group);
+     data-variant="cards" gives each figure its own card instead of one box.
+     Narrow pages stack them.
+     VERIFIED: (typography.e2e "figure groups") captions level, the 1px lines
+     between columns and between stacked rows, the cards' borders. */
   .typeset-group {
     --typeset-group-min: 12rem;
+    --typeset-group-gap: 1.25rem;
 
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--typeset-group-min)), 1fr));
-    gap: 0.75rem;
+    gap: var(--typeset-group-gap);
     margin-inline: 0;
-    padding: 0.75rem;
+    padding: 1rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: var(--card);
     counter-reset: typeset-sub;
 
-    & > figure { margin: 0; min-inline-size: 0; }
+    & > figure {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      row-gap: 0.4em;
+      align-content: start;
+      margin: 0;
+      min-inline-size: 0;
+    }
     & > figcaption { grid-column: 1 / -1; margin-block-start: 0.25em; }
     & img, & video { display: block; inline-size: 100%; block-size: auto; border-radius: var(--radius-md); }
+
+    &[data-align="middle"] > figure > :first-child { align-self: center; }
+
+    &[data-variant="cards"] {
+      padding: 0;
+      border: 0;
+      background: none;
+
+      & > figure {
+        padding: 0.875rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+      }
+    }
+
+    &[data-divided] {
+      gap: 1px;
+      padding: 0;
+      overflow: hidden;
+      background: var(--border);
+
+      & > figure { padding: 1rem; background: var(--card); }
+      & > figcaption { margin: 0; padding: 0.75rem 1rem 1rem; background: var(--card); }
+    }
   }
   .typeset-subcaption {
-    margin-block-start: 0.4em;
+    margin: 0;
     color: var(--muted-foreground);
     font-size: 0.8125em;
     line-height: 1.45;

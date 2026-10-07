@@ -22,7 +22,7 @@ export function DeckRail({ slug, title, children }: DeckRailProps) {
         <iframe src={`deck-${slug}.html`} title={title} loading="lazy"></iframe>
       </div>
       <p class="deck-rail-caption">
-        Eleven slides with the system's real, measured numbers. Click the deck and use ← / →, or{' '}
+        Click the deck and use ← / →, or{' '}
         <a href={`${slug}.html`}>open it with its source</a>.
       </p>
       {children ? <div class="deck-rail-extra">{children}</div> : null}

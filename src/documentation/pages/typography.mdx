@@ -176,6 +176,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Columns in a sans and a monospace face" hint="The setting is not tied to the serif: the same two ruled columns in the theme's sans (left) and monospace (right) stacks - a technical note or a listing's commentary. The monospace column hyphenates less (hyphens: manual) and keeps the figures lining." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-8" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));">
+  <div class="typeset" lang="en" data-align="justify" data-indent style="font-family: var(--font-sans);">
+    <h3 class="h4">In the sans</h3>
+    <p>A technical note reads well in the theme's sans face: justified, indented, the same rules as the book page without the serif's formality.</p>
+    <p>The second paragraph follows with its indent, as in any typeset block.</p>
+  </div>
+  <div class="typeset" lang="en" data-align="justify" data-indent style="font-family: var(--font-mono); font-size: 0.875em; hyphens: manual;">
+    <h3 class="h4">In the monospace</h3>
+    <p>A monospace column suits commentary beside code: every character the same width, figures lining, the justification spreading only the spaces.</p>
+    <p>Hyphenation is manual here - monospace words break badly at syllables.</p>
+  </div>
+</div>
+```
+
 ```html example label="Blocksatz (justified)" hint="data-align='justify' justifies the lines and hyphenates long words by the rules of the block's language (lang='en'); the last line of each paragraph stays flush to the start." previewStyle="justify-content:flex-start;text-align:left;"
 <div class="typeset" lang="en" data-align="justify" style="font-family: var(--font-serif); max-width: 28rem;">
   <p>The compositor justified each line by adding space between words and, where the space grew too wide, broke a word at a syllable. Typographically, interdisciplinary and internationalization break where the language allows them to.</p>
@@ -281,22 +296,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Figure groups: two charts, and a chart, a picture and a table" hint="figure.typeset-group sets two or three figures densely in one box, each with a lettered .typeset-subcaption - (a), (b), (c) - and the group's own numbered caption. Narrow the preview: the figures stack." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="Figure groups: two charts; a chart, a picture and a table; cards" hint="figure.typeset-group sets two or three figures side by side with lettered sub-captions and one numbered caption; subgrid rows keep the captions of a row level. First: two charts, divided by a hairline, media centred (data-divided, data-align='middle'). Second: a chart, a picture and a table in one box. Third: data-variant='cards' - each figure its own card. Narrow the preview: they stack, and the hairlines run between the rows instead." previewStyle="justify-content:flex-start;text-align:left;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <div class="typeset typeset-numbered" lang="en" style="font-family: var(--font-serif); max-width: 40rem;">
-  <p>Two charts compared side by side:</p>
-  <figure class="typeset-group">
+  <p>Two charts compared side by side, a hairline between them:</p>
+  <figure class="typeset-group" data-divided data-align="middle">
     <figure>
       <div class="chart" style="height: 9rem;" role="img" aria-label="Line chart, before: 4.1, 3.9, 3.8, 3.6" data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[4.1,3.9,3.8,3.6]}]}'></div>
       <figcaption class="typeset-subcaption">Before the fix.</figcaption>
     </figure>
     <figure>
-      <div class="chart" style="height: 9rem;" role="img" aria-label="Line chart, after: 3.4, 3.3, 3.2, 3.1" data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[3.4,3.3,3.2,3.1]}]}'></div>
-      <figcaption class="typeset-subcaption">After the fix.</figcaption>
+      <div class="chart" style="height: 7rem;" role="img" aria-label="Line chart, after: 3.4, 3.3, 3.2, 3.1" data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[3.4,3.3,3.2,3.1]}]}'></div>
+      <figcaption class="typeset-subcaption">After the fix - a shorter chart, its caption level with the first.</figcaption>
     </figure>
     <figcaption class="typeset-caption">An error rate before and after a fix, per week (synthetic).</figcaption>
   </figure>
-  <p>And three different kinds of figure in one box:</p>
+  <p>Three kinds of figure in one box:</p>
   <figure class="typeset-group">
     <figure>
       <div class="chart" style="height: 8rem;" role="img" aria-label="Pie chart: text 60, figures 25, tables 15" data-chart='{"series":[{"type":"pie","radius":["40%","70%"],"data":[{"name":"Text","value":60},{"name":"Figures","value":25},{"name":"Tables","value":15}],"label":{"show":false}}]}'></div>
@@ -310,7 +325,23 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       <table class="table"><tbody><tr><td>Text</td><td>60 %</td></tr><tr><td>Figures</td><td>25 %</td></tr><tr><td>Tables</td><td>15 %</td></tr></tbody></table>
       <figcaption class="typeset-subcaption">The same as a table.</figcaption>
     </figure>
-    <figcaption class="typeset-caption" data-align="center">A chart, a picture and a table in one dense box.</figcaption>
+    <figcaption class="typeset-caption" data-align="center">A chart, a picture and a table in one box.</figcaption>
+  </figure>
+  <p>And the same three as cards, each in its own frame:</p>
+  <figure class="typeset-group" data-variant="cards" data-align="middle">
+    <figure>
+      <img src="images/mk-wide2.png" alt="A placeholder scene, cool blue-grey">
+      <figcaption class="typeset-subcaption">A wide picture.</figcaption>
+    </figure>
+    <figure>
+      <div class="chart" style="height: 7rem;" role="img" aria-label="Bar chart: 2, 4, 8" data-chart='{"grid":{"left":28,"right":8,"top":10,"bottom":22},"xAxis":{"type":"category","data":["Folio","Quarto","Octavo"]},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[2,4,8]}]}'></div>
+      <figcaption class="typeset-subcaption">Leaves per sheet.</figcaption>
+    </figure>
+    <figure>
+      <table class="table"><tbody><tr><td>Folio</td><td>2</td></tr><tr><td>Quarto</td><td>4</td></tr><tr><td>Octavo</td><td>8</td></tr></tbody></table>
+      <figcaption class="typeset-subcaption">The same as a table.</figcaption>
+    </figure>
+    <figcaption class="typeset-caption">Cards: no outer box; the media sit centred in their row, the captions level below.</figcaption>
   </figure>
 </div>
 ```

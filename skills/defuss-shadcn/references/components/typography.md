@@ -192,13 +192,17 @@ Separator draws it.
 #### Figure groups
 
 `<figure class="typeset-group">` holds two or three figures - charts, pictures,
-tables - densely, side by side in one bordered box. Each inner figure's
-caption is a `.typeset-subcaption`, lettered "(a)", "(b)"; the group's own
-`.typeset-caption` numbers the whole. A narrow page stacks them
-(`--typeset-group-min: 12rem` per figure).
+tables - side by side. Each inner figure's caption is a `.typeset-subcaption`,
+lettered "(a)", "(b)"; the group's own `.typeset-caption` numbers the whole.
+Every figure spans two subgrid rows (media, caption), so the captions of a row
+sit at one height whatever the media's height. `data-align="middle"` centres the
+media in their row; `data-divided` draws hairlines between the figures - between the columns and,
+once they stack, between the rows; `data-variant="cards"` gives each figure its own
+card instead of one box. A narrow page stacks them (`--typeset-group-min: 12rem`
+per figure, `--typeset-group-gap: 1.25rem` between).
 
 ```html
-<figure class="typeset-group typeset-span">
+<figure class="typeset-group typeset-span" data-divided data-align="middle">
   <figure><div class="chart" ...></div><figcaption class="typeset-subcaption">Before.</figcaption></figure>
   <figure><div class="chart" ...></div><figcaption class="typeset-subcaption">After.</figcaption></figure>
   <figcaption class="typeset-caption">Word error rate before and after the fix.</figcaption>

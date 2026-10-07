@@ -976,11 +976,12 @@
   .diagram .diagram-node[data-shape="ghost"][data-step-state="current"] {
     outline: 0;
   }
-  /* a wire appears on its beat - just after its later end - and solid ones draw in */
-  .diagram .diagram-wire[data-step-state="current"] {
+  /* a wire appears on its beat - just after its later end - and solid ones draw in;
+     one that already entered (data-step-entered, kept across a redraw) stays as it is */
+  .diagram .diagram-wire[data-step-state="current"]:not([data-step-entered]) {
     animation: diagram-fade calc(var(--diagram-step-ms) * 0.4) ease calc(var(--step-i, 0) * var(--diagram-element-ms)) both;
   }
-  .diagram .diagram-wire[data-step-state="current"] .diagram-wire-line[pathLength] {
+  .diagram .diagram-wire[data-step-state="current"]:not([data-step-entered]) .diagram-wire-line[pathLength] {
     stroke-dasharray: 1;
     animation: diagram-draw var(--diagram-step-ms) ease-out calc(var(--step-i, 0) * var(--diagram-element-ms)) both;
   }
@@ -990,7 +991,7 @@
   @keyframes diagram-enter {
     from { opacity: 0; translate: 0 0.5rem; }
   }
-  .diagram .diagram-wire-label[data-step-state="current"] {
+  .diagram .diagram-wire-label[data-step-state="current"]:not([data-step-entered]) {
     animation: diagram-fade calc(var(--diagram-step-ms) * 0.6) ease calc(var(--step-i, 0) * var(--diagram-element-ms) + var(--diagram-step-ms) * 0.6) both;
   }
   @keyframes diagram-fade {

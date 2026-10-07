@@ -214,6 +214,32 @@ await cssSmoke('typography', [
     },
   },
   {
+    label: 'figure groups: captions level across unequal media (subgrid), a divider that turns when stacked, cards',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const top = (id: string) => Math.round(document.getElementById(id)!.getBoundingClientRect().top);
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const box = (id: string) => document.getElementById(id)!.getBoundingClientRect();
+        const a = box('ty-gf-a'), b = box('ty-gf-b');
+        const na = box('ty-group-narrow').top, nb = box('ty-gn-b');
+        const first = document.querySelector('#ty-group-narrow > figure')!.getBoundingClientRect();
+        return {
+          captionsLevel: top('ty-sub-a') === top('ty-sub-b'),
+          divided: [cs('ty-group').columnGap, cs('ty-group').backgroundColor === cs('ty-group').borderTopColor, Math.round(b.left - a.right)],
+          stacked: [cs('ty-group-narrow').rowGap, Math.round(nb.top - first.bottom)],
+          cards: [cs('ty-group-cards').borderTopWidth, cs('ty-gc-a').borderTopWidth],
+          counters: [cs('ty-group').containerType, cs('ty-group').contain],
+        };
+      });
+      assert.equal(r.captionsLevel, true, 'captions of a row sit at one height');
+      assert.deepEqual(r.divided, ['1px', true, 1], 'wide: a 1px line (the gap over the border colour) between the columns');
+      assert.deepEqual(r.stacked, ['1px', 1], 'stacked: the same 1px line between the rows');
+      assert.deepEqual(r.cards, ['0px', '1px'], 'cards: no outer box, each figure framed');
+      // no containment on the group: style containment would scope the caption counters to it
+      assert.deepEqual(r.counters, ['normal', 'none']);
+    },
+  },
+  {
     label: 'figure groups: lettered sub-captions (a), (b) in one bordered box',
     run: async (page) => {
       const r = await page.evaluate(() => ({ reset: getComputedStyle(document.getElementById('ty-group')!).counterReset, sub: getComputedStyle(document.getElementById('ty-sub-a')!, '::before').content }));

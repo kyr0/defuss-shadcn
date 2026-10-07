@@ -4,15 +4,6 @@
 Agents append `<UTC ISO> s=<session> LESSON <VAE-DIALECT>` only for a falsified HYPOTHESIS, a dead end, or a root cause.
 A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then delete its lines. -->
 
-2026-10-06T04:21:04Z s=c273a037 FAIL tests.integration.1,coverage
-2026-10-06T04:24:01Z s=c273a037 FAIL coverage
-2026-10-06T04:26:06Z s=c273a037 FAIL coverage
-2026-10-06T04:35:21Z s=c273a037 DONE fp=0668175f4518 cov=30.2% paths=AGENTS.md,Makefile,README.md,plans/core-bundle.md(+183)
-2026-10-06T04:35:21Z s=c273a037 FINDING .github/workflows/verify.yml (added by vae init) learn=verifier: .agents/VERIFY.py rule ci.no-vae-template fails if the template is re-added (proven: exit 0 now, exit 1 with the template line present).
-2026-10-06T04:35:21Z s=c273a037 FINDING scripts/verify.ts:makeTargets learn=verifier: verify's own `doc command refs` gate runs the parser against the real Makefile + AGENTS.md references and passes.
-2026-10-06T04:35:21Z s=c273a037 FINDING src/components/{border-layout,chart,cookie-consent,data-grid,data-tree,diagram,toast}/*.ts JSDoc learn=verifier: verify `API docs (JS components)` gate detects any hand-edited generated section.
-2026-10-06T05:10:05Z s=c273a037 FAIL tests.integration.1
-2026-10-06T05:32:40Z s=c273a037 FAIL tests.e2e.1
 2026-10-06T06:59:28Z s=c273a037 DONE fp=d54415f7d963 cov=31.2% paths=AGENTS.md,Makefile,README.md,package.json(+310)
 2026-10-06T06:59:28Z s=c273a037 FINDING src/components/tabs/tabs.ts:init learn=test: section-bundles.e2e compares data-init per element between a section load and the rest of the system (failed before, passes after).
 2026-10-06T06:59:28Z s=c273a037 FINDING scripts/bundle.ts CSS comment learn=test: section-bundles.e2e renders every section in README order against the full system.
@@ -104,3 +95,12 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T09:44:20Z s=c273a037 FINDING docs: session replay, VAE report swap + typeset, gallery papers learn=test: paper-gallery.e2e (12 checks, expectation for the capitals lead updated); prose check 0 findings on 21 files.
 2026-10-07T09:44:20Z s=c273a037 FINDING system-in-numbers deck: two diagram slides + four skill slides learn=none: screenshots of slides 8, 9, 12, 14 inspected (tmp/papers/deck-*.png: both diagrams fit their frames after a full play); no page error; the unit test on the deck
 2026-10-07T09:47:28Z s=c273a037 DONE fp=d4e966da9eb5 cov=75.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1452)
+2026-10-07T10:39:57Z s=c273a037 DONE fp=848b9ae1a76e cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1454)
+2026-10-07T10:39:57Z s=c273a037 FINDING src/components/diagrams/diagram draw() rebuilds (user: arrows flicker, animate twice) learn=test: diagram.e2e "a redraw within a step keeps the current wire": redraw mid-step → entered, 0 running animations, opacity 1 (fails on the old code: the animation re
+2026-10-07T10:39:57Z s=c273a037 FINDING typography .typeset-group (subgrid, cards, divided, middle) learn=test: typography.e2e "figure groups": captions level, 1px lines wide and stacked, cards framed, and containerType normal / contain none pinned so containment cannot c
+2026-10-07T10:39:57Z s=c273a037 FINDING statistics: section bundles + unit test files learn=test: tests/stats.test.ts (summary + passthrough; empty → zeros); verify's stat figures and stats.json fresh gates.
+2026-10-07T10:39:57Z s=c273a037 FINDING index page prose learn=test: documentation.e2e CDN note; verify stats claim + README ↔ index gates (README footprint updated with it).
+2026-10-07T10:39:57Z s=c273a037 FINDING deck: slide 4 (five splits), 10 (unit test files), 12-15 (cards, pitch text), 16 (defuss-vae + skills map) learn=none: renders of slides 4, 10, 12, 16 inspected (tmp/papers/deck-*.png); no page error; e2e covers the docs page only through the sandbox attributes.
+2026-10-07T10:39:57Z s=c273a037 FINDING probe tooling (process) learn=none: why Playwright judged the elements unstable is not established; no product code depends on it.
+2026-10-07T10:39:57Z s=c273a037 FINDING AGENTS.md "Work packages before a verify run" (user request) learn=none: a process rule; the gate cannot count pipeline runs. Prose check 0 findings.
+2026-10-07T10:39:57Z s=c273a037 FINDING WebGL anti-aliasing (user request: FXAA for presentations) learn=none: grep over src/ (ts, tsx, mdx); any flicker on the CSS decks would need a named slide to measure.

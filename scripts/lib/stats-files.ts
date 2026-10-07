@@ -18,6 +18,12 @@ export function countTokens(distDir: string): number {
   return new Set([...readFileSync(file, 'utf8').matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1])).size;
 }
 
+/** The unit test files beside dist/ (tests/*.test.ts) - what `bun run test:run` executes. */
+export function countUnitTestFiles(distDir: string): number {
+  const dir = join(distDir, '..', 'tests');
+  return existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.test.ts')).length : 0;
+}
+
 /** EXL: the live examples on the documentation pages - every ```… example
  *  fence in the MDX sources (each renders one CodeExample). */
 export function countExamples(): number {
@@ -196,7 +202,7 @@ export function measureApps(distDir: string): Record<string, AppStats> {
 export function buildStatsFileText(distDir: string): string {
   const componentsDir = join(distDir, 'components');
   const measures = measureComponents(componentsDir);
-  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(componentsDir), sections: measureSections(distDir) });
+  return buildStatsText(measures, measureBundle(componentsDir), measureCore(componentsDir), countTemplatePages(measures.map((m) => m.name)), { tokens: countTokens(distDir), examples: countExamples(), unitTestFiles: countUnitTestFiles(distDir), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(componentsDir), sections: measureSections(distDir) });
 }
 
 /** Write dist/stats.json and return the document (for the CLI summary line). */
@@ -206,7 +212,7 @@ export function writeStatsFile(distDir: string): StatsDoc {
   const bundle = measureBundle(componentsDir);
   const core = measureCore(componentsDir);
   const pages = countTemplatePages(measures.map((m) => m.name));
-  const extra = { tokens: countTokens(distDir), examples: countExamples(), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(join(distDir, 'components')), sections: measureSections(distDir) };
+  const extra = { tokens: countTokens(distDir), examples: countExamples(), unitTestFiles: countUnitTestFiles(distDir), apps: measureApps(distDir), templateGroups: templateGroups(measures.map((m) => m.name)), bundles: measureExtraBundles(join(distDir, 'components')), sections: measureSections(distDir) };
   writeFileSync(join(distDir, STATS_FILE), buildStatsText(measures, bundle, core, pages, extra));
   return aggregateStats(measures, bundle, core, pages, extra);
 }

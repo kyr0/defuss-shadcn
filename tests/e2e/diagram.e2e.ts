@@ -546,6 +546,25 @@ try {
     assert.deepEqual(bad, []);
   });
 
+  await check('a redraw within a step keeps the current wire: no animation restart, the wire stays drawn', async () => {
+    const r = await page.evaluate(async () => {
+      const fig = document.querySelector('.diagram[data-steps]') as any;
+      fig.api.setState('paused', { step: 2 });
+      await new Promise((res) => setTimeout(res, 120));
+      const current = () => fig.querySelector('.diagram-wire[data-step-state="current"]') as SVGGElement | null;
+      const before = current();
+      const runningBefore = before ? before.querySelector('.diagram-wire-line')!.getAnimations().length + before.getAnimations().length : -1;
+      (globalThis as any).df$.shadcn.diagram.redraw(fig);
+      const after = current();
+      return { hadCurrent: !!before, runningBefore, entered: after?.hasAttribute('data-step-entered'), runningAfter: after ? after.querySelector('.diagram-wire-line')!.getAnimations().length + after.getAnimations().length : -1, opacity: after ? getComputedStyle(after).opacity : '' };
+    });
+    assert.ok(r.hadCurrent, 'step 2 has a current wire');
+    assert.ok(r.runningBefore > 0, 'before the redraw its enter animation runs');
+    assert.equal(r.entered, true);
+    assert.equal(r.runningAfter, 0);
+    assert.equal(r.opacity, '1');
+  });
+
   await check('clearance: in every framed diagram, nothing drawn comes closer than 20px to the border (zones, zone labels, wire labels, wires)', async () => {
     await page.evaluate(() => document.querySelectorAll('figure.diagram').forEach((f) => (globalThis as any).df$.shadcn.diagram.redraw(f)));
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));

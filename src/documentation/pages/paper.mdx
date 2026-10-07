@@ -254,18 +254,19 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p>That sweep is the human review the method budgets for: one person reading what the gates cannot judge - whether a corner looks right - instead of re-checking what they can. <span class="paper-tag" data-tag="hypothesis">HYPOTHESIS</span> the review effort per component falls as the gates grow, because each class of defect found by hand becomes a gate; falsifier: issue counts per new component that do not fall across sweeps. One sweep is not enough data to say.</p>
 
     <h3 id="paper-s5-3">5.3 What it ships</h3>
-    <p>Every component is measured on each build: <span data-stat="stats.withoutJs">169</span> of <span data-stat="stats.total">229</span> need no JavaScript. The whole system is <span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.3</span> KiB as one bundle (minified and gzipped); a real application ships a fraction. Each application scaffold is bundled on its own - the core plus only the components its markup uses - and an end-to-end test proves it renders exactly as on the full bundle.</p>
+    <p>Every component is measured on each build: <span data-stat="stats.withoutJs">169</span> of <span data-stat="stats.total">229</span> need no JavaScript. The whole system is <span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.6</span> KiB as one bundle (minified and gzipped); a real application ships a fraction. Each application scaffold is bundled on its own - the core plus only the components its markup uses - and an end-to-end test proves it renders exactly as on the full bundle.</p>
+    <p>Between the whole and the one component sit <span data-stat="stats.sectionBundles.count">19</span> section bundles - one per sidebar section, its members alone, loaded after the shared code - from <span data-stat="stats.sectionBundles.minGzMinified" data-stat-format="kib">1.9</span> to <span data-stat="stats.sectionBundles.maxGzMinified" data-stat-format="kib">59.1</span> KiB, <span data-stat="stats.sectionBundles.meanGzMinified" data-stat-format="kib">14.4</span> KiB on average (minified and gzipped).</p>
     <figure class="paper-table paper-wide">
       <table class="table">
         <thead><tr><th scope="col">Application</th><th scope="col" data-num>Components</th><th scope="col" data-num>Shipped (KiB, min + gzip)</th></tr></thead>
         <tbody>
-          <tr><td>Everything - all.min.css + all.min.js</td><td data-num data-stat="stats.total">229</td><td data-num data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.3</td></tr>
-          <tr><td>Admin Dashboard</td><td data-num data-stat="stats.apps.admin-dashboard.components.length">30</td><td data-num data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.8</td></tr>
-          <tr><td>Messenger</td><td data-num data-stat="stats.apps.messenger.components.length">16</td><td data-num data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.3</td></tr>
-          <tr><td>Issue Tracker</td><td data-num data-stat="stats.apps.issue-tracker.components.length">24</td><td data-num data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.1</td></tr>
-          <tr><td>Notes &amp; Docs</td><td data-num data-stat="stats.apps.notes.components.length">24</td><td data-num data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.3</td></tr>
-          <tr><td>Status Page</td><td data-num data-stat="stats.apps.status-page.components.length">19</td><td data-num data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.3</td></tr>
-          <tr><td>Desktop</td><td data-num data-stat="stats.apps.desktop.components.length">33</td><td data-num data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.2</td></tr>
+          <tr><td>Everything - all.min.css + all.min.js</td><td data-num data-stat="stats.total">229</td><td data-num data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.6</td></tr>
+          <tr><td>Admin Dashboard</td><td data-num data-stat="stats.apps.admin-dashboard.components.length">30</td><td data-num data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.9</td></tr>
+          <tr><td>Messenger</td><td data-num data-stat="stats.apps.messenger.components.length">16</td><td data-num data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.4</td></tr>
+          <tr><td>Issue Tracker</td><td data-num data-stat="stats.apps.issue-tracker.components.length">24</td><td data-num data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.2</td></tr>
+          <tr><td>Notes &amp; Docs</td><td data-num data-stat="stats.apps.notes.components.length">24</td><td data-num data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.4</td></tr>
+          <tr><td>Status Page</td><td data-num data-stat="stats.apps.status-page.components.length">19</td><td data-num data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.4</td></tr>
+          <tr><td>Desktop</td><td data-num data-stat="stats.apps.desktop.components.length">33</td><td data-num data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.3</td></tr>
         </tbody>
       </table>
       <figcaption class="paper-table-caption"><b>Table 3.</b> Real applications ship a fraction of the system.</figcaption>

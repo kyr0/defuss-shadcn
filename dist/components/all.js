@@ -11013,6 +11013,10 @@ function draw2(root, canvas) {
   fit(root, canvas);
   const { nodes, rectOf } = measure(canvas);
   const panel = panelOf(canvas);
+  const entered = new Set;
+  for (const el of dfDollar18(canvas).find(':scope > .diagram-wires > .diagram-wire[data-step-state="current"], :scope > .diagram-wire-labels > [data-step-state="current"]').toArray()) {
+    entered.add(`${el.tagName.toLowerCase()}|${el.dataset.edgeRef ?? ""}|${el.textContent ?? ""}`);
+  }
   const wires = layer(canvas, "diagram-wires", () => {
     const el = svg("svg", { class: "diagram-wires", "aria-hidden": "true", focusable: "false" });
     return el;
@@ -11050,6 +11054,8 @@ function draw2(root, canvas) {
     const i = (extra.beatOf ?? edge)?.style?.getPropertyValue("--step-i");
     if (i)
       g.style.setProperty("--step-i", i);
+    if (g.dataset.stepState === "current" && entered.has(`g|${g.dataset.edgeRef ?? ""}|`))
+      g.setAttribute("data-step-entered", "");
     wires.append(g);
     return g;
   };
@@ -11066,6 +11072,7 @@ function draw2(root, canvas) {
   if (type === "fishbone")
     drawBones(nodes, wireGroup, line);
   sideDotLabels(nodes, wires, rectOf);
+  labels._entered = entered;
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
   if (panel === "changes")
     badges(canvas, labels, rectOf);
@@ -11200,6 +11207,8 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
         span.dataset[name] = edge.dataset[name];
     if (edge)
       span.dataset.edgeRef = edgeRef(edge);
+    if (span.dataset.stepState === "current" && layerEl._entered?.has(`span|${span.dataset.edgeRef ?? ""}|${text}`))
+      span.dataset.stepEntered = "";
     const i = edge?.style.getPropertyValue("--step-i");
     if (i)
       span.style.setProperty("--step-i", i);
@@ -21460,6 +21469,6 @@ df$59.win = windowActions;
 init59();
 new MutationObserver(init59).observe(document, { childList: true, subtree: true });
 
-//# debugId=A19888715533CD1064756E2164756E21
+//# debugId=1165041A879234D564756E2164756E21
 /* defuss-shadcn v0.9.6 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

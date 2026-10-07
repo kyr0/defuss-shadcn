@@ -849,6 +849,15 @@ function draw(root, canvas) {
   fit(root, canvas);
   const { nodes, rectOf } = measure(canvas);
   const panel = panelOf(canvas);
+  // what already entered: a wire or label that was 'current' before this draw. A draw can run
+  // again within a step (a clearance pass, a resize, fonts loading) - a rebuilt element would
+  // restart its enter animation (the wire drew twice, flickered); carrying data-step-entered
+  // keeps it still. VERIFIED: (diagram.e2e "a redraw within a step") a redraw mid-step leaves
+  // the current wire's animation count at zero and the wire fully drawn.
+  const entered = new Set<string>();
+  for (const el of dfDollar(canvas).find(':scope > .diagram-wires > .diagram-wire[data-step-state="current"], :scope > .diagram-wire-labels > [data-step-state="current"]').toArray()) {
+    entered.add(`${el.tagName.toLowerCase()}|${el.dataset.edgeRef ?? ''}|${el.textContent ?? ''}`);
+  }
   const wires = layer(canvas, 'diagram-wires', () => {
     const el = svg('svg', { class: 'diagram-wires', 'aria-hidden': 'true', focusable: 'false' });
     return el;
@@ -887,6 +896,7 @@ function draw(root, canvas) {
     });
     const i = (extra.beatOf ?? edge)?.style?.getPropertyValue('--step-i');
     if (i) g.style.setProperty('--step-i', i);
+    if (g.dataset.stepState === 'current' && entered.has(`g|${g.dataset.edgeRef ?? ''}|`)) g.setAttribute('data-step-entered', '');
     wires.append(g);
     return g;
   };
@@ -902,6 +912,7 @@ function draw(root, canvas) {
   if (type === 'fishbone') drawBones(nodes, wireGroup, line);
   // a dot's name goes to the side its wires leave free; then the labels avoid it there
   sideDotLabels(nodes, wires, rectOf);
+  labels._entered = entered;
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
   if (panel === 'changes') badges(canvas, labels, rectOf);
   flowTokens(labels, wires);
@@ -1048,6 +1059,7 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
     dfDollar(span).text(text);
     for (const name of ['tone', 'stepState', 'change', 'activeState']) if (edge?.dataset[name]) span.dataset[name] = edge.dataset[name];
     if (edge) span.dataset.edgeRef = edgeRef(edge);
+    if (span.dataset.stepState === 'current' && layerEl._entered?.has(`span|${span.dataset.edgeRef ?? ''}|${text}`)) span.dataset.stepEntered = '';
     const i = edge?.style.getPropertyValue('--step-i');
     if (i) span.style.setProperty('--step-i', i);
     dfDollar(layerEl).append(span);

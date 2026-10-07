@@ -28,13 +28,16 @@ export function statsClaimText(doc: StatsDoc): string {
   );
 }
 
-/** Index page: the claim sentence, generated from dist/stats.json (was a
- * hand-maintained paragraph that had to be re-edited on every count change). */
+/** Bytes as KiB with one decimal - the cards' description figures. */
+const kib = (bytes: number) => (bytes / 1024).toFixed(1);
+
+/** Index page: the claim sentence, generated from dist/stats.json - one caption line under the
+ * cards. VERIFIED: (verify's `stats claim` gate) the sentence is required verbatim here and in README.md. */
 export function StatsClaim(_props: Props) {
   const claim = statsClaimText(loadStats());
   return (
-    <p class="text-sm text-muted-foreground mb-4" style="max-width:44rem;">
-      {claim}. Measured from the shipped files. Full details in: <code>dist/stats.json</code> - updated on every build.
+    <p class="text-xs text-muted-foreground mt-0 mb-10" style="max-width:44rem;">
+      {claim}. Measured on every build - <code>dist/stats.json</code>.
     </p>
   );
 }
@@ -102,8 +105,11 @@ export function StatsCards(_props: Props) {
       <StatCard title="Bundle" description={<><code>all.min.css</code> + <code>all.min.js</code></>}>
         <CountDown bytes={s.bundle.totalSizeGzMinified} /> <span class="stats-unit">KiB</span> {gzip}
       </StatCard>
-      <StatCard title="Core runtime" description={<><code>core.min.js</code> + <code>core.min.css</code></>}>
+      <StatCard title="Shared code" description={<><code>core.min.js</code> + <code>core.min.css</code></>}>
         <CountDown bytes={s.core.totalSizeGzMinified} /> <span class="stats-unit">KiB</span> {gzip}
+      </StatCard>
+      <StatCard title="Section bundles" description={<>min {kib(s.sectionBundles.minGzMinified)} · mean {kib(s.sectionBundles.meanGzMinified)} · max {kib(s.sectionBundles.maxGzMinified)} KiB {gzip}</>}>
+        <CountUp value={s.sectionBundles.count} />
       </StatCard>
     </div>
   );

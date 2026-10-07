@@ -95,7 +95,19 @@ export type SectionStats = BundleStats & {
 };
 
 /** Extra measurements the caller passes through (fs-bound, see stats-files.ts). */
-export type StatsExtra = { tokens?: number; examples?: number; apps?: Record<string, AppStats>; templateGroups?: Record<string, number>; bundles?: Record<string, BundleStats>; sections?: Record<string, SectionStats> };
+/** The section bundles, summarized - the sidebar sections each built on their own (gzip, minified). */
+export type SectionBundlesSummary = {
+  /** how many sections ship a bundle */
+  count: number;
+  /** the smallest section bundle's bytes */
+  minGzMinified: number;
+  /** the largest section bundle's bytes */
+  maxGzMinified: number;
+  /** the arithmetic mean, rounded to whole bytes */
+  meanGzMinified: number;
+};
+
+export type StatsExtra = { tokens?: number; examples?: number; unitTestFiles?: number; apps?: Record<string, AppStats>; templateGroups?: Record<string, number>; bundles?: Record<string, BundleStats>; sections?: Record<string, SectionStats> };
 
 /** The whole dist/stats.json document. */
 export type StatsDoc = {
@@ -114,6 +126,8 @@ export type StatsDoc = {
   tokens: number;
   /** EXL - the live examples on the documentation pages */
   examples: number;
+  /** the unit test files (tests/*.test.ts) - the suite verify's gate runs */
+  unitTestFiles: number;
   withJs: number;
   withoutJs: number;
   totalSize: number;
@@ -127,10 +141,20 @@ export type StatsDoc = {
   bundles: Record<string, BundleStats>;
   /** one bundle per sidebar section, in sidebar order (scripts/lib/sections.ts) */
   sections: Record<string, SectionStats>;
+  /** the section bundles summarized: how many, and their smallest, mean and largest gzip size */
+  sectionBundles: SectionBundlesSummary;
   components: Record<string, ComponentStats>;
   /** the Application Scaffolds, each built on its own */
   apps: Record<string, AppStats>;
 };
+
+/** The summary the index cards, the deck and the report show: count, min, mean, max of the
+ *  section bundles' gzip size (0 for all when no section ships a bundle). */
+export function summarizeSections(sections: Record<string, { totalSizeGzMinified: number }>): SectionBundlesSummary {
+  const sizes = Object.values(sections).map((s) => s.totalSizeGzMinified);
+  if (!sizes.length) return { count: 0, minGzMinified: 0, maxGzMinified: 0, meanGzMinified: 0 };
+  return { count: sizes.length, minGzMinified: Math.min(...sizes), maxGzMinified: Math.max(...sizes), meanGzMinified: Math.round(sizes.reduce((a, b) => a + b, 0) / sizes.length) };
+}
 
 /**
  * Why: the single place every published number is computed, so the per-type
@@ -158,6 +182,7 @@ export function aggregateStats(
     templateGroups: extra.templateGroups ?? {},
     tokens: extra.tokens ?? 0,
     examples: extra.examples ?? 0,
+    unitTestFiles: extra.unitTestFiles ?? 0,
     withJs: 0,
     withoutJs: 0,
     totalSize: 0,
@@ -168,6 +193,7 @@ export function aggregateStats(
     core,
     bundles: extra.bundles ?? {},
     sections: extra.sections ?? {},
+    sectionBundles: summarizeSections(extra.sections ?? {}),
     components: {},
     apps: extra.apps ?? {},
   };

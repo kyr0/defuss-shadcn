@@ -143,17 +143,17 @@
 
   /* S4 splits: one small card per file - its gzip size and a mini chart of
      source → minified → gzip (the bars scaled to the card's source size) */
-  #sys-bundles .sys-splits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-  #sys-bundles .sys-split { display: grid; gap: 10px; align-content: start; padding: 26px 28px 28px; border: 2px solid #0A1E4A; border-radius: 18px; background: #FFFFFF; box-shadow: 0 10px 0 -4px rgba(10,30,74,.12); }
+  #sys-bundles .sys-splits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+  #sys-bundles .sys-split { display: grid; gap: 10px; align-content: start; padding: 22px 22px 24px; border: 2px solid #0A1E4A; border-radius: 18px; background: #FFFFFF; box-shadow: 0 10px 0 -4px rgba(10,30,74,.12); }
   #sys-bundles .sys-split-kind { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; }
   #sys-bundles .sys-split-kind b { font-weight: 900; }
   #sys-bundles .sys-split-kind span { padding: 2px 10px; border-radius: 999px; background: #0A1E4A; color: #FFFFFF; font-size: 16px; font-weight: 800; letter-spacing: .1em; }
   #sys-bundles .sys-split code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 18px; font-weight: 600; opacity: .75; }
-  #sys-bundles .sys-split-num { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 0; font-size: 64px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  #sys-bundles .sys-split-num { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 0; font-size: 56px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
   #sys-bundles .sys-split-num small { font-size: 18px; font-weight: 700; letter-spacing: .04em; opacity: .7; }
   #sys-bundles .sys-split-what { margin: 0 0 8px; font-size: 18px; font-weight: 500; line-height: 1.35; opacity: .75; min-height: 2.7em; }
   #sys-bundles .sys-split-chart { display: grid; gap: 10px; padding-top: 16px; border-top: 2px solid rgba(10,30,74,.14); }
-  #sys-bundles .sys-split-chart > div { display: grid; grid-template-columns: 80px 1fr 64px; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; }
+  #sys-bundles .sys-split-chart > div { display: grid; grid-template-columns: 66px 1fr 58px; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
   #sys-bundles .sys-split-chart i { display: block; height: 14px; width: var(--w, 0%); background: rgba(10,30,74,.3); transform: scaleX(0); transform-origin: left; transition: transform 1s var(--presentation-out) var(--d, 0s); }
   #sys-bundles .sys-split-chart .gz i { background: #0A1E4A; }
   #sys-bundles.is-on .sys-split-chart i { transform: scaleX(1); }
@@ -205,7 +205,10 @@
   /* S12-S15 skills: one pitch each - a claim, three panels, the call */
   #sys-deck .sys-skill-sub { position: absolute; left: 120px; top: 190px; width: 1240px; margin: 0; font-size: 32px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
   #sys-deck .sys-skill-grid { position: absolute; left: 120px; top: 330px; width: 1360px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-  #sys-deck .sys-skill-grid > div { border: 2px solid currentColor; padding: 24px 26px; font-size: 21px; font-weight: 500; line-height: 1.4; }
+  #sys-deck .sys-skill-grid > div { padding: 24px 26px; border: 2px solid currentColor; border-radius: 18px; background: color-mix(in oklab, currentColor 7%, transparent); box-shadow: 0 10px 0 -4px color-mix(in oklab, currentColor 14%, transparent); font-size: 21px; font-weight: 500; line-height: 1.4; }
+  :is(#sys-vae, #sys-gate, #sys-vae-skill) .sys-dg { position: absolute; left: 120px; transform-origin: 0 0; }
+  :is(#sys-vae, #sys-gate, #sys-vae-skill) .sys-dg .diagram { margin: 0; }
+  :is(#sys-vae, #sys-gate, #sys-vae-skill) .sys-dg .diagram-controls { display: none; }
   #sys-deck .sys-skill-grid b { display: block; margin-bottom: 12px; font-size: 15px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; opacity: .65; }
   #sys-deck .sys-skill-grid code, #sys-deck .sys-skill-cmd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   #sys-deck .sys-skill-cmd { position: absolute; left: 120px; top: 690px; width: 1360px; margin: 0; font-size: 24px; font-weight: 700; opacity: .85; }
@@ -226,7 +229,7 @@
   #sys-watch .sys-row { display: grid; grid-template-columns: 300px 1fr 110px; align-items: center; gap: 16px; height: 50px; font-size: 26px; font-weight: 600; padding: 0 12px; box-sizing: border-box; }
   #sys-watch .sys-row b { text-align: right; font-weight: 900; font-size: 30px; }
   #sys-watch .sys-row.hot { background: #FFFFFF; color: var(--presentation-ink); }
-  #sys-watch .sys-rec { position: absolute; left: 792px; top: 470px; width: 690px; margin: 0; font-size: 22px; font-weight: 500; line-height: 1.5; }
+  #sys-watch .sys-rec { position: absolute; left: 792px; top: 530px; width: 690px; margin: 0; font-size: 22px; font-weight: 500; line-height: 1.5; }
   #sys-watch .sys-rec code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 20px; }
 
   /* S10 how to use: branching route + 4 trains */
@@ -287,7 +290,7 @@
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.8s; left:120px; top:500px; width:520px; font-size:50px">From <span class="type-badge" data-type="ATM" title="Atom">ATM</span> to <span class="type-badge" data-type="TPL" title="Template">TPL</span></h2>
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:610px"><b>0</b><span>runtime dependencies</span></div>
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.35s; left:120px; top:680px"><b data-stat="stats.tokens">50</b><span>design tokens</span></div>
-    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b data-stat="stats.examples">1,583</b><span>live examples</span></div>
+    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b data-stat="stats.examples">1,585</b><span>live examples</span></div>
     <div class="sys-dots" id="sys-dots"></div>
     <div class="sys-collab" data-col="atm" style="left:620px"><b data-stat="stats.byType.ATM">68</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div>
     <div class="sys-collab" data-col="mol" style="left:795px"><b data-stat="stats.byType.MOL">25</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div>
@@ -369,27 +372,27 @@
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.50s">
         <p class="sys-split-kind"><b>all</b><span>JS</span></p>
         <code>all.min.js</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">138.6</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">138.7</span><small>KiB gzip</small></p>
         <p class="sys-split-what">every component's script + the core</p>
         <div class="sys-split-chart" role="img" aria-label="all.min.js: source, minified and gzip size">
-          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib">788.9</b></div>
-          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib">454.7</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">138.6</b></div>
+          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib">789.5</b></div>
+          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib">455.2</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib">138.7</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.65s">
         <p class="sys-split-kind"><b>all</b><span>CSS</span></p>
         <code>all.min.css</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">127.7</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">127.8</span><small>KiB gzip</small></p>
         <p class="sys-split-what">every component's stylesheet</p>
         <div class="sys-split-chart" role="img" aria-label="all.min.css: source, minified and gzip size">
-          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib">1213.3</b></div>
-          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib">740.3</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">127.7</b></div>
+          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib">1214.9</b></div>
+          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib">740.9</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib">127.8</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.80s">
-        <p class="sys-split-kind"><b>core</b><span>JS</span></p>
+        <p class="sys-split-kind"><b>shared</b><span>JS</span></p>
         <code>core.min.js</code>
         <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1000" data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib">24.8</span><small>KiB gzip</small></p>
         <p class="sys-split-what">df$ - query, morph, state, stores</p>
@@ -400,7 +403,7 @@
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.95s">
-        <p class="sys-split-kind"><b>core</b><span>CSS</span></p>
+        <p class="sys-split-kind"><b>shared</b><span>CSS</span></p>
         <code>core.min.css</code>
         <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1150" data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib">9.7</span><small>KiB gzip</small></p>
         <p class="sys-split-what">tokens + sizing, layout, a11y</p>
@@ -408,6 +411,17 @@
           <div><span>source</span><i style="--d:1.15s"></i><b data-stat="stats.core.cssSize" data-stat-format="kib">124.9</b></div>
           <div><span>minified</span><i style="--d:1.25s"></i><b data-stat="stats.core.cssSizeMinified" data-stat-format="kib">106.7</b></div>
           <div class="gz"><span>gzip</span><i style="--d:1.35s"></i><b data-stat="stats.core.cssSizeGzMinified" data-stat-format="kib">9.7</b></div>
+        </div>
+      </div>
+      <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:1.10s">
+        <p class="sys-split-kind"><b>sections</b><span>CSS + JS</span></p>
+        <code>sections/*.min.*</code>
+        <p class="sys-split-num"><span data-count="" data-count-delay="1300" data-stat="stats.sectionBundles.count">19</span><small>bundles</small></p>
+        <p class="sys-split-what">one per sidebar section - its members alone, after the shared code</p>
+        <div class="sys-split-chart" role="img" aria-label="section bundles: the smallest, the mean and the largest gzip size">
+          <div><span>min</span><i style="--d:1.30s"></i><b data-stat="stats.sectionBundles.minGzMinified" data-stat-format="kib">1.9</b></div>
+          <div><span>mean</span><i style="--d:1.40s"></i><b data-stat="stats.sectionBundles.meanGzMinified" data-stat-format="kib">14.4</b></div>
+          <div class="gz"><span>max</span><i style="--d:1.50s"></i><b data-stat="stats.sectionBundles.maxGzMinified" data-stat-format="kib">59.1</b></div>
         </div>
       </div>
     </div>
@@ -430,13 +444,13 @@
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:96px">Use cases · Application Scaffolds</p>
     <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:132px">Real apps ship a fraction.</h2>
     <div class="abs sys-bars" style="left:120px; top:268px; width:1360px; gap:8px; --sys-bar-label:520px">
-      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">229</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.3</span><span>KiB</span></b></div>
-      <a class="sys-bar" href="app-admin-dashboard.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.60s"><span>Admin Dashboard<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.admin-dashboard.components.length">30</span> components</small></span><i style="--d:0.70s"></i><b><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.8</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-messenger.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.72s"><span>Messenger<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.messenger.components.length">16</span> components</small></span><i style="--d:0.82s"></i><b><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.3</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-issue-tracker.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.84s"><span>Issue Tracker<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.issue-tracker.components.length">24</span> components</small></span><i style="--d:0.94s"></i><b><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.1</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-notes.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.96s"><span>Notes &amp; Docs<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.notes.components.length">24</span> components</small></span><i style="--d:1.06s"></i><b><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.3</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-status-page.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.08s"><span>Status Page<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.status-page.components.length">19</span> components</small></span><i style="--d:1.18s"></i><b><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.3</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-desktop.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.20s"><span>Desktop<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.desktop.components.length">33</span> components</small></span><i style="--d:1.30s"></i><b><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.2</span><span>KiB</span></b></a>
+      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">229</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">266.6</span><span>KiB</span></b></div>
+      <a class="sys-bar" href="app-admin-dashboard.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.60s"><span>Admin Dashboard<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.admin-dashboard.components.length">30</span> components</small></span><i style="--d:0.70s"></i><b><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">74.9</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-messenger.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.72s"><span>Messenger<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.messenger.components.length">16</span> components</small></span><i style="--d:0.82s"></i><b><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.4</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-issue-tracker.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.84s"><span>Issue Tracker<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.issue-tracker.components.length">24</span> components</small></span><i style="--d:0.94s"></i><b><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.2</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-notes.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.96s"><span>Notes &amp; Docs<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.notes.components.length">24</span> components</small></span><i style="--d:1.06s"></i><b><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.4</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-status-page.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.08s"><span>Status Page<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.status-page.components.length">19</span> components</small></span><i style="--d:1.18s"></i><b><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.4</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-desktop.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.20s"><span>Desktop<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.desktop.components.length">33</span> components</small></span><i style="--d:1.30s"></i><b><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.3</span><span>KiB</span></b></a>
     </div>
     <p class="abs sys-foot" data-df-entrance="fade" style="--df-motion-delay:1.7s; left:120px; top:752px; width:1360px">Each app is built on its own: the core plus only the components its markup uses (dist/apps/) - an e2e test proves it renders exactly as on the full bundle. Click one to open it full screen.</p>
     <p class="presentation-note">Real-world applications never load every component: each scaffold is bundled on its own and measured - a fraction of the whole system, and the e2e proof shows it renders exactly as on the full bundle.</p>
@@ -507,7 +521,8 @@
     <div class="sys-rows">
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.7s"><span>Verify gates</span><span></span><b data-stat="verify.gates">78</b></div>
       <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>E2E test files</span><span></span><b data-stat="verify.e2eFiles">242</b></div>
-      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"><span>Components covered</span><span></span><b data-stat="stats.total">229</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"><span>Unit test files</span><span></span><b data-stat="stats.unitTestFiles">35</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:1.06s"><span>Components covered</span><span></span><b data-stat="stats.total">229</b></div>
     </div>
     <p class="sys-rec" data-df-entrance="fade" style="--df-motion-delay:1.4s"><code>bun scripts/verify.ts</code> - <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s on a <span data-stat="verify.machine" data-stat-format="text">MacBook Air</span> · <span data-stat="verify.chip" data-stat-format="text">Apple M4</span> (<span data-stat="verify.memoryGB">24</span> GB, <span data-stat="verify.os" data-stat-format="text">macOS 15.7.3</span>, Bun <span data-stat="verify.bun" data-stat-format="text">1.4.2</span>), run by <span data-stat="verify.agent" data-stat-format="text">Claude Code · Opus 5.5 (high effort)</span> on <span data-stat="verify.date" data-stat-format="text">2026-10-05</span>. Recorded by scripts/time-verify.ts - and this slide is checked against the record.</p>
     <p class="presentation-note">How long the verifier alone takes, measured: one verify run, recorded with the machine and the agent that drove it - the slide's figures are gated against that record.</p>
@@ -541,7 +556,7 @@
   <section class="slide" data-slide id="sys-skill-ref" data-theme="ink" data-sec="5" aria-label="Skill: defuss-shadcn, the reference">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · 1 of 4 · the reference</p>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:100px">defuss-shadcn</h2>
-    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Your agent builds with the whole system - <span data-stat="stats.total">229</span> components, each as its documented markup, nothing invented.</p>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Your agent builds with the whole component system in mind - <span data-stat="stats.total">229</span> components, learning from the best practices shown in <span data-stat="stats.examples">1,585</span> live examples: expert guidance built in, AI slop left out.</p>
     <div class="sys-skill-grid">
       <div data-df-entrance="up" style="--df-motion-delay:.7s"><b>What it holds</b>The install paths (npm, CDN), the rules, a map of every documentation page - and every component skill next to it: markup, variants, sizes, ARIA, states.</div>
       <div data-df-entrance="up" style="--df-motion-delay:.9s"><b>Rules it keeps</b>Markup from the skills, verbatim. Native elements first. Every colour a token. State through the State API. One runtime: <code>df$</code>.</div>
@@ -553,7 +568,7 @@
   <section class="slide" data-slide id="sys-skill-plan" data-theme="paper" data-sec="5" aria-label="Skill: shadcn-plan">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · 2 of 4 · plan</p>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:100px">shadcn-plan</h2>
-    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Deconstruct by reusability first, then compose - a page, a whole frontend or a new component.</p>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">It plans the way an expert does - reusable units first, existing components before new ones - so a page, a frontend or a new component stays consistent instead of sprawling.</p>
     <div class="sys-skill-grid">
       <div data-df-entrance="up" style="--df-motion-delay:.7s"><b>Smallest common denominator</b>It looks across the whole plan for the units that recur. A flavor of an existing component stays that component - a variant, a state, an example - never a near-duplicate.</div>
       <div data-df-entrance="up" style="--df-motion-delay:.9s"><b>Then the contract</b>Every unit typed (ATM to TPL), its tokens, states, API, boundaries, docs and examples - one owner per concern, components that talk through events and APIs.</div>
@@ -565,7 +580,7 @@
   <section class="slide" data-slide id="sys-skill-theme" data-theme="ink" data-sec="5" aria-label="Skill: shadcn-theme">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · 3 of 4 · theme</p>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:100px">shadcn-theme</h2>
-    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">A theme from a brief - text, colours, a design guide or a picture - every token, light and dark, checked.</p>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">A theme from a brief - text, colours, a design guide or a picture - every token in light and dark, checked for readability before anyone sees it.</p>
     <div class="sys-skill-grid">
       <div data-df-entrance="up" style="--df-motion-delay:.7s"><b>What it writes</b>One theme file in the shape the Theme Designer imports: every token in <code>:root</code> and <code>.dark</code>, the same radius in both - one identity, two palettes.</div>
       <div data-df-entrance="up" style="--df-motion-delay:.9s"><b>What checks it</b><code>theme-check.mjs</code>: unknown or missing tokens, the radius, WCAG contrast per text pair - with the nearest lightness that passes.</div>
@@ -577,7 +592,7 @@
   <section class="slide" data-slide id="sys-skill-review" data-theme="paper" data-sec="5" aria-label="Skill: shadcn-review">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · 4 of 4 · review</p>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:100px">shadcn-review</h2>
-    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">The checker first, then judgment - and it fixes what it confirms.</p>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">The checker first, then judgment against the same guides the components were built with - and what it confirms, it fixes.</p>
     <div class="sys-skill-grid">
       <div data-df-entrance="up" style="--df-motion-delay:.7s"><b>Mechanical pass</b><code>markup-check.mjs</code>: modifier classes, parts and values a component does not have, invented tokens, loading order, globals, icon buttons without a name.</div>
       <div data-df-entrance="up" style="--df-motion-delay:.9s"><b>Judgment pass</b>Against the guides: native elements first, the data-attribute API, the State API, composition and boundaries, tokens, accessibility - and no near-duplicate of an existing component.</div>
@@ -586,7 +601,18 @@
     <p class="abs sys-skill-cmd" data-df-entrance="fade" style="--df-motion-delay:1.4s">/defuss-shadcn:shadcn-review src/pages/settings.html</p>
     <p class="presentation-note">shadcn-review, human-triggered: the bundled markup checker runs first - its vocabulary is every class, part, variant and token of the release - then a judgment pass against the guides. Confirmed findings are fixed with the smallest correct diff and checked again.</p>
   </section>
-  <!-- 16 · Outlook - discussion: outlined ? with one tick per component -->
+  <!-- 16 · Use - defuss-vae: the process skills beside the component skills, the map of both -->
+  <section class="slide" data-slide id="sys-vae-skill" data-theme="ink" data-sec="5" aria-label="defuss-vae: the process skills">
+    <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · and the process</p>
+    <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:96px; font-size:46px; width:1360px">Want to improve on vibe coding and agentic engineering?</h2>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s; top:168px; font-size:28px">Install defuss-vae as one more skill: the verified workflow that let defuss-shadcn scale this far with AI - in any harness that reads Agent Skills.</p>
+    <div class="sys-dg" style="top:280px; width:1360px; transform:scale(1)">
+      <figure class="diagram" id="sys-skills-map" aria-label="How the skills divide: defuss-shadcn's skills tell the agent what to build - the components, their guidelines, a plan, a theme, a review - and lead to a consistent UI; defuss-vae's skills tell it how to work - plan, implement, gate, finalize - and lead to quality that scales" style="--diagram-node-w:8.5rem;--diagram-col-min:6.5rem;--diagram-gap-x:1.4rem;--diagram-gap-y:1rem"><script type="application/json" class="diagram-spec">{"type":"flow","steps":true,"interactive":true,"cols":6,"nodes":[{"id":"agent","name":"Your agent","meta":"Claude Code · Codex · Cursor · Gemini CLI · Copilot · Windsurf","col":1,"row":2,"step":1,"tone":"accent"},{"id":"ref","name":"defuss-shadcn","eyebrow":"defuss-shadcn","meta":"every component as its documented markup; the rules","col":2,"row":1,"step":2},{"id":"plan","name":"shadcn-plan","eyebrow":"defuss-shadcn","meta":"reusable units first, then compose","col":3,"row":1,"step":3},{"id":"theme","name":"shadcn-theme","eyebrow":"defuss-shadcn","meta":"a theme from a brief, checked","col":4,"row":1,"step":4},{"id":"review","name":"shadcn-review","eyebrow":"defuss-shadcn","meta":"the checker, then judgment","col":5,"row":1,"step":5},{"id":"ui","name":"A consistent UI","meta":"no invented classes, no slop","col":6,"row":1,"step":6,"shape":"pill","tone":"ok"},{"id":"vplan","name":"plan","eyebrow":"defuss-vae","meta":"trace · probe · the smallest plan","col":2,"row":3,"step":7},{"id":"vimpl","name":"implement","eyebrow":"defuss-vae","meta":"fully agentic","col":3,"row":3,"step":8},{"id":"vgate","name":"gate","eyebrow":"defuss-vae","meta":"verify → review → docs","col":4,"row":3,"step":9,"tone":"warn"},{"id":"vfinal","name":"finalize","eyebrow":"defuss-vae","meta":"commits · changelog · memory","col":5,"row":3,"step":10},{"id":"quality","name":"Quality that scales","meta":"failure modes fixed, docs that hold","col":6,"row":3,"step":11,"shape":"pill","tone":"ok"}],"edges":[{"from":"agent","to":"ref","label":"what to build"},{"from":"ref","to":"plan"},{"from":"plan","to":"theme"},{"from":"theme","to":"review"},{"from":"review","to":"ui"},{"from":"agent","to":"vplan","label":"how to work"},{"from":"vplan","to":"vimpl"},{"from":"vimpl","to":"vgate"},{"from":"vgate","to":"vimpl","label":"fix","tone":"warn"},{"from":"vgate","to":"vfinal"},{"from":"vfinal","to":"quality"}]}</script></figure>
+    </div>
+    <p class="abs sys-skill-cmd" data-df-entrance="fade" style="--df-motion-delay:1.4s; top:800px">github.com/kyr0/defuss-vae</p>
+    <p class="presentation-note">The two skill families and how they divide: defuss-shadcn's skills tell the agent what to build - the components with their guidelines, a plan, a theme, a review - and lead to a consistent UI; defuss-vae's skills tell it how to work - plan, implement, the gate, finalize - fixing the failure modes of agentic engineering, raising code and documentation quality, and letting vibe coding scale. Both install into any harness that reads Agent Skills.</p>
+  </section>
+  <!-- 17 · Outlook - discussion: outlined ? with one tick per component -->
   <section class="slide" data-slide id="sys-frage" data-theme="ink" data-sec="6" aria-label="Discussion">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:230px">Discussion</p>
     <h2 class="abs sys-h-l" data-df-entrance="skew" style="--df-motion-delay:.3s; left:120px; top:280px; width:760px; font-size:96px">What will you build?</h2>
@@ -756,7 +782,7 @@
 
     // S8 + S9: each diagram slide plays its diagram a second after it arrives
     // and resets it when left - every revisit replays
-    const diagramSlides = [['sys-vae', 'sys-vae-loop'], ['sys-gate', 'sys-vae-gate']];
+    const diagramSlides = [['sys-vae', 'sys-vae-loop'], ['sys-gate', 'sys-vae-gate'], ['sys-vae-skill', 'sys-skills-map']];
     let vaeTimer = 0;
     const vae = (activeId) => {
       clearTimeout(vaeTimer);

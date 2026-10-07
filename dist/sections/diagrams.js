@@ -544,6 +544,10 @@ function draw(root, canvas) {
   fit(root, canvas);
   const { nodes, rectOf } = measure(canvas);
   const panel = panelOf(canvas);
+  const entered = new Set;
+  for (const el of dfDollar(canvas).find(':scope > .diagram-wires > .diagram-wire[data-step-state="current"], :scope > .diagram-wire-labels > [data-step-state="current"]').toArray()) {
+    entered.add(`${el.tagName.toLowerCase()}|${el.dataset.edgeRef ?? ""}|${el.textContent ?? ""}`);
+  }
   const wires = layer(canvas, "diagram-wires", () => {
     const el = svg("svg", { class: "diagram-wires", "aria-hidden": "true", focusable: "false" });
     return el;
@@ -581,6 +585,8 @@ function draw(root, canvas) {
     const i = (extra.beatOf ?? edge)?.style?.getPropertyValue("--step-i");
     if (i)
       g.style.setProperty("--step-i", i);
+    if (g.dataset.stepState === "current" && entered.has(`g|${g.dataset.edgeRef ?? ""}|`))
+      g.setAttribute("data-step-entered", "");
     wires.append(g);
     return g;
   };
@@ -597,6 +603,7 @@ function draw(root, canvas) {
   if (type === "fishbone")
     drawBones(nodes, wireGroup, line);
   sideDotLabels(nodes, wires, rectOf);
+  labels._entered = entered;
   placeLabels(queue, labels, wires, nodes, textRects(canvas, nodes, rectOf));
   if (panel === "changes")
     badges(canvas, labels, rectOf);
@@ -731,6 +738,8 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
         span.dataset[name] = edge.dataset[name];
     if (edge)
       span.dataset.edgeRef = edgeRef(edge);
+    if (span.dataset.stepState === "current" && layerEl._entered?.has(`span|${span.dataset.edgeRef ?? ""}|${text}`))
+      span.dataset.stepEntered = "";
     const i = edge?.style.getPropertyValue("--step-i");
     if (i)
       span.style.setProperty("--step-i", i);
@@ -2146,5 +2155,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=E4C5001F378CD0D464756E2164756E21
+//# debugId=3CBBEB15FE96B79A64756E2164756E21
 //# sourceMappingURL=diagrams.js.map

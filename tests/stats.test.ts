@@ -121,6 +121,14 @@ describe('statsClaimText / statsClaimProblems', () => {
     expect(withBundle.totalSizeGzMinified).toBe(4);
   });
 
+  it('summarizes the section bundles (count, min, mean, max of gzip) and passes the unit test file count through', () => {
+    const section = (gz: number) => ({ heading: 'x', members: [], needs: [], files: [], jsSize: 0, jsSizeMinified: 0, cssSize: 0, cssSizeMinified: 0, totalSizeGz: gz, totalSizeGzMinified: gz, jsSizeGzMinified: 0, cssSizeGzMinified: 0 }) as any;
+    const doc = aggregateStats([], undefined, undefined, 0, { sections: { a: section(1000), b: section(3000), c: section(2300) }, unitTestFiles: 35 });
+    expect(doc.sectionBundles).toEqual({ count: 3, minGzMinified: 1000, maxGzMinified: 3000, meanGzMinified: 2100 });
+    expect(doc.unitTestFiles).toBe(35);
+    expect(aggregateStats([]).sectionBundles).toEqual({ count: 0, minGzMinified: 0, maxGzMinified: 0, meanGzMinified: 0 });
+  });
+
   it('measures core as its own block (modular fixed cost), outside the claim and totals', () => {
     const withCore = aggregateStats(
       [comp({ name: 'badge', type: 'ATM' })],
