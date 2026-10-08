@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
 import { assertRenderContract } from './lib/render-contract.ts';
+import { observedState } from './lib/observed-state.ts';
 
 /**
  * Why: E2E smoke test for the shipped dialog component. Loads the fixture
@@ -54,11 +55,29 @@ try {
   await check('trigger button opens the dialog modally', async () => {
     await page.click('[data-dialog-trigger="demo-dialog"]');
     assert.equal(await isOpen(page), true, 'dialog should be open after trigger click');
+    // 0.9.7 regression: a dialog opened without setState kept reporting 'default'
+    assert.equal(await observedState(page, '#demo-dialog'), 'open', 'a trigger-opened dialog reports open');
   });
 
   await check('data-dialog-close button closes it', async () => {
     await page.click('[data-dialog-close]');
     assert.equal(await isOpen(page), false, 'dialog should close via close button');
+    assert.equal(await observedState(page, '#demo-dialog'), 'default', 'a closed dialog reports default');
+  });
+
+  await check('a native commandfor button opens it; getState() follows', async () => {
+    // the platform's declarative opener (no component JS involved in opening)
+    await page.evaluate(() => {
+      const b = document.createElement('button');
+      b.id = 'native-opener'; b.setAttribute('commandfor', 'demo-dialog'); b.setAttribute('command', 'show-modal'); b.textContent = 'Open';
+      document.body.prepend(b);
+    });
+    await page.click('#native-opener');
+    assert.equal(await isOpen(page), true, 'commandfor opens the dialog');
+    assert.equal(await observedState(page, '#demo-dialog'), 'open', 'a commandfor-opened dialog reports open');
+    await page.keyboard.press('Escape');
+    assert.equal(await observedState(page, '#demo-dialog'), 'default', 'Escape: back to default');
+    await page.evaluate(() => document.querySelector('#native-opener')?.remove());
   });
 
   await check('backdrop click closes the dialog', async () => {
@@ -66,6 +85,18 @@ try {
     // dialog is centered; a click at the very corner lands on ::backdrop
     await page.mouse.click(2, 2);
     assert.equal(await isOpen(page), false, 'dialog should close on backdrop click');
+    assert.equal(await observedState(page, '#demo-dialog'), 'default', 'a backdrop click: getState() reports default');
+  });
+
+  await check('a dialog authored with open reports open', async () => {
+    await page.evaluate(() => {
+      const d = document.createElement('dialog');
+      d.id = 'authored-open'; d.className = 'dialog'; d.setAttribute('open', ''); d.textContent = 'shown';
+      document.body.append(d);
+    });
+    await page.waitForFunction(() => document.querySelector('#authored-open')?.hasAttribute('data-init'));
+    assert.equal(await observedState(page, '#authored-open'), 'open', 'authored open markup is the open state');
+    await page.evaluate(() => document.querySelector('#authored-open')?.remove());
   });
 
   // -- State API (AGENTS.md "State API") -------------------------------------

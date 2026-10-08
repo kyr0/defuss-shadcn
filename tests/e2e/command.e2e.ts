@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
 import { assertRenderContract } from './lib/render-contract.ts';
+import { observedState } from './lib/observed-state.ts';
 
 /**
  * Why: E2E smoke test for the shipped command (palette) component. Loads the
@@ -55,6 +56,7 @@ try {
   await check('trigger opens with input focused', async () => {
     await page.click('[data-command-trigger="demo-cmd"]');
     assert.equal(await isOpen(page), true);
+    assert.equal(await observedState(page, '#demo-cmd'), 'open', 'a trigger-opened palette reports open');
     const focused = await page.evaluate(() => document.activeElement?.className);
     assert.match(focused ?? '', /command-input/, 'search input must receive focus on open');
   });
@@ -88,14 +90,28 @@ try {
   await check('Cmd/Ctrl+K toggles the palette', async () => {
     await page.keyboard.press('Control+k');
     assert.equal(await isOpen(page), true, 'Ctrl+K opens');
+    // 0.9.7 regression: ⌘K opened the palette natively and getState() kept 'default'
+    assert.equal(await observedState(page, '#demo-cmd'), 'open', 'Ctrl+K: getState() reports open');
     await page.keyboard.press('Control+k');
     assert.equal(await isOpen(page), false, 'Ctrl+K closes again');
+    assert.equal(await observedState(page, '#demo-cmd'), 'default', 'Ctrl+K: getState() reports default again');
+    await page.keyboard.press('Control+k');
+    await page.keyboard.press('Escape');
+    assert.equal(await observedState(page, '#demo-cmd'), 'default', 'Escape: getState() reports default');
   });
 
   await check('item click closes the palette', async () => {
     await page.click('[data-command-trigger="demo-cmd"]');
     await page.click('#demo-cmd .command-item:has-text("Billing")');
     assert.equal(await isOpen(page), false);
+    assert.equal(await observedState(page, '#demo-cmd'), 'default', 'an item click: getState() reports default');
+  });
+
+  await check('backdrop click closes the palette; getState() follows', async () => {
+    await page.keyboard.press('Control+k');
+    await page.mouse.click(2, 2); // the palette is centered: the corner is ::backdrop
+    assert.equal(await isOpen(page), false, 'backdrop click closes');
+    assert.equal(await observedState(page, '#demo-cmd'), 'default', 'a backdrop click: getState() reports default');
   });
 
   // -- State API (AGENTS.md "State API") -------------------------------------

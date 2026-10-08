@@ -10,7 +10,9 @@ set -euo pipefail
 #   ./scripts/deploy.sh patch beta   → 0.4.0-alpha  → 0.4.1-beta   (patch bump, change to beta)
 #   ./scripts/deploy.sh patch release→ 0.4.1-beta   → 0.4.2        (patch bump, drop suffix)
 #
-# This is a RELEASE deploy, run on main with a clean tree. It:
+# This is a RELEASE deploy, run on main with a clean tree (agent state in
+# .agents/ excepted). It:
+#   0. Commits pending agent state (.agents/: episodes, memory) on its own
 #   1. Moves EVERY version site to the new version (scripts/bump-version.ts:
 #      package.json, the Claude Code plugin manifest, the shared-ABI stamp,
 #      the deck cover - verify's `version sites` gate checks them)
@@ -41,8 +43,13 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
   exit 1
 fi
 
-if [[ -n $(git status --porcelain) ]]; then
-  echo "❌ Working tree is dirty. Commit or stash changes first."
+# .agents/ is agent state (the gate's episode log, memory, the sub-agent
+# registry) that changes on its own while agents work. No build step reads it
+# and no release ships it, so it never blocks a release: step 0 commits it on
+# its own, and step 4b's bump commit adds everything but it.
+AGENT_STATE=':(exclude).agents'
+if [[ -n $(git status --porcelain -- . "$AGENT_STATE") ]]; then
+  echo "❌ Working tree is dirty (outside .agents/). Commit or stash changes first."
   exit 1
 fi
 
@@ -77,6 +84,13 @@ fi
 
 echo "📦 Releasing v${FULL_VERSION} → ${TAG} (${BUMP_TYPE}${PHASE:+, phase: $PHASE})"
 
+# 0. agent state the sessions before this release left behind lands as its own
+# commit, after every precondition passed and before anything is bumped
+if [[ -n $(git status --porcelain -- .agents) ]]; then
+  git add -A -- .agents
+  git commit -m "chore(agents): updated agent memory after self-reflection"
+fi
+
 # 1. every version site
 bun scripts/bump-version.ts "${NEW_VERSION}"
 
@@ -109,14 +123,15 @@ git commit -m "docs(changelog): add ${TAG} entry"
 ENTRY_HASH=$(git rev-parse --short HEAD)
 
 # 4b. second commit: stamp that hash into the entry, regenerate, land the bump
-# (the tree was clean before step 1, so everything left is this release)
+# (the tree was clean outside .agents/ before step 1, so everything left there
+# is this release; agent state stays for its own commit)
 bun scripts/changelog-entry.ts stamp-hash "${NEW_VERSION}" "${ENTRY_HASH}"
 # --force: docs/ already carries this version's stamp from make build, but
 # the changelog page just changed (the hash) - re-snapshot it
 bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts --force
 PAGE_TIMEOUT_MS=60000 bun run screenshots
 bun scripts/verify.ts
-git add -A
+git add -A -- . "$AGENT_STATE"
 git commit -m "chore: bump version to ${TAG} (changelog ${ENTRY_HASH})"
 
 # 5. tag, push, GitHub Release. The TAG goes first: the docs/ snapshot loads

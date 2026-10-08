@@ -15,7 +15,7 @@ const POLL_MS = 50;
 /** Default timeout for iframe page loads (CDN scripts included). */
 const LOAD_TIMEOUT_MS = 15000;
 
-/** 3 on CI, 1 locally - vitest.config.ts defines it (hang guards scale with the machine) */
+/** 3 on CI, 2 under coverage, 1 locally - vitest.config.ts defines it (hang guards scale with the machine) */
 declare const __TIMEOUT_SCALE__: number;
 
 export async function waitFor(predicate: () => unknown, label: string, timeout = 5000): Promise<void> {

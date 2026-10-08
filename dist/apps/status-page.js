@@ -4851,10 +4851,12 @@ function triggerStateChange3(dialog, stateName, _config) {
       break;
   }
 }
+var shown = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState({
   component: "dialog",
   states: dialogStates,
   apply: (dialog, state) => triggerStateChange3(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
   markup: (el, state) => applyMarkup3(el, state.name)
 });
 df$3.dialogApi = dialogApi;
@@ -4872,7 +4874,7 @@ function init3() {
   });
   dfDollar3("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
     dfDollar3(dialog).data("init", "");
-    bindComponent(dialog, dialogApi);
+    bindComponent(dialog, dialogApi, { name: shown(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
@@ -4885,7 +4887,6 @@ function init3() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       if (dialog._trigger)
         dialog._trigger.focus();
     });
@@ -5847,6 +5848,6 @@ function init8() {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=086AE12BC110677664756E2164756E21
+//# debugId=399B3271598EF89864756E2164756E21
 /* defuss-shadcn v0.9.7 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=status-page.js.map

@@ -48,11 +48,17 @@ function triggerStateChange(dialog, stateName, _config) {
   }
 }
 
+/** The state a dialog shows: its `open` - read back after every change, and the state it starts in. */
+const shown = (dialog: HTMLDialogElement) => (dialog.open ? 'open' : 'default');
+
 /** Registry-level API; pass the dialog element explicitly. Unknown names throw. */
-export const alertDialogApi = componentState({
+export const alertDialogApi = componentState<HTMLDialogElement>({
   component: 'alert-dialog',
   states: alertDialogStates,
   apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+  // the state is the dialog's `open`, as the schema observes it: a trigger or
+  // a native commandfor button opens it without setState
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
   markup: (el, state) => applyMarkup(el, state.name),
 });
 
@@ -75,7 +81,7 @@ dfDollar('[data-alert-dialog-trigger]:not([data-init])').toArray().forEach((trig
 dfDollar<HTMLDialogElement>('dialog.alert-dialog:not([data-init])').toArray().forEach((dialog) => {
   dialog.dataset.init = '';
   // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(dialog, alertDialogApi);
+  bindComponent(dialog, alertDialogApi, { name: shown(dialog), config: {} });
   /* Block Escape key */
   dialog.addEventListener('cancel', (e) => {
     e.preventDefault();
@@ -91,12 +97,9 @@ dfDollar<HTMLDialogElement>('dialog.alert-dialog:not([data-init])').toArray().fo
   /* Return focus to trigger */
   dialog.addEventListener('close', () => {
     // `close` fires AFTER the exit transition (display allow-discrete), so a
-    // fast re-open can beat it - a stale event must not downgrade an open
-    // dialog back to 'default' or yank focus out of it while it's showing.
+    // fast re-open can beat it - a stale event must not yank focus out of an
+    // open dialog. The state itself follows `open` through read().
     if (dialog.open) return;
-    // reflect the actual UI state: close buttons (the only close path) or
-    // setState('default') land the dialog back at 'default'
-    dialog.dataset.stateName = 'default';
     if (dialog._trigger) dialog._trigger.focus();
   });
 });

@@ -297,10 +297,12 @@ function triggerStateChange4(dialog, stateName, _config) {
       break;
   }
 }
+var shown = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState4({
   component: "dialog",
   states: dialogStates,
   apply: (dialog, state) => triggerStateChange4(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
   markup: (el, state) => applyMarkup4(el, state.name)
 });
 df$4.dialogApi = dialogApi;
@@ -318,7 +320,7 @@ function init4() {
   });
   dfDollar4("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
     dfDollar4(dialog).data("init", "");
-    bindComponent4(dialog, dialogApi);
+    bindComponent4(dialog, dialogApi, { name: shown(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
@@ -331,7 +333,6 @@ function init4() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       if (dialog._trigger)
         dialog._trigger.focus();
     });
@@ -365,10 +366,12 @@ function triggerStateChange5(sheet, stateName, _config) {
       break;
   }
 }
+var shown2 = (sheet) => sheet.open ? "open" : "default";
 var sheetApi = componentState5({
   component: "sheet",
   states: sheetStates,
   apply: (sheet, state) => triggerStateChange5(sheet, state.name, state.config),
+  read: (sheet, state) => ({ name: shown2(sheet), config: state.config }),
   markup: (el, state) => applyMarkup5(el, state.name)
 });
 df$5.sheetApi = sheetApi;
@@ -386,7 +389,7 @@ function init5() {
   });
   dfDollar5("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
     sheet.dataset.init = "";
-    bindComponent5(sheet, sheetApi);
+    bindComponent5(sheet, sheetApi, { name: shown2(sheet), config: {} });
     sheet.addEventListener("click", (e) => {
       if (e.target === sheet)
         sheet.close();
@@ -399,7 +402,6 @@ function init5() {
     sheet.addEventListener("close", () => {
       if (sheet.open)
         return;
-      sheet.dataset.stateName = "default";
       if (sheet._trigger)
         sheet._trigger.focus();
     });
@@ -511,10 +513,12 @@ function triggerStateChange7(dialog, stateName, _config) {
       break;
   }
 }
+var shown3 = (dialog) => dialog.open ? "open" : "default";
 var commandApi = componentState7({
   component: "command",
   states: commandStates,
   apply: (dialog, state) => triggerStateChange7(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown3(dialog), config: state.config }),
   markup: (el, state) => applyMarkup7(el, state.name)
 });
 df$7.commandApi = commandApi;
@@ -552,7 +556,7 @@ function highlightItem(list, index) {
 function init7() {
   dfDollar7("dialog.command:not([data-init])").toArray().forEach((dialog) => {
     dialog.dataset.init = "";
-    bindComponent7(dialog, commandApi);
+    bindComponent7(dialog, commandApi, { name: shown3(dialog), config: {} });
     const input = dfDollar7(dialog).find(".command-input").get(0);
     const list = dfDollar7(dialog).find(".command-list").get(0);
     const empty = dfDollar7(dialog).find(".command-empty").get(0);
@@ -610,7 +614,6 @@ function init7() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       dfDollar7(input).val("");
       filter("");
       dfDollar7(list).find(".command-item[data-highlighted]").data("highlighted", null);
@@ -633,5 +636,5 @@ function init7() {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=1D78D445A516CAB064756E2164756E21
+//# debugId=23783F4464B34DD164756E2164756E21
 //# sourceMappingURL=overlays.js.map

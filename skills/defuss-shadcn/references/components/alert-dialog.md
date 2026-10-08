@@ -54,6 +54,8 @@ document.querySelector('#my-alert').api.setState('open');
 document.querySelector('#my-alert').api.getState(); // { name: 'open', config: {} }
 ```
 
+The state is the dialog's `open`: opening it with a trigger or a `commandfor` button and closing it with a close button is reported by `getState()` and `el.store` too, without `setState`.
+
 The api is bound per dialog; the registry global is
 `df$.shadcn.alertDialogApi` / `df$.shadcn.alertDialogStates` (camelCase).
 

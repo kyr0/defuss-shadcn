@@ -78,6 +78,12 @@ try {
     assert.equal(await dark.evaluate(() => document.documentElement.classList.contains('dark')), true);
     const [bg, fg] = await dark.evaluate(() => [getComputedStyle(document.body).backgroundColor, getComputedStyle(document.body).color]);
     assert.notEqual(bg, fg);
+    // the light/dark swap starts in the mode the page is in: it showed light on a dark
+    // page, so the first click did nothing visible
+    await dark.waitForLoadState('load');
+    assert.equal(await dark.$eval('#paper-mode input', (i) => (i as HTMLInputElement).checked), true, 'the swap shows dark');
+    await dark.click('#paper-mode');
+    assert.equal(await dark.evaluate(() => document.documentElement.classList.contains('dark')), false, 'one click switches to light');
     await dark.close();
   });
 

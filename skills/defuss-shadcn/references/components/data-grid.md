@@ -32,6 +32,7 @@ every window or page is a slice of it.
 - [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - `data-format="number" | "currency:EUR" | "percent"` cells
 - [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - the window and the sticky offsets follow the container
 - [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) - one render per frame however many scroll events arrive
+- [`overflow-anchor: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor) - the runtime owns the scroll position: browser scroll anchoring would follow the recycled rows and keep scrolling by itself (Firefox)
 - [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) - initializes grids added after load
 - [WAI-ARIA grid / treegrid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) - `aria-rowcount`, `aria-rowindex`, `aria-colindex`, `aria-sort`, `aria-selected`, `aria-level`, `aria-expanded`
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) · [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) · [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors)

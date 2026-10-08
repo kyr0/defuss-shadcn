@@ -45,11 +45,16 @@ function triggerStateChange(sheet, stateName, _config) {
             break;
     }
 }
+/** The state a sheet shows: its `open` - read back after every change, and the state it starts in. */
+const shown = (sheet) => (sheet.open ? 'open' : 'default');
 /** Registry-level API; pass the sheet element explicitly. Unknown names throw. */
 export const sheetApi = componentState({
     component: 'sheet',
     states: sheetStates,
     apply: (sheet, state) => triggerStateChange(sheet, state.name, state.config),
+    // the state is the dialog's `open`, as the schema observes it: a trigger or
+    // a native commandfor button opens it without setState
+    read: (sheet, state) => ({ name: shown(sheet), config: state.config }),
     markup: (el, state) => applyMarkup(el, state.name),
 });
 df$.sheetApi = sheetApi;
@@ -68,7 +73,7 @@ function init() {
     dfDollar('dialog.sheet:not([data-init])').toArray().forEach((sheet) => {
         sheet.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
-        bindComponent(sheet, sheetApi);
+        bindComponent(sheet, sheetApi, { name: shown(sheet), config: {} });
         sheet.addEventListener('click', (e) => {
             if (e.target === sheet)
                 sheet.close();
@@ -78,13 +83,10 @@ function init() {
         });
         sheet.addEventListener('close', () => {
             // `close` fires AFTER the exit transition (display allow-discrete), so a
-            // fast re-open can beat it - a stale event must not downgrade an open
-            // sheet back to 'default' or yank focus out of it while it's showing.
+            // fast re-open can beat it - a stale event must not yank focus out of an
+            // open sheet. The state itself follows `open` through read().
             if (sheet.open)
                 return;
-            // reflect the actual UI state: any close path (Escape, backdrop, close
-            // button) returns the sheet to 'default', even when it wasn't setState'd
-            sheet.dataset.stateName = 'default';
             if (sheet._trigger)
                 sheet._trigger.focus();
         });

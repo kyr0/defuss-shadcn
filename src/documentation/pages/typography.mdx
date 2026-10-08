@@ -169,10 +169,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <p class="text-sm text-muted-foreground mb-3">Continuous text set like a book or a journal page: one <code>.typeset</code> block, plain paragraphs inside, and each classic rule of the compositor's craft an opt-in attribute. The examples show every rule on its own first, then captions, separators, leading and figure groups, and only then pages that combine them. The <code>--typeset-*</code> properties tune each block; they are this component's knobs, not theme tokens, so a theme stays the tweakcn token set.</p>
 
-```html example label="Columns" hint="data-columns='2' sets two columns, data-rule a hairline between them. No column is narrower than --typeset-column-width (18rem): switch the preview to Phone and the block sets one column - no media query." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="Columns" hint="data-columns='2' sets two columns, data-rule a hairline between them. No column is narrower than --typeset-column-width (18rem): switch the preview to Phone and the block sets one column - no media query. A .typeset-span heading or figure crosses both columns, and the columns below it start level." previewStyle="justify-content:flex-start;text-align:left;"
 <div class="typeset" lang="en" data-columns="2" data-rule style="font-family: var(--font-serif);">
   <p>A printed column is a measure of even grey. Two columns halve the measure and keep a line within the sixty to seventy characters a reader takes in at a glance.</p>
   <p>The column property takes a count and a minimum width; when the page grows too narrow for two columns of that width, the block sets one, and a phone reads a single column.</p>
+  <h3 class="h4 typeset-span">Across both columns</h3>
+  <h4>Below the span</h4>
+  <p>A heading or a figure with .typeset-span crosses both columns. The text after it fills two new columns, and the first block starts at the top of the left one, level with the right.</p>
+  <p>Without that, a subheading's top margin would push the left column below the right: across a column break the margin cannot collapse into the spanner's.</p>
 </div>
 ```
 
@@ -191,8 +195,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Blocksatz (justified)" hint="data-align='justify' justifies the lines and hyphenates long words by the rules of the block's language (lang='en'); the last line of each paragraph stays flush to the start." previewStyle="justify-content:flex-start;text-align:left;"
+```html example label="Blocksatz (justified)" hint="data-align='justify' justifies the lines and hyphenates long words by the rules of the block's language (lang='en'); the last line of each paragraph stays flush to the start. Headings are never justified: they stay flush start, unhyphenated." previewStyle="justify-content:flex-start;text-align:left;"
 <div class="typeset" lang="en" data-align="justify" style="font-family: var(--font-serif); max-width: 28rem;">
+  <h3 class="h4">How the compositor justified a line of movable type by hand</h3>
   <p>The compositor justified each line by adding space between words and, where the space grew too wide, broke a word at a syllable. Typographically, interdisciplinary and internationalization break where the language allows them to.</p>
 </div>
 ```

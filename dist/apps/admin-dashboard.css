@@ -2177,6 +2177,10 @@
 @layer components {
   .chart {
     width: 100%;
+    /* a grid or flex item sizes no smaller than its content by default - the
+       canvas drawn at the old width held a narrowing figure open, so the chart
+       never saw its container shrink (the paper on a phone after a resize) */
+    min-inline-size: 0;
     height: 20rem;
 
     &[data-size='sm'] {
@@ -2395,6 +2399,10 @@
     min-height: 0;
     overflow: auto;
     overscroll-behavior: contain;
+    /* the windowing owns the scroll position: Firefox's scroll anchoring would follow
+       the recycled rows, move scrollTop, re-render and move it again - a scroll
+       that runs on by itself (big-data-firefox.e2e) */
+    overflow-anchor: none;
     scrollbar-gutter: stable;
   }
 
@@ -7660,6 +7668,10 @@
     & :is(figure, blockquote, table, pre, .typeset-group) { break-inside: avoid; }
     & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { break-after: avoid; }
     & .typeset-span { column-span: all; }
+    /* the columns below a spanning heading or figure start level: the first
+       block keeps no top margin - across the column break it cannot collapse
+       into the spanner's, so a subheading sat lower than the text beside it */
+    &[data-columns] > .typeset-span + :not(.typeset-span) { margin-block-start: 0; }
 
     &[data-columns] { max-inline-size: none; column-gap: var(--typeset-column-gap); }
     &[data-columns="2"] { columns: 2 var(--typeset-column-width); }
@@ -7672,10 +7684,10 @@
       hyphens: auto;
       hyphenate-limit-chars: 6 3 2;
 
-      /* text-align-last inherits: a centered caption or heading inside a justified
-         setting kept its last line flush left (a two-line figure caption looked
+      /* text-align-last inherits: a centered caption inside a justified setting
+         kept its last line flush left (a two-line figure caption looked
          off-center) - what centers itself takes its last line from its own alignment */
-      & :where(figcaption, caption, .typeset-caption, h1, h2, h3, h4, h5, h6) { text-align-last: auto; }
+      & :where(figcaption, caption, .typeset-caption) { text-align-last: auto; }
     }
 
     /* leading and tracking move together: tight lines close up a little,
@@ -7724,6 +7736,14 @@
       font-variant-ligatures: common-ligatures discretionary-ligatures historical-ligatures contextual;
       font-variant-numeric: oldstyle-nums proportional-nums;
     }
+  }
+  /* a heading is never justified: a wrapping heading stretched to the measure
+     opened wide gaps between its words. Flush start and unhyphenated - zero
+     specificity, so an alignment the heading sets itself still wins */
+  :where(.typeset[data-align="justify"]) :where(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4) {
+    text-align: start;
+    text-align-last: auto;
+    hyphens: manual;
   }
   /* no initial-letter (Firefox): a floated letter as tall as the lines */
   @supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {

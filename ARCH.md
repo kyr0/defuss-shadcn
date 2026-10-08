@@ -2,10 +2,18 @@
 
 `defuss-shadcn` is built for an era where **coding agents do the work**. The
 scaling bottleneck is no longer writing components - it is *trusting* them.
-This repo solves trust with a closed loop: every artifact an agent produces
-passes through mechanical quality gates designed by a human senior software engineer, and the gates talk back to the AI agent in the form of executable instructions. An agent can reach "done" only by satisfying every gate; the goal is unreachable any other way.
+This repo answers with programs that talk back: a verifier and other
+agent-authored control programs check the work or select the next piece of
+it, and return their findings to the agent as instructions. The agent acts
+on them, and it can extend those programs when a task shows a gap. Lessons
+that hold become tests, verifier rules or instructions that later sessions
+inherit. A human sets the goal and the acceptance criteria and reviews
+before every release.
 
-The method has five parts.
+The method has five parts. The
+[technical report](https://kyr0.github.io/defuss-shadcn/paper.html)
+(*Verified Agentic Engineering in Practice*) describes it in general terms
+and measures it on this repository.
 
 ## 1. AGENTS.md - the philosophy/instruction layer
 
@@ -15,49 +23,44 @@ popover, `:has()`, `@starting-style` - no libraries, no frameworks), the
 component folder contract, the State API shape, the token boundary rule,
 docs structure, and the authoring conventions. It is *teaching* - prose a
 model reads before and while it works. Prose, however, is advisory: an agent
-can misread it, skip it, or claim compliance. That is exactly what the next
-layer is for.
+can misread it, skip it, or claim compliance. That is what the next layer is
+for.
 
 ## 2. The deterministic verifier - an authority layer
 
 [`scripts/verify.ts`](scripts/verify.ts) is a custom, code-implemented audit
-of everything prose cannot guarantee: **41 check groups** over the shipped
-tree - skills exist (with discovery frontmatter), doc pages exist, tokens are
-tweakcn-compatible, snippets match source, dist is a 1:1 build of src, every
-declared state has a screenshot/skill/doc/e2e artifact, cross-page imports are
-complete, links resolve, paths are portable, the working tree is committed, the
+of what prose cannot guarantee: **87 checks** (distinct `check()` labels, 2026-10-08) over the
+shipped tree - skills exist (with discovery frontmatter), doc pages exist,
+tokens are tweakcn-compatible, snippets match source, dist is a 1:1 build of
+src, every declared state has a screenshot/skill/doc/e2e artifact,
+cross-page imports are complete, links resolve, paths are portable, the
 committed version has a changelog entry carrying its commit hash (AGENTS.md
 "Changelog"), the generated dist/SKILL.md agent index matches the skills,
-and more. Each
-check reads the *actual* files and computes the truth; nothing is taken on
-word.
+and more. Each check reads the *actual* files and computes its result;
+nothing is taken on word.
 
-Two properties make the verifier the loop's backbone:
+Three properties make the verifier the loop's backbone:
 
 - **It is the build gate.** `bun run build` compiles and then runs the
   verifier; `make build` runs the full pipeline ending in it plus the test
-  suites. A build cannot "pass" while the verifier fails - there is no
-  flag that skips it.
+  suites. A build cannot "pass" while the verifier fails - there is no flag
+  that skips it.
 - **Its failure output is a repair instruction for the agent.** Every check
   prints, right after its failures, a `fix:` line naming the exact command,
   file, or template to apply - e.g. `fix: per component: 1) add fixture +
   test per tests/e2e/accordion.e2e.{ts,fixture.html}, 2) bun run e2e`. The
-  verifier does not merely reject; it converts any agent into a
-  self-correcting one. The agent's job reduces to: *edit → run → do what
-  the output says → repeat.*
-- **Because it is authoritative, its instructions *generate* missing
-  artifacts.** The checks are coverage requirements, not style nits: add a
-  component and the gates immediately demand its doc page, skill, State-API
-  states, screenshots per state, and e2e pair - each with a `fix:` line
-  naming the template to copy. The agent is therefore *triggered to write
-  new tests* (and docs, and fixtures) it never planned to write: the task
-  list comes from the verifier, not from the agent's memory of the
-  conventions. This is how this repo's own test suite grew - the e2e rollout
-  was nothing but a green-then-red-then-green walk down the
+  verifier does not merely reject; it names the agent's next step. The
+  agent's job reduces to: *edit → run → do what the output says → repeat.*
+- **Its instructions *generate* missing artifacts.** The checks are coverage
+  requirements, not style nits: add a component and the gates demand its doc
+  page, skill, State-API states, screenshots per state, and e2e pair - each
+  with a `fix:` line naming the template to copy. The task list comes from
+  the verifier, not from the agent's memory of the conventions. This is how
+  this repo's own test suite grew - the e2e rollout was a
+  green-then-red-then-green walk down the
   `e2e smoke tests: tests/e2e/{name}.e2e.ts missing` list until all 55
-  pairs existed and the ratchet could be promoted to a hard gate. Coverage
-  is self-propagating: a future agent cannot silently skip a test, because
-  "test missing" is itself a build failure with instructions attached.
+  pairs of the fork existed and the ratchet could be promoted to a hard gate.
+  A component's e2e pair cannot be skipped without failing the build.
 
 ## 3. AGENTS.md defers: verifier output is authoritative
 
@@ -68,7 +71,20 @@ to ignore it. The two files are one system: prose explains the *why*, the
 verifier enforces the *what*, and prose points at the verifier as the final
 word (`bun run verify` is the single "am I done?" question).
 
-## 4. The surrounding gates - suppressing hallucination, AI slop and overstating claims
+The verifier is one controller among several. The
+[defuss-vae](https://github.com/kyr0/defuss-vae) gate wraps it (its repair
+lines read `AGENT_CMD: FIX ...`), and its document walk hands the agent one
+part of a page at a time with the review rules and a `NEXT:` command. The
+agent writes and extends such programs itself: a new requirement arrives
+with its check (a component-sections gate for a new folder layout), and a
+gap a change exposes gets one when it can be stated as a check (a
+rendered-page audit after a missed API field, a source scanner taught a new
+syntax). Lessons that hold across tasks become tests, verifier rules or
+AGENTS.md instructions; [`.agents/MEMORY.md`](.agents/MEMORY.md) keeps the rest within a fixed
+4 KiB budget, so the injected memory stays bounded while the executable
+checks grow.
+
+## 4. The surrounding gates - checking behavior, quality and appearance
 
 The verifier checks *consistency*. The loop wraps it with gates that check
 *behavior, quality, and appearance*:
@@ -78,26 +94,22 @@ The verifier checks *consistency*. The loop wraps it with gates that check
 | Lint | oxlint (`bun run lint`) | src/, tests/, scripts/ stay warning-clean |
 | Type-check | strict `tsc --noEmit` | tests/ and scripts/ compile |
 | Unit/integration | Vitest browser mode (`bun run test:run`) | real doc pages in a real Chromium iframe behave |
-| E2E | 56 standalone Playwright scripts (`bun run e2e`) | every component's documented surface - interactions, keyboard, computed CSS - plus the doc site itself (renders, SPA nav, search) |
+| E2E | one standalone Playwright script per component and docs flow (`bun run e2e`; 254 files on 2026-10-08) | every component's documented surface - interactions, keyboard, computed CSS - plus the doc site itself (renders, SPA nav, search) |
 | Screenshots | `bun run screenshots` | every declared **state × light/dark** PNG exists, is fresh vs. its input fingerprint, and the render manifest hash-detects drift |
-| Git hygiene | verify check #23 | every verified byte is committed - what CI/other agents see is exactly what passed |
+| Git hygiene | verify check #16 (a warning) | names uncommitted changes, so a green build is not mistaken for committed work |
 
-Screenshots close the last gap between machine checks and visual truth: they
-are generated by driving each component's own `api.setState()`, hashed into
-[`screenshots/manifest.json`](screenshots/manifest.json) alongside the
+Screenshots close part of the gap between machine checks and visual truth:
+they are generated by driving each component's own `api.setState()`, hashed
+into [`screenshots/manifest.json`](screenshots/manifest.json) alongside the
 fingerprint of the inputs that produced them, and re-checked on every build
 (stale or silently-drifted PNGs fail the build). What the loop guarantees
-mechanically is therefore *proof of appearance*: for every state, a
-byte-verified PNG of the shipped rendering exists and is on disk. The final
-step - **a VLM reads those PNGs and reasons about whether each state looks
-correct** - is the last gate, performed by the multimodal agent itself (or a
-human) against the captured evidence. It is deliberately kept outside the
-deterministic pipeline - model inference is non-reproducible and needs an API
-key, so it cannot gate a build - but the loop's guarantee is what makes that
-step trivial: the reviewer never has to wonder *which* render to look at or
-whether it is current; the pipeline hands it every state, both schemes,
-provably generated from the committed files. "Claims work" becomes "shown
-working, to a viewer that can tell."
+mechanically is *evidence of appearance*: for every state, a current PNG of
+the shipped rendering exists on disk. The agent - itself a vision-language
+model - can open those PNGs through its harness, and a person can review
+them. That inspection is not a gate: no step compares a screenshot with an
+earlier one, and no check requires anyone to look. Judging whether a state
+looks right - and taste in general - stays with review, and a stable
+property a review finds can become a check of its own.
 
 ## The proof loop
 
@@ -105,7 +117,7 @@ working, to a viewer that can tell."
 {
   "type": "flow",
   "eyebrow": "The proof loop",
-  "title": "Trapped in the loop until the work is actually good",
+  "title": "The verifier's output is the work order",
   "steps": true,
   "interactive": true,
   "autoplay": true,
@@ -122,7 +134,7 @@ working, to a viewer that can tell."
     {
       "id": "agent",
       "name": "Coding agent",
-      "meta": "edits src/",
+      "meta": "edits src/ · extends checks",
       "col": 2,
       "row": 1,
       "tone": "accent",
@@ -200,7 +212,7 @@ working, to a viewer that can tell."
     {
       "id": "evidence",
       "name": "Visual evidence",
-      "meta": "byte-verified PNG per state",
+      "meta": "current PNG per state",
       "col": 5,
       "row": 4,
       "step": 7
@@ -208,7 +220,7 @@ working, to a viewer that can tell."
     {
       "id": "review",
       "name": "Looks right?",
-      "meta": "VLM / human review",
+      "meta": "agent inspection · human review",
       "col": 4,
       "row": 4,
       "shape": "diamond",
@@ -216,8 +228,8 @@ working, to a viewer that can tell."
     },
     {
       "id": "done",
-      "name": "Provably done",
-      "meta": "committed · built · mirrored",
+      "name": "Accepted",
+      "meta": "committed · reviewed before release",
       "col": 3,
       "row": 4,
       "shape": "pill",
@@ -301,29 +313,56 @@ working, to a viewer that can tell."
 
 
 
-(Mechanically-enforced gates end at "all gates pass"; the screenshot set is
-the loop's guarantee of *evidence of appearance*. VLM reasoning over those
-PNGs is the final review step - see the gate table above for why it lives
-just outside the deterministic build.)
+(The mechanically enforced gates end at "all gates pass"; the screenshot set
+is the loop's *evidence of appearance*. Looking at those PNGs - by the agent
+or a person - is the review step after it, and it stays outside the
+deterministic build: model inference is not reproducible, and taste is not a
+predicate.)
 
-There is no exit into "done" that bypasses a gate. The agent is *trapped in
-the loop until the work is actually good* - which is precisely the point:
-human review does not scale to an army of agents, but a verifier that
-audits every byte, speaks repair instructions, and is the only door out
-does.
+No build flag skips a gate, and the defuss-vae commit gate refuses a commit
+while verification fails. A gate establishes what it encodes and nothing
+more: unspecified behavior and appearance stay with review, and a defect
+found there becomes a new check when it can be stated as one. Human review
+does not scale to an army of agents; a verifier that audits the built
+tree, speaks repair instructions and grows with each lesson takes over the
+part of review that can be written down.
 
 ## 5. Human expert final review before release
 
-The human expert only reviews the code, documentation and visual representation after all quality gates have passed and the visual evidence has been captured - right before a new version is released.
+The human expert reviews the code, documentation and visual representation
+after all quality gates have passed and the visual evidence has been
+captured - right before a new version is released.
 
-Should the human expert find any issues during this final review, the feedback is fed back into the loop, and the agents must address it before a new version can be released. If a regression or a new "unknown unknown" fail case is discovered, the human expert will either instruct the agent to add this to the AGENTS.md or let the agent implement yet another verifier logic to add a new static and deterministic quality gate, preventing the same issue from slipping through in future iterations.
+Should the human expert find any issues during this final review, the
+feedback is fed back into the loop, and the agents must address it before a
+new version can be released. If a regression or a new "unknown unknown"
+fail case is discovered, the human expert either instructs the agent to add
+a rule to AGENTS.md or lets the agent implement another verifier check - a
+new static and deterministic quality gate that keeps the same issue from
+slipping through in future iterations. A finding that is a matter of
+preference - an appearance the specification never stated - is the
+expert's decision; the agent applies it and encodes whatever part of it can
+be checked.
 
-As for the Agent Harness, this method has a huge advantage compared to more automated or harness-native solutions:
+Why the method is built this way:
 
-1. It doesn't matter what VLM model is used. As long as the model is capable enough, it can handle the task including multimodal reasoning and visual inspection of the screenshots.
+1. The instructions and the verifier are plain files, not tied to one
+   model. A model capable enough to read them, edit code and inspect
+   screenshots can work under them; the session transcripts recorded since
+   2026-09-27 show Claude models (Opus 5.5 and Fable 5.1) in Claude Code.
 
-2. AGENTS.md and the verifier logic are decoupled from the specific VLM model. This means that improvements or changes to the VLM model do not require modifications to the agent's instructions or the verifier, ensuring long-term maintainability and flexibility.
+2. AGENTS.md and the verifier logic are decoupled from the model: neither
+   names one, so a model change does not by itself require editing the
+   agent's instructions or the verifier.
 
-3. The human still has oversight over both the development process (and thus can intercept in case of errors or unexpected behavior) and the release process, ensuring that the quality gates are meaningful, implemented changes are safe and correct, and that the released version meets all of the desired standards, set by the human expert.
+3. The human keeps oversight over both the development process (and can
+   intervene in case of errors or unexpected behavior) and the release
+   process, so that the quality gates stay meaningful, implemented changes
+   are safe and correct, and the released version meets the standards the
+   human expert set.
 
-4. Spec-driven development is absolutely possible by simply creating plans or bug reports in the ./issues folder - decoupling the agentic engineering process from any 3rd party project management tool, while still maintaining a clear and structured workflow for the agents to follow - even in case the harness fails right in the middle of an  implementation loop.
+4. Spec-driven development works by creating plans or bug reports in the
+   ./issues folder - decoupling the agentic engineering process from any
+   third-party project management tool, while still giving the agents a
+   clear and structured workflow - even in case the harness fails in the
+   middle of an implementation loop.

@@ -19,6 +19,8 @@ document.querySelector('#my-dialog').api.setState('open');
 document.querySelector('#my-dialog').api.getState(); // { name: 'open', config: {} }
 ```
 
+The state is the dialog's `open`: opening it with a trigger, a `commandfor` button or authored `open` markup and closing it with Escape, a backdrop click or a close button is reported by `getState()` and `el.store` too, without `setState`.
+
 Unknown state names throw. `globalThis.df$.shadcn.dialogStates` lists them.
 
 ## API

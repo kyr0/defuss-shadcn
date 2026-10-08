@@ -83,6 +83,28 @@ try {
     assert.notEqual(heights.sourceColor, 'rgb(0, 0, 0)', 'chart-source should use --muted-foreground');
   });
 
+  await check('a drawn chart shrinks with a narrowing grid host (its canvas never holds it open)', async () => {
+    // a grid item's min-width is its content: the svg drawn at the old width kept the
+    // paper's figure wide on a phone after a resize
+    await page.evaluate(() => {
+      const chart = document.querySelector('#size-default') as HTMLElement;
+      const host = document.createElement('div');
+      host.id = 'shrink-host'; host.style.cssText = 'display:grid;width:800px';
+      chart.before(host); host.append(chart);
+    });
+    await page.waitForTimeout(500);
+    await page.evaluate(() => { (document.querySelector('#shrink-host') as HTMLElement).style.width = '300px'; });
+    await page.waitForTimeout(800);
+    const w = await page.evaluate(() => {
+      const chart = document.querySelector('#size-default') as HTMLElement;
+      const out = { chart: Math.round(chart.getBoundingClientRect().width), svg: Math.round(chart.querySelector('svg')!.getBoundingClientRect().width) };
+      const host = chart.parentElement!;
+      host.before(chart); host.remove();
+      return out;
+    });
+    assert.deepEqual(w, { chart: 300, svg: 300 });
+  });
+
   await check('state API: default state reported for bound instances', async () => {
     const state = await page.$eval('#declarative', (el) => (el as HTMLElement).api!.getState());
     assert.equal(state.name, 'default');

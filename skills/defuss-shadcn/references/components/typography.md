@@ -144,7 +144,7 @@ them as a page needs.
 |---|---|---|
 | `data-columns="2"` / `"3"` | multi-column; no column narrower than `--typeset-column-width`, so a phone gets one column | `--typeset-column-width: 18rem`, `--typeset-column-gap: 2.5em` |
 | `data-rule` | a hairline (`--border`) between the columns | - |
-| `data-align="justify"` | Blocksatz: justified, hyphenated, last line flush start | - |
+| `data-align="justify"` | Blocksatz: justified, hyphenated, last line flush start; headings stay flush start and unhyphenated | - |
 | `data-indent` | Einzug: no paragraph gap, first line indented; the paragraph after a heading starts flush | `--typeset-indent: 1em` |
 | `data-initial="drop"` / `"raised"` | Initiale: the first letter sunk into / rising above the first lines, its top level with the first line | `--typeset-initial-lines: 3`, `--typeset-initial-gap: 0.3em`, `--typeset-initial-font: var(--font-serif)`, `--typeset-initial-color: var(--primary)` |
 | `data-lead="smallcaps"` | the opening line in small capitals (Kapitälchen); beside an initial it sets letterspaced capitals, so the line's top stays level with the initial's | - |
@@ -153,7 +153,7 @@ them as a page needs.
 | `data-leading="tight"` / `"loose"` | compact (1.45, tracking -0.01em) or airy (1.9, tracking +0.01em) lines - tracking moves with the leading so the column's grey stays even; the default is 1.65 | `--typeset-leading`, `--typeset-tracking` |
 
 Without columns the block keeps a reading measure (`--typeset-measure: 68ch`).
-`.typeset-span` makes a heading, a figure or a group span every column.
+`.typeset-span` makes a heading, a figure or a group span every column; the columns below it start level (the first block after it keeps no top margin).
 Figures, tables, quotes, code, charts, diagrams, groups and Separator breaks keep
 `--typeset-gap` (1.5em) from the text above and below them.
 

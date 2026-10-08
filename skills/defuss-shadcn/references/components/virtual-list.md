@@ -23,6 +23,7 @@ browser's; only the window of rows is ours.
 - [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) - initializes lists added after load (SPA navigation)
 - [`contain: strict`](https://developer.mozilla.org/en-US/docs/Web/CSS/contain) - the browser need not look outside the list when laying out or painting
 - [`overscroll-behavior`](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior) - reaching an end does not start scrolling the page
+- [`overflow-anchor: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor) - the runtime owns the scroll position: browser scroll anchoring would follow the recycled rows and keep scrolling by itself (Firefox)
 - [`scrollbar-gutter`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter) - no layout shift when the scrollbar appears
 - [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) - keyboard-only focus ring on the container
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - suppresses the loading pulse

@@ -31,6 +31,10 @@
     min-height: 0;
     overflow: auto;
     overscroll-behavior: contain;
+    /* the windowing owns the scroll position: Firefox's scroll anchoring would follow
+       the recycled rows, move scrollTop, re-render and move it again - a scroll
+       that runs on by itself (big-data-firefox.e2e) */
+    overflow-anchor: none;
     scrollbar-gutter: stable;
   }
 

@@ -11,76 +11,20 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-06T18:26:05Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.9 learn=none: claim precision is a reading judgment; prose check 0 findings, the figures cite their sources.
 2026-10-07T04:38:45Z s=c273a037 FINDING AGENTS.md "One owner per concern, explicit contracts" learn=none: a recommendation, not a gate; only the path-ownership part could be enforced by verify, and that was offered, not built.
 2026-10-07T04:38:45Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 10 (user corrections) learn=none: the figures cite the transcript; claim precision is a reading judgment beyond the prose check.
-2026-10-07T04:38:45Z s=c273a037 FINDING src/components/papers/paper/paper.css .paper-tag[data-tag="verified"] learn=test: paper.e2e "VERIFIED is white text at >= 4.5:1, also on a theme whose chart-2 is light" - fails on the HEAD all.css (probe: 3.62 and black), passes now.
 2026-10-07T04:38:45Z s=c273a037 FINDING src/documentation/pages/paper.mdx Figures 7 + 8 learn=none: inspected in light and dark screenshots (tmp/fig7-*.png, tmp/fig8-*.png); paper.e2e checks only that every chart mounts.
-2026-10-07T05:44:47Z s=c273a037 DONE fp=1110eb257b5d cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1419)
-2026-10-07T05:44:47Z s=c273a037 FINDING skills/shadcn-{plan,theme,review} (new, generated) learn=verifier: verify's new `agent skills ↔ sources` gate (probe: a stale SKILL.md, a stray file and a TOKEN_RE drift each fail by name).
-2026-10-07T05:44:47Z s=c273a037 FINDING scripts/lib/contrast.ts oklchToRgb (pre-existing bug) learn=test: tests/contrast.test.ts "gamma-encodes oklch: mid tones match the CSS Color 4 reference" (fails on the old code: 55 vs 128). The sidebar contrast gate still pass
-2026-10-07T05:44:47Z s=c273a037 FINDING scripts/lib/theme-tokens.ts + theme-check.ts (new) learn=test: tests/theme-check.test.ts (THEME_TOKENS == token file, every rule, fixes reach the target, fjord passes clean); agent-skills.e2e runs the bundle under node.
-2026-10-07T05:44:47Z s=c273a037 FINDING scripts/lib/markup-check.ts (new) - calibration learn=test: tests/markup-check.test.ts pins every rule and each precision fix; agent-skills.e2e: all 10 planted mistakes named, clean page passes.
 2026-10-07T05:44:47Z s=c273a037 FINDING docs examples (real findings, not fixed here) learn=none: reported to the user as follow-up; no gate runs markup-check over the docs yet.
 2026-10-07T05:44:47Z s=c273a037 FINDING tmp edit script corrupted markup-check.ts (process) learn=none: tsc + the unit tests + both calibrations reran green on the repaired file.
-2026-10-07T05:44:47Z s=c273a037 FINDING .codex-plugin/plugin.json version 0.9.0 (pre-existing drift) learn=verifier: verify's version sites gate; tests/version-sites.test.ts lists both.
-2026-10-07T05:44:47Z s=c273a037 FINDING src/skills/shadcn-theme/theme-preview.html learn=test: agent-skills.e2e "the theme preview renders the theme in light and dark, without an error".
-2026-10-07T05:54:44Z s=c273a037 DONE fp=97d726be5537 cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1419)
-2026-10-07T07:03:44Z s=c273a037 DONE fp=8ee43161a910 cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1445)
-2026-10-07T07:03:44Z s=c273a037 FINDING src/components/primitives/typography .typeset (new) learn=test: typography.e2e: 4 new typeset checks (columns + rule + justify, Einzug, initial/small caps/ligatures, 44rem two columns vs 20rem one).
-2026-10-07T07:03:44Z s=c273a037 FINDING src/components/papers/paper data-variant classic | minimal (new) learn=test: paper.e2e: classic, minimal and two-column checks incl. the phone padding (40px wide, 0px at 390px).
-2026-10-07T07:03:44Z s=c273a037 FINDING src/components/data-display/iframe (new component) learn=test: iframe.e2e (14 checks incl. render contract; 3/3 runs green) + paper-gallery.e2e bridge checks.
-2026-10-07T07:03:44Z s=c273a037 FINDING iframe.ts load + size races (self-found) learn=test: iframe.e2e: opaque-origin height via handshake, rejection without data-origins, container 300px, reduced motion; 3 consecutive green runs.
-2026-10-07T07:03:44Z s=c273a037 FINDING src/shared/theme-links.ts + theme-switcher.ts (pre-existing bug) learn=test: tests/theme-links.test.ts "fetches the sidecar from the href a caller passes" (fails on the old code: 404 from the page folder); theme-switcher.e2e green.
-2026-10-07T07:03:44Z s=c273a037 FINDING Paper Gallery: 10 TPL pages + parent (new) learn=test: paper-gallery.e2e drives each paper in its sandbox (12 checks); markup-check: 33 new example fences, 0 findings.
-2026-10-07T07:03:44Z s=c273a037 FINDING paper-gallery.mdx card titles (self-found) learn=test: paper-gallery.e2e checks every paper is linked exactly once.
-2026-10-07T07:03:44Z s=c273a037 FINDING README / index CSS-only stat + index pillar claim learn=verifier: verify's stats claim, CSS-only stat and README ↔ index gates.
 2026-10-07T07:03:44Z s=c273a037 FINDING known sandbox noise (not fixed) learn=none: production serves the docs assets from jsDelivr (CORS *); not verified in this session.
-2026-10-07T09:44:20Z s=c273a037 DONE fp=d544bdc71b5c cov=75.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1451)
-2026-10-07T09:44:20Z s=c273a037 FINDING src/components/primitives/typography .typeset (initial, captions, groups, leading) learn=test: typography.e2e: 7 new typeset checks (initial gap + capitals, lead variants, leading/tracking values, gaps, caption counters, groups, columns).
-2026-10-07T09:44:20Z s=c273a037 FINDING separators: reuse, not a new one learn=test: separator.e2e "data-line=none"; typography.e2e gaps check includes a .separator.
-2026-10-07T09:44:20Z s=c273a037 FINDING src/components/papers/paper/paper.css spacing + .paper-section.typeset learn=verifier: verify design tokens + paper.e2e (phone padding 40px → 0px); full-paper probe: no overflow at 1280 / 390 px.
-2026-10-07T09:44:20Z s=c273a037 FINDING src/components/chat/session data-animate fade | slide + .session-token learn=test: session.e2e "data-animate" (transition properties per row, from-keyframe sides, tokens, reduced motion = none); 2 consecutive green runs.
-2026-10-07T09:44:20Z s=c273a037 FINDING docs: session replay, VAE report swap + typeset, gallery papers learn=test: paper-gallery.e2e (12 checks, expectation for the capitals lead updated); prose check 0 findings on 21 files.
 2026-10-07T09:44:20Z s=c273a037 FINDING system-in-numbers deck: two diagram slides + four skill slides learn=none: screenshots of slides 8, 9, 12, 14 inspected (tmp/papers/deck-*.png: both diagrams fit their frames after a full play); no page error; the unit test on the deck
-2026-10-07T09:47:28Z s=c273a037 DONE fp=d4e966da9eb5 cov=75.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1452)
-2026-10-07T10:39:57Z s=c273a037 DONE fp=848b9ae1a76e cov=75.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1454)
-2026-10-07T10:39:57Z s=c273a037 FINDING src/components/diagrams/diagram draw() rebuilds (user: arrows flicker, animate twice) learn=test: diagram.e2e "a redraw within a step keeps the current wire": redraw mid-step → entered, 0 running animations, opacity 1 (fails on the old code: the animation re
-2026-10-07T10:39:57Z s=c273a037 FINDING typography .typeset-group (subgrid, cards, divided, middle) learn=test: typography.e2e "figure groups": captions level, 1px lines wide and stacked, cards framed, and containerType normal / contain none pinned so containment cannot c
-2026-10-07T10:39:57Z s=c273a037 FINDING statistics: section bundles + unit test files learn=test: tests/stats.test.ts (summary + passthrough; empty → zeros); verify's stat figures and stats.json fresh gates.
-2026-10-07T10:39:57Z s=c273a037 FINDING index page prose learn=test: documentation.e2e CDN note; verify stats claim + README ↔ index gates (README footprint updated with it).
 2026-10-07T10:39:57Z s=c273a037 FINDING deck: slide 4 (five splits), 10 (unit test files), 12-15 (cards, pitch text), 16 (defuss-vae + skills map) learn=none: renders of slides 4, 10, 12, 16 inspected (tmp/papers/deck-*.png); no page error; e2e covers the docs page only through the sandbox attributes.
 2026-10-07T10:39:57Z s=c273a037 FINDING probe tooling (process) learn=none: why Playwright judged the elements unstable is not established; no product code depends on it.
 2026-10-07T10:39:57Z s=c273a037 FINDING AGENTS.md "Work packages before a verify run" (user request) learn=none: a process rule; the gate cannot count pipeline runs. Prose check 0 findings.
 2026-10-07T10:39:57Z s=c273a037 FINDING WebGL anti-aliasing (user request: FXAA for presentations) learn=none: grep over src/ (ts, tsx, mdx); any flicker on the CSS decks would need a named slide to measure.
-2026-10-07T12:20:09Z s=c273a037 FAIL prose
-2026-10-07T12:39:22Z s=c273a037 DONE fp=af96bf098461 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1478)
-2026-10-07T12:39:22Z s=c273a037 FINDING src/components/wysiwyg-editors/editorjs (new component) learn=test: editorjs.e2e: 16 checks (builds requested exactly once from node_modules, never @latest; round trip byte-equal; bold / marker / inline code / heading / paragrap
-2026-10-07T12:39:22Z s=c273a037 FINDING src/components/application/doc-comments (new component) learn=test: doc-comments.e2e: 13 checks (marks across <b>, 3rd occurrence, gone text; order by document position; reply nesting; escaped Markdown; mark / card / nav selecti
-2026-10-07T12:39:22Z s=c273a037 FINDING scaffold-document-editor (new app) + scaffold-lean learn=test: scaffold-document-editor.e2e: 12 checks on app-document-editor.html with the builds served offline; scaffold-lean: 7/7 apps render as on the whole system (docum
-2026-10-07T12:39:22Z s=c273a037 FINDING src/types/defuss-shadcn.d.ts stash name (self-found) learn=verifier: verify's component types ratchet: every file at baseline 0 again.
-2026-10-07T12:39:22Z s=c273a037 FINDING README / index footprint learn=verifier: verify's stats claim, CSS-only stat, README ↔ index parity and commit window gates.
-2026-10-07T15:45:25Z s=c273a037 DONE fp=232df28ad216 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1482)
-2026-10-07T15:45:25Z s=c273a037 FINDING Document Editor: dark mode, toolbar toggles, sidebar (user findings) learn=test: editorjs.e2e: "toggles report the caret" (H1 presses nothing; bold only inside <b>) and "dark mode" (popover, search, + button: dark surface, light text, pixels
-2026-10-07T15:45:25Z s=c273a037 FINDING Illustrative Diagram wires: lag, jump, snap on slides (user finding) learn=test: diagram.e2e: "a redraw within a step keeps the current wire element" (same element, same Animation objects, advanced, no stale) and "a node mid enter-animation"
-2026-10-07T15:45:25Z s=c273a037 FINDING deck slide 4, index statistics, Standalone HTML, Anatomy page learn=test: tests/ui.test.ts index test (whole-KiB cards, no sentence); verify stats claim (README), README ↔ index parity + commit window, stat figures; slide 4 and index 
 2026-10-07T15:45:25Z s=c273a037 FINDING deck slide 17: the turning ? aliases mid-rotation (user finding) learn=none: falsifier: slide 17 mid-turn still shows stair-stepped edges on the stroke - sampling during motion was not measured, only the static 62-degree frame.
-2026-10-07T15:46:15Z s=c273a037 DONE fp=440412d0f3e1 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1483)
-2026-10-07T15:46:15Z s=c273a037 FINDING every JS component (state configs) learn=verifier: verify's API docs gate fails without the map, on a state it lacks or adds, an undescribed state or field, and a declared field the code never names (tests/compo
-2026-10-07T16:54:00Z s=c273a037 DONE fp=98f4febdc092 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1483)
-2026-10-07T16:54:00Z s=c273a037 FINDING src/shared/component-state.ts (el.api / registry) learn=verifier: the API docs gate runs memberGaps over the shared members on every component.
-2026-10-07T16:54:00Z s=c273a037 FINDING src/components/otp-input/component-skill.md learn=verifier: legacy namespace gate covers the docs agents read.
-2026-10-07T16:54:00Z s=c273a037 FINDING diagram: slide 9 (the proof loop) flickered at ~3 Hz (user finding) learn=test: diagram.e2e "a redraw of an unchanged diagram is idempotent" (labels and padding equal across two draws, 0 draws in 1.5 s idle); deck probe: 0 draws in 7 s on s
-2026-10-07T16:54:31Z s=c273a037 DONE fp=16c5944b84ca cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1483)
-2026-10-07T16:54:31Z s=c273a037 FINDING src/documentation/lib/component-api.ts typeMembers / typeEntries learn=test: tests/component-api.test.ts (17 cases) covers state contracts, quoted keys, nesting and the shared specialization.
-2026-10-07T16:54:31Z s=c273a037 FINDING the previous review (process) learn=test: api-docs.e2e runs whenever src/ or scripts/ change.
-2026-10-07T16:54:31Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts inDemo learn=test: the e2e itself: failed 1 of 2 runs before, passed 4 of 4 after.
 2026-10-07T16:54:31Z s=c273a037 FINDING state config reads (limitation) learn=none: typing each apply() with its StateConfigs would let tsc check it - a change across 59 components, not made here.
-2026-10-07T17:29:50Z s=c273a037 DONE fp=fea4b93550f7 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1486)
-2026-10-07T17:29:50Z s=c273a037 FINDING src/components/code-example/code-example.ts vpApply / vpZoomApply learn=test: code-example-docs.e2e check I traces diagram.html and fails when the bundles force as many style recalcs as there are cards (HEAD bundles: 40 for 12 - fails; no
-2026-10-07T17:29:50Z s=c273a037 FINDING src/components/resizer/resizer.ts init learn=test: the same e2e check I counts forced recalcs from all.js too.
 2026-10-07T17:29:50Z s=c273a037 FINDING src/components/code-example/code-example.ts vpApplyAll (self-review) learn=none: no fixture shows a stage whose scrollbar flips the justify decision; the order is documented inline.
 2026-10-07T17:29:50Z s=c273a037 FINDING 59 src/components/*/*.ts StateConfigs + diagram.ts draw() learn=none: lint is non-blocking by project rule (AGENTS.md: no --deny-warnings), so only the clean-log discipline catches a new warning.
-2026-10-07T17:29:50Z s=c273a037 FINDING slide 10: 599 unit tests, not 35 files (user request) learn=verifier: bun run test:run wrote files 35 / tests 599 / passed 599; verify's stat figures gate checks the slide against the record.
 2026-10-07T17:29:50Z s=c273a037 FINDING slides 11-15 layout (user request) learn=none: renders of slides 10, 11 (after its entrances), 12 and 15 inspected (tmp/papers/deck-*.png); documentation e2e green.
-2026-10-07T17:57:06Z s=c273a037 DONE fp=5b4d72b431a3 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,AGENTS.md(+1486)
 2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/public/css/layout.css .site-sidebar (drawer) learn=test: documentation.e2e "mobile drawer" reads the winning declared height from the cascade (computed px cannot tell vh apart in emulation): fails on the old CSS ("cal
 2026-10-07T17:57:06Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts demoBox learn=test: the e2e itself: failed once, then 3 of 3 passes.
 2026-10-07T17:57:06Z s=c273a037 FINDING .env.example (missing) learn=verifier: the defuss-vae env.example check.
@@ -104,3 +48,59 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T20:40:09Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 1-12 (B01, B02, L01, P06, R04, A01, S03) learn=none: claim scope and falsifier logic are reading judgments; the report states that the static check and the walk do not catch them
 2026-10-07T20:40:09Z s=029d0000 FINDING src/documentation/pages/paper.mdx section elements (data-lead=smallcaps) learn=none: whether a font has real small caps is not detectable in CSS or by a static check; the Typography option stays available for fonts that have them
 2026-10-07T20:40:09Z s=029d0000 FINDING src/components/data-display/qr-code/qr-code.ts encodeGeometry/applyMarkup (security review) learn=none: no finding to encode
+2026-10-07T21:09:15Z s=029d0000 FAIL hygiene.probes
+2026-10-08T08:03:04Z s=029d0000 DONE fp=345a5b00040e cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,README.md,bun.lock(+439)
+2026-10-08T08:03:04Z s=029d0000 FINDING docs/paper.html:92, docs/full-paper.html:111 (hygiene.probes) <- src/documentation/pages/paper.mdx section 2.1 learn=none: the plugin has no per-path exclude for its built-in probe rule; a page citing the tag literally is a reading matter, and the gate itself caught it
+2026-10-08T08:03:04Z s=029d0000 FINDING scripts/deploy.sh clean-tree check and step 4b; .gitignore learn=none: deploy.sh has no test harness (it pushes and releases); the throwaway-repo probe exercised the exact git commands, and the next release runs the script end to e
+2026-10-08T08:03:04Z s=029d0000 FINDING release v0.9.7 commits 3c7f27f7, c2e16120 (version sites, changelog, docs/ snapshot) learn=none: the release pipeline and its gates are the check; nothing new to encode
+2026-10-08T10:14:19Z s=029d0000 FAIL prose,tests.unit,tests.integration.1,coverage,hygiene.probes
+2026-10-08T10:21:28Z s=029d0000 FAIL tests.unit,coverage
+2026-10-08T10:37:19Z s=029d0000 FAIL tests.unit
+2026-10-08T10:44:57Z s=029d0000 FAIL coverage
+2026-10-08T10:56:53Z s=029d0000 FAIL tests.unit,coverage
+2026-10-08T11:06:00Z s=029d0000 FAIL coverage
+2026-10-08T11:16:36Z s=029d0000 FAIL tests.unit
+2026-10-08T11:24:45Z s=029d0000 DONE fp=5f03808d5768 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,ARCH.md,README.md(+445)
+2026-10-08T11:24:45Z s=029d0000 FINDING src/documentation/pages/paper.mdx (whole report, per paper-edit-handoff/EDITING_INSTRUCTIONS.md) learn=none: an editorial rewrite against a specification; the structure probe is a one-off for this revision
+2026-10-08T11:24:45Z s=029d0000 FINDING src/documentation/pages/paper.mdx historical figures learn=none: an immutable study source for scripts/stat-figures.ts would let verify check them; proposed to the maintainer as a separate change
+2026-10-08T11:24:45Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 2.2, 3, 5.2, 5.3 (evidence added beyond the handoff) learn=none: recovered records cited in the text
+2026-10-08T11:24:45Z s=029d0000 FINDING src/documentation/pages/paper.mdx Figure 1 (paper-edit-handoff/figures/general_feedback.json) learn=none: a visual judgment on rendered output
+2026-10-08T11:24:45Z s=029d0000 FINDING ARCH.md, src/documentation/pages/architecture.mdx (the VAE sub-page) learn=verifier: the architecture <-> ARCH.md gate keeps the page and the file equal
+2026-10-08T11:24:45Z s=029d0000 FINDING tests/ui.test.ts "diagram component: the CodeExample card pauses on a step..." learn=none: hang guards, not speed assertions (vitest.config.ts); speed has its own checks
+2026-10-08T11:24:45Z s=029d0000 FINDING vitest.config.ts TIMEOUT_SCALE (coverage runs) + tests/code-example.test.ts "typing in a text editor..." + tests/helpers.ts comment learn=none: hang guards are not speed assertions (vitest.config.ts); the debounce behavior (sync without change or blur) is still asserted
+2026-10-08T11:24:45Z s=029d0000 FINDING .git/info/exclude (local, untracked): paper-edit-handoff/ learn=none: a local workspace decision, reported to the maintainer
+2026-10-08T12:14:02Z s=029d0000 DONE fp=4cce3fa6a92e cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+460)
+2026-10-08T12:14:02Z s=029d0000 FINDING src/components/big-data/{data-grid,virtual-list,data-tree}/*.css scroll containers (Firefox runaway scroll, user report 2026-10-08) learn=test: tests/e2e/big-data-firefox.e2e.ts: failed on the unfixed build (contract on all three, runaway on grid and list, the list -58,970 px in 2 s), passes after the f
+2026-10-08T12:14:02Z s=029d0000 FINDING tests/e2e/code-example-firefox.e2e.ts (the reported card error and failed resize) learn=test: guards the reported behavior; the original error and resize failure need the maintainer's steps
+2026-10-08T12:14:02Z s=029d0000 FINDING .github/workflows/verify.yml learn=none: CI configuration
+2026-10-08T12:14:02Z s=029d0000 FINDING README.md, src/documentation/pages/index.mdx front matter learn=verifier: stats claim (README) and README <-> index commit window gates
+2026-10-08T12:48:18Z s=029d0000 DONE fp=a851c0e34e28 cov=74.7% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+460)
+2026-10-08T12:48:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx round 3 (maintainer request 2026-10-08: 4.1 boxes, 4.2 timeline, 2.2 conversation, 4.4 diff, before/after tables, section 5 title, 2.5, signed colors, "-", new section 7) learn=none: an editorial change checked by the structure, prose and render probes of this revision
+2026-10-08T12:48:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx 4.1 + ARCH.md:32 (verifier check count) learn=none: a dated study value with its method, like the other frozen figures
+2026-10-08T12:48:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 2.5 and 7 (claims about defuss-vae 0.8.0) learn=none: claims checked once against the pinned package version the paper names
+2026-10-08T12:48:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx 2.5 "research into the preferences of senior developers" learn=none: needs a source from the maintainer if the paper should cite it
+2026-10-08T12:48:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx Figure 5 (splice) + Figures 2/5 and Tables 3-6 (render decisions) learn=none: one-off edit scripts in tmp/; the probes caught it before the build was attested
+2026-10-08T13:30:18Z s=029d0000 DONE fp=431c90d7c6ed cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+477)
+2026-10-08T13:30:18Z s=029d0000 FINDING src/components/overlays/command/command.ts + dialog/dialog.ts + feedback-status/alert-dialog/alert-dialog.ts + overlays/sheet/sheet.ts (getState() after a native open, reported against 0.9.7) learn=test: command/dialog/alert-dialog/sheet e2e assert store, getState() and data-state-name after every open and close path (tests/e2e/lib/observed-state.ts reads the st
+2026-10-08T13:30:18Z s=029d0000 FINDING same four components: initial state of authored `open` markup learn=test: dialog.e2e "a dialog authored with open reports open" (failed before this change, passes after)
+2026-10-08T13:30:18Z s=029d0000 FINDING same four components: componentState<HTMLDialogElement> learn=verifier: component types (tsc ratchet) gate
+2026-10-08T13:30:18Z s=029d0000 FINDING src/components/*/{command,dialog,alert-dialog,sheet}/component-skill.md ## States learn=none: docs and e2e describe the same surface (AGENTS.md "Docs <-> E2E parity")
+2026-10-08T13:30:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx 2.4 + section 7, ARCH.md:83 (memory links, maintainer request) learn=none: an editorial correction against the repository's own files
+2026-10-08T13:30:18Z s=029d0000 FINDING .agents/MEMORY.md (3 entries over the 240-character cap) learn=memory: the next wrap consolidates them; reported to the maintainer
+2026-10-08T13:30:18Z s=029d0000 FINDING src/documentation/pages/paper.mdx Table 4 "Files in the component folders" learn=none: a label clarification; the count was right
+2026-10-08T13:30:18Z s=029d0000 FINDING README.md + src/documentation/pages/index.mdx footprint sentence learn=verifier: stats claim (README) and README <-> index commit window gates
+2026-10-08T13:55:13Z s=029d0000 FAIL tests.e2e.1
+2026-10-08T13:58:52Z s=029d0000 DONE fp=43b5787c28ad cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+482)
+2026-10-08T13:58:52Z s=029d0000 FINDING src/components/primitives/typography/typography.css (a heading in a justified .typeset) learn=test: typography.e2e "Blocksatz never justifies a heading": the fixture heading computes justify/auto with the committed CSS and start/manual with the fix (tmp/typo-r
+2026-10-08T13:58:52Z s=029d0000 FINDING tests/e2e/code-example-firefox.e2e.ts boot wait learn=none: a test-precondition fix; the component is unchanged
+2026-10-08T13:58:52Z s=029d0000 FINDING src/documentation/pages/paper.mdx Table 7 + 4.8 (prices, maintainer request) learn=none: a dated price snapshot with its source and access date
+2026-10-08T13:58:52Z s=029d0000 FINDING src/documentation/pages/paper.mdx 4.8 hypothesis sentence (maintainer request) learn=none: needs a measurement before the claim can be stated as supported by data
+2026-10-08T13:58:52Z s=029d0000 FINDING src/documentation/pages/paper.mdx Table 5 (maintainer request) learn=none: presentation
+2026-10-08T16:13:36Z s=029d0000 DONE fp=b897d299257d cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+483)
+2026-10-08T16:13:36Z s=029d0000 FINDING src/components/primitives/typography/typography.css (columns below a .typeset-span) learn=test: typography.e2e "the columns below a .typeset-span start level": failed on the previous dist (margin-block-start), passes after the rebuild
+2026-10-08T16:13:36Z s=029d0000 FINDING src/documentation/pages/paper.mdx two-column trial (maintainer request) learn=none: a layout trial the maintainer judges visually
+2026-10-08T16:13:36Z s=029d0000 FINDING src/documentation/pages/paper.mdx 2.3 (VERIFY.py and verify.ts) learn=none: a dated count with its source
+2026-10-08T16:13:36Z s=029d0000 FINDING src/documentation/pages/paper.mdx Table 7 caption (maintainer request) learn=none: the maintainer's statement; this session cannot see the plan's usage
+2026-10-08T18:14:05Z s=029d0000 DONE fp=0bb6082b0384 cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+486)
+2026-10-08T18:14:05Z s=029d0000 FINDING src/components/charts/chart/chart.css (.chart min-inline-size) learn=test: chart.e2e "a drawn chart shrinks with a narrowing grid host": chart and svg follow an 800 -> 300px grid host
+2026-10-08T18:14:05Z s=029d0000 FINDING src/documentation/pages/paper.mdx inline script (#paper-mode swap) learn=test: paper-fullscreen.e2e "it follows the OS color scheme": the swap starts checked on a dark OS and one click switches to light - failed before the docs rebuild, pa

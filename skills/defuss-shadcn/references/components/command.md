@@ -107,6 +107,8 @@ document.querySelector('#cmd').api.setState('open');
 document.querySelector('#cmd').api.getState(); // { name: 'open', config: {} }
 ```
 
+The state is the dialog's `open`: opening it with ⌘K, a trigger or a `commandfor` button and closing it with Escape, a backdrop click or an item is reported by `getState()` and `el.store` too, without `setState`.
+
 The api is bound per palette dialog; the registry global is
 `df$.shadcn.commandApi` / `df$.shadcn.commandStates`.
 

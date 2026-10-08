@@ -4188,10 +4188,12 @@ function triggerStateChange(dialog, stateName, _config) {
       break;
   }
 }
+var shown = (dialog) => dialog.open ? "open" : "default";
 var alertDialogApi = componentState({
   component: "alert-dialog",
   states: alertDialogStates,
   apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
   markup: (el, state) => applyMarkup(el, state.name)
 });
 df$.alertDialogApi = alertDialogApi;
@@ -4209,7 +4211,7 @@ function init() {
   });
   dfDollar("dialog.alert-dialog:not([data-init])").toArray().forEach((dialog) => {
     dialog.dataset.init = "";
-    bindComponent(dialog, alertDialogApi);
+    bindComponent(dialog, alertDialogApi, { name: shown(dialog), config: {} });
     dialog.addEventListener("cancel", (e) => {
       e.preventDefault();
     });
@@ -4221,7 +4223,6 @@ function init() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       if (dialog._trigger)
         dialog._trigger.focus();
     });
@@ -4794,10 +4795,12 @@ function triggerStateChange4(dialog, stateName, _config) {
       break;
   }
 }
+var shown2 = (dialog) => dialog.open ? "open" : "default";
 var commandApi = componentState({
   component: "command",
   states: commandStates,
   apply: (dialog, state) => triggerStateChange4(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown2(dialog), config: state.config }),
   markup: (el, state) => applyMarkup4(el, state.name)
 });
 df$4.commandApi = commandApi;
@@ -4835,7 +4838,7 @@ function highlightItem(list, index) {
 function init4() {
   dfDollar4("dialog.command:not([data-init])").toArray().forEach((dialog) => {
     dialog.dataset.init = "";
-    bindComponent(dialog, commandApi);
+    bindComponent(dialog, commandApi, { name: shown2(dialog), config: {} });
     const input = dfDollar4(dialog).find(".command-input").get(0);
     const list = dfDollar4(dialog).find(".command-list").get(0);
     const empty = dfDollar4(dialog).find(".command-empty").get(0);
@@ -4893,7 +4896,6 @@ function init4() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       dfDollar4(input).val("");
       filter("");
       dfDollar4(list).find(".command-item[data-highlighted]").data("highlighted", null);
@@ -5004,7 +5006,7 @@ function evaluate(grid, config) {
     collapsed: config.collapsed
   });
 }
-function shown(grid, config) {
+function shown3(grid, config) {
   const entries = grid._result?.entries ?? [];
   const mode = paging(grid);
   if (mode === "virtual")
@@ -5287,7 +5289,7 @@ function refresh(grid, config, previous) {
   grid._config = config;
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
-  grid._shown = shown(grid, config);
+  grid._shown = shown3(grid, config);
   layoutColumns(grid, config);
   syncFilters(grid, config);
   grid._gen = (grid._gen || 0) + 1;
@@ -5699,10 +5701,12 @@ function triggerStateChange6(dialog, stateName, _config) {
       break;
   }
 }
+var shown4 = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState({
   component: "dialog",
   states: dialogStates,
   apply: (dialog, state) => triggerStateChange6(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown4(dialog), config: state.config }),
   markup: (el, state) => applyMarkup6(el, state.name)
 });
 df$6.dialogApi = dialogApi;
@@ -5720,7 +5724,7 @@ function init6() {
   });
   dfDollar6("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
     dfDollar6(dialog).data("init", "");
-    bindComponent(dialog, dialogApi);
+    bindComponent(dialog, dialogApi, { name: shown4(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
@@ -5733,7 +5737,6 @@ function init6() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       if (dialog._trigger)
         dialog._trigger.focus();
     });
@@ -6598,10 +6601,12 @@ function triggerStateChange11(sheet, stateName, _config) {
       break;
   }
 }
+var shown5 = (sheet) => sheet.open ? "open" : "default";
 var sheetApi = componentState({
   component: "sheet",
   states: sheetStates,
   apply: (sheet, state) => triggerStateChange11(sheet, state.name, state.config),
+  read: (sheet, state) => ({ name: shown5(sheet), config: state.config }),
   markup: (el, state) => applyMarkup11(el, state.name)
 });
 df$11.sheetApi = sheetApi;
@@ -6619,7 +6624,7 @@ function init11() {
   });
   dfDollar11("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
     sheet.dataset.init = "";
-    bindComponent(sheet, sheetApi);
+    bindComponent(sheet, sheetApi, { name: shown5(sheet), config: {} });
     sheet.addEventListener("click", (e) => {
       if (e.target === sheet)
         sheet.close();
@@ -6632,7 +6637,6 @@ function init11() {
     sheet.addEventListener("close", () => {
       if (sheet.open)
         return;
-      sheet.dataset.stateName = "default";
       if (sheet._trigger)
         sheet._trigger.focus();
     });
@@ -7706,6 +7710,6 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-//# debugId=37573D73E57D8B8F64756E2164756E21
+//# debugId=DA9E7C9F7625F93064756E2164756E21
 /* defuss-shadcn v0.9.7 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=admin-dashboard.js.map

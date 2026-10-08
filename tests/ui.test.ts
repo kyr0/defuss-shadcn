@@ -2,6 +2,8 @@ import { expect, test } from 'vitest';
 import { clickSelector, openDocPage, waitFor } from './helpers.ts';
 import type { StatsDoc } from '../scripts/lib/stats.ts';
 
+declare const __TIMEOUT_SCALE__: number; // vitest.config.ts: 3 on CI, 2 under coverage, 1 locally
+
 /** site.js/layout.js expose their globals under `df$` (no window globals). */
 type DocsGlobal = Window & { df$: { shadcn: { docs: { realignWhenSettled?: (id: string) => void } } } };
 
@@ -221,14 +223,16 @@ test('diagram component: the CodeExample card pauses on a step and plays through
   const card = doc.querySelector('.code-example[data-component="diagram"]') as HTMLElement & {
     preview?: { setState(state: string, value?: unknown): void };
   };
-  await waitFor(() => card?.preview, 'diagram example card to boot its sandbox');
+  await waitFor(() => card?.preview, 'diagram example card to boot its sandbox', 15_000); // a load: openDocPage's allowance
   card.preview!.setState('paused', 2);
   await waitFor(() => String(JSON.parse(card.dataset.stateValues || '{}').paused) === '2', 'the diagram to pause on step 2 (mirrored)');
   card.preview!.setState('playing', true);
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').playing === true, 'the diagram to play (mirrored)');
   card.preview!.setState('active', 'api');
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').active === 'api', 'the gateway to be active (mirrored)');
-});
+  // a hang guard above openDocPage's own 15 s load allowance: diagram.html is the heaviest docs page, and
+  // VERIFIED: (2026-10-08, this machine) the test took 10.5 and 11.6 s, past the suite's 10 s default
+}, 30_000 * __TIMEOUT_SCALE__);
 
 test('property-grid component: the CodeExample card opens an editor through the State API', async () => {
   // the settings grid is an executable fence: the State tab names a path,

@@ -6,9 +6,13 @@ import { defineConfig } from 'vitest/config';
  * VERIFIED: (actions run 37476334763) the second CI run timed out twice in 564 tests - a sandbox
  * round-trip and a 10 s page test - both green on this machine. The timeouts are hang
  * guards, not assertions about speed (speed has its own checks, e.g. the forced-recalc e2e), so on CI they
- * scale: testTimeout here, every waitFor through __TIMEOUT_SCALE__ (tests/helpers.ts).
+ * scale: testTimeout here, every waitFor through __TIMEOUT_SCALE__ (tests/helpers.ts). A coverage run
+ * is instrumented and slower too. VERIFIED: (2026-10-08, this machine) the full suite took 73 s, its
+ * coverage run 91 s, and only the coverage run timed out the 3 s typing round trip of
+ * tests/code-example.test.ts - so coverage runs get twice the guard.
  */
-const TIMEOUT_SCALE = process.env.CI ? 3 : 1;
+const COVERAGE = process.argv.includes('--coverage');
+const TIMEOUT_SCALE = process.env.CI ? 3 : COVERAGE ? 2 : 1;
 
 /**
  * Why: a separate config (Vitest prefers vitest.config.* over vite.config.*)
@@ -28,7 +32,7 @@ export default defineConfig({
       provider: playwright(),
       instances: [{ browser: 'chromium' }],
     },
-    testTimeout: 10000 * TIMEOUT_SCALE, // 10 seconds; 30 on CI
+    testTimeout: 10000 * TIMEOUT_SCALE, // 10 seconds; 20 under coverage, 30 on CI
     // a full run records its totals as src/documentation/data/unit-tests.json (tests/lib/count-reporter.ts)
     reporters: ['default', './tests/lib/count-reporter.ts'],
   },

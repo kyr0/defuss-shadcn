@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
 import { assertRenderContract } from './lib/render-contract.ts';
+import { observedState } from './lib/observed-state.ts';
 import { icbRect } from './lib/viewport.ts';
 
 /**
@@ -167,14 +168,18 @@ try {
   await check('trigger button opens; data-sheet-close closes', async () => {
     await page.click('[data-sheet-trigger="sheet-right"]');
     assert.equal(await isOpen(page, 'sheet-right'), true);
+    // 0.9.7 regression: a sheet opened without setState kept reporting 'default'
+    assert.equal(await observedState(page, '#sheet-right'), 'open', 'a trigger-opened sheet reports open');
     await page.click('#sheet-right [data-sheet-close]');
     assert.equal(await isOpen(page, 'sheet-right'), false);
+    assert.equal(await observedState(page, '#sheet-right'), 'default', 'a closed sheet reports default');
   });
 
   await check('Escape closes (native dialog behavior preserved)', async () => {
     await setState(page, 'sheet-right', 'open');
     await page.keyboard.press('Escape');
     assert.equal(await isOpen(page, 'sheet-right'), false, 'native Escape-to-close must still work');
+    assert.equal(await observedState(page, '#sheet-right'), 'default', 'Escape: getState() reports default');
   });
 
   await check('focus returns to trigger on close', async () => {

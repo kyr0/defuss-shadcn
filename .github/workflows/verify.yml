@@ -22,7 +22,8 @@ jobs:
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
+      # firefox: tests/e2e/*-firefox.e2e.ts hold Firefox-only behavior (scroll anchoring in the windowed components)
+      - run: bunx playwright install --with-deps chromium firefox
       - run: bun run lint
       - run: bun run test:run
       - run: bun run screenshots

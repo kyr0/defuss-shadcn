@@ -55,11 +55,17 @@ function triggerStateChange(dialog, stateName, _config) {
   }
 }
 
+/** The state a dialog shows: its `open` - read back after every change, and the state it starts in. */
+const shown = (dialog: HTMLDialogElement) => (dialog.open ? 'open' : 'default');
+
 /** Registry-level API; pass the dialog element explicitly. Unknown names throw. */
-export const commandApi = componentState({
+export const commandApi = componentState<HTMLDialogElement>({
   component: 'command',
   states: commandStates,
   apply: (dialog, state) => triggerStateChange(dialog, state.name, state.config),
+  // the state is the dialog's `open`, as the schema observes it: ⌘K and the
+  // trigger open it natively, without setState, and getState() must see that
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
   markup: (el, state) => applyMarkup(el, state.name),
 });
 
@@ -101,7 +107,7 @@ function init() {
 dfDollar<HTMLDialogElement>('dialog.command:not([data-init])').toArray().forEach((dialog) => {
     dialog.dataset.init = '';
     // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(dialog, commandApi);
+    bindComponent(dialog, commandApi, { name: shown(dialog), config: {} });
     const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
     const list = dfDollar(dialog).find('.command-list').get(0);
     const empty = dfDollar(dialog).find('.command-empty').get(0);
@@ -156,11 +162,10 @@ dfDollar<HTMLDialogElement>('dialog.command:not([data-init])').toArray().forEach
     dialog.addEventListener('close', () => {
       // `close` fires AFTER the exit transition (display allow-discrete), so a
       // fast re-open (setState/⌘K within 150ms) can beat the queued event - a
-      // stale one must not downgrade an open palette to 'default'. (Skipping
-      // the reset on re-open keeps the last query, like macOS Spotlight.)
+      // stale one must not clear an open palette. (Skipping the reset on
+      // re-open keeps the last query, like macOS Spotlight.) The state itself
+      // follows `open` through read().
       if (dialog.open) return;
-      // reflect the actual UI state: Escape/item-click/backdrop close = 'default'
-      dialog.dataset.stateName = 'default'; // State API marker stays dataset.*
       dfDollar(input).val('');
       filter('');
       dfDollar(list).find('.command-item[data-highlighted]').data('highlighted', null);

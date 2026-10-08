@@ -131,6 +131,8 @@ document.querySelector('#sheet-right').api.setState('open');
 document.querySelector('#sheet-right').api.getState(); // { name: 'open', config: {} }
 ```
 
+The state is the dialog's `open`: opening it with a trigger or a `commandfor` button and closing it with Escape, a backdrop click or a close button is reported by `getState()` and `el.store` too, without `setState`.
+
 The api is bound per sheet element; the registry global is
 `df$.shadcn.sheetApi` / `df$.shadcn.sheetStates`.
 

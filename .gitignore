@@ -39,3 +39,6 @@ release/
 
 # Python bytecode (the defuss-vae policy file .agents/VERIFY.py is imported)
 __pycache__/
+
+# defuss-vae's live sub-agent registry (`vae.py swarm`) - per-machine runtime state, never committed
+.agents/SWARM_STATUS.yaml

@@ -259,9 +259,11 @@ describe('CodeExample (input page)', () => {
     const value = card.querySelector('.code-example-row[data-state-name="value"] .code-example-control') as HTMLInputElement;
     value.value = 'typed-live';
     value.dispatchEvent(new Event('keyup', { bubbles: true })); // NO change event fired
-    await waitForObserved(card, 'value', 'typed-live', 3000);
+    // hang guards, like the rebuild wait above (6 s): VERIFIED: (2026-10-08) 1.6 s alone, past 3 s in four full
+    // parallel runs on a loaded machine
+    await waitForObserved(card, 'value', 'typed-live', 6000);
     // and the editor's shown code carries the reflected attribute (§11: shown == rendered)
-    await waitFor(() => textareaOf(card).value.includes('value="typed-live"'), 'editor shows typed value', 3000);
+    await waitFor(() => textareaOf(card).value.includes('value="typed-live"'), 'editor shows typed value', 6000);
   });
 
   it('state edits sync bidirectionally: panel edit updates the editor source', async () => {

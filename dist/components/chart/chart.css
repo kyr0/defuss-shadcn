@@ -8,6 +8,10 @@
 @layer components {
   .chart {
     width: 100%;
+    /* a grid or flex item sizes no smaller than its content by default - the
+       canvas drawn at the old width held a narrowing figure open, so the chart
+       never saw its container shrink (the paper on a phone after a resize) */
+    min-inline-size: 0;
     height: 20rem;
 
     &[data-size='sm'] {

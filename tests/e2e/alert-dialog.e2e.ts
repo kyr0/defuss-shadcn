@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from './server.ts';
 import { assertRenderContract } from './lib/render-contract.ts';
+import { observedState } from './lib/observed-state.ts';
 import { icbRect } from './lib/viewport.ts';
 
 /**
@@ -78,8 +79,11 @@ try {
   });
 
   await check('close button closes it and refocuses the trigger', async () => {
+    // still open from the trigger click above - 0.9.7 kept reporting 'default'
+    assert.equal(await observedState(page, '#demo-alert-dialog-1'), 'open', 'a trigger-opened alert dialog reports open');
     await page.click('[data-alert-dialog-close]'); // first: Cancel
     assert.equal(await isOpen(page), false);
+    assert.equal(await observedState(page, '#demo-alert-dialog-1'), 'default', 'a closed alert dialog reports default');
     await page.waitForTimeout(50);
     const focused = await page.evaluate(
       () => document.activeElement?.getAttribute('data-alert-dialog-trigger'),

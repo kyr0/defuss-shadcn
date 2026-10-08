@@ -527,10 +527,12 @@ function triggerStateChange3(dialog, stateName, _config) {
       break;
   }
 }
+var shown = (dialog) => dialog.open ? "open" : "default";
 var alertDialogApi = componentState3({
   component: "alert-dialog",
   states: alertDialogStates,
   apply: (dialog, state) => triggerStateChange3(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
   markup: (el, state) => applyMarkup3(el, state.name)
 });
 df$3.alertDialogApi = alertDialogApi;
@@ -548,7 +550,7 @@ function init3() {
   });
   dfDollar3("dialog.alert-dialog:not([data-init])").toArray().forEach((dialog) => {
     dialog.dataset.init = "";
-    bindComponent3(dialog, alertDialogApi);
+    bindComponent3(dialog, alertDialogApi, { name: shown(dialog), config: {} });
     dialog.addEventListener("cancel", (e) => {
       e.preventDefault();
     });
@@ -560,7 +562,6 @@ function init3() {
     dialog.addEventListener("close", () => {
       if (dialog.open)
         return;
-      dialog.dataset.stateName = "default";
       if (dialog._trigger)
         dialog._trigger.focus();
     });
@@ -829,5 +830,5 @@ var toastActions = {
 };
 df$4.toast = toastActions;
 
-//# debugId=91E56CB917BE658964756E2164756E21
+//# debugId=E3140762AC7AA6B364756E2164756E21
 //# sourceMappingURL=feedback-status.js.map

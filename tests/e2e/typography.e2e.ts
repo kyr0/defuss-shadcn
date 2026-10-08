@@ -134,6 +134,19 @@ await cssSmoke('typography', [
     css: { 'column-count': '2', 'column-width': '288px', 'column-rule-style': 'solid', 'text-align': 'justify', 'hyphens': 'auto', 'text-align-last': 'start' },
   },
   {
+    // across the column break the heading's margin cannot collapse into the spanner's:
+    // the left column started lower than the right (the paper's two-column trial)
+    label: 'typeset: the columns below a .typeset-span start level - the first block keeps no top margin',
+    selector: '#ty-span-h',
+    css: { 'margin-block-start': '0px' },
+  },
+  {
+    // a wrapping heading was justified like the text: wide gaps between its words
+    label: 'typeset: Blocksatz never justifies a heading - flush start, unhyphenated',
+    selector: '#ty-set-h',
+    css: { 'text-align': 'start', 'hyphens': 'manual' },
+  },
+  {
     label: 'typeset: Einzug - no paragraph gap, the first line of each following paragraph indented 1em',
     run: async (page) => {
       const r = await page.evaluate(() => ['ty-set-p1', 'ty-set-p2', 'ty-set-p3'].map((id) => { const cs = getComputedStyle(document.getElementById(id)!); return [cs.textIndent, cs.marginBlockStart, cs.marginBlockEnd]; }));
