@@ -25,8 +25,6 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T17:29:50Z s=c273a037 FINDING src/components/code-example/code-example.ts vpApplyAll (self-review) learn=none: no fixture shows a stage whose scrollbar flips the justify decision; the order is documented inline.
 2026-10-07T17:29:50Z s=c273a037 FINDING 59 src/components/*/*.ts StateConfigs + diagram.ts draw() learn=none: lint is non-blocking by project rule (AGENTS.md: no --deny-warnings), so only the clean-log discipline catches a new warning.
 2026-10-07T17:29:50Z s=c273a037 FINDING slides 11-15 layout (user request) learn=none: renders of slides 10, 11 (after its entrances), 12 and 15 inspected (tmp/papers/deck-*.png); documentation e2e green.
-2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/public/css/layout.css .site-sidebar (drawer) learn=test: documentation.e2e "mobile drawer" reads the winning declared height from the cascade (computed px cannot tell vh apart in emulation): fails on the old CSS ("cal
-2026-10-07T17:57:06Z s=c273a037 FINDING tests/e2e/sizing-layout.e2e.ts demoBox learn=test: the e2e itself: failed once, then 3 of 3 passes.
 2026-10-07T17:57:06Z s=c273a037 FINDING .env.example (missing) learn=verifier: the defuss-vae env.example check.
 2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.6 (self-review) learn=none: claim precision is a reading judgment; the prose catalog review is the check, no program can.
 2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx sections 6, 7, 5.7, 12 learn=none: a reading judgment; no mechanical check distinguishes an anecdote from a result.
@@ -104,3 +102,5 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-08T18:14:05Z s=029d0000 DONE fp=0bb6082b0384 cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+486)
 2026-10-08T18:14:05Z s=029d0000 FINDING src/components/charts/chart/chart.css (.chart min-inline-size) learn=test: chart.e2e "a drawn chart shrinks with a narrowing grid host": chart and svg follow an 800 -> 300px grid host
 2026-10-08T18:14:05Z s=029d0000 FINDING src/documentation/pages/paper.mdx inline script (#paper-mode swap) learn=test: paper-fullscreen.e2e "it follows the OS color scheme": the swap starts checked on a dark OS and one click switches to light - failed before the docs rebuild, pa
+2026-10-08T19:55:41Z s=029d0000 DONE fp=ec7f4cdf476a cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+486)
+2026-10-08T19:55:41Z s=029d0000 FINDING commit 640d2a97 (scope after the push) learn=none: a re-attestation of an unchanged tree
