@@ -25,12 +25,9 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-07T17:29:50Z s=c273a037 FINDING src/components/code-example/code-example.ts vpApplyAll (self-review) learn=none: no fixture shows a stage whose scrollbar flips the justify decision; the order is documented inline.
 2026-10-07T17:29:50Z s=c273a037 FINDING 59 src/components/*/*.ts StateConfigs + diagram.ts draw() learn=none: lint is non-blocking by project rule (AGENTS.md: no --deny-warnings), so only the clean-log discipline catches a new warning.
 2026-10-07T17:29:50Z s=c273a037 FINDING slides 11-15 layout (user request) learn=none: renders of slides 10, 11 (after its entrances), 12 and 15 inspected (tmp/papers/deck-*.png); documentation e2e green.
-2026-10-07T17:57:06Z s=c273a037 FINDING .env.example (missing) learn=verifier: the defuss-vae env.example check.
 2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx section 5.6 (self-review) learn=none: claim precision is a reading judgment; the prose catalog review is the check, no program can.
 2026-10-07T17:57:06Z s=c273a037 FINDING src/documentation/pages/paper.mdx sections 6, 7, 5.7, 12 learn=none: a reading judgment; no mechanical check distinguishes an anecdote from a result.
 2026-10-07T17:57:06Z s=c273a037 FINDING session figures supplied by the user (not written) learn=none: the figure came from a person, not a check; the paper cites the transcript as its source.
-2026-10-07T17:57:06Z s=c273a037 FINDING paper: two-line captions off-center, tags with a blank inside (user finding) learn=test: paper.e2e: "a tag inside an indented paragraph is not indented itself" (text offset = padding) and "a wrapping caption keeps every line centered" (last line box
-2026-10-07T18:29:19Z s=029d0000 DONE fp=1f44c43cb601 cov=? paths=src/documentation/pages/paper.mdx
 2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx section 2 (B09) learn=none: a version pin in prose; no check can tell which release a page describes
 2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx sections 5.1, 5.5, Figures 3-6, Table 2 (B09) learn=none: historical figures are dated snapshots by design; current figures are already data-stat elements the stat figures gate checks
 2026-10-07T18:29:19Z s=029d0000 FINDING src/documentation/pages/paper.mdx Results tiles + 5.1 (L03) learn=none: the two sources are both correct for their dates; dating the record is the fix, not a rule
@@ -104,3 +101,6 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-08T18:14:05Z s=029d0000 FINDING src/documentation/pages/paper.mdx inline script (#paper-mode swap) learn=test: paper-fullscreen.e2e "it follows the OS color scheme": the swap starts checked on a dark OS and one click switches to light - failed before the docs rebuild, pa
 2026-10-08T19:55:41Z s=029d0000 DONE fp=ec7f4cdf476a cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+486)
 2026-10-08T19:55:41Z s=029d0000 FINDING commit 640d2a97 (scope after the push) learn=none: a re-attestation of an unchanged tree
+2026-10-08T20:27:53Z s=029d0000 DONE fp=a6483e1ad757 cov=74.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,.github/workflows/verify.yml,ARCH.md(+486)
+2026-10-08T20:27:53Z s=029d0000 FINDING scripts/verify.ts docs release snapshot + src/documentation/public/CNAME (the Pages custom domain) learn=verifier: docs release snapshot: OK with the file, FAILED "docs/CNAME differs ... would lose the custom domain" with docs/CNAME moved aside
+2026-10-08T20:27:53Z s=029d0000 FINDING v0.9.8 release (scripts/deploy.sh run) learn=none: a remote commit during a release; deploy.sh fails closed on a rejected push

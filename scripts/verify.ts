@@ -1000,6 +1000,12 @@ if (existsSync(DOCS_OUT)) {
   const stamp = existsSync(stampFile) ? (JSON.parse(readFileSync(stampFile, 'utf8')) as { version?: string }).version : undefined;
   if (stamp !== version) docsProblems.push(`docs/${RELEASE_STAMP} names ${stamp ?? 'no version'}, package.json is ${version} - the snapshot was not republished for this release`);
   if (!existsSync(join(DOCS_OUT, 'index.html')) || !existsSync(join(DOCS_OUT, '404.html'))) docsProblems.push('docs/index.html or docs/404.html missing');
+  // the Pages custom domain: sync-docs replaces docs/ whole, so a CNAME added to
+  // docs/ by hand vanished at the next release - it lives in the docs' public/
+  const cname = join(ROOT, 'src', 'documentation', 'public', 'CNAME');
+  if (existsSync(cname) && (!existsSync(join(DOCS_OUT, 'CNAME')) || readFileSync(join(DOCS_OUT, 'CNAME'), 'utf8') !== readFileSync(cname, 'utf8'))) {
+    docsProblems.push('docs/CNAME differs from src/documentation/public/CNAME - GitHub Pages would lose the custom domain');
+  }
   for (const file of walk(DOCS_OUT, ['.html'])) {
     const bad = unpinnedRefs(readFileSync(file, 'utf8'), version);
     if (bad.length) docsProblems.push(`docs/${relative(DOCS_OUT, file)} loads ${bad.length} asset(s) not pinned to v${version}, e.g. ${bad[0]}`);
