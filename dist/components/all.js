@@ -4072,7 +4072,7 @@ function safeShowPopover(el) {
   requestAnimationFrame(tick);
 }
 // src/shared/version.ts
-var SHARED_ABI = "0.9.7";
+var SHARED_ABI = "0.9.8";
 // src/core/index.ts
 var existing = Reflect.get(globalThis, "df$");
 if (existing !== undefined) {
@@ -22875,6 +22875,6 @@ df$61.win = windowActions;
 init61();
 new MutationObserver(init61).observe(document, { childList: true, subtree: true });
 
-//# debugId=E31BB83FFC0FF94164756E2164756E21
-/* defuss-shadcn v0.9.7 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
+//# debugId=16B9EDF86B6FC46264756E2164756E21
+/* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

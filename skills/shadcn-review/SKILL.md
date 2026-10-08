@@ -9,7 +9,7 @@ disable-model-invocation: true
 # defuss-shadcn / shadcn-review
 
 Precondition: a person asked for this review. Default: review and fix what is confirmed; if they ask for a report only, change nothing.
-Scope: the defuss-shadcn specifics of defuss-shadcn 0.9.7. General review - requirements, callers, tests, minimalism - stays with the project's own method (defuss-vae `review`, for example).
+Scope: the defuss-shadcn specifics of defuss-shadcn 0.9.8. General review - requirements, callers, tests, minimalism - stays with the project's own method (defuss-vae `review`, for example).
 
 ## Where things are
 

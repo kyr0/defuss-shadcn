@@ -9,7 +9,7 @@ disable-model-invocation: true
 # defuss-shadcn / shadcn-plan
 
 Precondition: a person asked for this plan. Do not implement unless they ask for the plan and the implementation.
-Scope: what to build with defuss-shadcn 0.9.7 (232 components: 69 ATM, 26 MOL, 6 ORG, 128 BLK, 3 TPL). The process around it - evidence, tests, gates - stays with the project's own method (defuss-vae `plan`, for example); this skill adds the defuss-shadcn specifics.
+Scope: what to build with defuss-shadcn 0.9.8 (232 components: 69 ATM, 26 MOL, 6 ORG, 128 BLK, 3 TPL). The process around it - evidence, tests, gates - stays with the project's own method (defuss-vae `plan`, for example); this skill adds the defuss-shadcn specifics.
 
 ## Where things are
 
@@ -19,7 +19,7 @@ Read them; do not search the filesystem. Paths are relative to this file.
 - `references/tokens.md` - every theme token with its role.
 - `references/rules.md` - the rules every markup follows.
 - `references/guides.md` - the guide pages: native APIs, data attributes, State API, cascade layers, modules, accessibility.
-- A component skill (markup, variants, sizes, ARIA, states): `../defuss-shadcn/references/components/<name>.md`, else `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.7/skills/defuss-shadcn/references/components/<name>.md`.
+- A component skill (markup, variants, sizes, ARIA, states): `../defuss-shadcn/references/components/<name>.md`, else `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.8/skills/defuss-shadcn/references/components/<name>.md`.
 
 ## Workflow
 

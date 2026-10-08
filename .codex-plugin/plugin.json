@@ -1,7 +1,7 @@
 {
   "name": "defuss-shadcn",
   "description": "Build web apps, charts, websites and presentations in plain HTML/CSS/JS with shadcn-style components and defuss - plus task skills to plan UI (shadcn-plan), create themes (shadcn-theme) and review markup (shadcn-review).",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "author": {
     "name": "Aron Homberg",
     "url": "https://github.com/kyr0"

@@ -6,7 +6,8 @@
       "commits": [
         "docs: rebuild the paper pages from the committed paper source",
         "feat: paper revision, modal getState() fix, Firefox big-data scroll fix"
-      ]
+      ],
+      "hash": "bb712254"
     },
     {
       "version": "v0.9.7",

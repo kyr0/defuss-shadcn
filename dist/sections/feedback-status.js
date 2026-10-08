@@ -1,7 +1,7 @@
 // dist/components/progress/progress.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.7") {
+if (!__df$shared || __df$shared.abi !== "0.9.8") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, textLocale } = __df$shared;
@@ -253,7 +253,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/radial-progress/radial-progress.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.7") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.8") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, textLocale: textLocale2 } = __df$shared2;
@@ -505,7 +505,7 @@ new MutationObserver(init2).observe(document, { childList: true, subtree: true }
 // dist/components/alert-dialog/alert-dialog.js
 var __df$core3 = globalThis.df$;
 var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
-if (!__df$shared3 || __df$shared3.abi !== "0.9.7") {
+if (!__df$shared3 || __df$shared3.abi !== "0.9.8") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, componentState: componentState3, bindComponent: bindComponent3 } = __df$shared3;
@@ -573,7 +573,7 @@ new MutationObserver(init3).observe(document, { childList: true, subtree: true }
 // dist/components/toast/toast.js
 var __df$core4 = globalThis.df$;
 var __df$shared4 = __df$core4 && __df$core4.shadcn && __df$core4.shadcn.shared;
-if (!__df$shared4 || __df$shared4.abi !== "0.9.7") {
+if (!__df$shared4 || __df$shared4.abi !== "0.9.8") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals4, defussQuery: defussQuery4, anim, componentState: componentState4, bindComponent: bindComponent4 } = __df$shared4;
@@ -830,5 +830,5 @@ var toastActions = {
 };
 df$4.toast = toastActions;
 
-//# debugId=E3140762AC7AA6B364756E2164756E21
+//# debugId=F5861D8F5E24A57364756E2164756E21
 //# sourceMappingURL=feedback-status.js.map
