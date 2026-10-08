@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "version": "v0.9.8",
+      "date": "October 08, 2026",
+      "commits": [
+        "docs: rebuild the paper pages from the committed paper source",
+        "feat: paper revision, modal getState() fix, Firefox big-data scroll fix"
+      ]
+    },
+    {
       "version": "v0.9.7",
       "date": "October 07, 2026",
       "commits": [
