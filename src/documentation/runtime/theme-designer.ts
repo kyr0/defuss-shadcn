@@ -1,11 +1,14 @@
 // -- theme-designer.js - the Theme Designer page ------------------------------
 // Loaded on demand by site.js when a page holds [data-theme-designer]; it
 // registers docs.initThemeDesigner(root) / docs.leaveThemeDesigner(). The
-// theme being designed is applied to the WHOLE page through the switcher's
-// docs.previewTheme() (nothing persisted until you save); saving goes through
-// docs.customThemes (theme-switcher.js) - the same token shape as the
-// tweakcn presets, kept in this browser (prefs.customThemes), listed on top of the
-// header's theme menu.
+// select box picks the theme the site shows; an edit goes to a CUSTOM theme -
+// the first edit of a built-in theme starts "Untitled custom theme", a custom
+// theme changes in place - and every change saves as you go through
+// docs.customThemes (theme-switcher.js): the same token shape as the tweakcn
+// presets, kept in this browser (prefs.customThemes), listed on top of the
+// header's theme menu. While you type, docs.previewTheme() shows the edit on
+// the whole page at once; the save that follows applies the stored theme.
+// VERIFIED: (theme-designer.e2e) every promise above, in a fresh browser.
 (function () {
   'use strict';
   var ns = globalThis.df$ && globalThis.df$.shadcn;
@@ -41,7 +44,6 @@
     'muted-foreground': 'background', 'destructive-foreground': 'destructive', 'sidebar-foreground': 'sidebar',
     'sidebar-primary-foreground': 'sidebar-primary', 'sidebar-accent-foreground': 'sidebar-accent',
   };
-  var PALETTE = ['background', 'foreground', 'primary', 'secondary', 'accent', 'muted', 'destructive', 'border', 'card', 'popover', 'sidebar', 'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'];
   var FONT_SLOTS = [['sans', 'Sans', 'sans-serif'], ['serif', 'Serif', 'serif'], ['mono', 'Mono', 'monospace']];
   var FONTS = {
     sans: ['Inter', 'Geist', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Nunito', 'Nunito Sans', 'Raleway', 'Work Sans', 'DM Sans', 'Manrope', 'Plus Jakarta Sans', 'Outfit', 'Figtree', 'Onest', 'Space Grotesk', 'IBM Plex Sans', 'Source Sans 3', 'Noto Sans', 'Rubik', 'Karla', 'Mulish', 'Lexend', 'Sora', 'Urbanist', 'Archivo', 'Barlow', 'Public Sans', 'Quicksand', 'Josefin Sans', 'Fira Sans', 'PT Sans', 'Ubuntu', 'Cabin', 'Hanken Grotesk', 'Instrument Sans', 'Albert Sans', 'Red Hat Display', 'Be Vietnam Pro', 'Atkinson Hyperlegible', 'Bricolage Grotesque', 'Oxanium', 'Comfortaa', 'Fredoka', 'Syne'],
@@ -50,6 +52,10 @@
   };
   var ANY_HINT = 'Type a name to use any Google Font';
   var STACK = { sans: 'ui-sans-serif, system-ui, sans-serif', serif: 'ui-serif, Georgia, serif', mono: 'ui-monospace, SFMono-Regular, monospace' };
+  /* the link tokens (Typography): not in the tweakcn export, so a theme only
+     carries them when they differ from the token file's defaults */
+  var LINK_LINES = [['underline', 'Underline'], ['underline dotted', 'Dotted underline'], ['underline dashed', 'Dashed underline'], ['underline wavy', 'Wavy underline'], ['underline double', 'Double underline'], ['none', 'No line']];
+  var UNTITLED = 'Untitled custom theme';
 
   // -- colour maths: any CSS colour → sRGB via a 1px canvas ----------------------
   var cx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
@@ -148,6 +154,8 @@
     COLORS.forEach(function (k) { out[k] = cs.getPropertyValue('--' + k).trim(); });
     out.radius = cs.getPropertyValue('--radius').trim() || '0.625rem';
     out['tracking-normal'] = cs.getPropertyValue('--tracking-normal').trim() || '0em';
+    out['link-text-decoration'] = cs.getPropertyValue('--link-text-decoration').trim() || 'underline';
+    out['link-underline-offset'] = cs.getPropertyValue('--link-underline-offset').trim() || '4px';
     html.classList.toggle('dark', wasDark);
     if (inline === null) html.removeAttribute('style'); else html.setAttribute('style', inline);
     if (slot) slot.disabled = false;
@@ -165,20 +173,20 @@
   }
 
   // -- state ---------------------------------------------------------------------
-  // { from, name, light: {token: value}, dark: {…}, radius, tracking,
-  //   fonts: { sans: {family, href} | null, … }, shadow: null | {…} }
-  var S = null;
+  // S, the values: { light: {token: value}, dark: {…}, radius, tracking,
+  //   fonts: { sans: {family, href} | null, … }, shadow: null | {…},
+  //   link: { line, offset }, extra: { light, dark } }
+  // cur, the theme they belong to: { id, label, custom, from } - kept apart, so
+  // Back / Next step through values and never back to a built-in theme
+  var S = null, cur = null;
   var root = null;
-  var history = [], at = -1, historyTimer = 0, draftTimer = 0, frame = 0;
-  /* what the site shows without a draft (the active saved theme), as
-     themeOf() JSON: the state differs from it = there is a draft to keep */
-  var baseline = '';
+  var history = [], at = -1, historyTimer = 0, saveTimer = 0, frame = 0, storageWarned = false;
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function stateFrom(id) {
     var t = presetById(id);
     var b = clone(base());
-    var st = { from: t.id, name: t.custom ? t.label : '', light: {}, dark: {}, radius: b.light.radius, tracking: b.light['tracking-normal'], fonts: { sans: null, serif: null, mono: null }, shadow: null, extra: { light: {}, dark: {} } };
+    var st = { light: {}, dark: {}, radius: b.light.radius, tracking: b.light['tracking-normal'], fonts: { sans: null, serif: null, mono: null }, shadow: null, link: { line: b.light['link-text-decoration'], offset: b.light['link-underline-offset'] }, extra: { light: {}, dark: {} } };
     ['light', 'dark'].forEach(function (mode) {
       var own = (t.styles && t.styles[mode]) || {};
       COLORS.forEach(function (k) { st[mode][k] = own[k] || b[mode][k]; });
@@ -188,6 +196,8 @@
     var lt = (t.styles && t.styles.light) || {};
     if (lt.radius) st.radius = lt.radius;
     if (lt['tracking-normal']) st.tracking = lt['tracking-normal'];
+    if (lt['link-text-decoration']) st.link.line = lt['link-text-decoration'];
+    if (lt['link-underline-offset']) st.link.offset = lt['link-underline-offset'];
     var hrefs = (t.links || []).map(function (n) { return (n && n.attributes && n.attributes.href) || ''; });
     FONT_SLOTS.forEach(function (slot) {
       var fam = familyOf(lt['font-' + slot[0]]);
@@ -199,10 +209,21 @@
     if (t.designer && t.designer.shadow) st.shadow = clone(t.designer.shadow);
     return st;
   }
+  /** a state from elsewhere (an old draft, history) gets the fields added since */
+  function normalize(st) {
+    var b = base();
+    st.extra = st.extra || { light: {}, dark: {} };
+    st.link = st.link || { line: b.light['link-text-decoration'], offset: b.light['link-underline-offset'] };
+    return st;
+  }
+  function identity(id) {
+    var t = presetById(id);
+    return { id: t.id, label: t.label || 'Default', custom: !!t.custom, from: (t.designer && t.designer.from) || t.id };
+  }
 
   /** a theme token the controls do not edit: shadows, spacing */
   function isExtra(k) {
-    return docs.customThemes.tokenPattern.test(k) && COLORS.indexOf(k) < 0 && k !== 'radius' && k !== 'tracking-normal' && k.indexOf('font-') !== 0;
+    return docs.customThemes.tokenPattern.test(k) && COLORS.indexOf(k) < 0 && k !== 'radius' && k !== 'tracking-normal' && k.indexOf('font-') !== 0 && k.indexOf('link-') !== 0;
   }
 
   var SHADOW_DEFAULT = { color: '#000000', opacity: 0.1, blur: 3, spread: 0, x: 0, y: 1 };
@@ -220,12 +241,15 @@
   function themeOf(st) {
     var styles = { light: {}, dark: {} };
     var links = [];
+    var b = base().light;
     ['light', 'dark'].forEach(function (mode) {
       COLORS.forEach(function (k) { styles[mode][k] = st[mode][k]; });
       var extra = (st.extra && st.extra[mode]) || {};
       for (var x in extra) styles[mode][x] = extra[x];
       styles[mode].radius = st.radius;
-      if (st.tracking && st.tracking !== base().light['tracking-normal']) styles[mode]['tracking-normal'] = st.tracking;
+      if (st.tracking && st.tracking !== b['tracking-normal']) styles[mode]['tracking-normal'] = st.tracking;
+      if (st.link && st.link.line !== b['link-text-decoration']) styles[mode]['link-text-decoration'] = st.link.line;
+      if (st.link && st.link.offset !== b['link-underline-offset']) styles[mode]['link-underline-offset'] = st.link.offset;
       FONT_SLOTS.forEach(function (slot) {
         var f = st.fonts[slot[0]];
         if (f) styles[mode]['font-' + slot[0]] = "'" + f.family + "', " + STACK[slot[0]];
@@ -243,8 +267,9 @@
     return { styles: styles, links: links };
   }
 
-  // -- applying, history, draft -------------------------------------------------
+  // -- applying, history, saving ---------------------------------------------------
   function mode() { return document.documentElement.classList.contains('dark') ? 'dark' : 'light'; }
+  /** the edit on the whole page at once (the save that follows applies the stored theme) */
   function apply() {
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(function () {
@@ -257,7 +282,7 @@
 
   // -- the scaffold apps: same-origin pages (app-*.html) the theme is written
   //    into - an iframe per preview tab, and the full-screen windows opened
-  //    from there; both follow every edit and the Light / Dark switch
+  //    from there; both follow every edit and the header's light / dark switch
   var apps = [], appObserver = null;
   function syncDoc(d) {
     if (!d || !d.head || !S) return;
@@ -315,28 +340,54 @@
     w.addEventListener('load', function () { syncDoc(appDoc(a)); });
     return true;
   }
+
+  /** a name no other custom theme carries, and its id: "X", "X 2", "X 3" … */
+  function freeName(label, except) {
+    var mine = docs.customThemes.list();
+    var taken = function (l, id) { return mine.some(function (t) { return t.id !== except && (t.id === id || t.label.toLowerCase() === l.toLowerCase()); }); };
+    var name = label, n = 2;
+    while (taken(name, docs.customThemes.idFor(name))) name = label + ' ' + n++;
+    return { label: name, id: docs.customThemes.idFor(name) };
+  }
+  /** the first edit of a built-in theme starts a custom one - selected at once */
+  function fork() {
+    var n = freeName(UNTITLED);
+    cur = { id: n.id, label: n.label, custom: true, from: cur.id };
+    persist();
+    toast('“' + n.label + '” started', 'Edits to a built-in theme go to a custom copy - it saves as you go.');
+  }
+  /** an edit: shown at once, recorded once you pause, saved as you go */
   function changed(record) {
+    if (!S) return;
+    if (!cur.custom) fork();
     apply();
     if (record !== false) {
       clearTimeout(historyTimer);
       historyTimer = setTimeout(remember, 350);
     }
-    clearTimeout(draftTimer);
-    draftTimer = setTimeout(keepDraft, 400);
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(persist, 400);
   }
-  /** a state that differs from the saved theme is the live draft: it stays
-   *  on every page after you leave, until you save or discard it; one that
-   *  matches (nothing edited, undone, reset) is no draft at all */
-  function keepDraft() {
-    clearTimeout(draftTimer);
-    if (!S || !docs.themeDraft) return;
-    var theme = themeOf(S);
-    if (JSON.stringify(theme) !== baseline) docs.themeDraft.set(S, theme);
-    else docs.themeDraft.clear();
+  /** store the custom theme and apply it: the site, the menu and the select follow */
+  function persist() {
+    clearTimeout(saveTimer);
+    saveTimer = 0;
+    if (!S || !cur || !cur.custom) return;
+    var t = themeOf(S);
+    t.id = cur.id;
+    t.label = cur.label;
+    t.custom = true;
+    t.updated = new Date().toISOString();
+    t.designer = { from: cur.from, shadow: S.shadow };
+    if (!docs.customThemes.save(t) && !storageWarned) {
+      storageWarned = true;
+      toast('Not kept in this browser', 'Storage is blocked here: the theme lasts while the page is open - export the CSS to keep it.');
+    }
+    cancelAnimationFrame(frame);
+    docs.applyTheme(cur.id);
+    paintBar();
   }
-  function rebase() {
-    baseline = JSON.stringify(themeOf(stateFrom(docs.__activeColorTheme || 'default')));
-  }
+  function flush() { if (saveTimer) persist(); }
   function remember() {
     var snap = JSON.stringify(S);
     if (history[at] === snap) return;
@@ -350,6 +401,7 @@
     if (!root) return;
     one(root, '[data-td-undo]').disabled = at <= 0;
     one(root, '[data-td-redo]').disabled = at >= history.length - 1;
+    one(root, '[data-td-reset]').disabled = history.length < 2 || history[0] === JSON.stringify(S);
   }
   function travel(d) {
     clearTimeout(historyTimer);
@@ -362,13 +414,22 @@
     paintAll();
     changed(false);
   }
+  /** a theme's values into the editor: a fresh history, nothing saved */
   function load(st) {
-    S = st;
+    S = normalize(st);
     history = [];
     at = -1;
     remember();
     paintAll();
-    changed(false);
+  }
+  /** the select box: the site shows the theme, the editor holds it */
+  function select(id) {
+    flush();
+    // identity first: applyTheme's defuss-theme-change then names the theme we hold
+    cur = identity(id);
+    docs.applyTheme(id);
+    load(stateFrom(id));
+    loadThemeFonts();
   }
 
   // -- building the controls ----------------------------------------------------
@@ -387,21 +448,6 @@
       '<div class="color-picker"><input type="color" aria-label="Pick --' + k + '"></div>' +
       '<input class="input" type="text" spellcheck="false" autocomplete="off" aria-label="--' + k + ' value"' + (autofocus ? ' autofocus' : '') + '>');
     return row;
-  }
-
-  function buildColors() {
-    var box = one(root, '[data-td-colors]');
-    box.replaceChildren();
-    var head = el('div', { class: 'td-setting' });
-    dfDollar(head).html('<span class="td-setting-head">Swatches write<select class="select" data-td-notation aria-label="Colour notation the swatches write" style="width:auto;height:1.75rem;font-size:0.75rem"><option value="oklch">OKLCH</option><option value="hex">HEX</option></select></span><p class="td-hint">You are editing the <strong data-td-mode-name>light</strong> palette - switch with Light / Dark above. Type any CSS colour, or pick one.</p>');
-    box.appendChild(head);
-    GROUPS.forEach(function (g, i) {
-      var det = el('details', { class: 'td-group' });
-      if (i < 4) det.open = true;
-      dfDollar(det).html('<summary><span>' + esc(g[0]) + '</span><span class="td-group-swatches">' + g[1].map(function (k) { return '<i data-swatch="' + k + '"></i>'; }).join('') + '</span></summary>');
-      g[1].forEach(function (k) { det.appendChild(tokenRow(k)); });
-      box.appendChild(det);
-    });
   }
 
   function slider(key, label, min, max, step, unit) {
@@ -429,27 +475,30 @@
       '<div id="td-fb-' + k + '" role="listbox" class="combobox-listbox" aria-label="' + slot[1] + ' fonts">' + opts + '</div></div></div></div>';
   }
 
-  function buildForm() {
-    dfDollar(root).find('[data-td-form]').html(
-      '<fieldset class="td-fieldset"><legend>Shape &amp; type</legend>' +
-      slider('radius', 'Roundness', 0, 1.5, 0.025, 'rem') +
-      FONT_SLOTS.map(fontPicker).join('') +
-      slider('tracking', 'Letter spacing', -0.05, 0.1, 0.005, 'em') +
-      '</fieldset>' +
-      '<fieldset class="td-fieldset"><legend>Shadows</legend>' +
-      '<div class="td-setting"><label class="td-setting-head" for="td-shadow-on">Custom shadows <input class="switch" type="checkbox" role="switch" id="td-shadow-on" data-td-shadow-on></label><p class="td-hint">Off: the theme\'s own shadow scale. On: one shadow, the whole --shadow-* scale derived from it (tweakcn\'s recipe).</p></div>' +
+  /* the settings tabs: Fonts, Shape, Shadows, Typography (Colors is the palette) */
+  function buildPanes() {
+    var pane = function (id) { return dfDollar(root).find('[data-td-pane="' + id + '"]'); };
+    pane('fonts').html(FONT_SLOTS.map(fontPicker).join(''));
+    pane('shape').html(slider('radius', 'Roundness', 0, 1.5, 0.025, 'rem') +
+      '<p class="td-hint">The base radius: <code>--radius-sm</code>, <code>-md</code>, <code>-lg</code> and <code>-xl</code> follow it, in light and dark alike.</p>');
+    pane('shadows').html('<div class="td-setting"><label class="td-setting-head" for="td-shadow-on">Custom shadows <input class="switch" type="checkbox" role="switch" id="td-shadow-on" data-td-shadow-on></label><p class="td-hint">Off: the theme\'s own shadow scale. On: one shadow, the whole --shadow-* scale derived from it (tweakcn\'s recipe).</p></div>' +
       '<fieldset class="td-shadow-box" data-td-shadow-box><legend class="sr-only">Shadow</legend>' +
       '<div class="td-setting"><span class="td-setting-head"><label for="td-shadow-text">Shadow colour</label></span><div class="td-token" style="padding:0"><div class="color-picker"><input type="color" data-td-shadow-color aria-label="Pick the shadow colour"></div><input class="input" type="text" id="td-shadow-text" data-td-shadow-text spellcheck="false"></div></div>' +
       '<div class="td-slider-grid">' + slider('opacity', 'Opacity', 0, 1, 0.01, '') + slider('blur', 'Blur', 0, 50, 1, 'px') + slider('spread', 'Spread', -10, 20, 1, 'px') + slider('x', 'Offset X', -20, 20, 1, 'px') + slider('y', 'Offset Y', -20, 20, 1, 'px') + '</div>' +
-      '</fieldset></fieldset>');
+      '</fieldset>');
+    pane('type').html(slider('tracking', 'Letter spacing', -0.05, 0.1, 0.005, 'em') +
+      '<div class="td-setting"><span class="td-setting-head"><label for="td-link-line">Link line</label></span><select class="select" id="td-link-line" data-td-link-line>' +
+      LINK_LINES.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('') + '</select></div>' +
+      slider('link-offset', 'Link underline offset', 0, 12, 1, 'px') +
+      '<p class="td-hint">Links in running text (<code>.link</code>) read <code>--link-text-decoration</code> and <code>--link-underline-offset</code>: <a class="link" href="theming.html">a link in your theme</a>.</p>');
   }
 
-  /* the palette strip: every chip is a button - it opens one shared popover
-     with that token's colour row (the panel's row, same wiring) */
+  /* the Colors tab: every colour token as a chip, grouped - each opens one
+     shared popover with that token's colour row */
   function buildPalette() {
-    var box = one(root, '[data-td-palette]');
-    dfDollar(box).html(PALETTE.map(function (k) {
-      return '<button type="button" class="td-chip" data-chip="' + k + '" popovertarget="td-chip-pop" aria-label="Edit --' + k + '"><i></i><span>' + k + '</span></button>';
+    dfDollar(root).find('[data-td-palette]').html(GROUPS.map(function (g) {
+      return '<div class="td-chip-group" role="group" aria-label="' + esc(g[0]) + '"><p class="td-chip-group-name">' + esc(g[0]) + '</p><div class="td-chips">' +
+        g[1].map(function (k) { return '<button type="button" class="td-chip" data-chip="' + k + '" popovertarget="td-chip-pop" aria-label="Edit --' + k + '"><i></i><span>' + k + '</span></button>'; }).join('') + '</div></div>';
     }).join(''));
   }
   function openChip(chip) {
@@ -461,7 +510,7 @@
       c.toggleAttribute('data-editing', c === chip);
     });
     one(pop, '.popover-title').textContent = '--' + k;
-    one(pop, '.popover-description').textContent = 'Your ' + mode() + ' palette - type any CSS colour, or pick one.';
+    one(pop, '.popover-description').textContent = 'The ' + mode() + ' palette - type any CSS colour, or pick one.';
     var box = one(pop, '.popover-content');
     box.replaceChildren(tokenRow(k, true));
     paintToken(box.firstChild, mode());
@@ -495,13 +544,12 @@
         badge.title = 'Contrast on --' + ON[k] + ': ' + ratio.toFixed(2) + ':1 (WCAG AA needs 4.5)';
       }
     }
-    all(root, '[data-swatch="' + k + '"]').forEach(function (i) { i.style.setProperty('--c', v); });
   }
   function paintColors() {
     var m = mode();
     all(root, '.td-token[data-token]').forEach(function (row) { paintToken(row, m); });
-    var name = one(root, '[data-td-mode-name]');
-    if (name) name.textContent = m;
+    var desc = one(root, '#td-chip-pop .popover-description');
+    if (desc && desc.textContent) desc.textContent = 'The ' + m + ' palette - type any CSS colour, or pick one.';
   }
   function setRange(key, value) {
     var input = one(root, '[data-td-range="' + key + '"]');
@@ -521,9 +569,12 @@
     state.textContent = f && !f.href ? 'loading…' : '';
   }
   function paintOther() {
-    var r = parseFloat(S.radius) || 0;
-    setRange('radius', r);
+    setRange('radius', parseFloat(S.radius) || 0);
     setRange('tracking', parseFloat(S.tracking) || 0);
+    setRange('link-offset', parseFloat(S.link.offset) || 0);
+    var line = one(root, '[data-td-link-line]');
+    if (!LINK_LINES.some(function (o) { return o[0] === S.link.line; })) dfDollar(line).append(el('option', { value: S.link.line }, esc(S.link.line)));
+    line.value = S.link.line;
     var on = !!S.shadow;
     one(root, '[data-td-shadow-on]').checked = on;
     one(root, '[data-td-shadow-box]').disabled = !on;
@@ -534,82 +585,77 @@
     var t = one(root, '[data-td-shadow-text]');
     if (document.activeElement !== t) t.value = sh.color;
   }
-  function paintFrom() {
+  /** the select box (built-in themes, then yours), Rename / Delete, the status */
+  function paintBar() {
+    if (!root || !cur) return;
     var sel = one(root, '[data-td-from]');
     var mine = docs.customThemes ? docs.customThemes.list() : [];
-    dfDollar(sel).html('<optgroup label="Presets">' + (docs.THEMES || []).map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(t.label) + '</option>'; }).join('') + '</optgroup>' +
+    dfDollar(sel).html('<optgroup label="Built-in themes">' + (docs.THEMES || []).map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(t.label) + '</option>'; }).join('') + '</optgroup>' +
       (mine.length ? '<optgroup label="Your themes">' + mine.map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(t.label) + '</option>'; }).join('') + '</optgroup>' : ''));
-    sel.value = S.from;
-    if (sel.value !== S.from) sel.value = 'default';
-  }
-  function paintSaved() {
-    var box = one(root, '[data-td-saved]');
-    var mine = docs.customThemes ? docs.customThemes.list() : [];
-    var active = docs.__activeColorTheme;
-    if (!mine.length) {
-      dfDollar(box).html('<p class="td-hint" style="padding:0.75rem 0.25rem">No saved themes yet. Name your theme and press Save - it lands here and on top of the theme menu.</p>');
-      return;
-    }
-    dfDollar(box).html('<ul class="td-saved-list">' + mine.map(function (t) {
-      return '<li class="td-saved-item"' + (t.id === active ? ' data-active' : '') + ' data-id="' + esc(t.id) + '"><span><strong>' + esc(t.label) + '</strong><small>' + (t.id === active ? 'In use · ' : '') + (t.updated ? new Date(t.updated).toLocaleString('en') : '') + '</small></span>' +
-        '<span class="td-saved-actions"><button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-edit>Edit</button><button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-use>Use</button><button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-delete>Delete</button></span></li>';
-    }).join('') + '</ul>');
+    sel.value = cur.id;
+    if (sel.value !== cur.id) sel.value = 'default';
+    one(root, '[data-td-rename]').disabled = !cur.custom;
+    var del = one(root, '[data-td-delete]');
+    del.disabled = !cur.custom;
+    var status = one(root, '[data-td-status]');
+    status.textContent = status.title = cur.custom ? 'Changes save as you go' : 'Built-in: your first edit starts a custom copy';
   }
   function paintAll() {
     paintColors();
     FONT_SLOTS.forEach(function (s) { paintFont(s[0]); });
     paintOther();
-    paintFrom();
-    paintSaved();
+    paintBar();
     paintPalette();
+    syncHistoryButtons();
     var names = one(root, '[data-td-fontnames]');
     if (names) names.textContent = FONT_SLOTS.map(function (s) { return S.fonts[s[0]] ? S.fonts[s[0]].family : s[1] + ' (default)'; }).join(' · ');
-    var name = one(root, '#td-name');
-    if (name && document.activeElement !== name && S.name) name.value = S.name;
-    syncModeButtons();
-  }
-  function syncModeButtons() {
-    var m = mode();
-    all(root, '[data-td-mode] .toggle').forEach(function (b) { b.setAttribute('aria-pressed', String(b.value === m)); });
   }
 
   // -- fonts: choose, load, write ------------------------------------------------
-  function chooseFont(k, family) {
+  function chooseFont(k, family, record) {
     if (!family) {
       S.fonts[k] = null;
       paintFont(k);
-      changed();
+      changed(record);
       return;
     }
     // the token applies at once (the stack falls back until the font arrives);
     // the stylesheet link joins the theme when it has loaded
     S.fonts[k] = { family: family, href: null };
     paintFont(k);
-    changed();
+    changed(record);
     loadFont(family).then(function (href) {
-      if (S.fonts[k] && S.fonts[k].family === family) {
+      if (S && S.fonts[k] && S.fonts[k].family === family) {
         S.fonts[k].href = href;
         paintFont(k);
-        changed();
+        changed(false);
       }
     }, function () {
-      if (S.fonts[k] && S.fonts[k].family === family) {
+      if (S && S.fonts[k] && S.fonts[k].family === family) {
         S.fonts[k] = null;
         paintFont(k);
-        changed();
+        changed(false);
         toast('“' + family + '” is not on Google Fonts', 'Check the spelling - names are case-sensitive, like “Playfair Display”.');
       }
+    });
+  }
+  /** a theme's fonts load without counting as an edit (a built-in theme stays built-in) */
+  function loadThemeFonts() {
+    FONT_SLOTS.forEach(function (s) {
+      var f = S.fonts[s[0]];
+      if (!f || f.href) return;
+      loadFont(f.family).then(function (href) { if (S && S.fonts[s[0]] && S.fonts[s[0]].family === f.family) { S.fonts[s[0]].href = href; paintFont(s[0]); } }, function () {});
     });
   }
 
   // -- import / export -------------------------------------------------------------
   function exportCss() {
     var t = themeOf(S);
-    var name = (one(root, '#td-name').value || S.name || 'My theme').trim();
     var fonts = t.links.filter(function (l) { return l.attributes.rel === 'stylesheet'; }).map(function (l) { return "@import url('" + l.attributes.href + "');"; });
-    return '/* ' + name.replace(/\*\//g, '') + ' - designed with the defuss-shadcn Theme Designer. Load it after theme/utils/default-semantic-tokens.css. */\n' +
+    return '/* ' + cur.label.replace(/\*\//g, '') + ' - designed with the defuss-shadcn Theme Designer. Load it after theme/utils/default-semantic-tokens.css. */\n' +
       (fonts.length ? fonts.join('\n') + '\n' : '') + '\n' + docs.customThemes.css(t);
   }
+  /** a tweakcn export or our own: its tokens become the current theme's values (an edit) */
   function importCss(text) {
     var blocks = { light: null, dark: null };
     var re = /(:root|\.dark)\s*\{([^}]*)\}/g, m;
@@ -630,6 +676,8 @@
         else if (isExtra(k)) st.extra[mdl][k] = v;
         else if (k === 'radius') st.radius = v;
         else if (k === 'tracking-normal') st.tracking = v;
+        else if (k === 'link-text-decoration') st.link.line = v;
+        else if (k === 'link-underline-offset') st.link.offset = v;
         else if (k.startsWith('font-') && mdl === 'light') {
           var fam = familyOf(v);
           if (fam) st.fonts[k.slice(5)] = { family: fam, href: null };
@@ -637,10 +685,61 @@
       }
     });
     if (!found) return false;
-    st.from = 'default';
-    load(st);
-    FONT_SLOTS.forEach(function (s) { if (S.fonts[s[0]]) chooseFont(s[0], S.fonts[s[0]].family); });
+    S = st;
+    paintAll();
+    changed();
+    FONT_SLOTS.forEach(function (s) { if (S.fonts[s[0]]) chooseFont(s[0], S.fonts[s[0]].family, false); });
     return true;
+  }
+
+  // -- duplicate, rename, delete --------------------------------------------------
+  function duplicate() {
+    flush();
+    var n = freeName(cur.label + ' copy');
+    cur = { id: n.id, label: n.label, custom: true, from: cur.from };
+    persist();
+    load(S);
+    toast('Duplicated', '“' + n.label + '” is selected - your edits go to it.');
+  }
+  function rename(name) {
+    name = String(name || '').trim().slice(0, 40);
+    if (!name || !cur.custom || name === cur.label) return;
+    flush();
+    var old = cur.id;
+    var n = freeName(name, old);
+    cur = { id: n.id, label: n.label, custom: true, from: cur.from };
+    persist();
+    if (n.id !== old) docs.customThemes.remove(old);
+    paintBar();
+    toast('Renamed', '“' + n.label + '” is on top of the theme menu.');
+  }
+  function remove() {
+    if (!cur.custom) return;
+    clearTimeout(saveTimer);
+    saveTimer = 0;
+    var gone = cur.label;
+    docs.customThemes.remove(cur.id);
+    select('default');
+    toast('Theme deleted', '“' + gone + '” is gone - the site shows the default theme.');
+  }
+
+  // -- fullscreen ------------------------------------------------------------------
+  function isFull() { return !!root && (document.fullscreenElement === root || root.hasAttribute('data-fullscreen')); }
+  function paintFull() {
+    var label = root && one(root, '[data-td-fullscreen] span');
+    if (label) label.textContent = isFull() ? 'Exit fullscreen' : 'Fullscreen';
+  }
+  /** the designer alone on the screen: native fullscreen, a fixed overlay where refused */
+  function toggleFullscreen() {
+    if (document.fullscreenElement === root) { document.exitFullscreen(); return; }
+    if (root.hasAttribute('data-fullscreen')) { root.removeAttribute('data-fullscreen'); paintFull(); return; }
+    var overlay = function () { root.setAttribute('data-fullscreen', ''); paintFull(); };
+    if (typeof root.requestFullscreen !== 'function') { overlay(); return; }
+    root.requestFullscreen().then(paintFull, overlay);
+  }
+  function leaveFullscreen() {
+    if (document.fullscreenElement === root) document.exitFullscreen();
+    if (root) root.removeAttribute('data-fullscreen');
   }
 
   function toast(title, description) {
@@ -659,16 +758,13 @@
       if (row) {
         var k = row.dataset.token, m = mode();
         if (t.type === 'color') {
-          var notation = one(root, '[data-td-notation]').value;
-          S[m][k] = notation === 'hex' ? t.value : oklch(rgb(t.value));
+          var hexNotation = one(root, '[data-td-notation]').checked;
+          S[m][k] = hexNotation ? t.value : oklch(rgb(t.value));
         } else {
           if (!isColor(t.value.trim())) { t.setAttribute('aria-invalid', 'true'); return; }
           S[m][k] = t.value.trim();
         }
         paintToken(row, m);
-        // a surface change moves the badges of the text tokens on it
-        all(root, '.td-token[data-token="' + k + '"]').forEach(function (r) { if (r !== row) paintToken(r, m); });
-        for (var on in ON) if (ON[on] === k) all(root, '.td-token[data-token="' + on + '"]').forEach(function (r) { paintToken(r, m); });
         paintPalette();
         changed();
         return;
@@ -678,6 +774,7 @@
         var key = range.dataset.tdRange, val = Number(range.value);
         if (key === 'radius') S.radius = val + 'rem';
         else if (key === 'tracking') S.tracking = val + 'em';
+        else if (key === 'link-offset') S.link.offset = val + 'px';
         else { S.shadow = S.shadow || clone(SHADOW_DEFAULT); S.shadow[key] = val; }
         setRange(key, val);
         changed();
@@ -707,8 +804,9 @@
     }, { capture: true, signal: ac.signal });
     root.addEventListener('change', function (e) {
       var t = e.target;
-      if (t.matches('[data-td-from]')) { load(stateFrom(t.value)); return; }
-      if (t.matches('[data-td-shadow-on]')) { S.shadow = t.checked ? clone(SHADOW_DEFAULT) : null; paintOther(); changed(); }
+      if (t.matches('[data-td-from]')) { select(t.value); return; }
+      if (t.matches('[data-td-shadow-on]')) { S.shadow = t.checked ? clone(SHADOW_DEFAULT) : null; paintOther(); changed(); return; }
+      if (t.matches('[data-td-link-line]')) { S.link.line = t.value; changed(); }
     }, opt);
     root.addEventListener('combobox:change', function (e) {
       var slotEl = e.target.closest('[data-font-slot]');
@@ -718,7 +816,7 @@
     }, opt);
     root.addEventListener('submit', function (e) {
       var f = e.target;
-      if (f.matches('[data-td-save]')) { e.preventDefault(); save(f.elements.name.value.trim()); return; }
+      if (f.matches('[data-td-rename-form]')) { rename(f.elements.name.value); return; }
       if (f.matches('[data-td-import-form]')) {
         if (!importCss(f.elements.css.value)) { e.preventDefault(); one(root, '[data-td-import-error]').hidden = false; return; }
         one(root, '[data-td-import-error]').hidden = true;
@@ -727,22 +825,49 @@
     }, opt);
     root.addEventListener('click', function (e) {
       var t = e.target;
-      var modeBtn = t.closest('[data-td-mode] .toggle');
-      if (modeBtn) {
-        if (modeBtn.value !== mode()) {
-          var toggle = one(document, '#theme-toggle');
-          if (toggle) toggle.click(); else document.documentElement.classList.toggle('dark');
-        }
-        syncModeButtons();
-        return;
-      }
       var full = t.closest('.td-app > a');
       if (full) { if (openAppWindow(full.getAttribute('href'))) e.preventDefault(); return; }
       var chip = t.closest('.td-chip');
       if (chip) { openChip(chip); return; }
       if (t.closest('[data-td-undo]')) return travel(-1);
       if (t.closest('[data-td-redo]')) return travel(1);
-      if (t.closest('[data-td-reset]')) { load(stateFrom(S.from)); return; }
+      if (t.closest('[data-td-reset]')) {
+        if (history.length < 2) return;
+        clearTimeout(historyTimer);
+        S = JSON.parse(history[0]);
+        remember();
+        paintAll();
+        changed(false);
+        return;
+      }
+      if (t.closest('[data-td-duplicate]')) { duplicate(); return; }
+      if (t.closest('[data-td-fullscreen]')) { toggleFullscreen(); return; }
+      if (t.closest('[data-td-mode-toggle]')) {
+        // the header's switch: one source of the site's light / dark
+        var sw = one(document, '#theme-toggle');
+        if (sw) sw.click(); else document.documentElement.classList.toggle('dark');
+        return;
+      }
+      if (t.closest('[data-td-rename]')) {
+        var input = one(root, '#td-rename-name');
+        input.value = cur.label;
+        one(root, '#td-rename').showModal();
+        input.select();
+        return;
+      }
+      var del = t.closest('[data-td-delete]');
+      if (del) {
+        // two steps instead of a modal: the first click asks
+        if (del.dataset.confirm) { delete del.dataset.confirm; dfDollar(del).html('<i data-lucide="trash-2"></i> Delete'); del.setAttribute('data-variant', 'ghost'); remove(); }
+        else {
+          del.dataset.confirm = '1';
+          del.textContent = 'Really delete?';
+          del.setAttribute('data-variant', 'destructive');
+          setTimeout(function () { if (del.isConnected && del.dataset.confirm) { delete del.dataset.confirm; dfDollar(del).html('<i data-lucide="trash-2"></i> Delete'); del.setAttribute('data-variant', 'ghost'); if (globalThis.lucide) globalThis.lucide.createIcons(); } }, 3000);
+        }
+        if (globalThis.lucide) globalThis.lucide.createIcons();
+        return;
+      }
       if (t.closest('[data-td-export]')) {
         one(root, '[data-td-css]').value = exportCss();
         one(root, '#td-export').showModal();
@@ -756,26 +881,14 @@
       }
       if (t.closest('[data-td-download]')) {
         var a = document.createElement('a');
-        var slug = (one(root, '#td-name').value || 'theme').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'theme';
+        var slug = cur.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'theme';
         a.href = URL.createObjectURL(new Blob([one(root, '[data-td-css]').value], { type: 'text/css' }));
         a.download = slug + '.css';
         a.click();
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
         return;
       }
-      if (t.closest('[data-td-toast]')) { toast('Theme saved', 'Toasts use the popover colours and the shadow scale.'); return; }
-      var item = t.closest('.td-saved-item');
-      if (item) {
-        var id = item.dataset.id;
-        if (t.closest('[data-td-edit]')) { load(stateFrom(id)); toast('Editing “' + S.name + '”', 'Save keeps the name; a new name makes a copy.'); }
-        if (t.closest('[data-td-use]')) { docs.applyTheme(id); rebase(); paintSaved(); toast('Theme applied'); }
-        var del = t.closest('[data-td-delete]');
-        if (del) {
-          // two steps instead of a modal: the first click asks
-          if (del.dataset.confirm) { docs.customThemes.remove(id); rebase(); paintSaved(); paintFrom(); changed(false); toast('Theme deleted'); }
-          else { del.dataset.confirm = '1'; del.textContent = 'Really?'; del.setAttribute('data-variant', 'destructive'); setTimeout(function () { if (del.isConnected) { delete del.dataset.confirm; del.textContent = 'Delete'; del.setAttribute('data-variant', 'ghost'); } }, 3000); }
-        }
-      }
+      if (t.closest('[data-td-toast]')) { toast('Theme saved', 'Toasts use the popover colours and the shadow scale.'); }
     }, opt);
     // the colour popover closes: no chip is being edited any more
     // (beforetoggle: synchronous - toggle is a later task)
@@ -809,37 +922,24 @@
       e.preventDefault();
       travel(e.shiftKey ? 1 : -1);
     }, opt);
-    document.addEventListener('defuss-custom-themes-change', function () { paintSaved(); paintFrom(); }, opt);
-    // the header's dark toggle and ours are one switch - the controls follow
-    modeObserver = new MutationObserver(function () { if (S) { paintColors(); paintPalette(); syncModeButtons(); syncApps(); } });
+    document.addEventListener('defuss-custom-themes-change', function () { paintBar(); }, opt);
+    document.addEventListener('fullscreenchange', paintFull, opt);
+    // the overlay fallback closes with Escape too - unless a popover or dialog inside takes it
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && root.hasAttribute('data-fullscreen') && !one(root, ':popover-open, dialog[open]')) { root.removeAttribute('data-fullscreen'); paintFull(); }
+    }, opt);
+    // a theme picked from the header's menu: the designer holds it now
+    document.addEventListener('defuss-theme-change', function (e) {
+      var id = e.detail && e.detail.id;
+      if (!id || id === '__preview' || !cur || id === cur.id) return;
+      flush();
+      cur = identity(id);
+      load(stateFrom(id));
+      loadThemeFonts();
+    }, opt);
+    // the header's light / dark switch: the palette being edited follows
+    modeObserver = new MutationObserver(function () { if (S) { paintColors(); paintPalette(); syncApps(); } });
     modeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-  }
-
-  function save(name) {
-    if (!name) return;
-    var id = docs.customThemes.idFor(name);
-    var t = themeOf(S);
-    t.id = id;
-    t.label = name;
-    t.custom = true;
-    t.updated = new Date().toISOString();
-    t.designer = { from: S.from, shadow: S.shadow };
-    var existed = !!docs.customThemes.get(id);
-    if (!docs.customThemes.save(t)) {
-      toast('Could not save', 'This browser blocks local storage here - export the CSS instead.');
-      return;
-    }
-    S.name = name;
-    S.from = id;
-    docs.applyTheme(id);
-    // saved: the theme is what the site shows now - no draft any more
-    clearTimeout(draftTimer);
-    docs.themeDraft.clear();
-    baseline = JSON.stringify(themeOf(S));
-    paintFrom();
-    paintSaved();
-    remember();
-    toast(existed ? 'Theme updated' : 'Theme saved', '“' + name + '” is on top of the theme menu now.');
   }
 
   // -- lifecycle -----------------------------------------------------------------
@@ -848,44 +948,43 @@
     if (root) docs.leaveThemeDesigner();
     root = el;
     BASE = null;
-    buildColors();
-    buildForm();
+    buildPanes();
     buildPalette();
-    // app tabs load their scaffold once shown (a hidden panel never intersects)
+    // app tabs load their scaffold once shown (a hidden panel never intersects) - also
+    // just below the fold: the settings above keep their full height, so a shown tab's
+    // app can start under the viewport's edge
     appObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { mountApp(en.target); appObserver.unobserve(en.target); } });
-    });
+    }, { rootMargin: '0px 0px 100% 0px' });
     all(root, '[data-td-app]').forEach(function (b) { appObserver.observe(b); });
     if (globalThis.lucide) globalThis.lucide.createIcons();
     wire();
-    // a draft (live, or paused by a pick from the theme menu) is where you
-    // left off; otherwise start from the theme the site shows
-    rebase();
+    var active = docs.__activeColorTheme || 'default';
+    cur = identity(active);
+    // an unsaved draft of the earlier designer becomes a custom theme: nothing is lost
     var draft = docs.themeDraft && docs.themeDraft.get();
     var st = draft && draft.state;
     if (st && st.light && st.dark && st.fonts) {
-      st.extra = st.extra || { light: {}, dark: {} };
       load(st);
-      keepDraft();
-    } else load(stateFrom(docs.__activeColorTheme || 'default'));
-    // fonts of a restored draft or a loaded theme: make sure they are in
-    FONT_SLOTS.forEach(function (s) { if (S.fonts[s[0]] && !S.fonts[s[0]].href) chooseFont(s[0], S.fonts[s[0]].family); });
+      fork();
+      docs.themeDraft.clear();
+    } else load(stateFrom(active));
+    loadThemeFonts();
   };
   docs.leaveThemeDesigner = function () {
     if (!root) return;
+    flush();
+    leaveFullscreen();
     if (ac) ac.abort();
     if (modeObserver) modeObserver.disconnect();
     if (appObserver) appObserver.disconnect();
     apps = apps.filter(function (a) { return a.win; }); // full-screen windows keep their last theme
     cancelAnimationFrame(frame);
-    // the draft stays on as you browse; with nothing to keep, the saved
-    // theme comes back
-    keepDraft();
-    var live = docs.themeDraft && docs.themeDraft.isLive();
-    if (live) docs.previewTheme(themeOf(S)); // the last edit, even mid-frame
+    clearTimeout(historyTimer);
     root = null;
     S = null;
-    if (!live && docs.endThemePreview) docs.endThemePreview();
+    cur = null;
+    if (docs.endThemePreview) docs.endThemePreview();
   };
   docs.themeDesignerState = function () { return S && clone(S); };
 })();

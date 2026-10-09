@@ -49,7 +49,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </figure>
 ```
 
-<p class="text-sm text-muted-foreground mb-3" style="max-width:44rem;">An embed - YouTube, Vimeo - takes the video's place: an <code>&lt;iframe&gt;</code> in the same layer, hidden and click-through until <code>playing</code>. A third-party player sets cookies, so load it through <a href="cookie-consent.html#toc-what-consent-gates" style="text-decoration:underline;">Cookie Consent</a> - its live example plays a YouTube video only after you allow it - and keep the poster local.</p>
+<p class="text-sm text-muted-foreground mb-3" style="max-width:44rem;">An embed - YouTube, Vimeo - takes the video's place: an <code>&lt;iframe&gt;</code> in the same layer, hidden and click-through until <code>playing</code>. A third-party player sets cookies, so load it through <a class="link" href="cookie-consent.html#toc-what-consent-gates" style="text-decoration:underline;">Cookie Consent</a> - its live example plays a YouTube video only after you allow it - and keep the poster local.</p>
 
 ```html title="a consent-gated YouTube embed"
 <figure class="mk-showcase">
@@ -141,7 +141,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </ul>
   <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/product-showcase-\{state\}.png</code>.</p>
 
-Machine contract - verified against <a href="../schemas/product-showcase.schema.json"><code>product-showcase.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a class="link" href="../schemas/product-showcase.schema.json"><code>product-showcase.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

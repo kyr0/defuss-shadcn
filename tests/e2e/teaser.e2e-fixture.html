@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>teaser e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/shapes.css" />
+    <link rel="stylesheet" href="/dist/components/play-button/play-button.css" />
+    <link rel="stylesheet" href="/dist/components/teaser/teaser.css" />
+  </head>
+  <body style="padding:2rem;display:grid;gap:2rem;max-width:40rem;">
+    <!-- mirrors the doc page: the plain teaser, one in an aura with a ratio, a poster, content without a control, a link inside -->
+    <section class="teaser" id="t-basic" aria-label="The quarterly report">
+      <button class="play-button" type="button" aria-label="Show the report"></button>
+      <h3 class="teaser-title">The quarterly report</h3>
+      <p class="teaser-text" id="t-basic-text">Loaded when you ask for it.</p>
+      <template class="teaser-content">
+        <div class="report" id="c-basic"><p>Q3 at a glance</p><button type="button" id="c-basic-btn">Details</button></div>
+      </template>
+    </section>
+
+    <div class="aura" id="t-aura-frame" style="--shape-round: var(--radius-xl)">
+      <section class="teaser" id="t-aura" data-ratio="16/9" aria-label="The presentation">
+        <button class="play-button" type="button" data-size="lg" data-pulse aria-label="Start the presentation"></button>
+        <h3 class="teaser-title">Click here to start the presentation!</h3>
+        <p class="teaser-text">Every feature, slide by slide.</p>
+        <template class="teaser-content">
+          <div id="c-aura" style="aspect-ratio:16/9;background:#123;"><a href="#slides" id="c-aura-link">Slides</a></div>
+        </template>
+      </section>
+    </div>
+
+    <section class="teaser" id="t-poster" data-ratio="16/9" aria-label="The product tour">
+      <img class="teaser-media" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect width='16' height='9' fill='%23468'/%3E%3C/svg%3E" alt="">
+      <button class="play-button" type="button" data-variant="glass" aria-label="Play the product tour"></button>
+      <p class="teaser-title" id="t-poster-title">The product tour</p>
+      <template class="teaser-content">
+        <p id="c-poster">The tour plays here.</p>
+      </template>
+    </section>
+
+    <section class="teaser" id="t-plain" aria-label="Plain content">
+      <button class="play-button" type="button" data-size="sm" aria-label="Show the note"></button>
+      <template class="teaser-content">
+        <p id="c-plain">A note without any control.</p>
+      </template>
+    </section>
+
+    <section class="teaser" id="t-link" aria-label="Teaser with a link">
+      <button class="play-button" type="button" aria-label="Show more"></button>
+      <p class="teaser-text">Or <a href="#elsewhere" id="t-link-a">read the summary</a> instead.</p>
+      <template class="teaser-content">
+        <p id="c-link">More.</p>
+      </template>
+    </section>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/teaser/teaser.js"></script>
+  </body>
+</html>

@@ -2368,6 +2368,16 @@ function elementModel(el, runtimeAttrs = []) {
     html: defussQuery()(src).html() ?? ""
   };
 }
+function settleTemplates(root, markup) {
+  if (!markup.includes("<template"))
+    return;
+  const $ = defussQuery();
+  const parsed = $(new DOMParser().parseFromString(markup, "text/html").body).find("template").toArray();
+  $(root).find("template").toArray().forEach((t, i) => {
+    if (parsed[i])
+      t.content.replaceChildren(document.importNode(parsed[i].content, true));
+  });
+}
 function renderModel(model, apply) {
   const $ = defussQuery();
   const node = $(`<${model.tag}></${model.tag}>`);
@@ -2376,6 +2386,8 @@ function renderModel(model, apply) {
   node.html(model.html);
   const host = $("<div></div>").append(node);
   const el = node.get(0);
+  if (el)
+    settleTemplates(el, model.html);
   if (el && apply)
     apply(el);
   return host.html() ?? "";
@@ -4101,6 +4113,7 @@ shadcn.shared = {
   loadTheme,
   elementModel,
   renderModel,
+  settleTemplates,
   componentState,
   bindComponent,
   unbindComponent,
@@ -6900,6 +6913,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=62573E89ADA0A45564756E2164756E21
+//# debugId=7002A263CF6C623564756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

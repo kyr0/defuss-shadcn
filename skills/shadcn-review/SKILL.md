@@ -15,7 +15,7 @@ Scope: the defuss-shadcn specifics of defuss-shadcn 0.9.8. General review - requ
 
 Paths are relative to this file.
 
-- `scripts/markup-check.mjs` - the checker (Node 18 or later, or Bun; no dependencies). Its vocabulary - every class, part, variant, size and custom property of 232 components - is built from this release's stylesheets, scripts and component skills.
+- `scripts/markup-check.mjs` - the checker (Node 18 or later, or Bun; no dependencies). Its vocabulary - every class, part, variant, size and custom property of 234 components - is built from this release's stylesheets, scripts and component skills.
 - `references/rules.md` - the rules every markup follows.
 - `references/guides.md` - the guide pages each judgment below refers to.
 - `references/catalog.md` - every component with its type, states and when to use it.

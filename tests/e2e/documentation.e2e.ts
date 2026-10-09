@@ -330,6 +330,50 @@ try {
     assert.equal(other.maxWidth, 'none', 'a regular page main is still capped');
   });
 
+  await check('the deck rail\'s Fullscreen button: the deck fills the viewport edge to edge, focused', async () => {
+    const viewport = page.viewportSize();
+    await page.setViewportSize({ width: 1680, height: 1000 });
+    await page.goto(`${server.url}${PAGE}`);
+    const btn = page.locator('.deck-rail [data-deck-fullscreen]');
+    await btn.scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => !!document.querySelector('.deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
+    assert.equal(await page.$$eval('.deck-rail iframe', (n) => n.length), 0, 'the deck waits in the teaser - nothing loaded yet');
+    const edges = await page.evaluate(() => [document.querySelector('[data-deck-fullscreen]')!.getBoundingClientRect().right, document.querySelector('.deck-rail-caption')!.getBoundingClientRect().right].map(Math.round));
+    assert.equal(edges[0], edges[1], 'the button sits at the caption\'s end');
+    await btn.click();
+    await page.waitForFunction(() => document.fullscreenElement?.tagName === 'IFRAME', undefined, { timeout: 5_000 });
+    // the deck loads into the fresh frame, then takes focus
+    await page.waitForFunction(() => {
+      const d = (document.fullscreenElement as HTMLIFrameElement | null)?.contentDocument;
+      return !!d && d.activeElement === d.querySelector('.presentation');
+    }, undefined, { timeout: 15_000 });
+    const fs = await page.evaluate(() => {
+      const d = (document.fullscreenElement as HTMLIFrameElement).contentDocument!;
+      const r = d.querySelector('.presentation')!.getBoundingClientRect();
+      return { left: Math.round(r.left), width: Math.round(r.width), viewport: d.documentElement.clientWidth };
+    });
+    assert.deepEqual(fs, { left: 0, width: fs.viewport, viewport: fs.viewport });
+    await page.evaluate(() => document.exitFullscreen());
+    if (viewport) await page.setViewportSize(viewport);
+  });
+
+  await check('the deck rail is a teaser: a click on the card loads the deck in its place, the aura stops', async () => {
+    const viewport = page.viewportSize();
+    await page.setViewportSize({ width: 1680, height: 1000 });
+    await page.goto(`${server.url}${PAGE}`);
+    await page.waitForFunction(() => !!document.querySelector('.deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
+    const box = (await page.locator('.deck-rail .teaser').boundingBox())!;
+    await page.click('.deck-rail .teaser-text');
+    await page.waitForFunction(() => !!(document.querySelector('.deck-rail iframe') as HTMLIFrameElement | null)?.contentDocument?.querySelector('.presentation[data-init]'), undefined, { timeout: 15_000 });
+    const after = await page.evaluate(() => ({
+      h: Math.round(document.querySelector('.deck-rail .teaser')!.getBoundingClientRect().height),
+      aura: getComputedStyle(document.querySelector('.deck-rail .aura')!).animationName,
+    }));
+    assert.ok(Math.abs(after.h - box.height) <= 2, `the swap keeps the rail's height (${box.height} -> ${after.h})`);
+    assert.equal(after.aura, 'none');
+    if (viewport) await page.setViewportSize(viewport);
+  });
+
   // Why: on phones the drawer was `height: calc(100vh - 3.5rem)` - 100vh is the viewport with
   // the browser toolbar HIDDEN, so while the toolbar showed, the drawer's end sat below the
   // screen and its last links were out of the menu's scroll range (reported on a device).

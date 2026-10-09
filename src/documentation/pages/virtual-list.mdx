@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="virtual-list" title="Virtual List" component="virtual-list">
-  A list too long to render. Only the rows on screen exist in the DOM, and their elements are recycled as you scroll - ten rows and ten million cost the same, the frame rate holds, and the last row is reachable even past the browser's element-height cap. One engine for lists and grids; screen readers still hear "row 5,000,099 of 10,000,000". Hand it records instead of a count and a <a href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> source backs it: filters and sorting run locally over every record, and the query lives in the list's store.
+  A list too long to render. Only the rows on screen exist in the DOM, and their elements are recycled as you scroll - ten rows and ten million cost the same, the frame rate holds, and the last row is reachable even past the browser's element-height cap. One engine for lists and grids; screen readers still hear "row 5,000,099 of 10,000,000". Hand it records instead of a count and a <a class="link" href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> source backs it: filters and sorting run locally over every record, and the query lives in the list's store.
 </PageHeader>
 
 <SkillPanel component="virtual-list">
@@ -268,7 +268,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </ul>
   <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/virtual-list-\{state\}.png</code>.</p>
 
-Machine contract - verified against <a href="../schemas/virtual-list.schema.json"><code>virtual-list.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a class="link" href="../schemas/virtual-list.schema.json"><code>virtual-list.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

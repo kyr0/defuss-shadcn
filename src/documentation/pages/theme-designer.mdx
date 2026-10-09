@@ -1,6 +1,6 @@
 ---
 title: "Theme Designer"
-description: "Design your own theme, the tweakcn way, right in the docs: every colour token for light and dark, Google Fonts for sans, serif and mono, radius, letter spacing and shadows - with a live preview of each section's components. Save it by name: it stays in your browser and appears on top of the theme menu; export the CSS to use it anywhere."
+description: "Design your own theme, the tweakcn way, right in the docs: pick a theme, change any colour for light and dark, Google Fonts for sans, serif and mono, radius, shadows, letter spacing and links - with a live preview of every component and the seven example apps. Every change saves as you go to a theme in your browser, on top of the theme menu; export the CSS to use it anywhere."
 slug: "theme-designer"
 ---
 
@@ -9,63 +9,76 @@ import { DocPage, PageHeader, DocLink } from "../lib/components/index";
 <DocPage meta={meta}>
 
 <PageHeader slug="theme-designer" title="Theme Designer" introStyle="max-width:48rem;">
-  Design your own theme, the way <a href="https://tweakcn.com" target="_blank" rel="noopener">tweakcn</a> does - right here. Start from any theme, change colours for light and dark, pick Google Fonts, set the radius and the shadows: the whole site follows as you go. The preview on the right is part of the editor: click a colour to change it, and the Forms &amp; Inputs card holds the roundness, font, letter-spacing and shadow controls. Its tabs show every component at once, or one of the six example apps (Admin Dashboard, Messenger, Issue Tracker, Notes &amp; Docs, Status Page, Desktop) in your theme. Your unsaved draft stays on while you browse the other pages, so you can check every component in it before you save (the theme menu can pause or discard it). Save it by name - it stays in this browser and shows up on top of the theme menu - or export the CSS for your own project (<DocLink href="theming.html">Theming</DocLink> explains the tokens).
+  Design a theme the way <a class="link" href="https://tweakcn.com" target="_blank" rel="noopener">tweakcn</a> does, on this site's own components. Pick a theme to start from: your first change makes it a custom theme that saves as you go, in this browser, on top of the theme menu. Export the CSS for your project (<DocLink href="theming.html">Theming</DocLink> explains the tokens).
 </PageHeader>
 
 <div class="td" data-theme-designer>
   <div class="td-bar" role="toolbar" aria-label="Theme designer">
-    <label class="td-from"><span class="sr-only">Start from</span><select class="select" data-td-from aria-label="Start from a theme"></select></label>
-    <div class="toggle-group td-mode" role="group" aria-label="Edit the light or the dark palette" data-type="single" data-variant="outline" data-td-mode>
-      <button class="toggle" type="button" aria-pressed="true" value="light"><i data-lucide="sun"></i> Light</button>
-      <button class="toggle" type="button" aria-pressed="false" value="dark"><i data-lucide="moon"></i> Dark</button>
-    </div>
     <span class="td-bar-group">
-      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-undo aria-label="Undo" title="Undo (Ctrl+Z)" disabled><i data-lucide="undo-2"></i></button>
-      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-redo aria-label="Redo" title="Redo (Ctrl+Shift+Z)" disabled><i data-lucide="redo-2"></i></button>
-      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-reset title="Back to the theme you started from"><i data-lucide="rotate-ccw"></i> Reset</button>
+      <label class="td-from"><span class="sr-only">Theme</span><select class="select" data-td-from aria-label="The theme you design"></select></label>
+      <button class="btn" data-variant="outline" data-size="icon-sm" type="button" data-td-duplicate aria-label="Duplicate this theme" title="Duplicate this theme"><i data-lucide="copy"></i></button>
     </span>
-    <span class="td-spacer"></span>
+    <span class="td-bar-group">
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-undo aria-label="Back" title="Back (Ctrl+Z)" disabled><i data-lucide="undo-2"></i></button>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-redo aria-label="Next" title="Next (Ctrl+Shift+Z)" disabled><i data-lucide="redo-2"></i></button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-reset title="Back to the theme as it was when you opened it"><i data-lucide="rotate-ccw"></i> Reset</button>
+    </span>
+    <span class="td-bar-group">
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-rename><i data-lucide="pencil"></i> Rename</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-td-delete><i data-lucide="trash-2"></i> Delete</button>
+    </span>
+    <span class="td-status" data-td-status aria-live="polite"></span>
     <span class="td-bar-group">
       <button class="btn" data-variant="outline" data-size="sm" type="button" data-td-import><i data-lucide="file-up"></i> Import</button>
       <button class="btn" data-variant="outline" data-size="sm" type="button" data-td-export><i data-lucide="code"></i> Export</button>
     </span>
-    <form class="td-save" data-td-save>
-      <label class="sr-only" for="td-name">Theme name</label>
-      <input class="input" id="td-name" name="name" placeholder="Name your theme" required maxlength="40" autocomplete="off" />
-      <button class="btn" data-size="sm" type="submit"><i data-lucide="save"></i> Save</button>
-    </form>
+    <span class="td-bar-group">
+      <button class="btn" data-variant="ghost" data-size="icon-sm" type="button" data-td-mode-toggle aria-label="Switch light and dark" title="Light / dark"><i data-lucide="sun-moon"></i></button>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-td-fullscreen><i data-lucide="maximize"></i> <span>Fullscreen</span></button>
+    </span>
   </div>
 
-  <div class="td-main">
-    <div class="td-panel" aria-label="Theme settings">
-      <div class="tabs td-tabs">
-        <div class="tab-list" role="tablist" aria-label="Settings">
-          <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="td-p-colors" id="td-t-colors">Colors</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-p-saved" id="td-t-saved" tabindex="-1">Saved</button>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-p-colors" aria-labelledby="td-t-colors" tabindex="0"><div data-td-colors></div></div>
-        <div class="tab-content" role="tabpanel" id="td-p-saved" aria-labelledby="td-t-saved" tabindex="0" hidden><div data-td-saved></div></div>
+  <section class="td-settings" aria-label="Theme settings">
+    <div class="tabs td-tabs">
+      <div class="tab-list" role="tablist" aria-label="Settings" data-size="sm">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="td-p-colors" id="td-t-colors">Colors</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-p-fonts" id="td-t-fonts" tabindex="-1">Fonts</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-p-shape" id="td-t-shape" tabindex="-1">Shape</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-p-shadows" id="td-t-shadows" tabindex="-1">Shadows</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-p-type" id="td-t-type" tabindex="-1">Typography</button>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-p-colors" aria-labelledby="td-t-colors" tabindex="0">
+        <p class="td-hint">Click a colour to change it. You edit the palette the page shows, light or dark - as the light / dark switch is set.</p>
+        <div class="td-palette" data-td-palette role="group" aria-label="Palette"></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-p-fonts" aria-labelledby="td-t-fonts" tabindex="0" hidden><div class="td-pane" data-td-pane="fonts"></div></div>
+      <div class="tab-content" role="tabpanel" id="td-p-shape" aria-labelledby="td-t-shape" tabindex="0" hidden><div class="td-pane" data-td-pane="shape"></div></div>
+      <div class="tab-content" role="tabpanel" id="td-p-shadows" aria-labelledby="td-t-shadows" tabindex="0" hidden><div class="td-pane" data-td-pane="shadows"></div></div>
+      <div class="tab-content" role="tabpanel" id="td-p-type" aria-labelledby="td-t-type" tabindex="0" hidden><div class="td-pane" data-td-pane="type"></div></div>
+    </div>
+    <div class="popover td-chip-pop" id="td-chip-pop" popover>
+      <div class="popover-header"><p class="popover-title"></p><p class="popover-description"></p></div>
+      <div class="popover-content"></div>
+      <div class="td-notation">
+        <span class="td-hint">The picker writes</span>
+        <label class="swap" title="OKLCH or HEX"><input type="checkbox" data-td-notation aria-label="The picker writes HEX instead of OKLCH" /><span class="swap-on">HEX</span><span class="swap-off">OKLCH</span></label>
       </div>
     </div>
+  </section>
 
-    <div class="td-preview" aria-label="Live preview">
-      <p class="td-hint">Click a colour to change it. The Forms &amp; Inputs card is the rest of the editor: roundness, fonts, letter spacing and shadows.</p>
-      <div class="td-palette" data-td-palette role="group" aria-label="Palette"></div>
-      <div class="popover td-chip-pop" id="td-chip-pop" popover>
-        <div class="popover-header"><p class="popover-title"></p><p class="popover-description"></p></div>
-        <div class="popover-content"></div>
+  <section class="td-preview" aria-label="Live preview">
+    <div class="tabs td-views">
+      <div class="tab-list" role="tablist" aria-label="Preview" data-size="sm">
+        <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="td-v-components" id="td-vt-components">All Components</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-admin-dashboard" id="td-vt-admin-dashboard" tabindex="-1">Admin Dashboard</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-messenger" id="td-vt-messenger" tabindex="-1">Messenger</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-issue-tracker" id="td-vt-issue-tracker" tabindex="-1">Issue Tracker</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-notes" id="td-vt-notes" tabindex="-1">Notes &amp; Docs</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-status-page" id="td-vt-status-page" tabindex="-1">Status Page</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-desktop" id="td-vt-desktop" tabindex="-1">Desktop</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-document-editor" id="td-vt-document-editor" tabindex="-1">Document Editor</button>
       </div>
-      <div class="tabs td-views">
-        <div class="tab-list" role="tablist" aria-label="Preview" data-size="sm">
-          <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="td-v-components" id="td-vt-components">Components</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-admin-dashboard" id="td-vt-admin-dashboard" tabindex="-1">Admin Dashboard</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-messenger" id="td-vt-messenger" tabindex="-1">Messenger</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-issue-tracker" id="td-vt-issue-tracker" tabindex="-1">Issue Tracker</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-notes" id="td-vt-notes" tabindex="-1">Notes &amp; Docs</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-status-page" id="td-vt-status-page" tabindex="-1">Status Page</button>
-          <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="td-v-desktop" id="td-vt-desktop" tabindex="-1">Desktop</button>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-components" aria-labelledby="td-vt-components" tabindex="0">
+      <div class="tab-content" role="tabpanel" id="td-v-components" aria-labelledby="td-vt-components" tabindex="0">
       <div class="td-cards">
 
         <section class="card td-card" aria-labelledby="tdp-actions">
@@ -93,10 +106,9 @@ import { DocPage, PageHeader, DocLink } from "../lib/components/index";
           </div>
         </section>
 
-        <section class="card td-card td-form-card" aria-labelledby="tdp-forms">
-          <div class="card-header"><h3 class="card-title" id="tdp-forms">Forms &amp; Inputs</h3><p class="card-description">These controls are live - they shape the theme.</p></div>
+        <section class="card td-card" aria-labelledby="tdp-forms">
+          <div class="card-header"><h3 class="card-title" id="tdp-forms">Forms &amp; Inputs</h3><p class="card-description">Inputs, selects, checks and text</p></div>
           <div class="card-content td-stack">
-            <div class="td-form" data-td-form></div>
             <div class="td-form-samples">
               <div class="td-field"><label class="label" for="tdp-email">Email</label><input class="input" id="tdp-email" type="email" placeholder="you@example.com" /></div>
               <div class="td-field"><label class="label" for="tdp-plan">Plan</label><select class="select" id="tdp-plan"><option>Pro</option><option>Team</option><option>Enterprise</option></select></div>
@@ -258,36 +270,39 @@ import { DocPage, PageHeader, DocLink } from "../lib/components/index";
           <div class="card-content td-type">
             <p class="td-type-h">The quick brown fox jumps over the lazy dog</p>
             <p>Body text in the sans font: themes are one identity in two palettes - the same shape, the same type, light and dark.</p>
+            <p>A <a class="link" href="theming.html">link in running text</a> takes the line and the offset from the Typography settings.</p>
             <blockquote class="td-type-serif">"Design is not just what it looks like and feels like. Design is how it works."</blockquote>
             <pre class="td-type-mono"><code>--primary: oklch(0.205 0.005 285);</code></pre>
           </div>
         </section>
 
       </div>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-admin-dashboard" aria-labelledby="td-vt-admin-dashboard" tabindex="0" hidden>
-          <div class="td-app" data-td-app="app-admin-dashboard.html" data-title="Admin Dashboard"><a class="btn" data-variant="outline" data-size="sm" href="app-admin-dashboard.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Admin Dashboard full screen</a></div>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-messenger" aria-labelledby="td-vt-messenger" tabindex="0" hidden>
-          <div class="td-app" data-td-app="app-messenger.html" data-title="Messenger"><a class="btn" data-variant="outline" data-size="sm" href="app-messenger.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Messenger full screen</a></div>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-issue-tracker" aria-labelledby="td-vt-issue-tracker" tabindex="0" hidden>
-          <div class="td-app" data-td-app="app-issue-tracker.html" data-title="Issue Tracker"><a class="btn" data-variant="outline" data-size="sm" href="app-issue-tracker.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Issue Tracker full screen</a></div>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-notes" aria-labelledby="td-vt-notes" tabindex="0" hidden>
-          <div class="td-app" data-td-app="app-notes.html" data-title="Notes &amp; Docs"><a class="btn" data-variant="outline" data-size="sm" href="app-notes.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Notes &amp; Docs full screen</a></div>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-status-page" aria-labelledby="td-vt-status-page" tabindex="0" hidden>
-          <div class="td-app" data-td-app="app-status-page.html" data-title="Status Page"><a class="btn" data-variant="outline" data-size="sm" href="app-status-page.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Status Page full screen</a></div>
-        </div>
-        <div class="tab-content" role="tabpanel" id="td-v-desktop" aria-labelledby="td-vt-desktop" tabindex="0" hidden>
-          <div class="td-app" data-td-app="app-desktop.html" data-title="Desktop"><a class="btn" data-variant="outline" data-size="sm" href="app-desktop.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Desktop full screen</a></div>
-        </div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-admin-dashboard" aria-labelledby="td-vt-admin-dashboard" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-admin-dashboard.html" data-title="Admin Dashboard"><a class="btn" data-variant="outline" data-size="sm" href="app-admin-dashboard.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Admin Dashboard full screen</a></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-messenger" aria-labelledby="td-vt-messenger" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-messenger.html" data-title="Messenger"><a class="btn" data-variant="outline" data-size="sm" href="app-messenger.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Messenger full screen</a></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-issue-tracker" aria-labelledby="td-vt-issue-tracker" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-issue-tracker.html" data-title="Issue Tracker"><a class="btn" data-variant="outline" data-size="sm" href="app-issue-tracker.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Issue Tracker full screen</a></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-notes" aria-labelledby="td-vt-notes" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-notes.html" data-title="Notes &amp; Docs"><a class="btn" data-variant="outline" data-size="sm" href="app-notes.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Notes &amp; Docs full screen</a></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-status-page" aria-labelledby="td-vt-status-page" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-status-page.html" data-title="Status Page"><a class="btn" data-variant="outline" data-size="sm" href="app-status-page.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Status Page full screen</a></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-desktop" aria-labelledby="td-vt-desktop" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-desktop.html" data-title="Desktop"><a class="btn" data-variant="outline" data-size="sm" href="app-desktop.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Desktop full screen</a></div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="td-v-document-editor" aria-labelledby="td-vt-document-editor" tabindex="0" hidden>
+        <div class="td-app" data-td-app="app-document-editor.html" data-title="Document Editor"><a class="btn" data-variant="outline" data-size="sm" href="app-document-editor.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Document Editor full screen</a></div>
       </div>
     </div>
-  </div>
+  </section>
 
-  {/* export and import */}
+  {/* export, import and rename */}
   <dialog class="dialog td-dialog" id="td-export" role="dialog" aria-modal="true" aria-labelledby="td-export-title">
     <div class="dialog-content">
       <div class="dialog-header"><h2 class="dialog-title" id="td-export-title">Export theme</h2><p class="dialog-description">Drop it in after the token file - the same shape tweakcn exports.</p></div>
@@ -305,6 +320,16 @@ import { DocPage, PageHeader, DocLink } from "../lib/components/index";
         <p class="td-muted" data-td-import-error hidden>No theme tokens found in that CSS.</p>
       </div>
       <div class="dialog-footer"><button class="btn" data-variant="outline" type="button" data-dialog-close>Cancel</button><button class="btn" type="submit">Import</button></div>
+    </form>
+  </dialog>
+  <dialog class="dialog td-dialog" id="td-rename" role="dialog" aria-modal="true" aria-labelledby="td-rename-title">
+    <form class="dialog-content" method="dialog" data-td-rename-form>
+      <div class="dialog-header"><h2 class="dialog-title" id="td-rename-title">Rename theme</h2><p class="dialog-description">The name it shows in the select box and on top of the theme menu.</p></div>
+      <div class="dialog-body td-dialog-body">
+        <label class="label" for="td-rename-name">Name</label>
+        <input class="input" id="td-rename-name" name="name" required maxlength="40" autocomplete="off" />
+      </div>
+      <div class="dialog-footer"><button class="btn" data-variant="outline" type="button" data-dialog-close>Cancel</button><button class="btn" type="submit">Rename</button></div>
     </form>
   </dialog>
 </div>

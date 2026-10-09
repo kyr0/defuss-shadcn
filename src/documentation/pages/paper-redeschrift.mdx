@@ -9,7 +9,7 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
 <DocPage meta={meta}>
 
 <PageHeader slug="paper-redeschrift" title="Redeschrift 1.0" component="paper">
-  A paper on a real model - <a href="https://huggingface.co/kyr0/redeschrift-1.0" target="_blank" rel="noopener">Redeschrift 1.0</a>, German speech recognition on the CPU - with an <DocLink href="iframe.html">Iframe</DocLink> at its centre. The framed model card is a page of its own; choosing a variant there sends a message, and the paper around it highlights the row and updates its numbers. Hugging Face sends <code>X-Frame-Options: DENY</code>, so the paper frames its own card and links to the original.
+  A paper on a real model - <a class="link" href="https://huggingface.co/kyr0/redeschrift-1.0" target="_blank" rel="noopener">Redeschrift 1.0</a>, German speech recognition on the CPU - with an <DocLink href="iframe.html">Iframe</DocLink> at its centre. The framed model card is a page of its own; choosing a variant there sends a message, and the paper around it highlights the row and updates its numbers. Hugging Face sends <code>X-Frame-Options: DENY</code>, so the paper frames its own card and links to the original.
 </PageHeader>
 
 ```html example label="Redeschrift 1.0" schema="none" sandbox="links" hint="Choose S, M or L inside the framed model card: it posts { type: 'defuss:iframe', kind: 'message', name: 'variant' } to the paper, the .iframe fires iframe-message, and the paper marks the table row and rewrites its three statistics. The frame follows its content's height (data-fit='content'). Numbers: the model card and ARCH.md on Hugging Face, 12 September 2026."

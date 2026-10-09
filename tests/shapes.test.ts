@@ -166,6 +166,15 @@ describe('shape utilities', () => {
     expect(css(add('aura', '--shape-round: 10px;'), 'border-top-left-radius')).toBe('13px');
   });
 
+  it('aura: around content that has played (a Teaser) the light goes, the frame keeps its size', () => {
+    const ring = add('aura');
+    add('', '', ring).setAttribute('data-played', '');
+    expect([css(ring, 'animation-name'), css(ring, 'padding-top'), css(ring, 'background-image')]).toEqual(['none', '3px', 'none']);
+    const glow = add('aura aura-glow');
+    add('', '', glow).setAttribute('data-played', '');
+    expect(getComputedStyle(glow, '::before').content).toBe('none');
+  });
+
   it('aura styles swap the light, glow moves it into a blurred halo behind', () => {
     const light = (cls: string) => css(add(`aura ${cls}`), 'background-image');
     const all = ['', 'aura-dual', 'aura-rainbow', 'aura-holo', 'aura-gold', 'aura-silver'].map(light);

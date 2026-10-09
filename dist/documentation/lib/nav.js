@@ -101,6 +101,7 @@ export const NAV = [
     { heading: 'Actions', icon: 'mouse-pointer-click', items: [
             { label: 'Button', href: 'button.html' },
             { label: 'FAB', href: 'fab.html', isNew: true },
+            { label: 'Play Button', href: 'play-button.html', isNew: true },
             { label: 'Toggle', href: 'toggle.html' },
             { label: 'Swap', href: 'swap.html', isNew: true },
             { label: 'Toggle Group', href: 'toggle-group.html' },
@@ -148,6 +149,7 @@ export const NAV = [
             { label: 'Diff', href: 'diff.html', isNew: true },
             { label: 'Countdown', href: 'countdown.html', isNew: true },
             { label: 'Card', href: 'card.html' },
+            { label: 'Teaser', href: 'teaser.html', isNew: true },
             {
                 label: 'Image',
                 href: 'image.html',

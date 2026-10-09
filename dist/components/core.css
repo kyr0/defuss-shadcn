@@ -80,6 +80,12 @@
   /* -- Tracking ------------------------------------------------- */
   --tracking-normal:         0em;
 
+  /* -- Links ---------------------------------------------------- */
+  /* not part of the tweakcn export: a tweakcn theme leaves them unset and
+     .link falls back to these same values */
+  --link-text-decoration:    underline;
+  --link-underline-offset:   4px;
+
   /* -- Shadow scale --------------------------------------------- */
   --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs:  0 1px 3px 0px hsl(0 0% 0% / 0.05);

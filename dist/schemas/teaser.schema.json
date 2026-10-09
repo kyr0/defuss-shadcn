@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "teaser",
+  "states": {
+    "played": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".teaser"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "played"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-played"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

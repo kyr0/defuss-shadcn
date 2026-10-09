@@ -153,7 +153,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, H2 } from "../li
 
 <H2 id="order">The order of precedence</H2>
 
-<DocText>For the step being left: (1) the picked option's <code>data-goto</code>; (2) the first rule in <code>branches[step]</code> whose <code>when</code> holds (an empty <code>when</code> always does - a catch-all); (3) <code>data-next</code>; (4) the next <code>.questionnaire-step</code> in the markup. Skipping an optional step takes (3) or (4) - a skipped answer cannot choose a branch. <code>df$.shadcn.questionnaire.nextOf(form, step, answers)</code> evaluates the same order for any answers, and <a href="questionnaire-graph.html">the flow graph page</a> draws every possible edge.</DocText>
+<DocText>For the step being left: (1) the picked option's <code>data-goto</code>; (2) the first rule in <code>branches[step]</code> whose <code>when</code> holds (an empty <code>when</code> always does - a catch-all); (3) <code>data-next</code>; (4) the next <code>.questionnaire-step</code> in the markup. Skipping an optional step takes (3) or (4) - a skipped answer cannot choose a branch. <code>df$.shadcn.questionnaire.nextOf(form, step, answers)</code> evaluates the same order for any answers, and <a class="link" href="questionnaire-graph.html">the flow graph page</a> draws every possible edge.</DocText>
 
 <SourceFiles component="questionnaire" section="css">
   <SourceNote for="css">Branching is behavior - the stylesheet is the questionnaire's.</SourceNote>

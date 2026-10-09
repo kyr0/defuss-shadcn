@@ -985,6 +985,12 @@ The token file must be a pure subset of what TweakCN produces.
 
 **Tracking**: `--tracking-normal`
 
+**Links** (the one exception to the tweakcn shape, a maintainer decision of 2026-10-09):
+`--link-text-decoration` (default `underline`), `--link-underline-offset` (default `4px`) -
+read only by Typography's `.link`, always with the same literal fallback
+(`var(--link-text-decoration, underline)`), so a tweakcn theme that leaves them unset
+renders unchanged. The Theme Designer sets them under Typography.
+
 **Nothing else.** If a value is not on this list, it cannot be a `var(--*)` reference
 in component CSS. Use a literal CSS value instead.
 
@@ -1003,6 +1009,7 @@ in component CSS. Use a literal CSS value instead.
 - Shadow scale: `--shadow-2xs` through `--shadow-2xl`
 - Spacing: `--spacing`
 - Tracking: `--tracking-normal`
+- Links (not in the tweakcn export, see above): `--link-text-decoration`, `--link-underline-offset`
 
 ###### `.dark` block overrides:
 - All color pairs for dark mode
@@ -1048,18 +1055,28 @@ build) adds the interactive behavior on top of the static markup:
   a child of Theming in `nav.ts`), lazy-loaded by site.ts only when a page
   holds `[data-theme-designer]`; SPA navigation away calls
   `docs.leaveThemeDesigner()` (aborts every listener; ends the preview
-  unless a live draft keeps it on). The preview IS the editor: palette
-  chips open one shared `.popover` with that token's colour row (the
-  panel's row markup + wiring - the anchor moves to the clicked chip, since
-  popover.js gives every trigger the same anchor name), and the Forms &
-  Inputs card holds roundness / fonts / letter spacing / shadows (the left
-  panel keeps Colors + Saved). The preview's tabs: every component, then
-  each scaffold app - a same-origin `app-*.html` iframe made when its tab
-  first shows, the theme written into it (`<style id="theme-css">`, inline
-  fonts, `.dark`) on every edit; "full screen" opens a window that follows
-  the edits too
+  unless the edit is saved). No side panel: a bar (the theme select +
+  Duplicate, Back / Next / Reset, Rename / Delete, Import / Export - no Save
+  button, no Light / Dark buttons: the header's switch picks the palette
+  being edited), the settings tabs (Colors - every colour token as a chip;
+  a chip opens one shared `.popover` with that token's colour row and the
+  OKLCH / HEX swap for the picker; the anchor moves to the clicked chip,
+  since popover.js gives every trigger the same anchor name - Fonts, Shape,
+  Shadows, Typography with the link tokens), then the preview tabs: every
+  component, then each scaffold app - a same-origin `app-*.html` iframe made
+  when its tab first shows, the theme written into it (`<style
+  id="theme-css">`, inline fonts, `.dark`) on every edit; "full screen"
+  opens a window that follows the edits too
 
-**Custom themes (Theme Designer contract).** Saved themes live in this
+**Custom themes (Theme Designer contract).** The designer's select box
+applies a theme to the site (`docs.applyTheme`). An edit goes to a CUSTOM
+theme: the first edit of a built-in theme starts "Untitled custom theme"
+(a free name: "... 2", "... 3"), a custom theme changes in place; every edit
+shows at once through `docs.previewTheme(theme)` and saves as you go
+(`docs.customThemes.save` + `docs.applyTheme(id)`, debounced). Duplicate
+saves a copy ("... copy"), Rename re-saves under the new name's id and
+removes the old one, Delete asks twice. Back / Next step through the edit
+history without changing which theme is edited. Saved themes live in this
 browser only: `localStorage['defuss-shadcn-custom-themes']` holds a JSON
 array of theme objects in the SAME shape as `docs.THEMES` presets (`id`
 always `custom-<slug>`, `label`, `styles.{light,dark}` limited to the tweakcn
@@ -1068,10 +1085,11 @@ token whitelist `TOKEN_RE`, `links` VNodes - Google Fonts hosts only, plus
 (`docs.customThemes.{list,get,idFor,save,remove,css,tokenPattern}`; writes
 dispatch `defuss-custom-themes-change`) and applies a custom id as an inline
 `<style id="theme-css">` in the preset `<link>`'s slot - pre-paint, like a
-preset. The designer edits through `docs.previewTheme(theme)` (whole page,
+preset. `docs.previewTheme(theme)` shows an edit before its save (whole page,
 nothing persisted; the slot's `data-theme-id` is `__preview`) and
-`docs.endThemePreview()` restores the stored theme. **The live draft:** a
-designer state that differs from the saved theme is kept as
+`docs.endThemePreview()` restores the stored theme. **The live draft** (the
+earlier designer's unsaved state; the designer no longer writes one, and
+turns one it finds into a custom theme on its next start) is kept as
 `localStorage['defuss-shadcn-theme-draft']` = `{ state, theme, live }`
 (`docs.themeDraft.{get,isLive,set,clear,resume,discard}`, owned by
 theme-switcher.ts; writes dispatch `defuss-theme-draft-change`) and is
@@ -1574,11 +1592,11 @@ The sidebar is ordered by dependency (primitives first):
 1. Introduction (Getting Started, Installation → {Bundles & Downloads}, Vibe Coding / Agentic Engineering, Anatomy of a Component, Component Skills, Verified Agentic Engineering (VAE), Changelog) - Anatomy of a Component (`anatomy.mdx`) shows how one component's parts meet: the tokens it reads, its markup, its stylesheet, its script and the skill + schema that describe it - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
 2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris, Parallax}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Typewriter, Separator, Icon, Kbd, Heading Anchor)
-4. Actions (Button, FAB, Toggle, Swap, Toggle Group, Button Group, Toolbar)
+4. Actions (Button, FAB, Play Button, Toggle, Swap, Toggle Group, Button Group, Toolbar)
 5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Search & Filter, Form)
 6. WYSIWYG Editors (HTML Preview Editor, Editor.js) - editors whose result is shown as it is made; Editor.js (`editorjs`, in the wysiwyg bundle too) wraps the official block editor - pinned jsDelivr ESM builds of `@editorjs/editorjs` + its tools + `marked`, loaded by the first editor on a page (verify's VENDOR_IMPORTS; the e2e serves them from the devDependencies) - with a Markdown source (`script.editorjs-source`, deterministic block ids b1..bn) or Editor.js JSON, Markdown out (`df$.shadcn.editorjs.markdown`), a Toolbar binding (`data-toolbar` + `data-editor-command` buttons; toggles follow the selection) and states default / readonly; HTML Preview Editor is the `code-example` component - the card every live docs example renders in (editable source + sandboxed srcdoc preview + device toolbar / resize handles / zoom / fullscreen + schema-generated State tab + Shiki paint), shipped in the EXTRA bundle `wysiwyg.css` / `wysiwyg.js` (scripts/lib/bundles.ts), never in all.*; states default / code / state / fullscreen `{ source, panel }`, `el.preview` drives the previewed component, `df$.shadcn.codeExample.configure({ styles, scripts, tail, theme, highlight })` sets the preview assets (default: the page's own sheets + inlined all/core bundle); its page nests cards (a source containing a .code-example gets wysiwyg.js and the assets handed down)
 7. Questionnaire (Questionnaire, Branching, Validation, Drafts & History, Dependent Answers, Flow Graph) - a branching step-flow controller over one native <form>: <fieldset> steps in blocks, the flow a graph (option data-goto → rules' branches → data-next → markup order), per-step validation (native constraints, data-min/-max, cross-field asserts, configure() functions), a branch history (Back walks the steps taken), dependent-answer invalidation (orphans by reachability + data-depends-on), a persisted draft (session by default - viewPersistence), analyze() (missing targets, cycles, dead ends, unreachable steps, dominator-based "field may be unanswered" warnings) and toMermaid(); the topic pages are NavItem type 'MOL' and embed the questionnaire's sources
-8. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Image → {Image Gallery}, Statistic, Table, Collapsible, Timeline, Tree View, Calendar)
+8. Data Display (Badge, Avatar, Indicator, Diff, Countdown, Card, Teaser, Image → {Image Gallery}, Statistic, Table, Collapsible, Timeline, Tree View, Calendar)
 9. Big Data (Virtual List, Data Tree, Data Grid, Tree Grid, Autocomplete) - records by the hundred thousand: windowed DOM, every query local over all rows through defuss-dataview (see "Big data"); Tree Grid is the Data Grid with `data-parent-field` (a `type: 'ATM'` nav page, sources of data-grid)
 10. Charts (Chart, Comparison, Change over time, Distribution, Composition, Election, Narrative)
 11. Diagrams (Illustrative Diagrams → {Architecture, Flow, State (+ complex state), State Lifecycle, ER (+ database schema), Timeline, Swimlane, Nested, Organigram, Layers, Loop, Data Lake, Medallion, High-level, High-level Parametric, Process, Data Flow, Topology, Matrix, Fishbone, Wardley Map, Kanban, User Journey, Deployment, Dependency Graph, UML Class, Story Map, Sequence, Quadrant, Policy Trace}, Mermaid) - Illustrative Diagrams is the dependency-free `diagram` component, meant to be written by agents as illustration (plain HTML nodes on a grid / free / radial canvas + an `<ol class="diagram-edges">`, wires drawn into an SVG layer from the measured layout; visual grammar adapted from cathrynlavery/diagram-design, MIT; theme colors only - chart colors for accent / changes -, the theme's radius (wire elbows too) and monospace); every type page shows the diagram, the same diagram revealed step by step (`data-steps`), an interactive twin (`data-interactive` + declarative outside controls `data-diagram-for` / `data-diagram-action` / `<output data-diagram-for>`; state `active`), multi-edge flow where the type moves data (`data-flow` / `-tokens` / `-delay`) and a before/changes/after delta (`data-delta` + `data-change`); no label or text sits under a wire or over a box (labels and dot names are placed around boxes, text and other wires; the e2e "readability" check pins it; nothing drawn - zones, labels, wires - comes closer than 20px to a framed canvas's border: diagram.ts CLEARANCE grows the padding or the absolute insets, the e2e "clearance" check pins it); High-level Parametric renders JSON specs (`script.diagram-spec`, `df$.shadcn.diagram.build`); a ```diagram fence in ARCH.md is such a spec (lib/arch-md.ts - the architecture page's proof loop). Every node / edge is plain JSON through `df$.shadcn.diagram.properties / propertySchema / setProperties` - each type page's "Inspect and edit" example binds it to a Property Grid in a closable Panel. On a presentation slide a diagram takes the slide's palette and `data-autoplay="ms"` replays on every arrival (Parliament Hemicycle, Sankey, Story State Machine and Bump Ranking carry one diagram slide; the flagship deck carries two on two slides - the loop (the report's Figure 1) and this repository's proof loop (ARCH.md) - one pitch slide per skill and a defuss-vae slide with the map of both skill families (the same figure on the Vibe Coding page)). Mermaid renders text-first diagrams; a ```mermaid fence in any MDX page or ARCH.md renders through the same component (lib/mdx-example.ts, lib/arch-md.ts)

@@ -625,6 +625,22 @@ test('accordion state contract: the CodeExample card exposes the schema State AP
   await waitFor(() => mirrored()['all-open'] === false, 'default clears all-open');
 });
 
+test('teaser state contract: the CodeExample card plays the sandbox teaser and brings it back', async () => {
+  // the sandbox is opaque (sandbox="allow-scripts"): the host-side contract is
+  // the card's bound preview api + its mirrored data-state-values; the click,
+  // focus and morph behavior is pinned in tests/e2e/teaser.e2e.ts
+  const { doc } = await openDocPage('teaser.html');
+  const card = doc.querySelector('.code-example[data-component="teaser"]') as HTMLElement & {
+    preview?: { setState(name: string, config?: Record<string, unknown>): void };
+  };
+  await waitFor(() => card?.preview, 'teaser example card to boot its sandbox');
+  const mirrored = (): Record<string, unknown> => JSON.parse(card.dataset.stateValues || '{}') as Record<string, unknown>;
+  card.preview!.setState('played');
+  await waitFor(() => mirrored().played === true, 'played to mirror onto the card');
+  card.preview!.setState('default');
+  await waitFor(() => mirrored().played === false, 'default brings the teaser back');
+});
+
 test('presentation state contract: the CodeExample card drives the sandbox deck end to end', async () => {
   // same contract shape as the accordion test: the opaque sandbox is driven
   // through the host card's api; the mirrored data-state-values is assertable.

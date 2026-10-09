@@ -731,6 +731,13 @@
       opacity: 0.9;
     }
   }
+  /* an aura around content that has played (a Teaser: [data-played]) has
+     done its job - the light goes; the ring's room stays, so nothing moves */
+  :where(.aura):has(> [data-played]) {
+    background: none;
+    animation: none;
+  }
+  :where(.aura-glow):has(> [data-played])::before { content: none; }
   :where(.aura-xs) { --_aura-w: 1px; }
   :where(.aura-sm) { --_aura-w: 2px; }
   :where(.aura-md) { --_aura-w: 3px; }

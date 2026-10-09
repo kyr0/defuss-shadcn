@@ -59,6 +59,7 @@ import {
   scrollIntoViewTop,
   elementModel,
   renderModel,
+  settleTemplates,
   SHARED_ABI,
 } from '../shared/index.js';
 
@@ -84,6 +85,7 @@ type ShadcnNamespace = {
     loadTheme: typeof loadTheme;
     elementModel: typeof elementModel;
     renderModel: typeof renderModel;
+    settleTemplates: typeof settleTemplates;
     componentState: typeof componentState;
     bindComponent: typeof bindComponent;
     unbindComponent: typeof unbindComponent;
@@ -162,6 +164,7 @@ shadcn.shared = {
   // render() machinery (src/shared/render.ts): markup model + state render
   elementModel,
   renderModel,
+  settleTemplates,
   // the State API on a store per element (src/shared/component-state.ts)
   componentState,
   bindComponent,

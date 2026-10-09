@@ -9,14 +9,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="theming" title="Theming" introStyle="max-width:38rem;">
-  The theme is defined by semantic tokens - CSS custom properties that match the <a href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn.com</a> export format. Design a theme in the Theme Designer (or on tweakcn), load its <code>:root</code> and <code>.dark</code> blocks after <code>default-semantic-tokens.css</code>, and every component rethemes instantly.
+  The theme is defined by semantic tokens - CSS custom properties that match the <a class="link" href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn.com</a> export format. Design a theme in the Theme Designer (or on tweakcn), load its <code>:root</code> and <code>.dark</code> blocks after <code>default-semantic-tokens.css</code>, and every component rethemes instantly.
 </PageHeader>
 
 <div class="alert td-callout mb-10" role="note">
   <i data-lucide="paintbrush" class="alert-icon"></i>
   <div class="alert-content">
     <h5 class="alert-title">Design your own theme</h5>
-    <p class="alert-description">The Theme Designer edits every token on this site's own components and its six example apps, live - colours for light and dark, Google Fonts, radius, shadows. Save it by name to this site's theme menu, or export the CSS for your project.</p>
+    <p class="alert-description">The Theme Designer edits every token on this site's own components and its seven example apps, live - colours for light and dark, Google Fonts, radius, shadows, letter spacing and links. Every change saves as you go to a custom theme on this site's theme menu; export the CSS for your project.</p>
   </div>
   <div class="alert-action">
     <a class="btn nav-link" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Open the Theme Designer</a>
@@ -235,7 +235,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <h3 style="font-size:1rem;font-weight:500;margin:0 0 0.375rem;">1. Swap the entire theme</h3>
     <p class="text-sm text-muted-foreground mb-3">Design the theme, export its <code>:root</code> and <code>.dark</code> CSS variable blocks, and load them after (or instead of) <code>default-semantic-tokens.css</code>. Every component updates instantly. Two tools write that shape:</p>
     <ul class="text-sm text-muted-foreground mb-4 td-ways">
-      <li><strong>The <DocLink href="theme-designer.html">Theme Designer</DocLink> (recommended)</strong> - built into these docs. You see the theme on <em>this</em> system's components while you design it: the whole site follows every edit, and a preview shows a sample of every section at once - or a whole example app (Admin Dashboard, Messenger, Issue Tracker, Notes & Docs, Status Page, Desktop) - and doubles as the editor: click a colour to change it. Contrast badges flag text that fails WCAG AA on its surface; the radius is the same in light and dark (as every theme here must be); any Google Font can be picked, and the export carries its <code>@import</code>. Save a theme by name and it sits on top of this site's theme menu, in your browser - or import a tweakcn export and refine it here.</li>
+      <li><strong>The <DocLink href="theme-designer.html">Theme Designer</DocLink> (recommended)</strong> - built into these docs. You see the theme on <em>this</em> system's components while you design it: the whole site follows every edit, and a preview shows a sample of every section at once - or a whole example app (Admin Dashboard, Messenger, Issue Tracker, Notes & Docs, Status Page, Desktop, Document Editor) - and the settings sit in tabs above it: click a colour to change it. Contrast badges flag text that fails WCAG AA on its surface; the radius is the same in light and dark (as every theme here must be); any Google Font can be picked, and the export carries its <code>@import</code>. Your first edit of a built-in theme starts a custom theme, every change saves as you go, and it sits on top of this site's theme menu, in your browser - Duplicate copies a theme, Rename names it - or import a tweakcn export and refine it here.</li>
       <li><strong><DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink></strong> - works too: its exports use the same token names, so they drop in unchanged. Its preview renders shadcn/ui's React components, not these, so check the result here (paste it into the designer's Import).</li>
     </ul>
     <a class="btn nav-link" data-variant="outline" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Open the Theme Designer</a>
@@ -251,7 +251,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <H2>Theme files</H2>
 
-<p class="text-sm text-muted-foreground mb-5">Every <a href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn</a> preset ships as a generated stylesheet in <code>{"dist/theme/<id>.css"}</code> - the same <code>:root</code> + <code>.dark</code> token shape as <code>default-semantic-tokens.css</code>. Link one <em>instead of</em> the token file to ship a fixed theme:</p>
+<p class="text-sm text-muted-foreground mb-5">Every <a class="link" href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn</a> preset ships as a generated stylesheet in <code>{"dist/theme/<id>.css"}</code> - the same <code>:root</code> + <code>.dark</code> token shape as <code>default-semantic-tokens.css</code>. Link one <em>instead of</em> the token file to ship a fixed theme:</p>
 
 <CodeWindow lang="html" title="ship a preset" code={"<!-- instead of theme/utils/default-semantic-tokens.css -->\n<link rel=\"stylesheet\" href=\"theme/claude.css\" />"} />
 

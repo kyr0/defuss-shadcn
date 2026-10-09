@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="editorjs" title="Editor.js" component="editorjs">
-  The official <a href="https://editorjs.io" target="_blank" rel="noopener">Editor.js</a> block editor as a component: write the document as Markdown (or as Editor.js JSON) inside the element, the runtime loads the pinned builds of the editor and its tools on the first editor of a page, mounts it in the theme's tokens and hands the document back as Markdown or as blocks. A <DocLink href="toolbar.html">Toolbar</DocLink> drives the formatting through <code>data-editor-command</code> buttons. The <DocLink href="scaffold-document-editor.html">Document Editor</DocLink> scaffold builds a Google-Docs-style editor with a comment column on it.
+  The official <a class="link" href="https://editorjs.io" target="_blank" rel="noopener">Editor.js</a> block editor as a component: write the document as Markdown (or as Editor.js JSON) inside the element, the runtime loads the pinned builds of the editor and its tools on the first editor of a page, mounts it in the theme's tokens and hands the document back as Markdown or as blocks. A <DocLink href="toolbar.html">Toolbar</DocLink> drives the formatting through <code>data-editor-command</code> buttons. The <DocLink href="scaffold-document-editor.html">Document Editor</DocLink> scaffold builds a Google-Docs-style editor with a comment column on it.
 </PageHeader>
 
 <SkillPanel component="editorjs">
@@ -192,7 +192,7 @@ A document loaded from the textarea above - with a list:
   </ul>
   <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/editorjs-\{state\}.png</code>.</p>
 
-Machine contract - verified against <a href="../schemas/editorjs.schema.json"><code>editorjs.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a class="link" href="../schemas/editorjs.schema.json"><code>editorjs.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

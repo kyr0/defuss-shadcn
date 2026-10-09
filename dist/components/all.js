@@ -2368,6 +2368,16 @@ function elementModel(el, runtimeAttrs = []) {
     html: defussQuery()(src).html() ?? ""
   };
 }
+function settleTemplates(root, markup) {
+  if (!markup.includes("<template"))
+    return;
+  const $ = defussQuery();
+  const parsed = $(new DOMParser().parseFromString(markup, "text/html").body).find("template").toArray();
+  $(root).find("template").toArray().forEach((t, i) => {
+    if (parsed[i])
+      t.content.replaceChildren(document.importNode(parsed[i].content, true));
+  });
+}
 function renderModel(model, apply) {
   const $ = defussQuery();
   const node = $(`<${model.tag}></${model.tag}>`);
@@ -2376,6 +2386,8 @@ function renderModel(model, apply) {
   node.html(model.html);
   const host = $("<div></div>").append(node);
   const el = node.get(0);
+  if (el)
+    settleTemplates(el, model.html);
   if (el && apply)
     apply(el);
   return host.html() ?? "";
@@ -4101,6 +4113,7 @@ shadcn.shared = {
   loadTheme,
   elementModel,
   renderModel,
+  settleTemplates,
   componentState,
   bindComponent,
   unbindComponent,
@@ -21020,9 +21033,67 @@ function init51() {
 init51();
 new MutationObserver(init51).observe(document, { childList: true, subtree: true });
 
-// src/components/navigation/theme-switcher/theme-switcher.ts
+// src/components/data-display/teaser/teaser.ts
 var df$52 = defussGlobals();
 var dfDollar51 = defussQuery();
+var teaserStates = ["default", "played"];
+function partsOf2(el) {
+  const template = dfDollar51(el).find("template.teaser-content");
+  return { teaser: dfDollar51(el).html() ?? "", content: template.length ? template.html() ?? "" : "" };
+}
+function applyMarkup49(el, stateName, parts) {
+  const played = stateName === "played";
+  if (played === el.hasAttribute("data-played"))
+    return;
+  const markup = played ? parts.content : parts.teaser;
+  dfDollar51(el).morph(markup);
+  settleTemplates(el, markup);
+  dfDollar51(el).attr("data-played", played ? "" : null);
+}
+function triggerStateChange52(el, stateName) {
+  applyMarkup49(el, stateName, el._teaser ?? partsOf2(el));
+}
+var teaserApi = componentState({
+  component: "teaser",
+  states: teaserStates,
+  apply: (el, state) => triggerStateChange52(el, state.name),
+  read: (el, state) => ({ name: el.hasAttribute("data-played") ? "played" : "default", config: state.config }),
+  markup: (el, state) => applyMarkup49(el, state.name, partsOf2(el))
+});
+df$52.teaserApi = teaserApi;
+df$52.teaserStates = teaserStates;
+function focusContent(el) {
+  const first = dfDollar51(el).find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])').get(0);
+  if (first) {
+    first.focus({ preventScroll: true });
+    return;
+  }
+  dfDollar51(el).attr("tabindex", "-1");
+  el.focus({ preventScroll: true });
+}
+function init52() {
+  dfDollar51(".teaser:not([data-init])").each((_i, node) => {
+    const el = node;
+    dfDollar51(el).data("init", "");
+    el._teaser = partsOf2(el);
+    bindComponent(el, teaserApi, { name: el.hasAttribute("data-played") ? "played" : "default", config: {} });
+    dfDollar51(el).on("click", (e) => {
+      if (el.hasAttribute("data-played"))
+        return;
+      const control = e.target.closest("a, button, input, select, textarea, summary, [contenteditable]");
+      if (control && el.contains(control) && !control.matches(".play-button"))
+        return;
+      teaserApi.setState(el, "played");
+      focusContent(el);
+    });
+  });
+}
+init52();
+new MutationObserver(init52).observe(document, { childList: true, subtree: true });
+
+// src/components/navigation/theme-switcher/theme-switcher.ts
+var df$53 = defussGlobals();
+var dfDollar52 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
 var LINK_ID = "theme-css";
@@ -21032,13 +21103,13 @@ var remembered = () => chosen ??= persisted(STORAGE_KEY, "default");
 function themeHref(root, id) {
   if (root.dataset.themeBase)
     return `${root.dataset.themeBase}/${id}.css`;
-  const tokens = dfDollar51("#tokens-css").get(0) || dfDollar51('link[href*="default-semantic-tokens.css"]').get(0);
+  const tokens = dfDollar52("#tokens-css").get(0) || dfDollar52('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
     return new URL(`../${id}.css`, tokens.href).href;
   return `${id}.css`;
 }
 function applyThemeId(root, id) {
-  let link = dfDollar51("#" + CSS.escape(LINK_ID)).get(0);
+  let link = dfDollar52("#" + CSS.escape(LINK_ID)).get(0);
   if (!id || id === "default") {
     link?.remove();
     remembered().set("default");
@@ -21060,11 +21131,11 @@ function applyThemeId(root, id) {
   link.rel = "stylesheet";
   link.dataset.themeId = id;
   link.href = themeHref(root, id);
-  const tokens = dfDollar51("#tokens-css").get(0) || dfDollar51('link[href*="default-semantic-tokens.css"]').get(0);
+  const tokens = dfDollar52("#tokens-css").get(0) || dfDollar52('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
-    dfDollar51(tokens).after(link);
+    dfDollar52(tokens).after(link);
   else
-    dfDollar51(document.head).append(link);
+    dfDollar52(document.head).append(link);
   loadTheme(id, themeHref(root, id).replace(/\.css(?=$|[?#])/, ".json")).catch(() => {
     return;
   });
@@ -21072,24 +21143,24 @@ function applyThemeId(root, id) {
   document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
 function syncTrigger(root, id) {
-  const $root = dfDollar51(root);
+  const $root = dfDollar52(root);
   const trigger = $root.find(".theme-switcher-trigger")[0];
   const items = Array.from($root.find(".theme-switcher-item"));
   const active = items.find((i) => i.dataset.themeId === id);
-  items.forEach((i) => dfDollar51(i).attr("aria-checked", i === active ? "true" : "false"));
+  items.forEach((i) => dfDollar52(i).attr("aria-checked", i === active ? "true" : "false"));
   if (!trigger)
     return;
-  const dot = dfDollar51(trigger).find(".theme-switcher-dot")[0];
-  const label = dfDollar51(trigger).find(".theme-switcher-label")[0];
+  const dot = dfDollar52(trigger).find(".theme-switcher-dot")[0];
+  const label = dfDollar52(trigger).find(".theme-switcher-label")[0];
   const first = active?.dataset.themeColors?.split(",")[0]?.trim();
   if (dot)
-    dfDollar51(dot).css("background", first || "");
+    dfDollar52(dot).css("background", first || "");
   if (label && (active || id === "default"))
-    dfDollar51(label).text(active?.dataset.themeLabel || "Default");
+    dfDollar52(label).text(active?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function applyMarkup49(_el, _stateName) {}
-function triggerStateChange52(menu, stateName, _config) {
+function applyMarkup50(_el, _stateName) {}
+function triggerStateChange53(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -21104,8 +21175,8 @@ function triggerStateChange52(menu, stateName, _config) {
 var themeSwitcherApi = Object.assign(componentState({
   component: "theme-switcher",
   states: themeSwitcherStates,
-  apply: (menu, state) => triggerStateChange52(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup49(el, state.name)
+  apply: (menu, state) => triggerStateChange53(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup50(el, state.name)
 }), {
   select(menu, id) {
     const root = menu.closest(".theme-switcher");
@@ -21114,22 +21185,22 @@ var themeSwitcherApi = Object.assign(componentState({
     applyThemeId(root, id);
   }
 });
-df$52.themeSwitcherApi = themeSwitcherApi;
-df$52.themeSwitcherStates = themeSwitcherStates;
-function init52() {
-  dfDollar51(".theme-switcher-menu:not([data-init])").toArray().forEach((menu) => {
+df$53.themeSwitcherApi = themeSwitcherApi;
+df$53.themeSwitcherStates = themeSwitcherStates;
+function init53() {
+  dfDollar52(".theme-switcher-menu:not([data-init])").toArray().forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
-    const trigger = (root ? dfDollar51(root).find(".theme-switcher-trigger").get(0) : undefined) ?? (menu.id && dfDollar51(`[popovertarget="${menu.id}"]`).get(0));
-    const getItems = () => Array.from(dfDollar51(menu).find(".theme-switcher-item").toArray());
+    const trigger = (root ? dfDollar52(root).find(".theme-switcher-trigger").get(0) : undefined) ?? (menu.id && dfDollar52(`[popovertarget="${menu.id}"]`).get(0));
+    const getItems = () => Array.from(dfDollar52(menu).find(".theme-switcher-item").toArray());
     if (trigger) {
       const anchorId = `--theme-switcher-${menu.id || "menu"}`;
-      dfDollar51(trigger).css("anchorName", anchorId);
-      dfDollar51(menu).css("positionAnchor", anchorId);
+      dfDollar52(trigger).css("anchorName", anchorId);
+      dfDollar52(menu).css("positionAnchor", anchorId);
     }
     menu.addEventListener("toggle", () => {
       if (trigger)
-        dfDollar51(trigger).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
+        dfDollar52(trigger).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
       if (menu.matches(":popover-open")) {
         const first = getItems()[0];
         first?.focus();
@@ -21141,10 +21212,10 @@ function init52() {
       }
     });
     getItems().forEach((item) => {
-      const holder = dfDollar51(item).find(".theme-switcher-dots").get(0);
+      const holder = dfDollar52(item).find(".theme-switcher-dots").get(0);
       if (holder && !holder.childElementCount) {
         const spans = (item.dataset.themeColors || "").split(",").slice(0, 5).map((c) => c.trim()).filter(Boolean).map((c) => `<span style="background:${c}"></span>`).join("");
-        dfDollar51(holder).html(spans);
+        dfDollar52(holder).html(spans);
       }
     });
     menu.addEventListener("click", (e) => {
@@ -21174,59 +21245,59 @@ function init52() {
     });
     bindComponent(menu, themeSwitcherApi);
     if (root) {
-      const initial = dfDollar51("#" + CSS.escape(LINK_ID)).get(0)?.dataset.themeId || remembered().value || "default";
-      if (initial !== "default" || dfDollar51("#" + CSS.escape(LINK_ID)).get(0))
+      const initial = dfDollar52("#" + CSS.escape(LINK_ID)).get(0)?.dataset.themeId || remembered().value || "default";
+      if (initial !== "default" || dfDollar52("#" + CSS.escape(LINK_ID)).get(0))
         syncTrigger(root, initial);
     }
   });
 }
 document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
-  dfDollar51(".theme-switcher").toArray().forEach((root) => syncTrigger(root, id));
+  dfDollar52(".theme-switcher").toArray().forEach((root) => syncTrigger(root, id));
 });
-init52();
-new MutationObserver(init52).observe(document, { childList: true, subtree: true });
+init53();
+new MutationObserver(init53).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/toast/toast.ts
-var df$53 = defussGlobals();
-var dfDollar52 = defussQuery();
+var df$54 = defussGlobals();
+var dfDollar53 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup50(_el, _stateName) {}
-function triggerStateChange53(container, stateName, _config) {
+function applyMarkup51(_el, _stateName) {}
+function triggerStateChange54(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar52(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar53(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange53(container, state.name, state.config);
+    triggerStateChange54(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar52(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar53(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup50(el, state.name)
+  markup: (el, state) => applyMarkup51(el, state.name)
 });
-df$53.toastApi = toastApi;
-df$53.toastStates = toastStates;
+df$54.toastApi = toastApi;
+df$54.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar52("#toast-container").get(0);
+var toastContainer = dfDollar53("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar52(document.body).append(toastContainer);
+  dfDollar53(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar52(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar53(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -21257,7 +21328,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar52(el).remove();
+      dfDollar53(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -21268,7 +21339,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar52(el).remove();
+    dfDollar53(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -21299,29 +21370,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar52(contentEl).append(dfDollar52(icons[variant]));
+    dfDollar53(contentEl).append(dfDollar53(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar52(p).text(title);
-    dfDollar52(textDiv).append(p);
+    dfDollar53(p).text(title);
+    dfDollar53(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar52(p).text(description);
-    dfDollar52(textDiv).append(p);
+    dfDollar53(p).text(description);
+    dfDollar53(textDiv).append(p);
   }
-  dfDollar52(contentEl).append(textDiv);
+  dfDollar53(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar52(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar52(contentEl).append(closeBtn);
+  dfDollar53(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar53(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -21331,9 +21402,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar52(el).append(host);
+    dfDollar53(el).append(host);
   }
-  dfDollar52(host).append(contentEl);
+  dfDollar53(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -21342,15 +21413,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar52(actionBtn).text(action.label);
-    dfDollar52(actionsDiv).append(actionBtn);
-    dfDollar52(host).append(actionsDiv);
+    dfDollar53(actionBtn).text(action.label);
+    dfDollar53(actionsDiv).append(actionBtn);
+    dfDollar53(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar52(toastContainer).append(el);
+  dfDollar53(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -21361,13 +21432,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar52(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar53(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init53() {
-  dfDollar52("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init54() {
+  dfDollar53("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -21416,8 +21487,8 @@ function init53() {
     });
   });
 }
-init53();
-new MutationObserver(init53).observe(document.body, { childList: true, subtree: true });
+init54();
+new MutationObserver(init54).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -21434,56 +21505,56 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar52(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar53(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$53.toast = toastActions;
+df$54.toast = toastActions;
 
 // src/components/actions/toggle/toggle.ts
-var df$54 = defussGlobals();
-var dfDollar53 = defussQuery();
+var df$55 = defussGlobals();
+var dfDollar54 = defussQuery();
 var toggleStates = ["default", "pressed"];
-function applyMarkup51(toggle, stateName, defaultPressed) {
-  dfDollar53(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+function applyMarkup52(toggle, stateName, defaultPressed) {
+  dfDollar54(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
 }
-function triggerStateChange54(toggle, stateName, _config) {
-  applyMarkup51(toggle, stateName, toggle._defaultPressed ?? "false");
+function triggerStateChange55(toggle, stateName, _config) {
+  applyMarkup52(toggle, stateName, toggle._defaultPressed ?? "false");
 }
 var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
-  apply: (toggle, state) => triggerStateChange54(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar53(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  apply: (toggle, state) => triggerStateChange55(toggle, state.name, state.config),
+  read: (toggle, state) => ({ name: dfDollar54(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
-    applyMarkup51(toggle, state.name, authored ? authored[1] : "false");
+    applyMarkup52(toggle, state.name, authored ? authored[1] : "false");
   }
 });
-df$54.toggleApi = toggleApi;
-df$54.toggleStates = toggleStates;
-function init54() {
-  dfDollar53(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
-    dfDollar53(toggle).data("init", "");
-    toggle._defaultPressed = dfDollar53(toggle).attr("aria-pressed") || "false";
+df$55.toggleApi = toggleApi;
+df$55.toggleStates = toggleStates;
+function init55() {
+  dfDollar54(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar54(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar54(toggle).attr("aria-pressed") || "false";
     bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
-    dfDollar53(toggle).on("click", () => {
-      dfDollar53(toggle).attr("aria-pressed", String(dfDollar53(toggle).attr("aria-pressed") !== "true"));
+    dfDollar54(toggle).on("click", () => {
+      dfDollar54(toggle).attr("aria-pressed", String(dfDollar54(toggle).attr("aria-pressed") !== "true"));
     });
   });
 }
-init54();
-new MutationObserver(init54).observe(document, { childList: true, subtree: true });
+init55();
+new MutationObserver(init55).observe(document, { childList: true, subtree: true });
 
 // src/components/actions/toggle-group/toggle-group.ts
-var df$55 = defussGlobals();
-var dfDollar54 = defussQuery();
+var df$56 = defussGlobals();
+var dfDollar55 = defussQuery();
 var toggleGroupStates = ["default", "disabled"];
-function applyMarkup52(el, stateName) {
-  dfDollar54(el).attr("data-disabled", stateName === "disabled" ? "" : null);
+function applyMarkup53(el, stateName) {
+  dfDollar55(el).attr("data-disabled", stateName === "disabled" ? "" : null);
 }
-function triggerStateChange55(group, stateName, _config) {
+function triggerStateChange56(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -21496,23 +21567,23 @@ function triggerStateChange55(group, stateName, _config) {
 var toggleGroupApi = componentState({
   component: "toggle-group",
   states: toggleGroupStates,
-  apply: (group, state) => triggerStateChange55(group, state.name, state.config),
+  apply: (group, state) => triggerStateChange56(group, state.name, state.config),
   read: (group, state) => {
     return {
       name: group.hasAttribute("data-disabled") ? "disabled" : "default",
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup52(el, state.name)
+  markup: (el, state) => applyMarkup53(el, state.name)
 });
-df$55.toggleGroupApi = toggleGroupApi;
-df$55.toggleGroupStates = toggleGroupStates;
-function init55() {
-  dfDollar54(".toggle-group:not([data-init])").toArray().forEach((group) => {
+df$56.toggleGroupApi = toggleGroupApi;
+df$56.toggleGroupStates = toggleGroupStates;
+function init56() {
+  dfDollar55(".toggle-group:not([data-init])").toArray().forEach((group) => {
     group.dataset.init = "";
     bindComponent(group, toggleGroupApi);
     const type = group.getAttribute("data-type") || "single";
-    const getToggles = () => Array.from(dfDollar54(group).find(".toggle:not(:disabled)").toArray());
+    const getToggles = () => Array.from(dfDollar55(group).find(".toggle:not(:disabled)").toArray());
     const initTabindex = () => {
       const toggles = getToggles();
       if (toggles.length === 0)
@@ -21572,15 +21643,15 @@ function init55() {
     });
   });
 }
-init55();
-new MutationObserver(init55).observe(document, { childList: true, subtree: true });
+init56();
+new MutationObserver(init56).observe(document, { childList: true, subtree: true });
 
 // src/components/actions/toolbar/toolbar.ts
-var df$56 = defussGlobals();
-var dfDollar55 = defussQuery();
+var df$57 = defussGlobals();
+var dfDollar56 = defussQuery();
 var toolbarStates = ["default"];
-function applyMarkup53(_el, _stateName) {}
-function triggerStateChange56(toolbar, items, stateName, config) {
+function applyMarkup54(_el, _stateName) {}
+function triggerStateChange57(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -21593,7 +21664,7 @@ var toolbarApi = componentState({
   states: toolbarStates,
   apply: (toolbar, state) => {
     const items = toolbarItems(toolbar);
-    triggerStateChange56(toolbar, items, state.name, state.config);
+    triggerStateChange57(toolbar, items, state.name, state.config);
   },
   read: (toolbar, state) => {
     const items = toolbarItems(toolbar);
@@ -21603,13 +21674,13 @@ var toolbarApi = componentState({
       config: { ...state.config, rovingIndex: idx }
     };
   },
-  markup: (el, state) => applyMarkup53(el, state.name)
+  markup: (el, state) => applyMarkup54(el, state.name)
 });
-df$56.toolbarApi = toolbarApi;
-df$56.toolbarStates = toolbarStates;
-var toolbarItems = (toolbar) => Array.from(dfDollar55(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
-function init56() {
-  dfDollar55('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
+df$57.toolbarApi = toolbarApi;
+df$57.toolbarStates = toolbarStates;
+var toolbarItems = (toolbar) => Array.from(dfDollar56(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
+function init57() {
+  dfDollar56('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
     toolbar.dataset.init = "";
     bindComponent(toolbar, toolbarApi);
     const items = toolbarItems(toolbar);
@@ -21647,15 +21718,15 @@ function init56() {
     });
   });
 }
-init56();
-new MutationObserver(init56).observe(document, { childList: true, subtree: true });
+init57();
+new MutationObserver(init57).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/tooltip/tooltip.ts
-var df$57 = defussGlobals();
-var dfDollar56 = defussQuery();
+var df$58 = defussGlobals();
+var dfDollar57 = defussQuery();
 var tooltipStates = ["default", "visible"];
-function applyMarkup54(_el, _stateName) {}
-function triggerStateChange57(tip, stateName, _config) {
+function applyMarkup55(_el, _stateName) {}
+function triggerStateChange58(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -21671,11 +21742,11 @@ function triggerStateChange57(tip, stateName, _config) {
 var tooltipApi = componentState({
   component: "tooltip",
   states: tooltipStates,
-  apply: (tip, state) => triggerStateChange57(tip, state.name, state.config),
-  markup: (el, state) => applyMarkup54(el, state.name)
+  apply: (tip, state) => triggerStateChange58(tip, state.name, state.config),
+  markup: (el, state) => applyMarkup55(el, state.name)
 });
-df$57.tooltipApi = tooltipApi;
-df$57.tooltipStates = tooltipStates;
+df$58.tooltipApi = tooltipApi;
+df$58.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -21691,10 +21762,10 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init57() {
-  dfDollar56("[data-tooltip-trigger]:not([data-init])").toArray().forEach((trigger) => {
+function init58() {
+  dfDollar57("[data-tooltip-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const tip = dfDollar56("#" + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
+    const tip = dfDollar57("#" + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
     if (!tip)
       return;
     const anchorId = `--tooltip-${tip.id}`;
@@ -21731,17 +21802,17 @@ function init57() {
     trigger.addEventListener("focus", show);
     trigger.addEventListener("blur", hide);
   });
-  dfDollar56(".tooltip[popover]:not([data-init])").toArray().forEach((tip) => {
+  dfDollar57(".tooltip[popover]:not([data-init])").toArray().forEach((tip) => {
     tip.dataset.init = "";
     bindComponent(tip, tooltipApi);
   });
 }
-init57();
-new MutationObserver(init57).observe(document, { childList: true, subtree: true });
+init58();
+new MutationObserver(init58).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
-    dfDollar56(".tooltip:popover-open").toArray().forEach((tip) => {
+    dfDollar57(".tooltip:popover-open").toArray().forEach((tip) => {
       try {
         tip.hidePopover();
       } catch {}
@@ -21750,14 +21821,14 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/data-display/tree-view/tree-view.ts
-var df$58 = defussGlobals();
-var dfDollar57 = defussQuery();
+var df$59 = defussGlobals();
+var dfDollar58 = defussQuery();
 var treeViewStates = ["default", "expanded"];
-function applyMarkup55(el, stateName) {
+function applyMarkup56(el, stateName) {
   if (stateName === "expanded")
-    dfDollar57(el).attr("open", "");
+    dfDollar58(el).attr("open", "");
 }
-function triggerStateChange58(details, stateName, _config) {
+function triggerStateChange59(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = details._defaultOpen ?? false;
@@ -21770,28 +21841,28 @@ function triggerStateChange58(details, stateName, _config) {
 var treeViewApi = componentState({
   component: "tree-view",
   states: treeViewStates,
-  apply: (details, state) => triggerStateChange58(details, state.name, state.config),
+  apply: (details, state) => triggerStateChange59(details, state.name, state.config),
   read: (details, state) => {
     return {
       name: details.open ? "expanded" : "default",
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup55(el, state.name)
+  markup: (el, state) => applyMarkup56(el, state.name)
 });
-df$58.treeViewApi = treeViewApi;
-df$58.treeViewStates = treeViewStates;
+df$59.treeViewApi = treeViewApi;
+df$59.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
 var isDisabled2 = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
   if (!item || isDisabled2(item) || item.getAttribute("aria-selected") === "true")
     return;
-  dfDollar57(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute("aria-selected", "false"));
+  dfDollar58(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute("aria-selected", "false"));
   item.setAttribute("aria-selected", "true");
   tree.dispatchEvent(new CustomEvent("tree-select", { bubbles: true, detail: { item } }));
 }
-var checkOf = (item) => item ? dfDollar57(item).find(":scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check").get(0) : undefined;
-var childItems = (item) => [...dfDollar57(item).find(":scope > details > .tree-group").get(0)?.children ?? []].filter((li) => li.matches('[role="treeitem"]'));
+var checkOf = (item) => item ? dfDollar58(item).find(":scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check").get(0) : undefined;
+var childItems = (item) => [...dfDollar58(item).find(":scope > details > .tree-group").get(0)?.children ?? []].filter((li) => li.matches('[role="treeitem"]'));
 var cascades = (tree) => tree.dataset.checkable !== "independent";
 function checkDown(item, checked) {
   for (const child of childItems(item)) {
@@ -21818,14 +21889,14 @@ function rollUp(tree, item) {
   }
 }
 function syncAria(tree) {
-  dfDollar57(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+  dfDollar58(tree).find('[role="treeitem"]').toArray().forEach((item) => {
     const box = checkOf(item);
     if (box)
       item.setAttribute("aria-checked", box.indeterminate ? "mixed" : String(box.checked));
   });
 }
 function checkedValues(tree) {
-  return [...dfDollar57(tree).find(".tree-check").toArray()].filter((b) => b.checked && !b.indeterminate).map((b) => b.value !== "on" ? b.value : dfDollar57(b).closest('[role="treeitem"]').find(":scope > * > span:last-child, :scope > details > summary > span:last-child").get(0)?.textContent ?? "");
+  return [...dfDollar58(tree).find(".tree-check").toArray()].filter((b) => b.checked && !b.indeterminate).map((b) => b.value !== "on" ? b.value : dfDollar58(b).closest('[role="treeitem"]').find(":scope > * > span:last-child, :scope > details > summary > span:last-child").get(0)?.textContent ?? "");
 }
 function onCheck(tree, item) {
   const box = checkOf(item);
@@ -21841,9 +21912,9 @@ function onCheck(tree, item) {
 }
 function initChecks(tree) {
   let n = 0;
-  dfDollar57(tree).find(".tree-check").toArray().forEach((box) => {
+  dfDollar58(tree).find(".tree-check").toArray().forEach((box) => {
     if (!box.hasAttribute("aria-label") && !box.hasAttribute("aria-labelledby")) {
-      const label = dfDollar57(box.parentElement).find(":scope > span:last-child").get(0);
+      const label = dfDollar58(box.parentElement).find(":scope > span:last-child").get(0);
       if (label) {
         label.id ||= `${tree.id || "tree"}-lbl-${n++}-${Math.random().toString(36).slice(2, 7)}`;
         box.setAttribute("aria-labelledby", label.id);
@@ -21851,12 +21922,12 @@ function initChecks(tree) {
     }
   });
   if (cascades(tree)) {
-    dfDollar57(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+    dfDollar58(tree).find('[role="treeitem"]').toArray().forEach((item) => {
       const b = checkOf(item);
       if (b?.checked)
         checkDown(item, true);
     });
-    const leaves = [...dfDollar57(tree).find('[role="treeitem"]').toArray()].filter((i) => !childItems(i).length);
+    const leaves = [...dfDollar58(tree).find('[role="treeitem"]').toArray()].filter((i) => !childItems(i).length);
     leaves.forEach((leaf) => rollUp(tree, leaf));
   }
   syncAria(tree);
@@ -21867,7 +21938,7 @@ function initChecks(tree) {
   });
 }
 function clearDrop(tree) {
-  dfDollar57(tree).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
+  dfDollar58(tree).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
 }
 function announceMove2(tree, item) {
   const parentItem = item.parentElement.closest('[role="treeitem"]');
@@ -21876,7 +21947,7 @@ function announceMove2(tree, item) {
 }
 function initSortable(tree) {
   let dragged = null;
-  const rows = () => dfDollar57(tree).find(".tree-branch-trigger, .tree-leaf").toArray();
+  const rows = () => dfDollar58(tree).find(".tree-branch-trigger, .tree-leaf").toArray();
   rows().forEach((row) => {
     if (!isDisabled2(itemOf(row)))
       row.draggable = true;
@@ -21913,27 +21984,27 @@ function initSortable(tree) {
       clearDrop(tree);
   });
   tree.addEventListener("drop", (e) => {
-    const row = dfDollar57(tree).find("[data-drop]").get(0);
+    const row = dfDollar58(tree).find("[data-drop]").get(0);
     if (!dragged || !row)
       return;
     e.preventDefault();
     const target = itemOf(row);
     const where = row.dataset.drop;
     if (where === "inside") {
-      const details = dfDollar57(target).find(":scope > details").get(0);
+      const details = dfDollar58(target).find(":scope > details").get(0);
       details.open = true;
-      dfDollar57(details).find(":scope > .tree-group").get(0).append(dragged);
+      dfDollar58(details).find(":scope > .tree-group").get(0).append(dragged);
     } else {
       const ref = where === "before" ? target : target.nextSibling;
       if (ref)
-        dfDollar57(ref).before(dragged);
+        dfDollar58(ref).before(dragged);
       else
-        dfDollar57(target.parentElement).append(dragged);
+        dfDollar58(target.parentElement).append(dragged);
     }
     clearDrop(tree);
     announceMove2(tree, dragged);
     if (tree.hasAttribute("data-checkable") && cascades(tree)) {
-      dfDollar57(tree).find('[role="treeitem"]').toArray().forEach((i) => {
+      dfDollar58(tree).find('[role="treeitem"]').toArray().forEach((i) => {
         if (!childItems(i).length)
           rollUp(tree, i);
       });
@@ -21954,18 +22025,18 @@ function moveByKey(tree, row, dir) {
     return;
   const ref = dir < 0 ? sib : sib.nextSibling;
   if (ref)
-    dfDollar57(ref).before(item);
+    dfDollar58(ref).before(item);
   else
-    dfDollar57(item.parentElement).append(item);
+    dfDollar58(item.parentElement).append(item);
   row.focus();
   announceMove2(tree, item);
 }
-function init58() {
-  dfDollar57('.tree[role="tree"]:not([data-init])').toArray().forEach((tree) => {
+function init59() {
+  dfDollar58('.tree[role="tree"]:not([data-init])').toArray().forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
     if (selectable) {
-      dfDollar57(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+      dfDollar58(tree).find('[role="treeitem"]').toArray().forEach((item) => {
         if (!isDisabled2(item) && !item.hasAttribute("aria-selected"))
           item.setAttribute("aria-selected", "false");
       });
@@ -21992,7 +22063,7 @@ function init58() {
         onCheck(tree, item);
       }
     });
-    dfDollar57(tree).find(".tree-branch").toArray().forEach((details) => {
+    dfDollar58(tree).find(".tree-branch").toArray().forEach((details) => {
       const treeitem = details.closest('[role="treeitem"]');
       if (!treeitem)
         return;
@@ -22007,7 +22078,7 @@ function init58() {
       const target = e.target.closest(".tree-branch-trigger, .tree-leaf");
       if (!target)
         return;
-      const allItems = Array.from(dfDollar57(tree).find(".tree-branch-trigger, .tree-leaf").toArray());
+      const allItems = Array.from(dfDollar58(tree).find(".tree-branch-trigger, .tree-leaf").toArray());
       const visibleItems = allItems.filter((item) => item.checkVisibility());
       const index = visibleItems.indexOf(target);
       if (e.altKey && tree.hasAttribute("data-sortable") && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
@@ -22079,12 +22150,12 @@ function init58() {
     });
   });
 }
-init58();
-new MutationObserver(init58).observe(document, { childList: true, subtree: true });
+init59();
+new MutationObserver(init59).observe(document, { childList: true, subtree: true });
 
 // src/components/primitives/typewriter/typewriter.ts
-var df$59 = defussGlobals();
-var dfDollar58 = defussQuery();
+var df$60 = defussGlobals();
+var dfDollar59 = defussQuery();
 var typewriterStates = ["default", "paused", "done"];
 var num5 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
@@ -22169,8 +22240,8 @@ function run3(tw, delay = 0) {
   else
     go();
 }
-function applyMarkup56(_el, _stateName) {}
-function triggerStateChange59(tw, stateName, config, previous) {
+function applyMarkup57(_el, _stateName) {}
+function triggerStateChange60(tw, stateName, config, previous) {
   const count = tw._sources.length;
   const asked = config.index === undefined || config.index === "" ? NaN : Number(config.index);
   const pick = Number.isInteger(asked) ? Math.min(Math.max(asked, 0), count - 1) : undefined;
@@ -22203,14 +22274,14 @@ var typewriterApi = componentState({
   states: typewriterStates,
   apply: (tw, state, previous) => {
     tw.dataset.stateName = state.name;
-    triggerStateChange59(tw, state.name, state.config, previous.name);
+    triggerStateChange60(tw, state.name, state.config, previous.name);
   },
-  markup: (el, state) => applyMarkup56(el, state.name)
+  markup: (el, state) => applyMarkup57(el, state.name)
 });
-df$59.typewriterApi = typewriterApi;
-df$59.typewriterStates = typewriterStates;
-function init59() {
-  dfDollar58(".typewriter:not([data-init])").toArray().forEach((tw) => {
+df$60.typewriterApi = typewriterApi;
+df$60.typewriterStates = typewriterStates;
+function init60() {
+  dfDollar59(".typewriter:not([data-init])").toArray().forEach((tw) => {
     tw.dataset.init = "";
     const children = Array.from(tw.children);
     if (!children.length)
@@ -22238,7 +22309,7 @@ function init59() {
       tw._sources.forEach((s) => {
         const g = document.createElement("span");
         g.textContent = s.text;
-        dfDollar58(ghost).append(g);
+        dfDollar59(ghost).append(g);
       });
       tw.append(ghost);
     }
@@ -22259,12 +22330,12 @@ function init59() {
     }
   });
 }
-init59();
-new MutationObserver(init59).observe(document, { childList: true, subtree: true });
+init60();
+new MutationObserver(init60).observe(document, { childList: true, subtree: true });
 
 // src/components/big-data/virtual-list/virtual-list.ts
-var df$60 = defussGlobals();
-var dfDollar59 = defussQuery();
+var df$61 = defussGlobals();
+var dfDollar60 = defussQuery();
 var virtualListStates = ["default", "loading", "empty"];
 var columnsOf = (list) => Math.max(1, parseInt(list.dataset.columns || "1", 10) || 1);
 var itemCount = (list) => list._source ? list._result.entries.length : list._count;
@@ -22288,7 +22359,7 @@ function renderRows3(list) {
     const row = document.createElement("div");
     row.className = "virtual-list-row";
     row.setAttribute("role", cols > 1 ? "row" : "listitem");
-    dfDollar59(rows).append(row);
+    dfDollar60(rows).append(row);
   }
   while (rows.children.length > pool) {
     rows.lastElementChild.remove();
@@ -22312,7 +22383,7 @@ function renderRows3(list) {
       const cell = document.createElement("div");
       cell.className = "virtual-list-cell";
       cell.setAttribute("role", "gridcell");
-      dfDollar59(row).append(cell);
+      dfDollar60(row).append(cell);
     }
     for (let c = 0;c < cols; c++) {
       const cell = row.children[c];
@@ -22332,8 +22403,8 @@ function renderRows3(list) {
 var defaultRenderRow = (row, index) => {
   row.textContent = `Row ${index + 1}`;
 };
-function applyMarkup57(el, stateName) {
-  dfDollar59(el).attr("data-state", stateName).attr("aria-busy", stateName === "loading" ? "true" : null);
+function applyMarkup58(el, stateName) {
+  dfDollar60(el).attr("data-state", stateName).attr("aria-busy", stateName === "loading" ? "true" : null);
 }
 function refresh3(list, config) {
   if (list._source)
@@ -22350,7 +22421,7 @@ function refresh3(list, config) {
   }
   return itemCount(list);
 }
-function triggerStateChange60(list, stateName, config, incoming = config) {
+function triggerStateChange61(list, stateName, config, incoming = config) {
   if (list._source && stateName !== "loading" && !refresh3(list, config) && stateName === "default")
     stateName = "empty";
   list.dataset.state = stateName;
@@ -22377,12 +22448,12 @@ var virtualListApi = componentState({
   component: "virtual-list",
   states: virtualListStates,
   mergeConfig: true,
-  apply: (list, state, _previous, incoming) => triggerStateChange60(list, state.name, state.config, incoming),
-  markup: (el, state) => applyMarkup57(el, state.name)
+  apply: (list, state, _previous, incoming) => triggerStateChange61(list, state.name, state.config, incoming),
+  markup: (el, state) => applyMarkup58(el, state.name)
 });
-df$60.virtualListApi = virtualListApi;
-df$60.virtualListStates = virtualListStates;
-df$60.virtualList = {
+df$61.virtualListApi = virtualListApi;
+df$61.virtualListStates = virtualListStates;
+df$61.virtualList = {
   setData(list, count, renderRow) {
     list._source = null;
     list._count = Math.max(0, Math.floor(count) || 0);
@@ -22414,7 +22485,7 @@ df$60.virtualList = {
 };
 if (!document.__virtualListQueryInit) {
   document.__virtualListQueryInit = true;
-  const target = (el, attr) => dfDollar59("#" + CSS.escape(el.getAttribute(attr))).get(0);
+  const target = (el, attr) => dfDollar60("#" + CSS.escape(el.getAttribute(attr))).get(0);
   document.addEventListener("input", (e) => {
     const input = e.target.closest?.("[data-virtual-list-filter]");
     const list = input && target(input, "data-virtual-list-filter");
@@ -22422,7 +22493,7 @@ if (!document.__virtualListQueryInit) {
       return;
     clearTimeout(list._filterTimer);
     list._filterTimer = setTimeout(() => {
-      const filters = dfDollar59(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray().map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || "text")).filter(Boolean);
+      const filters = dfDollar60(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray().map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || "text")).filter(Boolean);
       virtualListApi.setState(list, "default", { filters });
     }, 150);
   });
@@ -22435,20 +22506,20 @@ if (!document.__virtualListQueryInit) {
     virtualListApi.setState(list, "default", { sorters: field ? [{ field, direction: direction === "desc" ? "desc" : "asc" }] : [] });
   });
 }
-function init60() {
-  dfDollar59(".virtual-list:not([data-init])").toArray().forEach((list) => {
+function init61() {
+  dfDollar60(".virtual-list:not([data-init])").toArray().forEach((list) => {
     list.dataset.init = "";
-    let sizer = dfDollar59(list).find(".virtual-list-sizer").get(0);
+    let sizer = dfDollar60(list).find(".virtual-list-sizer").get(0);
     if (!sizer) {
       sizer = document.createElement("div");
       sizer.className = "virtual-list-sizer";
-      dfDollar59(list).append(sizer);
+      dfDollar60(list).append(sizer);
     }
-    let rows = dfDollar59(sizer).find(".virtual-list-rows").get(0);
+    let rows = dfDollar60(sizer).find(".virtual-list-rows").get(0);
     if (!rows) {
       rows = document.createElement("div");
       rows.className = "virtual-list-rows";
-      dfDollar59(sizer).append(rows);
+      dfDollar60(sizer).append(rows);
     }
     list._rows = rows;
     list._renderRow = list._renderRow || defaultRenderRow;
@@ -22485,23 +22556,23 @@ function init60() {
       virtualListApi.setState(list, list._count ? "default" : "empty");
   });
 }
-init60();
-new MutationObserver(init60).observe(document, { childList: true, subtree: true });
+init61();
+new MutationObserver(init61).observe(document, { childList: true, subtree: true });
 
 // src/components/application/window/window.ts
-var df$61 = defussGlobals();
-var dfDollar60 = defussQuery();
+var df$62 = defussGlobals();
+var dfDollar61 = defussQuery();
 var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
-var resolve13 = (target) => typeof target === "string" ? dfDollar60("#" + CSS.escape(target)).get(0) ?? dfDollar60(target).get(0) : target;
-var titleOf2 = (w) => dfDollar60(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
+var resolve13 = (target) => typeof target === "string" ? dfDollar61("#" + CSS.escape(target)).get(0) ?? dfDollar61(target).get(0) : target;
+var titleOf2 = (w) => dfDollar61(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
   const parent = w.offsetParent;
-  const bar = dfDollar60(w).find(".window-titlebar").get(0);
+  const bar = dfDollar61(w).find(".window-titlebar").get(0);
   if (parent) {
-    const ctl = dfDollar60(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
+    const ctl = dfDollar61(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
     const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
@@ -22519,7 +22590,7 @@ function raise(w) {
     return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar60(".window[data-active]").toArray().forEach((o) => {
+  dfDollar61(".window[data-active]").toArray().forEach((o) => {
     if (o !== w)
       o.removeAttribute("data-active");
   });
@@ -22535,7 +22606,7 @@ function showQuietly(w) {
     document.activeElement.blur();
 }
 function activateTopmost() {
-  const open = Array.from(dfDollar60(".window[open]").toArray());
+  const open = Array.from(dfDollar61(".window[open]").toArray());
   if (!open.length)
     return;
   const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
@@ -22555,16 +22626,16 @@ function restoreSize(w) {
   w.style.height = w._stash.height;
   w._stash = null;
 }
-function applyMarkup58(el, stateName) {
+function applyMarkup59(el, stateName) {
   const open = stateName !== "closed";
-  dfDollar60(el).attr("open", open ? "" : null);
-  dfDollar60(el).attr("data-maximized", stateName === "maximized" ? "" : null);
-  dfDollar60(el).attr("data-minimized", stateName === "minimized" ? "" : null);
-  dfDollar60(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar60(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar61(el).attr("open", open ? "" : null);
+  dfDollar61(el).attr("data-maximized", stateName === "maximized" ? "" : null);
+  dfDollar61(el).attr("data-minimized", stateName === "minimized" ? "" : null);
+  dfDollar61(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
+  dfDollar61(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
-function triggerStateChange61(w, stateName, config) {
-  const maxBtn = dfDollar60(w).find(".window-maximize").get(0);
+function triggerStateChange62(w, stateName, config) {
+  const maxBtn = dfDollar61(w).find(".window-maximize").get(0);
   if (stateName !== "closed" && !w.open)
     showQuietly(w);
   switch (stateName) {
@@ -22596,23 +22667,23 @@ function triggerStateChange61(w, stateName, config) {
   }
   if (maxBtn)
     maxBtn.setAttribute("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar60(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar61(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
 var windowApi = componentState({
   component: "window",
   states: windowStates,
   apply: (w, state) => {
     w.dataset.stateName = state.name;
-    triggerStateChange61(w, state.name, state.config);
+    triggerStateChange62(w, state.name, state.config);
   },
   read: (w, state) => {
     const name = !w.open ? "closed" : w.dataset.stateName || "default";
     return { name, config: name === "closed" ? {} : state.config };
   },
-  markup: (el, state) => applyMarkup58(el, state.name)
+  markup: (el, state) => applyMarkup59(el, state.name)
 });
-df$61.windowApi = windowApi;
-df$61.windowStates = windowStates;
+df$62.windowApi = windowApi;
+df$62.windowStates = windowStates;
 function bindDrag(w, bar) {
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
@@ -22653,17 +22724,17 @@ function bindDrag(w, bar) {
     w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
   });
 }
-function init61() {
-  dfDollar60("dialog.window:not([data-init])").toArray().forEach((w) => {
+function init62() {
+  dfDollar61("dialog.window:not([data-init])").toArray().forEach((w) => {
     w.dataset.init = "";
-    const bar = dfDollar60(w).find(":scope > .window-titlebar").get(0);
+    const bar = dfDollar61(w).find(":scope > .window-titlebar").get(0);
     if (bar) {
       if (!bar.hasAttribute("tabindex"))
         bar.tabIndex = 0;
       bindDrag(w, bar);
     }
     if (!w.hasAttribute("aria-labelledby") && !w.hasAttribute("aria-label")) {
-      const title = dfDollar60(w).find(".window-title").get(0);
+      const title = dfDollar61(w).find(".window-title").get(0);
       if (title) {
         if (!title.id)
           title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
@@ -22672,12 +22743,12 @@ function init61() {
     }
     w.addEventListener("pointerdown", () => raise(w), true);
     w.addEventListener("focusin", () => raise(w));
-    dfDollar60(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
-    dfDollar60(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
+    dfDollar61(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
+    dfDollar61(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
       e.preventDefault();
       windowApi.setState(w, "closed", {});
     });
-    dfDollar60(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
+    dfDollar61(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
     w.addEventListener("close", () => {
       if (w.open)
         return;
@@ -22690,11 +22761,11 @@ function init61() {
     bindComponent(w, windowApi);
     const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
     w.dataset.stateName = initial;
-    dfDollar60(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
-    dfDollar60(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
+    dfDollar61(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
+    dfDollar61(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
     if (w.open) {
       w.style.zIndex = String(++topZ);
-      dfDollar60(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
+      dfDollar61(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
       w.setAttribute("data-active", "");
     }
   });
@@ -22717,7 +22788,7 @@ function create(options = {}) {
     focus = true,
     flush = false
   } = options;
-  const host = resolve13(parent) ?? dfDollar60(".window-desktop").get(0) ?? document.body;
+  const host = resolve13(parent) ?? dfDollar61(".window-desktop").get(0) ?? document.body;
   const w = document.createElement("dialog");
   w.className = "window";
   if (id)
@@ -22726,7 +22797,7 @@ function create(options = {}) {
     w.dataset.chrome = chrome;
   if (resizable)
     w.setAttribute("data-resizable", "");
-  const count = dfDollar60(host).find(":scope > .window").toArray().length;
+  const count = dfDollar61(host).find(":scope > .window").toArray().length;
   w.style.setProperty("--window-x", typeof x === "number" ? `${x}px` : x ?? `${24 + count % 8 * 28}px`);
   w.style.setProperty("--window-y", typeof y === "number" ? `${y}px` : y ?? `${24 + count % 8 * 28}px`);
   if (width !== undefined)
@@ -22773,7 +22844,7 @@ function create(options = {}) {
     w.append(s);
   }
   host.append(w);
-  init61();
+  init62();
   showQuietly(w);
   if (focus)
     windowApi.setState(w, "default", {});
@@ -22781,7 +22852,7 @@ function create(options = {}) {
     globalThis.lucide?.createIcons?.();
   return w;
 }
-var list2 = (scope, all = false) => dfDollar60(resolve13(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
+var list2 = (scope, all = false) => dfDollar61(resolve13(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
 function cascade(scope, step = 28) {
   list2(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
     windowApi.setState(w, "default", {});
@@ -22866,15 +22937,15 @@ var windowActions = {
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
   },
-  active: () => dfDollar60(".window[open][data-active]").get(0),
+  active: () => dfDollar61(".window[open][data-active]").get(0),
   list: list2,
   cascade,
   tile
 };
-df$61.win = windowActions;
-init61();
-new MutationObserver(init61).observe(document, { childList: true, subtree: true });
+df$62.win = windowActions;
+init62();
+new MutationObserver(init62).observe(document, { childList: true, subtree: true });
 
-//# debugId=16B9EDF86B6FC46264756E2164756E21
+//# debugId=46BE4939CEF46C1A64756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

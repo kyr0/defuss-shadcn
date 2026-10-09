@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.8 - Agent Skill
 
-232 components (169 CSS-only, 63 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+234 components (170 CSS-only, 64 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -121,7 +121,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Installation](../../src/documentation/pages/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
   - [Bundles & Downloads](../../src/documentation/pages/bundles.mdx) - Load defuss-shadcn whole, per sidebar section, or per component - from the jsDelivr CDN, with npm, or as a ZIP you vendor into your project.
 - [Vibe Coding / Agentic Engineering](../../src/documentation/pages/vibe-coding.mdx) - Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML.
-- [Anatomy of a Component](../../src/documentation/pages/anatomy.mdx) - How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, and the skill and schema that describe it - each a plain file you copy or link.
+- [Anatomy of a Component](../../src/documentation/pages/anatomy.mdx) - How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, the named states it exposes, and the skill and schema that describe it - each a plain file you copy or link.
 - [Component Skills](../../src/documentation/pages/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
 - [Verified Agentic Engineering (VAE)](../../src/documentation/pages/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces and instructs, the agent extends its checks, screenshots record every state, humans review before release.
 - [Changelog](../../src/documentation/pages/changelog.mdx) - Release history and changelog for defuss-shadcn.
@@ -129,7 +129,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Guides
 
 - [Theming](../../src/documentation/pages/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme.
-  - [Theme Designer](../../src/documentation/pages/theme-designer.mdx) - Design your own theme, the tweakcn way, right in the docs: every colour token for light and dark, Google Fonts for sans, serif and mono, radius, letter spacing and shadows - with a live preview of each section's components. Save it by name: it stays in your browser and appears on top of the theme menu; export the CSS to use it anywhere.
+  - [Theme Designer](../../src/documentation/pages/theme-designer.mdx) - Design your own theme, the tweakcn way, right in the docs: pick a theme, change any colour for light and dark, Google Fonts for sans, serif and mono, radius, shadows, letter spacing and links - with a live preview of every component and the seven example apps. Every change saves as you go to a theme in your browser, on top of the theme menu; export the CSS to use it anywhere.
 - [Dark Mode](../../src/documentation/pages/dark-mode.mdx) - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.
 - [Data Attribute API](../../src/documentation/pages/data-attribute-api.mdx) - Use data attributes to configure component variants, sizes, and states directly in HTML markup.
 - [State API](../../src/documentation/pages/state-api.mdx) - Every interactive component declares its UI states by name and exposes them per element - el.api.setState('open') / el.api.getState() - for agents, tests, and code.
@@ -382,6 +382,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** The one primary action of a screen (compose, add, new) that stays in reach while scrolling - with a speed dial when 2-6 related actions share it. For a bar of actions use toolbar; for an ordinary menu use dropdown-menu.
 - **States:** `default` · **Skill:** [references/components/fab.md](references/components/fab.md) · **Examples:** [src/documentation/pages/fab.mdx](../../src/documentation/pages/fab.mdx)
 
+#### Play Button · ATM · CSS
+
+- **Why:** A native button - focus, Enter / Space and the disabled state come from the browser; the round shape and the triangle are pure CSS (clip-path), so one element with an accessible name is the whole component.
+- **When:** The one action that starts something - a video, a deck, a demo, content that loads on demand (the Teaser). For any other action use button; for the floating screen action use fab.
+- **States:** `default` · **Skill:** [references/components/play-button.md](references/components/play-button.md) · **Examples:** [src/documentation/pages/play-button.mdx](../../src/documentation/pages/play-button.mdx)
+
 #### Toggle · ATM · JS
 
 - **Why:** Two-state button carrying aria-pressed - activation is native.
@@ -581,6 +587,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Token-backed surface with header/content/footer slots - one container for anything boxed.
 - **When:** Grouping related content and actions on a page - dashboards, lists, modal bodies.
 - **States:** `default` · **Skill:** [references/components/card.md](references/components/card.md) · **Examples:** [src/documentation/pages/card.mdx](../../src/documentation/pages/card.mdx)
+
+#### Teaser · MOL · JS
+
+- **Why:** Template content is inert - nothing inside a `<template>` loads, runs or renders - so a teaser can stand in for a deck, a video or an iframe at the cost of a card; its play button (a native button) morphs the content into place through defuss-morph.
+- **When:** Content that is heavy or should start on purpose - a slide deck, a video, an embedded app, a demo - shown as an inviting card first. For media that is always loaded use the Video Player block or Iframe; for a call to action that navigates use CTA.
+- **States:** `default`, `played` · **Skill:** [references/components/teaser.md](references/components/teaser.md) · **Examples:** [src/documentation/pages/teaser.mdx](../../src/documentation/pages/teaser.mdx)
 
 #### Image · ATM · JS
 

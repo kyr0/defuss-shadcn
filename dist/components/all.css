@@ -21444,6 +21444,129 @@
   }
 }
 
+/* ── components/play-button/play-button.css ── */
+/* -- Play Button component ------------------------------------
+   A large round button that starts something: a video, a deck, content that
+   loads only on demand. One <button> with an accessible name - the triangle
+   is drawn by CSS (clip-path), so no icon is needed. data-pulse sends a ring
+   outward to draw the eye. CSS only. */
+
+@layer components {
+  .play-button {
+    --play-button-size: 4.5rem;
+    --_bg: var(--primary);
+    --_fg: var(--primary-foreground);
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--play-button-size);
+    block-size: var(--play-button-size);
+    padding: 0;
+    border: 0;
+    border-radius: 9999px;
+    background-color: var(--_bg);
+    color: var(--_fg);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: scale 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+    /* the triangle: a third of the button, nudged toward its point so it
+       reads as centred (its visual centre is not its box's) */
+    &::before {
+      content: "";
+      inline-size: 34%;
+      aspect-ratio: 1 / 1.15;
+      translate: 10% 0;
+      background-color: currentColor;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    &:hover:not(:disabled) {
+      scale: 1.06;
+      background-color: color-mix(in oklch, var(--_bg) 88%, var(--_fg));
+    }
+    &:active:not(:disabled) { scale: 0.97; }
+    &:focus-visible {
+      outline: 3px solid var(--ring);
+      outline-offset: 4px;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* -- Sizes ------------------------------------------------------ */
+    &[data-size="sm"] { --play-button-size: 3rem; }
+    &[data-size="lg"] { --play-button-size: 6rem; }
+    &[data-size="xl"] { --play-button-size: 8rem; }
+
+    /* -- Variants --------------------------------------------------- */
+    &[data-variant="secondary"] {
+      --_bg: var(--secondary);
+      --_fg: var(--secondary-foreground);
+    }
+    &[data-variant="outline"] {
+      --_bg: var(--background);
+      --_fg: var(--foreground);
+      box-shadow: inset 0 0 0 2px var(--border), var(--shadow-sm);
+    }
+    /* over a photo or a video poster: frosted, white, whatever the theme */
+    &[data-variant="glass"] {
+      --_bg: oklch(1 0 0 / 0.2);
+      --_fg: oklch(1 0 0);
+      box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.4), 0 8px 32px oklch(0 0 0 / 0.3);
+      backdrop-filter: blur(12px) saturate(1.4);
+
+      &:hover:not(:disabled) { background-color: oklch(1 0 0 / 0.32); }
+    }
+
+    /* -- Attention: a ring that keeps pulsing outward ---------------- */
+    &[data-pulse]::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      animation: play-button-pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+  }
+
+  @keyframes play-button-pulse {
+    from { box-shadow: 0 0 0 0 color-mix(in oklch, var(--_bg) 60%, transparent); }
+    to { box-shadow: 0 0 0 calc(var(--play-button-size) / 3) transparent; }
+  }
+
+  /* -- Accessibility ------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .play-button {
+      transition: none;
+
+      &:hover:not(:disabled), &:active:not(:disabled) { scale: none; }
+      &[data-pulse]::after { animation: none; }
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .play-button {
+      box-shadow: inset 0 0 0 2px var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .play-button {
+      border: 2px solid ButtonText;
+      background-color: ButtonFace;
+      color: ButtonText;
+
+      &::before { background-color: ButtonText; }
+      &:focus-visible { outline-color: Highlight; }
+    }
+  }
+}
+
 /* ── components/playlist-item/playlist-item.css ── */
 /* -- Playlist Item (website · Media) --------------------------------------
    Represents one selectable track or episode within a playlist - number, cover, title, artist and length; the selected one shows "now playing" bars. */
@@ -31168,6 +31291,134 @@
   }
 }
 
+/* ── components/teaser/teaser.css ── */
+/* -- Teaser component -----------------------------------------
+   A card that stands in for content that should not load yet - a deck, a
+   video, a heavy widget. Its play button (or a click anywhere on the card)
+   morphs the content of its <template> into place; until then nothing in
+   the template loads (template content is inert). Around it, the Shapes
+   module's aura draws the eye - and stops once the teaser has played. */
+
+@layer components {
+  .teaser {
+    /* border-box: data-ratio is the whole card's shape, padding and border included */
+    box-sizing: border-box;
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.75rem;
+    min-inline-size: 0;
+    padding: 2.5rem 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    text-align: center;
+    cursor: pointer;
+
+    /* the size of what it stands for: the swap does not move the page */
+    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+    &[data-ratio="4/3"] { aspect-ratio: 4 / 3; }
+    &[data-ratio="1/1"] { aspect-ratio: 1 / 1; }
+    &[data-ratio="21/9"] { aspect-ratio: 21 / 9; }
+
+    & > .play-button { margin-block-end: 0.5rem; }
+    &:hover:not([data-played]) > .play-button:not(:disabled) { scale: 1.06; }
+    /* the card shows where the keyboard is */
+    &:has(> .play-button:focus-visible) { box-shadow: 0 0 0 2px var(--ring); }
+
+    /* -- Played: the content takes the whole card ------------------- */
+    &[data-played] {
+      display: block;
+      /* the card's centring would shrink a block child to its content's width */
+      align-content: normal;
+      justify-items: normal;
+      aspect-ratio: auto;
+      padding: 0;
+      overflow: visible;
+      border: 0;
+      background: none;
+      color: inherit;
+      text-align: start;
+      cursor: auto;
+
+      & > * {
+        transition: opacity 400ms ease;
+
+        @starting-style { opacity: 0; }
+      }
+    }
+  }
+
+  .teaser-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  .teaser-text {
+    max-inline-size: 36rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /* -- A poster behind the text: a photo or a video still ------------ */
+  .teaser-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .teaser:has(> .teaser-media):not([data-played]) {
+    color: oklch(1 0 0);
+
+    /* a scrim keeps the text readable on any photo */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(to top, oklch(0 0 0 / 0.72), oklch(0 0 0 / 0.15) 70%);
+    }
+    & > :not(.teaser-media) {
+      position: relative;
+      z-index: 1;
+    }
+    & .teaser-text { color: oklch(1 0 0 / 0.85); }
+  }
+
+  /* -- Accessibility ------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .teaser {
+      &:hover:not([data-played]) > .play-button:not(:disabled) { scale: none; }
+      &[data-played] > * { transition: none; }
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .teaser:not([data-played]) {
+      border-color: var(--foreground);
+    }
+    .teaser-text { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .teaser:not([data-played]) {
+      border-color: CanvasText;
+    }
+    .teaser:has(> .play-button:focus-visible) { outline: 2px solid Highlight; }
+  }
+}
+
 /* ── components/testimonials/testimonials.css ── */
 /* -- Testimonials (marketing) --------------------------------------
    Big pull-quote with partner logo lockup, plus a grid of media cards
@@ -33786,6 +34037,15 @@
     color: var(--muted-foreground);
   }
 
+  /* -- Link ------------------------------------------------- */
+  /* a link in running text: the primary colour, the line and its offset from
+     the theme's link tokens (literal fallbacks for a theme without them) */
+  .link {
+    color: var(--primary);
+    text-decoration: var(--link-text-decoration, underline);
+    text-underline-offset: var(--link-underline-offset, 4px);
+  }
+
   /* -- Blockquote --------------------------------------------- */
   .blockquote {
     margin-block-start: 1.5rem;
@@ -34165,6 +34425,11 @@
     .muted {
       color: var(--foreground);
     }
+
+    /* a theme may drop the underline; more contrast brings it back */
+    .link {
+      text-decoration-line: underline;
+    }
   }
 
   @media (forced-colors: active) {
@@ -34184,6 +34449,11 @@
       background: Canvas;
       outline: 1px solid CanvasText;
       color: CanvasText;
+    }
+
+    .link {
+      color: LinkText;
+      text-decoration-line: underline;
     }
   }
 }

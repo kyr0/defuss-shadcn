@@ -59,6 +59,22 @@ export function elementModel(el: Element, runtimeAttrs: readonly string[] = []):
   };
 }
 
+/** VERIFIED: (probe in the teaser fixture) defuss-morph drops a <template>'s
+ *  content - `.html('<template><p>x</p></template>')` leaves the template
+ *  empty, as children and as .content - so markup written through df$ lost
+ *  every template in it. After `markup` was written into `root`, this gives
+ *  each template under `root` the content the HTML parser gives it - the
+ *  templates of the markup, in order (morph writes the markup's structure).
+ *  The content stays inert: nothing in it loads. */
+export function settleTemplates(root: Element, markup: string): void {
+  if (!markup.includes('<template')) return;
+  const $ = defussQuery();
+  const parsed = $(new DOMParser().parseFromString(markup, 'text/html').body).find('template').toArray() as HTMLTemplateElement[];
+  ($(root).find('template').toArray() as HTMLTemplateElement[]).forEach((t, i) => {
+    if (parsed[i]) t.content.replaceChildren(document.importNode(parsed[i].content, true));
+  });
+}
+
 /** The model as markup, the state applied by `apply` (the component's own
  *  markup function, run on the detached copy). */
 export function renderModel(model: ElementModel, apply?: (el: Element) => void): string {
@@ -69,6 +85,7 @@ export function renderModel(model: ElementModel, apply?: (el: Element) => void):
   node.html(model.html);
   const host = $('<div></div>').append(node);
   const el = node.get(0) as Element | undefined;
+  if (el) settleTemplates(el, model.html);
   if (el && apply) apply(el);
   return host.html() ?? '';
 }

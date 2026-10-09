@@ -99,7 +99,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   #sys-zahlen .sys-dot.tpl { background: #64748B; }
   #sys-zahlen.is-on .sys-dot { animation: sys-drop .7s var(--presentation-spring) forwards; animation-delay: var(--dl); }
   @keyframes sys-drop { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 1; transform: none; } }
-  #sys-zahlen .sys-collab { position: absolute; width: 160px; text-align: center; top: 750px; }
+  #sys-zahlen .sys-collab { position: absolute; width: 160px; text-align: center; top: 690px; }
   #sys-zahlen .sys-collab b { display: block; font-size: 34px; font-weight: 900; }
   #sys-zahlen .sys-collab .type-badge { display: inline-block; margin-top: 6px; font-size: 22px; padding: 3px 12px; border-width: 2px; border-radius: 8px; }
   #sys-zahlen h2 .type-badge { font-size: 36px; padding: 2px 12px; border-width: 3px; border-radius: 10px; vertical-align: 6px; letter-spacing: .04em; }
@@ -231,7 +231,9 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
 
   /* S10 how to use: branching route + 4 trains */
   /* the route sits 60px above its drawn coordinates: the bottom branch stays clear of the deck's prev / next controls */
-  #sys-wege .sys-fx, #sys-wege .sys-tl, #sys-wege .sys-trn { translate: 0 -60px; }
+  #sys-wege .sys-fx, #sys-wege .sys-tl, #sys-wege .sys-trn, #sys-wege .sys-say { translate: 0 -60px; }
+  /* the two setup lines left of the branch point, one above the trunk and one below */
+  #sys-wege .sys-say { left: 120px; width: 420px; margin: 0; font-size: 26px; font-weight: 700; line-height: 1.2; text-wrap: balance; }
   #sys-wege .sys-br { fill: none; stroke: #0A1E4A; stroke-width: 14; stroke-linejoin: round; stroke-linecap: round; }
   #sys-wege .sys-term { fill: #FFFFFF; stroke: #0A1E4A; stroke-width: 7; transform-box: fill-box; transform-origin: center; }
   #sys-wege .sys-tl { position: absolute; left: 950px; width: 560px; font-size: 36px; font-weight: 800; line-height: 1.1; transform: translateY(-50%); }
@@ -279,27 +281,26 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="abs sys-copy">
       <p class="sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.2s">defuss-shadcn · v0.9.8</p>
       <h1 class="sys-type" id="sys-type">Powerful Standalone HTML Component System.</h1>
-      <p class="sys-claim" data-df-entrance="up" style="--df-motion-delay:2.5s">No compilation. Stateful components. Fully themable. AI&nbsp;Agent-native.</p>
-      <p class="sys-sub" data-df-entrance="up" style="--df-motion-delay:2.8s"><span>The system in numbers</span><b><span data-stat="stats.total">232</span> components</b></p>
+      <p class="sys-claim" data-df-entrance="up" style="--df-motion-delay:2.5s">No compilation. <br />Stateful components.</p>
+      <p class="sys-sub" data-df-entrance="up" style="--df-motion-delay:2.8s"><span>Fully themable.</span><b><span>AI&nbsp;Agent-native.</span></b></p>
     </div>
     <div class="abs sys-stamp" data-df-entrance="pop" style="--df-motion-delay:3.2s; left:1040px; top:640px; transform:rotate(-9deg)">0 Dependencies</div>
     <p class="presentation-note">Opening: the system presents itself - every tick along the bottom edge is one of its components.</p>
   </section>
   <!-- 2 · Opening - the system in numbers: one unit dot per building block in five columns -->
   <section class="slide" data-slide id="sys-zahlen" data-theme="paper" data-sec="0" aria-label="The system in numbers">
-    <div class="abs sys-num" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:120px; font-size:300px"><span data-count="" data-stat="stats.total">232</span></div>
+    <div class="abs sys-num" data-df-entrance="blur" style="--df-motion-delay:.1s; left:112px; top:120px; font-size:300px"><span data-count="" data-stat="stats.total">234</span></div>
     <div class="abs" data-df-entrance="up" style="--df-motion-delay:.5s; left:124px; top:400px; font-size:40px; font-weight:300; letter-spacing:.02em">components</div>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.8s; left:120px; top:500px; width:520px; font-size:50px">From <span class="type-badge" data-type="ATM" title="Atom">ATM</span> to <span class="type-badge" data-type="TPL" title="Template">TPL</span></h2>
-    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:610px"><b>0</b><span>runtime dependencies</span></div>
-    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.35s; left:120px; top:680px"><b data-stat="stats.tokens">50</b><span>design tokens</span></div>
-    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.5s; left:120px; top:750px"><b data-stat="stats.examples">1,604</b><span>live examples</span></div>
+    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.2s; left:120px; top:610px"><b data-stat="stats.tokens">52</b><span>design tokens</span></div>
+    <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay:1.35s; left:120px; top:680px"><b data-stat="stats.examples">1,615</b><span>live examples</span></div>
     <div class="sys-dots" id="sys-dots"></div>
-    <div class="sys-collab" data-col="atm" style="left:620px"><b data-stat="stats.byType.ATM">69</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div>
-    <div class="sys-collab" data-col="mol" style="left:795px"><b data-stat="stats.byType.MOL">26</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div>
+    <div class="sys-collab" data-col="atm" style="left:620px"><b data-stat="stats.byType.ATM">70</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div>
+    <div class="sys-collab" data-col="mol" style="left:795px"><b data-stat="stats.byType.MOL">27</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div>
     <div class="sys-collab" data-col="blk" style="left:970px"><b data-stat="stats.byType.BLK">128</b><span class="type-badge" data-type="BLK" title="Blocks">BLK</span></div>
     <div class="sys-collab" data-col="org" style="left:1145px"><b data-stat="stats.byType.ORG">6</b><span class="type-badge" data-type="ORG" title="Organisms">ORG</span></div>
     <div class="sys-collab" data-col="tpl" style="left:1320px"><b data-stat="stats.templates">66</b><span class="type-badge" data-type="TPL" title="Templates">TPL</span></div>
-    <div class="abs sys-axlab" style="left:620px; top:866px">Taxonomy</div>
+    <div class="abs sys-axlab" style="left:620px; top:806px">Taxonomy</div>
     <p class="presentation-note">Every dot is one building block - atoms, molecules, blocks, organisms and templates (the template components plus the template pages: the decks, the website templates and the app scaffolds). Behind them: the design tokens and the live examples in the docs.</p>
   </section>
   <!-- 3 · Features - the sidebar's sections (Primitives on) as one line map: each station wears its section icon, a train loops -->
@@ -374,23 +375,23 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.50s">
         <p class="sys-split-kind"><b>all</b><span>JS</span></p>
         <code>all.min.js</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">149</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="700" data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">150</span><small>KiB gzip</small></p>
         <p class="sys-split-what">every component's script + the core</p>
         <div class="sys-split-chart" role="img" aria-label="all.min.js: source, minified and gzip size">
-          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib0">844</b></div>
-          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib0">487</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">149</b></div>
+          <div><span>source</span><i style="--d:0.70s"></i><b data-stat="stats.bundle.jsSize" data-stat-format="kib0">847</b></div>
+          <div><span>minified</span><i style="--d:0.80s"></i><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib0">489</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:0.90s"></i><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">150</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.65s">
         <p class="sys-split-kind"><b>all</b><span>CSS</span></p>
         <code>all.min.css</code>
-        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">129</span><small>KiB gzip</small></p>
+        <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="850" data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">130</span><small>KiB gzip</small></p>
         <p class="sys-split-what">every component's stylesheet</p>
         <div class="sys-split-chart" role="img" aria-label="all.min.css: source, minified and gzip size">
-          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib0">1227</b></div>
-          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib0">748</b></div>
-          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">129</b></div>
+          <div><span>source</span><i style="--d:0.85s"></i><b data-stat="stats.bundle.cssSize" data-stat-format="kib0">1235</b></div>
+          <div><span>minified</span><i style="--d:0.95s"></i><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib0">753</b></div>
+          <div class="gz"><span>gzip</span><i style="--d:1.05s"></i><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">130</b></div>
         </div>
       </div>
       <div class="sys-split" data-df-entrance="up" style="--df-motion-delay:0.80s">
@@ -399,8 +400,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
         <p class="sys-split-num"><span data-count="" data-count-down data-count-delay="1000" data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib0">25</span><small>KiB gzip</small></p>
         <p class="sys-split-what">df$ - query, morph, state, stores</p>
         <div class="sys-split-chart" role="img" aria-label="core.min.js: source, minified and gzip size">
-          <div><span>source</span><i style="--d:1.00s"></i><b data-stat="stats.core.jsSize" data-stat-format="kib0">141</b></div>
-          <div><span>minified</span><i style="--d:1.10s"></i><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib0">72</b></div>
+          <div><span>source</span><i style="--d:1.00s"></i><b data-stat="stats.core.jsSize" data-stat-format="kib0">142</b></div>
+          <div><span>minified</span><i style="--d:1.10s"></i><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib0">73</b></div>
           <div class="gz"><span>gzip</span><i style="--d:1.20s"></i><b data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib0">25</b></div>
         </div>
       </div>
@@ -437,8 +438,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <p class="abs" data-df-entrance="up" style="--df-motion-delay:3s; left:120px; top:560px; width:500px; font-size:40px; font-weight:600; line-height:1.2; margin:0">As little JavaScript as possible - as much as necessary.</p>
     <div class="sys-tank" style="left:720px"><div class="sys-liq" data-share="css" style="--d:.4s"><b><span data-count="" data-count-delay="400">0</span>%</b></div></div>
     <div class="sys-tank" style="left:1040px"><div class="sys-liq" data-share="js" style="--d:1s"><b><span data-count="" data-count-delay="1000">0</span>%</b></div></div>
-    <div class="sys-tlab" style="left:720px"><b data-stat="stats.withoutJs">169</b>CSS-only</div>
-    <div class="sys-tlab" style="left:1040px"><b data-stat="stats.withJs">63</b>with JavaScript</div>
+    <div class="sys-tlab" style="left:720px"><b data-stat="stats.withoutJs">170</b>CSS-only</div>
+    <div class="sys-tlab" style="left:1040px"><b data-stat="stats.withJs">64</b>with JavaScript</div>
     <p class="presentation-note">The ratio: three of four components are plain HTML and CSS - JavaScript only where HTML and CSS end (keyboard patterns, focus, state).</p>
   </section>
   <!-- 6 · Size - real apps: each Application Scaffold built on its own, linked full screen -->
@@ -446,13 +447,13 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:96px">Use cases · Application Scaffolds</p>
     <h2 class="abs sys-h-l" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:132px">Real apps ship a fraction.</h2>
     <div class="abs sys-bars" style="left:120px; top:268px; width:1360px; gap:8px; --sys-bar-label:520px">
-      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">232</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">278.4</span><span>KiB</span></b></div>
-      <a class="sys-bar" href="app-admin-dashboard.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.60s"><span>Admin Dashboard<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.admin-dashboard.components.length">30</span> components</small></span><i style="--d:0.70s"></i><b><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">75.0</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-messenger.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.72s"><span>Messenger<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.messenger.components.length">16</span> components</small></span><i style="--d:0.82s"></i><b><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.5</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-issue-tracker.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.84s"><span>Issue Tracker<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.issue-tracker.components.length">24</span> components</small></span><i style="--d:0.94s"></i><b><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.3</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-notes.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.96s"><span>Notes &amp; Docs<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.notes.components.length">24</span> components</small></span><i style="--d:1.06s"></i><b><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.6</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-status-page.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.08s"><span>Status Page<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.status-page.components.length">19</span> components</small></span><i style="--d:1.18s"></i><b><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.5</span><span>KiB</span></b></a>
-      <a class="sys-bar" href="app-desktop.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.20s"><span>Desktop<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.desktop.components.length">33</span> components</small></span><i style="--d:1.30s"></i><b><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.4</span><span>KiB</span></b></a>
+      <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay:.45s"><span>Everything<small><span data-stat="stats.total">234</span> components · all.min.css + all.min.js</small></span><i style="--d:.5s"></i><b><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">279.8</span><span>KiB</span></b></div>
+      <a class="sys-bar" href="app-admin-dashboard.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.60s"><span>Admin Dashboard<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.admin-dashboard.components.length">30</span> components</small></span><i style="--d:0.70s"></i><b><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">75.2</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-messenger.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.72s"><span>Messenger<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.messenger.components.length">16</span> components</small></span><i style="--d:0.82s"></i><b><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">55.7</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-issue-tracker.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.84s"><span>Issue Tracker<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.issue-tracker.components.length">24</span> components</small></span><i style="--d:0.94s"></i><b><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">67.5</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-notes.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:0.96s"><span>Notes &amp; Docs<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.notes.components.length">24</span> components</small></span><i style="--d:1.06s"></i><b><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.7</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-status-page.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.08s"><span>Status Page<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.status-page.components.length">19</span> components</small></span><i style="--d:1.18s"></i><b><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">57.7</span><span>KiB</span></b></a>
+      <a class="sys-bar" href="app-desktop.html" target="_blank" rel="noopener" data-df-entrance="left" style="--df-motion-delay:1.20s"><span>Desktop<span class="sys-go" aria-hidden="true">↗</span><small><span data-stat="stats.apps.desktop.components.length">33</span> components</small></span><i style="--d:1.30s"></i><b><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">73.6</span><span>KiB</span></b></a>
     </div>
     <p class="abs sys-foot" data-df-entrance="fade" style="--df-motion-delay:1.7s; left:120px; top:752px; width:1360px">Each app is built on its own: the core plus only the components its markup uses (dist/apps/) - an e2e test proves it renders exactly as on the full bundle. Click one to open it full screen.</p>
     <p class="presentation-note">Real-world applications never load every component: each scaffold is bundled on its own and measured - a fraction of the whole system, and the e2e proof shows it renders exactly as on the full bundle.</p>
@@ -485,8 +486,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="sys-dg" style="top:204px; width:1240px; transform:scale(1.1)">
       <figure class="diagram" id="sys-vae-loop" aria-label="The VAE loop: a session starts from the rules and the agent's memory, plans, implements and passes the gate - which sends failures back - then finalizes; lessons become tests, verifier rules and memory for the next session; a person reviews before release" style="--diagram-node-w:9rem;--diagram-col-min:7rem;--diagram-gap-x:2rem;--diagram-gap-y:1.1rem"><script type="application/json" class="diagram-spec">{"type":"flow","steps":true,"interactive":true,"cols":4,"nodes":[{"id":"start","name":"Session start","meta":"rules + .agents/ loaded","col":1,"row":1,"step":1},{"id":"plan","name":"Plan","meta":"prompt · research · spec","col":2,"row":1,"step":2},{"id":"implement","name":"Implement","meta":"fully agentic","col":3,"row":1,"step":3,"tone":"accent"},{"id":"gate","name":"Gate","meta":"VERIFY.py · verify → review → docs · skips what passed","col":4,"row":1,"step":4,"tone":"warn"},{"id":"finalize","name":"Finalize","meta":"commits · changelog","col":4,"row":2,"step":5},{"id":"learn","name":"Learn","meta":"a lesson twice → test · VERIFY.py rule · AGENTS.md rule","col":2,"row":2,"step":6},{"id":"memory","name":".agents/","meta":"MEMORY · CLI_GIST · EPISODES","col":1,"row":2,"step":7},{"id":"human","name":"Human review","meta":"a person signs off","col":4,"row":3,"step":8,"tone":"link"},{"id":"release","name":"Release","meta":"CI · CD · registries","col":3,"row":3,"step":9,"shape":"pill","tone":"ok"}],"edges":[{"from":"start","to":"plan"},{"from":"plan","to":"implement"},{"from":"implement","to":"gate"},{"from":"gate","to":"implement","label":"fix","tone":"warn"},{"from":"gate","to":"finalize","label":"green"},{"from":"finalize","to":"learn","label":"consolidate"},{"from":"learn","to":"memory"},{"from":"memory","to":"start","label":"next session","line":"dashed"},{"from":"finalize","to":"human"},{"from":"human","to":"release"}]}</script></figure>
     </div>
-    <p class="abs sys-proof" data-df-entrance="up" style="--df-motion-delay:.6s; left:120px; top:720px; width:1360px">The proof: defuss-shadcn scaled from 20 to <span data-stat="stats.total">232</span> components with this method - and still passes every gate.</p>
-    <p class="abs sys-credit" data-df-entrance="fade" style="--df-motion-delay:.9s; left:120px; top:766px; width:1360px">Designed by Aron Homberg (kyr0), general purpose: it adapts to any agentic engineering project. Skill: <a href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener">github.com/kyr0/defuss-vae</a> · the report: <a href="paper.html" target="_blank" rel="noopener">Verified Agentic Engineering in Practice</a></p>
+    <p class="abs sys-proof" data-df-entrance="up" style="--df-motion-delay:.6s; left:120px; top:622px; width:1360px">The proof: defuss-shadcn scaled from 20 to <span data-stat="stats.total">234</span> components with this method - and still passes every gate.</p>
+    <p class="abs sys-credit" data-df-entrance="fade" style="--df-motion-delay:.9s; left:120px; top:668px; width:1360px">Designed by Aron Homberg (kyr0), general purpose: it adapts to any agentic engineering project. Skill: <a href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener">github.com/kyr0/defuss-vae</a> · the report: <a href="paper.html" target="_blank" rel="noopener">Verified Agentic Engineering in Practice</a></p>
     <p class="presentation-note">The VAE loop, as the technical report draws it (Figure 1): a session starts from the rules and the agent's own memory, plans, implements fully agentically, passes the gate - verify, review, docs; failures come back as fix lines - then finalizes. A lesson learned twice becomes a test, a verifier rule or an AGENTS.md rule, and the memory in .agents/ opens the next session. A person reviews before the release.</p>
   </section>
   <!-- 9 · Method - inside the gate: this repository's proof loop (the Architecture page) -->
@@ -497,8 +498,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="sys-dg" style="top:204px; width:1360px; transform:scale(1.02)">
       <figure class="diagram" id="sys-vae-gate" aria-label="The proof loop: AGENTS.md defers to the verifier; the agent edits and runs make build; lint, compile, screenshots, verify.ts and the tests gate it; a failing gate's output is the work order back to the agent; a passing one yields visual evidence a reviewer judges - provably done" style="--diagram-node-w:8rem;--diagram-col-min:6.5rem;--diagram-gap-x:1.5rem;--diagram-gap-y:1.1rem"><script type="application/json" class="diagram-spec">{"type":"flow","steps":true,"interactive":true,"cols":6,"nodes":[{"id":"agents","name":"AGENTS.md","meta":"conventions · defers to the verifier","col":1,"row":1,"step":1},{"id":"agent","name":"Coding agent","meta":"edits src/","col":2,"row":1,"step":2,"tone":"accent"},{"id":"build","name":"make build","meta":"the whole pipeline","col":3,"row":1,"step":3,"shape":"pill"},{"id":"lint","name":"oxlint · typecheck","col":1,"row":2,"step":4,"eyebrow":"Gate"},{"id":"compile","name":"compile src → dist","meta":"1:1 build","col":2,"row":2,"step":5,"eyebrow":"Gate"},{"id":"shots","name":"Screenshots","meta":"every state × light/dark","col":3,"row":2,"step":6,"eyebrow":"Gate"},{"id":"verify","name":"verify.ts","meta":"consistency gates · fix: lines","col":4,"row":2,"step":7,"eyebrow":"Gate"},{"id":"tests","name":"Vitest · e2e","meta":"real pages, real Chromium","col":5,"row":2,"step":8,"eyebrow":"Gate"},{"id":"pass","name":"All gates pass?","col":6,"row":2,"step":9,"shape":"diamond"},{"id":"order","name":"Verifier output is the work order","col":2,"row":3,"step":10,"tone":"warn"},{"id":"evidence","name":"Visual evidence","meta":"byte-verified PNG per state","col":4,"row":3,"step":11},{"id":"review","name":"Looks right?","meta":"VLM / human review","col":5,"row":3,"step":12,"shape":"diamond"},{"id":"done","name":"Provably done","meta":"committed · built · mirrored","col":6,"row":3,"step":13,"shape":"pill","tone":"ok"}],"edges":[{"from":"agents","to":"agent","label":"rules"},{"from":"agent","to":"build","label":"runs"},{"from":"build","to":"lint"},{"from":"lint","to":"compile"},{"from":"compile","to":"shots"},{"from":"shots","to":"verify"},{"from":"verify","to":"tests"},{"from":"tests","to":"pass"},{"from":"pass","to":"order","label":"no"},{"from":"order","to":"agent","label":"fix","line":"dashed","tone":"accent"},{"from":"pass","to":"evidence","label":"yes"},{"from":"evidence","to":"review"},{"from":"review","to":"agent","label":"visual defect","line":"dashed"},{"from":"review","to":"done","label":"yes"}]}</script></figure>
     </div>
-    <p class="abs sys-proof" data-df-entrance="up" style="--df-motion-delay:.6s; left:120px; top:720px; width:1360px">Trapped in the loop until the work is actually good: a failing gate's output is the work order, a green gate plus a screenshot per state is the evidence.</p>
-    <p class="abs sys-credit" data-df-entrance="fade" style="--df-motion-delay:.9s; left:120px; top:800px; width:1360px">The same diagram, with the why: <a href="architecture.html" target="_blank" rel="noopener">Verified Agentic Engineering (VAE)</a> in the guide.</p>
+    <p class="abs sys-proof" data-df-entrance="up" style="--df-motion-delay:.6s; left:120px; top:609px; width:1360px">Trapped in the loop until the work is actually good: a failing gate's output is the work order, a green gate plus a screenshot per state is the evidence.</p>
+    <p class="abs sys-credit" data-df-entrance="fade" style="--df-motion-delay:.9s; left:120px; top:689px; width:1360px">The same diagram, with the why: <a href="architecture.html" target="_blank" rel="noopener">Verified Agentic Engineering (VAE)</a> in the guide.</p>
     <p class="presentation-note">Inside the gate, for this repository: AGENTS.md states the conventions and defers to the verifier; the agent edits and runs the whole pipeline; lint and types, the 1:1 compile, a screenshot per state and mode, the verifier's consistency gates with their fix lines, and the unit and end-to-end tests gate it. If a gate fails, its output is the work order back to the agent. If all pass, the screenshots are the visual evidence a reviewer judges - then the work is provably done.</p>
   </section>
   <!-- 10 · Method - the verifier, timed: stopwatch + the recorded run -->
@@ -523,8 +524,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="sys-rows">
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay:.7s"><span>Verify gates</span><span></span><b data-stat="verify.gates">78</b></div>
       <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.82s"><span>E2E test files</span><span></span><b data-stat="verify.e2eFiles">242</b></div>
-      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"><span>Unit tests</span><span></span><b data-stat="tests.tests">618</b></div>
-      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:1.06s"><span>Components covered</span><span></span><b data-stat="stats.total">232</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:.94s"><span>Unit tests</span><span></span><b data-stat="tests.tests">622</b></div>
+      <div class="sys-row" data-df-entrance="left" style="--df-motion-delay:1.06s"><span>Components covered</span><span></span><b data-stat="stats.total">234</b></div>
     </div>
     <p class="sys-rec" data-df-entrance="fade" style="--df-motion-delay:1.4s"><code>bun scripts/verify.ts</code> - <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s on a <span data-stat="verify.machine" data-stat-format="text">MacBook Air</span> · <span data-stat="verify.chip" data-stat-format="text">Apple M4</span> (<span data-stat="verify.memoryGB">24</span> GB, <span data-stat="verify.os" data-stat-format="text">macOS 15.7.3</span>, Bun <span data-stat="verify.bun" data-stat-format="text">1.4.2</span>), run by <span data-stat="verify.agent" data-stat-format="text">Claude Code · Opus 5.5 (high effort)</span> on <span data-stat="verify.date" data-stat-format="text">2026-10-05</span>. Recorded by scripts/time-verify.ts - and this slide is checked against the record.</p>
     <p class="presentation-note">How long the verifier alone takes, measured: one verify run, recorded with the machine and the agent that drove it - the slide's figures are gated against that record.</p>
@@ -544,6 +545,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
       <circle class="sys-term" cx="900" cy="610" r="20" data-df-entrance="pop" style="--df-motion-delay:1.9s"></circle>
       <circle class="sys-term" cx="900" cy="760" r="20" data-df-entrance="pop" style="--df-motion-delay:2s"></circle>
     </svg>
+    <p class="abs sys-say" data-df-entrance="fade" style="--df-motion-delay:1s; bottom:376px">Agentic first setup for Claude Code, Codex &amp; co.</p>
+    <p class="abs sys-say" data-df-entrance="fade" style="--df-motion-delay:1.5s; top:556px">Classic professional developer setup options remain</p>
     <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:1.8s; top:320px"><a href="vibe-coding.html" target="_blank" rel="noopener">SKILL.md / Vibe Coding</a><small>one skill - your agent builds with it</small></div>
     <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:1.95s; top:470px">Simple &lt;link&gt; / &lt;script&gt;<small>all.css + all.js from the CDN</small></div>
     <div class="sys-tl" data-df-entrance="left" style="--df-motion-delay:2.1s; top:610px">npm install<small>npm install defuss-shadcn</small></div>
@@ -558,7 +561,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
   <section class="slide" data-slide id="sys-skill-ref" data-theme="ink" data-sec="5" aria-label="Skill: defuss-shadcn, the reference">
     <p class="abs sys-eyebrow" data-df-entrance="up" style="--df-motion-delay:.1s; left:120px; top:64px">Skills · 1 of 4 · the reference</p>
     <h2 class="abs sys-h-m" data-df-entrance="up" style="--df-motion-delay:.2s; left:120px; top:100px">defuss-shadcn</h2>
-    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Your agent builds with the whole component system in mind - <span data-stat="stats.total">232</span> components, learning from the best practices shown in <span data-stat="stats.examples">1,604</span> live examples: expert guidance built in, AI slop left out.</p>
+    <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay:.4s">Your agent builds with the whole component system in mind - <span data-stat="stats.total">234</span> components, learning from the best practices shown in <span data-stat="stats.examples">1,615</span> live examples: expert guidance built in, AI slop left out.</p>
     <div class="sys-skill-grid">
       <div data-df-entrance="up" style="--df-motion-delay:.7s"><b>What it holds</b>The install paths (npm, CDN), the rules, a map of every documentation page - and every component skill next to it: markup, variants, sizes, ARIA, states.</div>
       <div data-df-entrance="up" style="--df-motion-delay:.9s"><b>Rules it keeps</b>Markup from the skills, verbatim. Native elements first. Every colour a token. State through the State API. One runtime: <code>df$</code>.</div>
@@ -611,7 +614,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     <div class="sys-dg" style="top:280px; width:1360px; transform:scale(1)">
       <figure class="diagram" id="sys-skills-map" aria-label="How the skills divide: defuss-shadcn's skills tell the agent what to build - the components, their guidelines, a plan, a theme, a review - and lead to a consistent UI; defuss-vae's skills tell it how to work - plan, implement, gate, finalize - and lead to quality that scales" style="--diagram-node-w:8.5rem;--diagram-col-min:6.5rem;--diagram-gap-x:1.4rem;--diagram-gap-y:1rem"><script type="application/json" class="diagram-spec">{"type":"flow","steps":true,"interactive":true,"cols":6,"nodes":[{"id":"agent","name":"Your agent","meta":"Claude Code · Codex · Cursor · Gemini CLI · Copilot · Windsurf","col":1,"row":2,"step":1,"tone":"accent"},{"id":"ref","name":"defuss-shadcn","eyebrow":"defuss-shadcn","meta":"every component as its documented markup; the rules","col":2,"row":1,"step":2},{"id":"plan","name":"shadcn-plan","eyebrow":"defuss-shadcn","meta":"reusable units first, then compose","col":3,"row":1,"step":3},{"id":"theme","name":"shadcn-theme","eyebrow":"defuss-shadcn","meta":"a theme from a brief, checked","col":4,"row":1,"step":4},{"id":"review","name":"shadcn-review","eyebrow":"defuss-shadcn","meta":"the checker, then judgment","col":5,"row":1,"step":5},{"id":"ui","name":"A consistent UI","meta":"no invented classes, no slop","col":6,"row":1,"step":6,"shape":"pill","tone":"ok"},{"id":"vplan","name":"plan","eyebrow":"defuss-vae","meta":"trace · probe · the smallest plan","col":2,"row":3,"step":7},{"id":"vimpl","name":"implement","eyebrow":"defuss-vae","meta":"fully agentic","col":3,"row":3,"step":8},{"id":"vgate","name":"gate","eyebrow":"defuss-vae","meta":"verify → review → docs","col":4,"row":3,"step":9,"tone":"warn"},{"id":"vfinal","name":"finalize","eyebrow":"defuss-vae","meta":"commits · changelog · memory","col":5,"row":3,"step":10},{"id":"quality","name":"Quality that scales","meta":"failure modes fixed, docs that hold","col":6,"row":3,"step":11,"shape":"pill","tone":"ok"}],"edges":[{"from":"agent","to":"ref","label":"what to build"},{"from":"ref","to":"plan"},{"from":"plan","to":"theme"},{"from":"theme","to":"review"},{"from":"review","to":"ui"},{"from":"agent","to":"vplan","label":"how to work"},{"from":"vplan","to":"vimpl"},{"from":"vimpl","to":"vgate"},{"from":"vgate","to":"vimpl","label":"fix","tone":"warn"},{"from":"vgate","to":"vfinal"},{"from":"vfinal","to":"quality"}]}</script></figure>
     </div>
-    <p class="abs sys-skill-cmd" data-df-entrance="fade" style="--df-motion-delay:1.4s; top:800px">github.com/kyr0/defuss-vae</p>
+    <p class="abs sys-skill-cmd" data-df-entrance="fade" style="--df-motion-delay:1.4s; top:734px">npx skills add kyr0/defuss-vae --skill '*'</p>
     <p class="presentation-note">The two skill families and how they divide: defuss-shadcn's skills tell the agent what to build - the components with their guidelines, a plan, a theme, a review - and lead to a consistent UI; defuss-vae's skills tell it how to work - plan, implement, the gate, finalize - fixing the failure modes of agentic engineering, raising code and documentation quality, and letting vibe coding scale. Both install into any harness that reads Agent Skills.</p>
   </section>
   <!-- 17 · Outlook - discussion: outlined ? with one tick per component -->
@@ -699,7 +702,8 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
     }
 
     // S2: one unit dot per building block raining into the five taxonomy
-    // columns - the pitch shrinks until the tallest column fits (top 150 → 720)
+    // columns - the pitch shrinks until the tallest column fits (top 90 → 660),
+    // clear of the navigation and the brand along the bottom edge
     const dots = document.getElementById('sys-dots');
     const columns = Array.from(deck.querySelectorAll('#sys-zahlen .sys-collab')).map((c) => [num(c.querySelector('b')), c.dataset.col]);
     const PER_ROW = 5;
@@ -714,7 +718,7 @@ import { DocPage, PageHeader, SourceFiles } from "../lib/components/index";
         const dot = document.createElement('i');
         dot.className = 'sys-dot ' + cls;
         dot.style.left = (x0 + col * pitch + (pitch - size) / 2) + 'px';
-        dot.style.top = (720 - row * pitch - size / 2) + 'px';
+        dot.style.top = (660 - row * pitch - size / 2) + 'px';
         dot.style.setProperty('--dl', (row * 60 + k * 45 + col * 18 + 300) + 'ms');
         dots.appendChild(dot);
       }

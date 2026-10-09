@@ -41,7 +41,7 @@ export { draw, entrance, type MotionOptions } from './motion.js';
 export { anim, animChannel, type AnimOptions, type AnimRegistry } from './anim.js';
 // the render() half of the State API: snapshot the authored markup, rebuild
 // it with a state applied (AGENTS.md "State API" → render)
-export { elementModel, renderModel, RUNTIME_ATTRS, type ElementModel } from './render.js';
+export { elementModel, renderModel, settleTemplates, RUNTIME_ATTRS, type ElementModel } from './render.js';
 // the State API itself, built once on a defuss-store store per element
 // (AGENTS.md "State through stores")
 export { componentState, bindComponent, unbindComponent, type ComponentApi, type ComponentState, type StateSpec } from './component-state.js';

@@ -97,6 +97,7 @@ const GROUP_TITLES: Record<TokenGroup, string> = {
   shadow: 'Shadow scale',
   spacing: 'Spacing',
   tracking: 'Tracking',
+  link: 'Links',
 };
 
 /** references/tokens.md - every theme token: role and default value per mode, plus the contrast pairs. */

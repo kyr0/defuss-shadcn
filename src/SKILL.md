@@ -1479,6 +1479,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/payment-form.png
 **Skill:** [components/website/payment-form/component-skill.md](components/website/payment-form/component-skill.md)
 
+## Play Button
+
+**Type:** ATM
+**Why:** A native button - focus, Enter / Space and the disabled state come from the browser; the round shape and the triangle are pure CSS (clip-path), so one element with an accessible name is the whole component.
+**When:** The one action that starts something - a video, a deck, a demo, content that loads on demand (the Teaser). For any other action use button; for the floating screen action use fab.
+**Files:** dist/components/play-button/play-button.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/play-button.png
+**Skill:** [components/actions/play-button/component-skill.md](components/actions/play-button/component-skill.md)
+
 ## Playlist Item
 
 **Type:** BLK
@@ -2158,6 +2168,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/team-member.png
 **Skill:** [components/website/team-member/component-skill.md](components/website/team-member/component-skill.md)
+
+## Teaser
+
+**Type:** MOL
+**Why:** Template content is inert - nothing inside a <template> loads, runs or renders - so a teaser can stand in for a deck, a video or an iframe at the cost of a card; its play button (a native button) morphs the content into place through defuss-morph.
+**When:** Content that is heavy or should start on purpose - a slide deck, a video, an embedded app, a demo - shown as an inviting card first. For media that is always loaded use the Video Player block or Iframe; for a call to action that navigates use CTA.
+**Files:** dist/components/teaser/teaser.css + dist/components/teaser/teaser.js
+**Supported states:** default, played
+**Screenshots:** screenshots/{light,dark}/teaser.png, screenshots/{light,dark}/teaser-played.png
+**Skill:** [components/data-display/teaser/component-skill.md](components/data-display/teaser/component-skill.md)
 
 ## Testimonials
 

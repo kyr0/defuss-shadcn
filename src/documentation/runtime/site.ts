@@ -408,6 +408,32 @@
     var themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) themeBtn.addEventListener('click', toggleDark);
 
+    // VERIFIED: (documentation.e2e) The Getting Started rail's Fullscreen button: the deck waits in a
+    // teaser until played - the button plays it first (synchronously, so the click still counts as
+    // the user's gesture), then the iframe goes native fullscreen - its page sets the deck full
+    // width, centred, edge to edge - and the deck takes focus for ← / →, now or once its frame has
+    // loaded. Where the browser refuses element fullscreen (iPhone), the deck page opens in a new tab.
+    document.addEventListener('click', function (e) {
+      var $ = globalThis.df$;
+      var btn = $(e.target).closest('[data-deck-fullscreen]').get(0);
+      if (!btn) return;
+      var rail = $(btn).closest('.deck-rail');
+      var teaser = rail.find('.teaser').get(0);
+      if (teaser && teaser.api && !teaser.hasAttribute('data-played')) teaser.api.setState('played');
+      var frame = rail.find('iframe').get(0);
+      if (!frame) return;
+      var newTab = function () { globalThis.open(frame.src, '_blank', 'noopener'); };
+      if (typeof frame.requestFullscreen !== 'function') { newTab(); return; }
+      var focusDeck = function () {
+        var deck = frame.contentDocument && frame.contentDocument.body && $(frame.contentDocument.body).find('.presentation').get(0);
+        if (deck) deck.focus();
+      };
+      frame.requestFullscreen().then(function () {
+        focusDeck();
+        frame.addEventListener('load', focusDeck, { once: true });
+      }, newTab);
+    });
+
     // Handle hash-link clicks (TOC "On This Page", built-with pills, etc.)
     // Default anchor scroll doesn't always work after SPA navigation, so we
     // scrollIntoView - but its end offset is computed AT CLICK TIME. Any reflow

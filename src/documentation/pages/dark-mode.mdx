@@ -161,7 +161,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <H2>Persistence</H2>
 
-<p class="text-sm text-muted-foreground mb-5">When a user explicitly toggles dark mode, keep their choice in a persisted store - <code>df$.store.persisted(key, initial)</code>, the system's one way to Web Storage (<a href="https://www.npmjs.com/package/defuss-store">defuss-store</a>: validated, versioned, in memory when the browser blocks storage). On page load, check the saved choice first - if there is none, fall back to the OS setting.</p>
+<p class="text-sm text-muted-foreground mb-5">When a user explicitly toggles dark mode, keep their choice in a persisted store - <code>df$.store.persisted(key, initial)</code>, the system's one way to Web Storage (<a class="link" href="https://www.npmjs.com/package/defuss-store">defuss-store</a>: validated, versioned, in memory when the browser blocks storage). On page load, check the saved choice first - if there is none, fall back to the OS setting.</p>
 
 <CodeWindow lang="javascript" title="persistence logic - runs before first paint" mb="1.5rem" code={"// Synchronous in <head> (no defer, no module): it must run before the\n// first paint, so before any library - plain DOM on purpose, not df$.\n// The store's bytes are a small envelope: { format: 'defuss-store', value }\nlet saved = '';\ntry {\n  const raw = JSON.parse(localStorage.getItem('defuss-shadcn-theme'));\n  saved = raw && raw.format === 'defuss-store' ? raw.value : raw;\n} catch {}\nconst prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;\n\nif (saved === 'dark' || (!saved && prefersDark)) {\n  document.documentElement.classList.add('dark');\n  document.documentElement.style.colorScheme = 'dark';\n}"} />
 

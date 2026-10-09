@@ -23,7 +23,7 @@ export function DocLink({ href, target, rel, children }: Props & { href: string;
       href={href}
       {...(target ? { target } : {})}
       {...(rel ? { rel } : {})}
-      style="color:var(--primary);text-decoration:underline;text-underline-offset:4px;"
+      class="link"
     >
       {children}
     </a>

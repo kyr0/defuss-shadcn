@@ -8,7 +8,7 @@
  * no longer matches the tokens default-semantic-tokens.css declares.
  */
 
-export type TokenGroup = 'surface' | 'utility' | 'chart' | 'sidebar' | 'font' | 'radius' | 'shadow' | 'spacing' | 'tracking';
+export type TokenGroup = 'surface' | 'utility' | 'chart' | 'sidebar' | 'font' | 'radius' | 'shadow' | 'spacing' | 'tracking' | 'link';
 
 /** Every token a theme may set, with its group and the role components give it. */
 export const THEME_TOKENS: Readonly<Record<string, { group: TokenGroup; role: string }>> = {
@@ -58,6 +58,8 @@ export const THEME_TOKENS: Readonly<Record<string, { group: TokenGroup; role: st
   'shadow-2xl': { group: 'shadow', role: 'elevation scale, largest' },
   spacing: { group: 'spacing', role: 'the base spacing unit every gap / padding utility multiplies' },
   'tracking-normal': { group: 'tracking', role: 'default letter spacing' },
+  'link-text-decoration': { group: 'link', role: 'the line under a .link: underline, none, underline dotted, ... (not in the tweakcn export: unset, .link underlines)' },
+  'link-underline-offset': { group: 'link', role: 'the gap between a .link and its underline (not in the tweakcn export: unset, 4px)' },
 };
 
 /** Colour tokens: a theme sets every one of them in both modes, or the

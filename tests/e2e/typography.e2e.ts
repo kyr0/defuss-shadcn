@@ -134,6 +134,22 @@ await cssSmoke('typography', [
     css: { 'column-count': '2', 'column-width': '288px', 'column-rule-style': 'solid', 'text-align': 'justify', 'hyphens': 'auto', 'text-align-last': 'start' },
   },
   {
+    label: 'link: the primary colour, underlined 4px below the text - and a theme sets both through its tokens',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+        const probe = document.createElement('span');
+        probe.style.color = primary; document.body.append(probe);
+        const want = getComputedStyle(probe).color; probe.remove();
+        const a = cs('ty-link'), b = cs('ty-link-themed');
+        return { color: a.color, want, line: a.textDecorationLine, offset: a.textUnderlineOffset, style: b.textDecorationStyle, offset2: b.textUnderlineOffset };
+      });
+      assert.equal(r.color, r.want);
+      assert.deepEqual([r.line, r.offset, r.style, r.offset2], ['underline', '4px', 'dotted', '2px']);
+    },
+  },
+  {
     // across the column break the heading's margin cannot collapse into the spanner's:
     // the left column started lower than the right (the paper's two-column trial)
     label: 'typeset: the columns below a .typeset-span start level - the first block keeps no top margin',

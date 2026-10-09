@@ -81,6 +81,12 @@
   /* -- Tracking ------------------------------------------------- */
   --tracking-normal:         0em;
 
+  /* -- Links ---------------------------------------------------- */
+  /* not part of the tweakcn export: a tweakcn theme leaves them unset and
+     .link falls back to these same values */
+  --link-text-decoration:    underline;
+  --link-underline-offset:   4px;
+
   /* -- Shadow scale --------------------------------------------- */
   --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs:  0 1px 3px 0px hsl(0 0% 0% / 0.05);
@@ -4825,6 +4831,15 @@
     color: var(--muted-foreground);
   }
 
+  /* -- Link ------------------------------------------------- */
+  /* a link in running text: the primary colour, the line and its offset from
+     the theme's link tokens (literal fallbacks for a theme without them) */
+  .link {
+    color: var(--primary);
+    text-decoration: var(--link-text-decoration, underline);
+    text-underline-offset: var(--link-underline-offset, 4px);
+  }
+
   /* -- Blockquote --------------------------------------------- */
   .blockquote {
     margin-block-start: 1.5rem;
@@ -5204,6 +5219,11 @@
     .muted {
       color: var(--foreground);
     }
+
+    /* a theme may drop the underline; more contrast brings it back */
+    .link {
+      text-decoration-line: underline;
+    }
   }
 
   @media (forced-colors: active) {
@@ -5223,6 +5243,11 @@
       background: Canvas;
       outline: 1px solid CanvasText;
       color: CanvasText;
+    }
+
+    .link {
+      color: LinkText;
+      text-decoration-line: underline;
     }
   }
 }

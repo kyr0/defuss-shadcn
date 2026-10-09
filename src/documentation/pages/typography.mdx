@@ -101,6 +101,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <code class="inline-code">default-semantic-tokens.css</code>
 ```
 
+```html example label="Link" hint="A link in running text: the primary colour, the line from --link-text-decoration (underline) and its gap from --link-underline-offset (4px) - two theme tokens the Theme Designer sets under Typography. The second paragraph overrides both inline."
+<p class="p">Read the <a class="link" href="#">installation guide</a> first.</p>
+<p class="p" style="--link-text-decoration: underline dotted; --link-underline-offset: 2px;">The same <a class="link" href="#">link</a> with a dotted line closer to the text.</p>
+```
+
 ```html example label="Font stacks" hint="Three token-driven stacks - components reference the tokens, never a hardcoded family."
 <p style="font-family:var(--font-serif)">Display headings</p>
 ```

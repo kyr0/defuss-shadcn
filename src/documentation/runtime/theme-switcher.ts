@@ -40,8 +40,10 @@ import { prefs, saveCustomThemes } from './prefs.js';
      blocked (private mode, sandboxed frames): the store then keeps the list
      for this page only and saving reports it. */
   var CUSTOM_PREFIX = 'custom-';
-  /* the only properties a custom theme may set - the tweakcn token shape */
-  var TOKEN_RE = /^(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground|border|input|ring|chart-[1-5]|sidebar|sidebar-foreground|sidebar-primary|sidebar-primary-foreground|sidebar-accent|sidebar-accent-foreground|sidebar-border|sidebar-ring|font-sans|font-serif|font-mono|radius|shadow-2xs|shadow-xs|shadow-sm|shadow|shadow-md|shadow-lg|shadow-xl|shadow-2xl|spacing|tracking-normal)$/;
+  /* the only properties a custom theme may set - the tweakcn token shape, plus the two
+     link tokens (Typography's .link reads them with fallbacks, so tweakcn themes still fit).
+     VERIFIED: (verify agent skills <-> sources) equal to THEME_TOKENS and the token file */
+  var TOKEN_RE = /^(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground|border|input|ring|chart-[1-5]|sidebar|sidebar-foreground|sidebar-primary|sidebar-primary-foreground|sidebar-accent|sidebar-accent-foreground|sidebar-border|sidebar-ring|font-sans|font-serif|font-mono|radius|shadow-2xs|shadow-xs|shadow-sm|shadow|shadow-md|shadow-lg|shadow-xl|shadow-2xl|spacing|tracking-normal|link-text-decoration|link-underline-offset)$/;
 
   function isCustomId(id) {
     return typeof id === 'string' && id.indexOf(CUSTOM_PREFIX) === 0;

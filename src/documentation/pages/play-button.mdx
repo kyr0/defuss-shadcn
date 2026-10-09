@@ -1,0 +1,107 @@
+---
+title: "Play Button"
+description: "Play Button - a large round button that starts something: a video, a deck, content that loads on demand. One native button; the triangle is CSS."
+slug: "play-button"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="play-button" title="Play Button" component="play-button">
+  A large round button that starts something - a video, a slide deck, content that loads only on demand (the <DocLink href="teaser.html">Teaser</DocLink>). One native <code>&lt;button&gt;</code> with an accessible name: the circle is its box, the triangle its <code>::before</code>, cut out with <code>clip-path</code>. No icon, no JavaScript.
+</PageHeader>
+
+<SkillPanel component="play-button">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;button type="button" aria-label="..."&gt;</code> - focus, Enter / Space and <code>disabled</code> come from the browser.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button" title="focus, Enter / Space, disabled"><code>&lt;button&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" title="the triangle"><code>clip-path</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scale" title="hover and press feedback"><code>scale</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter" title="the frosted glass variant"><code>backdrop-filter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="hover colour and the pulse ring"><code>color-mix()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="no pulse, no scaling"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="system button colours"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.play-button</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="secondary" description="--secondary fill" />
+    <Variant name="outline" description="--background fill, a --border ring" />
+    <Variant name="glass" description="Frosted white over a photo or a poster" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="sm" description="3rem (48px)" />
+    <Variant name="md" description="4.5rem (72px, default)" />
+    <Variant name="lg" description="6rem (96px)" />
+    <Variant name="xl" description="8rem (128px)" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• <code>data-pulse</code> sends a ring outward for attention; it stops under reduced motion.</SkillText>
+  <SkillText dense>• The accessible name says what plays - the triangle is decoration.</SkillText>
+  <SkillText dense>• <code>--play-button-size</code> sets any other diameter; the triangle and the pulse follow.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A round --primary button with a CSS triangle - hover grows it a little, a press shrinks it. The accessible name says what plays." schema="none"
+<button class="play-button" type="button" aria-label="Play the video"></button>
+```
+
+```html example label="Sizes" hint="data-size: sm (48px), md (72px, the default), lg (96px), xl (128px). --play-button-size sets any other diameter." schema="none"
+<div class="flex flex-wrap items-center gap-4">
+  <button class="play-button" type="button" data-size="sm" aria-label="Play (small)"></button>
+  <button class="play-button" type="button" aria-label="Play (medium)"></button>
+  <button class="play-button" type="button" data-size="lg" aria-label="Play (large)"></button>
+  <button class="play-button" type="button" data-size="xl" aria-label="Play (extra large)"></button>
+</div>
+```
+
+```html example label="Variants" hint="secondary and outline sit on plain surfaces; glass is frosted white for a photo or a video still behind it." schema="none"
+<div class="flex flex-wrap items-center gap-4">
+  <button class="play-button" type="button" aria-label="Play"></button>
+  <button class="play-button" type="button" data-variant="secondary" aria-label="Play (secondary)"></button>
+  <button class="play-button" type="button" data-variant="outline" aria-label="Play (outline)"></button>
+  <div class="grid place-items-center" style="inline-size:14rem; aspect-ratio:16/9; border-radius:var(--radius-lg); background:url(images/mk-wide3.png) center/cover;">
+    <button class="play-button" type="button" data-variant="glass" aria-label="Play the trailer"></button>
+  </div>
+</div>
+```
+
+```html example label="Pulse" hint="data-pulse sends a ring outward, again and again - for the one thing on the page that should be noticed. Reduced motion stops it." schema="none"
+<button class="play-button" type="button" data-size="lg" data-pulse aria-label="Start the presentation"></button>
+```
+
+```html example label="Disabled" hint="Native disabled: not focusable, not clickable, half opacity." schema="none"
+<button class="play-button" type="button" disabled aria-label="Play (unavailable)"></button>
+```
+
+```html example label="In a teaser" hint="The play button starts a Teaser: the card's template content - here a video - takes its place." component="teaser"
+<section class="teaser" data-ratio="16/9" aria-label="The product tour">
+  <img class="teaser-media" src="images/mk-wide3.png" alt="">
+  <button class="play-button" type="button" data-variant="glass" data-size="lg" aria-label="Play the product tour"></button>
+  <p class="teaser-title">The product tour</p>
+  <template class="teaser-content">
+    <video src="videos/demo.mp4" controls autoplay playsinline style="inline-size:100%; display:block; border-radius:var(--radius-xl);"></video>
+  </template>
+</section>
+```
+
+<SourceFiles component="play-button" section="css" />
+
+</DocPage>

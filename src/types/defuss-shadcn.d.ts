@@ -294,6 +294,8 @@ interface HTMLElement {
   _iframeHeight?: number;
   /** Iframe-only: the observer following a same-origin framed document. */
   _iframeObserver?: ResizeObserver;
+  /** Teaser-only: its authored inner markup and its template's content, read once at init. */
+  _teaser?: { teaser: string; content: string };
   /** Accordion-only: set while triggerStateChange() is applying (suspends enforcement). */
   _applying?: boolean;
   /** Accordion-only: generation counter so queued toggle events can't clear a newer _applying. */

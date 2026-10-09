@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="tree-grid" title="Tree Grid" component="data-grid">
-  A <a href="data-grid.html">Data Grid</a> whose rows may have a parent. Name the parent field with <code>data-parent-field</code> and the grid becomes an ARIA <code>treegrid</code>: the first column indents by depth and opens and closes branches, while everything a grid does still works on the visible rows - multisort orders siblings, a column filter keeps the ancestors of every match and opens the way to it, pages and infinite loading walk the tree, columns lock. The records stay one flat array; <a href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> builds the hierarchy.
+  A <a class="link" href="data-grid.html">Data Grid</a> whose rows may have a parent. Name the parent field with <code>data-parent-field</code> and the grid becomes an ARIA <code>treegrid</code>: the first column indents by depth and opens and closes branches, while everything a grid does still works on the visible rows - multisort orders siblings, a column filter keeps the ancestors of every match and opens the way to it, pages and infinite loading walk the tree, columns lock. The records stay one flat array; <a class="link" href="https://www.npmjs.com/package/defuss-dataview">defuss-dataview</a> builds the hierarchy.
 </PageHeader>
 
 ```html example label="111,110 nodes" schema="none" hint="Ten regions × ten countries × a hundred cities × ten districts - one flat array of records with a parentId. Open a branch with its chevron or → / ← on the first column. Filter 'district 4.2.17' to see a match with its whole path opened; sort Population (Shift+click Name to break ties). Expand all opens 11,110 branches at once."
@@ -140,7 +140,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <H2 id="how">How it works</H2>
 
-<DocText>The tree grid IS the <a href="data-grid.html">Data Grid</a> - same component, same files, same State API (see its page for every attribute and state). <code>data-parent-field</code> (and <code>data-id-field</code>, default <code>id</code>) switch on the hierarchy:</DocText>
+<DocText>The tree grid IS the <a class="link" href="data-grid.html">Data Grid</a> - same component, same files, same State API (see its page for every attribute and state). <code>data-parent-field</code> (and <code>data-id-field</code>, default <code>id</code>) switch on the hierarchy:</DocText>
 
 <ul class="text-sm text-muted-foreground mb-5 ps-5">
   <li><code>role="treegrid"</code>; each row carries <code>aria-level</code> and, with children, <code>aria-expanded</code>.</li>

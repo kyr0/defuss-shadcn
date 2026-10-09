@@ -1042,6 +1042,134 @@
   }
 }
 
+/* ── components/teaser/teaser.css ── */
+/* -- Teaser component -----------------------------------------
+   A card that stands in for content that should not load yet - a deck, a
+   video, a heavy widget. Its play button (or a click anywhere on the card)
+   morphs the content of its <template> into place; until then nothing in
+   the template loads (template content is inert). Around it, the Shapes
+   module's aura draws the eye - and stops once the teaser has played. */
+
+@layer components {
+  .teaser {
+    /* border-box: data-ratio is the whole card's shape, padding and border included */
+    box-sizing: border-box;
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.75rem;
+    min-inline-size: 0;
+    padding: 2.5rem 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    text-align: center;
+    cursor: pointer;
+
+    /* the size of what it stands for: the swap does not move the page */
+    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+    &[data-ratio="4/3"] { aspect-ratio: 4 / 3; }
+    &[data-ratio="1/1"] { aspect-ratio: 1 / 1; }
+    &[data-ratio="21/9"] { aspect-ratio: 21 / 9; }
+
+    & > .play-button { margin-block-end: 0.5rem; }
+    &:hover:not([data-played]) > .play-button:not(:disabled) { scale: 1.06; }
+    /* the card shows where the keyboard is */
+    &:has(> .play-button:focus-visible) { box-shadow: 0 0 0 2px var(--ring); }
+
+    /* -- Played: the content takes the whole card ------------------- */
+    &[data-played] {
+      display: block;
+      /* the card's centring would shrink a block child to its content's width */
+      align-content: normal;
+      justify-items: normal;
+      aspect-ratio: auto;
+      padding: 0;
+      overflow: visible;
+      border: 0;
+      background: none;
+      color: inherit;
+      text-align: start;
+      cursor: auto;
+
+      & > * {
+        transition: opacity 400ms ease;
+
+        @starting-style { opacity: 0; }
+      }
+    }
+  }
+
+  .teaser-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  .teaser-text {
+    max-inline-size: 36rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /* -- A poster behind the text: a photo or a video still ------------ */
+  .teaser-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .teaser:has(> .teaser-media):not([data-played]) {
+    color: oklch(1 0 0);
+
+    /* a scrim keeps the text readable on any photo */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(to top, oklch(0 0 0 / 0.72), oklch(0 0 0 / 0.15) 70%);
+    }
+    & > :not(.teaser-media) {
+      position: relative;
+      z-index: 1;
+    }
+    & .teaser-text { color: oklch(1 0 0 / 0.85); }
+  }
+
+  /* -- Accessibility ------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .teaser {
+      &:hover:not([data-played]) > .play-button:not(:disabled) { scale: none; }
+      &[data-played] > * { transition: none; }
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .teaser:not([data-played]) {
+      border-color: var(--foreground);
+    }
+    .teaser-text { color: var(--foreground); }
+  }
+
+  @media (forced-colors: active) {
+    .teaser:not([data-played]) {
+      border-color: CanvasText;
+    }
+    .teaser:has(> .play-button:focus-visible) { outline: 2px solid Highlight; }
+  }
+}
+
 /* ── components/image/image.css ── */
 @layer components {
   .image {

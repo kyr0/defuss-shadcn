@@ -2,7 +2,7 @@
 # README ↔ index parity pair (AGENTS.md): the pillar cards below mirror README's
 # pillar bullets and the CSS-only stat - this file's last commit must land with it.
 # The footprint numbers are the StatsCards (whole KiB); README states the claim sentence,
-# at this commit: 232 components - 63 with JavaScript, 169 CSS-only - 415.4 KiB minified + compressed - 278.4 KiB as the all.css/all.js bundle.
+# at this commit: 234 components - 64 with JavaScript, 170 CSS-only - 417.9 KiB minified + compressed - 279.8 KiB as the all.css/all.js bundle.
 title: "defuss-shadcn - Semantic HTML · Shadcn Tokens · Plain CSS"
 description: "A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform."
 slug: "index"
@@ -17,7 +17,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h1 style="font-family: var(--font-display); font-size: 3.25rem; font-weight: 400; line-height: 1.05; letter-spacing: -0.04em; margin: 0 0 1.25rem; color: var(--foreground);"> A UI component system<br /><em style="font-style: italic; font-weight: 300;">that scales with AI.</em></h1>
 
-<p class="text-lg text-muted-foreground leading-relaxed mb-8" style="max-width: 36rem;"> Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - <code>dist/</code> is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping. </p>
+<p class="text-lg text-muted-foreground leading-relaxed mb-8" style="max-width: 36rem;">Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - <code>dist/</code> is committed and ready to use as-is. The simplest possible foundation for Agentic-first frontend engineering.</p>
 
 <div class="flex gap-3 mb-6 flex-wrap items-center">
   <a href="installation.html" class="btn" data-variant="default">Get Started</a>
@@ -51,6 +51,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </div>
     <div class="card-footer">
       <button class="btn" data-variant="link" data-size="sm" popovertarget="theme-popover" style="padding:0;height:auto;font-size:0.8125rem;">Try it out →</button>
+    </div>
+
+    <div class="card-footer">
+      <a class="btn" data-variant="link" data-size="sm" href="theme-designer.html" style="padding:0;height:auto;font-size:0.8125rem;">Design your own theme →</a>
     </div>
   </div>
   <div class="card">
@@ -110,7 +114,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </div>
         <h3 class="card-title card-title-sm">Standalone HTML</h3>
       </div>
-      <p class="card-description card-desc-sm">Plain HTML, CSS and ES modules - no framework, no build pipeline, and <CssOnlyStat /> components need no JavaScript at all. The interactive ones run on one tiny core runtime, <code>df$</code>: <a href="https://www.npmjs.com/package/defuss-query" target="_blank" rel="noopener">defuss-query</a> for DOM selection and events and <a href="https://www.npmjs.com/package/defuss-morph" target="_blank" rel="noopener">defuss-morph</a> for HTML reconciling, plus the shared State API helpers - shipped once as <code>core.js</code>, inside <code>all.js</code>. The footprint (counts per type, JS/CSS-only split, byte sizes) is published as <code>dist/stats.json</code>.</p>
+      <p class="card-description card-desc-sm">Plain HTML, CSS and ES modules - no framework, no build pipeline, and <CssOnlyStat /> components need no JavaScript at all. The interactive ones run on one tiny core runtime, <code>df$</code>: <a class="link" href="https://www.npmjs.com/package/defuss-query" target="_blank" rel="noopener">defuss-query</a> for DOM selection and events and <a class="link" href="https://www.npmjs.com/package/defuss-morph" target="_blank" rel="noopener">defuss-morph</a> for HTML reconciling, plus the shared State API helpers - shipped once as <code>core.js</code>, inside <code>all.js</code>. The footprint (counts per type, JS/CSS-only split, byte sizes) is published as <code>dist/stats.json</code>.</p>
     </div>
     <div style="height:1.25rem;" />
   </div>

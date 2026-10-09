@@ -1,0 +1,129 @@
+---
+title: "Teaser"
+description: "Teaser - a card that stands in for heavy content until it is played: a deck, a video, an embedded app. Its template's content is inert until the play button morphs it into place through defuss-morph."
+slug: "teaser"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, DocLink } from "../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="teaser" title="Teaser" component="teaser">
+  A card that stands in for content that should not load yet - a slide deck, a video, an embedded app. The content waits in a <code>&lt;template&gt;</code>, where nothing loads or runs; the <DocLink href="play-button.html">Play Button</DocLink> - or a click anywhere on the card - morphs it into place through defuss-morph. Wrapped in the Shapes module's <DocLink href="shapes.html">aura</DocLink>, the teaser draws the eye until it is played.
+</PageHeader>
+
+<SkillPanel component="teaser">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;section class="teaser"&gt;</code> with a <code>.play-button</code>, a title, a text and a <code>&lt;template class="teaser-content"&gt;</code> - inert content until <code>df$(el).morph()</code> puts it in the teaser's place.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template" title="inert content: nothing loads before the teaser plays"><code>&lt;template&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="data-ratio: the swap does not move the page"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="the content fades in"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="focus ring on the card; the aura stops once played"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus" title="the keyboard continues in the content"><code>focus()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="no fade, no scaling"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.teaser</code>
+    <code>.teaser-title</code>
+    <code>.teaser-text</code>
+    <code>.teaser-media</code>
+    <code>.teaser-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillGrid>
+    <Variant name="data-ratio" description="16/9 · 4/3 · 1/1 · 21/9 - the shape of what it stands for" />
+    <Variant name="data-played" description="Set by the runtime once the content is in place" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• A click anywhere on the card plays it, except on another control inside.</SkillText>
+  <SkillText dense>• After a click, focus moves to the content's first control - or to the teaser itself.</SkillText>
+  <SkillText dense>• Scripts inside the content do not run; components inside it initialize as usual.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Click the card or its play button: the template's content - a card with a table - takes the teaser's place. Before that, nothing inside the template exists on the page."
+<section class="teaser" id="teaser-demo" aria-label="The quarterly report">
+  <button class="play-button" type="button" aria-label="Show the quarterly report"></button>
+  <h3 class="teaser-title">The quarterly report</h3>
+  <p class="teaser-text">Revenue, orders and returns - loaded when you ask for them.</p>
+  <template class="teaser-content">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Q3 at a glance</h3><p class="card-description">July to September</p></div>
+      <div class="card-content">
+        <table class="table">
+          <thead><tr><th scope="col">Month</th><th scope="col" style="text-align:end">Revenue</th><th scope="col" style="text-align:end">Orders</th></tr></thead>
+          <tbody>
+            <tr><td>July</td><td style="text-align:end">$41,200</td><td style="text-align:end">1,204</td></tr>
+            <tr><td>August</td><td style="text-align:end">$45,231</td><td style="text-align:end">1,318</td></tr>
+            <tr><td>September</td><td style="text-align:end">$48,960</td><td style="text-align:end">1,402</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </template>
+</section>
+```
+
+```html example label="Attention: in an aura" hint="The Shapes module's aura draws a turning light around the card and a pulsing play button asks to be pressed. Played, the whole slide deck loads - an iframe that did not exist before - and the aura stops." height="30"
+<div class="aura" style="--shape-round: var(--radius-xl)">
+  <section class="teaser" data-ratio="16/9" aria-label="The system in numbers - a presentation">
+    <button class="play-button" type="button" data-size="lg" data-pulse aria-label="Start the presentation"></button>
+    <h3 class="teaser-title">Click here to start the presentation!</h3>
+    <p class="teaser-text">The system in numbers - every feature of defuss-shadcn, slide by slide.</p>
+    <template class="teaser-content">
+      <iframe src="deck-system-in-numbers.html" title="The System in Numbers" style="display:block; inline-size:100%; aspect-ratio:16/9; border:0; border-radius:var(--radius-xl);"></iframe>
+    </template>
+  </section>
+</div>
+```
+
+```html example label="With a poster" hint="A .teaser-media image behind the text, a glass play button: the video and its file load only once it is played - and then it starts." height="26"
+<section class="teaser" data-ratio="16/9" aria-label="The product tour">
+  <img class="teaser-media" src="images/mk-wide3.png" alt="">
+  <button class="play-button" type="button" data-variant="glass" data-size="lg" aria-label="Play the product tour"></button>
+  <p class="teaser-title">The product tour</p>
+  <p class="teaser-text">Two minutes, no sign-up.</p>
+  <template class="teaser-content">
+    <video src="videos/demo.mp4" controls autoplay playsinline style="inline-size:100%; display:block; border-radius:var(--radius-xl);"></video>
+  </template>
+</section>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the teaser: the play button, the title and the text (<code>setState('default')</code> brings it back)</li>
+    <li><code>played</code> - the template's content in the teaser's place, <code>data-played</code> on the element</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/teaser-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/teaser.schema.json"><code>teaser.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `played` | `boolean` | `true`, `false` | `false` | The template's content in the teaser's place (`data-played`). |
+```
+
+</StatesSection>
+
+<ApiSection component="teaser" />
+
+<SourceFiles component="teaser" section="css" />
+
+<SourceFiles component="teaser" section="js">
+  <SourceNote for="js">One markup function per state - <code>played</code> morphs the template's content in, <code>default</code> morphs the authored teaser back; <code>render()</code> runs it on a detached copy.</SourceNote>
+</SourceFiles>
+
+</DocPage>

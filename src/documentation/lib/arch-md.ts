@@ -25,7 +25,7 @@ function inline(s: string): string {
   // [text](url): repo-relative link targets point at the GitHub source
   out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
     const href = /^(https?:|mailto:|#)/.test(url) ? url : REPO_FILE_BASE + url.replace(/^\.?\//, '');
-    return `<a href="${href}">${text}</a>`;
+    return `<a class="link" href="${href}">${text}</a>`;
   });
   for (let i = 0; i < codes.length; i++) out = out.replaceAll(`\u0000${i}\u0000`, codes[i]);
   return out;

@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="questionnaire" title="Questionnaire" component="questionnaire">
-  One question at a time, the next one chosen by the answers. The questionnaire is a single native <code>&lt;form&gt;</code> whose steps are <code>&lt;fieldset&gt;</code>s, grouped into blocks; the controller walks a <a href="questionnaire-branching.html">flow graph</a>, <a href="questionnaire-validation.html">validates</a> each step before it is left, keeps the <a href="questionnaire-drafts.html">branch history and a draft</a> that survives a reload, <a href="questionnaire-dependencies.html">clears answers</a> a changed answer cut off, and can <a href="questionnaire-graph.html">check and draw its own graph</a>. Without JavaScript it is a plain long form.
+  One question at a time, the next one chosen by the answers. The questionnaire is a single native <code>&lt;form&gt;</code> whose steps are <code>&lt;fieldset&gt;</code>s, grouped into blocks; the controller walks a <a class="link" href="questionnaire-branching.html">flow graph</a>, <a class="link" href="questionnaire-validation.html">validates</a> each step before it is left, keeps the <a class="link" href="questionnaire-drafts.html">branch history and a draft</a> that survives a reload, <a class="link" href="questionnaire-dependencies.html">clears answers</a> a changed answer cut off, and can <a class="link" href="questionnaire-graph.html">check and draw its own graph</a>. Without JavaScript it is a plain long form.
 </PageHeader>
 
 <SkillPanel component="questionnaire">
@@ -239,7 +239,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </ul>
   <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/questionnaire-\{state\}.png</code>.</p>
 
-Machine contract - verified against <a href="../schemas/questionnaire.schema.json"><code>questionnaire.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a class="link" href="../schemas/questionnaire.schema.json"><code>questionnaire.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

@@ -2,7 +2,7 @@
 
 # Component catalog
 
-232 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+234 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.8/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -32,6 +32,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | --- | --- | --- | --- | --- |
 | [Button](../../defuss-shadcn/references/components/button.md) `button` | ATM | default | - | Every single action trigger - forms, dialogs, toolbars. |
 | [FAB](../../defuss-shadcn/references/components/fab.md) `fab` | MOL | default | - | The one primary action of a screen (compose, add, new) that stays in reach while scrolling - with a speed dial when 2-6 related actions share it. For a bar of actions use toolbar; for an ordinary menu use dropdown-menu. |
+| [Play Button](../../defuss-shadcn/references/components/play-button.md) `play-button` | ATM | default | - | The one action that starts something - a video, a deck, a demo, content that loads on demand (the Teaser). For any other action use button; for the floating screen action use fab. |
 | [Toggle](../../defuss-shadcn/references/components/toggle.md) `toggle` | ATM | default, pressed | yes | A single on/off action: mute, bold, favorite. |
 | [Swap](../../defuss-shadcn/references/components/swap.md) `swap` | ATM | default | - | Toggling between two (or three) glyphs or words in place (theme icons, play/pause, hamburger/close); use toggle or switch when the control needs a pressed button or form-field appearance. |
 | [Toggle Group](../../defuss-shadcn/references/components/toggle-group.md) `toggle-group` | MOL | default, disabled | yes | Sets of on/off options like text formatting (bold/italic/underline). |
@@ -84,6 +85,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Diff](../../defuss-shadcn/references/components/diff.md) `diff` | ATM | default, before, after | yes | Before / after comparisons - photo edits, redesigns, old vs new screenshots, rendered vs source text. For side-by-side panels the user resizes use resizer. |
 | [Countdown](../../defuss-shadcn/references/components/countdown.md) `countdown` | ATM | default, running, paused, finished | yes | Launch / sale / event countdowns, timers, clocks, animated counters (0-999 per value). For a progress fraction use progress; for a static figure use statistic. |
 | [Card](../../defuss-shadcn/references/components/card.md) `card` | MOL | default | - | Grouping related content and actions on a page - dashboards, lists, modal bodies. |
+| [Teaser](../../defuss-shadcn/references/components/teaser.md) `teaser` | MOL | default, played | yes | Content that is heavy or should start on purpose - a slide deck, a video, an embedded app, a demo - shown as an inviting card first. For media that is always loaded use the Video Player block or Iframe; for a call to action that navigates use CTA. |
 | [Image](../../defuss-shadcn/references/components/image.md) `image` | ATM | default, error | yes | Remote images whose loading or failure must be visually controlled. |
 | [Iframe](../../defuss-shadcn/references/components/iframe.md) `iframe` | ATM | default, loaded | yes | Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame. |
 | [Statistic](../../defuss-shadcn/references/components/statistic.md) `statistic` | ATM | default | - | Dashboards showing one value and its trend. |

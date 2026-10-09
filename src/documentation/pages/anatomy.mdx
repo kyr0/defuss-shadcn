@@ -1,6 +1,6 @@
 ---
 title: "Anatomy of a Component"
-description: "How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, and the skill and schema that describe it - each a plain file you copy or link."
+description: "How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, the named states it exposes, and the skill and schema that describe it - each a plain file you copy or link."
 slug: "anatomy"
 ---
 
@@ -9,12 +9,12 @@ import { CodeWindow, DocPage, PageHeader, DocText, DocLink, H2 } from "../lib/co
 <DocPage meta={meta}>
 
 <PageHeader slug="anatomy" title="Anatomy of a Component" introStyle="max-width:40rem;">
-  <DocLink href="installation.html">Installation</DocLink> put the files on your page. This is what one component is made of, shown on the Toggle: the CSS custom properties it reads, the HTML you write, the stylesheet that turns the tokens into a look, the script that adds the behavior HTML cannot express, and the two files that describe it to an agent. No part knows the others by name - they meet in the browser through a class, a few attributes and the tokens.
+  <DocLink href="installation.html">Installation</DocLink> put the files on your page. This is what one component is made of, shown on the Toggle: the CSS custom properties it reads, the HTML you write, the stylesheet that turns the tokens into a look, the script that adds the behavior HTML cannot express, the named states that script exposes, and the two files that describe it to an agent. No part knows the others by name - they meet in the browser through a class, a few attributes and the tokens.
 </PageHeader>
 
 <H2>1 - Tokens: the values every part reads</H2>
 
-<DocText>The theme is a set of CSS custom properties on <code>:root</code> (and the same keys with dark values on <code>.dark</code>), in the shape <a href="https://tweakcn.com" target="_blank" rel="noopener">tweakcn</a> exports. A component never names a colour, a radius or a shadow - it reads a token, so a theme swap or dark mode reaches every component at once. These are the tokens the Toggle reads:</DocText>
+<DocText>The theme is a set of CSS custom properties on <code>:root</code> (and the same keys with dark values on <code>.dark</code>), in the shape <a class="link" href="https://tweakcn.com" target="_blank" rel="noopener">tweakcn</a> exports. A component never names a colour, a radius or a shadow - it reads a token, so a theme swap or dark mode reaches every component at once. These are the tokens the Toggle reads:</DocText>
 
 <CodeWindow lang="css" title="theme/utils/default-semantic-tokens.css (the keys the Toggle reads)" mb="1.5rem" code={":root {\n  --accent:            oklch(0.9700 0 0);   /* pressed surface */\n  --accent-foreground: oklch(0.2050 0 0);   /* pressed text */\n  --muted:             oklch(0.9700 0 0);   /* hover surface */\n  --muted-foreground:  oklch(0.5560 0 0);   /* resting text */\n  --ring:              oklch(0.7080 0 0);   /* focus ring */\n  --radius:            0.625rem;\n  --radius-md:         calc(var(--radius) - 2px);\n  --font-sans:         ui-sans-serif, system-ui, sans-serif;\n}\n.dark { /* the same keys, dark values */ }"} />
 
@@ -32,15 +32,31 @@ import { CodeWindow, DocPage, PageHeader, DocText, DocLink, H2 } from "../lib/co
 
 <H2>4 - Script: only what HTML and CSS cannot do</H2>
 
-<DocText>Most components stop at the stylesheet. The Toggle needs one thing the platform does not give a button: flipping <code>aria-pressed</code> on click. Its module finds every <code>.toggle</code> through <code>df$</code> (the core runtime: <a href="https://www.npmjs.com/package/defuss-query" target="_blank" rel="noopener">defuss-query</a> for selection and events, <a href="https://www.npmjs.com/package/defuss-morph" target="_blank" rel="noopener">defuss-morph</a> for markup), guards against initializing twice, binds the <DocLink href="state-api.html">State API</DocLink> so <code>el.api.setState('pressed')</code> and <code>el.store</code> work on every instance, and watches the document so elements added later initialize too. The attribute the script writes is the one the stylesheet reads - the script never styles anything.</DocText>
+<DocText>Most components stop at the stylesheet. The Toggle needs one thing the platform does not give a button: flipping <code>aria-pressed</code> on click. Its module finds every <code>.toggle</code> through <code>df$</code> (the core runtime: <a class="link" href="https://www.npmjs.com/package/defuss-query" target="_blank" rel="noopener">defuss-query</a> for selection and events, <a class="link" href="https://www.npmjs.com/package/defuss-morph" target="_blank" rel="noopener">defuss-morph</a> for markup), guards against initializing twice, binds the <DocLink href="state-api.html">State API</DocLink> so <code>el.api.setState('pressed')</code> and <code>el.store</code> work on every instance, and watches the document so elements added later initialize too. The attribute the script writes is the one the stylesheet reads - the script never styles anything.</DocText>
 
 <CodeWindow lang="javascript" title="components/toggle/toggle.js (excerpt)" mb="1.5rem" code={"function init() {\n  dfDollar('.toggle:not([data-init]):not(.toggle-group .toggle)').each((_i, toggle) => {\n    dfDollar(toggle).data('init', '');                 // the double-init guard\n    toggle._defaultPressed = dfDollar(toggle).attr('aria-pressed') || 'false';\n    // el.store + el.api: $('#my-toggle').api.setState('pressed')\n    bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === 'true' ? 'pressed' : 'default', config: {} });\n    dfDollar(toggle).on('click', () => {\n      dfDollar(toggle).attr('aria-pressed', String(dfDollar(toggle).attr('aria-pressed') !== 'true'));\n    });\n  });\n}\n\ninit();\nnew MutationObserver(init).observe(document, { childList: true, subtree: true });"} />
 
-<H2>5 - Skill and schema: the component described</H2>
+<H2>5 - Component State API: named states in a store</H2>
+
+<DocText>Every component with a script exposes its states by name. Each element gets <code>el.api.setState(name, config)</code>, <code>el.api.getState()</code> and <code>el.api.render(state)</code>, and <code>el.store</code>: a <a class="link" href="https://www.npmjs.com/package/defuss-store" target="_blank" rel="noopener">defuss-store</a> store of the state's name and config. The store follows every change, including the ones a user makes with a click, so a subscriber observes the component without polling; writing to the store applies the state as <code>setState()</code> does. A page or another component can therefore drive any component from outside and react to its changes through this API and the component's events, without knowing how it is built.</DocText>
+
+<DocText><code>setState()</code> applies a state to the live element through <code>df$</code>: attributes through defuss-query, markup through <a class="link" href="https://www.npmjs.com/package/defuss-morph" target="_blank" rel="noopener">defuss-morph</a>, which patches the existing DOM in place instead of replacing it. <code>render(state)</code> returns the element's markup in any state, as a string, built by the same function, so the UI that <code>setState()</code> produces and the markup <code>render()</code> describes cannot drift apart. The end-to-end test of every interactive component checks that they agree.</DocText>
+
+<DocText>Some components add methods for interactions that a single state does not cover: <code>df$.shadcn.toast.show()</code> raises a toast, <code>df$.shadcn.chart.deck()</code> binds charts to a presentation, <code>df$.shadcn.diagram.build()</code> renders a diagram from JSON. Each component's page documents its whole API.</DocText>
+
+<DocText>defuss-store is a micro-store for backing data that can also persist a store to <code>localStorage</code> or <code>sessionStorage</code>. Every component gets its store without extra code, and the shared layer's <code>persisted()</code> (<code>df$.store</code> for pages) adds the persistence: the big-data components keep their sort and filters this way by default, and these docs keep every remembered choice.</DocText>
+
+<DocText>Every example on these pages runs in the <DocLink href="code-example.html">HTML Preview Editor</DocLink>, so a component's behavior can be watched and tested where it is documented. Its State tab is generated from the component's schema and sets any state value directly; the example below binds the Toggle's.</DocText>
+
+```html example label="The State API, live" component="toggle" hint="Open the State tab: it sets the pressed state through the same API. Press the toggle and the tab follows the click."
+<button class="toggle" aria-pressed="false" aria-label="Bold"><i data-lucide="bold"></i></button>
+```
+
+<H2>6 - Skill and schema: the component described</H2>
 
 <DocText>Two more files ship beside the stylesheet and the script. The <DocLink href="component-skills.html">component skill</DocLink> (<code>component-skill.md</code>) is the markup reference an agent reads before writing the HTML: the native basis, the structure, the variants, the ARIA and the states. The schema (<code>toggle.schema.json</code>) is the machine contract of the states: their names, types and defaults, how each is set and observed on the DOM - the docs' State tab is generated from it, and the verifier compares every page's States table against it.</DocText>
 
-<H2>All five, live</H2>
+<H2>All six, live</H2>
 
 <DocText>The same markup three times under three token sets: the page's theme, a warm accent and the dark palette. Press any of them - the script flips the attribute, the stylesheet paints the state from whichever tokens are in scope.</DocText>
 

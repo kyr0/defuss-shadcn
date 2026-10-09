@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>play-button e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/play-button/play-button.css" />
+  </head>
+  <body style="padding:2rem;display:flex;flex-wrap:wrap;align-items:center;gap:1.5rem;">
+    <!-- mirrors the doc page: default, sizes, variants (glass over a poster), pulse, disabled -->
+    <button class="play-button" id="pb" type="button" aria-label="Play the video"></button>
+    <button class="play-button" id="pb-sm" type="button" data-size="sm" aria-label="Play (small)"></button>
+    <button class="play-button" id="pb-lg" type="button" data-size="lg" aria-label="Play (large)"></button>
+    <button class="play-button" id="pb-xl" type="button" data-size="xl" aria-label="Play (extra large)"></button>
+    <button class="play-button" id="pb-secondary" type="button" data-variant="secondary" aria-label="Play (secondary)"></button>
+    <button class="play-button" id="pb-outline" type="button" data-variant="outline" aria-label="Play (outline)"></button>
+    <div style="display:grid;place-items:center;inline-size:14rem;aspect-ratio:16/9;background:#334;">
+      <button class="play-button" id="pb-glass" type="button" data-variant="glass" aria-label="Play the trailer"></button>
+    </div>
+    <button class="play-button" id="pb-pulse" type="button" data-size="lg" data-pulse aria-label="Start the presentation"></button>
+    <button class="play-button" id="pb-disabled" type="button" disabled aria-label="Play (unavailable)"></button>
+  </body>
+</html>

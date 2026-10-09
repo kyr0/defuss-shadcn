@@ -1,0 +1,121 @@
+/* -- Play Button component ------------------------------------
+   A large round button that starts something: a video, a deck, content that
+   loads only on demand. One <button> with an accessible name - the triangle
+   is drawn by CSS (clip-path), so no icon is needed. data-pulse sends a ring
+   outward to draw the eye. CSS only. */
+
+@layer components {
+  .play-button {
+    --play-button-size: 4.5rem;
+    --_bg: var(--primary);
+    --_fg: var(--primary-foreground);
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--play-button-size);
+    block-size: var(--play-button-size);
+    padding: 0;
+    border: 0;
+    border-radius: 9999px;
+    background-color: var(--_bg);
+    color: var(--_fg);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: scale 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+    /* the triangle: a third of the button, nudged toward its point so it
+       reads as centred (its visual centre is not its box's) */
+    &::before {
+      content: "";
+      inline-size: 34%;
+      aspect-ratio: 1 / 1.15;
+      translate: 10% 0;
+      background-color: currentColor;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    &:hover:not(:disabled) {
+      scale: 1.06;
+      background-color: color-mix(in oklch, var(--_bg) 88%, var(--_fg));
+    }
+    &:active:not(:disabled) { scale: 0.97; }
+    &:focus-visible {
+      outline: 3px solid var(--ring);
+      outline-offset: 4px;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* -- Sizes ------------------------------------------------------ */
+    &[data-size="sm"] { --play-button-size: 3rem; }
+    &[data-size="lg"] { --play-button-size: 6rem; }
+    &[data-size="xl"] { --play-button-size: 8rem; }
+
+    /* -- Variants --------------------------------------------------- */
+    &[data-variant="secondary"] {
+      --_bg: var(--secondary);
+      --_fg: var(--secondary-foreground);
+    }
+    &[data-variant="outline"] {
+      --_bg: var(--background);
+      --_fg: var(--foreground);
+      box-shadow: inset 0 0 0 2px var(--border), var(--shadow-sm);
+    }
+    /* over a photo or a video poster: frosted, white, whatever the theme */
+    &[data-variant="glass"] {
+      --_bg: oklch(1 0 0 / 0.2);
+      --_fg: oklch(1 0 0);
+      box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.4), 0 8px 32px oklch(0 0 0 / 0.3);
+      backdrop-filter: blur(12px) saturate(1.4);
+
+      &:hover:not(:disabled) { background-color: oklch(1 0 0 / 0.32); }
+    }
+
+    /* -- Attention: a ring that keeps pulsing outward ---------------- */
+    &[data-pulse]::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      animation: play-button-pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+  }
+
+  @keyframes play-button-pulse {
+    from { box-shadow: 0 0 0 0 color-mix(in oklch, var(--_bg) 60%, transparent); }
+    to { box-shadow: 0 0 0 calc(var(--play-button-size) / 3) transparent; }
+  }
+
+  /* -- Accessibility ------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .play-button {
+      transition: none;
+
+      &:hover:not(:disabled), &:active:not(:disabled) { scale: none; }
+      &[data-pulse]::after { animation: none; }
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .play-button {
+      box-shadow: inset 0 0 0 2px var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .play-button {
+      border: 2px solid ButtonText;
+      background-color: ButtonFace;
+      color: ButtonText;
+
+      &::before { background-color: ButtonText; }
+      &:focus-visible { outline-color: Highlight; }
+    }
+  }
+}

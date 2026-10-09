@@ -181,7 +181,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <p class="text-sm text-muted-foreground m-0 mb-3">Every change fires <code>progress:change</code> (<code>detail: \{ value, max, percent \}</code>). Button commands: <code>commandfor="id" command="--reset"</code> (<code>--increment</code>, <code>--decrement</code>, <code>--play</code>, <code>--pause</code>, <code>--complete</code>, <code>--indeterminate</code>) - or <code>progress:&lt;command&gt;</code> events on the ring. Writing <code>aria-valuenow</code> directly repaints it too.</p>
   <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/radial-progress-\{state\}.png</code>.</p>
 
-Machine contract - verified against <a href="../schemas/radial-progress.schema.json"><code>radial-progress.schema.json</code></a> by <code>bun run verify</code>:
+Machine contract - verified against <a class="link" href="../schemas/radial-progress.schema.json"><code>radial-progress.schema.json</code></a> by <code>bun run verify</code>:
 
 ```states
 | State | Type | Values | Default | Description |

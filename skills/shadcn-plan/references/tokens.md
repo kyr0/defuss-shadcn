@@ -2,7 +2,7 @@
 
 # Theme tokens
 
-A theme sets these 46 custom properties - in `:root` (light) and `.dark` (dark) - and nothing else: components read no other token. Every colour token in both modes; `--radius` identical in both (the shape is part of the theme); `--radius-sm/md/lg/xl` are derived from `--radius`. Defaults below are the shipped token file's.
+A theme sets these 48 custom properties - in `:root` (light) and `.dark` (dark) - and nothing else: components read no other token. Every colour token in both modes; `--radius` identical in both (the shape is part of the theme); `--radius-sm/md/lg/xl` are derived from `--radius`. Defaults below are the shipped token file's.
 
 ## Surface / foreground pairs
 
@@ -94,6 +94,13 @@ A theme sets these 46 custom properties - in `:root` (light) and `.dark` (dark) 
 | Token | Role | Light default | Dark default |
 | --- | --- | --- | --- |
 | `--tracking-normal` | default letter spacing | `0em` | `0em` |
+
+## Links
+
+| Token | Role | Light default | Dark default |
+| --- | --- | --- | --- |
+| `--link-text-decoration` | the line under a .link: underline, none, underline dotted, ... (not in the tweakcn export: unset, .link underlines) | `underline` | `underline` |
+| `--link-underline-offset` | the gap between a .link and its underline (not in the tweakcn export: unset, 4px) | `4px` | `4px` |
 
 ## Contrast pairs
 

@@ -61,6 +61,7 @@
     "switch": "./switch.schema.json",
     "table": "./table.schema.json",
     "tabs": "./tabs.schema.json",
+    "teaser": "./teaser.schema.json",
     "textarea": "./textarea.schema.json",
     "theme-switcher": "./theme-switcher.schema.json",
     "toast": "./toast.schema.json",

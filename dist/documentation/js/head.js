@@ -4005,7 +4005,7 @@
     var THEME_LINK_ID = "theme-css";
     var THEME_LINKS_ATTR = "data-df-theme-link";
     var CUSTOM_PREFIX = "custom-";
-    var TOKEN_RE = /^(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground|border|input|ring|chart-[1-5]|sidebar|sidebar-foreground|sidebar-primary|sidebar-primary-foreground|sidebar-accent|sidebar-accent-foreground|sidebar-border|sidebar-ring|font-sans|font-serif|font-mono|radius|shadow-2xs|shadow-xs|shadow-sm|shadow|shadow-md|shadow-lg|shadow-xl|shadow-2xl|spacing|tracking-normal)$/;
+    var TOKEN_RE = /^(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground|border|input|ring|chart-[1-5]|sidebar|sidebar-foreground|sidebar-primary|sidebar-primary-foreground|sidebar-accent|sidebar-accent-foreground|sidebar-border|sidebar-ring|font-sans|font-serif|font-mono|radius|shadow-2xs|shadow-xs|shadow-sm|shadow|shadow-md|shadow-lg|shadow-xl|shadow-2xl|spacing|tracking-normal|link-text-decoration|link-underline-offset)$/;
     function isCustomId(id) {
       return typeof id === "string" && id.indexOf(CUSTOM_PREFIX) === 0;
     }

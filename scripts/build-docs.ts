@@ -82,7 +82,7 @@ for (const slug of STANDALONE_DECKS) {
 <link rel="stylesheet" href="css/docs-theme.css" />
 <link rel="stylesheet" href="css/docs-utilities.css" />
 <link rel="stylesheet" href="../components/all.css" />
-<style>html, body { margin: 0; background: transparent; } body { overflow: hidden; }</style>
+<style>html, body { margin: 0; background: transparent; } body { overflow: hidden; display: grid; align-content: center; min-height: 100vh; }</style>
 </head>
 <body>
 ${fence[1].trimEnd()}
@@ -90,6 +90,9 @@ ${fence[1].trimEnd()}
 </body>
 </html>
 `;
+  // the body centres the full-width deck: in the rail the frame is the deck's own 16:9,
+  // in fullscreen (the rail's Fullscreen button) a viewport is not - the slide then runs
+  // edge to edge with bars above and below, never at the sides
   writeFileSync(join(ROOT, 'dist', 'documentation', standaloneDeckFile(slug)), html);
   console.log(`standalone deck → dist/documentation/deck-${slug}.html`);
 }

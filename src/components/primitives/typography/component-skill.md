@@ -77,6 +77,12 @@ Pure CSS - no JavaScript or ARIA required.
 <code class="inline-code">default-semantic-tokens.css</code>
 ```
 
+### Link
+```html
+<p class="p">Read the <a class="link" href="installation.html">installation guide</a> first.</p>
+```
+`.link` is a link in running text: `--primary`, with the line from `--link-text-decoration` (default `underline`) and its gap from `--link-underline-offset` (default `4px`). Both tokens are theme tokens outside the tweakcn export: a theme that leaves them unset gets the same defaults. With `prefers-contrast: more` the underline returns even when a theme removed it; forced colors use `LinkText`.
+
 ---
 
 ### Chinese, Japanese, Korean
@@ -224,6 +230,7 @@ per figure, `--typeset-group-gap: 1.25rem` between).
 | `.muted` | `<p>` or any | 0.875rem muted-foreground text |
 | `.blockquote` | `<blockquote>` | Italic block with inline-start border, hanging punctuation |
 | `.inline-code` | `<code>` | Monospace inline code with muted background |
+| `.link` | `<a href>` | A link in running text: `--primary`, `--link-text-decoration`, `--link-underline-offset` |
 | `.typeset` | `<div>`, `<article>` | Continuous text set like a book: columns, Blocksatz, Einzug, Initiale, small-caps lead, classic ligatures - each a data attribute (see Typesetting) |
 | `.typeset-span` | inside `.typeset` | Spans every column (a heading, a figure) |
 | `.typeset-numbered` | any container | Numbers `.typeset-caption`s inside it: figures and tables, each in order |
