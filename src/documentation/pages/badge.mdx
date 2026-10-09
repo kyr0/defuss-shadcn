@@ -34,6 +34,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <Variant name="outline" description="Color variation" />
     <Variant name="secondary" description="Alternate background styling" />
     <Variant name="default" description="Alternate background styling" />
+    <Variant name="destructive" description="Alternate background styling" />
   </SkillGrid>
   </SkillField>
 </SkillPanel>
@@ -50,9 +51,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <span class="badge" data-variant="outline">v0.1.0</span>
 ```
 
+```html example label="Destructive" hint="High emphasis in the destructive color - warnings and pre-release tags."
+<span class="badge" data-variant="destructive">Beta</span>
+```
+
 ```html example label="All Variants" hint="Side-by-side comparison."
 <span class="badge" data-variant="default">Default</span>
 <span class="badge" data-variant="secondary">Secondary</span>
+<span class="badge" data-variant="destructive">Destructive</span>
 <span class="badge" data-variant="outline">Outline</span>
 ```
 
@@ -82,6 +88,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <p style="margin:0.25rem 0 0;font-size:0.75rem;color:var(--muted-foreground);">requests this month</p>
   </div>
 </article>
+```
+
+```html example label="Beta Sticker" hint="A rotated badge pinned over a logo - the wrapper is relative, the badge absolute and rotated."
+<div style="position:relative;display:inline-flex;">
+  <div style="width:4rem;height:4rem;border-radius:var(--radius-lg);background:var(--primary);color:var(--primary-foreground);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;">A</div>
+  <span class="badge" data-variant="destructive" style="position:absolute;top:-0.5rem;right:-0.75rem;rotate:12deg;box-shadow:var(--shadow-md);">BETA</span>
+</div>
 ```
 
 ```html example label="Sizes" hint="The full five-step scale via data-size - the default equals md."

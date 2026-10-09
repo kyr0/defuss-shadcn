@@ -3,7 +3,7 @@ import { cssSmoke } from './lib/css-smoke.ts';
 /**
  * Why: badge is CSS-only - the shipped contract is badge.css itself. This
  * verifies the base geometry (hardcoded px values) actually applies and that
- * the three documented variants render with genuinely distinct token-derived
+ * the four documented variants render with genuinely distinct token-derived
  * colors (theme-value-agnostic distinctness, not hardcoded oklch).
  */
 await cssSmoke('badge', [
@@ -25,10 +25,11 @@ await cssSmoke('badge', [
     css: { 'white-space': 'nowrap', 'flex-shrink': '0' },
   },
   {
-    label: 'all three variants carry distinct background colors',
+    label: 'all four variants carry distinct background colors',
     distinct: [
       { selector: '#b-default', prop: 'background-color' },
       { selector: '#b-secondary', prop: 'background-color' },
+      { selector: '#b-destructive', prop: 'background-color' },
       { selector: '#b-outline', prop: 'background-color' },
     ],
   },

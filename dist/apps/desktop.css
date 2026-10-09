@@ -1844,6 +1844,11 @@
       background: var(--primary);
       color: var(--primary-foreground);
     }
+
+    &[data-variant="destructive"] {
+      background: var(--destructive);
+      color: var(--destructive-foreground);
+    }
   }
 }
 

@@ -34,11 +34,13 @@ supportedStates: default
 |----------------|-----------------------------------|
 | `default`      | Primary background, high emphasis  |
 | `secondary`    | Secondary background, medium       |
+| `destructive`  | Destructive background, warnings   |
 | `outline`      | Border only, low emphasis          |
 
 ```html
 <span class="badge" data-variant="default">New</span>
 <span class="badge" data-variant="secondary">Draft</span>
+<span class="badge" data-variant="destructive">Beta</span>
 <span class="badge" data-variant="outline">v0.1.0</span>
 ```
 
@@ -66,3 +68,4 @@ supportedStates: default
 ## Notes
 
 - A badge keeps its label on one line and does not shrink in a flex row (`white-space: nowrap`, `flex-shrink: 0`, as in shadcn/ui). Keep labels short; in a row of badges, let the **container** wrap (`flex-wrap` on a `.card-footer` or any flex parent) instead of the badges.
+- Sticker placement (a "BETA" tag over a logo or avatar): wrap the logo in a `position: relative` container, pin the badge to a corner with `position: absolute` and tilt it with the individual `rotate` property (e.g. `rotate: 12deg`) - placement is per-instance inline style, the component ships no positioning classes.

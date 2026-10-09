@@ -1,30 +1,17 @@
-# CI: the checks the local gate runs, on a clean checkout - lint, the unit tests and the static verifier.
-# WHY its own workflow, not the defuss-vae template: this repository's `make setup` assumes bun is installed.
-# Screenshots are NOT generated here: they are a local, gitignored artifact for agent inspection only -
-# verify.ts skips its screenshot gates wherever no screenshots/manifest.json exists (a clean checkout).
-# The end-to-end suite (~250 browser files) stays local and in releases (deploy.sh runs it in full);
-# CI keeps to what a push must not break.
-name: verify
+# CI is DISABLED by design (maintainer decision, 2026-10-09).
+# Why: the verifier, the unit suite and the e2e pipeline are LOCAL gates
+# (AGENTS.md "The verifier is authoritative"; deploy.sh runs e2e in full
+# before a release) - a push is proven by the last green local run, not by a
+# runner. GitHub's only job in this repository is publishing ./docs via
+# GitHub Pages. This file remains as the documented tombstone: it has no
+# push/PR trigger, and a manual dispatch prints the note and skips.
+# Delete it wholesale (or replace its steps) to ever re-enable CI.
+name: verify (disabled)
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch: {}
 jobs:
-  verify:
+  noop:
+    if: false # never runs - CI stays off; the gates run locally
     runs-on: ubuntu-latest
-    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0 # verify reads git history (README ↔ index commit window, changelog ↔ version)
-      # the Bun that builds dist/: stats.json records gzip sizes, and Bun's zlib compresses differently across
-      # versions (all.min.js: 139,902 bytes under 1.3.9, 140,945 under 1.4.2) - the first run failed on exactly that
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: package.json
-      - run: bun install --frozen-lockfile
-      # firefox: tests/e2e/*-firefox.e2e.ts hold Firefox-only behavior (scroll anchoring in the windowed components)
-      - run: bunx playwright install --with-deps chromium firefox
-      - run: bun run lint
-      - run: bun run test:run
-      - run: make verify
+      - run: echo "CI disabled - gates run locally; GitHub only publishes ./docs (Pages)"

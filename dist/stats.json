@@ -16,23 +16,23 @@
     "Website": 12
   },
   "tokens": 52,
-  "examples": 1615,
+  "examples": 1617,
   "unitTestFiles": 37,
   "withJs": 64,
   "withoutJs": 170,
-  "totalSize": 2511746,
-  "totalSizeMinified": 1279605,
-  "totalSizeGz": 761496,
-  "totalSizeGzMinified": 427963,
+  "totalSize": 2511871,
+  "totalSizeMinified": 1279699,
+  "totalSizeGz": 761515,
+  "totalSizeGzMinified": 427980,
   "bundle": {
     "jsSize": 867254,
     "jsSizeMinified": 500291,
-    "cssSize": 1264650,
-    "cssSizeMinified": 770576,
-    "totalSizeGz": 459487,
-    "totalSizeGzMinified": 286471,
+    "cssSize": 1264775,
+    "cssSizeMinified": 770670,
+    "totalSizeGz": 459512,
+    "totalSizeGzMinified": 286485,
     "jsSizeGzMinified": 153400,
-    "cssSizeGzMinified": 133071
+    "cssSizeGzMinified": 133085
   },
   "core": {
     "jsSize": 144926,
@@ -260,12 +260,12 @@
       ],
       "jsSize": 139670,
       "jsSizeMinified": 78434,
-      "cssSize": 127202,
-      "cssSizeMinified": 70217,
-      "totalSizeGz": 60771,
-      "totalSizeGzMinified": 38047,
+      "cssSize": 127327,
+      "cssSizeMinified": 70311,
+      "totalSizeGz": 60784,
+      "totalSizeGzMinified": 38054,
       "jsSizeGzMinified": 24162,
-      "cssSizeGzMinified": 13885
+      "cssSizeGzMinified": 13892
     },
     "big-data": {
       "heading": "Big Data",
@@ -715,7 +715,7 @@
     "count": 19,
     "minGzMinified": 1965,
     "maxGzMinified": 60511,
-    "meanGzMinified": 15704
+    "meanGzMinified": 15705
   },
   "components": {
     "about-intro": {
@@ -958,12 +958,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 1498,
-      "cssSizeMinified": 857,
-      "totalSizeGz": 589,
-      "totalSizeGzMinified": 356,
-      "totalSize": 1498,
-      "totalSizeMinified": 857
+      "cssSize": 1623,
+      "cssSizeMinified": 951,
+      "totalSizeGz": 608,
+      "totalSizeGzMinified": 373,
+      "totalSize": 1623,
+      "totalSizeMinified": 951
     },
     "before-after": {
       "name": "before-after",
@@ -3799,12 +3799,12 @@
       ],
       "jsSize": 275871,
       "jsSizeMinified": 149627,
-      "cssSize": 337725,
-      "cssSizeMinified": 221424,
-      "totalSizeGz": 122920,
-      "totalSizeGzMinified": 77014,
+      "cssSize": 337850,
+      "cssSizeMinified": 221518,
+      "totalSizeGz": 122931,
+      "totalSizeGzMinified": 77022,
       "jsSizeGzMinified": 47032,
-      "cssSizeGzMinified": 29982
+      "cssSizeGzMinified": 29990
     },
     "messenger": {
       "page": "scaffold-messenger",
@@ -3867,12 +3867,12 @@
       ],
       "jsSize": 246908,
       "jsSizeMinified": 134290,
-      "cssSize": 303945,
-      "cssSizeMinified": 203255,
-      "totalSizeGz": 108912,
-      "totalSizeGzMinified": 69101,
+      "cssSize": 304070,
+      "cssSizeMinified": 203349,
+      "totalSizeGz": 108922,
+      "totalSizeGzMinified": 69109,
       "jsSizeGzMinified": 41736,
-      "cssSizeGzMinified": 27365
+      "cssSizeGzMinified": 27373
     },
     "notes": {
       "page": "scaffold-notes",
@@ -3905,12 +3905,12 @@
       ],
       "jsSize": 212864,
       "jsSizeMinified": 112910,
-      "cssSize": 292669,
-      "cssSizeMinified": 194578,
-      "totalSizeGz": 98031,
-      "totalSizeGzMinified": 61150,
+      "cssSize": 292794,
+      "cssSizeMinified": 194672,
+      "totalSizeGz": 98042,
+      "totalSizeGzMinified": 61158,
       "jsSizeGzMinified": 35431,
-      "cssSizeGzMinified": 25719
+      "cssSizeGzMinified": 25727
     },
     "status-page": {
       "page": "scaffold-status-page",
@@ -3938,12 +3938,12 @@
       ],
       "jsSize": 205746,
       "jsSizeMinified": 109214,
-      "cssSize": 260786,
-      "cssSizeMinified": 178044,
-      "totalSizeGz": 92052,
-      "totalSizeGzMinified": 59047,
+      "cssSize": 260911,
+      "cssSizeMinified": 178138,
+      "totalSizeGz": 92060,
+      "totalSizeGzMinified": 59056,
       "jsSizeGzMinified": 36000,
-      "cssSizeGzMinified": 23047
+      "cssSizeGzMinified": 23056
     },
     "desktop": {
       "page": "scaffold-desktop",
@@ -3985,12 +3985,12 @@
       ],
       "jsSize": 246054,
       "jsSizeMinified": 133009,
-      "cssSize": 371531,
-      "cssSizeMinified": 247294,
-      "totalSizeGz": 121575,
-      "totalSizeGzMinified": 75329,
+      "cssSize": 371656,
+      "cssSizeMinified": 247388,
+      "totalSizeGz": 121584,
+      "totalSizeGzMinified": 75334,
       "jsSizeGzMinified": 41331,
-      "cssSizeGzMinified": 33998
+      "cssSizeGzMinified": 34003
     },
     "document-editor": {
       "page": "scaffold-document-editor",
@@ -4018,12 +4018,12 @@
       ],
       "jsSize": 205388,
       "jsSizeMinified": 111215,
-      "cssSize": 260901,
-      "cssSizeMinified": 179831,
-      "totalSizeGz": 92590,
-      "totalSizeGzMinified": 60091,
+      "cssSize": 261026,
+      "cssSizeMinified": 179925,
+      "totalSizeGz": 92605,
+      "totalSizeGzMinified": 60098,
       "jsSizeGzMinified": 36498,
-      "cssSizeGzMinified": 23593
+      "cssSizeGzMinified": 23600
     }
   }
 }
