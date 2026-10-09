@@ -23,6 +23,8 @@ interface Entry {
   version: string;
   date: string;
   hash?: string;
+  /** optional attribution badges (rendered by ChangelogEntries) - preserved on existing entries */
+  badges?: { text: string; href?: string }[];
   commits: string[];
 }
 

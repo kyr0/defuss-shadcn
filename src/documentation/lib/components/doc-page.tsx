@@ -3,7 +3,6 @@ import { SiteHeader } from './site-header';
 import { SiteNav } from './site-nav';
 import { PrevNext } from './prev-next';
 import { EditPage } from './edit-page';
-import { SiteFooter } from './site-footer';
 
 export interface DocPageMeta {
   title: string;
@@ -120,7 +119,6 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
     if (sb) { sb.dataset.state = 'collapsed'; sb.dataset.stateName = 'collapsed'; }
   }
 } catch (e) {}`}</script>
-        <SiteFooter />
         {overlays.length ? overlays : null}
         <script src="js/site.js" defer></script>
         {/* CodeExample glue: configures the shipped code-example component

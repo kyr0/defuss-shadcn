@@ -4,7 +4,8 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { parseHTML } from 'linkedom';
 import { auditUtilities, walk } from './lib/audit.ts';
-import { componentFingerprints, declaredStates } from './lib/inputs.ts';
+import { declaredStates } from './lib/inputs.ts';
+import { componentFingerprints } from './lib/inputs-files.ts';
 import { statFigureProblems } from './lib/stat-figures.ts';
 import { statSources } from './stat-figures.ts';
 import { BUNDLE_ARTIFACTS, isBundleDirArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
@@ -783,13 +784,15 @@ check(
 // 12. every component has light + dark screenshots whose manifest fingerprint
 // matches the CURRENT dist/ inputs (same content-hash contract as
 // create-screenshots.ts). Content-based, so a no-change rebuild stays green
-// and any component edit invalidates exactly its own shots.
+// and any component edit invalidates exactly its own shots. Screenshots are a
+// LOCAL artifact (gitignored, kept for agent inspection - never generated in
+// CI): the gate applies only where a manifest exists, i.e. `bun run
+// screenshots` has run on this machine.
+const shotsManifestPath = join(ROOT, 'screenshots', 'manifest.json');
+const hasShots = existsSync(shotsManifestPath);
 const shotProblems: string[] = [];
-if (existsSync(DIST)) {
-  const manifestPath = join(ROOT, 'screenshots', 'manifest.json');
-  const manifest: { fingerprints?: Record<string, string> } = existsSync(manifestPath)
-    ? JSON.parse(readFileSync(manifestPath, 'utf8'))
-    : {};
+if (existsSync(DIST) && hasShots) {
+  const manifest: { fingerprints?: Record<string, string> } = JSON.parse(readFileSync(shotsManifestPath, 'utf8'));
   const current = componentFingerprints(DIST);
   for (const c of componentDirs) {
     for (const mode of ['light', 'dark']) {
@@ -829,7 +832,8 @@ for (const c of componentDirs) {
     : '';
 
   for (const s of states) {
-    if (s !== 'default' && MODES.some((m) => !existsSync(join(ROOT, 'screenshots', m, `${c}-${s}.png`)))) {
+    // PNG existence is local-only (see #12): a clean checkout - CI - has no screenshots/
+    if (hasShots && s !== 'default' && MODES.some((m) => !existsSync(join(ROOT, 'screenshots', m, `${c}-${s}.png`)))) {
       coverageProblems.push(`${c}: no screenshot for state "${s}" (both modes) - add [data-state-demo] + run \`bun run screenshots\``);
     }
     if (!doc.includes(`<code>${s}</code>`)) coverageProblems.push(`${c}: state "${s}" not documented in ${c}.html (<code>${s}</code>)`);

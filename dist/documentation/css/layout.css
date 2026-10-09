@@ -803,31 +803,6 @@ html[data-theme-draft] #theme-selector-btn {
 }
 .github-stars:empty { display: none; }
 
-/* -- Site footer ------------------------------------------- */
-.site-footer {
-  padding: 2rem 1.5rem;
-  text-align: center;
-  font-size: 0.8125rem;
-  color: var(--muted-foreground);
-  border-top: 1px solid var(--border);
-}
-.site-footer p { margin: 0; }
-.site-footer-tagline {
-  font-style: italic;
-  margin: 0 0 0.25rem !important;
-  color: var(--foreground);
-  opacity: 0.7;
-}
-.site-footer a {
-  color: var(--foreground);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--muted-foreground);
-  transition: text-decoration-color 150ms;
-}
-.site-footer a:hover { text-decoration-color: var(--foreground); }
-.site-footer-dot { color: var(--border); }
-
 /* -- Table of contents (right sidebar) --------------------- */
 .site-toc {
   width: 12rem;
@@ -1137,6 +1112,7 @@ html[data-theme-draft] #theme-selector-btn {
 }
 .deck-rail-caption {
   display: flex;
+  flex-wrap: wrap; /* small screens: the Fullscreen button breaks under the text */
   align-items: center;
   gap: 0.75rem;
   margin: 0.75rem 0 0;

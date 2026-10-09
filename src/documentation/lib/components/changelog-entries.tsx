@@ -11,10 +11,19 @@ import { repoFile } from '../repo';
  * entries.
  */
 
+/** Optional attribution badge in an entry header (e.g. "Forked here" → the origin repo). */
+export interface ChangelogBadge {
+  text: string;
+  /** when set, the badge is a link (opens in a new tab) */
+  href?: string;
+}
+
 export interface ChangelogEntry {
   version: string;
   date: string;
   hash?: string;
+  /** optional header badges - attribution; the verify gate ignores them */
+  badges?: ChangelogBadge[];
   commits: string[];
 }
 
@@ -41,6 +50,17 @@ export function ChangelogEntries(_props: Props) {
                 <code class="changelog-hash">{e.hash}</code>
               </>
             ) : null}
+            {(e.badges ?? []).map((b) =>
+              b.href ? (
+                <a class="badge" data-variant="secondary" href={b.href} target="_blank" rel="noopener" style="font-family:var(--font-mono);text-decoration:none;">
+                  {b.text}
+                </a>
+              ) : (
+                <span class="badge" data-variant="secondary" style="font-family:var(--font-mono);">
+                  {b.text}
+                </span>
+              ),
+            )}
           </div>
           <ul style="margin:0;padding-left:1.25rem;" class="text-sm text-muted-foreground flex flex-col gap-1">
             {e.commits.map((c) => (

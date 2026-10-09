@@ -1,8 +1,9 @@
 # CI: the checks the local gate runs, on a clean checkout - lint, the unit tests and the static verifier.
-# WHY its own workflow, not the defuss-vae template: this repository's `make setup` assumes bun is installed,
-# and `make verify` checks a screenshot for every declared state while screenshots/ is gitignored (built
-# locally), so they are generated here first. The end-to-end suite (~250 browser files) stays local and in
-# releases (deploy.sh runs it in full); CI keeps to what a push must not break.
+# WHY its own workflow, not the defuss-vae template: this repository's `make setup` assumes bun is installed.
+# Screenshots are NOT generated here: they are a local, gitignored artifact for agent inspection only -
+# verify.ts skips its screenshot gates wherever no screenshots/manifest.json exists (a clean checkout).
+# The end-to-end suite (~250 browser files) stays local and in releases (deploy.sh runs it in full);
+# CI keeps to what a push must not break.
 name: verify
 on:
   push:
@@ -26,7 +27,4 @@ jobs:
       - run: bunx playwright install --with-deps chromium firefox
       - run: bun run lint
       - run: bun run test:run
-      - run: bun run screenshots
-        env:
-          PAGE_TIMEOUT_MS: "60000"
       - run: make verify

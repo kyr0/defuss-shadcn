@@ -334,11 +334,13 @@ try {
     const viewport = page.viewportSize();
     await page.setViewportSize({ width: 1680, height: 1000 });
     await page.goto(`${server.url}${PAGE}`);
-    const btn = page.locator('.deck-rail [data-deck-fullscreen]');
+    // the rail copy is the assertion target - the .rail-fallback holds a
+    // second (hidden at this width) deck for small screens
+    const btn = page.locator('.site-aside .deck-rail [data-deck-fullscreen]');
     await btn.scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => !!document.querySelector('.deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
-    assert.equal(await page.$$eval('.deck-rail iframe', (n) => n.length), 0, 'the deck waits in the teaser - nothing loaded yet');
-    const edges = await page.evaluate(() => [document.querySelector('[data-deck-fullscreen]')!.getBoundingClientRect().right, document.querySelector('.deck-rail-caption')!.getBoundingClientRect().right].map(Math.round));
+    await page.waitForFunction(() => !!document.querySelector('.site-aside .deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
+    assert.equal(await page.$$eval('.site-aside .deck-rail iframe', (n) => n.length), 0, 'the deck waits in the teaser - nothing loaded yet');
+    const edges = await page.evaluate(() => [document.querySelector('.site-aside [data-deck-fullscreen]')!.getBoundingClientRect().right, document.querySelector('.site-aside .deck-rail-caption')!.getBoundingClientRect().right].map(Math.round));
     assert.equal(edges[0], edges[1], 'the button sits at the caption\'s end');
     await btn.click();
     await page.waitForFunction(() => document.fullscreenElement?.tagName === 'IFRAME', undefined, { timeout: 5_000 });
@@ -361,16 +363,42 @@ try {
     const viewport = page.viewportSize();
     await page.setViewportSize({ width: 1680, height: 1000 });
     await page.goto(`${server.url}${PAGE}`);
-    await page.waitForFunction(() => !!document.querySelector('.deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
-    const box = (await page.locator('.deck-rail .teaser').boundingBox())!;
-    await page.click('.deck-rail .teaser-text');
-    await page.waitForFunction(() => !!(document.querySelector('.deck-rail iframe') as HTMLIFrameElement | null)?.contentDocument?.querySelector('.presentation[data-init]'), undefined, { timeout: 15_000 });
+    await page.waitForFunction(() => !!document.querySelector('.site-aside .deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
+    const box = (await page.locator('.site-aside .deck-rail .teaser').boundingBox())!;
+    await page.click('.site-aside .deck-rail .teaser-text');
+    await page.waitForFunction(() => !!(document.querySelector('.site-aside .deck-rail iframe') as HTMLIFrameElement | null)?.contentDocument?.querySelector('.presentation[data-init]'), undefined, { timeout: 15_000 });
     const after = await page.evaluate(() => ({
-      h: Math.round(document.querySelector('.deck-rail .teaser')!.getBoundingClientRect().height),
-      aura: getComputedStyle(document.querySelector('.deck-rail .aura')!).animationName,
+      h: Math.round(document.querySelector('.site-aside .deck-rail .teaser')!.getBoundingClientRect().height),
+      aura: getComputedStyle(document.querySelector('.site-aside .deck-rail .aura')!).animationName,
     }));
     assert.ok(Math.abs(after.h - box.height) <= 2, `the swap keeps the rail's height (${box.height} -> ${after.h})`);
     assert.equal(after.aura, 'none');
+    if (viewport) await page.setViewportSize(viewport);
+  });
+
+  // Why: below 88rem the sticky right rail is hidden - the deck must still
+  // render, breaking into the main flow: under the hero buttons and the CDN
+  // note, over the pillar cards (its caption wrapping under it).
+  await check('the deck renders on small screens: in the main flow, under the intro buttons, over the pillar cards', async () => {
+    const viewport = page.viewportSize();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${server.url}${PAGE}`);
+    const order = await page.evaluate(() => {
+      const deck = document.querySelector('.rail-fallback .deck-rail .teaser');
+      const buttons = document.querySelector('main .btn')?.parentElement;
+      const boxes = document.querySelector('main .card');
+      if (!deck || !buttons || !boxes) return null;
+      const r = (el: Element) => el.getBoundingClientRect();
+      return {
+        visible: r(deck).height > 0,
+        underButtons: r(deck).top >= r(buttons).bottom - 1,
+        overBoxes: r(deck).bottom <= r(boxes).top + 1,
+      };
+    });
+    assert.ok(order, 'index lost its fallback deck, hero buttons or pillar cards');
+    assert.equal(order.visible, true, 'the fallback deck teaser has no height on a phone viewport');
+    assert.equal(order.underButtons, true, 'the fallback deck does not sit under the hero buttons');
+    assert.equal(order.overBoxes, true, 'the fallback deck does not sit over the pillar cards');
     if (viewport) await page.setViewportSize(viewport);
   });
 

@@ -205,7 +205,8 @@ not to produce it:
   (light + dark), doc page, component skill, and e2e assertion - enforced by `verify`.
 - **Screenshots for agents** - `bun run screenshots` renders each component (and each
   named state) to `screenshots/{light,dark}/` so an agent can *look* at what it changed;
-  a content-hash manifest makes re-capture incremental.
+  a content-hash manifest makes re-capture incremental - only components whose own files,
+  doc page or the core/theme shell changed re-shoot, and CI never generates them.
 - **E2E tests** - components are exercised in a real browser against the shipped files
   (see [Testing](#testing)); an agent can prove a change works instead of guessing
 - **oxlint** - `make lint` catches dead code and mistakes instantly, in milliseconds

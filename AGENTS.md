@@ -105,8 +105,8 @@ defuss-shadcn/
 │   │   └── components/*.tsx           ← the docs design system: DocPage, SiteHeader, SiteNav, PageHeader,
 │   │                                     SkillPanel, CodeExample (executable example, SSR shell - no dual source),
 │   │                                     Example(+Label/Hint/Code), Demo(+DemoCode), SourceFiles (+SourceNote),
-│   │                                     StatesSection, ChangelogEntries, StatsClaim/Cards, PrevNext, SiteFooter,
-│   │                                     ArchBody, PageOverlay - static, no hydration
+│   │                                     StatesSection, ChangelogEntries, StatsClaim/Cards, PrevNext,
+│   │                                     ArchBody, PageOverlay - static, no hydration (no site footer)
 │   ├── runtime/*.ts                   ← client JS (tsc → public/js): site.ts (copy, code collapse,
 │   │                                     viewport toolbar, tabs, swatches), code-example.ts (glue: configures the
 │   │                                     shipped code-example component with the docs' preview assets), shiki-highlight.ts,
@@ -126,7 +126,7 @@ defuss-shadcn/
 │   └── prompts/                       ← reusable prompt files
 │       └── component-review.prompt.md
 │
-├── screenshots/                       ← generated PNGs per component AND per declared state, light/ + dark/ (`bun run screenshots`, gitignored) - SKILL.md maps state names to these files
+├── screenshots/                       ← generated PNGs per component AND per declared state, light/ + dark/ (`bun run screenshots`, gitignored, LOCAL agent-inspection artifact - never generated in CI) - SKILL.md maps state names to these files
 ├── scripts/                           ← build & maintenance scripts (no one-shot migrations)
 │   ├── build.ts                       ← src/ → dist/ components+theme (tsc type-strip + sourceMap + copy 1:1; the docs tree is NOT copied - defuss-ssg renders it)
 │   ├── build-docs.ts                  ← dist/documentation producer: compiles runtime → public/js, then defuss-ssg build (runs under node)
@@ -149,7 +149,7 @@ defuss-shadcn/
 │   ├── lib/mirror.ts                  ← shared docs/ snapshot transform: tag-pinned CDN base, release stamp, unpinnedRefs (sync-docs + verify's `docs release snapshot` gate)
 │   ├── lib/skill.ts                   ← SKILL.md generation core: frontmatter parser + index renderer (pure)
 │   ├── lib/skill-files.ts             ← dist/SKILL.md index generator from src/SKILL_tpl.md + skill frontmatter, and the repo-root SKILL.md from src/SKILL_root_tpl.md + nav.ts + page frontmatter (build.ts regenerates both every build)
-│   ├── create-screenshots.ts          ← parallel default-state screenshots for agent inspection
+│   ├── create-screenshots.ts          ← incremental screenshots for agent inspection: a fingerprint manifest (lib/inputs.ts pure core + lib/inputs-files.ts fs half) re-shoots exactly the components whose own files / doc page / core+theme shell changed - bundle rebuilds (all.*, wysiwyg.*) invalidate nothing; `--force` re-shoots all
 │   ├── lib/audit.ts                   ← undefined-utility audit (used by verify)
 │   ├── lib/links.ts                   ← markdown link checker (verify markdown link integrity gate; pure)
 │   ├── lib/minify.ts                  ← derived-artifact recognition (verify 1:1 allow-list + min-twin gate; pure)
@@ -1031,8 +1031,8 @@ These exist as real CSS custom properties because component CSS uses `var(--radi
 
 The docs are a **statically rendered multi-page app**: every page is a full HTML
 document produced by defuss-ssg from `pages/*.mdx` + the shared TSX components in
-`lib/components/` (DocPage shell, SiteHeader, SiteNav, PrevNext, SiteFooter;
-**no custom elements, no runtime chrome injection**; the TOC and § anchors are
+`lib/components/` (DocPage shell, SiteHeader, SiteNav, PrevNext;
+**no custom elements, no runtime chrome injection, no site footer**; the TOC and § anchors are
 injected at build time by `lib/plugins.ts`'s toc plugin). The doc site dev
 server runs on `http://localhost:3000/` via `bun run dev` (Vite, serves `dist/`).
 When testing, use the existing dev server - don't start a new one.
@@ -1568,7 +1568,7 @@ The docs chrome is statically rendered per page by the TSX components in
   `<body>` (header, sidebar, TOC shell, footer, end-of-body scripts)
 - `<SiteHeader>` / `<SiteNav>` - the fixed header and sidebar (static markup;
   the old `<site-header>`/`<site-nav>` custom elements are gone)
-- `<PrevNext>` / `<SiteFooter>` - pager + footer (was runtime injection)
+- `<PrevNext>` - the pager (was runtime injection; there is no site footer)
 - The TOC aside, § heading anchors and `toc-*` ids are injected by the toc
   plugin in `lib/plugins.ts` at build time; the runtime only does the
   IntersectionObserver active tracking

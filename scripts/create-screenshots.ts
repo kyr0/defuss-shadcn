@@ -5,7 +5,8 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { join } from 'node:path';
 import { componentDirs, componentFile } from '../src/documentation/lib/component-dirs.ts';
 import { availableParallelism } from 'node:os';
-import { componentFingerprints, declaredStates } from './lib/inputs.ts';
+import { declaredStates } from './lib/inputs.ts';
+import { componentFingerprints } from './lib/inputs-files.ts';
 
 /**
  * Why: per-component default-state screenshots the AI agent can inspect
@@ -18,9 +19,11 @@ import { componentFingerprints, declaredStates } from './lib/inputs.ts';
  *
  * Incremental: manifest.json stores an input fingerprint per component
  * (shipped files + doc page + global shell; see lib/inputs.ts). Unchanged
- * components keep their PNGs; only changed ones are re-shot. `--force`
- * re-shoots everything. verify.ts checks freshness with the SAME fingerprints,
- * so a build that changed nothing costs ~0 s here and stays green there.
+ * components keep their PNGs; only changed ones are re-shot - rebuilding the
+ * all.* and wysiwyg.* bundles (any single component edit does) invalidates
+ * NOTHING, because they are not fingerprinted. `--force` re-shoots
+ * everything. verify.ts checks freshness with the SAME fingerprints, so a
+ * build that changed nothing costs ~0 s here and stays green there.
  */
 
 const ROOT = join(import.meta.dirname, '..');

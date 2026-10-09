@@ -4,7 +4,6 @@ export { SiteHeader } from './site-header';
 export { SiteNav } from './site-nav';
 export { PrevNext } from './prev-next';
 export { EditPage } from './edit-page';
-export { SiteFooter } from './site-footer';
 export { PageHeader } from './page-header';
 export { SkillPanel } from './skill-panel';
 export { Example, ExampleLabel, ExampleHint, ExampleCode } from './example';
