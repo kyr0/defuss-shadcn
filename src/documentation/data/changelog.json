@@ -1,6 +1,35 @@
 {
   "entries": [
     {
+      "version": "v0.9.9",
+      "date": "October 10, 2026",
+      "commits": [
+        "chore(agents): episodes of the deploy fix",
+        "build(deploy): the changelog page path comes from page-dirs",
+        "chore(agents): episodes of the release fix",
+        "build(release): the index hero names the pinned release, so a bump touches README and index together",
+        "chore(agents): episodes of the domain package",
+        "docs(site): shadcn.defuss.org is the published site, owned by page-dirs",
+        "chore(agents): episodes of the domain link change",
+        "docs(readme): link shadcn.defuss.org and the Theme Designer",
+        "chore(agents): episodes of the README restyle",
+        "docs(readme): restyle after the defuss-multicore README",
+        "chore(agents): episodes of the section-layout package",
+        "refactor(layout): mirror the sidebar sections in pages, e2e, dist/documentation and dist/apps",
+        "chore(agents): episodes of the formatting package",
+        "docs(plans): acceptance criteria for introducing a formatter, for defuss-vae to generalize",
+        "build(format): oxfmt for component ts/css, a fence formatter for the doc pages, and the parsers that read formatted sources",
+        "docs(paper): learnings in instructions (5.2), memory reconciliation (5.4), limits (6) and a copy-edited conclusion (8)",
+        "docs(agents): consolidate memory - settle 60 episode leads, cap long lines, record the deploy denial and the managed-block lesson",
+        "chore(agents): refresh the defuss-vae managed block (init 0.8.0), restate the CI-disabled decision outside it",
+        "ci: disable GitHub Actions - local gates only; GitHub just publishes docs/ (Pages)",
+        "docs: republish snapshot (badges, footer removed, mobile deck)",
+        "feat: add Teaser + Play Button, rework Theme Designer to an auto-saving bar, ship Typography .link",
+        "fix(docs): keep the Pages custom domain across releases",
+        "Create CNAME"
+      ]
+    },
+    {
       "version": "v0.9.8",
       "date": "October 08, 2026",
       "commits": [
@@ -373,7 +402,11 @@
       "version": "v0.7.14",
       "date": "September 06, 2026",
       "hash": "da3c0d5",
-      "badges": [{ "text": "Continued by kyr0" }],
+      "badges": [
+        {
+          "text": "Continued by kyr0"
+        }
+      ],
       "commits": [
         "First release as defuss-shadcn - forked from codylindley/shadcn-html (original idea and implementation by Cody Lindley) at commit f6d308d, September 05, 2026; v0.7.14 continues the original v0.7.13-alpha line and every commit below is post-fork work",
         "README: doc-site e2e covers the command-palette search, not the removed sidebar filter",
@@ -410,7 +443,12 @@
     {
       "version": "v0.7.13-alpha",
       "date": "April 19, 2026",
-      "badges": [{ "text": "Forked here", "href": "https://github.com/codylindley/shadcn-html" }],
+      "badges": [
+        {
+          "text": "Forked here",
+          "href": "https://github.com/codylindley/shadcn-html"
+        }
+      ],
       "commits": [
         "docs(es-modules): update documentation for ES modules"
       ]
