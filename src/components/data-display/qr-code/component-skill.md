@@ -32,7 +32,7 @@ locally by the vendored Nayuki TypeScript algorithm.
 <figure
   id="project-qr"
   class="qr-code"
-  data-value="https://kyr0.github.io/defuss-shadcn/"
+  data-value="https://shadcn.defuss.org/"
   data-ecc="M"
   data-version="auto"
   data-size="md"

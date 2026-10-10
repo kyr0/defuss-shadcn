@@ -11,7 +11,7 @@ inherit. A human sets the goal and the acceptance criteria and reviews
 before every release.
 
 The method has five parts. The
-[technical report](https://kyr0.github.io/defuss-shadcn/paper.html)
+[technical report](https://shadcn.defuss.org/papers/paper.html)
 (*Verified Agentic Engineering in Practice*) describes it in general terms
 and measures it on this repository.
 

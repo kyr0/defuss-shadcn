@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/kyr0/defuss-shadcn.git"
   },
-  "homepage": "https://kyr0.github.io/defuss-shadcn/",
+  "homepage": "https://shadcn.defuss.org/",
   "files": [
     "dist",
     "!dist/documentation",

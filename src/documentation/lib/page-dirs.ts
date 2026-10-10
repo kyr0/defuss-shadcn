@@ -101,6 +101,12 @@ export const pageSourceRel = (slug: string): string => pageRel(slug).replace(/\.
 /** The prefix that reaches the docs root from a page: '' at the root, '../' inside a section. */
 export const docsRoot = (id: string): string => (pageSection(id) ? '../' : '');
 
+/** The published site root (docs/CNAME): docs/ serves dist/documentation/ at the domain root, so a page's
+ *  public URL is SITE_BASE + its docs-root-relative path - no `/documentation/` segment. */
+export const SITE_BASE = 'https://shadcn.defuss.org';
+/** The public URL of a page: `https://shadcn.defuss.org/data-display/badge.html`. */
+export const pageUrl = (id: string): string => `${SITE_BASE}/${pageRel(id)}`;
+
 /**
  * The relative href from one page to another: `badge.html` inside one
  * section, `../data-display/badge.html` across sections, `data-display/badge.html`

@@ -261,6 +261,7 @@ export function remarkDocExamples() {
         const pageComponent = String(file?.basename ?? '').replace(/\.mdx$/, '');
         // the injected imports reach lib/ from the page's folder: one level more below pages/
         const dir = String(file?.dirname ?? '').replace(/\\/g, '/');
+        // VERIFIED: a page under pages/<section>/ imports the lib two levels up - the plain ../lib/ failed to load for every moved page
         const libBase = dir && !/\/pages$/.test(dir) ? '../../lib/components/' : '../lib/components/';
         transform(tree, /^[a-z0-9-]+$/.test(pageComponent) ? pageComponent : '', libBase);
     };

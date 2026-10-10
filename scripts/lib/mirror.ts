@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { walk } from './audit.ts';
+import { SITE_BASE } from '../../src/documentation/lib/page-dirs.ts';
 
 /**
  * Why: GitHub Pages publishes ./docs, which must contain ONLY the
@@ -17,9 +18,9 @@ import { walk } from './audit.ts';
  * the stamp and the pinning with this module.
  */
 
-/** Published Pages root: docs/ files sit at the site root, so the
- *  `…/documentation/…` URLs baked into og:url/sitemap lose their prefix. */
-export const PAGES_BASE = 'https://kyr0.github.io/defuss-shadcn';
+/** Published site root (docs/CNAME) - page-dirs.ts owns it; og:url and the sitemap
+ *  are authored as public URLs, so the snapshot rewrites assets only. */
+export const PAGES_BASE = SITE_BASE;
 /** jsDelivr GitHub root of the repo (no version). */
 export const CDN_REPO = 'https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn';
 /** @latest (newest tag) - what README's quick start shows consumers and
@@ -47,14 +48,12 @@ const LIVE_REF =
 /**
  * Mirror rewrite for one text file: live `../components/…`, `../theme/…` and
  * `../apps/…` (the full-screen scaffolds' own bundles)
- * attributes → CDN (the docs tree no longer carries those siblings), and the
- * published page URLs drop the `/documentation/` path segment (docs/ IS the
- * site root now). Escaped code samples keep their dist-relative paths.
+ * attributes → CDN (the docs tree carries none of those siblings); page URLs
+ * (og:url, sitemap) are already public (page-dirs.ts pageUrl). Escaped code
+ * samples keep their dist-relative paths.
  */
 export function mirrorTransform(text: string, version: string): string {
-  return text
-    .replace(LIVE_REF, `$1${cdnBase(version)}/$2/`)
-    .replaceAll(`${PAGES_BASE}/documentation/`, `${PAGES_BASE}/`);
+  return text.replace(LIVE_REF, `$1${cdnBase(version)}/$2/`);
 }
 
 /** GitHub Pages serves a blank page for unknown URLs unless a 404.html exists. */

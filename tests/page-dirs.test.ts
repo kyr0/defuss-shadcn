@@ -8,6 +8,7 @@ import {
   pageHref,
   pageIds,
   pageRel,
+  pageUrl,
   pageSection,
   pageSourceRel,
   resolvePageRefs,
@@ -77,6 +78,8 @@ describe('paths and links', () => {
     expect(pageRel('index')).toBe('index.html');
     expect(pageRel('app-notes')).toBe('application/app-notes.html');
     expect(() => pageRel('no-such-page')).toThrow(/no sidebar section/);
+    expect(pageUrl('badge')).toBe('https://shadcn.defuss.org/data-display/badge.html');
+    expect(pageUrl('index')).toBe('https://shadcn.defuss.org/index.html');
   });
 
   it('links: inside a section, across sections, from the root, back to the root, with a hash', () => {

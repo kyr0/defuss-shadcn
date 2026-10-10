@@ -3,7 +3,7 @@ import { SiteHeader } from './site-header';
 import { SiteNav } from './site-nav';
 import { PrevNext } from './prev-next';
 import { EditPage } from './edit-page';
-import { docsRoot, pageRel } from '../page-dirs';
+import { docsRoot, pageRel, pageUrl } from '../page-dirs';
 
 export interface DocPageMeta {
   title: string;
@@ -34,7 +34,7 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
   // VERIFIED: the page's path from the docs root (page-dirs.ts): its public URL, and the
   // two attributes the runtime reads to resolve ids (search palette, router)
   const rel = pageRel(meta.slug);
-  const url = `https://kyr0.github.io/defuss-shadcn/documentation/${rel}`;
+  const url = pageUrl(meta.slug);
   // partition: <PageOverlay> children render as direct body children (demo
   // dialogs/popovers), everything else is main content
   const mainKids: unknown[] = [];

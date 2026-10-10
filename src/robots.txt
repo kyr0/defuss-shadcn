@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kyr0.github.io/defuss-shadcn/sitemap.xml
+Sitemap: https://shadcn.defuss.org/sitemap.xml

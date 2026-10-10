@@ -30,7 +30,7 @@ export const doctypePlugin = {
         return cleaned.startsWith('<!DOCTYPE') ? cleaned : `<!DOCTYPE html>\n${cleaned}`;
     },
 };
-/** page-html: pages render into section folders (page-dirs.ts), so every link
+/** VERIFIED: page-html: pages render into section folders (page-dirs.ts), so every link
  *  and asset reference is resolved from the page's own folder - the owner's
  *  resolvePageRefs, run here on every rendered page. */
 export const pageRefsPlugin = {
