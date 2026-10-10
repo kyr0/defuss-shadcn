@@ -87,3 +87,5 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-10T18:48:54Z s=45f78726 DONE fp=56366971a8f6 cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,ARCH.md(+1362)
 2026-10-10T18:48:54Z s=45f78726 FINDING src/documentation/lib/page-dirs.ts SITE_BASE / pageUrl; lib/components/doc-page.tsx og:url; scripts/lib/mirror.ts mirrorTransform; src/sitemap.xml learn=test: tests/page-dirs.test.ts 'paths and links' covers pageUrl for a section page and the index
 2026-10-10T18:48:54Z s=45f78726 FINDING src/documentation/pages/papers/*.mdx bibtex url fields; tests/e2e/papers/paper.e2e-fixture.html; ARCH.md learn=verifier: verify's `architecture ↔ ARCH.md` gate; the paper fixture mirrors the page by the docs ↔ e2e parity rule
+2026-10-10T19:31:17Z s=45f78726 DONE fp=f2e367e825da cov=74.9% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,ARCH.md(+1362)
+2026-10-10T19:31:17Z s=45f78726 FINDING scripts/lib/version-sites.ts VERSION_SITES (index hero release); scripts/deploy.sh step 1 → make build → verify `README ↔ index commit window` learn=test: tests/version-sites.test.ts iterates every site; the gate that caught it is verify's own
