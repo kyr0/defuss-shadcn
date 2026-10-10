@@ -46,3 +46,25 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-10T10:12:36Z s=45f78726 DONE fp=7f9da306f928 cov=? paths=AGENTS.md,src/documentation/pages/paper.mdx
 2026-10-10T10:12:36Z s=45f78726 FINDING src/documentation/pages/paper.mdx:568 S (grammar) + T (spelling) learn=none: a human's in-progress edit; minimal copy fix applied (its; subject-verb repaired, meaning kept), the file stays uncommitted as the maintainer's work
 2026-10-10T10:12:36Z s=45f78726 FINDING AGENTS.md:1735-1760 (defuss-vae managed block) learn=memory: a project rule written inside the managed block is lost on the next init; it belongs outside the block
+2026-10-10T10:41:43Z s=45f78726 DONE fp=eceb529a083f cov=? paths=AGENTS.md,src/documentation/pages/paper.mdx
+2026-10-10T10:41:43Z s=45f78726 FINDING src/documentation/pages/paper.mdx:567 B01+S03 (5.2, maintainer draft) learn=none: doc-edit of the maintainer's draft, checked by the prose walk (4 parts, 0 findings)
+2026-10-10T10:41:43Z s=45f78726 FINDING src/documentation/pages/paper.mdx:568-585 T01 (verbatim report as inline <code>) learn=none: presentation fix verified on the built page
+2026-10-10T10:41:43Z s=45f78726 FINDING src/documentation/pages/paper.mdx:560 A04+L05 (section 5 intro) and ToC lines 141-144 learn=none: structure follows the headings; nothing mechanizable beyond the existing link checks
+2026-10-10T10:41:43Z s=45f78726 FINDING src/documentation/pages/paper.mdx:568 B07+P06 (the 'adversarial attack' experiment) learn=none: a fact only the maintainer holds; asked, not invented
+2026-10-10T10:41:43Z s=45f78726 FINDING AGENTS.md:1735-1760 (defuss-vae managed block) learn=memory: recorded in .agents/MEMORY.md (agents-md line)
+2026-10-10T10:55:12Z s=45f78726 DONE fp=588a73967bfb cov=? paths=AGENTS.md,src/documentation/pages/paper.mdx
+2026-10-10T10:55:12Z s=45f78726 FINDING src/documentation/pages/paper.mdx:603 B01+B07 (section 6, maintainer's new paragraph) learn=none: a report from the maintainer; attributed, not verified - pin it to projects or people if the paper should carry it as evidence
+2026-10-10T10:55:12Z s=45f78726 FINDING src/documentation/pages/paper.mdx:603-604 T03 learn=none: typos in a live draft
+2026-10-10T13:10:08Z s=45f78726 FAIL coverage
+2026-10-10T13:27:03Z s=45f78726 FAIL coverage
+2026-10-10T13:31:40Z s=45f78726 DONE fp=d2b1fb799e3c cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+701)
+2026-10-10T13:31:40Z s=45f78726 FINDING scripts/lib/apps.ts:initHooks learn=test: tests/apps.test.ts 'sees a call a formatter wrapped'
+2026-10-10T13:31:40Z s=45f78726 FINDING scripts/verify.ts dialog ownership boundary; scripts/lib/dom-discipline.ts:hasRender learn=test: tests/dom-discipline.test.ts; the dialog gate is verify's own check
+2026-10-10T13:31:40Z s=45f78726 FINDING src/documentation/lib/component-api.ts (event comment walk-up, typeEntries generics depth, tidyType) learn=test: tests/component-api.test.ts (two new cases + tidyType assertions)
+2026-10-10T13:31:40Z s=45f78726 FINDING src/documentation/lib/components/code-example.tsx:ICONS reader; scripts/verify.ts 'rendered pages are error-free' learn=verifier: verify gate 'rendered pages are error-free' (scripts/verify.ts §29)
+2026-10-10T13:31:40Z s=45f78726 FINDING scripts/lib/format-pages.ts:keepVerbatim; scripts/format-pages.ts HTML_OPTIONS learn=test: tests/format-pages.test.ts 'keeps data scripts, pre and textarea byte for byte'
+2026-10-10T13:31:40Z s=45f78726 FINDING src/documentation/pages/*.mdx (30 pages): void end tags, double </svg>, JSX braces in an html fence learn=verifier: bun run format:check (part of lint) refuses such markup
+2026-10-10T13:31:40Z s=45f78726 FINDING .oxfmtrc.json; package.json format globs learn=none: documented in AGENTS.md 'Formatting'; the e2e and the theme-files-fresh gate enforce it
+2026-10-10T13:31:40Z s=45f78726 FINDING tests/motion.test.ts, tests/component-schema.test.ts, tests/ui.test.ts expectations learn=none: the invariants they pin do not depend on the quote character
+2026-10-10T13:31:40Z s=45f78726 FINDING pages (prose review) - src/documentation/pages/paper.mdx sections 6 and 8; AGENTS.md Formatting learn=none: prose static check + walk earlier this session (4 parts, 0 findings)
+2026-10-10T13:34:12Z s=45f78726 DONE fp=490706904f8a cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+702)
