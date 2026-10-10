@@ -68,3 +68,13 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-10T13:31:40Z s=45f78726 FINDING tests/motion.test.ts, tests/component-schema.test.ts, tests/ui.test.ts expectations learn=none: the invariants they pin do not depend on the quote character
 2026-10-10T13:31:40Z s=45f78726 FINDING pages (prose review) - src/documentation/pages/paper.mdx sections 6 and 8; AGENTS.md Formatting learn=none: prose static check + walk earlier this session (4 parts, 0 findings)
 2026-10-10T13:34:12Z s=45f78726 DONE fp=490706904f8a cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+702)
+2026-10-10T14:14:27Z s=45f78726 FAIL prose
+2026-10-10T14:14:45Z s=45f78726 DONE fp=2bbc07d1d309 cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+703)
+2026-10-10T14:20:18Z s=45f78726 DONE fp=36f90857df09 cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+703)
+2026-10-10T16:48:31Z s=45f78726 DONE fp=bb59032b1a5a cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+1634)
+2026-10-10T16:48:31Z s=45f78726 FINDING src/components/wysiwyg-editors/code-example/code-example.ts:buildSrcdoc (base config); src/documentation/runtime/code-example.ts learn=test: tests/e2e/site/paper-gallery.e2e.ts fails on console errors (404) - it caught the regression and pins the fix
+2026-10-10T16:48:31Z s=45f78726 FINDING tests/e2e/site/theme-designer.e2e.ts:open; src/documentation/runtime/theme-designer.ts:mountApp learn=verifier: verify gate `page links resolve` + `e2e sections`; the test itself names every page through pageRel
+2026-10-10T16:48:31Z s=45f78726 FINDING scripts/build-docs.ts:writePage; src/documentation/lib/plugins.ts:pageRefsPlugin learn=verifier: verify gate `page links resolve` reads every rendered page, standalone ones included
+2026-10-10T16:48:31Z s=45f78726 FINDING tests/helpers.ts:openDocPage; tests/ui.test.ts selectors; tests/state-contract.test.ts fixture glob learn=test: tests/page-dirs.test.ts pins pageRel/pageHref/resolvePageRefs; ui.test.ts drives the real pages
+2026-10-10T16:48:31Z s=45f78726 FINDING src/sitemap.xml; scripts/sync-docs.ts (404.html <base href="/">) learn=verifier: verify `docs release snapshot` + `page links resolve` (sitemap entries are page ids)
+2026-10-10T16:48:31Z s=45f78726 FINDING scripts/format-pages.ts, scripts/stat-figures.ts, scripts/create-screenshots.ts (shebang line) learn=none: a one-off mechanical slip; `bun run figures` / the build run the scripts and fail loudly
