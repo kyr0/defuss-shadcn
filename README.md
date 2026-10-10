@@ -32,7 +32,7 @@ defuss-shadcn ships the components as files. Tokens are CSS custom properties in
 - ♿ **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists). Keyboard navigation, focus management, and screen reader support by default
 - 🧩 **Standalone HTML** - plain HTML, CSS and ES modules, no framework, no build pipeline; the interactive components run on one tiny core runtime, `df$` - [defuss-query](https://www.npmjs.com/package/defuss-query) (DOM selection and events) and [defuss-morph](https://www.npmjs.com/package/defuss-morph) (HTML reconciling) plus the shared State API helpers, shipped once as `core.js` inside `all.js`
 
-The documentation site dogfoods the CDN install: every demo loads `all.css` / `all.js` and its theme from the jsDelivr CDN, pinned to the release it documents - if it renders, the CDN install works.
+The documentation site dogfoods the CDN install: every demo loads `all.css` / `all.js` and its theme from the jsDelivr CDN, pinned to the release it documents (the index page names that release) - if it renders, the CDN install works.
 
 ## How it works
 

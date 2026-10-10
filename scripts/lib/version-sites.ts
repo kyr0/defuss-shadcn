@@ -39,6 +39,10 @@ export const VERSION_SITES: VersionSite[] = [
   site('src/shared/version.ts', 'shared ABI stamp (df$.shadcn.shared.abi)', /SHARED_ABI = '([^']+)'/),
   // VERIFIED: README's citation names the release - a reader copies it, so bump-version moves it with the others
   site('README.md', 'citation version (bibtex)', /^ {2}version {6}= \{([^}]+)\},$/m),
+  // VERIFIED: the index hero names the release its demos are pinned to - and a bump then touches README and
+  // index.mdx in ONE commit, which verify's `README ↔ index commit window` gate requires (a release once failed
+  // in make build because the bump left README alone dirty)
+  site('src/documentation/pages/index.mdx', 'index hero release (CDN note)', /pinned to this release \(v([^)]+)\)/),
   // VERIFIED: the deck page sits in its section folder (page-dirs.ts) - the flat path missed the cover and the gate reported no deck version site
   site('src/documentation/pages/presentations/system-in-numbers.mdx', 'deck cover eyebrow', /defuss-shadcn · v(\d+\.\d+\.\d+(?:-[\w.]+)?)</),
 ];

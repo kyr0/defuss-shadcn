@@ -9,6 +9,7 @@ const files: Record<string, string> = {
   'plugin.json': '{\n  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",\n  "name": "x",\n  "version": "1.2.3"\n}\n',
   'src/shared/version.ts': "export const SHARED_ABI = '1.2.3';\n",
   'README.md': '```bibtex\n@misc{x,\n  year         = {2026},\n  version      = {1.2.3},\n}\n```\n',
+  'src/documentation/pages/index.mdx': '<p>from the jsDelivr CDN, pinned to this release (v1.2.3) - if a demo renders</p>',
   'src/documentation/pages/presentations/system-in-numbers.mdx': '<p class="sys-eyebrow">defuss-shadcn · v1.2.3</p>',
 };
 
