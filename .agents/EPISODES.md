@@ -82,3 +82,5 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-10T17:08:21Z s=45f78726 FINDING README.md: How it works (mermaid labels) learn=verifier: vae.py prose static T07 check runs in the docs gate
 2026-10-10T17:08:21Z s=45f78726 FINDING scripts/verify.ts: README ↔ index parity (pillar regex + range) learn=verifier: verify gate `README ↔ index parity` is its own check (a different bullet shape fails by name)
 2026-10-10T17:08:21Z s=45f78726 FINDING scripts/lib/version-sites.ts VERSION_SITES (README citation); tests/version-sites.test.ts fixture learn=test: tests/version-sites.test.ts iterates every site including README.md
+2026-10-10T17:19:53Z s=45f78726 DONE fp=2501f00b24ab cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+1359)
+2026-10-10T17:19:53Z s=45f78726 FINDING README.md: the component list link ("Using components" → "The component folder") learn=none: a one-off text slip; verify's markdown link gate checks hrefs, not link text
