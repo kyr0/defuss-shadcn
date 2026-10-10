@@ -78,3 +78,7 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-10T16:48:31Z s=45f78726 FINDING tests/helpers.ts:openDocPage; tests/ui.test.ts selectors; tests/state-contract.test.ts fixture glob learn=test: tests/page-dirs.test.ts pins pageRel/pageHref/resolvePageRefs; ui.test.ts drives the real pages
 2026-10-10T16:48:31Z s=45f78726 FINDING src/sitemap.xml; scripts/sync-docs.ts (404.html <base href="/">) learn=verifier: verify `docs release snapshot` + `page links resolve` (sitemap entries are page ids)
 2026-10-10T16:48:31Z s=45f78726 FINDING scripts/format-pages.ts, scripts/stat-figures.ts, scripts/create-screenshots.ts (shebang line) learn=none: a one-off mechanical slip; `bun run figures` / the build run the scripts and fail loudly
+2026-10-10T17:08:21Z s=45f78726 DONE fp=94d40e627560 cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+1359)
+2026-10-10T17:08:21Z s=45f78726 FINDING README.md: How it works (mermaid labels) learn=verifier: vae.py prose static T07 check runs in the docs gate
+2026-10-10T17:08:21Z s=45f78726 FINDING scripts/verify.ts: README ↔ index parity (pillar regex + range) learn=verifier: verify gate `README ↔ index parity` is its own check (a different bullet shape fails by name)
+2026-10-10T17:08:21Z s=45f78726 FINDING scripts/lib/version-sites.ts VERSION_SITES (README citation); tests/version-sites.test.ts fixture learn=test: tests/version-sites.test.ts iterates every site including README.md
