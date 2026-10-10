@@ -1,7 +1,7 @@
 // dist/components/presentation/presentation.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.8") {
+if (!__df$shared || __df$shared.abi !== "0.9.9") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim, defussQuery, componentState, bindComponent } = __df$shared;
@@ -430,5 +430,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=B624D127846E80DB64756E2164756E21
+//# debugId=69AE709DF83C94FB64756E2164756E21
 //# sourceMappingURL=presentations.js.map

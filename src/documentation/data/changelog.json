@@ -27,7 +27,8 @@
         "feat: add Teaser + Play Button, rework Theme Designer to an auto-saving bar, ship Typography .link",
         "fix(docs): keep the Pages custom domain across releases",
         "Create CNAME"
-      ]
+      ],
+      "hash": "c653f9df"
     },
     {
       "version": "v0.9.8",

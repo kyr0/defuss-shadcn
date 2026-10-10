@@ -3879,7 +3879,10 @@
   var areas = {};
   var inMemory = new Set;
   function storageOf(area) {
-    return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+    return areas[area] ??= createWebStorage(area, {
+      fallback: createMemoryStorage(),
+      onUnavailable: () => inMemory.add(area)
+    });
   }
   function storageAvailable(area = "local") {
     try {
@@ -4005,7 +4008,7 @@
     var THEME_LINK_ID = "theme-css";
     var THEME_LINKS_ATTR = "data-df-theme-link";
     var CUSTOM_PREFIX = "custom-";
-    var TOKEN_RE = /^(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground|border|input|ring|chart-[1-5]|sidebar|sidebar-foreground|sidebar-primary|sidebar-primary-foreground|sidebar-accent|sidebar-accent-foreground|sidebar-border|sidebar-ring|font-sans|font-serif|font-mono|radius|shadow-2xs|shadow-xs|shadow-sm|shadow|shadow-md|shadow-lg|shadow-xl|shadow-2xl|spacing|tracking-normal)$/;
+    var TOKEN_RE = /^(background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|destructive|destructive-foreground|border|input|ring|chart-[1-5]|sidebar|sidebar-foreground|sidebar-primary|sidebar-primary-foreground|sidebar-accent|sidebar-accent-foreground|sidebar-border|sidebar-ring|font-sans|font-serif|font-mono|radius|shadow-2xs|shadow-xs|shadow-sm|shadow|shadow-md|shadow-lg|shadow-xl|shadow-2xl|spacing|tracking-normal|link-text-decoration|link-underline-offset)$/;
     function isCustomId(id) {
       return typeof id === "string" && id.indexOf(CUSTOM_PREFIX) === 0;
     }
@@ -4408,7 +4411,17 @@
       }
       (docs.__spaInits = docs.__spaInits || []).push(fn);
     };
-    var currentPage = location.pathname.split("/").pop() || "index.html";
+    var root = document.documentElement;
+    var docsRoot = new URL(root.getAttribute("data-docs-root") || "", location.href);
+    var currentPage = root.getAttribute("data-page") || "index.html";
+    var pageUrl = function(rel) {
+      return new URL(rel, docsRoot);
+    };
+    var resolveChromeLinks = function() {
+      globalThis.df$(".site-sidebar a[data-page], .site-header a[data-page]").each(function(_i, a) {
+        a.setAttribute("href", pageUrl(a.getAttribute("data-page")).pathname);
+      });
+    };
     function typeBadge(type) {
       return ' <span class="type-badge" data-type="' + type + '" title="' + type + '">' + type + "</span>";
     }
@@ -4479,7 +4492,8 @@
         go.className = "btn nav-link";
         go.setAttribute("data-variant", "outline");
         go.setAttribute("data-size", "sm");
-        go.href = "theme-designer.html";
+        var designer = globalThis.df$(".site-header a.theme-design-btn").get(0);
+        go.href = designer ? pageUrl(designer.getAttribute("data-page") || "index.html").pathname : "#";
         go.textContent = "Continue designing";
         var drop = document.createElement("button");
         drop.className = "btn";
@@ -4611,7 +4625,7 @@
             } else
               window.scrollTo(0, 0);
           } else {
-            navigateTo(page, true);
+            navigateTo(pageUrl(page).pathname, true);
             if (id)
               scrollToWhenReady(id, 0);
           }
@@ -4712,7 +4726,7 @@
     }
     document.addEventListener("DOMContentLoaded", initChrome);
     document.addEventListener("click", function(e) {
-      var link = e.target.closest('a.nav-link, .site-header a[href="index.html"]');
+      var link = e.target.closest("a.nav-link, .site-header a.header-brand");
       if (!link)
         return;
       var sidebar = document.querySelector(".site-sidebar .sidebar-content");
@@ -4751,10 +4765,12 @@
     function navigateTo(href, pushState) {
       if (navigating)
         return;
-      if (href === currentPage && pushState !== false)
+      var target = new URL(href, location.href);
+      if (target.pathname === location.pathname && pushState !== false)
         return;
       navigating = true;
-      fetch(href).then(function(r) {
+      href = target.pathname;
+      fetch(target.href).then(function(r) {
         if (!r.ok)
           throw new Error(r.status);
         return r.text();
@@ -4798,9 +4814,14 @@
             document.body.appendChild(document.importNode(el, true));
           });
           document.title = doc.title;
-          currentPage = href;
+          var newRoot = doc.documentElement;
+          currentPage = newRoot.getAttribute("data-page") || currentPage;
+          root.setAttribute("data-page", currentPage);
+          root.setAttribute("data-docs-root", newRoot.getAttribute("data-docs-root") || "");
+          docsRoot = new URL(root.getAttribute("data-docs-root") || "", target.href);
+          resolveChromeLinks();
           document.querySelectorAll(".nav-link").forEach(function(link) {
-            var isActive = link.getAttribute("href") === currentPage;
+            var isActive = (link.getAttribute("data-page") || link.getAttribute("href")) === currentPage;
             link.classList.toggle("active", isActive);
             if (isActive)
               link.setAttribute("aria-current", "page");
@@ -4844,7 +4865,7 @@
         return;
       if (e.defaultPrevented)
         return;
-      var link = e.target.closest('a.nav-link:not(.disabled), .site-header a[href="index.html"], a.page-nav-link');
+      var link = e.target.closest("a.nav-link:not(.disabled), .site-header a.header-brand, a.page-nav-link");
       if (!link)
         return;
       var href = link.getAttribute("href");
@@ -4854,8 +4875,7 @@
       navigateTo(href, true);
     });
     window.addEventListener("popstate", function() {
-      var page = location.pathname.split("/").pop() || "index.html";
-      navigateTo(page, false);
+      navigateTo(location.pathname, false);
     });
     function updateAnchorPad() {
       var hdr = document.querySelector(".site-header");

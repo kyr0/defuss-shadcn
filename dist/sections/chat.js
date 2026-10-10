@@ -1,7 +1,7 @@
 // dist/components/session/session.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.8") {
+if (!__df$shared || __df$shared.abi !== "0.9.9") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -389,5 +389,5 @@ df$.session = {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=8D22FF1439C50CEC64756E2164756E21
+//# debugId=AD7F6F2D3E4B7CE764756E2164756E21
 //# sourceMappingURL=chat.js.map
