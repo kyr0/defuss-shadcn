@@ -84,3 +84,6 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-10T17:08:21Z s=45f78726 FINDING scripts/lib/version-sites.ts VERSION_SITES (README citation); tests/version-sites.test.ts fixture learn=test: tests/version-sites.test.ts iterates every site including README.md
 2026-10-10T17:19:53Z s=45f78726 DONE fp=2501f00b24ab cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,Makefile(+1359)
 2026-10-10T17:19:53Z s=45f78726 FINDING README.md: the component list link ("Using components" → "The component folder") learn=none: a one-off text slip; verify's markdown link gate checks hrefs, not link text
+2026-10-10T18:48:54Z s=45f78726 DONE fp=56366971a8f6 cov=74.8% paths=.oxfmtrc.json,.vscode/settings.json,AGENTS.md,ARCH.md(+1362)
+2026-10-10T18:48:54Z s=45f78726 FINDING src/documentation/lib/page-dirs.ts SITE_BASE / pageUrl; lib/components/doc-page.tsx og:url; scripts/lib/mirror.ts mirrorTransform; src/sitemap.xml learn=test: tests/page-dirs.test.ts 'paths and links' covers pageUrl for a section page and the index
+2026-10-10T18:48:54Z s=45f78726 FINDING src/documentation/pages/papers/*.mdx bibtex url fields; tests/e2e/papers/paper.e2e-fixture.html; ARCH.md learn=verifier: verify's `architecture ↔ ARCH.md` gate; the paper fixture mirrors the page by the docs ↔ e2e parity rule
