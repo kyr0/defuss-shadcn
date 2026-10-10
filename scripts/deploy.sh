@@ -118,7 +118,10 @@ E2E_ALL=1 make build # a release runs every e2e file, changed or not
 # old one - every commit on main stays verify-green. docs/ is NOT part of it:
 # make build already re-snapshotted docs/ for the new version (pinned to the
 # new tag), which only matches the committed version after 4b.
-git add src/documentation/data/changelog.json dist/documentation/changelog.html
+# VERIFIED: the changelog page sits in its sidebar section folder - page-dirs.ts owns the path
+# (a release once stopped here on the flat dist/documentation/changelog.html)
+CHANGELOG_PAGE="dist/documentation/$(bun -e "import { pageRel } from './src/documentation/lib/page-dirs.ts'; console.log(pageRel('changelog'))")"
+git add src/documentation/data/changelog.json "$CHANGELOG_PAGE"
 git commit -m "docs(changelog): add ${TAG} entry"
 ENTRY_HASH=$(git rev-parse --short HEAD)
 
