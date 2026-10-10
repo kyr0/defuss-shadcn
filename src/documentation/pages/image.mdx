@@ -52,23 +52,36 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </SkillPanel>
 
 ```html example label="Default" hint="Basic image in a figure with rounded corners and cover fit."
-<figure class="image" style="max-width:400px;">
-  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient"></img>
+<figure class="image" style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+    alt="Abstract gradient"
+  />
 </figure>
 ```
 
 ```html example label="With Caption" hint="Semantic &lt;figcaption&gt; for descriptive text below the image."
-<figure class="image" style="max-width:400px;">
-  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Abstract gradient"></img>
+<figure class="image" style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+    alt="Abstract gradient"
+  />
   <figcaption class="image-caption">Photo by Unsplash - Abstract gradient composition</figcaption>
 </figure>
 ```
 
 ```html example label="Fallback" hint="Shows a placeholder when the image fails to load. Uses :has() to detect error state."
-<figure class="image" style="max-width:400px;height:200px;">
-  <img src="https://invalid-url-that-will-fail.example/photo.jpg" alt="Broken image example"></img>
+<figure class="image" style="max-width: 400px; height: 200px">
+  <img src="https://invalid-url-that-will-fail.example/photo.jpg" alt="Broken image example" />
   <div class="image-fallback">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
       <circle cx="9" cy="9" r="2"></circle>
       <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
@@ -78,73 +91,109 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 ```html example label="Lightbox Preview" hint="Click the image to open a fullscreen preview with zoom and rotate controls. Uses native &lt;dialog&gt;. data-src-full names a much larger original that only the lightbox loads: the preview opens instantly with the inline image, then swaps in the original once it has downloaded."
-<figure class="image" data-preview style="max-width:400px;">
-  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop" data-src-full="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=2400&amp;h=1200&amp;fit=crop&amp;q=85" alt="Mountain landscape"></img>
+<figure class="image" data-preview style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop"
+    data-src-full="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=2400&amp;h=1200&amp;fit=crop&amp;q=85"
+    alt="Mountain landscape"
+  />
   <figcaption class="image-caption">Click to preview - opens the 2400 px original</figcaption>
 </figure>
 ```
 
 ```html example label="Progressive Loading" hint="data-src-low paints a blurred placeholder while the real image preloads in the background; data-src-high replaces it on ≥2dppx (retina) displays - and, combined with data-preview, on the first lightbox zoom-in."
-<figure class="image" data-preview style="max-width:400px;">
-  <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" data-src-low="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=32&amp;h=16&amp;fit=crop" data-src-high="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1600&amp;h=800&amp;fit=crop" alt="Abstract gradient"></img>
+<figure class="image" data-preview style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+    data-src-low="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=32&amp;h=16&amp;fit=crop"
+    data-src-high="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1600&amp;h=800&amp;fit=crop"
+    alt="Abstract gradient"
+  />
   <figcaption class="image-caption">Progressive: low-res placeholder → standard → high-res on retina/zoom</figcaption>
 </figure>
 ```
 
 ```html example label="Aspect Ratios" hint="Controlled aspect ratios via data-ratio."
-<div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
-  <figure class="image" data-ratio="1/1" style="width:120px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Square"></img>
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start">
+  <figure class="image" data-ratio="1/1" style="width: 120px">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Square" />
     <figcaption class="image-caption">1:1</figcaption>
   </figure>
-  <figure class="image" data-ratio="4/3" style="width:160px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=300&amp;fit=crop" alt="Standard"></img>
+  <figure class="image" data-ratio="4/3" style="width: 160px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=300&amp;fit=crop"
+      alt="Standard"
+    />
     <figcaption class="image-caption">4:3</figcaption>
   </figure>
-  <figure class="image" data-ratio="16/9" style="width:200px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=225&amp;fit=crop" alt="Widescreen"></img>
+  <figure class="image" data-ratio="16/9" style="width: 200px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=225&amp;fit=crop"
+      alt="Widescreen"
+    />
     <figcaption class="image-caption">16:9</figcaption>
   </figure>
-  <figure class="image" data-ratio="3/4" style="width:120px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=300&amp;h=400&amp;fit=crop" alt="Portrait"></img>
+  <figure class="image" data-ratio="3/4" style="width: 120px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=300&amp;h=400&amp;fit=crop"
+      alt="Portrait"
+    />
     <figcaption class="image-caption">3:4</figcaption>
   </figure>
 </div>
 ```
 
 ```html example label="Object Fit" hint="Control how the image fills its container via data-fit."
-<div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
-  <figure class="image" data-ratio="4/3" style="width:180px;background:var(--muted);">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Cover (default)"></img>
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start">
+  <figure class="image" data-ratio="4/3" style="width: 180px; background: var(--muted)">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+      alt="Cover (default)"
+    />
     <figcaption class="image-caption">cover (default)</figcaption>
   </figure>
-  <figure class="image" data-ratio="4/3" data-fit="contain" style="width:180px;background:var(--muted);">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="Contain"></img>
+  <figure class="image" data-ratio="4/3" data-fit="contain" style="width: 180px; background: var(--muted)">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+      alt="Contain"
+    />
     <figcaption class="image-caption">contain</figcaption>
   </figure>
-  <figure class="image" data-ratio="4/3" data-fit="none" style="width:180px;background:var(--muted);">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="None"></img>
+  <figure class="image" data-ratio="4/3" data-fit="none" style="width: 180px; background: var(--muted)">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="None" />
     <figcaption class="image-caption">none</figcaption>
   </figure>
 </div>
 ```
 
 ```html example label="Border Radius" hint="Control border radius via data-radius."
-<div style="display:flex;gap:1.0rem;flex-wrap:wrap;align-items:flex-start;">
-  <figure class="image" data-radius="none" data-ratio="1/1" style="width:100px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="No radius"></img>
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start">
+  <figure class="image" data-radius="none" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="No radius"
+    />
     <figcaption class="image-caption">none</figcaption>
   </figure>
-  <figure class="image" data-radius="sm" data-ratio="1/1" style="width:100px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Small radius"></img>
+  <figure class="image" data-radius="sm" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="Small radius"
+    />
     <figcaption class="image-caption">sm</figcaption>
   </figure>
-  <figure class="image" data-ratio="1/1" style="width:100px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Default radius"></img>
+  <figure class="image" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="Default radius"
+    />
     <figcaption class="image-caption">default (lg)</figcaption>
   </figure>
-  <figure class="image" data-radius="full" data-ratio="1/1" style="width:100px;">
-    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Full radius"></img>
+  <figure class="image" data-radius="full" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="Full radius"
+    />
     <figcaption class="image-caption">full</figcaption>
   </figure>
 </div>

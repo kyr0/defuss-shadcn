@@ -19,56 +19,69 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">High-level</span>
     <span class="diagram-title">The data stack on Kubernetes</span>
-    <span class="diagram-dek">Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span>
+    <span class="diagram-dek"
+      >Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+  <div class="diagram-canvas" style="--cols: 5; --diagram-col-min: 7.5rem; --diagram-node-w: 9rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 5">
       <li>Sources</li>
       <li>Ingestion</li>
       <li data-tone="accent">Storage</li>
       <li>Transform</li>
       <li>Visualize</li>
     </ol>
-    <div class="diagram-group" data-node="ext" style="--col:1;--row:2;--rspan:2"><span class="diagram-group-label">External</span></div>
-    <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col:2;--row:2;--span:4;--rspan:3"><span class="diagram-group-label">Kubernetes cluster</span></div>
-    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+    <div class="diagram-group" data-node="ext" style="--col: 1; --row: 2; --rspan: 2"
+      ><span class="diagram-group-label">External</span></div
+    >
+    <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col: 2; --row: 2; --span: 4; --rspan: 3"
+      ><span class="diagram-group-label">Kubernetes cluster</span></div
+    >
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col: 1; --row: 2">
       <span class="diagram-node-name">PostgreSQL</span>
       <span class="diagram-node-meta">OLTP</span>
     </div>
-    <div class="diagram-node" data-node="forms" data-tone="external" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="forms" data-tone="external" style="--col: 1; --row: 3">
       <span class="diagram-node-name">Web forms</span>
       <span class="diagram-node-meta">events</span>
     </div>
-    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="nifi" style="--col: 2; --row: 2">
       <span class="diagram-node-name">NiFi</span>
       <span class="diagram-node-meta">ingest flows</span>
     </div>
-    <div class="diagram-node" data-node="kafka" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="kafka" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Kafka</span>
       <span class="diagram-node-meta">stream buffer</span>
     </div>
-    <div class="diagram-node" data-node="minio" data-shape="store" data-tone="accent" data-step-label="The lake" style="--col:3;--row:2;--rspan:2">
+    <div
+      class="diagram-node"
+      data-node="minio"
+      data-shape="store"
+      data-tone="accent"
+      data-step-label="The lake"
+      style="--col: 3; --row: 2; --rspan: 2"
+    >
       <span class="diagram-node-name">MinIO</span>
       <span class="diagram-node-meta">Iceberg lake</span>
     </div>
-    <div class="diagram-node" data-node="spark" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="spark" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Spark</span>
       <span class="diagram-node-meta">batch jobs</span>
     </div>
-    <div class="diagram-node" data-node="dbt" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="dbt" style="--col: 4; --row: 3">
       <span class="diagram-node-name">dbt</span>
       <span class="diagram-node-meta">models</span>
     </div>
-    <div class="diagram-node" data-node="superset" style="--col:5;--row:2;--rspan:2">
+    <div class="diagram-node" data-node="superset" style="--col: 5; --row: 2; --rspan: 2">
       <span class="diagram-node-name">Superset</span>
       <span class="diagram-node-meta">dashboards</span>
     </div>
-    <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col:2;--row:4;--span:4">
+    <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col: 2; --row: 4; --span: 4">
       <span class="diagram-node-eyebrow">Orchestration</span>
       <span class="diagram-node-name">Airflow</span>
       <span class="diagram-node-meta">DAGs · schedules · retries</span>
     </div>
-    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:1;--row:5;--span:5">
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col: 1; --row: 5; --span: 5">
       <span class="diagram-node-eyebrow">Identity</span>
       <span class="diagram-node-name">Keycloak</span>
       <span class="diagram-node-meta">SSO · OIDC for every UI</span>
@@ -89,60 +102,93 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="The stack, phase by phase" component="diagram" hint="Sources, ingestion, the lake (focal), transformation, visualization, then the cross-cutting bars."
-<figure class="diagram" id="dg-high-steps" data-type="high-level" data-steps data-autoplay aria-label="Data stack on Kubernetes, high level">
+<figure
+  class="diagram"
+  id="dg-high-steps"
+  data-type="high-level"
+  data-steps
+  data-autoplay
+  aria-label="Data stack on Kubernetes, high level"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">High-level</span>
     <span class="diagram-title">The data stack on Kubernetes</span>
-    <span class="diagram-dek">Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span>
+    <span class="diagram-dek"
+      >Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+  <div class="diagram-canvas" style="--cols: 5; --diagram-col-min: 7.5rem; --diagram-node-w: 9rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 5">
       <li>Sources</li>
       <li>Ingestion</li>
       <li data-tone="accent">Storage</li>
       <li>Transform</li>
       <li>Visualize</li>
     </ol>
-    <div class="diagram-group" data-node="ext" data-step="1" style="--col:1;--row:2;--rspan:2"><span class="diagram-group-label">External</span></div>
-    <div class="diagram-group" data-node="k8s" data-tone="solid" data-step="2" style="--col:2;--row:2;--span:4;--rspan:3"><span class="diagram-group-label">Kubernetes cluster</span></div>
-    <div class="diagram-node" data-node="pg" data-tone="external" data-step="1" style="--col:1;--row:2">
+    <div class="diagram-group" data-node="ext" data-step="1" style="--col: 1; --row: 2; --rspan: 2"
+      ><span class="diagram-group-label">External</span></div
+    >
+    <div
+      class="diagram-group"
+      data-node="k8s"
+      data-tone="solid"
+      data-step="2"
+      style="--col: 2; --row: 2; --span: 4; --rspan: 3"
+      ><span class="diagram-group-label">Kubernetes cluster</span></div
+    >
+    <div class="diagram-node" data-node="pg" data-tone="external" data-step="1" style="--col: 1; --row: 2">
       <span class="diagram-node-name">PostgreSQL</span>
       <span class="diagram-node-meta">OLTP</span>
     </div>
-    <div class="diagram-node" data-node="forms" data-tone="external" data-step="1" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="forms" data-tone="external" data-step="1" style="--col: 1; --row: 3">
       <span class="diagram-node-name">Web forms</span>
       <span class="diagram-node-meta">events</span>
     </div>
-    <div class="diagram-node" data-node="nifi" data-step="2" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="nifi" data-step="2" style="--col: 2; --row: 2">
       <span class="diagram-node-name">NiFi</span>
       <span class="diagram-node-meta">ingest flows</span>
     </div>
-    <div class="diagram-node" data-node="kafka" data-step="2" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="kafka" data-step="2" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Kafka</span>
       <span class="diagram-node-meta">stream buffer</span>
     </div>
-    <div class="diagram-node" data-node="minio" data-shape="store" data-tone="accent" data-step="3" data-step-label="The lake" style="--col:3;--row:2;--rspan:2">
+    <div
+      class="diagram-node"
+      data-node="minio"
+      data-shape="store"
+      data-tone="accent"
+      data-step="3"
+      data-step-label="The lake"
+      style="--col: 3; --row: 2; --rspan: 2"
+    >
       <span class="diagram-node-name">MinIO</span>
       <span class="diagram-node-meta">Iceberg lake</span>
     </div>
-    <div class="diagram-node" data-node="spark" data-step="4" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="spark" data-step="4" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Spark</span>
       <span class="diagram-node-meta">batch jobs</span>
     </div>
-    <div class="diagram-node" data-node="dbt" data-step="4" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="dbt" data-step="4" style="--col: 4; --row: 3">
       <span class="diagram-node-name">dbt</span>
       <span class="diagram-node-meta">models</span>
     </div>
-    <div class="diagram-node" data-node="superset" data-step="5" style="--col:5;--row:2;--rspan:2">
+    <div class="diagram-node" data-node="superset" data-step="5" style="--col: 5; --row: 2; --rspan: 2">
       <span class="diagram-node-name">Superset</span>
       <span class="diagram-node-meta">dashboards</span>
     </div>
-    <div class="diagram-node" data-node="airflow" data-shape="bar" data-step="6" style="--col:2;--row:4;--span:4">
+    <div class="diagram-node" data-node="airflow" data-shape="bar" data-step="6" style="--col: 2; --row: 4; --span: 4">
       <span class="diagram-node-eyebrow">Orchestration</span>
       <span class="diagram-node-name">Airflow</span>
       <span class="diagram-node-meta">DAGs · schedules · retries</span>
     </div>
-    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" data-step="7" style="--col:1;--row:5;--span:5">
+    <div
+      class="diagram-node"
+      data-node="kc"
+      data-shape="bar"
+      data-tone="muted"
+      data-step="7"
+      style="--col: 1; --row: 5; --span: 5"
+    >
       <span class="diagram-node-eyebrow">Identity</span>
       <span class="diagram-node-name">Keycloak</span>
       <span class="diagram-node-meta">SSO · OIDC for every UI</span>
@@ -166,65 +212,92 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="High-level, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-high-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-high-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-high-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-high-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-high-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-high-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-high-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-high-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-high-live" data-interactive data-type="high-level" aria-label="Data stack on Kubernetes, high level">
+<figure
+  class="diagram"
+  id="dg-high-live"
+  data-interactive
+  data-type="high-level"
+  aria-label="Data stack on Kubernetes, high level"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">High-level</span>
     <span class="diagram-title">The data stack on Kubernetes</span>
-    <span class="diagram-dek">Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span>
+    <span class="diagram-dek"
+      >Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+  <div class="diagram-canvas" style="--cols: 5; --diagram-col-min: 7.5rem; --diagram-node-w: 9rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 5">
       <li>Sources</li>
       <li>Ingestion</li>
       <li data-tone="accent">Storage</li>
       <li>Transform</li>
       <li>Visualize</li>
     </ol>
-    <div class="diagram-group" data-node="ext" style="--col:1;--row:2;--rspan:2"><span class="diagram-group-label">External</span></div>
-    <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col:2;--row:2;--span:4;--rspan:3"><span class="diagram-group-label">Kubernetes cluster</span></div>
-    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+    <div class="diagram-group" data-node="ext" style="--col: 1; --row: 2; --rspan: 2"
+      ><span class="diagram-group-label">External</span></div
+    >
+    <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col: 2; --row: 2; --span: 4; --rspan: 3"
+      ><span class="diagram-group-label">Kubernetes cluster</span></div
+    >
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col: 1; --row: 2">
       <span class="diagram-node-name">PostgreSQL</span>
       <span class="diagram-node-meta">OLTP</span>
     </div>
-    <div class="diagram-node" data-node="forms" data-tone="external" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="forms" data-tone="external" style="--col: 1; --row: 3">
       <span class="diagram-node-name">Web forms</span>
       <span class="diagram-node-meta">events</span>
     </div>
-    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="nifi" style="--col: 2; --row: 2">
       <span class="diagram-node-name">NiFi</span>
       <span class="diagram-node-meta">ingest flows</span>
     </div>
-    <div class="diagram-node" data-node="kafka" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="kafka" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Kafka</span>
       <span class="diagram-node-meta">stream buffer</span>
     </div>
-    <div class="diagram-node" data-node="minio" data-shape="store" data-tone="accent" data-step-label="The lake" style="--col:3;--row:2;--rspan:2">
+    <div
+      class="diagram-node"
+      data-node="minio"
+      data-shape="store"
+      data-tone="accent"
+      data-step-label="The lake"
+      style="--col: 3; --row: 2; --rspan: 2"
+    >
       <span class="diagram-node-name">MinIO</span>
       <span class="diagram-node-meta">Iceberg lake</span>
     </div>
-    <div class="diagram-node" data-node="spark" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="spark" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Spark</span>
       <span class="diagram-node-meta">batch jobs</span>
     </div>
-    <div class="diagram-node" data-node="dbt" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="dbt" style="--col: 4; --row: 3">
       <span class="diagram-node-name">dbt</span>
       <span class="diagram-node-meta">models</span>
     </div>
-    <div class="diagram-node" data-node="superset" style="--col:5;--row:2;--rspan:2">
+    <div class="diagram-node" data-node="superset" style="--col: 5; --row: 2; --rspan: 2">
       <span class="diagram-node-name">Superset</span>
       <span class="diagram-node-meta">dashboards</span>
     </div>
-    <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col:2;--row:4;--span:4">
+    <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col: 2; --row: 4; --span: 4">
       <span class="diagram-node-eyebrow">Orchestration</span>
       <span class="diagram-node-name">Airflow</span>
       <span class="diagram-node-meta">DAGs · schedules · retries</span>
     </div>
-    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:1;--row:5;--span:5">
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col: 1; --row: 5; --span: 5">
       <span class="diagram-node-eyebrow">Identity</span>
       <span class="diagram-node-name">Keycloak</span>
       <span class="diagram-node-meta">SSO · OIDC for every UI</span>
@@ -248,65 +321,92 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="High-level, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-high-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-high-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-high-edit" data-interactive data-type="high-level" aria-label="Data stack on Kubernetes, high level">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-high-edit"
+      data-interactive
+      data-type="high-level"
+      aria-label="Data stack on Kubernetes, high level"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">High-level</span>
         <span class="diagram-title">The data stack on Kubernetes</span>
-        <span class="diagram-dek">Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span>
+        <span class="diagram-dek"
+          >Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span
+        >
       </figcaption>
-      <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
-        <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+      <div class="diagram-canvas" style="--cols: 5; --diagram-col-min: 7.5rem; --diagram-node-w: 9rem">
+        <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 5">
           <li>Sources</li>
           <li>Ingestion</li>
           <li data-tone="accent">Storage</li>
           <li>Transform</li>
           <li>Visualize</li>
         </ol>
-        <div class="diagram-group" data-node="ext" style="--col:1;--row:2;--rspan:2"><span class="diagram-group-label">External</span></div>
-        <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col:2;--row:2;--span:4;--rspan:3"><span class="diagram-group-label">Kubernetes cluster</span></div>
-        <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+        <div class="diagram-group" data-node="ext" style="--col: 1; --row: 2; --rspan: 2"
+          ><span class="diagram-group-label">External</span></div
+        >
+        <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col: 2; --row: 2; --span: 4; --rspan: 3"
+          ><span class="diagram-group-label">Kubernetes cluster</span></div
+        >
+        <div class="diagram-node" data-node="pg" data-tone="external" style="--col: 1; --row: 2">
           <span class="diagram-node-name">PostgreSQL</span>
           <span class="diagram-node-meta">OLTP</span>
         </div>
-        <div class="diagram-node" data-node="forms" data-tone="external" style="--col:1;--row:3">
+        <div class="diagram-node" data-node="forms" data-tone="external" style="--col: 1; --row: 3">
           <span class="diagram-node-name">Web forms</span>
           <span class="diagram-node-meta">events</span>
         </div>
-        <div class="diagram-node" data-node="nifi" style="--col:2;--row:2">
+        <div class="diagram-node" data-node="nifi" style="--col: 2; --row: 2">
           <span class="diagram-node-name">NiFi</span>
           <span class="diagram-node-meta">ingest flows</span>
         </div>
-        <div class="diagram-node" data-node="kafka" style="--col:2;--row:3">
+        <div class="diagram-node" data-node="kafka" style="--col: 2; --row: 3">
           <span class="diagram-node-name">Kafka</span>
           <span class="diagram-node-meta">stream buffer</span>
         </div>
-        <div class="diagram-node" data-node="minio" data-shape="store" data-tone="accent" data-step-label="The lake" style="--col:3;--row:2;--rspan:2">
+        <div
+          class="diagram-node"
+          data-node="minio"
+          data-shape="store"
+          data-tone="accent"
+          data-step-label="The lake"
+          style="--col: 3; --row: 2; --rspan: 2"
+        >
           <span class="diagram-node-name">MinIO</span>
           <span class="diagram-node-meta">Iceberg lake</span>
         </div>
-        <div class="diagram-node" data-node="spark" style="--col:4;--row:2">
+        <div class="diagram-node" data-node="spark" style="--col: 4; --row: 2">
           <span class="diagram-node-name">Spark</span>
           <span class="diagram-node-meta">batch jobs</span>
         </div>
-        <div class="diagram-node" data-node="dbt" style="--col:4;--row:3">
+        <div class="diagram-node" data-node="dbt" style="--col: 4; --row: 3">
           <span class="diagram-node-name">dbt</span>
           <span class="diagram-node-meta">models</span>
         </div>
-        <div class="diagram-node" data-node="superset" style="--col:5;--row:2;--rspan:2">
+        <div class="diagram-node" data-node="superset" style="--col: 5; --row: 2; --rspan: 2">
           <span class="diagram-node-name">Superset</span>
           <span class="diagram-node-meta">dashboards</span>
         </div>
-        <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col:2;--row:4;--span:4">
+        <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col: 2; --row: 4; --span: 4">
           <span class="diagram-node-eyebrow">Orchestration</span>
           <span class="diagram-node-name">Airflow</span>
           <span class="diagram-node-meta">DAGs · schedules · retries</span>
         </div>
-        <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:1;--row:5;--span:5">
+        <div
+          class="diagram-node"
+          data-node="kc"
+          data-shape="bar"
+          data-tone="muted"
+          style="--col: 1; --row: 5; --span: 5"
+        >
           <span class="diagram-node-eyebrow">Identity</span>
           <span class="diagram-node-name">Keycloak</span>
           <span class="diagram-node-meta">SSO · OIDC for every UI</span>
@@ -328,11 +428,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-high-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-high-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-high-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -367,69 +480,133 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">High-level</span>
     <span class="diagram-title">The data stack on Kubernetes</span>
-    <span class="diagram-dek">Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span>
+    <span class="diagram-dek"
+      >Phases on top, the cluster boundary around the platform, cross-cutting concerns as bars.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:5">
+  <div class="diagram-canvas" style="--cols: 5; --diagram-col-min: 7.5rem; --diagram-node-w: 9rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 5">
       <li>Sources</li>
       <li>Ingestion</li>
       <li data-tone="accent">Storage</li>
       <li>Transform</li>
       <li>Visualize</li>
     </ol>
-    <div class="diagram-group" data-node="ext" style="--col:1;--row:2;--rspan:2"><span class="diagram-group-label">External</span></div>
-    <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col:2;--row:2;--span:4;--rspan:3"><span class="diagram-group-label">Kubernetes cluster</span></div>
-    <div class="diagram-node" data-node="pg" data-tone="external" style="--col:1;--row:2">
+    <div class="diagram-group" data-node="ext" style="--col: 1; --row: 2; --rspan: 2"
+      ><span class="diagram-group-label">External</span></div
+    >
+    <div class="diagram-group" data-node="k8s" data-tone="solid" style="--col: 2; --row: 2; --span: 4; --rspan: 3"
+      ><span class="diagram-group-label">Kubernetes cluster</span></div
+    >
+    <div class="diagram-node" data-node="pg" data-tone="external" style="--col: 1; --row: 2">
       <span class="diagram-node-name">PostgreSQL</span>
       <span class="diagram-node-meta">OLTP</span>
     </div>
-    <div class="diagram-node" data-node="forms" data-tone="external" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="forms" data-tone="external" style="--col: 1; --row: 3">
       <span class="diagram-node-name">Web forms</span>
       <span class="diagram-node-meta">events</span>
     </div>
-    <div class="diagram-node" data-node="nifi" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="nifi" style="--col: 2; --row: 2">
       <span class="diagram-node-name">NiFi</span>
       <span class="diagram-node-meta">ingest flows</span>
     </div>
-    <div class="diagram-node" data-node="kafka" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="kafka" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Kafka</span>
       <span class="diagram-node-meta">stream buffer</span>
     </div>
-    <div class="diagram-node" data-node="minio" data-shape="store" data-tone="accent" data-step-label="The lake" style="--col:3;--row:2;--rspan:2">
+    <div
+      class="diagram-node"
+      data-node="minio"
+      data-shape="store"
+      data-tone="accent"
+      data-step-label="The lake"
+      style="--col: 3; --row: 2; --rspan: 2"
+    >
       <span class="diagram-node-name">MinIO</span>
       <span class="diagram-node-meta">Iceberg lake</span>
     </div>
-    <div class="diagram-node" data-node="spark" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="spark" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Spark</span>
       <span class="diagram-node-meta">batch jobs</span>
     </div>
-    <div class="diagram-node" data-node="dbt" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="dbt" style="--col: 4; --row: 3">
       <span class="diagram-node-name">dbt</span>
       <span class="diagram-node-meta">models</span>
     </div>
-    <div class="diagram-node" data-node="superset" style="--col:5;--row:2;--rspan:2">
+    <div class="diagram-node" data-node="superset" style="--col: 5; --row: 2; --rspan: 2">
       <span class="diagram-node-name">Superset</span>
       <span class="diagram-node-meta">dashboards</span>
     </div>
-    <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col:2;--row:4;--span:4">
+    <div class="diagram-node" data-node="airflow" data-shape="bar" style="--col: 2; --row: 4; --span: 4">
       <span class="diagram-node-eyebrow">Orchestration</span>
       <span class="diagram-node-name">Airflow</span>
       <span class="diagram-node-meta">DAGs · schedules · retries</span>
     </div>
-    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col:1;--row:5;--span:5">
+    <div class="diagram-node" data-node="kc" data-shape="bar" data-tone="muted" style="--col: 1; --row: 5; --span: 5">
       <span class="diagram-node-eyebrow">Identity</span>
       <span class="diagram-node-name">Keycloak</span>
       <span class="diagram-node-meta">SSO · OIDC for every UI</span>
     </div>
   </div>
   <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="pg" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">JDBC</li>
-    <li class="diagram-edge" data-from="forms" data-to="kafka" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">HTTP</li>
-    <li class="diagram-edge" data-from="nifi" data-to="minio" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">write</li>
-    <li class="diagram-edge" data-from="kafka" data-to="minio" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100">sink</li>
-    <li class="diagram-edge" data-from="minio" data-to="spark" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800">read</li>
-    <li class="diagram-edge" data-from="spark" data-to="dbt" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="3500"></li>
-    <li class="diagram-edge" data-from="dbt" data-to="superset" data-flow="2600" data-flow-tokens="2" data-flow-delay="4200">SQL</li>
+    <li class="diagram-edge" data-from="pg" data-to="nifi" data-flow="2600" data-flow-tokens="2" data-flow-delay="0"
+      >JDBC</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="forms"
+      data-to="kafka"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="700"
+      >HTTP</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="nifi"
+      data-to="minio"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="1400"
+      >write</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="kafka"
+      data-to="minio"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="2100"
+      >sink</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="minio"
+      data-to="spark"
+      data-tone="accent"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="2800"
+      >read</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="spark"
+      data-to="dbt"
+      data-line="dashed"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="3500"
+    ></li>
+    <li
+      class="diagram-edge"
+      data-from="dbt"
+      data-to="superset"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="4200"
+      >SQL</li
+    >
   </ol>
 </figure>
 ```
@@ -442,26 +619,40 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-eyebrow">Roadmap</span>
     <span class="diagram-title">Next year: streaming and a semantic layer</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-col-min:7.5rem;--diagram-node-w:9rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-col-min: 7.5rem; --diagram-node-w: 9rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 4">
       <li>Ingestion</li>
       <li>Storage</li>
       <li>Transform</li>
       <li>Visualize</li>
     </ol>
-    <div class="diagram-node" data-node="nifi" style="--col:1;--row:2"><span class="diagram-node-name">NiFi</span></div>
-    <div class="diagram-node" data-node="kafka" data-change="added" style="--col:1;--row:3"><span class="diagram-node-name">Kafka</span></div>
-    <div class="diagram-node" data-node="minio" data-shape="store" style="--col:2;--row:2"><span class="diagram-node-name">MinIO</span></div>
-    <div class="diagram-node" data-node="spark" data-change="changed" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="nifi" style="--col: 1; --row: 2"
+      ><span class="diagram-node-name">NiFi</span></div
+    >
+    <div class="diagram-node" data-node="kafka" data-change="added" style="--col: 1; --row: 3"
+      ><span class="diagram-node-name">Kafka</span></div
+    >
+    <div class="diagram-node" data-node="minio" data-shape="store" style="--col: 2; --row: 2"
+      ><span class="diagram-node-name">MinIO</span></div
+    >
+    <div class="diagram-node" data-node="spark" data-change="changed" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Spark</span>
       <span class="diagram-node-meta" data-before="batch only">batch + streaming</span>
     </div>
-    <div class="diagram-node" data-node="cube" data-tone="accent" data-change="added" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="cube" data-tone="accent" data-change="added" style="--col: 4; --row: 3">
       <span class="diagram-node-name">Cube</span>
       <span class="diagram-node-meta">semantic layer</span>
     </div>
-    <div class="diagram-node" data-node="superset" style="--col:4;--row:2"><span class="diagram-node-name">Superset</span></div>
-    <div class="diagram-node" data-node="airflow" data-shape="bar" data-change="changed" style="--col:1;--row:4;--span:4">
+    <div class="diagram-node" data-node="superset" style="--col: 4; --row: 2"
+      ><span class="diagram-node-name">Superset</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="airflow"
+      data-shape="bar"
+      data-change="changed"
+      style="--col: 1; --row: 4; --span: 4"
+    >
       <span class="diagram-node-eyebrow">Orchestration</span>
       <span class="diagram-node-name" data-before="Airflow">Airflow</span>
       <span class="diagram-node-meta" data-before="DAGs">Dagster</span>

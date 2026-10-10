@@ -103,7 +103,10 @@ function syncValue(picker) {
     const display = dfDollar(picker).find('.color-picker-value').get(0);
     if (display && display.textContent !== text)
         display.textContent = text;
-    dfDollar(picker).find('input[data-color-output]').toArray().forEach((out) => {
+    dfDollar(picker)
+        .find('input[data-color-output]')
+        .toArray()
+        .forEach((out) => {
         if (out.value === text)
             return;
         out.value = text;
@@ -136,7 +139,9 @@ function applyMarkup(el, config) {
  */
 function triggerStateChange(picker, config) {
     // only a format that differs is written: setState(getState()) changes nothing
-    if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format) && config.format !== formatOf(picker)) {
+    if (typeof config?.format === 'string' &&
+        COLOR_FORMATS.includes(config.format) &&
+        config.format !== formatOf(picker)) {
         picker.dataset.format = config.format;
         syncValue(picker);
     }
@@ -171,7 +176,9 @@ export const colorPickerApi = componentState({
 df$.colorPickerApi = colorPickerApi;
 df$.colorPickerStates = colorPickerStates;
 function init() {
-    dfDollar('.color-picker:not([data-init])').toArray().forEach((picker) => {
+    dfDollar('.color-picker:not([data-init])')
+        .toArray()
+        .forEach((picker) => {
         picker.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(picker, colorPickerApi);
@@ -179,14 +186,22 @@ function init() {
         if (!input)
             return;
         syncValue(picker);
-        input.addEventListener('input', () => { syncValue(picker); });
+        input.addEventListener('input', () => {
+            syncValue(picker);
+        });
         // user-switchable notation: <select class="color-picker-format">
-        dfDollar(picker).find('select.color-picker-format').get(0)?.addEventListener('change', (e) => {
+        dfDollar(picker)
+            .find('select.color-picker-format')
+            .get(0)
+            ?.addEventListener('change', (e) => {
             picker.dataset.format = e.target.value;
             syncValue(picker);
         });
         // authors may flip data-format at runtime too
-        new MutationObserver(() => syncValue(picker)).observe(picker, { attributes: true, attributeFilter: ['data-format'] });
+        new MutationObserver(() => syncValue(picker)).observe(picker, {
+            attributes: true,
+            attributeFilter: ['data-format'],
+        });
     });
 }
 init();

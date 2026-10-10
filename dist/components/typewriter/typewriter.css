@@ -11,7 +11,9 @@
     display: inline;
 
     /* no script (or not yet initialized): the first string, as text */
-    &:not([data-init]) > :not(:first-child) { display: none; }
+    &:not([data-init]) > :not(:first-child) {
+      display: none;
+    }
 
     /* initialized: the authored strings are read, not seen */
     & > .typewriter-source {
@@ -26,7 +28,9 @@
       border: 0;
     }
 
-    & > .typewriter-line { white-space: pre-wrap; }
+    & > .typewriter-line {
+      white-space: pre-wrap;
+    }
 
     /* -- Cursor: a bar by default; solid while typing, blinking idle -- */
     & .typewriter-cursor {
@@ -38,54 +42,83 @@
       background: var(--_cursor);
       animation: typewriter-blink 1s steps(1) infinite;
     }
-    &:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor { animation: none; }
+    &:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor {
+      animation: none;
+    }
 
-    &[data-cursor="block"] .typewriter-cursor { width: 0.55em; opacity: 0.85; }
+    &[data-cursor="block"] .typewriter-cursor {
+      width: 0.55em;
+      opacity: 0.85;
+    }
     &[data-cursor="underscore"] .typewriter-cursor {
       width: 0.6em;
       height: max(2px, 0.1em);
       vertical-align: -0.1em;
     }
-    &[data-cursor="none"] .typewriter-cursor { display: none; }
+    &[data-cursor="none"] .typewriter-cursor {
+      display: none;
+    }
     /* data-cursor-hide: "typing" = only while idle; "done" = gone at the end */
     &[data-cursor-hide="typing"]:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor,
-    &[data-cursor-hide="done"][data-state-name="done"] .typewriter-cursor { visibility: hidden; }
+    &[data-cursor-hide="done"][data-state-name="done"] .typewriter-cursor {
+      visibility: hidden;
+    }
 
     /* -- data-reserve: as wide as the longest string from the start --- */
     &[data-reserve] {
       display: inline-grid;
       justify-items: start;
       vertical-align: bottom;
-      & > :is(.typewriter-line, .typewriter-ghost) { grid-area: 1 / 1; }
+      & > :is(.typewriter-line, .typewriter-ghost) {
+        grid-area: 1 / 1;
+      }
       & > .typewriter-ghost {
         display: grid;
         visibility: hidden;
         pointer-events: none;
         /* room for the cursor after the longest string */
         padding-inline-end: 0.2em;
-        & > span { grid-area: 1 / 1; white-space: pre; }
+        & > span {
+          grid-area: 1 / 1;
+          white-space: pre;
+        }
       }
-      & > .typewriter-line { white-space: pre; }
+      & > .typewriter-line {
+        white-space: pre;
+      }
     }
-    &[data-reserve][data-align="center"] { justify-items: center; }
-    &[data-reserve][data-align="end"] { justify-items: end; }
+    &[data-reserve][data-align="center"] {
+      justify-items: center;
+    }
+    &[data-reserve][data-align="end"] {
+      justify-items: end;
+    }
   }
 
   @keyframes typewriter-blink {
-    50% { opacity: 0; }
+    50% {
+      opacity: 0;
+    }
   }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     /* the runtime swaps whole strings instead of typing; the cursor stays still */
-    .typewriter .typewriter-cursor { animation: none; }
+    .typewriter .typewriter-cursor {
+      animation: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .typewriter[data-cursor="block"] .typewriter-cursor { opacity: 1; }
+    .typewriter[data-cursor="block"] .typewriter-cursor {
+      opacity: 1;
+    }
   }
 
   @media (forced-colors: active) {
-    .typewriter .typewriter-cursor { background: CanvasText; forced-color-adjust: none; }
+    .typewriter .typewriter-cursor {
+      background: CanvasText;
+      forced-color-adjust: none;
+    }
   }
 }

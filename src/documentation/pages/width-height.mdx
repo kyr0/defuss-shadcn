@@ -50,8 +50,8 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4">
-  <aside class="w-1/3 demo-tile demo-outline h-24" data-variant="muted" style="min-width:8rem;">w-1/3 - Filters</aside>
-  <section class="demo-tile h-24" style="flex:1;min-width:12rem;">w-2/3 - Results</section>
+  <aside class="w-1/3 demo-tile demo-outline h-24" data-variant="muted" style="min-width: 8rem">w-1/3 - Filters</aside>
+  <section class="demo-tile h-24" style="flex: 1; min-width: 12rem">w-2/3 - Results</section>
 </div>
 ```
 
@@ -66,7 +66,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="stack gap-3">
   <div class="demo-tile w-fit h-6 px-2" data-variant="secondary">w-fit hugs this label</div>
   <div class="demo-tile w-min h-6 px-2" data-variant="secondary">w-min wraps early</div>
-  <div class="demo-tile w-auto h-6 px-2" data-variant="secondary">w-auto fills the block direction like any block box</div>
+  <div class="demo-tile w-auto h-6 px-2" data-variant="secondary"
+    >w-auto fills the block direction like any block box</div
+  >
 </div>
 ```
 
@@ -79,8 +81,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="stack gap-4">
-  <div class="demo-tile max-w-32 h-auto p-2" data-variant="muted">max-w-32 caps this note at 128px, whatever the page does</div>
-  <div class="demo-tile min-h-24 p-2" data-variant="outline">min-h-24 keeps this box at least 96px tall even with one line of content</div>
+  <div class="demo-tile max-w-32 h-auto p-2" data-variant="muted"
+    >max-w-32 caps this note at 128px, whatever the page does</div
+  >
+  <div class="demo-tile min-h-24 p-2" data-variant="outline"
+    >min-h-24 keeps this box at least 96px tall even with one line of content</div
+  >
 </div>
 ```
 
@@ -90,7 +96,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <div class="flex gap-4">
   <aside class="demo-tile w-24 shrink-0 h-16">w-24 shrink-0</aside>
-  <main class="flex-1 min-w-0 wrap-anywhere demo-tile h-auto p-2" data-variant="outline" style="justify-content:flex-start;">flex-1 min-w-0 - AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage</main>
+  <main
+    class="flex-1 min-w-0 wrap-anywhere demo-tile h-auto p-2"
+    data-variant="outline"
+    style="justify-content: flex-start"
+    >flex-1 min-w-0 - AnUnusuallyLongIdentifierThatMustWrapInsteadOfWideningThePage</main
+  >
 </div>
 ```
 
@@ -98,12 +109,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText>A constrained box turns its overflow into a scrollbar with <code>overflow-x-auto</code>; pair it with <code>whitespace-nowrap</code> on the content so wide rows scroll instead of wrapping into a mess:</DocText>
 
 ```html example schema="none"
-<div class="demo-tile demo-outline max-w-64 overflow-x-auto" data-variant="muted" style="display:block;padding:0.75rem;">
-  <table class="table whitespace-nowrap" style="font-size:0.8125rem;">
-    <thead><tr class="table-row"><th class="table-head">Component</th><th class="table-head">Native basis</th><th class="table-head">Needs JS</th></tr></thead>
+<div
+  class="demo-tile demo-outline max-w-64 overflow-x-auto"
+  data-variant="muted"
+  style="display: block; padding: 0.75rem"
+>
+  <table class="table whitespace-nowrap" style="font-size: 0.8125rem">
+    <thead
+      ><tr class="table-row"
+        ><th class="table-head">Component</th><th class="table-head">Native basis</th
+        ><th class="table-head">Needs JS</th></tr
+      ></thead
+    >
     <tbody>
-      <tr class="table-row"><td class="table-cell">Dialog</td><td class="table-cell">{"<dialog> + showModal()"}</td><td class="table-cell">State API only</td></tr>
-      <tr class="table-row"><td class="table-cell">Accordion</td><td class="table-cell">{"<details name>"}</td><td class="table-cell">No</td></tr>
+      <tr class="table-row"
+        ><td class="table-cell">Dialog</td><td class="table-cell">&lt;dialog&gt; + showModal()</td
+        ><td class="table-cell">State API only</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell">Accordion</td><td class="table-cell">&lt;details name&gt;</td
+        ><td class="table-cell">No</td></tr
+      >
     </tbody>
   </table>
 </div>
@@ -120,20 +146,32 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-wrap gap-6">
   <div>
     <p class="demo-label">LTR</p>
-    <div class="demo-tile inline-40 block-24 ps-4" data-variant="outline" style="padding-block:0.25rem;padding-inline-end:0.25rem;">
-      <div class="demo-tile h-full" data-variant="muted" style="flex:1;">content</div>
+    <div
+      class="demo-tile inline-40 block-24 ps-4"
+      data-variant="outline"
+      style="padding-block: 0.25rem; padding-inline-end: 0.25rem"
+    >
+      <div class="demo-tile h-full" data-variant="muted" style="flex: 1">content</div>
     </div>
   </div>
   <div dir="rtl">
     <p class="demo-label">RTL - same classes</p>
-    <div class="demo-tile inline-40 block-24 ps-4" data-variant="outline" style="padding-block:0.25rem;padding-inline-end:0.25rem;">
-      <div class="demo-tile h-full" data-variant="muted" style="flex:1;">content</div>
+    <div
+      class="demo-tile inline-40 block-24 ps-4"
+      data-variant="outline"
+      style="padding-block: 0.25rem; padding-inline-end: 0.25rem"
+    >
+      <div class="demo-tile h-full" data-variant="muted" style="flex: 1">content</div>
     </div>
   </div>
   <div>
     <p class="demo-label">vertical-rl - same classes</p>
-    <div class="demo-tile inline-40 block-24 ps-4" data-variant="outline" style="writing-mode:vertical-rl;padding-block:0.25rem;padding-inline-end:0.25rem;">
-      <div class="demo-tile" data-variant="muted" style="flex:1;inline-size:100%;">content</div>
+    <div
+      class="demo-tile inline-40 block-24 ps-4"
+      data-variant="outline"
+      style="writing-mode: vertical-rl; padding-block: 0.25rem; padding-inline-end: 0.25rem"
+    >
+      <div class="demo-tile" data-variant="muted" style="flex: 1; inline-size: 100%">content</div>
     </div>
   </div>
 </div>
@@ -147,11 +185,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText><code>h-screen</code> / <code>min-h-screen</code> / <code>max-h-screen</code> are 100vh, with <code>dvh</code>, <code>svh</code> and <code>lvh</code> variants for mobile browser chrome. Their classic use is the app shell - header, fluid content, footer at the bottom even with little content. The demo renders that pattern inside a fixed-height frame; at page level you would write <code>min-h-screen</code> instead of <code>h-full</code>.</DocText>
 
 ```html example schema="none"
-<div class="demo-outline" style="block-size:16rem;">
+<div class="demo-outline" style="block-size: 16rem">
   <div class="stack h-full gap-0">
-    <header class="demo-tile h-10" style="border-radius:0;">header</header>
+    <header class="demo-tile h-10" style="border-radius: 0">header</header>
     <div class="flex-1 min-h-0 demo-tile h-auto" data-variant="muted">flex-1 - content fills whatever is left</div>
-    <footer class="demo-tile h-10" data-variant="secondary" style="border-radius:0;">footer - pushed down, never floating mid-page</footer>
+    <footer class="demo-tile h-10" data-variant="secondary" style="border-radius: 0"
+      >footer - pushed down, never floating mid-page</footer
+    >
   </div>
 </div>
 ```
@@ -187,12 +227,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText>A comment/mention row: square avatar (<code>size-10 shrink-0</code>), text that can shrink and wrap (<code>flex-1 min-w-0</code>), and a timestamp that never wraps (<code>shrink-0</code>). Every width on the row is one of the utilities from this page.</DocText>
 
 ```html example schema="none"
-<div class="stack gap-4" style="max-width:26rem;">
+<div class="stack gap-4" style="max-width: 26rem">
   <div class="flex items-center gap-3">
     <div class="demo-tile size-10 shrink-0" data-variant="accent">AL</div>
     <div class="flex-1 min-w-0">
       <p class="row-title">Ada Lovelace</p>
-      <p class="text-muted-foreground" style="margin:0;font-size:0.8125rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">left a comment on the sizing module</p>
+      <p
+        class="text-muted-foreground"
+        style="margin: 0; font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+        >left a comment on the sizing module</p
+      >
     </div>
     <span class="demo-label shrink-0 demo-label-inline">2h</span>
   </div>
@@ -200,7 +244,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div class="demo-tile size-10 shrink-0" data-variant="secondary">GR</div>
     <div class="flex-1 min-w-0">
       <p class="row-title">Grace Hopper</p>
-      <p class="text-muted-foreground" style="margin:0;font-size:0.8125rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">approved the request</p>
+      <p
+        class="text-muted-foreground"
+        style="margin: 0; font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+        >approved the request</p
+      >
     </div>
     <span class="demo-label shrink-0 demo-label-inline">5h</span>
   </div>
@@ -273,7 +321,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="stack gap-2" data-demo="scale">
   <div class="flex items-center gap-3">
     <span class="demo-label demo-label-end">0</span>
-    <div class="demo-tile w-0 h-3" style="min-width:1px;"></div>
+    <div class="demo-tile w-0 h-3" style="min-width: 1px"></div>
     <span class="demo-label demo-label-inline">0px</span>
   </div>
   <div class="flex items-center gap-3">
@@ -438,8 +486,16 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="flex flex-wrap gap-4">
-  <aside class="demo-tile h-32 p-2" data-variant="accent" style="width:clamp(10rem, 35%, 14rem);">inspector - clamp(10rem, 35%, 14rem)</aside>
-  <article class="demo-tile h-auto p-4" data-variant="muted" style="max-inline-size:38ch;flex:1;min-width:14rem;display:block;">article-copy - max-inline-size keeps the measure readable no matter how wide the frame gets. This sentence just fills space to make the line length visible.</article>
+  <aside class="demo-tile h-32 p-2" data-variant="accent" style="width: clamp(10rem, 35%, 14rem)"
+    >inspector - clamp(10rem, 35%, 14rem)</aside
+  >
+  <article
+    class="demo-tile h-auto p-4"
+    data-variant="muted"
+    style="max-inline-size: 38ch; flex: 1; min-width: 14rem; display: block"
+    >article-copy - max-inline-size keeps the measure readable no matter how wide the frame gets. This sentence just
+    fills space to make the line length visible.</article
+  >
 </div>
 ```
 

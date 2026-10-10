@@ -28,16 +28,51 @@
        The line variant's trigger base (0.5rem/1rem, nested in
        [data-variant="line"]) outranks the :where() rules, so its overrides
        are un-:where()'d (two attrs). */
-    &:where([data-size="xs"]) .tab-trigger { padding-block: 0.25rem; padding-inline: 0.5rem;    font-size: 0.75rem; }
-    &:where([data-size="sm"]) .tab-trigger { padding-block: 0.3125rem; padding-inline: 0.625rem; font-size: 0.8125rem; }
-    &:where([data-size="md"]) .tab-trigger { padding-block: 0.375rem; padding-inline: 0.75rem;   font-size: 0.875rem; }
-    &:where([data-size="lg"]) .tab-trigger { padding-block: 0.5rem; padding-inline: 1rem;       font-size: 1rem; }
-    &:where([data-size="xl"]) .tab-trigger { padding-block: 0.625rem; padding-inline: 1.25rem;  font-size: 1.125rem; }
-    &[data-variant="line"][data-size="xs"] .tab-trigger { padding-block: 0.25rem; padding-inline: 0.5rem; }
-    &[data-variant="line"][data-size="sm"] .tab-trigger { padding-block: 0.375rem; padding-inline: 0.75rem; }
-    &[data-variant="line"][data-size="md"] .tab-trigger { padding-block: 0.5rem; padding-inline: 1rem; }
-    &[data-variant="line"][data-size="lg"] .tab-trigger { padding-block: 0.625rem; padding-inline: 1.25rem; }
-    &[data-variant="line"][data-size="xl"] .tab-trigger { padding-block: 0.75rem; padding-inline: 1.5rem; }
+    &:where([data-size="xs"]) .tab-trigger {
+      padding-block: 0.25rem;
+      padding-inline: 0.5rem;
+      font-size: 0.75rem;
+    }
+    &:where([data-size="sm"]) .tab-trigger {
+      padding-block: 0.3125rem;
+      padding-inline: 0.625rem;
+      font-size: 0.8125rem;
+    }
+    &:where([data-size="md"]) .tab-trigger {
+      padding-block: 0.375rem;
+      padding-inline: 0.75rem;
+      font-size: 0.875rem;
+    }
+    &:where([data-size="lg"]) .tab-trigger {
+      padding-block: 0.5rem;
+      padding-inline: 1rem;
+      font-size: 1rem;
+    }
+    &:where([data-size="xl"]) .tab-trigger {
+      padding-block: 0.625rem;
+      padding-inline: 1.25rem;
+      font-size: 1.125rem;
+    }
+    &[data-variant="line"][data-size="xs"] .tab-trigger {
+      padding-block: 0.25rem;
+      padding-inline: 0.5rem;
+    }
+    &[data-variant="line"][data-size="sm"] .tab-trigger {
+      padding-block: 0.375rem;
+      padding-inline: 0.75rem;
+    }
+    &[data-variant="line"][data-size="md"] .tab-trigger {
+      padding-block: 0.5rem;
+      padding-inline: 1rem;
+    }
+    &[data-variant="line"][data-size="lg"] .tab-trigger {
+      padding-block: 0.625rem;
+      padding-inline: 1.25rem;
+    }
+    &[data-variant="line"][data-size="xl"] .tab-trigger {
+      padding-block: 0.75rem;
+      padding-inline: 1.5rem;
+    }
 
     /* -- Line variant --------------------------------------------- */
     &[data-variant="line"] {
@@ -71,7 +106,9 @@
       align-items: stretch;
       width: auto;
 
-      & .tab-trigger { text-align: start; }
+      & .tab-trigger {
+        text-align: start;
+      }
     }
   }
 
@@ -117,7 +154,9 @@
     &[aria-selected="true"] {
       background: var(--background);
       color: var(--foreground);
-      box-shadow: 0 1px 3px oklch(0 0 0 / 0.08), 0 0 0 1px var(--border);
+      box-shadow:
+        0 1px 3px oklch(0 0 0 / 0.08),
+        0 0 0 1px var(--border);
     }
 
     &:focus-visible {
@@ -143,13 +182,24 @@
     flex-direction: column;
     min-width: 0;
 
-    & > .tab-list { align-self: flex-start; }
-    &[data-align="center"] > .tab-list { align-self: center; }
-    &[data-align="end"] > .tab-list { align-self: flex-end; }
+    & > .tab-list {
+      align-self: flex-start;
+    }
+    &[data-align="center"] > .tab-list {
+      align-self: center;
+    }
+    &[data-align="end"] > .tab-list {
+      align-self: flex-end;
+    }
 
     &:where([data-side="bottom"]) {
-      & > .tab-list { order: 2; }
-      & > .tab-content { margin-top: 0; margin-bottom: 0.75rem; }
+      & > .tab-list {
+        order: 2;
+      }
+      & > .tab-content {
+        margin-top: 0;
+        margin-bottom: 0.75rem;
+      }
     }
 
     /* the older aria-orientation-only markup: a settings nav beside the
@@ -159,9 +209,17 @@
       align-items: flex-start;
       gap: 1rem;
 
-      & > .tab-list { max-width: 40%; }
-      & > .tab-content { margin: 0; flex: 1; min-width: 0; }
-      &:dir(rtl) { flex-direction: row-reverse; }
+      & > .tab-list {
+        max-width: 40%;
+      }
+      & > .tab-content {
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+      }
+      &:dir(rtl) {
+        flex-direction: row-reverse;
+      }
     }
 
     /* data-side left / right: a two-column grid. The tab column has
@@ -187,9 +245,17 @@
         min-height: 100%;
         max-width: none;
       }
-      &[data-align="center"] > .tab-list { align-content: center; }
-      &[data-align="end"] > .tab-list { align-content: end; }
-      & > .tab-content { grid-area: panel; margin: 0; min-width: 0; }
+      &[data-align="center"] > .tab-list {
+        align-content: center;
+      }
+      &[data-align="end"] > .tab-list {
+        align-content: end;
+      }
+      & > .tab-content {
+        grid-area: panel;
+        margin: 0;
+        min-width: 0;
+      }
 
       /* the labels run vertically along the panel edge - right-hand tabs
          read top to bottom, left-hand ones bottom to top (like book spines;
@@ -203,7 +269,9 @@
         text-orientation: sideways;
         text-align: center;
 
-        & :is(svg, img) { rotate: 90deg; }
+        & :is(svg, img) {
+          rotate: 90deg;
+        }
       }
     }
     &:where([data-side="right"]) {
@@ -224,7 +292,9 @@
       &:where([data-side="left"]) > .tab-list .tab-trigger {
         writing-mode: sideways-lr;
 
-        & :is(svg, img) { rotate: -90deg; }
+        & :is(svg, img) {
+          rotate: -90deg;
+        }
       }
     }
   }
@@ -242,22 +312,31 @@
       margin-bottom: 0;
       margin-top: -1px;
 
-      &[aria-selected="true"] { border-top-color: var(--primary); }
+      &[aria-selected="true"] {
+        border-top-color: var(--primary);
+      }
     }
   }
-  .tabs:is([data-side="left"], [data-side="right"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) > .tab-list[data-variant="line"] {
+  .tabs:is([data-side="left"], [data-side="right"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"]))
+    > .tab-list[data-variant="line"] {
     border-bottom: none;
 
-    & .tab-trigger { border-bottom: none; margin-bottom: 0; }
+    & .tab-trigger {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
   }
-  .tabs:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) > .tab-list[data-variant="line"] {
+  .tabs:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"]))
+    > .tab-list[data-variant="line"] {
     border-right: 1px solid var(--border);
 
     & .tab-trigger {
       border-right: 2px solid transparent;
       margin-right: -1px;
 
-      &[aria-selected="true"] { border-right-color: var(--primary); }
+      &[aria-selected="true"] {
+        border-right-color: var(--primary);
+      }
     }
   }
   .tabs[data-side="right"] > .tab-list[data-variant="line"] {
@@ -267,7 +346,9 @@
       border-left: 2px solid transparent;
       margin-left: -1px;
 
-      &[aria-selected="true"] { border-left-color: var(--primary); }
+      &[aria-selected="true"] {
+        border-left-color: var(--primary);
+      }
     }
   }
 
@@ -304,7 +385,9 @@
     gap: 0;
     column-gap: 0;
 
-    & > .tab-content { margin: 0; }
+    & > .tab-content {
+      margin: 0;
+    }
 
     /* top (default) / bottom: the tabs overlap the card border by 1px and
        stay clear of the rounded corner(s) along the row */
@@ -327,7 +410,10 @@
 
       & .tab-trigger {
         border-radius: 0 0 var(--radius-md) var(--radius-md);
-        &[aria-selected="true"] { border-bottom-color: var(--border); border-top-color: var(--card); }
+        &[aria-selected="true"] {
+          border-bottom-color: var(--border);
+          border-top-color: var(--card);
+        }
       }
     }
 
@@ -342,28 +428,42 @@
         grid-auto-columns: auto;
         padding-bottom: var(--radius-xl);
 
-        & .tab-trigger { width: 100%; }
+        & .tab-trigger {
+          width: 100%;
+        }
       }
-      &[data-align="end"] > .tab-list[data-variant="attached"] { padding-block: var(--radius-xl) 0; }
-      &[data-align="center"] > .tab-list[data-variant="attached"] { padding-block: var(--radius-xl); }
+      &[data-align="end"] > .tab-list[data-variant="attached"] {
+        padding-block: var(--radius-xl) 0;
+      }
+      &[data-align="center"] > .tab-list[data-variant="attached"] {
+        padding-block: var(--radius-xl);
+      }
     }
     /* legacy column (a flex row): the card grows to the column's height */
     &:not([data-side]):has(> .tab-list[aria-orientation="vertical"]) {
-      & > .tab-list[data-variant="attached"] { max-width: 40%; }
+      & > .tab-list[data-variant="attached"] {
+        max-width: 40%;
+      }
       & > .tab-content:not([hidden]) {
         align-self: stretch;
         display: flex;
         flex-direction: column;
 
-        & > .card { flex: 1; }
+        & > .card {
+          flex: 1;
+        }
       }
     }
-    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])) > .tab-list[data-variant="attached"] {
+    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"]))
+      > .tab-list[data-variant="attached"] {
       margin-right: -1px;
 
       & .tab-trigger {
         border-radius: var(--radius-md) 0 0 var(--radius-md);
-        &[aria-selected="true"] { border-bottom-color: var(--border); border-right-color: var(--card); }
+        &[aria-selected="true"] {
+          border-bottom-color: var(--border);
+          border-right-color: var(--card);
+        }
       }
     }
     &[data-side="right"] > .tab-list[data-variant="attached"] {
@@ -371,21 +471,54 @@
 
       & .tab-trigger {
         border-radius: 0 var(--radius-md) var(--radius-md) 0;
-        &[aria-selected="true"] { border-bottom-color: var(--border); border-left-color: var(--card); }
+        &[aria-selected="true"] {
+          border-bottom-color: var(--border);
+          border-left-color: var(--card);
+        }
       }
     }
 
     /* the card corner the aligned tabs grow from is square */
-    &:not([data-side]):not(:has(> .tab-list[aria-orientation="vertical"])):not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-start-start-radius: 0; }
-    &:not([data-side]):not(:has(> .tab-list[aria-orientation="vertical"]))[data-align="end"] > .tab-content > .card { border-start-end-radius: 0; }
-    &[data-side="top"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-start-start-radius: 0; }
-    &[data-side="top"][data-align="end"] > .tab-content > .card { border-start-end-radius: 0; }
-    &[data-side="bottom"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-end-start-radius: 0; }
-    &[data-side="bottom"][data-align="end"] > .tab-content > .card { border-end-end-radius: 0; }
-    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])):not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-top-left-radius: 0; }
-    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"]))[data-align="end"] > .tab-content > .card { border-bottom-left-radius: 0; }
-    &[data-side="right"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card { border-top-right-radius: 0; }
-    &[data-side="right"][data-align="end"] > .tab-content > .card { border-bottom-right-radius: 0; }
+    &:not([data-side]):not(:has(> .tab-list[aria-orientation="vertical"])):not([data-align="center"]):not(
+        [data-align="end"]
+      )
+      > .tab-content
+      > .card {
+      border-start-start-radius: 0;
+    }
+    &:not([data-side]):not(:has(> .tab-list[aria-orientation="vertical"]))[data-align="end"] > .tab-content > .card {
+      border-start-end-radius: 0;
+    }
+    &[data-side="top"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card {
+      border-start-start-radius: 0;
+    }
+    &[data-side="top"][data-align="end"] > .tab-content > .card {
+      border-start-end-radius: 0;
+    }
+    &[data-side="bottom"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card {
+      border-end-start-radius: 0;
+    }
+    &[data-side="bottom"][data-align="end"] > .tab-content > .card {
+      border-end-end-radius: 0;
+    }
+    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"])):not(
+        [data-align="center"]
+      ):not([data-align="end"])
+      > .tab-content
+      > .card {
+      border-top-left-radius: 0;
+    }
+    &:is([data-side="left"], :not([data-side]):has(> .tab-list[aria-orientation="vertical"]))[data-align="end"]
+      > .tab-content
+      > .card {
+      border-bottom-left-radius: 0;
+    }
+    &[data-side="right"]:not([data-align="center"]):not([data-align="end"]) > .tab-content > .card {
+      border-top-right-radius: 0;
+    }
+    &[data-side="right"][data-align="end"] > .tab-content > .card {
+      border-bottom-right-radius: 0;
+    }
   }
 
   /* -- Panel ---------------------------------------------------- */
@@ -397,13 +530,17 @@
       outline-offset: 2px;
     }
 
-    &[hidden] { display: none; }
+    &[hidden] {
+      display: none;
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
-    .tab-trigger { transition: none; }
+    .tab-trigger {
+      transition: none;
+    }
   }
 
   @media (forced-colors: active) {
@@ -411,7 +548,9 @@
       border: 2px solid Highlight;
       box-shadow: none;
     }
-    .tab-trigger:disabled { color: GrayText; }
+    .tab-trigger:disabled {
+      color: GrayText;
+    }
 
     .tab-list[data-variant="line"] .tab-trigger[aria-selected="true"] {
       border: none;

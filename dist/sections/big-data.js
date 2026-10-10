@@ -174,7 +174,9 @@ if (!document.__virtualListQueryInit) {
     if (!list?._source || !list.store)
       return;
     const [field, direction] = select.value.split(":");
-    virtualListApi.setState(list, "default", { sorters: field ? [{ field, direction: direction === "desc" ? "desc" : "asc" }] : [] });
+    virtualListApi.setState(list, "default", {
+      sorters: field ? [{ field, direction: direction === "desc" ? "desc" : "asc" }] : []
+    });
   });
 }
 function init() {
@@ -330,7 +332,12 @@ function renderItems(tree) {
 function refresh2(tree, config, previous) {
   if (!tree._source)
     return 0;
-  tree._result = tree._source.query({ filters: config.filters, sorters: config.sorters, expanded: config.expanded, collapsed: config.collapsed });
+  tree._result = tree._source.query({
+    filters: config.filters,
+    sorters: config.sorters,
+    expanded: config.expanded,
+    collapsed: config.collapsed
+  });
   tree._gen = (tree._gen || 0) + 1;
   const prev = previous?.config || {};
   if (JSON.stringify(prev.filters ?? []) !== JSON.stringify(config.filters ?? [])) {
@@ -353,7 +360,12 @@ function triggerStateChange2(tree, state, previous) {
   applyMarkup2(tree, { name, config: state.config });
   tree.dataset.stateName = name;
   if (tree._saved) {
-    tree._saved.set({ filters: state.config.filters ?? [], sorters: state.config.sorters ?? [], expanded: state.config.expanded ?? [], selected: state.config.selected ?? null });
+    tree._saved.set({
+      filters: state.config.filters ?? [],
+      sorters: state.config.sorters ?? [],
+      expanded: state.config.expanded ?? [],
+      selected: state.config.selected ?? null
+    });
   }
   if (tree.id) {
     for (const input of dfDollar2(`[data-tree-filter="${CSS.escape(tree.id)}"]`).toArray()) {
@@ -368,7 +380,10 @@ var KEPT = ["filters", "sorters", "expanded"];
 function attachPersistence(tree, config) {
   tree._saved?.destroy();
   const where = viewPersistence(tree, "data-tree", String(dfDollar2(".data-tree").toArray().indexOf(tree)), config || {});
-  tree._saved = where ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v) }) : null;
+  tree._saved = where ? persisted(where.key, {}, {
+    area: where.area,
+    validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+  }) : null;
   const kept = {};
   for (const k of KEPT)
     if (Array.isArray(tree._saved?.value[k]))
@@ -416,7 +431,10 @@ function select(tree, index) {
   if (!entry)
     return;
   query(tree, { selected: entry.row[tree._source.idField] });
-  tree.dispatchEvent(new CustomEvent("data-tree-select", { bubbles: true, detail: { record: entry.row, meta: entry.meta } }));
+  tree.dispatchEvent(new CustomEvent("data-tree-select", {
+    bubbles: true,
+    detail: { record: entry.row, meta: entry.meta }
+  }));
 }
 function activate(tree, index) {
   const total = tree._result?.entries.length ?? 0;
@@ -517,7 +535,10 @@ df$2.dataTree = {
     tree._render = options.render || null;
     tree._sourceOptions = options;
     if (tree.store)
-      dataTreeApi.setState(tree, "default", { ...options.query, ...options.persist ? attachPersistence(tree, options.persist) : {} });
+      dataTreeApi.setState(tree, "default", {
+        ...options.query,
+        ...options.persist ? attachPersistence(tree, options.persist) : {}
+      });
   },
   query: (target, patch) => {
     query(resolve(target), patch);
@@ -556,7 +577,15 @@ function init2() {
     if (!tree.hasAttribute("tabindex"))
       tree.tabIndex = 0;
     const early = tree._sourceOptions || {};
-    const config = { filters: [], sorters: [], expanded: [], collapsed: [], selected: null, ...early.query, ...attachPersistence(tree, early.persist) };
+    const config = {
+      filters: [],
+      sorters: [],
+      expanded: [],
+      collapsed: [],
+      selected: null,
+      ...early.query,
+      ...attachPersistence(tree, early.persist)
+    };
     let queued = false;
     tree.addEventListener("scroll", () => {
       if (queued)
@@ -628,7 +657,10 @@ function readColumns(grid) {
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
   const where = viewPersistence2(grid, "data-grid", String(dfDollar3(".data-grid").toArray().indexOf(grid)), config || {});
-  grid._saved = where ? persisted2(where.key, {}, { area: where.area, validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v) }) : null;
+  grid._saved = where ? persisted2(where.key, {}, {
+    area: where.area,
+    validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+  }) : null;
   const kept = {};
   for (const k of SAVED_KEYS)
     if (Array.isArray(grid._saved?.value[k]))
@@ -925,7 +957,13 @@ function renderFooter(grid, config) {
   if (!grid._parts.pager) {
     const pager = document.createElement("div");
     pager.className = "data-grid-pager";
-    for (const [act, name] of [["first", "First page"], ["prev", "Previous page"], ["label"], ["next", "Next page"], ["last", "Last page"]]) {
+    for (const [act, name] of [
+      ["first", "First page"],
+      ["prev", "Previous page"],
+      ["label"],
+      ["next", "Next page"],
+      ["last", "Last page"]
+    ]) {
       if (act === "label") {
         const label = document.createElement("span");
         label.className = "data-grid-page-label";
@@ -1009,7 +1047,9 @@ function toggleRow(grid, index, mode) {
   else if (mode === "range" && grid._anchor != null) {
     const from = Math.min(grid._anchor, index);
     const to = Math.max(grid._anchor, index);
-    next = [...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])];
+    next = [
+      ...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])
+    ];
   } else {
     next = grid._selected.has(id) ? [...grid._selected].filter((x) => x !== id) : [...grid._selected, id];
   }
@@ -1129,7 +1169,10 @@ function onKeydown2(grid, e) {
           query2(grid, { sorters: cycleSort(configOf2(grid).sorters, column.sortField, e.shiftKey), page: 0 });
         next = [-1, col];
       } else if (entry) {
-        grid.dispatchEvent(new CustomEvent("data-grid-activate", { bubbles: true, detail: { record: entry.row, index: row } }));
+        grid.dispatchEvent(new CustomEvent("data-grid-activate", {
+          bubbles: true,
+          detail: { record: entry.row, index: row }
+        }));
       }
       break;
     default:
@@ -1412,7 +1455,11 @@ async function networkLoad(cfg, request, signal) {
   if (typeof cfg.url === "function")
     url = cfg.url(request);
   else {
-    const params = new URLSearchParams({ q: request.query, page: String(request.page), pageSize: String(request.pageSize) });
+    const params = new URLSearchParams({
+      q: request.query,
+      page: String(request.page),
+      pageSize: String(request.pageSize)
+    });
     if (request.sorters[0])
       params.set("sort", `${request.sorters[0].field}:${request.sorters[0].direction || "asc"}`);
     url = `${cfg.url}${String(cfg.url).includes("?") ? "&" : "?"}${params}`;
@@ -1517,7 +1564,16 @@ async function search(root, query) {
   abort(root);
   const cfg = configOf3(root);
   const input = inputOf(root);
-  root._run = { query, records: [], page: 0, hasMore: false, total: undefined, active: -1, loadingMore: false, seq: (root._run?.seq || 0) + 1 };
+  root._run = {
+    query,
+    records: [],
+    page: 0,
+    hasMore: false,
+    total: undefined,
+    active: -1,
+    loadingMore: false,
+    seq: (root._run?.seq || 0) + 1
+  };
   listOf(root).textContent = "";
   input.removeAttribute("aria-activedescendant");
   if (query.length < cfg.minChars) {
@@ -1595,7 +1651,10 @@ function choose(root, index) {
     hidden.value = value == null ? "" : String(value);
   abort(root);
   autocompleteApi.setState(root, "default", { query: label, value: value ?? null, label });
-  root.dispatchEvent(new CustomEvent("autocomplete-select", { bubbles: true, detail: { record, value, label } }));
+  root.dispatchEvent(new CustomEvent("autocomplete-select", {
+    bubbles: true,
+    detail: { record, value, label }
+  }));
 }
 function triggerStateChange4(root, state, incoming) {
   const popover = popoverOf(root);
@@ -1807,5 +1866,5 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-//# debugId=70CD5A01776B1DCD64756E2164756E21
+//# debugId=A5FEB628F7768D1664756E2164756E21
 //# sourceMappingURL=big-data.js.map

@@ -2119,15 +2119,9 @@ function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
     case "wipeOut":
       return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
     case "irisIn":
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case "irisOut":
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
   }
@@ -3160,7 +3154,10 @@ function attachPersistence(store, options) {
 var areas = {};
 var inMemory = new Set;
 function storageOf(area) {
-  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+  return areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area)
+  });
 }
 function sameShape(initial) {
   const check = (model, value) => {
@@ -3876,7 +3873,12 @@ function dataSource(rows, options = {}) {
         } : undefined
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows
+      };
       cacheKey = key;
       return cache;
     },
@@ -3913,7 +3915,14 @@ function parseFilter(field, text, kind = "text") {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m)
       return null;
-    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    const ops = {
+      ">=": "gte",
+      "<=": "lte",
+      "!=": "neq",
+      ">": "gt",
+      "<": "lt",
+      "=": "eq"
+    };
     return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
   }
   return { field, op: "contains", value: raw };
@@ -4840,7 +4849,11 @@ async function networkLoad(cfg, request, signal) {
   if (typeof cfg.url === "function")
     url = cfg.url(request);
   else {
-    const params = new URLSearchParams({ q: request.query, page: String(request.page), pageSize: String(request.pageSize) });
+    const params = new URLSearchParams({
+      q: request.query,
+      page: String(request.page),
+      pageSize: String(request.pageSize)
+    });
     if (request.sorters[0])
       params.set("sort", `${request.sorters[0].field}:${request.sorters[0].direction || "asc"}`);
     url = `${cfg.url}${String(cfg.url).includes("?") ? "&" : "?"}${params}`;
@@ -4945,7 +4958,16 @@ async function search(root, query) {
   abort(root);
   const cfg = configOf(root);
   const input = inputOf(root);
-  root._run = { query, records: [], page: 0, hasMore: false, total: undefined, active: -1, loadingMore: false, seq: (root._run?.seq || 0) + 1 };
+  root._run = {
+    query,
+    records: [],
+    page: 0,
+    hasMore: false,
+    total: undefined,
+    active: -1,
+    loadingMore: false,
+    seq: (root._run?.seq || 0) + 1
+  };
   listOf(root).textContent = "";
   input.removeAttribute("aria-activedescendant");
   if (query.length < cfg.minChars) {
@@ -5023,7 +5045,10 @@ function choose(root, index) {
     hidden.value = value == null ? "" : String(value);
   abort(root);
   autocompleteApi.setState(root, "default", { query: label, value: value ?? null, label });
-  root.dispatchEvent(new CustomEvent("autocomplete-select", { bubbles: true, detail: { record, value, label } }));
+  root.dispatchEvent(new CustomEvent("autocomplete-select", {
+    bubbles: true,
+    detail: { record, value, label }
+  }));
 }
 function triggerStateChange4(root, state, incoming) {
   const popover = popoverOf(root);
@@ -5404,10 +5429,49 @@ function parse(text) {
   }
   return entries;
 }
-var MONTHS = { jan: "January", feb: "February", mar: "March", apr: "April", may: "May", jun: "June", jul: "July", aug: "August", sep: "September", oct: "October", nov: "November", dec: "December" };
-var IEEE_MONTH = { January: "Jan.", February: "Feb.", March: "Mar.", April: "Apr.", May: "May", June: "Jun.", July: "Jul.", August: "Aug.", September: "Sep.", October: "Oct.", November: "Nov.", December: "Dec." };
+var MONTHS = {
+  jan: "January",
+  feb: "February",
+  mar: "March",
+  apr: "April",
+  may: "May",
+  jun: "June",
+  jul: "July",
+  aug: "August",
+  sep: "September",
+  oct: "October",
+  nov: "November",
+  dec: "December"
+};
+var IEEE_MONTH = {
+  January: "Jan.",
+  February: "Feb.",
+  March: "Mar.",
+  April: "Apr.",
+  May: "May",
+  June: "Jun.",
+  July: "Jul.",
+  August: "Aug.",
+  September: "Sep.",
+  October: "Oct.",
+  November: "Nov.",
+  December: "Dec."
+};
 var ACCENTS = { '"': "̈", "'": "́", "`": "̀", "^": "̂", "~": "̃", "=": "̄", ".": "̇", c: "̧", v: "̌", u: "̆", H: "̋", k: "̨" };
-var SYMBOLS = { ss: "ß", o: "ø", O: "Ø", aa: "å", AA: "Å", ae: "æ", AE: "Æ", l: "ł", L: "Ł", i: "ı", oe: "œ", OE: "Œ" };
+var SYMBOLS = {
+  ss: "ß",
+  o: "ø",
+  O: "Ø",
+  aa: "å",
+  AA: "Å",
+  ae: "æ",
+  AE: "Æ",
+  l: "ł",
+  L: "Ł",
+  i: "ı",
+  oe: "œ",
+  OE: "Œ"
+};
 function clean(value) {
   return String(value ?? "").replace(/\{?\\([`'"^~=.])\s*\{?([A-Za-z])\}?\}?/g, (_m, a, ch) => (ch + ACCENTS[a]).normalize("NFC")).replace(/\{?\\([cvuHk])\s*\{([A-Za-z])\}\}?/g, (_m, a, ch) => (ch + ACCENTS[a]).normalize("NFC")).replace(/\{?\\(ss|aa|AA|ae|AE|oe|OE|o|O|l|L|i)\b\s*\}?/g, (_m, c) => SYMBOLS[c]).replace(/\\(TeX|LaTeX|BibTeX|XeTeX|LuaTeX)\b\s*(\{\})?/g, "$1").replace(/\\([&%$#_{}])/g, "$1").replace(/---/g, "—").replace(/--/g, "–").replace(/~/g, " ").replace(/\\[A-Za-z]+\s*/g, "").replace(/[{}]/g, "").replace(/\s+/g, " ").trim();
 }
@@ -5603,7 +5667,10 @@ function bibtexOut(entries, { align = true, highlight = true } = {}) {
       const href = k === "doi" ? doiUrl(value.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")) : /^https?:\/\/\S+$/.test(value) ? value : null;
       const shown = href && highlight ? `<span class="bibtex-value">${anchor(href, value)}</span>` : span("value", value);
       const [open, close] = raw === undefined ? ["{", "}"] : ["", ""];
-      return { html: `  ${span("field", k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`, text: `  ${k}${pad} = ${open}${value}${close},` };
+      return {
+        html: `  ${span("field", k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`,
+        text: `  ${k}${pad} = ${open}${value}${close},`
+      };
     });
     html.push([`@${span("type", e.type)}{${span("key", e.key)},`, ...lines.map((l) => l.html), "}"].join(`
 `));
@@ -5706,7 +5773,10 @@ function triggerStateChange6(root, state) {
   if (fmt !== root._shown) {
     root._shown = fmt;
     show(root, fmt);
-    root.dispatchEvent(new CustomEvent("bibtex-format", { bubbles: true, detail: { format: fmt, text: root._text } }));
+    root.dispatchEvent(new CustomEvent("bibtex-format", {
+      bubbles: true,
+      detail: { format: fmt, text: root._text }
+    }));
   }
   const copied = state.name === "copied";
   dfDollar6(root._bar).find(".bibtex-copy-label").text(copied ? "Copied" : "Copy");
@@ -5723,7 +5793,10 @@ var bibtexApi = componentState({
   component: "bibtex",
   states: bibtexStates,
   apply: (root, state) => triggerStateChange6(root, state),
-  read: (root, state) => ({ name: dfDollar6(root).attr("data-state-name") || state.name, config: { ...state.config, format: dfDollar6(root).attr("data-format") } }),
+  read: (root, state) => ({
+    name: dfDollar6(root).attr("data-state-name") || state.name,
+    config: { ...state.config, format: dfDollar6(root).attr("data-format") }
+  }),
   markup: (el, state) => {
     const authored = state.model.attrs.find(([name]) => name === "data-format");
     applyMarkup6(el, state, authored ? authored[1] : null);
@@ -5742,7 +5815,10 @@ async function copy(root) {
   }
   if (ok)
     root.api.setState("copied", { format: fmt });
-  root.dispatchEvent(new CustomEvent("bibtex-copy", { bubbles: true, detail: { format: fmt, text: root._text, ok } }));
+  root.dispatchEvent(new CustomEvent("bibtex-copy", {
+    bubbles: true,
+    detail: { format: fmt, text: root._text, ok }
+  }));
   return ok;
 }
 var resolve2 = (target) => typeof target === "string" ? dfDollar6(target).get(0) : target;
@@ -5879,7 +5955,10 @@ function collapse(layout, side, collapsed) {
   region.toggleAttribute("data-collapsed", collapsed);
   aria(layout);
   save(layout);
-  layout.dispatchEvent(new CustomEvent("border-layout-collapse", { bubbles: true, detail: { region: side, collapsed } }));
+  layout.dispatchEvent(new CustomEvent("border-layout-collapse", {
+    bubbles: true,
+    detail: { region: side, collapsed }
+  }));
   syncState(layout);
 }
 function syncState(layout) {
@@ -6241,7 +6320,10 @@ function renderRange(owner) {
 }
 function syncRange(owner) {
   const r = rangeState(owner);
-  for (const [key, value] of [["rangeStart", r.start], ["rangeEnd", r.end]]) {
+  for (const [key, value] of [
+    ["rangeStart", r.start],
+    ["rangeEnd", r.end]
+  ]) {
     if (value)
       owner.dataset[key] = value;
     else
@@ -6301,7 +6383,12 @@ function dayData(days, iso, full) {
   if (d.label)
     attrs += ` title="${esc2(d.label)}"`;
   const aria = ` aria-label="${esc2([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
-  return { attrs, note: note ? `<span class="calendar-day-note">${esc2(note)}</span>` : "", aria, blocked: d.disabled === true };
+  return {
+    attrs,
+    note: note ? `<span class="calendar-day-note">${esc2(note)}</span>` : "",
+    aria,
+    blocked: d.disabled === true
+  };
 }
 var YEARS_PER_PAGE = 12;
 var pageStart = (year) => year - (year % YEARS_PER_PAGE + YEARS_PER_PAGE) % YEARS_PER_PAGE;
@@ -6428,7 +6515,10 @@ function setView(el, view) {
     const pick = dfDollar8(panel).find(".calendar-pick[aria-current]:not([disabled])").get(0) ?? dfDollar8(panel).find(".calendar-pick:not([disabled])").get(0);
     pick?.focus();
   }
-  el.dispatchEvent(new CustomEvent("calendar:view", { bubbles: true, detail: { view, year: st.year, month: st.month } }));
+  el.dispatchEvent(new CustomEvent("calendar:view", {
+    bubbles: true,
+    detail: { view, year: st.year, month: st.month }
+  }));
 }
 var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names2(null)) => {
   const full = locale.full;
@@ -7377,7 +7467,12 @@ function chartStory(el, states, { loop = false } = {}) {
   };
   return { next: () => go(i + 1), prev: () => go(i - 1), go, index: () => i };
 }
-var DECK_TEMPO = { animationDuration: 1500, animationEasing: "cubicOut", animationDurationUpdate: 1500, animationEasingUpdate: "cubicInOut" };
+var DECK_TEMPO = {
+  animationDuration: 1500,
+  animationEasing: "cubicOut",
+  animationDurationUpdate: 1500,
+  animationEasingUpdate: "cubicInOut"
+};
 function chartDeck(deck, { base = {}, states }) {
   const stage = dfDollar10(deck).find(":scope > .presentation-stage").get(0) ?? null;
   if (!stage)
@@ -7616,7 +7711,10 @@ function init11() {
       picker.dataset.format = e.target.value;
       syncValue(picker);
     });
-    new MutationObserver(() => syncValue(picker)).observe(picker, { attributes: true, attributeFilter: ["data-format"] });
+    new MutationObserver(() => syncValue(picker)).observe(picker, {
+      attributes: true,
+      attributeFilter: ["data-format"]
+    });
   });
 }
 init11();
@@ -7755,7 +7853,10 @@ function initTags(wrapper) {
       input.dataset.placeholder = input.placeholder;
     input.placeholder = labels.length ? "" : input.dataset.placeholder;
     if (announce)
-      wrapper.dispatchEvent(new CustomEvent("combobox:change", { bubbles: true, detail: { values, labels, created } }));
+      wrapper.dispatchEvent(new CustomEvent("combobox:change", {
+        bubbles: true,
+        detail: { values, labels, created }
+      }));
   };
   const commit = (row) => {
     const text = input.value.trim();
@@ -8658,11 +8759,22 @@ class Controller {
     }
     const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
     this.storageFailed = false;
-    this.saved.set({ schemaVersion: 1, revision, decisionMade, language, acceptedServices: [...acceptedServices], updatedAt });
+    this.saved.set({
+      schemaVersion: 1,
+      revision,
+      decisionMade,
+      language,
+      acceptedServices: [...acceptedServices],
+      updatedAt
+    });
     this.storageFailed ||= !persistOk(this.saved);
   }
   getConsent() {
-    return { ...this.state, acceptedServices: [...this.state.acceptedServices], acceptedCategories: [...this.state.acceptedCategories] };
+    return {
+      ...this.state,
+      acceptedServices: [...this.state.acceptedServices],
+      acceptedCategories: [...this.state.acceptedCategories]
+    };
   }
   getDraft() {
     return [...this.draft].sort();
@@ -8795,7 +8907,10 @@ class Controller {
     this.root.dispatchEvent(new CustomEvent("cookie-consent:error", { bubbles: true, detail: { kind, error } }));
   }
   emit(reason) {
-    this.root.dispatchEvent(new CustomEvent("cookie-consent:change", { bubbles: true, detail: { state: this.getConsent(), reason } }));
+    this.root.dispatchEvent(new CustomEvent("cookie-consent:change", {
+      bubbles: true,
+      detail: { state: this.getConsent(), reason }
+    }));
     try {
       this.config.onChange?.(this.getConsent(), reason);
     } catch (error) {
@@ -8828,11 +8943,19 @@ class Controller {
   messages() {
     const base = translations[this.state.language] ?? translations.en;
     const overrides = this.config.translations?.[this.state.language];
-    return { ...base, ...overrides, categoryNames: { ...base.categoryNames, ...overrides?.categoryNames }, categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions } };
+    return {
+      ...base,
+      ...overrides,
+      categoryNames: { ...base.categoryNames, ...overrides?.categoryNames },
+      categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions }
+    };
   }
   links() {
     const tr = this.messages();
-    return [[this.config.privacyPolicyUrl, tr.privacyPolicy], [this.config.legalNoticeUrl, tr.legalNotice]].map(([value, label]) => {
+    return [
+      [this.config.privacyPolicyUrl, tr.privacyPolicy],
+      [this.config.legalNoticeUrl, tr.legalNotice]
+    ].map(([value, label]) => {
       const url = safeUrl(localize(value, this.state.language), this.doc);
       return url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>` : "";
     }).join("");
@@ -9186,7 +9309,10 @@ function init15() {
       cookieConsent.create(root, JSON.parse(q(configTag).text()));
     } catch (error) {
       q(root).attr("data-init", "").attr("data-cookie-consent-error", "");
-      root.dispatchEvent(new CustomEvent("cookie-consent:error", { bubbles: true, detail: { kind: "config", error } }));
+      root.dispatchEvent(new CustomEvent("cookie-consent:error", {
+        bubbles: true,
+        detail: { kind: "config", error }
+      }));
       console.error(error);
     }
   }
@@ -9428,7 +9554,10 @@ function readColumns(grid) {
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
   const where = viewPersistence(grid, "data-grid", String(dfDollar16(".data-grid").toArray().indexOf(grid)), config || {});
-  grid._saved = where ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v) }) : null;
+  grid._saved = where ? persisted(where.key, {}, {
+    area: where.area,
+    validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+  }) : null;
   const kept = {};
   for (const k of SAVED_KEYS)
     if (Array.isArray(grid._saved?.value[k]))
@@ -9725,7 +9854,13 @@ function renderFooter(grid, config) {
   if (!grid._parts.pager) {
     const pager = document.createElement("div");
     pager.className = "data-grid-pager";
-    for (const [act, name] of [["first", "First page"], ["prev", "Previous page"], ["label"], ["next", "Next page"], ["last", "Last page"]]) {
+    for (const [act, name] of [
+      ["first", "First page"],
+      ["prev", "Previous page"],
+      ["label"],
+      ["next", "Next page"],
+      ["last", "Last page"]
+    ]) {
       if (act === "label") {
         const label = document.createElement("span");
         label.className = "data-grid-page-label";
@@ -9809,7 +9944,9 @@ function toggleRow(grid, index, mode) {
   else if (mode === "range" && grid._anchor != null) {
     const from = Math.min(grid._anchor, index);
     const to = Math.max(grid._anchor, index);
-    next = [...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])];
+    next = [
+      ...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])
+    ];
   } else {
     next = grid._selected.has(id) ? [...grid._selected].filter((x) => x !== id) : [...grid._selected, id];
   }
@@ -9929,7 +10066,10 @@ function onKeydown2(grid, e) {
           query(grid, { sorters: cycleSort(configOf2(grid).sorters, column.sortField, e.shiftKey), page: 0 });
         next = [-1, col];
       } else if (entry) {
-        grid.dispatchEvent(new CustomEvent("data-grid-activate", { bubbles: true, detail: { record: entry.row, index: row } }));
+        grid.dispatchEvent(new CustomEvent("data-grid-activate", {
+          bubbles: true,
+          detail: { record: entry.row, index: row }
+        }));
       }
       break;
     default:
@@ -10241,7 +10381,12 @@ function renderItems(tree) {
 function refresh2(tree, config, previous) {
   if (!tree._source)
     return 0;
-  tree._result = tree._source.query({ filters: config.filters, sorters: config.sorters, expanded: config.expanded, collapsed: config.collapsed });
+  tree._result = tree._source.query({
+    filters: config.filters,
+    sorters: config.sorters,
+    expanded: config.expanded,
+    collapsed: config.collapsed
+  });
   tree._gen = (tree._gen || 0) + 1;
   const prev = previous?.config || {};
   if (JSON.stringify(prev.filters ?? []) !== JSON.stringify(config.filters ?? [])) {
@@ -10264,7 +10409,12 @@ function triggerStateChange18(tree, state, previous) {
   applyMarkup17(tree, { name, config: state.config });
   tree.dataset.stateName = name;
   if (tree._saved) {
-    tree._saved.set({ filters: state.config.filters ?? [], sorters: state.config.sorters ?? [], expanded: state.config.expanded ?? [], selected: state.config.selected ?? null });
+    tree._saved.set({
+      filters: state.config.filters ?? [],
+      sorters: state.config.sorters ?? [],
+      expanded: state.config.expanded ?? [],
+      selected: state.config.selected ?? null
+    });
   }
   if (tree.id) {
     for (const input of dfDollar17(`[data-tree-filter="${CSS.escape(tree.id)}"]`).toArray()) {
@@ -10279,7 +10429,10 @@ var KEPT = ["filters", "sorters", "expanded"];
 function attachPersistence3(tree, config) {
   tree._saved?.destroy();
   const where = viewPersistence(tree, "data-tree", String(dfDollar17(".data-tree").toArray().indexOf(tree)), config || {});
-  tree._saved = where ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v) }) : null;
+  tree._saved = where ? persisted(where.key, {}, {
+    area: where.area,
+    validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+  }) : null;
   const kept = {};
   for (const k of KEPT)
     if (Array.isArray(tree._saved?.value[k]))
@@ -10327,7 +10480,10 @@ function select(tree, index) {
   if (!entry)
     return;
   query2(tree, { selected: entry.row[tree._source.idField] });
-  tree.dispatchEvent(new CustomEvent("data-tree-select", { bubbles: true, detail: { record: entry.row, meta: entry.meta } }));
+  tree.dispatchEvent(new CustomEvent("data-tree-select", {
+    bubbles: true,
+    detail: { record: entry.row, meta: entry.meta }
+  }));
 }
 function activate3(tree, index) {
   const total = tree._result?.entries.length ?? 0;
@@ -10428,7 +10584,10 @@ df$18.dataTree = {
     tree._render = options.render || null;
     tree._sourceOptions = options;
     if (tree.store)
-      dataTreeApi.setState(tree, "default", { ...options.query, ...options.persist ? attachPersistence3(tree, options.persist) : {} });
+      dataTreeApi.setState(tree, "default", {
+        ...options.query,
+        ...options.persist ? attachPersistence3(tree, options.persist) : {}
+      });
   },
   query: (target, patch) => {
     query2(resolve5(target), patch);
@@ -10467,7 +10626,15 @@ function init18() {
     if (!tree.hasAttribute("tabindex"))
       tree.tabIndex = 0;
     const early = tree._sourceOptions || {};
-    const config = { filters: [], sorters: [], expanded: [], collapsed: [], selected: null, ...early.query, ...attachPersistence3(tree, early.persist) };
+    const config = {
+      filters: [],
+      sorters: [],
+      expanded: [],
+      collapsed: [],
+      selected: null,
+      ...early.query,
+      ...attachPersistence3(tree, early.persist)
+    };
     let queued = false;
     tree.addEventListener("scroll", () => {
       if (queued)
@@ -10668,7 +10835,13 @@ function describe2(root, ref) {
     return n ? nameOf(n) : parseEnd(end).id;
   };
   const text = el.textContent.trim();
-  return { ref: String(ref), kind, element: el, label: `${name(el.dataset.from)} → ${name(el.dataset.to)}${text ? ` · ${text}` : ""}`, detail: el.dataset.detail || "" };
+  return {
+    ref: String(ref),
+    kind,
+    element: el,
+    label: `${name(el.dataset.from)} → ${name(el.dataset.to)}${text ? ` · ${text}` : ""}`,
+    detail: el.dataset.detail || ""
+  };
 }
 function activationOrder(root) {
   const { stepOf } = stepPlan(root);
@@ -10775,7 +10948,10 @@ function bestSides(a, b, fixedA, fixedB, obstacles, texts = []) {
     if (sa === "top")
       return [null, Math.min(...between.map((o) => o.rect.y), a.rect.y, b.rect.y) - 18];
     if (sa === "bottom")
-      return [null, Math.max(...between.map((o) => o.rect.y + o.rect.h), a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 18];
+      return [
+        null,
+        Math.max(...between.map((o) => o.rect.y + o.rect.h), a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 18
+      ];
     if (sa === "left")
       return [null, Math.min(...between.map((o) => o.rect.x), a.rect.x, b.rect.x) - 18];
     return [null, Math.max(...between.map((o) => o.rect.x + o.rect.w), a.rect.x + a.rect.w, b.rect.x + b.rect.w) + 18];
@@ -10912,7 +11088,11 @@ function labelSpot(pts) {
     if (l > best) {
       best = l;
       at = { x: (pts[i].x + pts[i - 1].x) / 2, y: (pts[i].y + pts[i - 1].y) / 2 };
-      along = { x: Math.abs(pts[i].x - pts[i - 1].x) > 0.5 ? 1 : 0, y: Math.abs(pts[i].y - pts[i - 1].y) > 0.5 ? 1 : 0, len: l };
+      along = {
+        x: Math.abs(pts[i].x - pts[i - 1].x) > 0.5 ? 1 : 0,
+        y: Math.abs(pts[i].y - pts[i - 1].y) > 0.5 ? 1 : 0,
+        len: l
+      };
     }
   }
   return { at, along };
@@ -10935,7 +11115,13 @@ var HEADS = {
   many: { parts: [CROW], inset: 0 },
   "one-many": { parts: [CROW, ["M-15 -6V6", "stroke"]], inset: 0 },
   "zero-many": { parts: [CROW, ["M-23 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "hollow"]], inset: 0 },
-  "zero-one": { parts: [["M-7 -6V6", "stroke"], ["M-19 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "hollow"]], inset: 0 },
+  "zero-one": {
+    parts: [
+      ["M-7 -6V6", "stroke"],
+      ["M-19 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "hollow"]
+    ],
+    inset: 0
+  },
   none: { parts: [], inset: 0 }
 };
 function svg(tag, attrs = {}) {
@@ -10949,7 +11135,12 @@ function drawHead(group, kind, tip, dir) {
   const head = HEADS[kind] ?? HEADS.arrow;
   const angle = r1(Math.atan2(dir.y, dir.x) * 180 / Math.PI);
   for (const [d, paint] of head.parts) {
-    group.append(svg("path", { class: "diagram-wire-head", "data-paint": paint, d, transform: `translate(${r1(tip.x)} ${r1(tip.y)}) rotate(${angle})` }));
+    group.append(svg("path", {
+      class: "diagram-wire-head",
+      "data-paint": paint,
+      d,
+      transform: `translate(${r1(tip.x)} ${r1(tip.y)}) rotate(${angle})`
+    }));
   }
 }
 function inset(pts, by, atStart) {
@@ -11289,7 +11480,21 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
     const across = dir.x ? { x: 0, y: h / 2 + 5 } : { x: w / 2 + 6, y: 0 };
     const room = Math.max(0, (dir.len ?? Infinity) / 2 - (dir.x ? w / 2 : h / 2));
     let least = Infinity;
-    for (const [k, j] of [[0, 0], [1, 0], [-1, 0], [2, 0], [-2, 0], [0, -1], [0, 1], [1, -1], [-1, -1], [1, 1], [-1, 1], [3, 0], [-3, 0]]) {
+    for (const [k, j] of [
+      [0, 0],
+      [1, 0],
+      [-1, 0],
+      [2, 0],
+      [-2, 0],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [-1, -1],
+      [1, 1],
+      [-1, 1],
+      [3, 0],
+      [-3, 0]
+    ]) {
       if (Math.abs(k * step) > room)
         continue;
       if (!along && (k || j))
@@ -11342,7 +11547,10 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
   for (const plan of plans) {
     if (!plan.sa || bus)
       continue;
-    for (const [end, node, side, other] of [["a", plan.a, plan.sa, plan.b], ["b", plan.b, plan.sb, plan.a]]) {
+    for (const [end, node, side, other] of [
+      ["a", plan.a, plan.sa, plan.b],
+      ["b", plan.b, plan.sb, plan.a]
+    ]) {
       if ((end === "a" ? plan.from : plan.to).field)
         continue;
       const key = `${node.el.dataset.node}|${side}`;
@@ -11369,7 +11577,10 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
       return null;
     const rr = rectOf(row);
     const left = toward.x < node.rect.x + node.rect.w / 2;
-    return { point: { x: left ? node.rect.x : node.rect.x + node.rect.w, y: rr.y + rr.h / 2 }, side: left ? "left" : "right" };
+    return {
+      point: { x: left ? node.rect.x : node.rect.x + node.rect.w, y: rr.y + rr.h / 2 },
+      side: left ? "left" : "right"
+    };
   };
   const solid = [...nodes.values()].filter((n) => !n.el.classList.contains("diagram-group") && n.el.dataset.shape !== "ghost");
   const outside = Math.max(0, ...solid.map((n) => n.rect.x + n.rect.w)) + 24;
@@ -11526,7 +11737,12 @@ function drawSequence(canvas, nodes, list, panel, rectOf, wireGroup, line, label
     if (node.el.dataset.shape === "ghost")
       continue;
     const c = center(node.rect);
-    const g = wireGroup(null, { "data-lifeline": "", "data-step-state": node.el.dataset.stepState, "data-active-state": node.el.dataset.activeState, beatOf: node.el });
+    const g = wireGroup(null, {
+      "data-lifeline": "",
+      "data-step-state": node.el.dataset.stepState,
+      "data-active-state": node.el.dataset.activeState,
+      beatOf: node.el
+    });
     line(g, `M${r1(c.x)} ${r1(node.rect.y + node.rect.h)} V${r1(bottom)}`, false);
   }
   for (const edge of edgesIn(list)) {
@@ -11574,7 +11790,13 @@ function drawBones(nodes, wireGroup, line) {
     const from = { x: bone.rect.x + bone.rect.w / 2, y: above ? bone.rect.y + bone.rect.h : bone.rect.y };
     const dy = Math.abs(y - from.y);
     const to = { x: from.x + dy * 0.577, y };
-    const g = wireGroup(null, { "data-bone": "", "data-tone": bone.el.dataset.tone, "data-step-state": bone.el.dataset.stepState, "data-active-state": bone.el.dataset.activeState, beatOf: bone.el });
+    const g = wireGroup(null, {
+      "data-bone": "",
+      "data-tone": bone.el.dataset.tone,
+      "data-step-state": bone.el.dataset.stepState,
+      "data-active-state": bone.el.dataset.activeState,
+      beatOf: bone.el
+    });
     line(g, `M${r1(from.x)} ${r1(from.y)} L${r1(to.x)} ${r1(to.y)}`, true);
   }
 }
@@ -11619,7 +11841,12 @@ function flowTokens(labels, wires) {
       token.style.offsetPath = `path('${g.dataset.path}')`;
       dfDollar18(labels).append(token);
       const once = g.dataset.stepState === "current";
-      token.animate?.([{ offsetDistance: "0%", opacity: 0 }, { opacity: 1, offset: 0.08 }, { opacity: 1, offset: 0.92 }, { offsetDistance: "100%", opacity: 0 }], {
+      token.animate?.([
+        { offsetDistance: "0%", opacity: 0 },
+        { opacity: 1, offset: 0.08 },
+        { opacity: 1, offset: 0.92 },
+        { offsetDistance: "100%", opacity: 0 }
+      ], {
         duration,
         delay: once ? delay + i * duration / count : delay - i * duration / count,
         iterations: once ? 1 : Infinity,
@@ -11661,7 +11888,10 @@ function ledger(root, canvas) {
   const names = new Map(authored(canvas, "[data-node]").map((n) => [n.dataset.node, nameOf(n)]));
   const endName = (v) => names.get(parseEnd(v).id) || parseEnd(v).id;
   const list = edgeListOf(root, canvas);
-  const items = [...authored(canvas, "[data-change]"), ...list && !canvas.contains(list) ? edgesIn(list).filter((e) => e.dataset.change) : []];
+  const items = [
+    ...authored(canvas, "[data-change]"),
+    ...list && !canvas.contains(list) ? edgesIn(list).filter((e) => e.dataset.change) : []
+  ];
   const entries = [];
   for (const el of items) {
     const change = el.dataset.change;
@@ -11758,7 +11988,15 @@ function button(action, text, label) {
   b.dataset.action = action;
   if (label)
     b.setAttribute("aria-label", label);
-  const icon = svg("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round" });
+  const icon = svg("svg", {
+    viewBox: "0 0 24 24",
+    "aria-hidden": "true",
+    fill: "none",
+    stroke: "currentColor",
+    "stroke-width": 2,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round"
+  });
   for (const d of ICONS[action].match(/d="[^"]+"/g))
     icon.append(svg("path", { d: d.slice(3, -1) }));
   b.append(icon);
@@ -11785,7 +12023,15 @@ function makeControls(root) {
       control(root, action);
   });
   dfDollar18(bar).on("keydown", (e) => {
-    const map = { ArrowLeft: "prev", ArrowRight: "next", Home: "first", End: "all", r: "replay", R: "replay", " ": "toggle" };
+    const map = {
+      ArrowLeft: "prev",
+      ArrowRight: "next",
+      Home: "first",
+      End: "all",
+      r: "replay",
+      R: "replay",
+      " ": "toggle"
+    };
     const action = map[e.key];
     if (!action || e.key === " " && e.target.closest?.("button"))
       return;
@@ -11907,10 +12153,16 @@ function triggerStateChange19(root, state) {
   updateOutputs(root, about);
   queueMicrotask(() => {
     if (state.name === "playing" || state.name === "paused") {
-      root.dispatchEvent(new CustomEvent("diagram-step", { bubbles: true, detail: { step, max, label: stepLabel(root, step), state: state.name } }));
+      root.dispatchEvent(new CustomEvent("diagram-step", {
+        bubbles: true,
+        detail: { step, max, label: stepLabel(root, step), state: state.name }
+      }));
     }
     if (String(ref ?? "") !== String(wasActive ?? "")) {
-      root.dispatchEvent(new CustomEvent("diagram-activate", { bubbles: true, detail: about ?? { ref: null, kind: null, element: null, label: "", detail: "" } }));
+      root.dispatchEvent(new CustomEvent("diagram-activate", {
+        bubbles: true,
+        detail: about ?? { ref: null, kind: null, element: null, label: "", detail: "" }
+      }));
     }
   });
 }
@@ -11936,7 +12188,15 @@ df$19.diagramStates = diagramStates;
 var esc4 = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 var attr = (name, value) => value == null || value === false ? "" : value === true ? ` ${name}` : ` ${name}="${esc4(value)}"`;
 var place = (o) => {
-  const css = [["--col", o.col], ["--row", o.row], ["--span", o.span], ["--rspan", o.rspan], ["--x", o.x], ["--y", o.y], ["--i", o.i]].filter(([, v]) => v != null).map(([k, v]) => `${k}:${v}`);
+  const css = [
+    ["--col", o.col],
+    ["--row", o.row],
+    ["--span", o.span],
+    ["--rspan", o.rspan],
+    ["--x", o.x],
+    ["--y", o.y],
+    ["--i", o.i]
+  ].filter(([, v]) => v != null).map(([k, v]) => `${k}:${v}`);
   if (o.style)
     css.push(o.style);
   return css.join(";");
@@ -11967,7 +12227,10 @@ function markupOf(spec) {
     const phase = typeof p === "string" ? { name: p } : p;
     return `<li${attr("style", phase.span ? `--span:${phase.span}` : null)}>${esc4(phase.name)}</li>`;
   }).join("")}</ol>` : "";
-  const top = [...groups.filter((g) => !g.parent).map(groupMarkup), ...nodes.filter((n) => !n.parent).map((n) => nodeMarkup(n))].join("");
+  const top = [
+    ...groups.filter((g) => !g.parent).map(groupMarkup),
+    ...nodes.filter((n) => !n.parent).map((n) => nodeMarkup(n))
+  ].join("");
   const edges = (spec.edges ?? []).map((e) => {
     const before = e.before ?? {};
     return `<li class="diagram-edge"${attr("data-from", e.from)}${attr("data-to", e.to)}${attr("data-line", e.line)}${attr("data-tone", e.tone)}${attr("data-head", e.head)}${attr("data-tail", e.tail)}${attr("data-curve", e.curve)}${attr("data-step", e.step)}${attr("data-flow", e.flow === true ? "" : e.flow)}${attr("data-from-label", e.fromLabel)}${attr("data-to-label", e.toLabel)}${attr("data-change", e.change)}${attr("data-before", before.label)}${attr("data-before-from", before.from)}${attr("data-before-to", before.to)}>${esc4(e.label)}</li>`;
@@ -12026,7 +12289,11 @@ function specFlags(root, spec) {
 }
 var TONES = ["none", "accent", "link", "muted", "external", "warn", "ok", "danger"];
 var SHAPES = ["box", "pill", "diamond", "store", "circle", "dot", "bar", "note", "activity", "class", "start", "end"];
-var NODE_TEXT = [["eyebrow", "diagram-node-eyebrow"], ["name", "diagram-node-name"], ["meta", "diagram-node-meta"]];
+var NODE_TEXT = [
+  ["eyebrow", "diagram-node-eyebrow"],
+  ["name", "diagram-node-name"],
+  ["meta", "diagram-node-meta"]
+];
 var cellText = (c) => (dfDollar18(c).children("span").get(0) ?? c).textContent.trim();
 var headText = (c) => [...c.childNodes].filter((n) => n.nodeType === 3 || n.nodeName !== "SMALL").map((n) => n.textContent).join("").trim();
 function propertiesOf(root, ref) {
@@ -12807,7 +13074,10 @@ var docCommentsApi = componentState({
 df$22.docCommentsApi = docCommentsApi;
 df$22.docCommentsStates = docCommentsStates;
 function emitChange(el, id) {
-  el.dispatchEvent(new CustomEvent("doc-comments-change", { bubbles: true, detail: { comments: runtimeOf(el).data.comments.length, id } }));
+  el.dispatchEvent(new CustomEvent("doc-comments-change", {
+    bubbles: true,
+    detail: { comments: runtimeOf(el).data.comments.length, id }
+  }));
 }
 function select2(el, id, source) {
   if (!runtimeOf(el).data.comments.some((c) => c.id === id))
@@ -12841,7 +13111,10 @@ function flash(el, quote) {
     scrollTo(marks[0], "center");
     setTimeout(() => marks.forEach(unwrap), FLASH_MS);
   }
-  el.dispatchEvent(new CustomEvent("doc-comments-flash", { bubbles: true, detail: { block: quote.block, text: quote.text, found } }));
+  el.dispatchEvent(new CustomEvent("doc-comments-flash", {
+    bubbles: true,
+    detail: { block: quote.block, text: quote.text, found }
+  }));
   return found;
 }
 function addComment(el, comment) {
@@ -12856,7 +13129,14 @@ function addComment(el, comment) {
   while (data.comments.some((c) => c.id === id))
     id = `${id}-${Math.random().toString(36).slice(2, 6)}`;
   const parent = comment.parent ? data.comments.find((c) => c.id === comment.parent) : undefined;
-  const full = { ...comment, id, author: comment.author || dfDollar21(el).attr("data-author") || "You", time: comment.time ?? new Date().toISOString(), body: comment.body.trim(), color: comment.color ?? parent?.color };
+  const full = {
+    ...comment,
+    id,
+    author: comment.author || dfDollar21(el).attr("data-author") || "You",
+    time: comment.time ?? new Date().toISOString(),
+    body: comment.body.trim(),
+    color: comment.color ?? parent?.color
+  };
   runtimeOf(el).data = { version: 1, comments: [...data.comments, full] };
   placeMarks(el);
   renderColumn(el);
@@ -13058,7 +13338,10 @@ function activate4(menu, item) {
   if (role === "menuitemcheckbox") {
     const checked = item.getAttribute("aria-checked") !== "true";
     item.setAttribute("aria-checked", String(checked));
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked }
+    }));
     return;
   }
   if (role === "menuitemradio") {
@@ -13067,10 +13350,16 @@ function activate4(menu, item) {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true }
+    }));
     return;
   }
-  item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  item.dispatchEvent(new CustomEvent("dropdown:select", {
+    bubbles: true,
+    detail: { item, value: item.dataset.value ?? item.textContent.trim() }
+  }));
   try {
     rootOf2(menu).hidePopover();
   } catch {}
@@ -13328,7 +13617,12 @@ function formatSize(el, bytes) {
     n /= 1000;
     i++;
   }
-  return new Intl.NumberFormat(lang(el), { style: "unit", unit: units[i], unitDisplay: "short", maximumFractionDigits: i ? 1 : 0 }).format(n);
+  return new Intl.NumberFormat(lang(el), {
+    style: "unit",
+    unit: units[i],
+    unitDisplay: "short",
+    maximumFractionDigits: i ? 1 : 0
+  }).format(n);
 }
 var ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 function setFiles(input, files) {
@@ -13394,7 +13688,10 @@ function apply(el, rejected, quiet = false) {
   el.dataset.stateName = rejected.length ? "error" : input.files.length ? "selected" : "default";
   renderList(el);
   if (!quiet && rejected.length)
-    el.dispatchEvent(new CustomEvent("file-drop:rejected", { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
+    el.dispatchEvent(new CustomEvent("file-drop:rejected", {
+      bubbles: true,
+      detail: { files: rejected.map((r) => r.file), message }
+    }));
 }
 function onPick(el) {
   const input = inputOf2(el);
@@ -13617,12 +13914,18 @@ if (!document.__iframeInit) {
         return;
       if (data.kind === "hello") {
         if (document.documentElement.hasAttribute("data-iframe-child"))
-          sendToParent({ type: PROTOCOL, kind: "size", height: Math.ceil(document.documentElement.getBoundingClientRect().height) });
+          sendToParent({
+            type: PROTOCOL,
+            kind: "size",
+            height: Math.ceil(document.documentElement.getBoundingClientRect().height)
+          });
         return;
       }
       if (data.kind !== "message")
         return;
-      document.dispatchEvent(new CustomEvent("iframe-message", { detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin } }));
+      document.dispatchEvent(new CustomEvent("iframe-message", {
+        detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin }
+      }));
       return;
     }
     const el = dfDollar24(".iframe[data-init]").toArray().find((f) => frameOf(f)?.contentWindow === e.source);
@@ -13631,7 +13934,10 @@ if (!document.__iframeInit) {
     if (data.kind === "size" && dfDollar24(el).attr("data-fit") === "content" && typeof data.height === "number")
       setHeight(el, data.height);
     if (data.kind === "message") {
-      el.dispatchEvent(new CustomEvent("iframe-message", { bubbles: true, detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin } }));
+      el.dispatchEvent(new CustomEvent("iframe-message", {
+        bubbles: true,
+        detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin }
+      }));
     }
   });
 }
@@ -14618,7 +14924,10 @@ function init30() {
         });
       new MutationObserver(() => {
         setupCurrency(wrapper, input);
-      }).observe(wrapper, { attributes: true, attributeFilter: ["data-locale", "data-currency", "data-currency-display"] });
+      }).observe(wrapper, {
+        attributes: true,
+        attributeFilter: ["data-locale", "data-currency", "data-currency-display"]
+      });
       return;
     }
     formatDecimals(wrapper, input);
@@ -15025,7 +15334,14 @@ var panelApi = componentState({
     triggerStateChange33(panel, state.name);
     queueMicrotask(() => syncToggles(panel));
     if (from !== state.name) {
-      panel.dispatchEvent(new CustomEvent("panel-change", { bubbles: true, detail: { state: state.name, previous: from, region: sideOf(regionOf2(panel)) } }));
+      panel.dispatchEvent(new CustomEvent("panel-change", {
+        bubbles: true,
+        detail: {
+          state: state.name,
+          previous: from,
+          region: sideOf(regionOf2(panel))
+        }
+      }));
     }
   },
   markup: (el, state) => applyMarkup32(el, state.name)
@@ -15745,7 +16061,10 @@ function commit(el, v, emit = true) {
   const done = v >= maxOf(el);
   el.dataset.stateName = done ? "complete" : "default";
   if (emit)
-    el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+    el.dispatchEvent(new CustomEvent("progress:change", {
+      bubbles: true,
+      detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) }
+    }));
   if (done && before !== "complete")
     el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
 }
@@ -15830,7 +16149,12 @@ var progressApi = componentState({
     const indeterminate = el.position < 0;
     return {
       name: el.dataset.stateName || "default",
-      config: { ...state.config, value: indeterminate ? null : el.value, max: el.max, percent: indeterminate ? null : el.value / maxOf(el) }
+      config: {
+        ...state.config,
+        value: indeterminate ? null : el.value,
+        max: el.max,
+        percent: indeterminate ? null : el.value / maxOf(el)
+      }
     };
   },
   markup: (el, state) => applyMarkup36(el, state.name, state.config)
@@ -16040,7 +16364,10 @@ function renderRows2(root) {
     table.className = "property-grid-table";
     const head = document.createElement("thead");
     const tr = document.createElement("tr");
-    for (const [label, cls] of [[root.dataset.keyLabel || "Property", "property-grid-key"], [root.dataset.valueLabel || "Value", "property-grid-value"]]) {
+    for (const [label, cls] of [
+      [root.dataset.keyLabel || "Property", "property-grid-key"],
+      [root.dataset.valueLabel || "Value", "property-grid-value"]
+    ]) {
       const th = document.createElement("th");
       th.scope = "col";
       th.className = cls;
@@ -16209,7 +16536,11 @@ function editorFor(root, row, value) {
     return null;
   if (custom instanceof HTMLElement) {
     const el = custom;
-    return { el, immediate: el.type === "checkbox" || el.tagName === "SELECT", getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value };
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
   }
   if (custom && custom.el)
     return custom;
@@ -16311,7 +16642,13 @@ function commit2(root, then = "stay") {
   if (!problem)
     problem = ruleProblem(confOf(root, row._path), value);
   if (!problem) {
-    const answer = optionsOf(root).validateFn?.(key, value, { path: [...row._path], type: row.dataset.type, config: confOf(root, row._path), source: configOf4(root).source, grid: root });
+    const answer = optionsOf(root).validateFn?.(key, value, {
+      path: [...row._path],
+      type: row.dataset.type,
+      config: confOf(root, row._path),
+      source: configOf4(root).source,
+      grid: root
+    });
     if (typeof answer === "string" && answer)
       problem = answer;
     else if (answer === false)
@@ -16324,7 +16661,11 @@ function commit2(root, then = "stay") {
   const oldValue = ed.value;
   closeEditor(root);
   const same = JSON.stringify(value) === JSON.stringify(oldValue);
-  const before = new CustomEvent("property-grid-beforechange", { bubbles: true, cancelable: true, detail: { path, key, value, oldValue } });
+  const before = new CustomEvent("property-grid-beforechange", {
+    bubbles: true,
+    cancelable: true,
+    detail: { path, key, value, oldValue }
+  });
   if (same || !root.dispatchEvent(before)) {
     root.api.setState("default", { editing: null });
     restoreFocus(root, path, then);
@@ -16332,7 +16673,10 @@ function commit2(root, then = "stay") {
   }
   const source = setAt(configOf4(root).source, row._path, value);
   root.api.setState("default", { source, editing: null });
-  root.dispatchEvent(new CustomEvent("property-grid-change", { bubbles: true, detail: { path, key, value, oldValue, source: clone(source) } }));
+  root.dispatchEvent(new CustomEvent("property-grid-change", {
+    bubbles: true,
+    detail: { path, key, value, oldValue, source: clone(source) }
+  }));
   restoreFocus(root, path, then);
   return true;
 }
@@ -16410,8 +16754,14 @@ df$38.propertyGrid = {
     const p = toPath(path);
     const oldValue = getAt(configOf4(root).source, p);
     const source = setAt(configOf4(root).source, p, clone(value));
-    root.api.setState(root.store.value.name === "editing" ? "default" : root.store.value.name, { source, editing: null });
-    root.dispatchEvent(new CustomEvent("property-grid-change", { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
+    root.api.setState(root.store.value.name === "editing" ? "default" : root.store.value.name, {
+      source,
+      editing: null
+    });
+    root.dispatchEvent(new CustomEvent("property-grid-change", {
+      bubbles: true,
+      detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) }
+    }));
   },
   getProperty: (target, path) => clone(getAt(configOf4(resolve10(target)).source, toPath(path))),
   edit: (target, path) => {
@@ -17734,7 +18084,10 @@ function invalidOf(root, step, answers) {
       const asserts = rule.assert ?? [];
       const ok = Array.isArray(asserts) ? asserts.every((c) => holds(c, answers)) : when({ when: asserts }, answers);
       if (!ok)
-        return { control: rule.field ? controlsOf(step).find((c) => c.name === rule.field) : null, message: rule.message || "Check this answer." };
+        return {
+          control: rule.field ? controlsOf(step).find((c) => c.name === rule.field) : null,
+          message: rule.message || "Check this answer."
+        };
     }
   } else if (typeof rules === "function") {
     const message = rules(answers, readStep(step));
@@ -18043,7 +18396,13 @@ function paint4(root) {
 }
 function record(root, name) {
   const walk = cfgOf(root);
-  const config = { step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped };
+  const config = {
+    step: walk.step,
+    answers: walk.answers,
+    history: walk.history,
+    index: walk.index,
+    skipped: walk.skipped
+  };
   if (root.store)
     questionnaireApi.commit(root, name ?? landed(root, walk), config);
   if (root._draft)
@@ -18079,7 +18438,10 @@ function advance(root, { skip = false } = {}) {
     const problem = invalidOf(root, step, answers);
     if (problem) {
       showInvalid(step, problem);
-      root.dispatchEvent(new CustomEvent("questionnaire-invalid", { bubbles: true, detail: { step: walk.step, message: problem.message } }));
+      root.dispatchEvent(new CustomEvent("questionnaire-invalid", {
+        bubbles: true,
+        detail: { step: walk.step, message: problem.message }
+      }));
       return false;
     }
   }
@@ -18121,12 +18483,18 @@ function advance(root, { skip = false } = {}) {
   walk.index += 1;
   if (cleared.length) {
     notify(root, `${cleared.length === 1 ? "1 later answer was" : cleared.length + " later answers were"} cleared - they depended on "${titleOf(step)}".`);
-    root.dispatchEvent(new CustomEvent("questionnaire-invalidate", { bubbles: true, detail: { cause: walk.step, changed, cleared } }));
+    root.dispatchEvent(new CustomEvent("questionnaire-invalidate", {
+      bubbles: true,
+      detail: { cause: walk.step, changed, cleared }
+    }));
   } else
     notify(root, "");
   show2(root, to);
   record(root);
-  root.dispatchEvent(new CustomEvent("questionnaire-step", { bubbles: true, detail: { step: to, from: history[walk.index - 1], answers } }));
+  root.dispatchEvent(new CustomEvent("questionnaire-step", {
+    bubbles: true,
+    detail: { step: to, from: history[walk.index - 1], answers }
+  }));
   return true;
 }
 function back(root) {
@@ -18188,7 +18556,10 @@ async function submit(root) {
   notify(root, "");
   paint4(root);
   record(root, "submitted");
-  root.dispatchEvent(new CustomEvent("questionnaire-submit", { bubbles: true, detail: { answers, history: walk.history.slice(0, walk.index + 1) } }));
+  root.dispatchEvent(new CustomEvent("questionnaire-submit", {
+    bubbles: true,
+    detail: { answers, history: walk.history.slice(0, walk.index + 1) }
+  }));
   return true;
 }
 function triggerStateChange40(root, state, incoming) {
@@ -18251,7 +18622,17 @@ var questionnaireApi = componentState({
     const walk = cfgOf(root);
     if (!walk)
       return state;
-    return { name: landed(root, walk), config: { ...state.config, step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped } };
+    return {
+      name: landed(root, walk),
+      config: {
+        ...state.config,
+        step: walk.step,
+        answers: walk.answers,
+        history: walk.history,
+        index: walk.index,
+        skipped: walk.skipped
+      }
+    };
   },
   markup: (el, state) => applyMarkup39(el, state)
 });
@@ -18365,9 +18746,20 @@ function analyze(root) {
           for (const f of fieldsIn(rule.assert))
             reads(id, f, "an assertion");
   }
-  const nodes = steps.map((s) => ({ id: s.dataset.step, title: titleOf(s), end: isEnd(s), block: s.closest(".questionnaire-block")?.dataset.block || "" }));
+  const nodes = steps.map((s) => ({
+    id: s.dataset.step,
+    title: titleOf(s),
+    end: isEnd(s),
+    block: s.closest(".questionnaire-block")?.dataset.block || ""
+  }));
   const list = [...edges].flatMap(([from, l]) => l.map((e) => ({ from, ...e })));
-  return { ok: errors.length === 0, errors: [...new Set(errors)], warnings: [...new Set(warnings)], nodes, edges: list };
+  return {
+    ok: errors.length === 0,
+    errors: [...new Set(errors)],
+    warnings: [...new Set(warnings)],
+    nodes,
+    edges: list
+  };
 }
 function toMermaid(root) {
   const { nodes, edges } = analyze(root);
@@ -18495,7 +18887,10 @@ function linkDiagram(root, figure) {
     const target = stepById(root, to);
     if (reason === "unreached")
       notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
-    root.dispatchEvent(new CustomEvent("questionnaire-jump-refused", { bubbles: true, detail: { to, step: walk.step, reason } }));
+    root.dispatchEvent(new CustomEvent("questionnaire-jump-refused", {
+      bubbles: true,
+      detail: { to, step: walk.step, reason }
+    }));
   };
   const onActivate = (e) => {
     if (syncing)
@@ -18556,7 +18951,10 @@ df$40.questionnaire = {
 function attachDraft(root, config) {
   root._draft?.destroy();
   const where = viewPersistence(root, "questionnaire", String(dfDollar39(".questionnaire").toArray().indexOf(root)), config || {});
-  root._draft = where ? persisted(where.key, null, { area: where.area, validate: (v) => v === null || typeof v === "object" && !Array.isArray(v) }) : null;
+  root._draft = where ? persisted(where.key, null, {
+    area: where.area,
+    validate: (v) => v === null || typeof v === "object" && !Array.isArray(v)
+  }) : null;
   return root._draft?.value ?? null;
 }
 var lastActive = null;
@@ -18615,7 +19013,14 @@ function init40() {
       return;
     root.setAttribute("novalidate", "");
     keyHints(root);
-    root._walk = { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [], submitted: false };
+    root._walk = {
+      step: root._flow.start,
+      answers: {},
+      history: [root._flow.start],
+      index: 0,
+      skipped: [],
+      submitted: false
+    };
     const draft = attachDraft(root, root._config?.persist);
     let restored = false;
     if (draft && draft.history?.length && stepById(root, draft.step)) {
@@ -18689,7 +19094,10 @@ function init40() {
     root.addEventListener("pointerdown", () => {
       lastActive = root;
     });
-    bindComponent(root, questionnaireApi, { name: "default", config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] } });
+    bindComponent(root, questionnaireApi, {
+      name: "default",
+      config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] }
+    });
     show2(root, root._walk.step, false);
     record(root);
     if (restored)
@@ -18780,7 +19188,10 @@ function commit3(el, v) {
   setValue(el, v);
   const done = v >= maxOf2(el);
   el.dataset.stateName = done ? "complete" : "default";
-  el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: v, max: maxOf2(el), percent: v / maxOf2(el) } }));
+  el.dispatchEvent(new CustomEvent("progress:change", {
+    bubbles: true,
+    detail: { value: v, max: maxOf2(el), percent: v / maxOf2(el) }
+  }));
   if (done && before !== "complete")
     el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
 }
@@ -19222,7 +19633,10 @@ function init42() {
         if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5)
           applySize(wrapper, axis, v);
       }
-    }).observe(wrapper, { attributes: true, attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"] });
+    }).observe(wrapper, {
+      attributes: true,
+      attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"]
+    });
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
@@ -19555,7 +19969,10 @@ function track(s) {
   s._currentId = currentId;
   s._visibleIds = ids.join();
   items.forEach((it) => it.toggleAttribute("data-current", it === current));
-  s.dispatchEvent(new CustomEvent("session-visibility", { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+  s.dispatchEvent(new CustomEvent("session-visibility", {
+    bubbles: true,
+    detail: { currentAnchorId: currentId, visibleMessageIds: ids }
+  }));
 }
 function bindDrop(s) {
   const hasFiles = (e) => [...e.dataTransfer?.types ?? []].includes("Files");
@@ -20535,7 +20952,10 @@ function syncSelection(table, announce = true) {
   }
   if (announce) {
     const selected = rows.filter((r) => r.getAttribute("aria-selected") === "true");
-    table.dispatchEvent(new CustomEvent("table-select", { bubbles: true, detail: { rows: selected, count: selected.length } }));
+    table.dispatchEvent(new CustomEvent("table-select", {
+      bubbles: true,
+      detail: { rows: selected, count: selected.length }
+    }));
   }
 }
 function selectRows(table, which) {
@@ -20551,7 +20971,10 @@ function selectRows(table, which) {
   syncSelection(table);
 }
 function announceMove(table, row) {
-  table.dispatchEvent(new CustomEvent("table-reorder", { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
+  table.dispatchEvent(new CustomEvent("table-reorder", {
+    bubbles: true,
+    detail: { row, index: bodyRows(table).indexOf(row) }
+  }));
 }
 function moved(table, row) {
   dfDollar49(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
@@ -20669,7 +21092,10 @@ var tableApi = componentState({
   apply: (table, state) => triggerStateChange50(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
-    return { name: table.dataset.stateName || "default", config: { ...state.config, sort: table._sort ?? null, selected } };
+    return {
+      name: table.dataset.stateName || "default",
+      config: { ...state.config, sort: table._sort ?? null, selected }
+    };
   },
   markup: (el, state) => {
     enhanceHead(el);
@@ -20697,7 +21123,10 @@ function init50() {
         else
           sortBy(table, col, next);
         table.dataset.stateName = next === "none" ? "default" : "sorted";
-        table.dispatchEvent(new CustomEvent("table-sort", { bubbles: true, detail: { column: col, direction: next } }));
+        table.dispatchEvent(new CustomEvent("table-sort", {
+          bubbles: true,
+          detail: { column: col, direction: next }
+        }));
       });
     });
     const pre = dfDollar49(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
@@ -21335,7 +21764,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -21495,7 +21927,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -21526,7 +21961,10 @@ var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
   apply: (toggle, state) => triggerStateChange55(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar54(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  read: (toggle, state) => ({
+    name: dfDollar54(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
     applyMarkup52(toggle, state.name, authored ? authored[1] : "false");
@@ -21908,7 +22346,10 @@ function onCheck(tree, item) {
     rollUp(tree, item);
   }
   syncAria(tree);
-  tree.dispatchEvent(new CustomEvent("tree-check", { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
+  tree.dispatchEvent(new CustomEvent("tree-check", {
+    bubbles: true,
+    detail: { item, checked: box.checked, values: checkedValues(tree) }
+  }));
 }
 function initChecks(tree) {
   let n = 0;
@@ -21943,7 +22384,10 @@ function clearDrop(tree) {
 function announceMove2(tree, item) {
   const parentItem = item.parentElement.closest('[role="treeitem"]');
   const index = [...item.parentElement.children].indexOf(item);
-  tree.dispatchEvent(new CustomEvent("tree-reorder", { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
+  tree.dispatchEvent(new CustomEvent("tree-reorder", {
+    bubbles: true,
+    detail: { item, parent: parentItem ?? tree, index }
+  }));
 }
 function initSortable(tree) {
   let dragged = null;
@@ -22208,7 +22652,10 @@ function step2(tw) {
     paint6(tw, tw._index, tw._count + 1);
     return next(step2, keyDelay(tw, num5(tw, "speed", 70)));
   }
-  tw.dispatchEvent(new CustomEvent("typewriter-typed", { bubbles: true, detail: { index: tw._index, text: src.text } }));
+  tw.dispatchEvent(new CustomEvent("typewriter-typed", {
+    bubbles: true,
+    detail: { index: tw._index, text: src.text }
+  }));
   if (last && !loop)
     return finish2(tw);
   phase(tw, "holding");
@@ -22503,7 +22950,9 @@ if (!document.__virtualListQueryInit) {
     if (!list?._source || !list.store)
       return;
     const [field, direction] = select.value.split(":");
-    virtualListApi.setState(list, "default", { sorters: field ? [{ field, direction: direction === "desc" ? "desc" : "asc" }] : [] });
+    virtualListApi.setState(list, "default", {
+      sorters: field ? [{ field, direction: direction === "desc" ? "desc" : "asc" }] : []
+    });
   });
 }
 function init61() {
@@ -22818,7 +23267,11 @@ function create(options = {}) {
   const controls = document.createElement("form");
   controls.method = "dialog";
   controls.className = "window-controls";
-  for (const [cls, label, type] of [["window-minimize", "Minimize", "button"], ["window-maximize", "Maximize", "button"], ["window-close", "Close", "submit"]]) {
+  for (const [cls, label, type] of [
+    ["window-minimize", "Minimize", "button"],
+    ["window-maximize", "Maximize", "button"],
+    ["window-close", "Close", "submit"]
+  ]) {
     const b = document.createElement("button");
     b.type = type;
     b.className = cls;
@@ -22946,6 +23399,6 @@ df$62.win = windowActions;
 init62();
 new MutationObserver(init62).observe(document, { childList: true, subtree: true });
 
-//# debugId=46BE4939CEF46C1A64756E2164756E21
+//# debugId=306D96CD71A4C5B564756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

@@ -32,6 +32,8 @@ describe('figures', () => {
   it('reports the figures that disagree with their measurement', () => {
     expect(statFigureProblems(page, sources, 'deck.mdx')).toEqual(['deck.mdx: data-stat="stats.apps.notes.totalSizeGzMinified" shows "57.1" - the measurement says "58.0"']);
     expect(statFigureProblems('<i data-stat="stats.nope">1</i>', sources, 'x')).toEqual(['x: data-stat="stats.nope" names no measurement']);
+    // a formatter may set the figure on its own line - compared trimmed
+    expect(statFigureProblems('<b data-stat="verify.seconds" data-stat-format="s">\n  142.3\n</b>', sources, 'x')).toEqual([]);
   });
   it('rewrites every figure from its measurement and leaves the markup alone', () => {
     const next = rewriteStatFigures(page, sources);

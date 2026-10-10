@@ -100,17 +100,28 @@ export type AnimRegistry = Record<AnimName, AnimChannel> & {
 
 /** The complete animation vocabulary - every name ships in/out variants. */
 export const ANIM_NAMES = [
-  'fadeIn', 'fadeOut',
-  'slideIn', 'slideOut',
-  'zoomIn', 'zoomOut',
-  'popIn', 'popOut',
-  'spinIn', 'spinOut',
-  'flipIn', 'flipOut',
-  'skewIn', 'skewOut',
-  'blurIn', 'blurOut',
-  'wipeIn', 'wipeOut',
-  'irisIn', 'irisOut',
-  'blocksIn', 'blocksOut',
+  'fadeIn',
+  'fadeOut',
+  'slideIn',
+  'slideOut',
+  'zoomIn',
+  'zoomOut',
+  'popIn',
+  'popOut',
+  'spinIn',
+  'spinOut',
+  'flipIn',
+  'flipOut',
+  'skewIn',
+  'skewOut',
+  'blurIn',
+  'blurOut',
+  'wipeIn',
+  'wipeOut',
+  'irisIn',
+  'irisOut',
+  'blocksIn',
+  'blocksOut',
 ] as const;
 
 export type AnimName = (typeof ANIM_NAMES)[number];
@@ -141,20 +152,28 @@ function coerceDirection(value: unknown, fallback: AnimDirection): AnimDirection
 /** translate() offset pointing FROM the given edge (starting position). */
 function offsetFor(direction: AnimDirection, distance: string): string {
   switch (direction) {
-    case 'north': return `translate(0px, calc(-1 * ${distance}))`;
-    case 'south': return `translate(0px, ${distance})`;
-    case 'west': return `translate(calc(-1 * ${distance}), 0px)`;
-    case 'east': return `translate(${distance}, 0px)`;
+    case 'north':
+      return `translate(0px, calc(-1 * ${distance}))`;
+    case 'south':
+      return `translate(0px, ${distance})`;
+    case 'west':
+      return `translate(calc(-1 * ${distance}), 0px)`;
+    case 'east':
+      return `translate(${distance}, 0px)`;
   }
 }
 
 /** clip-path inset() that leaves only the given edge visible (zero-width). */
 function insetFor(direction: AnimDirection): string {
   switch (direction) {
-    case 'north': return 'inset(0px 0px 100% 0px)';
-    case 'south': return 'inset(100% 0px 0px 0px)';
-    case 'west': return 'inset(0px 100% 0px 0px)';
-    case 'east': return 'inset(0px 0px 0px 100%)';
+    case 'north':
+      return 'inset(0px 0px 100% 0px)';
+    case 'south':
+      return 'inset(100% 0px 0px 0px)';
+    case 'west':
+      return 'inset(0px 100% 0px 0px)';
+    case 'east':
+      return 'inset(0px 0px 0px 100%)';
   }
 }
 
@@ -278,15 +297,9 @@ export function animKeyframes(
       return [{ clipPath: 'inset(0px 0px 0px 0px)' }, { clipPath: insetFor(direction) }];
 
     case 'irisIn':
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` },
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case 'irisOut':
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` },
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
 
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
@@ -306,12 +319,10 @@ interface AnimInstance {
 /** Per-element instance registry - state lives on the element, not module scope. */
 const instances = new WeakMap<Element, Map<string, AnimInstance>>();
 
-const instanceFor = (el: Element, name: string): AnimInstance | undefined =>
-  instances.get(el)?.get(name);
+const instanceFor = (el: Element, name: string): AnimInstance | undefined => instances.get(el)?.get(name);
 
 const reducedMotion = (): boolean =>
-  typeof globalThis.matchMedia === 'function' &&
-  globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  typeof globalThis.matchMedia === 'function' && globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function dropInstance(el: Element, name: string): void {
   const map = instances.get(el);
@@ -350,12 +361,10 @@ function bindScroll(animations: Animation[], scroll: AnimScrollBinding, totalMs:
   const [rangeFrom, rangeTo] = scroll.range ?? [0, 1];
 
   const supportsTimeline =
-    !scroll.forceFallback &&
-    typeof (globalThis as { ScrollTimeline?: unknown }).ScrollTimeline === 'function';
+    !scroll.forceFallback && typeof (globalThis as { ScrollTimeline?: unknown }).ScrollTimeline === 'function';
 
   if (supportsTimeline) {
-    const source =
-      target === 'viewport' ? (document.scrollingElement ?? document.documentElement) : target;
+    const source = target === 'viewport' ? (document.scrollingElement ?? document.documentElement) : target;
     const TimelineCtor = (
       globalThis as unknown as { ScrollTimeline: new (init: { source: Element; axis: string }) => AnimationTimeline }
     ).ScrollTimeline;
@@ -401,8 +410,7 @@ function bindScroll(animations: Animation[], scroll: AnimScrollBinding, totalMs:
       apply();
     });
   };
-  const listenTarget: Element | typeof globalThis =
-    target === 'viewport' ? globalThis : target;
+  const listenTarget: Element | typeof globalThis = target === 'viewport' ? globalThis : target;
   listenTarget.addEventListener('scroll', onScroll, { passive: true });
   apply();
   return () => listenTarget.removeEventListener('scroll', onScroll);
@@ -466,8 +474,12 @@ function playBlocks(
       // outline in the block color closes the antialiased seams between them
       outline: `1px solid ${opts.color ?? 'currentColor'}`,
       transformOrigin: horizontal
-        ? direction === 'west' ? 'left' : 'right'
-        : direction === 'north' ? 'top' : 'bottom',
+        ? direction === 'west'
+          ? 'left'
+          : 'right'
+        : direction === 'north'
+          ? 'top'
+          : 'bottom',
     } satisfies Partial<CSSStyleDeclaration>);
     overlay.append(block);
 
@@ -479,9 +491,7 @@ function playBlocks(
       name === 'blocksIn'
         ? [{ transform: `${axis}(0)` }, { transform: `${axis}(1)` }]
         : [{ transform: `${axis}(1)` }, { transform: `${axis}(0)` }];
-    animations.push(
-      block.animate(keyframes, { ...timing, delay: (timing.delay as number) + index * stagger }),
-    );
+    animations.push(block.animate(keyframes, { ...timing, delay: (timing.delay as number) + index * stagger }));
   }
   host.append(overlay);
 
@@ -536,9 +546,7 @@ function playAnim(name: AnimName, el: Element, opts: AnimOptions = {}): AnimHand
     animations,
     unbind,
     cleanup,
-    finished: Promise.all(animations.map((a) => a.finished.catch(() => undefined))).then(
-      () => undefined,
-    ),
+    finished: Promise.all(animations.map((a) => a.finished.catch(() => undefined))).then(() => undefined),
   };
   storeInstance(el, name, instance);
 
@@ -580,10 +588,7 @@ function channelFor(name: AnimName): AnimChannel {
  * animation name, all sharing the same lifecycle machinery.
  */
 export const anim: AnimRegistry = Object.freeze(
-  Object.assign(
-    Object.fromEntries(ANIM_NAMES.map((name) => [name, channelFor(name)])),
-    { names: ANIM_NAMES },
-  ),
+  Object.assign(Object.fromEntries(ANIM_NAMES.map((name) => [name, channelFor(name)])), { names: ANIM_NAMES }),
 ) as unknown as AnimRegistry;
 
 /**

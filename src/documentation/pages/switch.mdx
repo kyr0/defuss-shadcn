@@ -67,7 +67,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Default" hint="Toggle switch with label."
 <div class="switch-item">
-  <input class="switch" type="checkbox" role="switch" id="airplane">
+  <input class="switch" type="checkbox" role="switch" id="airplane" />
   <label for="airplane">Airplane Mode</label>
 </div>
 ```
@@ -75,22 +75,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="With Description" hint="Switch with label and description text using .switch-item-block."
 <div class="switch-item-block">
   <label for="share">Share across devices</label>
-  <input class="switch" type="checkbox" role="switch" id="share" checked>
+  <input class="switch" type="checkbox" role="switch" id="share" checked />
   <span class="switch-description">Focus is shared across devices.</span>
 </div>
 ```
 
 ```html example label="Sizes" hint="The full five-step scale via data-size - the default equals md."
-<input class="switch" data-size="xs" type="checkbox" role="switch">
-<input class="switch" data-size="sm" type="checkbox" role="switch">
-<input class="switch" data-size="md" type="checkbox" role="switch">
-<input class="switch" data-size="lg" type="checkbox" role="switch">
-<input class="switch" data-size="xl" type="checkbox" role="switch">
+<input class="switch" data-size="xs" type="checkbox" role="switch" />
+<input class="switch" data-size="sm" type="checkbox" role="switch" />
+<input class="switch" data-size="md" type="checkbox" role="switch" />
+<input class="switch" data-size="lg" type="checkbox" role="switch" />
+<input class="switch" data-size="xl" type="checkbox" role="switch" />
 ```
 
 ```html example label="Checked by default"
 <div class="switch-item">
-  <input class="switch" type="checkbox" role="switch" id="sw-notify" checked>
+  <input class="switch" type="checkbox" role="switch" id="sw-notify" checked />
   <label for="sw-notify">Notifications</label>
 </div>
 ```
@@ -98,11 +98,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Disabled" hint="Disabled stays legible: the track keeps its full shade (a softened primary when on), the knob turns muted, and .switch-item mutes the label and shows the not-allowed cursor over it via :has() - no opacity fade."
 <div class="flex flex-col gap-3">
   <div class="switch-item">
-    <input class="switch" type="checkbox" role="switch" id="sw-disabled" disabled>
+    <input class="switch" type="checkbox" role="switch" id="sw-disabled" disabled />
     <label for="sw-disabled">Disabled</label>
   </div>
   <div class="switch-item">
-    <input class="switch" type="checkbox" role="switch" id="sw-disabled-on" disabled checked>
+    <input class="switch" type="checkbox" role="switch" id="sw-disabled-on" disabled checked />
     <label for="sw-disabled-on">Disabled on</label>
   </div>
 </div>
@@ -111,8 +111,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Invalid" hint="Validation error state with aria-invalid='true'."
 <div class="switch-item-block">
   <label for="terms">Accept terms and conditions</label>
-  <input class="switch" type="checkbox" role="switch" id="terms" aria-invalid="true">
-  <span class="switch-description" style="color:var(--destructive);">You must accept the terms.</span>
+  <input class="switch" type="checkbox" role="switch" id="terms" aria-invalid="true" />
+  <span class="switch-description" style="color: var(--destructive)">You must accept the terms.</span>
 </div>
 ```
 

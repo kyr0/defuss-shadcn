@@ -101,9 +101,7 @@ let topZ = 10;
 const KEEP = 48;
 
 const resolve = (target) =>
-  typeof target === 'string'
-    ? dfDollar('#' + CSS.escape(target)).get(0) ?? dfDollar(target).get(0)
-    : target;
+  typeof target === 'string' ? (dfDollar('#' + CSS.escape(target)).get(0) ?? dfDollar(target).get(0)) : target;
 
 const titleOf = (w) => dfDollar(w).find('.window-title').get(0)?.textContent?.trim() ?? '';
 
@@ -137,7 +135,11 @@ function raise(w) {
   if (w.hasAttribute('data-active') && Number(w.style.zIndex) === topZ) return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar('.window[data-active]').toArray().forEach((o) => { if (o !== w) o.removeAttribute('data-active'); });
+  dfDollar('.window[data-active]')
+    .toArray()
+    .forEach((o) => {
+      if (o !== w) o.removeAttribute('data-active');
+    });
   w.setAttribute('data-active', '');
   // Fires when a window comes to the front - its title.
   w.dispatchEvent(new CustomEvent<WindowFocusDetail>('window-focus', { bubbles: true, detail: { title: titleOf(w) } }));
@@ -189,8 +191,12 @@ function applyMarkup(el, stateName) {
   dfDollar(el).attr('open', open ? '' : null);
   dfDollar(el).attr('data-maximized', stateName === 'maximized' ? '' : null);
   dfDollar(el).attr('data-minimized', stateName === 'minimized' ? '' : null);
-  dfDollar(el).find('.window-maximize').attr('aria-label', stateName === 'maximized' ? 'Restore' : 'Maximize');
-  dfDollar(el).find('.window-minimize').attr('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
+  dfDollar(el)
+    .find('.window-maximize')
+    .attr('aria-label', stateName === 'maximized' ? 'Restore' : 'Maximize');
+  dfDollar(el)
+    .find('.window-minimize')
+    .attr('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
 }
 
 /**
@@ -228,7 +234,10 @@ function triggerStateChange(w, stateName, config) {
       break;
   }
   if (maxBtn) maxBtn.setAttribute('aria-label', stateName === 'maximized' ? 'Restore' : 'Maximize');
-  dfDollar(w).find('.window-minimize').get(0)?.setAttribute('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
+  dfDollar(w)
+    .find('.window-minimize')
+    .get(0)
+    ?.setAttribute('aria-label', stateName === 'minimized' ? 'Restore' : 'Minimize');
 }
 
 /** Registry-level API; pass the .window element explicitly. Unknown names throw. */
@@ -259,7 +268,8 @@ function bindDrag(w, bar) {
     if (w.hasAttribute('data-maximized')) return;
     e.preventDefault();
     const start = posOf(w);
-    const sx = e.clientX, sy = e.clientY;
+    const sx = e.clientX,
+      sy = e.clientY;
     bar.setPointerCapture(e.pointerId);
     w.setAttribute('data-dragging', '');
     const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy);
@@ -295,67 +305,92 @@ function bindDrag(w, bar) {
 }
 
 function init() {
-  dfDollar<HTMLDialogElement>('dialog.window:not([data-init])').toArray().forEach((w) => {
-    w.dataset.init = '';
-    const bar = dfDollar(w).find(':scope > .window-titlebar').get(0);
-    if (bar) {
-      if (!bar.hasAttribute('tabindex')) bar.tabIndex = 0;
-      bindDrag(w, bar);
-    }
-    if (!w.hasAttribute('aria-labelledby') && !w.hasAttribute('aria-label')) {
-      const title = dfDollar(w).find('.window-title').get(0);
-      if (title) {
-        if (!title.id) title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
-        w.setAttribute('aria-labelledby', title.id);
+  dfDollar<HTMLDialogElement>('dialog.window:not([data-init])')
+    .toArray()
+    .forEach((w) => {
+      w.dataset.init = '';
+      const bar = dfDollar(w).find(':scope > .window-titlebar').get(0);
+      if (bar) {
+        if (!bar.hasAttribute('tabindex')) bar.tabIndex = 0;
+        bindDrag(w, bar);
       }
-    }
+      if (!w.hasAttribute('aria-labelledby') && !w.hasAttribute('aria-label')) {
+        const title = dfDollar(w).find('.window-title').get(0);
+        if (title) {
+          if (!title.id) title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
+          w.setAttribute('aria-labelledby', title.id);
+        }
+      }
 
-    // any press inside a window brings it to the front (capture: before
-    // the content handles it); so does focus arriving by keyboard
-    w.addEventListener('pointerdown', () => raise(w), true);
-    w.addEventListener('focusin', () => raise(w));
+      // any press inside a window brings it to the front (capture: before
+      // the content handles it); so does focus arriving by keyboard
+      w.addEventListener('pointerdown', () => raise(w), true);
+      w.addEventListener('focusin', () => raise(w));
 
-    dfDollar(w).find('.window-maximize').get(0)?.addEventListener('click', () =>
-      windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {}));
-    // the × closes through the API too: the native form submit already
-    // does it, but a page that cancels submits (a sandbox, a SPA) must not
-    // strand the window open
-    dfDollar(w).find('.window-close').get(0)?.addEventListener('click', (e) => {
-      e.preventDefault();
-      windowApi.setState(w, 'closed', {});
+      dfDollar(w)
+        .find('.window-maximize')
+        .get(0)
+        ?.addEventListener('click', () =>
+          windowApi.setState(w, w.hasAttribute('data-maximized') ? 'default' : 'maximized', {}),
+        );
+      // the × closes through the API too: the native form submit already
+      // does it, but a page that cancels submits (a sandbox, a SPA) must not
+      // strand the window open
+      dfDollar(w)
+        .find('.window-close')
+        .get(0)
+        ?.addEventListener('click', (e) => {
+          e.preventDefault();
+          windowApi.setState(w, 'closed', {});
+        });
+      dfDollar(w)
+        .find('.window-minimize')
+        .get(0)
+        ?.addEventListener('click', () =>
+          windowApi.setState(w, w.hasAttribute('data-minimized') ? 'default' : 'minimized', {}),
+        );
+
+      // however it closed - the × (form method="dialog"), Escape-less
+      // close(), the API - the state follows the dialog
+      w.addEventListener('close', () => {
+        // the event is queued: a window reopened meanwhile stays open
+        if (w.open) return;
+        w.dataset.stateName = 'closed';
+        w.removeAttribute('data-active');
+        w.removeAttribute('data-maximized');
+        w.removeAttribute('data-minimized');
+        activateTopmost();
+      });
+
+      // el.store + el.api (AGENTS.md "State through stores")
+
+      bindComponent(w, windowApi);
+
+      const initial = !w.open
+        ? 'closed'
+        : w.hasAttribute('data-maximized')
+          ? 'maximized'
+          : w.hasAttribute('data-minimized')
+            ? 'minimized'
+            : 'default';
+      w.dataset.stateName = initial;
+      // the buttons name what they do in the state the window starts in (an
+      // authored maximized window's button restores it)
+      dfDollar(w)
+        .find('.window-maximize')
+        .attr('aria-label', initial === 'maximized' ? 'Restore' : 'Maximize');
+      dfDollar(w)
+        .find('.window-minimize')
+        .attr('aria-label', initial === 'minimized' ? 'Restore' : 'Minimize');
+      if (w.open) {
+        w.style.zIndex = String(++topZ);
+        // the last authored open window starts active
+        dfDollar('.window[data-active]')
+          .toArray()
+          .forEach((o) => o.removeAttribute('data-active'));
+        w.setAttribute('data-active', '');
+      }
     });
-    dfDollar(w).find('.window-minimize').get(0)?.addEventListener('click', () =>
-      windowApi.setState(w, w.hasAttribute('data-minimized') ? 'default' : 'minimized', {}));
-
-    // however it closed - the × (form method="dialog"), Escape-less
-    // close(), the API - the state follows the dialog
-    w.addEventListener('close', () => {
-      // the event is queued: a window reopened meanwhile stays open
-      if (w.open) return;
-      w.dataset.stateName = 'closed';
-      w.removeAttribute('data-active');
-      w.removeAttribute('data-maximized');
-      w.removeAttribute('data-minimized');
-      activateTopmost();
-    });
-
-    // el.store + el.api (AGENTS.md "State through stores")
-
-    bindComponent(w, windowApi);
-
-    const initial = !w.open ? 'closed' : w.hasAttribute('data-maximized') ? 'maximized' : w.hasAttribute('data-minimized') ? 'minimized' : 'default';
-    w.dataset.stateName = initial;
-    // the buttons name what they do in the state the window starts in (an
-    // authored maximized window's button restores it)
-    dfDollar(w).find('.window-maximize').attr('aria-label', initial === 'maximized' ? 'Restore' : 'Maximize');
-    dfDollar(w).find('.window-minimize').attr('aria-label', initial === 'minimized' ? 'Restore' : 'Minimize');
-    if (w.open) {
-      w.style.zIndex = String(++topZ);
-      // the last authored open window starts active
-      dfDollar('.window[data-active]').toArray().forEach((o) => o.removeAttribute('data-active'));
-      w.setAttribute('data-active', '');
-    }
-  });
 }
 
 /**
@@ -365,8 +400,21 @@ function init() {
  */
 function create(options: WindowCreateOptions = {}): HTMLDialogElement {
   const {
-    title = 'Untitled', icon, content, html, statusbar, id,
-    x, y, width, height, chrome, resizable = true, parent, focus = true, flush = false,
+    title = 'Untitled',
+    icon,
+    content,
+    html,
+    statusbar,
+    id,
+    x,
+    y,
+    width,
+    height,
+    chrome,
+    resizable = true,
+    parent,
+    focus = true,
+    flush = false,
   } = options;
   const host = resolve(parent) ?? dfDollar('.window-desktop').get(0) ?? document.body;
   const w = document.createElement('dialog');
@@ -375,8 +423,8 @@ function create(options: WindowCreateOptions = {}): HTMLDialogElement {
   if (chrome) w.dataset.chrome = chrome;
   if (resizable) w.setAttribute('data-resizable', '');
   const count = dfDollar(host).find(':scope > .window').toArray().length;
-  w.style.setProperty('--window-x', typeof x === 'number' ? `${x}px` : x ?? `${24 + (count % 8) * 28}px`);
-  w.style.setProperty('--window-y', typeof y === 'number' ? `${y}px` : y ?? `${24 + (count % 8) * 28}px`);
+  w.style.setProperty('--window-x', typeof x === 'number' ? `${x}px` : (x ?? `${24 + (count % 8) * 28}px`));
+  w.style.setProperty('--window-y', typeof y === 'number' ? `${y}px` : (y ?? `${24 + (count % 8) * 28}px`));
   if (width !== undefined) w.style.setProperty('--window-w', typeof width === 'number' ? `${width}px` : width);
   if (height !== undefined) w.style.setProperty('--window-h', typeof height === 'number' ? `${height}px` : height);
 
@@ -394,7 +442,11 @@ function create(options: WindowCreateOptions = {}): HTMLDialogElement {
   const controls = document.createElement('form');
   controls.method = 'dialog';
   controls.className = 'window-controls';
-  for (const [cls, label, type] of [['window-minimize', 'Minimize', 'button'], ['window-maximize', 'Maximize', 'button'], ['window-close', 'Close', 'submit']] as const) {
+  for (const [cls, label, type] of [
+    ['window-minimize', 'Minimize', 'button'],
+    ['window-maximize', 'Maximize', 'button'],
+    ['window-close', 'Close', 'submit'],
+  ] as const) {
     const b = document.createElement('button');
     b.type = type;
     b.className = cls;
@@ -433,7 +485,9 @@ function create(options: WindowCreateOptions = {}): HTMLDialogElement {
  * @returns the windows, in document order
  */
 const list = (scope?: HTMLElement | string, all: boolean = false): HTMLDialogElement[] =>
-  dfDollar(resolve(scope) ?? document).find<HTMLDialogElement>(all ? '.window' : '.window[open]').toArray();
+  dfDollar(resolve(scope) ?? document)
+    .find<HTMLDialogElement>(all ? '.window' : '.window[open]')
+    .toArray();
 
 /**
  * Steps the open windows diagonally from the top-left, front-most last.
@@ -443,7 +497,10 @@ const list = (scope?: HTMLElement | string, all: boolean = false): HTMLDialogEle
 function cascade(scope?: HTMLElement | string, step: number = 28): void {
   list(scope)
     .sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0))
-    .forEach((w, i) => { windowApi.setState(w, 'default', {}); moveTo(w, 16 + i * step, 16 + i * step); });
+    .forEach((w, i) => {
+      windowApi.setState(w, 'default', {});
+      moveTo(w, 16 + i * step, 16 + i * step);
+    });
 }
 
 /**
@@ -459,7 +516,8 @@ function tile(scope?: HTMLElement | string): void {
     windowApi.setState(w, 'default', {});
     const p = w.offsetParent;
     if (!p) return;
-    const cw = p.clientWidth / cols, ch = p.clientHeight / rows;
+    const cw = p.clientWidth / cols,
+      ch = p.clientHeight / rows;
     w.style.width = '';
     w.style.height = '';
     w.style.setProperty('--window-w', `${Math.floor(cw)}px`);
@@ -479,19 +537,31 @@ export const windowActions = {
    * @param config - where it opens: { x, y } px
    * @returns the window, null when the target matches none
    */
-  open: (target: string | HTMLElement, config: { x?: number; y?: number } = {}): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'default', config); return w; },
+  open: (target: string | HTMLElement, config: { x?: number; y?: number } = {}): HTMLDialogElement | null => {
+    const w = resolve(target);
+    if (w) windowApi.setState(w, 'default', config);
+    return w;
+  },
   /**
    * Close it (the closed state).
    * @param target - the .window element, its id or a selector
    * @returns the window, null when the target matches none
    */
-  close: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'closed', {}); return w; },
+  close: (target: string | HTMLElement): HTMLDialogElement | null => {
+    const w = resolve(target);
+    if (w) windowApi.setState(w, 'closed', {});
+    return w;
+  },
   /**
    * Bring it to the front (the active window).
    * @param target - the .window element, its id or a selector
    * @returns the window, null when the target matches none
    */
-  focus: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w?.open) raise(w); return w; },
+  focus: (target: string | HTMLElement): HTMLDialogElement | null => {
+    const w = resolve(target);
+    if (w?.open) raise(w);
+    return w;
+  },
   /**
    * Move it to x, y (px, inside its desktop).
    * @param target - the .window element, its id or a selector
@@ -499,7 +569,10 @@ export const windowActions = {
    * @param y - the top edge, px
    * @returns where it landed (kept reachable inside its desktop), null when the target matches none
    */
-  move: (target: string | HTMLElement, x: number, y: number): WindowPosition | null => { const w = resolve(target); return w ? moveTo(w, x, y) : null; },
+  move: (target: string | HTMLElement, x: number, y: number): WindowPosition | null => {
+    const w = resolve(target);
+    return w ? moveTo(w, x, y) : null;
+  },
   /**
    * Size it: width (and height) as px numbers or CSS lengths.
    * @param target - the .window element, its id or a selector
@@ -507,7 +580,11 @@ export const windowActions = {
    * @param height - px, or a CSS length; omitted, the height stays
    * @returns the window, null when the target matches none
    */
-  resize: (target: string | HTMLElement, width: number | string, height?: number | string): HTMLDialogElement | null => {
+  resize: (
+    target: string | HTMLElement,
+    width: number | string,
+    height?: number | string,
+  ): HTMLDialogElement | null => {
     const w = resolve(target);
     if (!w) return null;
     w.style.width = '';
@@ -521,19 +598,31 @@ export const windowActions = {
    * @param target - the .window element, its id or a selector
    * @returns the window, null when the target matches none
    */
-  maximize: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'maximized', {}); return w; },
+  maximize: (target: string | HTMLElement): HTMLDialogElement | null => {
+    const w = resolve(target);
+    if (w) windowApi.setState(w, 'maximized', {});
+    return w;
+  },
   /**
    * Minimize it to the taskbar.
    * @param target - the .window element, its id or a selector
    * @returns the window, null when the target matches none
    */
-  minimize: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'minimized', {}); return w; },
+  minimize: (target: string | HTMLElement): HTMLDialogElement | null => {
+    const w = resolve(target);
+    if (w) windowApi.setState(w, 'minimized', {});
+    return w;
+  },
   /**
    * Back to its normal size and place.
    * @param target - the .window element, its id or a selector
    * @returns the window, null when the target matches none
    */
-  restore: (target: string | HTMLElement): HTMLDialogElement | null => { const w = resolve(target); if (w) windowApi.setState(w, 'default', {}); return w; },
+  restore: (target: string | HTMLElement): HTMLDialogElement | null => {
+    const w = resolve(target);
+    if (w) windowApi.setState(w, 'default', {});
+    return w;
+  },
   /**
    * Maximize it, or restore it when it is maximized.
    * @param target - the .window element, its id or a selector

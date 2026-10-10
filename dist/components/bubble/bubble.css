@@ -28,11 +28,28 @@
     }
 
     /* -- Variants -------------------------------------------------- */
-    &[data-variant="secondary"] { --_bg: var(--secondary); --_fg: var(--secondary-foreground); }
-    &[data-variant="muted"] { --_bg: var(--muted); --_fg: var(--muted-foreground); }
-    &[data-variant="tinted"] { --_bg: color-mix(in oklch, var(--primary) 12%, var(--background)); --_fg: var(--foreground); }
-    &[data-variant="outline"] { --_bg: var(--background); --_fg: var(--foreground); --_bd: var(--border); }
-    &[data-variant="destructive"] { --_bg: color-mix(in oklch, var(--destructive) 12%, var(--background)); --_fg: var(--destructive); --_bd: color-mix(in oklch, var(--destructive) 30%, transparent); }
+    &[data-variant="secondary"] {
+      --_bg: var(--secondary);
+      --_fg: var(--secondary-foreground);
+    }
+    &[data-variant="muted"] {
+      --_bg: var(--muted);
+      --_fg: var(--muted-foreground);
+    }
+    &[data-variant="tinted"] {
+      --_bg: color-mix(in oklch, var(--primary) 12%, var(--background));
+      --_fg: var(--foreground);
+    }
+    &[data-variant="outline"] {
+      --_bg: var(--background);
+      --_fg: var(--foreground);
+      --_bd: var(--border);
+    }
+    &[data-variant="destructive"] {
+      --_bg: color-mix(in oklch, var(--destructive) 12%, var(--background));
+      --_fg: var(--destructive);
+      --_bd: color-mix(in oklch, var(--destructive) 30%, transparent);
+    }
     &[data-variant="ghost"] {
       --_bg: transparent;
       --_fg: var(--foreground);
@@ -42,8 +59,18 @@
     }
 
     /* -- Sizes ------------------------------------------------------ */
-    &[data-size="sm"] { --_r: 0.875rem; --_px: 0.625rem; --_py: 0.3125rem; --_fs: 0.8125rem; }
-    &[data-size="lg"] { --_r: 1.375rem; --_px: 1.125rem; --_py: 0.75rem; --_fs: 1rem; }
+    &[data-size="sm"] {
+      --_r: 0.875rem;
+      --_px: 0.625rem;
+      --_py: 0.3125rem;
+      --_fs: 0.8125rem;
+    }
+    &[data-size="lg"] {
+      --_r: 1.375rem;
+      --_px: 1.125rem;
+      --_py: 0.75rem;
+      --_fs: 1rem;
+    }
   }
 
   .bubble-content {
@@ -61,33 +88,76 @@
     text-wrap: pretty;
     overflow-wrap: anywhere;
 
-    & > :first-child { margin-block-start: 0; }
-    & > :last-child { margin-block-end: 0; }
-    & p { margin-block: 0 0.5em; }
-    & a:not(.bubble-content) { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
-    & code { font-family: var(--font-mono); font-size: 0.9em; padding: 0.0625rem 0.3125rem; border-radius: 0.3125rem; background: color-mix(in oklch, currentColor 12%, transparent); }
-    & img, & video { display: block; max-width: 100%; height: auto; border-radius: calc(var(--_r) - 0.375rem); }
-    & :is(ul, ol) { margin-block: 0.25em 0.5em; padding-inline-start: 1.25em; }
+    & > :first-child {
+      margin-block-start: 0;
+    }
+    & > :last-child {
+      margin-block-end: 0;
+    }
+    & p {
+      margin-block: 0 0.5em;
+    }
+    & a:not(.bubble-content) {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    & code {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      padding: 0.0625rem 0.3125rem;
+      border-radius: 0.3125rem;
+      background: color-mix(in oklch, currentColor 12%, transparent);
+    }
+    & img,
+    & video {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: calc(var(--_r) - 0.375rem);
+    }
+    & :is(ul, ol) {
+      margin-block: 0.25em 0.5em;
+      padding-inline-start: 1.25em;
+    }
 
     /* a whole bubble as a link or a button (quick replies, options) */
     &:is(a, button) {
       appearance: none;
       cursor: pointer;
       text-decoration: none;
-      transition: background-color 150ms ease, border-color 150ms ease;
-      &:hover { background: color-mix(in oklch, var(--_bg) 88%, var(--_fg)); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-      &:disabled, &[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+      transition:
+        background-color 150ms ease,
+        border-color 150ms ease;
+      &:hover {
+        background: color-mix(in oklch, var(--_bg) 88%, var(--_fg));
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+      &:disabled,
+      &[aria-disabled="true"] {
+        opacity: 0.5;
+        pointer-events: none;
+      }
     }
   }
-  .bubble[data-variant="ghost"] > .bubble-content:is(a, button):hover { background: var(--accent); }
+  .bubble[data-variant="ghost"] > .bubble-content:is(a, button):hover {
+    background: var(--accent);
+  }
 
   /* -- Media bubble: an image / video edge to edge ------------------ */
   .bubble-content[data-media] {
     padding: 0;
     overflow: hidden;
-    & img, & video { border-radius: 0; }
-    & .bubble-caption { padding: var(--_py) var(--_px); }
+    & img,
+    & video {
+      border-radius: 0;
+    }
+    & .bubble-caption {
+      padding: var(--_py) var(--_px);
+    }
   }
 
   /* -- Collapsible content: a preview, the rest in a <details> ------- */
@@ -103,19 +173,35 @@
       text-decoration: underline;
       text-underline-offset: 2px;
       cursor: pointer;
-      &::-webkit-details-marker { display: none; }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 0.25rem; }
+      &::-webkit-details-marker {
+        display: none;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+      }
     }
-    & .bubble-more-open { display: none; }
-    &[open] .bubble-more-open { display: inline; }
-    &[open] .bubble-more-closed { display: none; }
+    & .bubble-more-open {
+      display: none;
+    }
+    &[open] .bubble-more-open {
+      display: inline;
+    }
+    &[open] .bubble-more-closed {
+      display: none;
+    }
     &::details-content {
       interpolate-size: allow-keywords;
       block-size: 0;
       overflow: clip;
-      transition: block-size 220ms ease, content-visibility 220ms allow-discrete;
+      transition:
+        block-size 220ms ease,
+        content-visibility 220ms allow-discrete;
     }
-    &[open]::details-content { block-size: auto; }
+    &[open]::details-content {
+      block-size: auto;
+    }
   }
 
   /* -- Reactions: overlapped emoji anchored to the bubble's edge ------- */
@@ -130,7 +216,9 @@
     padding: 0.125rem;
     border-radius: 9999px;
     background: var(--background);
-    box-shadow: 0 0 0 1px var(--border), var(--shadow-xs);
+    box-shadow:
+      0 0 0 1px var(--border),
+      var(--shadow-xs);
     font-size: 0.75rem;
     line-height: 1;
 
@@ -142,7 +230,10 @@
       border-radius: 9999px;
       background: var(--background);
     }
-    & > * + * { margin-inline-start: -0.3125rem; box-shadow: -2px 0 0 var(--background); }
+    & > * + * {
+      margin-inline-start: -0.3125rem;
+      box-shadow: -2px 0 0 var(--background);
+    }
     & > .bubble-reactions-count {
       padding-inline: 0.25rem 0.375rem;
       font-weight: 500;
@@ -151,10 +242,17 @@
       box-shadow: none;
       margin-inline-start: 0;
     }
-    &[data-align="start"] { align-self: flex-start; }
-    &[data-side="top"] { order: -1; margin-block: 0 -0.5rem; }
+    &[data-align="start"] {
+      align-self: flex-start;
+    }
+    &[data-side="top"] {
+      order: -1;
+      margin-block: 0 -0.5rem;
+    }
   }
-  [dir="rtl"] .bubble-reactions > * + * { box-shadow: 2px 0 0 var(--background); }
+  [dir="rtl"] .bubble-reactions > * + * {
+    box-shadow: 2px 0 0 var(--background);
+  }
 
   /* -- Group: consecutive bubbles of one sender, the joined corners
      tightened (logical radii, so RTL mirrors) ---------------------- */
@@ -163,24 +261,42 @@
     flex-direction: column;
     gap: 0.1875rem;
 
-    & > .bubble { max-width: 80%; }
-    & > .bubble:has(> .bubble-reactions:not([data-side="top"])):not(:last-child) { margin-block-end: 0.375rem; }
+    & > .bubble {
+      max-width: 80%;
+    }
+    & > .bubble:has(> .bubble-reactions:not([data-side="top"])):not(:last-child) {
+      margin-block-end: 0.375rem;
+    }
 
     /* received (start): the start-side corners between neighbours */
     &:not([data-align="end"]) > .bubble:not([data-align="end"]) {
-      &:not(:last-child) > .bubble-content { border-end-start-radius: var(--_rs); }
-      &:not(:first-child) > .bubble-content { border-start-start-radius: var(--_rs); }
+      &:not(:last-child) > .bubble-content {
+        border-end-start-radius: var(--_rs);
+      }
+      &:not(:first-child) > .bubble-content {
+        border-start-start-radius: var(--_rs);
+      }
     }
     /* sent (end) */
-    &[data-align="end"] > .bubble, & > .bubble[data-align="end"] {
-      &:not(:last-child) > .bubble-content { border-end-end-radius: var(--_rs); }
-      &:not(:first-child) > .bubble-content { border-start-end-radius: var(--_rs); }
+    &[data-align="end"] > .bubble,
+    & > .bubble[data-align="end"] {
+      &:not(:last-child) > .bubble-content {
+        border-end-end-radius: var(--_rs);
+      }
+      &:not(:first-child) > .bubble-content {
+        border-start-end-radius: var(--_rs);
+      }
     }
   }
 
   /* -- Tail: data-tail on a bubble (or a group - its last bubble) draws
      a small curved tail at the bottom outer corner ------------------ */
-  :is(.bubble[data-tail], .bubble-group[data-tail] > .bubble:last-child):not([data-variant="ghost"], [data-variant="outline"], [data-variant="destructive"]) > .bubble-content {
+  :is(.bubble[data-tail], .bubble-group[data-tail] > .bubble:last-child):not(
+      [data-variant="ghost"],
+      [data-variant="outline"],
+      [data-variant="destructive"]
+    )
+    > .bubble-content {
     position: relative;
     border-end-start-radius: var(--_rs);
 
@@ -194,28 +310,47 @@
       width: 0.875rem;
       height: 1.25rem;
       background: var(--_bg);
-      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E")
+        0 0 / 100% 100% no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E")
+        0 0 / 100% 100% no-repeat;
     }
   }
-  :is(.bubble[data-tail][data-align="end"], .bubble-group[data-tail][data-align="end"] > .bubble:last-child, .bubble-group[data-tail] > .bubble[data-align="end"]:last-child):not([data-variant="ghost"], [data-variant="outline"], [data-variant="destructive"]) > .bubble-content {
+  :is(
+      .bubble[data-tail][data-align="end"],
+      .bubble-group[data-tail][data-align="end"] > .bubble:last-child,
+      .bubble-group[data-tail] > .bubble[data-align="end"]:last-child
+    ):not([data-variant="ghost"], [data-variant="outline"], [data-variant="destructive"])
+    > .bubble-content {
     border-end-start-radius: var(--_r);
     border-end-end-radius: var(--_rs);
 
     &::before {
       inset-inline-start: auto;
       inset-inline-end: -0.75rem;
-      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E")
+        0 0 / 100% 100% no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E")
+        0 0 / 100% 100% no-repeat;
     }
   }
   [dir="rtl"] :is(.bubble[data-tail], .bubble-group[data-tail] > .bubble:last-child) > .bubble-content::before {
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E")
+      0 0 / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M0 1C0 11 5 18 14 20H0Z'/%3E%3C/svg%3E")
+      0 0 / 100% 100% no-repeat;
   }
-  [dir="rtl"] :is(.bubble[data-tail][data-align="end"], .bubble-group[data-tail][data-align="end"] > .bubble:last-child, .bubble-group[data-tail] > .bubble[data-align="end"]:last-child) > .bubble-content::before {
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  [dir="rtl"]
+    :is(
+      .bubble[data-tail][data-align="end"],
+      .bubble-group[data-tail][data-align="end"] > .bubble:last-child,
+      .bubble-group[data-tail] > .bubble[data-align="end"]:last-child
+    )
+    > .bubble-content::before {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E")
+      0 0 / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20' preserveAspectRatio='none'%3E%3Cpath d='M14 1C14 11 9 18 0 20H14Z'/%3E%3C/svg%3E")
+      0 0 / 100% 100% no-repeat;
   }
 
   /* -- Typing: three dots that bounce while the other side writes ---- */
@@ -232,36 +367,73 @@
       background: currentColor;
       opacity: 0.45;
       animation: bubble-typing 1.2s ease-in-out infinite;
-      &:nth-child(2) { animation-delay: 0.15s; }
-      &:nth-child(3) { animation-delay: 0.3s; }
+      &:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      &:nth-child(3) {
+        animation-delay: 0.3s;
+      }
     }
   }
   @keyframes bubble-typing {
-    0%, 60%, 100% { translate: 0 0; opacity: 0.45; }
-    30% { translate: 0 -0.25rem; opacity: 1; }
+    0%,
+    60%,
+    100% {
+      translate: 0 0;
+      opacity: 0.45;
+    }
+    30% {
+      translate: 0 -0.25rem;
+      opacity: 1;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   @layer components {
-    .bubble-typing > span { animation: none; opacity: 0.7; }
-    .bubble-more::details-content { transition: none; }
-    .bubble-content:is(a, button) { transition: none; }
+    .bubble-typing > span {
+      animation: none;
+      opacity: 0.7;
+    }
+    .bubble-more::details-content {
+      transition: none;
+    }
+    .bubble-content:is(a, button) {
+      transition: none;
+    }
   }
 }
 
 @media (prefers-contrast: more) {
   @layer components {
-    .bubble-content { border-color: var(--foreground); }
-    .bubble[data-variant="ghost"] > .bubble-content { border-color: transparent; }
+    .bubble-content {
+      border-color: var(--foreground);
+    }
+    .bubble[data-variant="ghost"] > .bubble-content {
+      border-color: transparent;
+    }
   }
 }
 
 @media (forced-colors: active) {
   @layer components {
-    .bubble-content { border: 1px solid CanvasText; background: Canvas; color: CanvasText; }
-    .bubble[data-variant="default"] > .bubble-content, .bubble:not([data-variant]) > .bubble-content { background: Highlight; color: HighlightText; forced-color-adjust: none; }
-    .bubble-content::before { display: none; }
-    .bubble-reactions { box-shadow: none; border: 1px solid CanvasText; }
+    .bubble-content {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
+    .bubble[data-variant="default"] > .bubble-content,
+    .bubble:not([data-variant]) > .bubble-content {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+    .bubble-content::before {
+      display: none;
+    }
+    .bubble-reactions {
+      box-shadow: none;
+      border: 1px solid CanvasText;
+    }
   }
 }

@@ -45,9 +45,18 @@ function renderMarkdown(md) {
         .replace(/\*([^*]+)\*/g, '<em>$1</em>')
         .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
         .replace(/\n/g, '<br>');
-    return md.trim().split(/\n\s*\n/).map((p) => `<p>${inline(p.trim())}</p>`).join('');
+    return md
+        .trim()
+        .split(/\n\s*\n/)
+        .map((p) => `<p>${inline(p.trim())}</p>`)
+        .join('');
 }
-const initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+const initials = (name) => name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
 /** a short, locale-aware time: today's time, else the date */
 function formatTime(iso) {
     if (!iso)
@@ -61,11 +70,19 @@ function formatTime(iso) {
 /** the document the column comments on: data-for names an element; without it, the previous sibling */
 function documentOf(el) {
     const id = dfDollar(el).attr('data-for');
-    return id ? dfDollar('#' + CSS.escape(id)).get(0) ?? null : el.previousElementSibling;
+    return id
+        ? (dfDollar('#' + CSS.escape(id)).get(0) ?? null)
+        : el.previousElementSibling;
 }
 /** the block element a span names: [data-id], else #id inside the document, else the document */
 function blockOf(root, id) {
-    return dfDollar(root).find(`[data-id="${CSS.escape(id)}"]`).get(0) ?? dfDollar(root).find('#' + CSS.escape(id)).get(0) ?? (root.id === id ? root : null);
+    return (dfDollar(root)
+        .find(`[data-id="${CSS.escape(id)}"]`)
+        .get(0) ??
+        dfDollar(root)
+            .find('#' + CSS.escape(id))
+            .get(0) ??
+        (root.id === id ? root : null));
 }
 /** the Range of the n-th occurrence of `text` in a block's text nodes (marks excluded from nothing: text is text) */
 function findRange(block, text, occurrence = 0) {
@@ -186,7 +203,9 @@ function clearMarks(el) {
     const root = documentOf(el);
     if (!root)
         return;
-    dfDollar(root).find('mark.doc-comments-mark, mark.doc-comments-flash').each((_i, m) => unwrap(m));
+    dfDollar(root)
+        .find('mark.doc-comments-mark, mark.doc-comments-flash')
+        .each((_i, m) => unwrap(m));
 }
 const runtimeOf = (el) => {
     if (!el._comments)
@@ -198,7 +217,11 @@ function ordered(el) {
     const data = runtimeOf(el).data;
     const root = documentOf(el);
     const tops = data.comments.filter((c) => !c.parent || !data.comments.some((p) => p.id === c.parent));
-    const markOf = (c) => (root ? dfDollar(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).get(0) : undefined);
+    const markOf = (c) => root
+        ? dfDollar(root)
+            .find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`)
+            .get(0)
+        : undefined;
     tops.sort((a, b) => {
         const ma = markOf(a), mb = markOf(b);
         if (!ma || !mb)
@@ -209,7 +232,9 @@ function ordered(el) {
 }
 const cardMarkup = (data, c, depth) => {
     const anchor = anchorOf(data, c);
-    const replies = data.comments.filter((r) => r.parent === c.id).sort((a, b) => String(a.time ?? '').localeCompare(String(b.time ?? '')));
+    const replies = data.comments
+        .filter((r) => r.parent === c.id)
+        .sort((a, b) => String(a.time ?? '').localeCompare(String(b.time ?? '')));
     const color = c.color ? ` data-color="${esc(c.color)}"` : '';
     return `<li class="card doc-comments-card" data-id="${esc(c.id)}"${color} data-depth="${depth}">
   <div class="card-header doc-comments-card-header">
@@ -259,15 +284,23 @@ function applyMarkup(el, name, config) {
     dfDollar(el).attr('data-current', name === 'current' && config.id ? String(config.id) : null);
 }
 function markCurrent(el, id) {
-    dfDollar(el).find('.doc-comments-card[aria-current]').each((_i, c) => dfDollar(c).attr('aria-current', null));
+    dfDollar(el)
+        .find('.doc-comments-card[aria-current]')
+        .each((_i, c) => dfDollar(c).attr('aria-current', null));
     const root = documentOf(el);
     if (root)
-        dfDollar(root).find('mark.doc-comments-mark[data-current]').each((_i, m) => dfDollar(m).attr('data-current', null));
+        dfDollar(root)
+            .find('mark.doc-comments-mark[data-current]')
+            .each((_i, m) => dfDollar(m).attr('data-current', null));
     if (!id)
         return;
-    dfDollar(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).each((_i, c) => dfDollar(c).attr('aria-current', 'true'));
+    dfDollar(el)
+        .find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`)
+        .each((_i, c) => dfDollar(c).attr('aria-current', 'true'));
     if (root)
-        dfDollar(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).each((_i, m) => dfDollar(m).attr('data-current', ''));
+        dfDollar(root)
+            .find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`)
+            .each((_i, m) => dfDollar(m).attr('data-current', ''));
 }
 const reduced = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const scrollTo = (node, block) => node?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block, inline: 'nearest' });
@@ -277,10 +310,14 @@ function triggerStateChange(el, stateName, config) {
     const id = stateName === 'current' ? String(config.id ?? '') : null;
     markCurrent(el, id);
     if (id) {
-        scrollTo(dfDollar(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).get(0), 'nearest');
+        scrollTo(dfDollar(el)
+            .find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`)
+            .get(0), 'nearest');
         const root = documentOf(el);
         if (root)
-            scrollTo(dfDollar(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).get(0), 'center');
+            scrollTo(dfDollar(root)
+                .find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`)
+                .get(0), 'center');
     }
 }
 /** Registry-level API; pass the element explicitly. Unknown names throw. */
@@ -298,7 +335,10 @@ df$.docCommentsApi = docCommentsApi;
 df$.docCommentsStates = docCommentsStates;
 function emitChange(el, id) {
     // Fires after the model changed (load, add, reply) - how many comments it holds, and the added one's id.
-    el.dispatchEvent(new CustomEvent('doc-comments-change', { bubbles: true, detail: { comments: runtimeOf(el).data.comments.length, id } }));
+    el.dispatchEvent(new CustomEvent('doc-comments-change', {
+        bubbles: true,
+        detail: { comments: runtimeOf(el).data.comments.length, id },
+    }));
 }
 function select(el, id, source) {
     if (!runtimeOf(el).data.comments.some((c) => c.id === id))
@@ -309,7 +349,10 @@ function select(el, id, source) {
     return true;
 }
 /** the cards in column order (top-level, then replies, as rendered) */
-const cardIds = (el) => dfDollar(el).find('.doc-comments-card').toArray().map((c) => c.dataset.id ?? '');
+const cardIds = (el) => dfDollar(el)
+    .find('.doc-comments-card')
+    .toArray()
+    .map((c) => c.dataset.id ?? '');
 function step(el, dir, source) {
     const ids = cardIds(el);
     if (!ids.length)
@@ -327,12 +370,19 @@ function flash(el, quote) {
     const range = block && findRange(block, quote.text, quote.occurrence ?? 0);
     const found = !!range;
     if (range) {
-        const marks = wrapRange(range, () => { const m = document.createElement('mark'); m.className = 'doc-comments-flash'; return m; });
+        const marks = wrapRange(range, () => {
+            const m = document.createElement('mark');
+            m.className = 'doc-comments-flash';
+            return m;
+        });
         scrollTo(marks[0], 'center');
         setTimeout(() => marks.forEach(unwrap), FLASH_MS);
     }
     // Fires when a quote is followed - the span it names and whether the document still holds it.
-    el.dispatchEvent(new CustomEvent('doc-comments-flash', { bubbles: true, detail: { block: quote.block, text: quote.text, found } }));
+    el.dispatchEvent(new CustomEvent('doc-comments-flash', {
+        bubbles: true,
+        detail: { block: quote.block, text: quote.text, found },
+    }));
     return found;
 }
 function addComment(el, comment) {
@@ -347,7 +397,14 @@ function addComment(el, comment) {
     while (data.comments.some((c) => c.id === id))
         id = `${id}-${Math.random().toString(36).slice(2, 6)}`;
     const parent = comment.parent ? data.comments.find((c) => c.id === comment.parent) : undefined;
-    const full = { ...comment, id, author: comment.author || dfDollar(el).attr('data-author') || 'You', time: comment.time ?? new Date().toISOString(), body: comment.body.trim(), color: comment.color ?? parent?.color };
+    const full = {
+        ...comment,
+        id,
+        author: comment.author || dfDollar(el).attr('data-author') || 'You',
+        time: comment.time ?? new Date().toISOString(),
+        body: comment.body.trim(),
+        color: comment.color ?? parent?.color,
+    };
     runtimeOf(el).data = { version: 1, comments: [...data.comments, full] };
     placeMarks(el);
     renderColumn(el);
@@ -356,7 +413,11 @@ function addComment(el, comment) {
 }
 function load(el, data) {
     clearMarks(el);
-    const comments = Array.isArray(data?.comments) ? data.comments.filter((c) => c && typeof c.id === 'string' && typeof c.body === 'string').map((c) => ({ ...c, author: c.author || 'Anonymous' })) : [];
+    const comments = Array.isArray(data?.comments)
+        ? data.comments
+            .filter((c) => c && typeof c.id === 'string' && typeof c.body === 'string')
+            .map((c) => ({ ...c, author: c.author || 'Anonymous' }))
+        : [];
     runtimeOf(el).data = { version: 1, comments };
     placeMarks(el);
     renderColumn(el);
@@ -409,7 +470,9 @@ function onAction(el, button) {
     }
 }
 function init() {
-    dfDollar('.doc-comments:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.doc-comments:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(el, docCommentsApi);
@@ -440,33 +503,45 @@ function init() {
                     select(el, mark.dataset.comment, 'mark');
             });
             // an Editor.js document mounts its blocks later; a change may have re-rendered a block (its mark gone)
-            dfDollar(root).on('editorjs-ready', () => { placeMarks(el); renderColumn(el); });
+            dfDollar(root).on('editorjs-ready', () => {
+                placeMarks(el);
+                renderColumn(el);
+            });
             dfDollar(root).on('editorjs-change', () => placeMarks(el));
         }
     });
 }
-const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
+const resolve = (target) => typeof target === 'string' ? dfDollar(target).get(0) : target;
 df$.docComments = {
     /**
      * Replace the model: the column re-renders, the marks are placed again.
      * @param target - the .doc-comments element or its selector
      * @param data - the comments document (version 1)
      */
-    load: (target, data) => { const el = resolve(target); if (el)
-        load(el, data); },
+    load: (target, data) => {
+        const el = resolve(target);
+        if (el)
+            load(el, data);
+    },
     /**
      * The current model - comments as authored and added, with their anchors and quotes.
      * @param target - the .doc-comments element or its selector
      * @returns the comments document (version 1); empty when the element is unknown
      */
-    data: (target) => { const el = resolve(target); return el ? structuredClone(runtimeOf(el).data) : { version: 1, comments: [] }; },
+    data: (target) => {
+        const el = resolve(target);
+        return el ? structuredClone(runtimeOf(el).data) : { version: 1, comments: [] };
+    },
     /**
      * Add a comment: an anchor (a span of the document) for a new thread, or a parent for a reply. The id is generated when missing.
      * @param target - the .doc-comments element or its selector
      * @param comment - the comment; body required, plus anchor or parent
      * @returns the new comment's id, or null when it was refused (no body, no anchor and no parent, unknown parent)
      */
-    add: (target, comment) => { const el = resolve(target); return el ? addComment(el, comment) : null; },
+    add: (target, comment) => {
+        const el = resolve(target);
+        return el ? addComment(el, comment) : null;
+    },
     /**
      * Answer a comment - what the Reply composer sends.
      * @param target - the .doc-comments element or its selector
@@ -475,41 +550,59 @@ df$.docComments = {
      * @param author - the author; default: the column's data-author, else "You"
      * @returns the reply's id, or null when refused
      */
-    reply: (target, parentId, body, author) => { const el = resolve(target); return el ? addComment(el, { parent: parentId, body, author }) : null; },
+    reply: (target, parentId, body, author) => {
+        const el = resolve(target);
+        return el ? addComment(el, { parent: parentId, body, author }) : null;
+    },
     /**
      * Make a comment current: its card and its mark highlighted and scrolled into view (the current state).
      * @param target - the .doc-comments element or its selector
      * @param id - the comment's id
      * @returns true when the comment exists
      */
-    go: (target, id) => { const el = resolve(target); return el ? select(el, id, 'api') : false; },
+    go: (target, id) => {
+        const el = resolve(target);
+        return el ? select(el, id, 'api') : false;
+    },
     /**
      * The next comment down the column (wrapping) - the ↓ button.
      * @param target - the .doc-comments element or its selector
      * @returns the id that became current, or null without comments
      */
-    next: (target) => { const el = resolve(target); return el ? step(el, 1, 'api') : null; },
+    next: (target) => {
+        const el = resolve(target);
+        return el ? step(el, 1, 'api') : null;
+    },
     /**
      * The previous comment up the column (wrapping) - the ↑ button.
      * @param target - the .doc-comments element or its selector
      * @returns the id that became current, or null without comments
      */
-    prev: (target) => { const el = resolve(target); return el ? step(el, -1, 'api') : null; },
+    prev: (target) => {
+        const el = resolve(target);
+        return el ? step(el, -1, 'api') : null;
+    },
     /**
      * Scroll to a span of the document and flash it for a moment - what clicking a quote does.
      * @param target - the .doc-comments element or its selector
      * @param quote - the span: block id + exact text (+ occurrence)
      * @returns true when the span was found
      */
-    flash: (target, quote) => { const el = resolve(target); return el ? flash(el, quote) : false; },
+    flash: (target, quote) => {
+        const el = resolve(target);
+        return el ? flash(el, quote) : false;
+    },
     /**
      * Place the marks again (after the document was re-rendered) and re-render the column.
      * @param target - the .doc-comments element or its selector
      */
-    refresh: (target) => { const el = resolve(target); if (el) {
-        placeMarks(el);
-        renderColumn(el);
-    } },
+    refresh: (target) => {
+        const el = resolve(target);
+        if (el) {
+            placeMarks(el);
+            renderColumn(el);
+        }
+    },
 };
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });

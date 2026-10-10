@@ -80,7 +80,13 @@ function parseMoney(text, cfg) {
   }
   if (cfg.fraction === 0) dec = -1;
   const int = (dec < 0 ? text : text.slice(0, dec)).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
-  const frac = dec < 0 ? null : text.slice(dec + 1).replace(/\D/g, '').slice(0, cfg.fraction);
+  const frac =
+    dec < 0
+      ? null
+      : text
+          .slice(dec + 1)
+          .replace(/\D/g, '')
+          .slice(0, cfg.fraction);
   return { int, frac };
 }
 
@@ -134,11 +140,14 @@ function commitMoney(wrapper, input, cfg, number = null, remember = true) {
 /** Mirror the machine value into input[data-number-output] (+ change) and the wrapper. */
 function writeMoneyOutput(wrapper, value) {
   wrapper.dataset.value = value;
-  dfDollar(wrapper).find<HTMLInputElement>('input[data-number-output]').toArray().forEach((out) => {
-    if (out.value === value) return;
-    out.value = value;
-    out.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  dfDollar(wrapper)
+    .find<HTMLInputElement>('input[data-number-output]')
+    .toArray()
+    .forEach((out) => {
+      if (out.value === value) return;
+      out.value = value;
+      out.dispatchEvent(new Event('change', { bubbles: true }));
+    });
 }
 
 /** Show the locale's symbol on the locale's side (a unit label is created if missing). */
@@ -239,7 +248,9 @@ export const numberInputApi = componentState({
       config: {
         ...state.config,
         value: input ? input.value : '',
-        ...(wrapper._money ? { number: wrapper.dataset.value ?? '', currency: wrapper._money.currency, locale: wrapper._money.locale } : {}),
+        ...(wrapper._money
+          ? { number: wrapper.dataset.value ?? '', currency: wrapper._money.currency, locale: wrapper._money.locale }
+          : {}),
       },
     };
   },
@@ -250,63 +261,88 @@ df$.numberInputApi = numberInputApi;
 df$.numberInputStates = numberInputStates;
 
 function init() {
-  dfDollar('.number-input:not([data-init])').toArray().forEach((wrapper) => {
-  wrapper.dataset.init = '';
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(wrapper, numberInputApi);
-  const input = getInput(wrapper);
-  const decBtn = dfDollar(wrapper).find('[data-action="decrement"]').get(0);
-  const incBtn = dfDollar(wrapper).find('[data-action="increment"]').get(0);
-  if (!input) return;
+  dfDollar('.number-input:not([data-init])')
+    .toArray()
+    .forEach((wrapper) => {
+      wrapper.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(wrapper, numberInputApi);
+      const input = getInput(wrapper);
+      const decBtn = dfDollar(wrapper).find('[data-action="decrement"]').get(0);
+      const incBtn = dfDollar(wrapper).find('[data-action="increment"]').get(0);
+      if (!input) return;
 
-  if (wrapper.hasAttribute('data-currency')) {
-    setupCurrency(wrapper, input);
-    input.addEventListener('input', (e) => {
-      if ((e as InputEvent).isComposing) return;
-      maskMoney(wrapper, input, wrapper._money);
-    });
-    input.addEventListener('blur', () => { commitMoney(wrapper, input, wrapper._money); });
-    // steppers + ArrowUp/Down nudge by data-step (default 1), clamped to data-min / data-max
-    const nudge = (direction) => {
-      const step = Number(input.dataset.step || 1);
-      const min = input.dataset.min === undefined ? -Infinity : Number(input.dataset.min);
-      const max = input.dataset.max === undefined ? Infinity : Number(input.dataset.max);
-      const current = Number(moneyValue(parseMoney(input.value, wrapper._money)) || 0);
-      const next = Math.min(max, Math.max(min, Math.round((current + direction * step) * 1e6) / 1e6));
-      commitMoney(wrapper, input, wrapper._money, String(next));
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    };
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        nudge(e.key === 'ArrowUp' ? 1 : -1);
+      if (wrapper.hasAttribute('data-currency')) {
+        setupCurrency(wrapper, input);
+        input.addEventListener('input', (e) => {
+          if ((e as InputEvent).isComposing) return;
+          maskMoney(wrapper, input, wrapper._money);
+        });
+        input.addEventListener('blur', () => {
+          commitMoney(wrapper, input, wrapper._money);
+        });
+        // steppers + ArrowUp/Down nudge by data-step (default 1), clamped to data-min / data-max
+        const nudge = (direction) => {
+          const step = Number(input.dataset.step || 1);
+          const min = input.dataset.min === undefined ? -Infinity : Number(input.dataset.min);
+          const max = input.dataset.max === undefined ? Infinity : Number(input.dataset.max);
+          const current = Number(moneyValue(parseMoney(input.value, wrapper._money)) || 0);
+          const next = Math.min(max, Math.max(min, Math.round((current + direction * step) * 1e6) / 1e6));
+          commitMoney(wrapper, input, wrapper._money, String(next));
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            nudge(e.key === 'ArrowUp' ? 1 : -1);
+          }
+        });
+        if (decBtn)
+          decBtn.addEventListener('click', () => {
+            nudge(-1);
+          });
+        if (incBtn)
+          incBtn.addEventListener('click', () => {
+            nudge(1);
+          });
+        // switching locale / currency / display at runtime re-renders the same amount
+        new MutationObserver(() => {
+          setupCurrency(wrapper, input);
+        }).observe(wrapper, {
+          attributes: true,
+          attributeFilter: ['data-locale', 'data-currency', 'data-currency-display'],
+        });
+        return;
       }
-    });
-    if (decBtn) decBtn.addEventListener('click', () => { nudge(-1); });
-    if (incBtn) incBtn.addEventListener('click', () => { nudge(1); });
-    // switching locale / currency / display at runtime re-renders the same amount
-    new MutationObserver(() => { setupCurrency(wrapper, input); }).observe(wrapper, { attributes: true, attributeFilter: ['data-locale', 'data-currency', 'data-currency-display'] });
-    return;
-  }
 
-  formatDecimals(wrapper, input);
-  // commit (blur / Enter) re-applies the fixed decimals to typed values
-  input.addEventListener('change', () => { formatDecimals(wrapper, input); });
-
-  const update = (direction) => {
-    try {
-      if (direction > 0) input.stepUp();
-      else input.stepDown();
       formatDecimals(wrapper, input);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    } catch { /* min/max boundary */ }
-  };
+      // commit (blur / Enter) re-applies the fixed decimals to typed values
+      input.addEventListener('change', () => {
+        formatDecimals(wrapper, input);
+      });
 
-  if (decBtn) decBtn.addEventListener('click', () => { update(-1); });
-  if (incBtn) incBtn.addEventListener('click', () => { update(1); });
-});
+      const update = (direction) => {
+        try {
+          if (direction > 0) input.stepUp();
+          else input.stepDown();
+          formatDecimals(wrapper, input);
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch {
+          /* min/max boundary */
+        }
+      };
+
+      if (decBtn)
+        decBtn.addEventListener('click', () => {
+          update(-1);
+        });
+      if (incBtn)
+        incBtn.addEventListener('click', () => {
+          update(1);
+        });
+    });
 }
 
 init();

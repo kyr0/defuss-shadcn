@@ -60,7 +60,9 @@ export const dialogApi = componentState({
 df$.dialogApi = dialogApi;
 df$.dialogStates = dialogStates;
 function init() {
-    dfDollar('[data-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-dialog-trigger]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const dialog = dfDollar('#' + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
         if (!dialog)
@@ -73,7 +75,9 @@ function init() {
     /* .command excluded: the command component owns its dialogs (own backdrop
        close, filtering, focus). Without this, dialog.js - which loads first —
        claims them via data-init and command.js's init silently skips them. */
-    dfDollar('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])').toArray().forEach((dialog) => {
+    dfDollar('dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])')
+        .toArray()
+        .forEach((dialog) => {
         dfDollar(dialog).data('init', '');
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(dialog, dialogApi, { name: shown(dialog), config: {} });
@@ -81,8 +85,13 @@ function init() {
             if (e.target === dialog)
                 dialog.close();
         });
-        dfDollar(dialog).find('[data-dialog-close]').toArray().forEach((btn) => {
-            btn.addEventListener('click', () => { dialog.close(); });
+        dfDollar(dialog)
+            .find('[data-dialog-close]')
+            .toArray()
+            .forEach((btn) => {
+            btn.addEventListener('click', () => {
+                dialog.close();
+            });
         });
         dialog.addEventListener('close', () => {
             // `close` fires AFTER the exit transition (display allow-discrete), so a

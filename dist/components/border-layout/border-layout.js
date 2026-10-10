@@ -37,13 +37,13 @@ const num = (v, fallback) => {
     const n = parseFloat(v);
     return Number.isFinite(n) ? n : fallback;
 };
-const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+const resolve = (t) => (typeof t === 'string' ? (dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0)) : t);
 /** The region element (resizer wrapper or plain pane) for a side. */
 const regionOf = (layout, side) => dfDollar(layout).find(`:scope > .border-layout-${side}`).get(0);
 /** The pane that carries the size: the resizer's wrapped element. */
-const paneOf = (region) => (region.classList.contains('resizer')
+const paneOf = (region) => region.classList.contains('resizer')
     ? Array.from(region.children).find((c) => !c.classList.contains('resizer-handle'))
-    : region);
+    : region;
 const sizeOf = (region, side) => {
     if (region.hasAttribute('data-collapsed'))
         return 0;
@@ -107,7 +107,9 @@ function aria(layout) {
         const name = region.getAttribute('aria-label') || pane?.getAttribute('aria-label') || side;
         handle.setAttribute('aria-label', `Resize ${name}`);
         handle.setAttribute('aria-valuenow', String(sizeOf(region, side)));
-        handle.setAttribute('aria-valuemin', String(region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible') ? 0 : num(region.dataset.min, 48)));
+        handle.setAttribute('aria-valuemin', String(region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible')
+            ? 0
+            : num(region.dataset.min, 48)));
         handle.setAttribute('aria-valuemax', String(num(region.dataset[SIDES[side].axis === 'w' ? 'maxW' : 'maxH'], 2000)));
     }
 }
@@ -124,7 +126,10 @@ function collapse(layout, side, collapsed) {
     aria(layout);
     save(layout);
     // Fires when a region folds away or comes back - which region, and whether it is collapsed now.
-    layout.dispatchEvent(new CustomEvent('border-layout-collapse', { bubbles: true, detail: { region: side, collapsed } }));
+    layout.dispatchEvent(new CustomEvent('border-layout-collapse', {
+        bubbles: true,
+        detail: { region: side, collapsed },
+    }));
     syncState(layout);
 }
 /** The named state follows the regions: any collapsed → 'collapsed'. */
@@ -244,7 +249,9 @@ df$.borderLayoutApi = borderLayoutApi;
 df$.borderLayoutStates = borderLayoutStates;
 // -- init --------------------------------------------------------------------------
 function init() {
-    dfDollar('.border-layout:not([data-init])').toArray().forEach((layout) => {
+    dfDollar('.border-layout:not([data-init])')
+        .toArray()
+        .forEach((layout) => {
         layout.dataset.init = '';
         for (const side of REGIONS) {
             const region = regionOf(layout, side);
@@ -283,7 +290,10 @@ function init() {
         };
         layout.addEventListener('pointerdown', before, true);
         layout.addEventListener('keydown', before, true);
-        layout.addEventListener('focusin', (e) => { before(e); aria(layout); });
+        layout.addEventListener('focusin', (e) => {
+            before(e);
+            aria(layout);
+        });
         // double-click or Enter on a divider folds a collapsible region
         const toggle = (handle) => {
             const region = handle.parentElement;
@@ -311,12 +321,18 @@ function init() {
             aria(layout);
             save(layout);
         });
-        new ResizeObserver(() => { clamp(layout); aria(layout); }).observe(layout);
+        new ResizeObserver(() => {
+            clamp(layout);
+            aria(layout);
+        }).observe(layout);
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(layout, borderLayoutApi);
         syncState(layout);
         // the resizers may initialize after this module - label their handles then
-        queueMicrotask(() => { clamp(layout); aria(layout); });
+        queueMicrotask(() => {
+            clamp(layout);
+            aria(layout);
+        });
     });
 }
 // -- df$.shadcn.borderLayout: the imperative surface ----------------------------------
@@ -326,15 +342,21 @@ df$.borderLayout = {
      * @param target - the .border-layout element, its id or a selector
      * @param side - the region
      */
-    collapse: (target, side) => { const l = resolve(target); if (l)
-        collapse(l, side, true); },
+    collapse: (target, side) => {
+        const l = resolve(target);
+        if (l)
+            collapse(l, side, true);
+    },
     /**
      * Brings a folded region back.
      * @param target - the .border-layout element, its id or a selector
      * @param side - the region
      */
-    expand: (target, side) => { const l = resolve(target); if (l)
-        collapse(l, side, false); },
+    expand: (target, side) => {
+        const l = resolve(target);
+        if (l)
+            collapse(l, side, false);
+    },
     /**
      * Folds or unfolds a region.
      * @param target - the .border-layout element, its id or a selector
@@ -355,10 +377,14 @@ df$.borderLayout = {
      * @param side - the region
      * @param px - the width (west / east) or height (north / south) in px
      */
-    resize: (target, side, px) => { const l = resolve(target); const r = l && regionOf(l, side); if (r) {
-        clamp(l);
-        setSize(r, side, px);
-    } },
+    resize: (target, side, px) => {
+        const l = resolve(target);
+        const r = l && regionOf(l, side);
+        if (r) {
+            clamp(l);
+            setSize(r, side, px);
+        }
+    },
     /**
      * The current sizes: { west: 240, east: 0 (collapsed), ... }.
      * @param target - the .border-layout element, its id or a selector

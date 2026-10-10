@@ -59,55 +59,85 @@
     }
 
     /* -- Faces: default (off) ------------------------------- */
-    & .swap-off { opacity: 1; }
+    & .swap-off {
+      opacity: 1;
+    }
 
     /* -- Faces: indeterminate ------------------------------- */
     &:has(> input:indeterminate) {
-      & .swap-off { opacity: 0; }
-      & .swap-indeterminate { opacity: 1; }
+      & .swap-off {
+        opacity: 0;
+      }
+      & .swap-indeterminate {
+        opacity: 1;
+      }
     }
 
     /* -- Faces: on (checked, or forced via data-active) ------ */
     &:has(> input:checked),
     &[data-active] {
       & .swap-off,
-      & .swap-indeterminate { opacity: 0; }
-      & .swap-on { opacity: 1; }
+      & .swap-indeterminate {
+        opacity: 0;
+      }
+      & .swap-on {
+        opacity: 1;
+      }
     }
 
     /* -- Variant: rotate ------------------------------------ */
     &[data-variant="rotate"] {
       & .swap-on,
-      & .swap-indeterminate { rotate: -45deg; }
+      & .swap-indeterminate {
+        rotate: -45deg;
+      }
 
       &:has(> input:indeterminate) {
-        & .swap-off { rotate: 45deg; }
-        & .swap-indeterminate { rotate: 0deg; }
+        & .swap-off {
+          rotate: 45deg;
+        }
+        & .swap-indeterminate {
+          rotate: 0deg;
+        }
       }
 
       &:has(> input:checked),
       &[data-active] {
         & .swap-off,
-        & .swap-indeterminate { rotate: 45deg; }
-        & .swap-on { rotate: 0deg; }
+        & .swap-indeterminate {
+          rotate: 45deg;
+        }
+        & .swap-on {
+          rotate: 0deg;
+        }
       }
     }
 
     /* -- Variant: flip -------------------------------------- */
     &[data-variant="flip"] {
       & .swap-on,
-      & .swap-indeterminate { rotate: y 180deg; }
+      & .swap-indeterminate {
+        rotate: y 180deg;
+      }
 
       &:has(> input:indeterminate) {
-        & .swap-off { rotate: y -180deg; }
-        & .swap-indeterminate { rotate: y 0deg; }
+        & .swap-off {
+          rotate: y -180deg;
+        }
+        & .swap-indeterminate {
+          rotate: y 0deg;
+        }
       }
 
       &:has(> input:checked),
       &[data-active] {
         & .swap-off,
-        & .swap-indeterminate { rotate: y -180deg; }
-        & .swap-on { rotate: y 0deg; }
+        & .swap-indeterminate {
+          rotate: y -180deg;
+        }
+        & .swap-on {
+          rotate: y 0deg;
+        }
       }
     }
 
@@ -117,7 +147,10 @@
       min-height: 2rem;
       font-size: 0.75rem;
 
-      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+      & svg:not([class*="size-"]) {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
     &[data-size="lg"] {
@@ -125,11 +158,17 @@
       min-height: 2.75rem;
       font-size: 1.125rem;
 
-      & svg:not([class*="size-"]) { width: 1.5rem; height: 1.5rem; }
+      & svg:not([class*="size-"]) {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
     }
 
     /* -- Interaction states --------------------------------- */
-    &:hover:not(:has(> input:disabled)) { background-color: var(--accent); color: var(--accent-foreground); }
+    &:hover:not(:has(> input:disabled)) {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
 
     &:has(> input:focus-visible) {
       outline: 2px solid var(--ring);
@@ -159,7 +198,9 @@
       border: 2px solid transparent;
 
       &:has(> input:checked),
-      &[data-active] { border-color: currentColor; }
+      &[data-active] {
+        border-color: currentColor;
+      }
     }
   }
 
@@ -175,7 +216,10 @@
         color: HighlightText;
       }
 
-      &:has(> input:disabled) { border-color: GrayText; color: GrayText; }
+      &:has(> input:disabled) {
+        border-color: GrayText;
+        color: GrayText;
+      }
     }
   }
 }

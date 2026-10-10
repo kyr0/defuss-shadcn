@@ -26,7 +26,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const questionnaireStates = ['default', 'answering', 'review', 'submitted'];
@@ -35,7 +35,10 @@ const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const stepsOf = (root) => dfDollar(root).find('.questionnaire-step[data-step]').toArray();
 const stepById = (root, id) => root._flow?.byId.get(id) ?? null;
 const titleOf = (step) => (dfDollar(step).find('.questionnaire-title').get(0)?.textContent ?? step.dataset.step).trim();
-const controlsOf = (step) => dfDollar(step).find('input[name], select[name], textarea[name]').toArray().filter((c) => c.type !== 'hidden' || c.dataset.answer !== undefined);
+const controlsOf = (step) => dfDollar(step)
+    .find('input[name], select[name], textarea[name]')
+    .toArray()
+    .filter((c) => c.type !== 'hidden' || c.dataset.answer !== undefined);
 const isEnd = (step) => !!step && step.hasAttribute('data-end');
 /** the author's rules: <script type="application/json" class="questionnaire-rules"> + configure() */
 function rulesOf(root) {
@@ -69,7 +72,7 @@ function readFlow(root) {
     root._flow = { steps, byId, blocks, rules: rulesOf(root), start: root.dataset.start || steps[0]?.dataset.step };
 }
 /** a value an assertion compares with: a literal, or { field } - another answer */
-const operand = (value, answers) => (value && typeof value === 'object' && !Array.isArray(value) && 'field' in value ? answers[value.field] : value);
+const operand = (value, answers) => value && typeof value === 'object' && !Array.isArray(value) && 'field' in value ? answers[value.field] : value;
 const lower = (v) => String(v ?? '').toLowerCase();
 /** order two answers: numbers (and numeric strings) by value, the rest as
  *  strings - ISO dates ("2026-10-04") compare correctly that way */
@@ -88,19 +91,32 @@ function holds(cond, answers) {
     const v = answers[cond.field];
     const target = operand(cond.value, answers);
     switch (cond.op) {
-        case 'answered': return !isEmpty(v);
-        case 'empty': return isEmpty(v);
-        case 'neq': return Array.isArray(v) ? !v.includes(target) : lower(v) !== lower(target);
-        case 'gt': return !isEmpty(v) && !isEmpty(target) && compare(v, target) > 0;
-        case 'gte': return !isEmpty(v) && !isEmpty(target) && compare(v, target) >= 0;
-        case 'lt': return !isEmpty(v) && !isEmpty(target) && compare(v, target) < 0;
-        case 'lte': return !isEmpty(v) && !isEmpty(target) && compare(v, target) <= 0;
-        case 'in': return (Array.isArray(target) ? target : [target]).some((t) => (Array.isArray(v) ? v.includes(t) : lower(v) === lower(t)));
-        case 'includes': return Array.isArray(v) ? v.includes(target) : lower(v).includes(lower(target));
-        case 'contains': return lower(v).includes(lower(target));
-        case 'startsWith': return lower(v).startsWith(lower(target));
-        case 'endsWith': return lower(v).endsWith(lower(target));
-        default: return Array.isArray(v) ? v.includes(target) : lower(v) === lower(target);
+        case 'answered':
+            return !isEmpty(v);
+        case 'empty':
+            return isEmpty(v);
+        case 'neq':
+            return Array.isArray(v) ? !v.includes(target) : lower(v) !== lower(target);
+        case 'gt':
+            return !isEmpty(v) && !isEmpty(target) && compare(v, target) > 0;
+        case 'gte':
+            return !isEmpty(v) && !isEmpty(target) && compare(v, target) >= 0;
+        case 'lt':
+            return !isEmpty(v) && !isEmpty(target) && compare(v, target) < 0;
+        case 'lte':
+            return !isEmpty(v) && !isEmpty(target) && compare(v, target) <= 0;
+        case 'in':
+            return (Array.isArray(target) ? target : [target]).some((t) => Array.isArray(v) ? v.includes(t) : lower(v) === lower(t));
+        case 'includes':
+            return Array.isArray(v) ? v.includes(target) : lower(v).includes(lower(target));
+        case 'contains':
+            return lower(v).includes(lower(target));
+        case 'startsWith':
+            return lower(v).startsWith(lower(target));
+        case 'endsWith':
+            return lower(v).endsWith(lower(target));
+        default:
+            return Array.isArray(v) ? v.includes(target) : lower(v) === lower(target);
     }
 }
 /** a rule's `when`: a list (all must hold) or { any: [...] } */
@@ -119,7 +135,9 @@ function gotoOf(step, answers) {
     for (const control of controlsOf(step)) {
         if ((control.type === 'radio' || control.type === 'checkbox') && control.dataset.goto) {
             const v = answers[control.name];
-            if (Array.isArray(v) ? v.includes(control.value) : v === control.value || (control.type === 'checkbox' && v === true))
+            if (Array.isArray(v)
+                ? v.includes(control.value)
+                : v === control.value || (control.type === 'checkbox' && v === true))
                 return control.dataset.goto;
         }
         if (control.tagName === 'SELECT') {
@@ -182,8 +200,10 @@ function edgesOf(root, step) {
 }
 const ruleText = (rule) => {
     const w = rule.when ?? [];
-    const list = Array.isArray(w) ? w : w.any ?? w.all ?? [w];
-    return list.map((c) => `${c.field} ${c.op ?? 'eq'}${c.value === undefined ? '' : ' ' + (typeof c.value === 'object' && c.value && 'field' in c.value ? c.value.field : JSON.stringify(c.value))}`).join(Array.isArray(w) || w.all ? ' and ' : ' or ');
+    const list = Array.isArray(w) ? w : (w.any ?? w.all ?? [w]);
+    return list
+        .map((c) => `${c.field} ${c.op ?? 'eq'}${c.value === undefined ? '' : ' ' + (typeof c.value === 'object' && c.value && 'field' in c.value ? c.value.field : JSON.stringify(c.value))}`)
+        .join(Array.isArray(w) || w.all ? ' and ' : ' or ');
 };
 /** the label text of a choice control (its own text, without key hints or a freeform input) */
 function choiceText(control) {
@@ -240,7 +260,10 @@ function readStep(step) {
         if (first.type === 'radio')
             value = list.find((c) => c.checked)?.value ?? null;
         else if (first.type === 'checkbox')
-            value = list.length > 1 || first.dataset.multiple !== undefined ? list.filter((c) => c.checked).map((c) => c.value) : first.checked;
+            value =
+                list.length > 1 || first.dataset.multiple !== undefined
+                    ? list.filter((c) => c.checked).map((c) => c.value)
+                    : first.checked;
         else if (first.tagName === 'SELECT' && first.multiple)
             value = [...first.selectedOptions].map((o) => o.value);
         else if (first.type === 'number' || first.type === 'range')
@@ -314,7 +337,10 @@ function invalidOf(root, step, answers) {
             const asserts = rule.assert ?? [];
             const ok = Array.isArray(asserts) ? asserts.every((c) => holds(c, answers)) : when({ when: asserts }, answers);
             if (!ok)
-                return { control: rule.field ? controlsOf(step).find((c) => c.name === rule.field) : null, message: rule.message || 'Check this answer.' };
+                return {
+                    control: rule.field ? controlsOf(step).find((c) => c.name === rule.field) : null,
+                    message: rule.message || 'Check this answer.',
+                };
         }
     }
     else if (typeof rules === 'function') {
@@ -486,12 +512,22 @@ function renderProgress(root) {
     const label = dfDollar(host).find('.questionnaire-progress-label').get(0);
     // 'about': a branch ahead may take a longer way
     const branchy = remainingBranches(root, walk.step);
-    label.textContent = walk.submitted ? 'Done' : endNow ? 'Review your answers' : `Question ${done + 1} of ${branchy ? 'about ' : ''}${total}`;
+    label.textContent = walk.submitted
+        ? 'Done'
+        : endNow
+            ? 'Review your answers'
+            : `Question ${done + 1} of ${branchy ? 'about ' : ''}${total}`;
     const currentBlock = stepById(root, walk.step)?.closest('.questionnaire-block')?.dataset.block;
     const visitedBlocks = new Set(walk.history.slice(0, walk.index).map((id) => stepById(root, id)?.closest('.questionnaire-block')?.dataset.block));
     for (const chip of dfDollar(host).find('.questionnaire-block-chip').toArray()) {
         const id = chip.dataset.block;
-        const status = walk.submitted ? 'done' : id === currentBlock ? 'current' : visitedBlocks.has(id) ? 'done' : 'upcoming';
+        const status = walk.submitted
+            ? 'done'
+            : id === currentBlock
+                ? 'current'
+                : visitedBlocks.has(id)
+                    ? 'done'
+                    : 'upcoming';
         chip.dataset.status = status;
         if (status === 'current')
             chip.setAttribute('aria-current', 'step');
@@ -502,7 +538,8 @@ function renderProgress(root) {
 /** the branch history: the steps taken, each one a way back */
 function renderTrail(root) {
     // inside the form, or anywhere: <nav class="questionnaire-trail" data-for="form-id">
-    const host = dfDollar(root).find('.questionnaire-trail').get(0) || (root.id && dfDollar(`.questionnaire-trail[data-for="${CSS.escape(root.id)}"]`).get(0));
+    const host = dfDollar(root).find('.questionnaire-trail').get(0) ||
+        (root.id && dfDollar(`.questionnaire-trail[data-for="${CSS.escape(root.id)}"]`).get(0));
     if (!host)
         return;
     if (!root.contains(host) && !host._wired) {
@@ -557,7 +594,10 @@ function answerText(root, step, answers) {
         }
         else if (first.tagName === 'SELECT') {
             const values = Array.isArray(v) ? v : [v];
-            parts.push([...first.options].filter((o) => values.includes(o.value)).map((o) => o.textContent.trim()).join(', '));
+            parts.push([...first.options]
+                .filter((o) => values.includes(o.value))
+                .map((o) => o.textContent.trim())
+                .join(', '));
         }
         else
             parts.push(String(v));
@@ -636,7 +676,7 @@ function keyHints(root) {
         const choices = dfDollar(step).find('.questionnaire-choice').toArray();
         choices.forEach((choice, i) => {
             if (!choice.dataset.key)
-                choice.dataset.key = root.dataset.shortcuts === 'digits' ? String(i + 1) : LETTERS[i] ?? '';
+                choice.dataset.key = root.dataset.shortcuts === 'digits' ? String(i + 1) : (LETTERS[i] ?? '');
         });
     }
 }
@@ -649,7 +689,13 @@ function paint(root) {
 /** keep the walk: the store (subscribers) and the draft */
 function record(root, name) {
     const walk = cfgOf(root);
-    const config = { step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped };
+    const config = {
+        step: walk.step,
+        answers: walk.answers,
+        history: walk.history,
+        index: walk.index,
+        skipped: walk.skipped,
+    };
     if (root.store)
         questionnaireApi.commit(root, name ?? landed(root, walk), config);
     if (root._draft)
@@ -671,7 +717,9 @@ function show(root, id, focus = true) {
     clearInvalid(step);
     paint(root);
     if (focus) {
-        const target = controlsOf(step).find((c) => c.type !== 'radio' || c.checked) || controlsOf(step)[0] || dfDollar(root).find('[data-questionnaire="submit"]').get(0);
+        const target = controlsOf(step).find((c) => c.type !== 'radio' || c.checked) ||
+            controlsOf(step)[0] ||
+            dfDollar(root).find('[data-questionnaire="submit"]').get(0);
         target?.focus({ preventScroll: true });
         step.scrollIntoView?.({ block: 'nearest' });
     }
@@ -696,7 +744,10 @@ function advance(root, { skip = false } = {}) {
         if (problem) {
             showInvalid(step, problem);
             // Fires when a step cannot be left - the step and the message shown.
-            root.dispatchEvent(new CustomEvent('questionnaire-invalid', { bubbles: true, detail: { step: walk.step, message: problem.message } }));
+            root.dispatchEvent(new CustomEvent('questionnaire-invalid', {
+                bubbles: true,
+                detail: { step: walk.step, message: problem.message },
+            }));
             return false;
         }
     }
@@ -718,7 +769,10 @@ function advance(root, { skip = false } = {}) {
     const cleared = [];
     if (changed.length) {
         for (const s of root._flow.steps) {
-            const deps = (s.dataset.dependsOn || '').split(',').map((x) => x.trim()).filter(Boolean);
+            const deps = (s.dataset.dependsOn || '')
+                .split(',')
+                .map((x) => x.trim())
+                .filter(Boolean);
             if (s !== step && deps.some((d) => changed.includes(d)) && answeredStep(s, answers) && controlsOf(s).length) {
                 answers = clearStep(s, answers);
                 cleared.push(s.dataset.step);
@@ -741,14 +795,20 @@ function advance(root, { skip = false } = {}) {
     if (cleared.length) {
         notify(root, `${cleared.length === 1 ? '1 later answer was' : cleared.length + ' later answers were'} cleared - they depended on "${titleOf(step)}".`);
         // Fires when a changed answer clears later answers - the step that changed, the fields that changed, the steps cleared.
-        root.dispatchEvent(new CustomEvent('questionnaire-invalidate', { bubbles: true, detail: { cause: walk.step, changed, cleared } }));
+        root.dispatchEvent(new CustomEvent('questionnaire-invalidate', {
+            bubbles: true,
+            detail: { cause: walk.step, changed, cleared },
+        }));
     }
     else
         notify(root, '');
     show(root, to);
     record(root);
     // Fires on every move forward - the new step, the one left, the answers.
-    root.dispatchEvent(new CustomEvent('questionnaire-step', { bubbles: true, detail: { step: to, from: history[walk.index - 1], answers } }));
+    root.dispatchEvent(new CustomEvent('questionnaire-step', {
+        bubbles: true,
+        detail: { step: to, from: history[walk.index - 1], answers },
+    }));
     return true;
 }
 /** back along the branch history (the answers stay) */
@@ -817,7 +877,10 @@ async function submit(root) {
     paint(root);
     record(root, 'submitted');
     // Fires when sent - the answers on the path and the steps taken.
-    root.dispatchEvent(new CustomEvent('questionnaire-submit', { bubbles: true, detail: { answers, history: walk.history.slice(0, walk.index + 1) } }));
+    root.dispatchEvent(new CustomEvent('questionnaire-submit', {
+        bubbles: true,
+        detail: { answers, history: walk.history.slice(0, walk.index + 1) },
+    }));
     return true;
 }
 // -- State API ----------------------------------------------------------------------------
@@ -863,7 +926,9 @@ function triggerStateChange(root, state, incoming) {
                 go(nextOf(root, walk.step, walk.answers) || defaultNext(root, stepById(root, walk.step)));
             break;
         case 'review': {
-            const end = incoming.step && isEnd(stepById(root, incoming.step)) ? incoming.step : root._flow.steps.find(isEnd)?.dataset.step;
+            const end = incoming.step && isEnd(stepById(root, incoming.step))
+                ? incoming.step
+                : root._flow.steps.find(isEnd)?.dataset.step;
             if (end)
                 go(end);
             break;
@@ -877,7 +942,9 @@ function triggerStateChange(root, state, incoming) {
     root.dataset.stateName = name;
     paint(root);
     if (root._draft)
-        root._draft.set(walk.submitted ? null : { step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped });
+        root._draft.set(walk.submitted
+            ? null
+            : { step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped });
 }
 export const questionnaireApi = componentState({
     component: 'questionnaire',
@@ -890,7 +957,17 @@ export const questionnaireApi = componentState({
         const walk = cfgOf(root);
         if (!walk)
             return state;
-        return { name: landed(root, walk), config: { ...state.config, step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped } };
+        return {
+            name: landed(root, walk),
+            config: {
+                ...state.config,
+                step: walk.step,
+                answers: walk.answers,
+                history: walk.history,
+                index: walk.index,
+                skipped: walk.skipped,
+            },
+        };
     },
     markup: (el, state) => applyMarkup(el, state),
 });
@@ -951,7 +1028,9 @@ function analyze(root) {
     for (const s of steps)
         for (const c of controlsOf(s))
             fieldOwner.set(c.name, s.dataset.step);
-    const fieldsIn = (w) => (Array.isArray(w) ? w : w?.any ?? w?.all ?? (w ? [w] : [])).flatMap((c) => [c.field, c.value && typeof c.value === 'object' && 'field' in c.value ? c.value.field : null]).filter(Boolean);
+    const fieldsIn = (w) => (Array.isArray(w) ? w : (w?.any ?? w?.all ?? (w ? [w] : [])))
+        .flatMap((c) => [c.field, c.value && typeof c.value === 'object' && 'field' in c.value ? c.value.field : null])
+        .filter(Boolean);
     for (const [id, rules] of Object.entries(root._flow.rules.branches)) {
         if (!ids.has(id))
             errors.push(`branches for "${id}", which does not exist`);
@@ -970,7 +1049,10 @@ function analyze(root) {
                         errors.push(`an assertion on "${id}" reads "${f}", which no step asks`);
     }
     for (const s of steps)
-        for (const d of (s.dataset.dependsOn || '').split(',').map((x) => x.trim()).filter(Boolean)) {
+        for (const d of (s.dataset.dependsOn || '')
+            .split(',')
+            .map((x) => x.trim())
+            .filter(Boolean)) {
             if (!fieldOwner.has(d))
                 errors.push(`"${s.dataset.step}" depends on "${d}", which no step asks`);
         }
@@ -1001,7 +1083,9 @@ function analyze(root) {
                 }
             }
         }
-        const required = (id) => controlsOf(stepById(root, id)).filter((c) => c.required).map((c) => c.name);
+        const required = (id) => controlsOf(stepById(root, id))
+            .filter((c) => c.required)
+            .map((c) => c.name);
         const guaranteed = (id) => new Set([...(dom.get(id) ?? [])].filter((d) => d !== id).flatMap(required));
         const reads = (id, field, what) => {
             if (fieldOwner.has(field) && fieldOwner.get(field) !== id && dom.has(id) && !guaranteed(id).has(field))
@@ -1017,9 +1101,20 @@ function analyze(root) {
                     for (const f of fieldsIn(rule.assert))
                         reads(id, f, 'an assertion');
     }
-    const nodes = steps.map((s) => ({ id: s.dataset.step, title: titleOf(s), end: isEnd(s), block: s.closest('.questionnaire-block')?.dataset.block || '' }));
+    const nodes = steps.map((s) => ({
+        id: s.dataset.step,
+        title: titleOf(s),
+        end: isEnd(s),
+        block: s.closest('.questionnaire-block')?.dataset.block || '',
+    }));
     const list = [...edges].flatMap(([from, l]) => l.map((e) => ({ from, ...e })));
-    return { ok: errors.length === 0, errors: [...new Set(errors)], warnings: [...new Set(warnings)], nodes, edges: list };
+    return {
+        ok: errors.length === 0,
+        errors: [...new Set(errors)],
+        warnings: [...new Set(warnings)],
+        nodes,
+        edges: list,
+    };
 }
 /** the flow as a Mermaid flowchart - the walked path highlighted */
 function toMermaid(root) {
@@ -1167,7 +1262,10 @@ function linkDiagram(root, figure) {
         if (reason === 'unreached')
             notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
         // Fires when a click on the linked diagram asks for a step the walk cannot reach yet - the step asked for, the current step and why: 'unreached' (further on) or 'invalid' (the current step does not validate).
-        root.dispatchEvent(new CustomEvent('questionnaire-jump-refused', { bubbles: true, detail: { to, step: walk.step, reason } }));
+        root.dispatchEvent(new CustomEvent('questionnaire-jump-refused', {
+            bubbles: true,
+            detail: { to, step: walk.step, reason },
+        }));
     };
     const onActivate = (e) => {
         if (syncing)
@@ -1306,7 +1404,12 @@ df$.questionnaire = {
 function attachDraft(root, config) {
     root._draft?.destroy();
     const where = viewPersistence(root, 'questionnaire', String(dfDollar('.questionnaire').toArray().indexOf(root)), config || {});
-    root._draft = where ? persisted(where.key, null, { area: where.area, validate: (v) => v === null || (typeof v === 'object' && !Array.isArray(v)) }) : null;
+    root._draft = where
+        ? persisted(where.key, null, {
+            area: where.area,
+            validate: (v) => v === null || (typeof v === 'object' && !Array.isArray(v)),
+        })
+        : null;
     return root._draft?.value ?? null;
 }
 // -- keyboard: one listener for the page ----------------------------------------------------
@@ -1329,7 +1432,9 @@ function onKey(e) {
     if (!root && !onPage)
         return;
     if (!root) {
-        const live = dfDollar('.questionnaire[data-init]').toArray().filter((q) => q._walk && !q._walk.submitted && q.checkVisibility());
+        const live = dfDollar('.questionnaire[data-init]')
+            .toArray()
+            .filter((q) => q._walk && !q._walk.submitted && q.checkVisibility());
         root = live.includes(lastActive) ? lastActive : live.length === 1 ? live[0] : null;
     }
     if (!root?._walk || root._walk.submitted || t.matches?.(TYPING))
@@ -1350,7 +1455,10 @@ function onKey(e) {
         return;
     const key = e.key.toLowerCase();
     let input = null;
-    const choice = dfDollar(step).find('.questionnaire-choice').toArray().find((c) => c.dataset.key?.toLowerCase() === key);
+    const choice = dfDollar(step)
+        .find('.questionnaire-choice')
+        .toArray()
+        .find((c) => c.dataset.key?.toLowerCase() === key);
     if (choice)
         input = dfDollar(choice).find('input[type="radio"], input[type="checkbox"]').get(0);
     else if (/^[1-9]$/.test(key) && !dfDollar(step).find('.questionnaire-choice').get(0)) {
@@ -1369,14 +1477,23 @@ if (!document.__questionnaireKeys) {
 }
 // -- init --------------------------------------------------------------------------------------
 function init() {
-    dfDollar('.questionnaire:not([data-init])').toArray().forEach((root) => {
+    dfDollar('.questionnaire:not([data-init])')
+        .toArray()
+        .forEach((root) => {
         root.dataset.init = '';
         readFlow(root);
         if (!root._flow.steps.length)
             return;
         root.setAttribute('novalidate', ''); // the controller validates per step, with its own messages
         keyHints(root);
-        root._walk = { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [], submitted: false };
+        root._walk = {
+            step: root._flow.start,
+            answers: {},
+            history: [root._flow.start],
+            index: 0,
+            skipped: [],
+            submitted: false,
+        };
         // the draft: a walk kept in session storage (by default) comes back
         const draft = attachDraft(root, root._config?.persist);
         let restored = false;
@@ -1443,7 +1560,10 @@ function init() {
             clearInvalid(step);
             record(root);
             // a single choice with data-auto-advance moves on once picked
-            if (e.type === 'change' && e.target.type === 'radio' && root.hasAttribute('data-auto-advance') && controlsOf(step).every((c) => c.type === 'radio')) {
+            if (e.type === 'change' &&
+                e.target.type === 'radio' &&
+                root.hasAttribute('data-auto-advance') &&
+                controlsOf(step).every((c) => c.type === 'radio')) {
                 clearTimeout(root._auto);
                 root._auto = setTimeout(() => advance(root), 280);
             }
@@ -1451,9 +1571,16 @@ function init() {
         root.addEventListener('input', keep);
         root.addEventListener('change', keep);
         // the questionnaire being worked in takes the keys (see the document listener)
-        root.addEventListener('focusin', () => { lastActive = root; });
-        root.addEventListener('pointerdown', () => { lastActive = root; });
-        bindComponent(root, questionnaireApi, { name: 'default', config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] } });
+        root.addEventListener('focusin', () => {
+            lastActive = root;
+        });
+        root.addEventListener('pointerdown', () => {
+            lastActive = root;
+        });
+        bindComponent(root, questionnaireApi, {
+            name: 'default',
+            config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] },
+        });
         show(root, root._walk.step, false);
         record(root);
         if (restored)

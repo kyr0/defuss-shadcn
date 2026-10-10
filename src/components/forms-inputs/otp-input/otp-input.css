@@ -62,7 +62,9 @@
     font-family: var(--font-mono);
     font-size: 1.125rem;
     font-variant-numeric: tabular-nums;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &[data-filled] {
       border-color: var(--ring);
@@ -112,8 +114,12 @@
   }
 
   @keyframes otp-input-caret {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 }
 

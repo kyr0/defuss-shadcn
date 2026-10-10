@@ -15,20 +15,24 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```html example label="In / out, directions and lifecycle" schema="none" hint="Pick a direction, then run In or Out. Pause freezes mid-flight, Resume continues, Finish jumps to the end state, Reset unwinds back to the authored style. Duration and easing apply to the next play()."
 <style>
   #anim-skew-target {
-    width: 160px; height: 100px;
-    display: grid; place-items: center;
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: var(--card); color: var(--card-foreground);
+    background: var(--card);
+    color: var(--card-foreground);
     font-weight: 600;
   }
-  #anim-skew-demo button[data-dir][aria-pressed="true"] {
-    background: var(--accent); color: var(--accent-foreground);
+  #anim-skew-demo button[data-dir][aria-pressed='true'] {
+    background: var(--accent);
+    color: var(--accent-foreground);
   }
 </style>
-<div id="anim-skew-demo" style="display:grid; gap:0.75rem; justify-items:start;">
+<div id="anim-skew-demo" style="display: grid; gap: 0.75rem; justify-items: start">
   <div id="anim-skew-target">skew me</div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="north" aria-pressed="false">N</button>
@@ -40,9 +44,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-skew-reset">Reset</button>
   </div>
-  <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap">
     <label class="label" for="anim-skew-duration">Duration</label>
-    <input class="input" id="anim-skew-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <input class="input" id="anim-skew-duration" type="number" min="50" step="50" value="1500" style="width: 6rem" />
     <label class="label" for="anim-skew-easing">Easing</label>
     <select class="select" id="anim-skew-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
@@ -79,7 +83,8 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   document.querySelectorAll('#anim-skew-demo [data-dir]').forEach((btn) => {
     btn.addEventListener('click', () => {
       direction = btn.dataset.dir;
-      document.querySelectorAll('#anim-skew-demo [data-dir]')
+      document
+        .querySelectorAll('#anim-skew-demo [data-dir]')
         .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
     });
   });
@@ -92,24 +97,53 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```
 
 ```html example label="Scroll-bound skew" schema="none" hint="Progress is tied to the stage's scroll position instead of time: pass scroll: { target, axis }. Scroll the stage - the box un-skews as you descend. Reset unwinds the binding (and re-arms the demo)."
-<div id="anim-skew-stage" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
-  <div style="height: 600px; display: grid; align-content: space-between; justify-items: center;">
-    <div id="anim-skew-scroll-target" style="width: 160px; height: 100px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-weight: 600;">scroll-driven</div>
-    <p class="text-sm text-muted-foreground" style="margin:0;">end of the scroll range - fully un-skewed</p>
+<div
+  id="anim-skew-stage"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div style="height: 600px; display: grid; align-content: space-between; justify-items: center">
+    <div
+      id="anim-skew-scroll-target"
+      style="
+        width: 160px;
+        height: 100px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+        font-weight: 600;
+      "
+      >scroll-driven</div
+    >
+    <p class="text-sm text-muted-foreground" style="margin: 0">end of the scroll range - fully un-skewed</p>
   </div>
 </div>
-<button class="btn" data-variant="outline" data-size="sm" id="anim-skew-scroll-reset" style="margin-top:0.5rem;">Reset</button>
+<button class="btn" data-variant="outline" data-size="sm" id="anim-skew-scroll-reset" style="margin-top: 0.5rem"
+  >Reset</button
+>
 <script type="module">
   // bound lazily on first scroll so df$ is only touched at event time;
   // reset() unbinds the scroll link, so re-arm the flag afterwards.
   const scroller = document.getElementById('anim-skew-stage');
   const target = document.getElementById('anim-skew-scroll-target');
   let bound = false;
-  scroller.addEventListener('scroll', () => {
-    if (bound) return;
-    bound = true;
-    df$.anim.skewIn.play(target, { direction: 'west', scroll: { target: scroller, axis: 'y' } });
-  }, { passive: true });
+  scroller.addEventListener(
+    'scroll',
+    () => {
+      if (bound) return;
+      bound = true;
+      df$.anim.skewIn.play(target, { direction: 'west', scroll: { target: scroller, axis: 'y' } });
+    },
+    { passive: true },
+  );
   document.getElementById('anim-skew-scroll-reset').addEventListener('click', () => {
     df$.anim.skewIn.reset(target);
     bound = false;

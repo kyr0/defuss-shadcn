@@ -2119,15 +2119,9 @@ function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
     case "wipeOut":
       return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
     case "irisIn":
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case "irisOut":
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
   }
@@ -3160,7 +3154,10 @@ function attachPersistence(store, options) {
 var areas = {};
 var inMemory = new Set;
 function storageOf(area) {
-  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+  return areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area)
+  });
 }
 function sameShape(initial) {
   const check = (model, value) => {
@@ -3876,7 +3873,12 @@ function dataSource(rows, options = {}) {
         } : undefined
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows
+      };
       cacheKey = key;
       return cache;
     },
@@ -3913,7 +3915,14 @@ function parseFilter(field, text, kind = "text") {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m)
       return null;
-    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    const ops = {
+      ">=": "gte",
+      "<=": "lte",
+      "!=": "neq",
+      ">": "gt",
+      "<": "lt",
+      "=": "eq"
+    };
     return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
   }
   return { field, op: "contains", value: raw };
@@ -4559,7 +4568,10 @@ var docCommentsApi = componentState({
 df$3.docCommentsApi = docCommentsApi;
 df$3.docCommentsStates = docCommentsStates;
 function emitChange(el, id) {
-  el.dispatchEvent(new CustomEvent("doc-comments-change", { bubbles: true, detail: { comments: runtimeOf(el).data.comments.length, id } }));
+  el.dispatchEvent(new CustomEvent("doc-comments-change", {
+    bubbles: true,
+    detail: { comments: runtimeOf(el).data.comments.length, id }
+  }));
 }
 function select(el, id, source) {
   if (!runtimeOf(el).data.comments.some((c) => c.id === id))
@@ -4593,7 +4605,10 @@ function flash(el, quote) {
     scrollTo(marks[0], "center");
     setTimeout(() => marks.forEach(unwrap), FLASH_MS);
   }
-  el.dispatchEvent(new CustomEvent("doc-comments-flash", { bubbles: true, detail: { block: quote.block, text: quote.text, found } }));
+  el.dispatchEvent(new CustomEvent("doc-comments-flash", {
+    bubbles: true,
+    detail: { block: quote.block, text: quote.text, found }
+  }));
   return found;
 }
 function addComment(el, comment) {
@@ -4608,7 +4623,14 @@ function addComment(el, comment) {
   while (data.comments.some((c) => c.id === id))
     id = `${id}-${Math.random().toString(36).slice(2, 6)}`;
   const parent = comment.parent ? data.comments.find((c) => c.id === comment.parent) : undefined;
-  const full = { ...comment, id, author: comment.author || dfDollar3(el).attr("data-author") || "You", time: comment.time ?? new Date().toISOString(), body: comment.body.trim(), color: comment.color ?? parent?.color };
+  const full = {
+    ...comment,
+    id,
+    author: comment.author || dfDollar3(el).attr("data-author") || "You",
+    time: comment.time ?? new Date().toISOString(),
+    body: comment.body.trim(),
+    color: comment.color ?? parent?.color
+  };
   runtimeOf(el).data = { version: 1, comments: [...data.comments, full] };
   placeMarks(el);
   renderColumn(el);
@@ -4776,7 +4798,11 @@ function loadModule(vendorUrl) {
   return pending;
 }
 async function loadVendor(toolNames) {
-  const [EditorJS, marked, ...tools] = await Promise.all([loadModule(EDITORJS_URL), loadModule(MARKED_URL), ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))]);
+  const [EditorJS, marked, ...tools] = await Promise.all([
+    loadModule(EDITORJS_URL),
+    loadModule(MARKED_URL),
+    ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))
+  ]);
   return { EditorJS, marked, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
 function markdownToBlocks(md, marked) {
@@ -4784,23 +4810,40 @@ function markdownToBlocks(md, marked) {
   const items = (list) => (list.items ?? []).map((it) => {
     const own = (it.tokens ?? []).filter((t) => t.type !== "list");
     const sub = (it.tokens ?? []).find((t) => t.type === "list");
-    return { content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()), meta: it.task ? { checked: !!it.checked } : {}, items: sub ? items(sub) : [] };
+    return {
+      content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()),
+      meta: it.task ? { checked: !!it.checked } : {},
+      items: sub ? items(sub) : []
+    };
   });
   const blocks = [];
   for (const t of marked.lexer(md)) {
     switch (t.type) {
       case "heading":
-        blocks.push({ type: "header", data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) } });
+        blocks.push({
+          type: "header",
+          data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) }
+        });
         break;
       case "paragraph":
         blocks.push({ type: "paragraph", data: { text: inline(t.text ?? "") } });
         break;
       case "list":
-        blocks.push({ type: "list", data: { style: t.items?.some((i) => i.task) ? "checklist" : t.ordered ? "ordered" : "unordered", meta: {}, items: items(t) } });
+        blocks.push({
+          type: "list",
+          data: {
+            style: t.items?.some((i) => i.task) ? "checklist" : t.ordered ? "ordered" : "unordered",
+            meta: {},
+            items: items(t)
+          }
+        });
         break;
       case "blockquote":
-        blocks.push({ type: "quote", data: { text: inline((t.tokens ?? []).map((x) => x.text ?? "").join(`
-`)), caption: "", alignment: "left" } });
+        blocks.push({
+          type: "quote",
+          data: { text: inline((t.tokens ?? []).map((x) => x.text ?? "").join(`
+`)), caption: "", alignment: "left" }
+        });
         break;
       case "code":
         blocks.push({ type: "code", data: { code: t.text ?? "" } });
@@ -4809,7 +4852,16 @@ function markdownToBlocks(md, marked) {
         blocks.push({ type: "delimiter", data: {} });
         break;
       case "table":
-        blocks.push({ type: "table", data: { withHeadings: true, content: [(t.header ?? []).map((c) => inline(c.text)), ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))] } });
+        blocks.push({
+          type: "table",
+          data: {
+            withHeadings: true,
+            content: [
+              (t.header ?? []).map((c) => inline(c.text)),
+              ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))
+            ]
+          }
+        });
         break;
       case "html":
         blocks.push({ type: "paragraph", data: { text: t.raw ?? "" } });
@@ -4949,7 +5001,13 @@ async function runCommand(el, name) {
   const current = currentBlock(el, editor);
   if (kind === "delimiter" || kind === "table") {
     const index = current ? editor.blocks.getBlockIndex(current.id) : editor.blocks.getBlocksCount() - 1;
-    editor.blocks.insert(kind, kind === "table" ? { withHeadings: true, content: [["", ""], ["", ""]] } : {}, {}, index + 1, true);
+    editor.blocks.insert(kind, kind === "table" ? {
+      withHeadings: true,
+      content: [
+        ["", ""],
+        ["", ""]
+      ]
+    } : {}, {}, index + 1, true);
     return true;
   }
   if (!current)
@@ -5043,7 +5101,10 @@ async function mount(el) {
     placeholder: dfDollar4(el).attr("data-placeholder") ?? "Write...",
     minHeight: 0,
     onChange: async () => {
-      el.dispatchEvent(new CustomEvent("editorjs-change", { bubbles: true, detail: { blocks: editor.blocks.getBlocksCount() } }));
+      el.dispatchEvent(new CustomEvent("editorjs-change", {
+        bubbles: true,
+        detail: { blocks: editor.blocks.getBlocksCount() }
+      }));
     }
   });
   el._editorjs = editor;
@@ -5321,7 +5382,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -5481,7 +5545,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -5512,7 +5579,10 @@ var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
   apply: (toggle, state) => triggerStateChange7(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar7(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  read: (toggle, state) => ({
+    name: dfDollar7(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
     applyMarkup7(toggle, state.name, authored ? authored[1] : "false");
@@ -5707,6 +5777,6 @@ function init9() {
 init9();
 new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
-//# debugId=7C852784F82CD09664756E2164756E21
+//# debugId=3DA6B38F48A6233164756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=document-editor.js.map

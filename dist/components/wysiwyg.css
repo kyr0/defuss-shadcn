@@ -67,7 +67,7 @@
     min-width: 0;
   }
   /* measured modes (full / desktop): a dashed outline keeps the canvas visible at any width */
-  .code-example-screen:is([data-mode='full'], [data-mode='desktop']) .code-example-device {
+  .code-example-screen:is([data-mode="full"], [data-mode="desktop"]) .code-example-device {
     border: 1px dashed var(--border);
   }
   .code-example-device {
@@ -79,18 +79,18 @@
     margin-inline: auto;
   }
   /* a dark fixed-colour shell reads as hardware in both themes */
-  .code-example-screen:is([data-mode='phone'], [data-mode='tablet']) .code-example-device {
+  .code-example-screen:is([data-mode="phone"], [data-mode="tablet"]) .code-example-device {
     overflow: hidden;
     border-style: solid;
     border-color: #18181b;
     box-shadow: var(--shadow-lg);
   }
-  .code-example-screen[data-mode='phone'] .code-example-device {
+  .code-example-screen[data-mode="phone"] .code-example-device {
     --code-example-bezel: 0.6875rem;
     border-width: var(--code-example-bezel);
     border-radius: 2.5rem;
   }
-  .code-example-screen[data-mode='tablet'] .code-example-device {
+  .code-example-screen[data-mode="tablet"] .code-example-device {
     --code-example-bezel: 0.5rem;
     border-width: var(--code-example-bezel);
     border-radius: 1.5rem;
@@ -119,7 +119,7 @@
     background: #18181b;
     pointer-events: none;
   }
-  .code-example-screen[data-mode='phone'] {
+  .code-example-screen[data-mode="phone"] {
     & .code-example-device-island {
       display: block;
       top: 0.375rem;
@@ -185,7 +185,7 @@
         background: color-mix(in oklch, var(--foreground) 8%, transparent);
         color: var(--foreground);
       }
-      &[aria-pressed='true'] {
+      &[aria-pressed="true"] {
         background: var(--background);
         color: var(--foreground);
         box-shadow: var(--shadow-2xs);
@@ -226,7 +226,7 @@
     color: var(--muted-foreground);
     font-size: 0.75rem;
   }
-  .code-example-size input[type='number'] {
+  .code-example-size input[type="number"] {
     width: 4.25rem;
     height: 1.5rem;
     padding: 0 0.375rem;
@@ -261,7 +261,7 @@
     &[hidden] {
       display: none;
     }
-    &[data-panel='code'] {
+    &[data-panel="code"] {
       position: relative;
     }
   }
@@ -380,7 +380,7 @@
       font-family: var(--font-mono);
       font-size: 0.75rem;
     }
-    & :is(input[type='text'], input[type='number'], select) {
+    & :is(input[type="text"], input[type="number"], select) {
       box-sizing: border-box;
       width: 100%;
       height: 1.75rem;
@@ -392,7 +392,7 @@
       font: inherit;
       font-size: 0.8125rem;
     }
-    & input[type='checkbox'] {
+    & input[type="checkbox"] {
       justify-self: start;
       width: 1rem;
       height: 1rem;
@@ -412,7 +412,7 @@
       color: var(--foreground);
       cursor: pointer;
     }
-    & input[type='radio'] {
+    & input[type="radio"] {
       width: 0.875rem;
       height: 0.875rem;
       margin: 0;
@@ -491,7 +491,7 @@
       border-radius: 0;
     }
     /* measured modes fill the stage instead of shrink-wrapping short content */
-    & .code-example-screen:not([data-mode='phone'], [data-mode='tablet']) .code-example-frame {
+    & .code-example-screen:not([data-mode="phone"], [data-mode="tablet"]) .code-example-frame {
       min-height: calc(100dvh - 6.5rem) !important;
     }
     & .code-example-full-exit {
@@ -522,7 +522,7 @@
     :is(.code-example-vp, .code-example-tab, .code-example-copy, .code-example-reset, .code-example-full) span {
       display: none;
     }
-    .code-example-size input[type='number'] {
+    .code-example-size input[type="number"] {
       width: 3.25rem;
     }
   }
@@ -550,7 +550,7 @@
     .code-example-editor[data-painted] .code-example-src {
       color: CanvasText;
     }
-    .code-example-toolbar button[aria-pressed='true'] {
+    .code-example-toolbar button[aria-pressed="true"] {
       outline: 2px solid Highlight;
     }
     :is(.code-example-stage, .code-example-toolbar, .code-example-panel) {
@@ -577,8 +577,13 @@
     font-size: 1rem;
     line-height: 1.7;
 
-    & > script { display: none; }
-    & > .editorjs-holder { max-inline-size: var(--editorjs-measure); margin-inline: auto; }
+    & > script {
+      display: none;
+    }
+    & > .editorjs-holder {
+      max-inline-size: var(--editorjs-measure);
+      margin-inline: auto;
+    }
 
     /* until the editor mounted: a quiet shimmer where the document will be */
     &:not([data-ready]) > .editorjs-holder,
@@ -587,7 +592,12 @@
       display: block;
       min-block-size: var(--editorjs-min-height);
       border-radius: var(--radius-lg);
-      background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 6%, transparent), transparent);
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in oklab, var(--foreground) 6%, transparent),
+        transparent
+      );
       background-size: 200% 100%;
     }
     &[data-error]::after {
@@ -598,34 +608,115 @@
     }
 
     /* Editor.js's own structure, in tokens: the block, its content, the tools */
-    & .codex-editor__redactor { padding-block-end: 2rem !important; }
-    & .ce-block__content, & .ce-toolbar__content { max-inline-size: none; margin: 0; }
-    & .ce-paragraph { line-height: inherit; }
-    & .ce-header { margin-block: 1.25em 0.4em; font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
-    & h1.ce-header { font-size: 2rem; }
-    & h2.ce-header { font-size: 1.5rem; }
-    & h3.ce-header { font-size: 1.25rem; }
-    & h4.ce-header { font-size: 1.0625rem; }
-    & .cdx-block { padding-block: 0.3em; }
-    & .cdx-quote { padding-inline-start: 1rem; border-inline-start: 3px solid var(--primary); color: var(--muted-foreground); font-style: italic; }
-    & .cdx-quote__text, & .cdx-quote__caption { border: 0; box-shadow: none; background: none; padding: 0; min-block-size: 0; }
-    & .cdx-quote__caption { font-size: 0.875rem; font-style: normal; }
-    & .ce-code__textarea { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--muted); color: var(--foreground); font-family: var(--font-mono); font-size: 0.875rem; }
-    & .ce-delimiter::before { color: var(--muted-foreground); }
-    & .cdx-list { padding-inline-start: 0; }
-    & .cdx-list__item { padding-block: 0.2em; }
-    & .cdx-marker, & mark.cdx-marker { padding: 0.05em 0.1em; border-radius: var(--radius-sm); background: color-mix(in oklab, var(--chart-4) 45%, transparent); color: inherit; }
-    & code.inline-code { padding: 0.1em 0.35em; border-radius: var(--radius-sm); background: var(--muted); color: var(--foreground); font-family: var(--font-mono); font-size: 0.875em; }
-    & .tc-table, & .tc-wrap { --color-border: var(--border); --color-background: var(--card); }
-    & .tc-table .tc-cell { border-color: var(--border); }
-    & .tc-row--heading .tc-cell { font-weight: 600; background: var(--muted); }
+    & .codex-editor__redactor {
+      padding-block-end: 2rem !important;
+    }
+    & .ce-block__content,
+    & .ce-toolbar__content {
+      max-inline-size: none;
+      margin: 0;
+    }
+    & .ce-paragraph {
+      line-height: inherit;
+    }
+    & .ce-header {
+      margin-block: 1.25em 0.4em;
+      font-family: var(--font-serif);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+    & h1.ce-header {
+      font-size: 2rem;
+    }
+    & h2.ce-header {
+      font-size: 1.5rem;
+    }
+    & h3.ce-header {
+      font-size: 1.25rem;
+    }
+    & h4.ce-header {
+      font-size: 1.0625rem;
+    }
+    & .cdx-block {
+      padding-block: 0.3em;
+    }
+    & .cdx-quote {
+      padding-inline-start: 1rem;
+      border-inline-start: 3px solid var(--primary);
+      color: var(--muted-foreground);
+      font-style: italic;
+    }
+    & .cdx-quote__text,
+    & .cdx-quote__caption {
+      border: 0;
+      box-shadow: none;
+      background: none;
+      padding: 0;
+      min-block-size: 0;
+    }
+    & .cdx-quote__caption {
+      font-size: 0.875rem;
+      font-style: normal;
+    }
+    & .ce-code__textarea {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--muted);
+      color: var(--foreground);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+    }
+    & .ce-delimiter::before {
+      color: var(--muted-foreground);
+    }
+    & .cdx-list {
+      padding-inline-start: 0;
+    }
+    & .cdx-list__item {
+      padding-block: 0.2em;
+    }
+    & .cdx-marker,
+    & mark.cdx-marker {
+      padding: 0.05em 0.1em;
+      border-radius: var(--radius-sm);
+      background: color-mix(in oklab, var(--chart-4) 45%, transparent);
+      color: inherit;
+    }
+    & code.inline-code {
+      padding: 0.1em 0.35em;
+      border-radius: var(--radius-sm);
+      background: var(--muted);
+      color: var(--foreground);
+      font-family: var(--font-mono);
+      font-size: 0.875em;
+    }
+    & .tc-table,
+    & .tc-wrap {
+      --color-border: var(--border);
+      --color-background: var(--card);
+    }
+    & .tc-table .tc-cell {
+      border-color: var(--border);
+    }
+    & .tc-row--heading .tc-cell {
+      font-weight: 600;
+      background: var(--muted);
+    }
 
     /* Editor.js paints its popovers, toolbars and the table's popover from its own custom
        properties, declared on those elements - redeclare them from the theme tokens (two
        classes beat its one), so dark mode and every preset reach them.
        VERIFIED: (editorjs.e2e "dark mode") no light surface or light-on-light text inside
        the editor with the + popover open on a .dark page. */
-    & .ce-popover, & .ce-toolbar, & .ce-inline-toolbar, & .ce-conversion-toolbar, & .ce-settings, & .tc-popover, & .tc-toolbox, & .tc-wrap {
+    & .ce-popover,
+    & .ce-toolbar,
+    & .ce-inline-toolbar,
+    & .ce-conversion-toolbar,
+    & .ce-settings,
+    & .tc-popover,
+    & .tc-toolbox,
+    & .tc-wrap {
       --color-background: var(--popover) !important;
       --color-background-hover: var(--accent) !important;
       --color-background-item-hover: var(--accent) !important;
@@ -647,29 +738,103 @@
       --color-active-icon: var(--primary) !important;
       color-scheme: inherit;
     }
-    & .ce-popover__container, & .ce-popover__search, & .cdx-search-field { background: var(--popover) !important; color: var(--popover-foreground) !important; border-color: var(--border) !important; }
-    & .cdx-search-field__input { color: var(--popover-foreground) !important; }
-    & .cdx-search-field__input::placeholder { color: var(--muted-foreground) !important; }
-    & .ce-popover-item__icon, & .ce-popover-item__icon svg, & .tc-toolbox__toggler svg { background: transparent !important; color: var(--popover-foreground) !important; }
-    & .cdx-list__checkbox-check { --checkbox-background: var(--card) !important; --color-border: var(--border) !important; --color-bg-checked: var(--primary) !important; }
-    & .cdx-list__checkbox--checked .cdx-list__checkbox-check svg { stroke: var(--primary-foreground) !important; }
-    & .tc-add-column, & .tc-add-row { background: var(--card) !important; color: var(--muted-foreground) !important; }
-    & .tc-add-column:hover, & .tc-add-row:hover { background: var(--accent) !important; color: var(--accent-foreground) !important; }
-    & .tc-table { --color-background: var(--card) !important; }
+    & .ce-popover__container,
+    & .ce-popover__search,
+    & .cdx-search-field {
+      background: var(--popover) !important;
+      color: var(--popover-foreground) !important;
+      border-color: var(--border) !important;
+    }
+    & .cdx-search-field__input {
+      color: var(--popover-foreground) !important;
+    }
+    & .cdx-search-field__input::placeholder {
+      color: var(--muted-foreground) !important;
+    }
+    & .ce-popover-item__icon,
+    & .ce-popover-item__icon svg,
+    & .tc-toolbox__toggler svg {
+      background: transparent !important;
+      color: var(--popover-foreground) !important;
+    }
+    & .cdx-list__checkbox-check {
+      --checkbox-background: var(--card) !important;
+      --color-border: var(--border) !important;
+      --color-bg-checked: var(--primary) !important;
+    }
+    & .cdx-list__checkbox--checked .cdx-list__checkbox-check svg {
+      stroke: var(--primary-foreground) !important;
+    }
+    & .tc-add-column,
+    & .tc-add-row {
+      background: var(--card) !important;
+      color: var(--muted-foreground) !important;
+    }
+    & .tc-add-column:hover,
+    & .tc-add-row:hover {
+      background: var(--accent) !important;
+      color: var(--accent-foreground) !important;
+    }
+    & .tc-table {
+      --color-background: var(--card) !important;
+    }
 
     /* the toolbars Editor.js shows: the + and the settings handle, the inline toolbar */
-    & .ce-toolbar__plus, & .ce-toolbar__settings-btn { color: var(--muted-foreground) !important; background: var(--card) !important; border: 1px solid var(--border); border-radius: var(--radius-md); }
-    & .ce-toolbar__plus:hover, & .ce-toolbar__settings-btn:hover { background: var(--accent) !important; color: var(--accent-foreground) !important; }
-    & .ce-popover__container, & .ce-inline-toolbar, & .ce-conversion-toolbar { background: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
-    & .ce-popover-item:hover, & .ce-inline-tool:hover, & .ce-conversion-tool:hover { background: var(--accent); color: var(--accent-foreground); }
-    & .ce-popover-item--active, & .ce-inline-tool--active { background: var(--accent); color: var(--accent-foreground); }
-    & .ce-popover-item__icon, & .ce-conversion-tool__icon { background: var(--muted); border: 0; box-shadow: none; }
-    & .cdx-search-field { background: var(--muted); border-color: var(--border); color: var(--foreground); }
-    & .ce-block--selected .ce-block__content { background: color-mix(in oklab, var(--primary) 10%, transparent); border-radius: var(--radius-md); }
+    & .ce-toolbar__plus,
+    & .ce-toolbar__settings-btn {
+      color: var(--muted-foreground) !important;
+      background: var(--card) !important;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    & .ce-toolbar__plus:hover,
+    & .ce-toolbar__settings-btn:hover {
+      background: var(--accent) !important;
+      color: var(--accent-foreground) !important;
+    }
+    & .ce-popover__container,
+    & .ce-inline-toolbar,
+    & .ce-conversion-toolbar {
+      background: var(--popover);
+      color: var(--popover-foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    & .ce-popover-item:hover,
+    & .ce-inline-tool:hover,
+    & .ce-conversion-tool:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    & .ce-popover-item--active,
+    & .ce-inline-tool--active {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    & .ce-popover-item__icon,
+    & .ce-conversion-tool__icon {
+      background: var(--muted);
+      border: 0;
+      box-shadow: none;
+    }
+    & .cdx-search-field {
+      background: var(--muted);
+      border-color: var(--border);
+      color: var(--foreground);
+    }
+    & .ce-block--selected .ce-block__content {
+      background: color-mix(in oklab, var(--primary) 10%, transparent);
+      border-radius: var(--radius-md);
+    }
 
     &[data-readonly] {
-      & .ce-toolbar { display: none; }
-      & .codex-editor__redactor { cursor: default; }
+      & .ce-toolbar {
+        display: none;
+      }
+      & .codex-editor__redactor {
+        cursor: default;
+      }
     }
   }
 
@@ -680,19 +845,39 @@
     }
   }
   @keyframes editorjs-shimmer {
-    from { background-position: 200% 0; }
-    to { background-position: -200% 0; }
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     /* Editor.js fades every block in (its own .ce-block animation) and transitions its toolbars */
-    .editorjs .ce-block, .editorjs .ce-toolbar, .editorjs .ce-inline-toolbar, .editorjs .ce-popover { animation: none; transition: none; }
+    .editorjs .ce-block,
+    .editorjs .ce-toolbar,
+    .editorjs .ce-inline-toolbar,
+    .editorjs .ce-popover {
+      animation: none;
+      transition: none;
+    }
   }
   @media (prefers-contrast: more) {
-    .editorjs .ce-code__textarea, .editorjs .ce-toolbar__plus, .editorjs .ce-toolbar__settings-btn { border-color: var(--foreground); }
+    .editorjs .ce-code__textarea,
+    .editorjs .ce-toolbar__plus,
+    .editorjs .ce-toolbar__settings-btn {
+      border-color: var(--foreground);
+    }
   }
   @media (forced-colors: active) {
-    .editorjs .cdx-marker { background: Mark; color: MarkText; }
-    .editorjs .ce-block--selected .ce-block__content { outline: 2px solid Highlight; background: none; }
+    .editorjs .cdx-marker {
+      background: Mark;
+      color: MarkText;
+    }
+    .editorjs .ce-block--selected .ce-block__content {
+      outline: 2px solid Highlight;
+      background: none;
+    }
   }
 }

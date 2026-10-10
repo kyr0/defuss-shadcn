@@ -49,40 +49,77 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </SkillPanel>
 
 ```html example label="Cards" hint="Default cards: a picture, the name and distance, the <address>, the status (data-status: open → green dot) with the next change, a Directions link to a maps service and a tel: link." previewStyle="align-items:stretch;"
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem;width:100%">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1rem; width: 100%">
   <article class="mk-location-item">
-    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-0/800/450" alt="">
+    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-0/800/450" alt="" />
     <div class="mk-location-item-body">
-      <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div>
-      <address class="mk-location-item-address">Rua da Prata 120<br>1100-420 Lisboa, Portugal</address>
+      <div class="mk-location-item-head"
+        ><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div
+      >
+      <address class="mk-location-item-address">Rua da Prata 120<br />1100-420 Lisboa, Portugal</address>
       <p class="mk-location-item-status" data-status="open">Open now · until 18:00</p>
       <div class="mk-location-item-actions">
-        <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Lisbon (opens maps)</span></a>
-        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"><i data-lucide="phone"></i> +351 21 000 1200</a>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa"
+          target="_blank"
+          rel="noopener"
+          ><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Lisbon (opens maps)</span></a
+        >
+        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"
+          ><i data-lucide="phone"></i> +351 21 000 1200</a
+        >
       </div>
     </div>
   </article>
   <article class="mk-location-item">
-    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-1/800/450" alt="">
+    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-1/800/450" alt="" />
     <div class="mk-location-item-body">
-      <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Berlin</h3><span class="mk-location-item-distance">2,310 km</span></div>
-      <address class="mk-location-item-address">Torstraße 45<br>10119 Berlin, Germany</address>
+      <div class="mk-location-item-head"
+        ><h3 class="mk-location-item-name">Acme Berlin</h3><span class="mk-location-item-distance">2,310 km</span></div
+      >
+      <address class="mk-location-item-address">Torstraße 45<br />10119 Berlin, Germany</address>
       <p class="mk-location-item-status" data-status="closed">Closed · opens 09:00</p>
       <div class="mk-location-item-actions">
-        <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Torstra%C3%9Fe%2045%20Berlin" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Berlin (opens maps)</span></a>
-        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+493000004500"><i data-lucide="phone"></i> +49 30 0000 4500</a>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="https://www.openstreetmap.org/search?query=Torstra%C3%9Fe%2045%20Berlin"
+          target="_blank"
+          rel="noopener"
+          ><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Berlin (opens maps)</span></a
+        >
+        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+493000004500"
+          ><i data-lucide="phone"></i> +49 30 0000 4500</a
+        >
       </div>
     </div>
   </article>
   <article class="mk-location-item">
-    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-2/800/450" alt="">
+    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-2/800/450" alt="" />
     <div class="mk-location-item-body">
-      <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Montreal</h3><span class="mk-location-item-distance">5,240 km</span></div>
-      <address class="mk-location-item-address">4200 Boulevard Saint-Laurent<br>Montréal, QC H2W 2R2, Canada</address>
+      <div class="mk-location-item-head"
+        ><h3 class="mk-location-item-name">Acme Montreal</h3
+        ><span class="mk-location-item-distance">5,240 km</span></div
+      >
+      <address class="mk-location-item-address">4200 Boulevard Saint-Laurent<br />Montréal, QC H2W 2R2, Canada</address>
       <p class="mk-location-item-status" data-status="open">Open now · until 17:00</p>
       <div class="mk-location-item-actions">
-        <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=4200%20Saint-Laurent%20Montreal" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Montreal (opens maps)</span></a>
-        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+15140004200"><i data-lucide="phone"></i> +1 514 000 4200</a>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="https://www.openstreetmap.org/search?query=4200%20Saint-Laurent%20Montreal"
+          target="_blank"
+          rel="noopener"
+          ><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Montreal (opens maps)</span></a
+        >
+        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+15140004200"
+          ><i data-lucide="phone"></i> +1 514 000 4200</a
+        >
       </div>
     </div>
   </article>
@@ -90,26 +127,50 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```
 
 ```html example label="Compact" hint="data-variant='compact': no picture, the actions stacked on the right - for search results." previewStyle="align-items:stretch;"
-<div style="display:grid;gap:0.75rem;max-width:36rem;width:100%">
+<div style="display: grid; gap: 0.75rem; max-width: 36rem; width: 100%">
   <article class="mk-location-item" data-variant="compact">
     <div class="mk-location-item-body">
-      <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div>
-      <address class="mk-location-item-address">Rua da Prata 120<br>1100-420 Lisboa, Portugal</address>
+      <div class="mk-location-item-head"
+        ><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div
+      >
+      <address class="mk-location-item-address">Rua da Prata 120<br />1100-420 Lisboa, Portugal</address>
       <p class="mk-location-item-status" data-status="open">Open now · until 18:00</p>
       <div class="mk-location-item-actions">
-        <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Lisbon (opens maps)</span></a>
-        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"><i data-lucide="phone"></i> +351 21 000 1200</a>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%20Lisboa"
+          target="_blank"
+          rel="noopener"
+          ><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Lisbon (opens maps)</span></a
+        >
+        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+351210001200"
+          ><i data-lucide="phone"></i> +351 21 000 1200</a
+        >
       </div>
     </div>
   </article>
   <article class="mk-location-item" data-variant="compact">
     <div class="mk-location-item-body">
-      <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Berlin</h3><span class="mk-location-item-distance">2,310 km</span></div>
-      <address class="mk-location-item-address">Torstraße 45<br>10119 Berlin, Germany</address>
+      <div class="mk-location-item-head"
+        ><h3 class="mk-location-item-name">Acme Berlin</h3><span class="mk-location-item-distance">2,310 km</span></div
+      >
+      <address class="mk-location-item-address">Torstraße 45<br />10119 Berlin, Germany</address>
       <p class="mk-location-item-status" data-status="closed">Closed · opens 09:00</p>
       <div class="mk-location-item-actions">
-        <a class="btn" data-variant="outline" data-size="sm" href="https://www.openstreetmap.org/search?query=Torstra%C3%9Fe%2045%20Berlin" target="_blank" rel="noopener"><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Berlin (opens maps)</span></a>
-        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+493000004500"><i data-lucide="phone"></i> +49 30 0000 4500</a>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="https://www.openstreetmap.org/search?query=Torstra%C3%9Fe%2045%20Berlin"
+          target="_blank"
+          rel="noopener"
+          ><i data-lucide="navigation"></i> Directions<span class="sr-only"> to Acme Berlin (opens maps)</span></a
+        >
+        <a class="btn" data-variant="ghost" data-size="sm" href="tel:+493000004500"
+          ><i data-lucide="phone"></i> +49 30 0000 4500</a
+        >
       </div>
     </div>
   </article>

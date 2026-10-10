@@ -32,7 +32,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const presentationStates = ['default', 'notes', 'fullscreen'];
@@ -205,7 +205,10 @@ function applyMarkup(root, stateName, config = {}) {
         const target = slides[clampIndex(want, slides.length)];
         slides.forEach((slide) => {
             const on = slide === target;
-            dfDollar(slide).attr('data-active', on ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', String(!on));
+            dfDollar(slide)
+                .attr('data-active', on ? '' : null)
+                .attr('inert', on ? null : '')
+                .attr('aria-hidden', String(!on));
         });
     }
     if (stateName === 'notes')
@@ -408,7 +411,10 @@ function init() {
             dfDollar(target).find('[data-df-entrance]').toArray().forEach((el) => {
                 entrance(el);
             });
-            dfDollar(target).find('[data-df-draw]').toArray().forEach((el) => {
+            dfDollar(target)
+                .find('[data-df-draw]')
+                .toArray()
+                .forEach((el) => {
                 draw(el);
             });
         };
@@ -503,8 +509,10 @@ function init() {
                 progress.setAttribute('value', String(clamped + 1));
             }
             const loop = root.hasAttribute('data-loop');
-            const prev = (dfDollar(root).find('[data-presentation-action="prev"]').get(0) ?? null);
-            const next = (dfDollar(root).find('[data-presentation-action="next"]').get(0) ?? null);
+            const prev = (dfDollar(root).find('[data-presentation-action="prev"]').get(0) ??
+                null);
+            const next = (dfDollar(root).find('[data-presentation-action="next"]').get(0) ??
+                null);
             if (prev)
                 prev.disabled = clamped === 0 && !loop;
             if (next)

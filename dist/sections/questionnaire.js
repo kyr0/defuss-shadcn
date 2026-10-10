@@ -274,7 +274,10 @@ function invalidOf(root, step, answers) {
       const asserts = rule.assert ?? [];
       const ok = Array.isArray(asserts) ? asserts.every((c) => holds(c, answers)) : when({ when: asserts }, answers);
       if (!ok)
-        return { control: rule.field ? controlsOf(step).find((c) => c.name === rule.field) : null, message: rule.message || "Check this answer." };
+        return {
+          control: rule.field ? controlsOf(step).find((c) => c.name === rule.field) : null,
+          message: rule.message || "Check this answer."
+        };
     }
   } else if (typeof rules === "function") {
     const message = rules(answers, readStep(step));
@@ -583,7 +586,13 @@ function paint(root) {
 }
 function record(root, name) {
   const walk = cfgOf(root);
-  const config = { step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped };
+  const config = {
+    step: walk.step,
+    answers: walk.answers,
+    history: walk.history,
+    index: walk.index,
+    skipped: walk.skipped
+  };
   if (root.store)
     questionnaireApi.commit(root, name ?? landed(root, walk), config);
   if (root._draft)
@@ -619,7 +628,10 @@ function advance(root, { skip = false } = {}) {
     const problem = invalidOf(root, step, answers);
     if (problem) {
       showInvalid(step, problem);
-      root.dispatchEvent(new CustomEvent("questionnaire-invalid", { bubbles: true, detail: { step: walk.step, message: problem.message } }));
+      root.dispatchEvent(new CustomEvent("questionnaire-invalid", {
+        bubbles: true,
+        detail: { step: walk.step, message: problem.message }
+      }));
       return false;
     }
   }
@@ -661,12 +673,18 @@ function advance(root, { skip = false } = {}) {
   walk.index += 1;
   if (cleared.length) {
     notify(root, `${cleared.length === 1 ? "1 later answer was" : cleared.length + " later answers were"} cleared - they depended on "${titleOf(step)}".`);
-    root.dispatchEvent(new CustomEvent("questionnaire-invalidate", { bubbles: true, detail: { cause: walk.step, changed, cleared } }));
+    root.dispatchEvent(new CustomEvent("questionnaire-invalidate", {
+      bubbles: true,
+      detail: { cause: walk.step, changed, cleared }
+    }));
   } else
     notify(root, "");
   show(root, to);
   record(root);
-  root.dispatchEvent(new CustomEvent("questionnaire-step", { bubbles: true, detail: { step: to, from: history[walk.index - 1], answers } }));
+  root.dispatchEvent(new CustomEvent("questionnaire-step", {
+    bubbles: true,
+    detail: { step: to, from: history[walk.index - 1], answers }
+  }));
   return true;
 }
 function back(root) {
@@ -728,7 +746,10 @@ async function submit(root) {
   notify(root, "");
   paint(root);
   record(root, "submitted");
-  root.dispatchEvent(new CustomEvent("questionnaire-submit", { bubbles: true, detail: { answers, history: walk.history.slice(0, walk.index + 1) } }));
+  root.dispatchEvent(new CustomEvent("questionnaire-submit", {
+    bubbles: true,
+    detail: { answers, history: walk.history.slice(0, walk.index + 1) }
+  }));
   return true;
 }
 function triggerStateChange(root, state, incoming) {
@@ -791,7 +812,17 @@ var questionnaireApi = componentState({
     const walk = cfgOf(root);
     if (!walk)
       return state;
-    return { name: landed(root, walk), config: { ...state.config, step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped } };
+    return {
+      name: landed(root, walk),
+      config: {
+        ...state.config,
+        step: walk.step,
+        answers: walk.answers,
+        history: walk.history,
+        index: walk.index,
+        skipped: walk.skipped
+      }
+    };
   },
   markup: (el, state) => applyMarkup(el, state)
 });
@@ -905,9 +936,20 @@ function analyze(root) {
           for (const f of fieldsIn(rule.assert))
             reads(id, f, "an assertion");
   }
-  const nodes = steps.map((s) => ({ id: s.dataset.step, title: titleOf(s), end: isEnd(s), block: s.closest(".questionnaire-block")?.dataset.block || "" }));
+  const nodes = steps.map((s) => ({
+    id: s.dataset.step,
+    title: titleOf(s),
+    end: isEnd(s),
+    block: s.closest(".questionnaire-block")?.dataset.block || ""
+  }));
   const list = [...edges].flatMap(([from, l]) => l.map((e) => ({ from, ...e })));
-  return { ok: errors.length === 0, errors: [...new Set(errors)], warnings: [...new Set(warnings)], nodes, edges: list };
+  return {
+    ok: errors.length === 0,
+    errors: [...new Set(errors)],
+    warnings: [...new Set(warnings)],
+    nodes,
+    edges: list
+  };
 }
 function toMermaid(root) {
   const { nodes, edges } = analyze(root);
@@ -1035,7 +1077,10 @@ function linkDiagram(root, figure) {
     const target = stepById(root, to);
     if (reason === "unreached")
       notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
-    root.dispatchEvent(new CustomEvent("questionnaire-jump-refused", { bubbles: true, detail: { to, step: walk.step, reason } }));
+    root.dispatchEvent(new CustomEvent("questionnaire-jump-refused", {
+      bubbles: true,
+      detail: { to, step: walk.step, reason }
+    }));
   };
   const onActivate = (e) => {
     if (syncing)
@@ -1096,7 +1141,10 @@ df$.questionnaire = {
 function attachDraft(root, config) {
   root._draft?.destroy();
   const where = viewPersistence(root, "questionnaire", String(dfDollar(".questionnaire").toArray().indexOf(root)), config || {});
-  root._draft = where ? persisted(where.key, null, { area: where.area, validate: (v) => v === null || typeof v === "object" && !Array.isArray(v) }) : null;
+  root._draft = where ? persisted(where.key, null, {
+    area: where.area,
+    validate: (v) => v === null || typeof v === "object" && !Array.isArray(v)
+  }) : null;
   return root._draft?.value ?? null;
 }
 var lastActive = null;
@@ -1155,7 +1203,14 @@ function init() {
       return;
     root.setAttribute("novalidate", "");
     keyHints(root);
-    root._walk = { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [], submitted: false };
+    root._walk = {
+      step: root._flow.start,
+      answers: {},
+      history: [root._flow.start],
+      index: 0,
+      skipped: [],
+      submitted: false
+    };
     const draft = attachDraft(root, root._config?.persist);
     let restored = false;
     if (draft && draft.history?.length && stepById(root, draft.step)) {
@@ -1229,7 +1284,10 @@ function init() {
     root.addEventListener("pointerdown", () => {
       lastActive = root;
     });
-    bindComponent(root, questionnaireApi, { name: "default", config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] } });
+    bindComponent(root, questionnaireApi, {
+      name: "default",
+      config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] }
+    });
     show(root, root._walk.step, false);
     record(root);
     if (restored)
@@ -1239,5 +1297,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=26098391E514ECF364756E2164756E21
+//# debugId=F6010D5F3103CCFF64756E2164756E21
 //# sourceMappingURL=questionnaire.js.map

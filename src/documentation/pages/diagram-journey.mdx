@@ -21,34 +21,61 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-title">The first month of a new customer</span>
     <span class="diagram-dek">The dip at onboarding is the finding - two pain points, one stage.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--band:8rem">
-    <div class="diagram-cell" data-role="head" style="--col:2;--row:1"><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div>
-    <div class="diagram-cell" data-role="head" style="--col:3;--row:1"><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div>
-    <div class="diagram-cell" data-role="head" style="--col:4;--row:1"><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div>
-    <div class="diagram-cell" data-role="head" style="--col:5;--row:1"><span class="diagram-cell-eyebrow">Stage 4</span>First value</div>
-    <div class="diagram-cell" data-role="head" style="--col:6;--row:1"><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div>
-    <div class="diagram-band-labels" style="--col:1;--row:2"><span>High</span><span>Neutral</span><span>Low</span></div>
-    <div class="diagram-band" style="--col:2;--row:2;--span:5"></div>
-    <div class="diagram-node" data-node="s0" data-shape="dot" style="--col:2;--row:2;--sentiment:0.72"><span class="diagram-node-name">curious</span></div>
-    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col:3;--row:2;--sentiment:0.55"><span class="diagram-node-name">hopeful</span></div>
-    <div class="diagram-node" data-node="s2" data-shape="dot" data-tone="accent" style="--col:4;--row:2;--sentiment:0.15"><span class="diagram-node-name">lost</span></div>
-    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col:5;--row:2;--sentiment:0.6"><span class="diagram-node-name">relieved</span></div>
-    <div class="diagram-node" data-node="s4" data-shape="dot" style="--col:6;--row:2;--sentiment:0.85"><span class="diagram-node-name">loyal</span></div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:3">Actions</div>
-    <div class="diagram-cell" data-role="center" style="--col:2;--row:3">Reads a comparison post</div>
-    <div class="diagram-cell" data-role="center" style="--col:3;--row:3">Signs up with Google</div>
-    <div class="diagram-cell" data-role="center" style="--col:4;--row:3">Imports data, hits errors</div>
-    <div class="diagram-cell" data-role="center" style="--col:5;--row:3">Shares the first report</div>
-    <div class="diagram-cell" data-role="center" style="--col:6;--row:3">Upgrades to annual</div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:4">Touchpoints</div>
-    <div class="diagram-cell" data-role="mono" style="--col:2;--row:4">blog · search</div>
-    <div class="diagram-cell" data-role="mono" style="--col:3;--row:4">web app</div>
-    <div class="diagram-cell" data-role="mono" style="--col:4;--row:4">importer · docs</div>
-    <div class="diagram-cell" data-role="mono" style="--col:5;--row:4">email · Slack</div>
-    <div class="diagram-cell" data-role="mono" style="--col:6;--row:4">billing</div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:5">Pain</div>
-    <span class="diagram-tag" style="--col:4;--row:5">CSV errors unexplained</span>
-    <span class="diagram-tag" style="--col:4;--row:6">no sample data</span>
+  <div class="diagram-canvas" style="--cols: 5; --band: 8rem">
+    <div class="diagram-cell" data-role="head" style="--col: 2; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 3; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 4; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 5; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 4</span>First value</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 6; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div
+    >
+    <div class="diagram-band-labels" style="--col: 1; --row: 2"
+      ><span>High</span><span>Neutral</span><span>Low</span></div
+    >
+    <div class="diagram-band" style="--col: 2; --row: 2; --span: 5"></div>
+    <div class="diagram-node" data-node="s0" data-shape="dot" style="--col: 2; --row: 2; --sentiment: 0.72"
+      ><span class="diagram-node-name">curious</span></div
+    >
+    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col: 3; --row: 2; --sentiment: 0.55"
+      ><span class="diagram-node-name">hopeful</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s2"
+      data-shape="dot"
+      data-tone="accent"
+      style="--col: 4; --row: 2; --sentiment: 0.15"
+      ><span class="diagram-node-name">lost</span></div
+    >
+    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col: 5; --row: 2; --sentiment: 0.6"
+      ><span class="diagram-node-name">relieved</span></div
+    >
+    <div class="diagram-node" data-node="s4" data-shape="dot" style="--col: 6; --row: 2; --sentiment: 0.85"
+      ><span class="diagram-node-name">loyal</span></div
+    >
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Actions</div>
+    <div class="diagram-cell" data-role="center" style="--col: 2; --row: 3">Reads a comparison post</div>
+    <div class="diagram-cell" data-role="center" style="--col: 3; --row: 3">Signs up with Google</div>
+    <div class="diagram-cell" data-role="center" style="--col: 4; --row: 3">Imports data, hits errors</div>
+    <div class="diagram-cell" data-role="center" style="--col: 5; --row: 3">Shares the first report</div>
+    <div class="diagram-cell" data-role="center" style="--col: 6; --row: 3">Upgrades to annual</div>
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 4">Touchpoints</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 2; --row: 4">blog · search</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 3; --row: 4">web app</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 4; --row: 4">importer · docs</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 5; --row: 4">email · Slack</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 6; --row: 4">billing</div>
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 5">Pain</div>
+    <span class="diagram-tag" style="--col: 4; --row: 5">CSV errors unexplained</span>
+    <span class="diagram-tag" style="--col: 4; --row: 6">no sample data</span>
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="s0" data-to="s1" data-curve="straight" data-tone="ink" data-head="none"></li>
@@ -67,40 +94,92 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Stage by stage" component="diagram" hint="Each stage’s header, dot, action and touchpoint share one step."
-<figure class="diagram" id="dg-journey-steps" data-type="journey" data-steps data-autoplay aria-label="User journey of a new analytics customer">
+<figure
+  class="diagram"
+  id="dg-journey-steps"
+  data-type="journey"
+  data-steps
+  data-autoplay
+  aria-label="User journey of a new analytics customer"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">User journey</span>
     <span class="diagram-title">The first month of a new customer</span>
     <span class="diagram-dek">The dip at onboarding is the finding - two pain points, one stage.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--band:8rem">
-    <div class="diagram-cell" data-role="head" data-step="1" style="--col:2;--row:1"><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div>
-    <div class="diagram-cell" data-role="head" data-step="2" style="--col:3;--row:1"><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div>
-    <div class="diagram-cell" data-role="head" data-step="3" style="--col:4;--row:1"><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div>
-    <div class="diagram-cell" data-role="head" data-step="4" style="--col:5;--row:1"><span class="diagram-cell-eyebrow">Stage 4</span>First value</div>
-    <div class="diagram-cell" data-role="head" data-step="5" style="--col:6;--row:1"><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div>
-    <div class="diagram-band-labels" style="--col:1;--row:2"><span>High</span><span>Neutral</span><span>Low</span></div>
-    <div class="diagram-band" style="--col:2;--row:2;--span:5"></div>
-    <div class="diagram-node" data-node="s0" data-shape="dot" data-step="1" style="--col:2;--row:2;--sentiment:0.72"><span class="diagram-node-name">curious</span></div>
-    <div class="diagram-node" data-node="s1" data-shape="dot" data-step="2" style="--col:3;--row:2;--sentiment:0.55"><span class="diagram-node-name">hopeful</span></div>
-    <div class="diagram-node" data-node="s2" data-shape="dot" data-tone="accent" data-step="3" style="--col:4;--row:2;--sentiment:0.15"><span class="diagram-node-name">lost</span></div>
-    <div class="diagram-node" data-node="s3" data-shape="dot" data-step="4" style="--col:5;--row:2;--sentiment:0.6"><span class="diagram-node-name">relieved</span></div>
-    <div class="diagram-node" data-node="s4" data-shape="dot" data-step="5" style="--col:6;--row:2;--sentiment:0.85"><span class="diagram-node-name">loyal</span></div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:3">Actions</div>
-    <div class="diagram-cell" data-role="center" data-step="1" style="--col:2;--row:3">Reads a comparison post</div>
-    <div class="diagram-cell" data-role="center" data-step="2" style="--col:3;--row:3">Signs up with Google</div>
-    <div class="diagram-cell" data-role="center" data-step="3" style="--col:4;--row:3">Imports data, hits errors</div>
-    <div class="diagram-cell" data-role="center" data-step="4" style="--col:5;--row:3">Shares the first report</div>
-    <div class="diagram-cell" data-role="center" data-step="5" style="--col:6;--row:3">Upgrades to annual</div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:4">Touchpoints</div>
-    <div class="diagram-cell" data-role="mono" data-step="1" style="--col:2;--row:4">blog · search</div>
-    <div class="diagram-cell" data-role="mono" data-step="2" style="--col:3;--row:4">web app</div>
-    <div class="diagram-cell" data-role="mono" data-step="3" style="--col:4;--row:4">importer · docs</div>
-    <div class="diagram-cell" data-role="mono" data-step="4" style="--col:5;--row:4">email · Slack</div>
-    <div class="diagram-cell" data-role="mono" data-step="5" style="--col:6;--row:4">billing</div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:5">Pain</div>
-    <span class="diagram-tag" style="--col:4;--row:5" data-step="3">CSV errors unexplained</span>
-    <span class="diagram-tag" style="--col:4;--row:6" data-step="3">no sample data</span>
+  <div class="diagram-canvas" style="--cols: 5; --band: 8rem">
+    <div class="diagram-cell" data-role="head" data-step="1" style="--col: 2; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div
+    >
+    <div class="diagram-cell" data-role="head" data-step="2" style="--col: 3; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div
+    >
+    <div class="diagram-cell" data-role="head" data-step="3" style="--col: 4; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div
+    >
+    <div class="diagram-cell" data-role="head" data-step="4" style="--col: 5; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 4</span>First value</div
+    >
+    <div class="diagram-cell" data-role="head" data-step="5" style="--col: 6; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div
+    >
+    <div class="diagram-band-labels" style="--col: 1; --row: 2"
+      ><span>High</span><span>Neutral</span><span>Low</span></div
+    >
+    <div class="diagram-band" style="--col: 2; --row: 2; --span: 5"></div>
+    <div
+      class="diagram-node"
+      data-node="s0"
+      data-shape="dot"
+      data-step="1"
+      style="--col: 2; --row: 2; --sentiment: 0.72"
+      ><span class="diagram-node-name">curious</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s1"
+      data-shape="dot"
+      data-step="2"
+      style="--col: 3; --row: 2; --sentiment: 0.55"
+      ><span class="diagram-node-name">hopeful</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s2"
+      data-shape="dot"
+      data-tone="accent"
+      data-step="3"
+      style="--col: 4; --row: 2; --sentiment: 0.15"
+      ><span class="diagram-node-name">lost</span></div
+    >
+    <div class="diagram-node" data-node="s3" data-shape="dot" data-step="4" style="--col: 5; --row: 2; --sentiment: 0.6"
+      ><span class="diagram-node-name">relieved</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s4"
+      data-shape="dot"
+      data-step="5"
+      style="--col: 6; --row: 2; --sentiment: 0.85"
+      ><span class="diagram-node-name">loyal</span></div
+    >
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Actions</div>
+    <div class="diagram-cell" data-role="center" data-step="1" style="--col: 2; --row: 3">Reads a comparison post</div>
+    <div class="diagram-cell" data-role="center" data-step="2" style="--col: 3; --row: 3">Signs up with Google</div>
+    <div class="diagram-cell" data-role="center" data-step="3" style="--col: 4; --row: 3"
+      >Imports data, hits errors</div
+    >
+    <div class="diagram-cell" data-role="center" data-step="4" style="--col: 5; --row: 3">Shares the first report</div>
+    <div class="diagram-cell" data-role="center" data-step="5" style="--col: 6; --row: 3">Upgrades to annual</div>
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 4">Touchpoints</div>
+    <div class="diagram-cell" data-role="mono" data-step="1" style="--col: 2; --row: 4">blog · search</div>
+    <div class="diagram-cell" data-role="mono" data-step="2" style="--col: 3; --row: 4">web app</div>
+    <div class="diagram-cell" data-role="mono" data-step="3" style="--col: 4; --row: 4">importer · docs</div>
+    <div class="diagram-cell" data-role="mono" data-step="4" style="--col: 5; --row: 4">email · Slack</div>
+    <div class="diagram-cell" data-role="mono" data-step="5" style="--col: 6; --row: 4">billing</div>
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 5">Pain</div>
+    <span class="diagram-tag" style="--col: 4; --row: 5" data-step="3">CSV errors unexplained</span>
+    <span class="diagram-tag" style="--col: 4; --row: 6" data-step="3">no sample data</span>
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="s0" data-to="s1" data-curve="straight" data-tone="ink" data-head="none"></li>
@@ -122,45 +201,96 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="User Journey, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-journey-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-journey-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-journey-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-journey-live">Click a box or an arrow - or press Next.</output>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="sm"
+    data-diagram-for="dg-journey-live"
+    data-diagram-action="prev"
+    >Previous</button
+  >
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="sm"
+    data-diagram-for="dg-journey-live"
+    data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-journey-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-journey-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-journey-live" data-interactive data-type="journey" aria-label="User journey of a new analytics customer">
+<figure
+  class="diagram"
+  id="dg-journey-live"
+  data-interactive
+  data-type="journey"
+  aria-label="User journey of a new analytics customer"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">User journey</span>
     <span class="diagram-title">The first month of a new customer</span>
     <span class="diagram-dek">The dip at onboarding is the finding - two pain points, one stage.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:5;--band:8rem">
-    <div class="diagram-cell" data-role="head" style="--col:2;--row:1"><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div>
-    <div class="diagram-cell" data-role="head" style="--col:3;--row:1"><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div>
-    <div class="diagram-cell" data-role="head" style="--col:4;--row:1"><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div>
-    <div class="diagram-cell" data-role="head" style="--col:5;--row:1"><span class="diagram-cell-eyebrow">Stage 4</span>First value</div>
-    <div class="diagram-cell" data-role="head" style="--col:6;--row:1"><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div>
-    <div class="diagram-band-labels" style="--col:1;--row:2"><span>High</span><span>Neutral</span><span>Low</span></div>
-    <div class="diagram-band" style="--col:2;--row:2;--span:5"></div>
-    <div class="diagram-node" data-node="s0" data-shape="dot" style="--col:2;--row:2;--sentiment:0.72"><span class="diagram-node-name">curious</span></div>
-    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col:3;--row:2;--sentiment:0.55"><span class="diagram-node-name">hopeful</span></div>
-    <div class="diagram-node" data-node="s2" data-shape="dot" data-tone="accent" style="--col:4;--row:2;--sentiment:0.15"><span class="diagram-node-name">lost</span></div>
-    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col:5;--row:2;--sentiment:0.6"><span class="diagram-node-name">relieved</span></div>
-    <div class="diagram-node" data-node="s4" data-shape="dot" style="--col:6;--row:2;--sentiment:0.85"><span class="diagram-node-name">loyal</span></div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:3">Actions</div>
-    <div class="diagram-cell" data-role="center" style="--col:2;--row:3">Reads a comparison post</div>
-    <div class="diagram-cell" data-role="center" style="--col:3;--row:3">Signs up with Google</div>
-    <div class="diagram-cell" data-role="center" style="--col:4;--row:3">Imports data, hits errors</div>
-    <div class="diagram-cell" data-role="center" style="--col:5;--row:3">Shares the first report</div>
-    <div class="diagram-cell" data-role="center" style="--col:6;--row:3">Upgrades to annual</div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:4">Touchpoints</div>
-    <div class="diagram-cell" data-role="mono" style="--col:2;--row:4">blog · search</div>
-    <div class="diagram-cell" data-role="mono" style="--col:3;--row:4">web app</div>
-    <div class="diagram-cell" data-role="mono" style="--col:4;--row:4">importer · docs</div>
-    <div class="diagram-cell" data-role="mono" style="--col:5;--row:4">email · Slack</div>
-    <div class="diagram-cell" data-role="mono" style="--col:6;--row:4">billing</div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:5">Pain</div>
-    <span class="diagram-tag" style="--col:4;--row:5">CSV errors unexplained</span>
-    <span class="diagram-tag" style="--col:4;--row:6">no sample data</span>
+  <div class="diagram-canvas" style="--cols: 5; --band: 8rem">
+    <div class="diagram-cell" data-role="head" style="--col: 2; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 3; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 4; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 5; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 4</span>First value</div
+    >
+    <div class="diagram-cell" data-role="head" style="--col: 6; --row: 1"
+      ><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div
+    >
+    <div class="diagram-band-labels" style="--col: 1; --row: 2"
+      ><span>High</span><span>Neutral</span><span>Low</span></div
+    >
+    <div class="diagram-band" style="--col: 2; --row: 2; --span: 5"></div>
+    <div class="diagram-node" data-node="s0" data-shape="dot" style="--col: 2; --row: 2; --sentiment: 0.72"
+      ><span class="diagram-node-name">curious</span></div
+    >
+    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col: 3; --row: 2; --sentiment: 0.55"
+      ><span class="diagram-node-name">hopeful</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s2"
+      data-shape="dot"
+      data-tone="accent"
+      style="--col: 4; --row: 2; --sentiment: 0.15"
+      ><span class="diagram-node-name">lost</span></div
+    >
+    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col: 5; --row: 2; --sentiment: 0.6"
+      ><span class="diagram-node-name">relieved</span></div
+    >
+    <div class="diagram-node" data-node="s4" data-shape="dot" style="--col: 6; --row: 2; --sentiment: 0.85"
+      ><span class="diagram-node-name">loyal</span></div
+    >
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Actions</div>
+    <div class="diagram-cell" data-role="center" style="--col: 2; --row: 3">Reads a comparison post</div>
+    <div class="diagram-cell" data-role="center" style="--col: 3; --row: 3">Signs up with Google</div>
+    <div class="diagram-cell" data-role="center" style="--col: 4; --row: 3">Imports data, hits errors</div>
+    <div class="diagram-cell" data-role="center" style="--col: 5; --row: 3">Shares the first report</div>
+    <div class="diagram-cell" data-role="center" style="--col: 6; --row: 3">Upgrades to annual</div>
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 4">Touchpoints</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 2; --row: 4">blog · search</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 3; --row: 4">web app</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 4; --row: 4">importer · docs</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 5; --row: 4">email · Slack</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 6; --row: 4">billing</div>
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 5">Pain</div>
+    <span class="diagram-tag" style="--col: 4; --row: 5">CSV errors unexplained</span>
+    <span class="diagram-tag" style="--col: 4; --row: 6">no sample data</span>
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="s0" data-to="s1" data-curve="straight" data-tone="ink" data-head="none"></li>
@@ -182,51 +312,114 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="User Journey, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-journey-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-journey-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-journey-edit" data-interactive data-type="journey" aria-label="User journey of a new analytics customer">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-journey-edit"
+      data-interactive
+      data-type="journey"
+      aria-label="User journey of a new analytics customer"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">User journey</span>
         <span class="diagram-title">The first month of a new customer</span>
         <span class="diagram-dek">The dip at onboarding is the finding - two pain points, one stage.</span>
       </figcaption>
-      <div class="diagram-canvas" style="--cols:5;--band:8rem">
-        <div class="diagram-cell" data-role="head" style="--col:2;--row:1"><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div>
-        <div class="diagram-cell" data-role="head" style="--col:3;--row:1"><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div>
-        <div class="diagram-cell" data-role="head" style="--col:4;--row:1"><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div>
-        <div class="diagram-cell" data-role="head" style="--col:5;--row:1"><span class="diagram-cell-eyebrow">Stage 4</span>First value</div>
-        <div class="diagram-cell" data-role="head" style="--col:6;--row:1"><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div>
-        <div class="diagram-band-labels" style="--col:1;--row:2"><span>High</span><span>Neutral</span><span>Low</span></div>
-        <div class="diagram-band" style="--col:2;--row:2;--span:5"></div>
-        <div class="diagram-node" data-node="s0" data-shape="dot" style="--col:2;--row:2;--sentiment:0.72"><span class="diagram-node-name">curious</span></div>
-        <div class="diagram-node" data-node="s1" data-shape="dot" style="--col:3;--row:2;--sentiment:0.55"><span class="diagram-node-name">hopeful</span></div>
-        <div class="diagram-node" data-node="s2" data-shape="dot" data-tone="accent" style="--col:4;--row:2;--sentiment:0.15"><span class="diagram-node-name">lost</span></div>
-        <div class="diagram-node" data-node="s3" data-shape="dot" style="--col:5;--row:2;--sentiment:0.6"><span class="diagram-node-name">relieved</span></div>
-        <div class="diagram-node" data-node="s4" data-shape="dot" style="--col:6;--row:2;--sentiment:0.85"><span class="diagram-node-name">loyal</span></div>
-        <div class="diagram-cell" data-role="label" style="--col:1;--row:3">Actions</div>
-        <div class="diagram-cell" data-role="center" style="--col:2;--row:3">Reads a comparison post</div>
-        <div class="diagram-cell" data-role="center" style="--col:3;--row:3">Signs up with Google</div>
-        <div class="diagram-cell" data-role="center" style="--col:4;--row:3">Imports data, hits errors</div>
-        <div class="diagram-cell" data-role="center" style="--col:5;--row:3">Shares the first report</div>
-        <div class="diagram-cell" data-role="center" style="--col:6;--row:3">Upgrades to annual</div>
-        <div class="diagram-cell" data-role="label" style="--col:1;--row:4">Touchpoints</div>
-        <div class="diagram-cell" data-role="mono" style="--col:2;--row:4">blog · search</div>
-        <div class="diagram-cell" data-role="mono" style="--col:3;--row:4">web app</div>
-        <div class="diagram-cell" data-role="mono" style="--col:4;--row:4">importer · docs</div>
-        <div class="diagram-cell" data-role="mono" style="--col:5;--row:4">email · Slack</div>
-        <div class="diagram-cell" data-role="mono" style="--col:6;--row:4">billing</div>
-        <div class="diagram-cell" data-role="label" style="--col:1;--row:5">Pain</div>
-        <span class="diagram-tag" style="--col:4;--row:5">CSV errors unexplained</span>
-        <span class="diagram-tag" style="--col:4;--row:6">no sample data</span>
+      <div class="diagram-canvas" style="--cols: 5; --band: 8rem">
+        <div class="diagram-cell" data-role="head" style="--col: 2; --row: 1"
+          ><span class="diagram-cell-eyebrow">Stage 1</span>Discover</div
+        >
+        <div class="diagram-cell" data-role="head" style="--col: 3; --row: 1"
+          ><span class="diagram-cell-eyebrow">Stage 2</span>Sign up</div
+        >
+        <div class="diagram-cell" data-role="head" style="--col: 4; --row: 1"
+          ><span class="diagram-cell-eyebrow">Stage 3</span>Onboard</div
+        >
+        <div class="diagram-cell" data-role="head" style="--col: 5; --row: 1"
+          ><span class="diagram-cell-eyebrow">Stage 4</span>First value</div
+        >
+        <div class="diagram-cell" data-role="head" style="--col: 6; --row: 1"
+          ><span class="diagram-cell-eyebrow">Stage 5</span>Renew</div
+        >
+        <div class="diagram-band-labels" style="--col: 1; --row: 2"
+          ><span>High</span><span>Neutral</span><span>Low</span></div
+        >
+        <div class="diagram-band" style="--col: 2; --row: 2; --span: 5"></div>
+        <div class="diagram-node" data-node="s0" data-shape="dot" style="--col: 2; --row: 2; --sentiment: 0.72"
+          ><span class="diagram-node-name">curious</span></div
+        >
+        <div class="diagram-node" data-node="s1" data-shape="dot" style="--col: 3; --row: 2; --sentiment: 0.55"
+          ><span class="diagram-node-name">hopeful</span></div
+        >
+        <div
+          class="diagram-node"
+          data-node="s2"
+          data-shape="dot"
+          data-tone="accent"
+          style="--col: 4; --row: 2; --sentiment: 0.15"
+          ><span class="diagram-node-name">lost</span></div
+        >
+        <div class="diagram-node" data-node="s3" data-shape="dot" style="--col: 5; --row: 2; --sentiment: 0.6"
+          ><span class="diagram-node-name">relieved</span></div
+        >
+        <div class="diagram-node" data-node="s4" data-shape="dot" style="--col: 6; --row: 2; --sentiment: 0.85"
+          ><span class="diagram-node-name">loyal</span></div
+        >
+        <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Actions</div>
+        <div class="diagram-cell" data-role="center" style="--col: 2; --row: 3">Reads a comparison post</div>
+        <div class="diagram-cell" data-role="center" style="--col: 3; --row: 3">Signs up with Google</div>
+        <div class="diagram-cell" data-role="center" style="--col: 4; --row: 3">Imports data, hits errors</div>
+        <div class="diagram-cell" data-role="center" style="--col: 5; --row: 3">Shares the first report</div>
+        <div class="diagram-cell" data-role="center" style="--col: 6; --row: 3">Upgrades to annual</div>
+        <div class="diagram-cell" data-role="label" style="--col: 1; --row: 4">Touchpoints</div>
+        <div class="diagram-cell" data-role="mono" style="--col: 2; --row: 4">blog · search</div>
+        <div class="diagram-cell" data-role="mono" style="--col: 3; --row: 4">web app</div>
+        <div class="diagram-cell" data-role="mono" style="--col: 4; --row: 4">importer · docs</div>
+        <div class="diagram-cell" data-role="mono" style="--col: 5; --row: 4">email · Slack</div>
+        <div class="diagram-cell" data-role="mono" style="--col: 6; --row: 4">billing</div>
+        <div class="diagram-cell" data-role="label" style="--col: 1; --row: 5">Pain</div>
+        <span class="diagram-tag" style="--col: 4; --row: 5">CSV errors unexplained</span>
+        <span class="diagram-tag" style="--col: 4; --row: 6">no sample data</span>
       </div>
       <ol class="diagram-edges">
-        <li class="diagram-edge" data-from="s0" data-to="s1" data-curve="straight" data-tone="ink" data-head="none"></li>
-        <li class="diagram-edge" data-from="s1" data-to="s2" data-curve="straight" data-tone="accent" data-head="none"></li>
-        <li class="diagram-edge" data-from="s2" data-to="s3" data-curve="straight" data-tone="accent" data-head="none"></li>
-        <li class="diagram-edge" data-from="s3" data-to="s4" data-curve="straight" data-tone="ink" data-head="none"></li>
+        <li
+          class="diagram-edge"
+          data-from="s0"
+          data-to="s1"
+          data-curve="straight"
+          data-tone="ink"
+          data-head="none"
+        ></li>
+        <li
+          class="diagram-edge"
+          data-from="s1"
+          data-to="s2"
+          data-curve="straight"
+          data-tone="accent"
+          data-head="none"
+        ></li>
+        <li
+          class="diagram-edge"
+          data-from="s2"
+          data-to="s3"
+          data-curve="straight"
+          data-tone="accent"
+          data-head="none"
+        ></li>
+        <li
+          class="diagram-edge"
+          data-from="s3"
+          data-to="s4"
+          data-curve="straight"
+          data-tone="ink"
+          data-head="none"
+        ></li>
       </ol>
       <ul class="diagram-legend">
         <li data-swatch="accent-line">Sentiment</li>
@@ -240,11 +433,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-journey-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-journey-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-journey-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -273,25 +479,53 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="delta">Delta</H2>
 
 ```html example label="After the onboarding redesign" component="diagram" hint="The dot moved (its old --sentiment in data-before-style), a touchpoint was added, the pain point removed."
-<figure class="diagram" id="dg-journey-delta" data-type="journey" data-delta aria-label="Journey after the onboarding redesign">
+<figure
+  class="diagram"
+  id="dg-journey-delta"
+  data-type="journey"
+  data-delta
+  aria-label="Journey after the onboarding redesign"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">User journey · after the redesign</span>
     <span class="diagram-title">Onboarding no longer the trough</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--band:7rem">
-    <div class="diagram-cell" data-role="head" style="--col:2;--row:1">Sign up</div>
-    <div class="diagram-cell" data-role="head" style="--col:3;--row:1">Onboard</div>
-    <div class="diagram-cell" data-role="head" style="--col:4;--row:1">First value</div>
-    <div class="diagram-band-labels" style="--col:1;--row:2"><span>High</span><span>Neutral</span><span>Low</span></div>
-    <div class="diagram-band" style="--col:2;--row:2;--span:3"></div>
-    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col:2;--row:2;--sentiment:0.55"><span class="diagram-node-name">hopeful</span></div>
-    <div class="diagram-node" data-node="s2" data-shape="dot" data-tone="accent" data-change="moved" data-change-note="sentiment low → neutral-high" data-before-style="--col:3;--row:2;--sentiment:0.15" style="--col:3;--row:2;--sentiment:0.62"><span class="diagram-node-name" data-before="lost">guided</span></div>
-    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col:4;--row:2;--sentiment:0.7"><span class="diagram-node-name">relieved</span></div>
-    <div class="diagram-cell" data-role="label" style="--col:1;--row:3">Touchpoints</div>
-    <div class="diagram-cell" data-role="mono" style="--col:2;--row:3">web app</div>
-    <div class="diagram-cell" data-role="mono" data-change="added" style="--col:3;--row:3">sample workspace</div>
-    <div class="diagram-cell" data-role="mono" style="--col:4;--row:3">email · Slack</div>
-    <span class="diagram-tag" data-change="removed" data-change-label="Pain: CSV errors unexplained" style="--col:3;--row:4">CSV errors unexplained</span>
+  <div class="diagram-canvas" style="--cols: 3; --band: 7rem">
+    <div class="diagram-cell" data-role="head" style="--col: 2; --row: 1">Sign up</div>
+    <div class="diagram-cell" data-role="head" style="--col: 3; --row: 1">Onboard</div>
+    <div class="diagram-cell" data-role="head" style="--col: 4; --row: 1">First value</div>
+    <div class="diagram-band-labels" style="--col: 1; --row: 2"
+      ><span>High</span><span>Neutral</span><span>Low</span></div
+    >
+    <div class="diagram-band" style="--col: 2; --row: 2; --span: 3"></div>
+    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col: 2; --row: 2; --sentiment: 0.55"
+      ><span class="diagram-node-name">hopeful</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s2"
+      data-shape="dot"
+      data-tone="accent"
+      data-change="moved"
+      data-change-note="sentiment low → neutral-high"
+      data-before-style="--col:3;--row:2;--sentiment:0.15"
+      style="--col: 3; --row: 2; --sentiment: 0.62"
+      ><span class="diagram-node-name" data-before="lost">guided</span></div
+    >
+    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col: 4; --row: 2; --sentiment: 0.7"
+      ><span class="diagram-node-name">relieved</span></div
+    >
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Touchpoints</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 2; --row: 3">web app</div>
+    <div class="diagram-cell" data-role="mono" data-change="added" style="--col: 3; --row: 3">sample workspace</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 4; --row: 3">email · Slack</div>
+    <span
+      class="diagram-tag"
+      data-change="removed"
+      data-change-label="Pain: CSV errors unexplained"
+      style="--col: 3; --row: 4"
+      >CSV errors unexplained</span
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="s1" data-to="s2" data-curve="straight" data-tone="ink" data-head="none"></li>

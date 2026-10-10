@@ -50,12 +50,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </SkillPanel>
 
 ```html example label="Grouped list" hint="Default rows grouped by department (.mk-job-group): the title link covers the row, the facts carry icons, salary and date sit right; the arrow slides on hover." previewStyle="align-items:stretch;"
-<div style="display:grid;gap:2rem;width:100%">
+<div style="display: grid; gap: 2rem; width: 100%">
   <section class="mk-job-group" aria-labelledby="jobs-eng">
     <h2 class="mk-job-group-title" id="jobs-eng">Engineering · 3 roles</h2>
     <article class="mk-job-item">
       <div class="mk-job-item-main">
-        <h3 class="mk-job-item-title"><a href="#">Senior Sync Engineer</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3>
+        <h3 class="mk-job-item-title"
+          ><a href="#">Senior Sync Engineer</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3
+        >
         <ul class="mk-job-item-meta">
           <li><i data-lucide="briefcase"></i>Engineering</li>
           <li><i data-lucide="map-pin"></i>Lisbon or remote (EU)</li>
@@ -104,7 +106,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     <h2 class="mk-job-group-title" id="jobs-design">Design · 1 role</h2>
     <article class="mk-job-item">
       <div class="mk-job-item-main">
-        <h3 class="mk-job-item-title"><a href="#">Product Designer, Mobile</a> <span class="badge" data-variant="default" data-size="sm">New</span></h3>
+        <h3 class="mk-job-item-title"
+          ><a href="#">Product Designer, Mobile</a>
+          <span class="badge" data-variant="default" data-size="sm">New</span></h3
+        >
         <ul class="mk-job-item-meta">
           <li><i data-lucide="briefcase"></i>Design</li>
           <li><i data-lucide="map-pin"></i>Lisbon</li>
@@ -123,7 +128,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```
 
 ```html example label="Cards" hint="data-variant='card': bordered cards for a grid of featured roles - the arrow moves to the corner." previewStyle="align-items:stretch;"
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; width: 100%">
   <article class="mk-job-item" data-variant="card">
     <div class="mk-job-item-main">
       <h3 class="mk-job-item-title"><a href="#">Head of Support</a></h3>

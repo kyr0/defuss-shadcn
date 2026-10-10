@@ -19,32 +19,41 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Deployment</span>
     <span class="diagram-title">Where it runs: prod · eu-west-1</span>
-    <span class="diagram-dek">Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of failure.</span>
+    <span class="diagram-dek"
+      >Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of
+      failure.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:11rem">
-    <div class="diagram-group" data-node="edge" style="--col:1;--row:1;--rspan:2"><span class="diagram-group-label">Edge</span></div>
-    <div class="diagram-group" data-node="app" style="--col:2;--row:1;--rspan:2"><span class="diagram-group-label">prod / eu-west-1 · private</span></div>
-    <div class="diagram-group" data-node="data" style="--col:3;--row:1;--rspan:2"><span class="diagram-group-label">data · isolated subnet</span></div>
-    <div class="diagram-node" data-node="cdn" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 11rem">
+    <div class="diagram-group" data-node="edge" style="--col: 1; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">Edge</span></div
+    >
+    <div class="diagram-group" data-node="app" style="--col: 2; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">prod / eu-west-1 · private</span></div
+    >
+    <div class="diagram-group" data-node="data" style="--col: 3; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">data · isolated subnet</span></div
+    >
+    <div class="diagram-node" data-node="cdn" style="--col: 1; --row: 1">
       <span class="diagram-node-eyebrow">CDN</span>
       <span class="diagram-node-name">CloudFront</span>
       <ul class="diagram-node-chips">
         <li><span>static</span><span>v2.4.1</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="alb" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="alb" style="--col: 1; --row: 2">
       <span class="diagram-node-eyebrow">ALB</span>
       <span class="diagram-node-name">Load balancer</span>
       <span class="diagram-node-meta">TLS termination</span>
     </div>
-    <div class="diagram-node" data-node="web" data-badge="×3" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="web" data-badge="×3" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">web pods</span>
       <ul class="diagram-node-chips">
         <li><span>web</span><span>v2.4.1</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="worker" data-badge="×2" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="worker" data-badge="×2" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">worker pods</span>
       <ul class="diagram-node-chips">
@@ -52,11 +61,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li><span>mailer</span><span>v1.9</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" data-tone="accent" data-step-label="Single point of failure" style="--col:3;--row:1">
+    <div
+      class="diagram-node"
+      data-node="db"
+      data-shape="store"
+      data-tone="accent"
+      data-step-label="Single point of failure"
+      style="--col: 3; --row: 1"
+    >
       <span class="diagram-node-eyebrow">Postgres 16</span>
       <span class="diagram-node-name">RDS primary</span>
     </div>
-    <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" style="--col: 3; --row: 2">
       <span class="diagram-node-eyebrow">other AZ</span>
       <span class="diagram-node-name">RDS standby</span>
     </div>
@@ -78,36 +94,52 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Zone by zone" component="diagram" hint="Edge, application zone, data zone - each with its nodes."
-<figure class="diagram" id="dg-deploy-steps" data-type="deployment" data-steps data-autoplay aria-label="Production deployment in eu-west-1">
+<figure
+  class="diagram"
+  id="dg-deploy-steps"
+  data-type="deployment"
+  data-steps
+  data-autoplay
+  aria-label="Production deployment in eu-west-1"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Deployment</span>
     <span class="diagram-title">Where it runs: prod · eu-west-1</span>
-    <span class="diagram-dek">Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of failure.</span>
+    <span class="diagram-dek"
+      >Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of
+      failure.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:11rem">
-    <div class="diagram-group" data-node="edge" data-step="1" style="--col:1;--row:1;--rspan:2"><span class="diagram-group-label">Edge</span></div>
-    <div class="diagram-group" data-node="app" data-step="2" style="--col:2;--row:1;--rspan:2"><span class="diagram-group-label">prod / eu-west-1 · private</span></div>
-    <div class="diagram-group" data-node="data" data-step="3" style="--col:3;--row:1;--rspan:2"><span class="diagram-group-label">data · isolated subnet</span></div>
-    <div class="diagram-node" data-node="cdn" data-step="1" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 11rem">
+    <div class="diagram-group" data-node="edge" data-step="1" style="--col: 1; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">Edge</span></div
+    >
+    <div class="diagram-group" data-node="app" data-step="2" style="--col: 2; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">prod / eu-west-1 · private</span></div
+    >
+    <div class="diagram-group" data-node="data" data-step="3" style="--col: 3; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">data · isolated subnet</span></div
+    >
+    <div class="diagram-node" data-node="cdn" data-step="1" style="--col: 1; --row: 1">
       <span class="diagram-node-eyebrow">CDN</span>
       <span class="diagram-node-name">CloudFront</span>
       <ul class="diagram-node-chips">
         <li><span>static</span><span>v2.4.1</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="alb" data-step="1" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="alb" data-step="1" style="--col: 1; --row: 2">
       <span class="diagram-node-eyebrow">ALB</span>
       <span class="diagram-node-name">Load balancer</span>
       <span class="diagram-node-meta">TLS termination</span>
     </div>
-    <div class="diagram-node" data-node="web" data-badge="×3" data-step="2" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="web" data-badge="×3" data-step="2" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">web pods</span>
       <ul class="diagram-node-chips">
         <li><span>web</span><span>v2.4.1</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="worker" data-badge="×2" data-step="2" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="worker" data-badge="×2" data-step="2" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">worker pods</span>
       <ul class="diagram-node-chips">
@@ -115,11 +147,26 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li><span>mailer</span><span>v1.9</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" data-tone="accent" data-step="3" data-step-label="Single point of failure" style="--col:3;--row:1">
+    <div
+      class="diagram-node"
+      data-node="db"
+      data-shape="store"
+      data-tone="accent"
+      data-step="3"
+      data-step-label="Single point of failure"
+      style="--col: 3; --row: 1"
+    >
       <span class="diagram-node-eyebrow">Postgres 16</span>
       <span class="diagram-node-name">RDS primary</span>
     </div>
-    <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" data-step="3" style="--col:3;--row:2">
+    <div
+      class="diagram-node"
+      data-node="standby"
+      data-shape="store"
+      data-tone="muted"
+      data-step="3"
+      style="--col: 3; --row: 2"
+    >
       <span class="diagram-node-eyebrow">other AZ</span>
       <span class="diagram-node-name">RDS standby</span>
     </div>
@@ -144,41 +191,64 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Deployment, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-deploy-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-deploy-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-deploy-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-deploy-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-deploy-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-deploy-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-deploy-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-deploy-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-deploy-live" data-interactive data-type="deployment" aria-label="Production deployment in eu-west-1">
+<figure
+  class="diagram"
+  id="dg-deploy-live"
+  data-interactive
+  data-type="deployment"
+  aria-label="Production deployment in eu-west-1"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Deployment</span>
     <span class="diagram-title">Where it runs: prod · eu-west-1</span>
-    <span class="diagram-dek">Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of failure.</span>
+    <span class="diagram-dek"
+      >Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of
+      failure.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:11rem">
-    <div class="diagram-group" data-node="edge" style="--col:1;--row:1;--rspan:2"><span class="diagram-group-label">Edge</span></div>
-    <div class="diagram-group" data-node="app" style="--col:2;--row:1;--rspan:2"><span class="diagram-group-label">prod / eu-west-1 · private</span></div>
-    <div class="diagram-group" data-node="data" style="--col:3;--row:1;--rspan:2"><span class="diagram-group-label">data · isolated subnet</span></div>
-    <div class="diagram-node" data-node="cdn" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 11rem">
+    <div class="diagram-group" data-node="edge" style="--col: 1; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">Edge</span></div
+    >
+    <div class="diagram-group" data-node="app" style="--col: 2; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">prod / eu-west-1 · private</span></div
+    >
+    <div class="diagram-group" data-node="data" style="--col: 3; --row: 1; --rspan: 2"
+      ><span class="diagram-group-label">data · isolated subnet</span></div
+    >
+    <div class="diagram-node" data-node="cdn" style="--col: 1; --row: 1">
       <span class="diagram-node-eyebrow">CDN</span>
       <span class="diagram-node-name">CloudFront</span>
       <ul class="diagram-node-chips">
         <li><span>static</span><span>v2.4.1</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="alb" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="alb" style="--col: 1; --row: 2">
       <span class="diagram-node-eyebrow">ALB</span>
       <span class="diagram-node-name">Load balancer</span>
       <span class="diagram-node-meta">TLS termination</span>
     </div>
-    <div class="diagram-node" data-node="web" data-badge="×3" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="web" data-badge="×3" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">web pods</span>
       <ul class="diagram-node-chips">
         <li><span>web</span><span>v2.4.1</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="worker" data-badge="×2" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="worker" data-badge="×2" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">worker pods</span>
       <ul class="diagram-node-chips">
@@ -186,11 +256,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li><span>mailer</span><span>v1.9</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" data-tone="accent" data-step-label="Single point of failure" style="--col:3;--row:1">
+    <div
+      class="diagram-node"
+      data-node="db"
+      data-shape="store"
+      data-tone="accent"
+      data-step-label="Single point of failure"
+      style="--col: 3; --row: 1"
+    >
       <span class="diagram-node-eyebrow">Postgres 16</span>
       <span class="diagram-node-name">RDS primary</span>
     </div>
-    <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" style="--col: 3; --row: 2">
       <span class="diagram-node-eyebrow">other AZ</span>
       <span class="diagram-node-name">RDS standby</span>
     </div>
@@ -215,41 +292,58 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Deployment, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-deploy-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-deploy-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex gap-3 items-start">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-deploy-edit" data-interactive data-type="deployment" aria-label="Production deployment in eu-west-1">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-deploy-edit"
+      data-interactive
+      data-type="deployment"
+      aria-label="Production deployment in eu-west-1"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Deployment</span>
         <span class="diagram-title">Where it runs: prod · eu-west-1</span>
-        <span class="diagram-dek">Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of failure.</span>
+        <span class="diagram-dek"
+          >Zones are network boundaries; a path that crosses one is blue. The database primary is the single point of
+          failure.</span
+        >
       </figcaption>
-      <div class="diagram-canvas" style="--cols:3;--diagram-node-w:11rem">
-        <div class="diagram-group" data-node="edge" style="--col:1;--row:1;--rspan:2"><span class="diagram-group-label">Edge</span></div>
-        <div class="diagram-group" data-node="app" style="--col:2;--row:1;--rspan:2"><span class="diagram-group-label">prod / eu-west-1 · private</span></div>
-        <div class="diagram-group" data-node="data" style="--col:3;--row:1;--rspan:2"><span class="diagram-group-label">data · isolated subnet</span></div>
-        <div class="diagram-node" data-node="cdn" style="--col:1;--row:1">
+      <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 11rem">
+        <div class="diagram-group" data-node="edge" style="--col: 1; --row: 1; --rspan: 2"
+          ><span class="diagram-group-label">Edge</span></div
+        >
+        <div class="diagram-group" data-node="app" style="--col: 2; --row: 1; --rspan: 2"
+          ><span class="diagram-group-label">prod / eu-west-1 · private</span></div
+        >
+        <div class="diagram-group" data-node="data" style="--col: 3; --row: 1; --rspan: 2"
+          ><span class="diagram-group-label">data · isolated subnet</span></div
+        >
+        <div class="diagram-node" data-node="cdn" style="--col: 1; --row: 1">
           <span class="diagram-node-eyebrow">CDN</span>
           <span class="diagram-node-name">CloudFront</span>
           <ul class="diagram-node-chips">
             <li><span>static</span><span>v2.4.1</span></li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="alb" style="--col:1;--row:2">
+        <div class="diagram-node" data-node="alb" style="--col: 1; --row: 2">
           <span class="diagram-node-eyebrow">ALB</span>
           <span class="diagram-node-name">Load balancer</span>
           <span class="diagram-node-meta">TLS termination</span>
         </div>
-        <div class="diagram-node" data-node="web" data-badge="×3" style="--col:2;--row:1">
+        <div class="diagram-node" data-node="web" data-badge="×3" style="--col: 2; --row: 1">
           <span class="diagram-node-eyebrow">EKS</span>
           <span class="diagram-node-name">web pods</span>
           <ul class="diagram-node-chips">
             <li><span>web</span><span>v2.4.1</span></li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="worker" data-badge="×2" style="--col:2;--row:2">
+        <div class="diagram-node" data-node="worker" data-badge="×2" style="--col: 2; --row: 2">
           <span class="diagram-node-eyebrow">EKS</span>
           <span class="diagram-node-name">worker pods</span>
           <ul class="diagram-node-chips">
@@ -257,11 +351,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li><span>mailer</span><span>v1.9</span></li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="db" data-shape="store" data-tone="accent" data-step-label="Single point of failure" style="--col:3;--row:1">
+        <div
+          class="diagram-node"
+          data-node="db"
+          data-shape="store"
+          data-tone="accent"
+          data-step-label="Single point of failure"
+          style="--col: 3; --row: 1"
+        >
           <span class="diagram-node-eyebrow">Postgres 16</span>
           <span class="diagram-node-name">RDS primary</span>
         </div>
-        <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" style="--col:3;--row:2">
+        <div class="diagram-node" data-node="standby" data-shape="store" data-tone="muted" style="--col: 3; --row: 2">
           <span class="diagram-node-eyebrow">other AZ</span>
           <span class="diagram-node-name">RDS standby</span>
         </div>
@@ -279,16 +380,29 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       </ul>
     </figure>
   </div>
-  <section class="card panel" id="dg-deploy-edit-panel" aria-labelledby="dg-deploy-edit-title" style="flex:0 0 17rem">
+  <section class="card panel" id="dg-deploy-edit-panel" aria-labelledby="dg-deploy-edit-title" style="flex: 0 0 17rem">
     <header class="panel-header">
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-deploy-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-deploy-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-deploy-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -322,25 +436,44 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-eyebrow">Release 2.5</span>
     <span class="diagram-title">What changes in production</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:11rem">
-    <div class="diagram-group" data-node="app" style="--col:1;--row:1;--span:2;--rspan:2"><span class="diagram-group-label">prod / eu-west-1</span></div>
-    <div class="diagram-node" data-node="web" data-badge="×5" data-change="changed" data-change-note="×3 → ×5 replicas, v2.4.1 → v2.5.0" data-before-badge="×3" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 11rem">
+    <div class="diagram-group" data-node="app" style="--col: 1; --row: 1; --span: 2; --rspan: 2"
+      ><span class="diagram-group-label">prod / eu-west-1</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="web"
+      data-badge="×5"
+      data-change="changed"
+      data-change-note="×3 → ×5 replicas, v2.4.1 → v2.5.0"
+      data-before-badge="×3"
+      style="--col: 1; --row: 1"
+    >
       <span class="diagram-node-eyebrow">EKS</span>
       <span class="diagram-node-name">web pods</span>
       <ul class="diagram-node-chips">
         <li data-change="changed"><span>web</span><span>v2.5.0</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="cache" data-shape="store" data-tone="accent" data-change="added" style="--col:2;--row:1">
+    <div
+      class="diagram-node"
+      data-node="cache"
+      data-shape="store"
+      data-tone="accent"
+      data-change="added"
+      style="--col: 2; --row: 1"
+    >
       <span class="diagram-node-eyebrow">ElastiCache</span>
       <span class="diagram-node-name">Redis</span>
     </div>
-    <div class="diagram-node" data-node="cron" data-change="removed" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="cron" data-change="removed" style="--col: 1; --row: 2">
       <span class="diagram-node-eyebrow">EC2</span>
       <span class="diagram-node-name">cron VM</span>
       <span class="diagram-node-meta">replaced by jobs</span>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" style="--col:3;--row:1"><span class="diagram-node-name">RDS primary</span></div>
+    <div class="diagram-node" data-node="db" data-shape="store" style="--col: 3; --row: 1"
+      ><span class="diagram-node-name">RDS primary</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="web" data-to="cache" data-change="added">TLS:6379</li>

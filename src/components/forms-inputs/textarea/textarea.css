@@ -16,7 +16,9 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
     resize: vertical;
     field-sizing: content;
     line-height: 1.5;
@@ -24,30 +26,66 @@
     /* -- Rows: data-rows is the height it starts at, data-max-rows where it
        stops growing and scrolls instead (field-sizing grows it in between).
        1lh = one line of this textarea, + the padding and border. -------- */
-    &[data-rows="1"] { min-height: calc(1lh + 1rem + 2px); }
-    &[data-rows="2"] { min-height: calc(2lh + 1rem + 2px); }
-    &[data-rows="3"] { min-height: calc(3lh + 1rem + 2px); }
-    &[data-rows="4"] { min-height: calc(4lh + 1rem + 2px); }
-    &[data-rows="5"] { min-height: calc(5lh + 1rem + 2px); }
-    &[data-rows="6"] { min-height: calc(6lh + 1rem + 2px); }
-    &[data-rows="8"] { min-height: calc(8lh + 1rem + 2px); }
-    &[data-rows="10"] { min-height: calc(10lh + 1rem + 2px); }
-    &[data-max-rows="2"] { max-height: calc(2lh + 1rem + 2px); }
-    &[data-max-rows="3"] { max-height: calc(3lh + 1rem + 2px); }
-    &[data-max-rows="4"] { max-height: calc(4lh + 1rem + 2px); }
-    &[data-max-rows="5"] { max-height: calc(5lh + 1rem + 2px); }
-    &[data-max-rows="6"] { max-height: calc(6lh + 1rem + 2px); }
-    &[data-max-rows="8"] { max-height: calc(8lh + 1rem + 2px); }
-    &[data-max-rows="10"] { max-height: calc(10lh + 1rem + 2px); }
-    &[data-max-rows="12"] { max-height: calc(12lh + 1rem + 2px); }
-    &[data-resize="none"] { resize: none; }
+    &[data-rows="1"] {
+      min-height: calc(1lh + 1rem + 2px);
+    }
+    &[data-rows="2"] {
+      min-height: calc(2lh + 1rem + 2px);
+    }
+    &[data-rows="3"] {
+      min-height: calc(3lh + 1rem + 2px);
+    }
+    &[data-rows="4"] {
+      min-height: calc(4lh + 1rem + 2px);
+    }
+    &[data-rows="5"] {
+      min-height: calc(5lh + 1rem + 2px);
+    }
+    &[data-rows="6"] {
+      min-height: calc(6lh + 1rem + 2px);
+    }
+    &[data-rows="8"] {
+      min-height: calc(8lh + 1rem + 2px);
+    }
+    &[data-rows="10"] {
+      min-height: calc(10lh + 1rem + 2px);
+    }
+    &[data-max-rows="2"] {
+      max-height: calc(2lh + 1rem + 2px);
+    }
+    &[data-max-rows="3"] {
+      max-height: calc(3lh + 1rem + 2px);
+    }
+    &[data-max-rows="4"] {
+      max-height: calc(4lh + 1rem + 2px);
+    }
+    &[data-max-rows="5"] {
+      max-height: calc(5lh + 1rem + 2px);
+    }
+    &[data-max-rows="6"] {
+      max-height: calc(6lh + 1rem + 2px);
+    }
+    &[data-max-rows="8"] {
+      max-height: calc(8lh + 1rem + 2px);
+    }
+    &[data-max-rows="10"] {
+      max-height: calc(10lh + 1rem + 2px);
+    }
+    &[data-max-rows="12"] {
+      max-height: calc(12lh + 1rem + 2px);
+    }
+    &[data-resize="none"] {
+      resize: none;
+    }
 
     &:focus {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
-    &::placeholder { color: var(--muted-foreground); }
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
 
     /* Disabled = legible but inert: a muted surface and muted text inside
        the full-strength border - never an opacity fade that lets the box
@@ -65,8 +103,12 @@
         linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%),
         linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%);
       background-repeat: no-repeat;
-      background-size: 0.625rem 0.625rem, 0.3125rem 0.3125rem;
-      background-position: right 0.1875rem bottom 0.1875rem, right 0.1875rem bottom 0.1875rem;
+      background-size:
+        0.625rem 0.625rem,
+        0.3125rem 0.3125rem;
+      background-position:
+        right 0.1875rem bottom 0.1875rem,
+        right 0.1875rem bottom 0.1875rem;
     }
 
     &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
@@ -95,7 +137,10 @@
     border-radius: var(--radius-lg);
     background: var(--background);
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms, background-color 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms,
+      background-color 150ms;
 
     & > .textarea {
       min-height: calc(2lh + 1rem);
@@ -106,7 +151,9 @@
       resize: none;
       padding: 0.75rem 0.875rem 0.25rem;
 
-      &:focus { box-shadow: none; }
+      &:focus {
+        box-shadow: none;
+      }
     }
 
     &:has(> .textarea:focus) {
@@ -126,8 +173,14 @@
       gap: 0.5rem;
       padding: 0.625rem 0.625rem 0;
 
-      &:empty { display: none; }
-      & > .file-drop-item { width: 13rem; max-width: 100%; box-sizing: border-box; }
+      &:empty {
+        display: none;
+      }
+      & > .file-drop-item {
+        width: 13rem;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
     }
 
     & > .textarea-group-actions {
@@ -137,7 +190,9 @@
       padding: 0.375rem;
 
       /* everything after the spacer sits at the end - usually send */
-      & > .textarea-group-spacer { flex: 1; }
+      & > .textarea-group-spacer {
+        flex: 1;
+      }
     }
 
     & .textarea-group-count {
@@ -152,15 +207,21 @@
       flex-flow: row wrap;
       align-items: flex-end;
 
-      & > .file-drop-list { flex-basis: 100%; }
+      & > .file-drop-list {
+        flex-basis: 100%;
+      }
       & > .textarea {
         flex: 1;
         min-width: 0;
         min-height: calc(1lh + 1rem);
         padding: 0.5rem 0.25rem;
       }
-      & > .textarea:first-child { padding-inline-start: 0.875rem; }
-      & > .textarea-group-actions { padding: 0.3125rem; }
+      & > .textarea:first-child {
+        padding-inline-start: 0.875rem;
+      }
+      & > .textarea-group-actions {
+        padding: 0.3125rem;
+      }
     }
 
     /* a file dragged over the composer: the page sets data-dragover */
@@ -184,7 +245,9 @@
     .textarea-group {
       border-width: 2px;
     }
-    .textarea-group > .textarea { border-width: 0; }
+    .textarea-group > .textarea {
+      border-width: 0;
+    }
 
     .textarea:disabled {
       border-color: var(--muted-foreground);
@@ -192,9 +255,16 @@
   }
 
   @media (forced-colors: active) {
-    .textarea-group { border-color: ButtonBorder; }
-    .textarea-group:has(> .textarea:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
-    .textarea-group > .textarea:focus { outline: none; }
+    .textarea-group {
+      border-color: ButtonBorder;
+    }
+    .textarea-group:has(> .textarea:focus) {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+    .textarea-group > .textarea:focus {
+      outline: none;
+    }
 
     .textarea {
       border-color: ButtonBorder;
@@ -214,7 +284,10 @@
       border-color: GrayText;
     }
 
-    .textarea:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+    .textarea:is(
+      [aria-invalid="true"],
+      :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)
+    ) {
       border-color: LinkText;
     }
   }

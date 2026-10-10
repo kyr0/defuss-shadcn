@@ -13,7 +13,9 @@
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
 
-      &::-webkit-scrollbar { display: none; }
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     /* ── Slide ─────────────────────────────────── */
@@ -41,18 +43,36 @@
       color: var(--foreground);
       cursor: pointer;
       box-shadow: var(--shadow-sm);
-      transition: background-color 150ms ease, opacity 150ms ease;
+      transition:
+        background-color 150ms ease,
+        opacity 150ms ease;
       font-size: 0.875rem;
       z-index: 1;
 
-      &:hover { background-color: var(--accent); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-      &:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-      & svg { width: 1rem; height: 1rem; }
+      &:hover {
+        background-color: var(--accent);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      & svg {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
-    & .carousel-prev { left: -1rem; }
-    & .carousel-next { right: -1rem; }
+    & .carousel-prev {
+      left: -1rem;
+    }
+    & .carousel-next {
+      right: -1rem;
+    }
 
     /* ── Dot indicators ────────────────────────── */
     & .carousel-dots {
@@ -70,7 +90,9 @@
       padding: 0;
       cursor: pointer;
       background-color: var(--border);
-      transition: background-color 150ms ease, scale 150ms ease;
+      transition:
+        background-color 150ms ease,
+        scale 150ms ease;
 
       &[aria-current="true"] {
         background-color: var(--foreground);
@@ -113,19 +135,33 @@
         translate: -50% 0;
         top: auto;
       }
-      & .carousel-prev { top: -1rem; bottom: auto; }
-      & .carousel-next { bottom: -1rem; top: auto; }
+      & .carousel-prev {
+        top: -1rem;
+        bottom: auto;
+      }
+      & .carousel-next {
+        bottom: -1rem;
+        top: auto;
+      }
 
-      & .carousel-dots { flex-direction: column; }
+      & .carousel-dots {
+        flex-direction: column;
+      }
     }
   }
 
   /* ── Accessibility ─────────────────────────── */
   @media (prefers-reduced-motion: reduce) {
-    .carousel .carousel-viewport { scroll-behavior: auto; }
+    .carousel .carousel-viewport {
+      scroll-behavior: auto;
+    }
     .carousel .carousel-prev,
-    .carousel .carousel-next { transition: none; }
-    .carousel .carousel-dot { transition: none; }
+    .carousel .carousel-next {
+      transition: none;
+    }
+    .carousel .carousel-dot {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
@@ -147,7 +183,9 @@
     }
     .carousel .carousel-dot {
       background: ButtonText;
-      &[aria-current="true"] { background: Highlight; }
+      &[aria-current="true"] {
+        background: Highlight;
+      }
     }
   }
 }

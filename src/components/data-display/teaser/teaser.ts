@@ -8,7 +8,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent, settleTemplates } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+  settleTemplates,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -74,7 +80,9 @@ df$.teaserStates = teaserStates;
 
 /** after a click the keyboard continues in the content: its first control, else the teaser itself */
 function focusContent(el: HTMLElement) {
-  const first = dfDollar(el).find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])').get(0) as HTMLElement | undefined;
+  const first = dfDollar(el)
+    .find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])')
+    .get(0) as HTMLElement | undefined;
   if (first) {
     first.focus({ preventScroll: true });
     return;

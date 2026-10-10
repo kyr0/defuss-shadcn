@@ -233,7 +233,8 @@ describe('example fences (§7/§21)', () => {
     const withScript = fences.find((f) => f.body.includes('df$('));
     expect(withScript, 'the df$ example fence exists').toBeTruthy();
     // verbatim: the fence body bytes reach the parser untouched (§4 one source)
-    expect(withScript!.body).toContain('console.log("search term:", event.target.value);');
+    // (the quote style is the formatter's - scripts/format-pages.ts - not the contract)
+    expect(withScript!.body).toMatch(/console\.log\(["']search term:["'], event\.target\.value\);/);
     expect(fences.every((f) => f.body.trim() !== '')).toBe(true);
     expect(fences.every((f) => f.label)).toBe(true);
   });

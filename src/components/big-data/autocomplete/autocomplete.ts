@@ -12,7 +12,15 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent, dataSource, safeShowPopover, textLocale } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+  dataSource,
+  safeShowPopover,
+  textLocale,
+} from '../../../shared/state-api.js';
 import type { DataviewFilter, DataviewRow, DataviewSorter } from '../../../shared/dataview.js';
 
 const df$ = defussGlobals();
@@ -46,9 +54,16 @@ interface AutocompleteConfig {
   /** a JSON endpoint the default client GETs with ?q=&page=&pageSize=&sort=, or a function building the URL per request */
   url?: string | ((request: AutocompleteRequest) => string);
   /** your own client: answers a request (abort with the signal when the next keystroke supersedes it) */
-  load?: (request: AutocompleteRequest, options: { signal: AbortSignal }) => AutocompleteAnswer | Promise<AutocompleteAnswer>;
+  load?: (
+    request: AutocompleteRequest,
+    options: { signal: AbortSignal },
+  ) => AutocompleteAnswer | Promise<AutocompleteAnswer>;
   /** the default client's fetch, extra headers and a parse step from the JSON to an answer */
-  client?: { fetch?: typeof fetch; headers?: Record<string, string>; parse?: (json: unknown, request: AutocompleteRequest) => AutocompleteAnswer };
+  client?: {
+    fetch?: typeof fetch;
+    headers?: Record<string, string>;
+    parse?: (json: unknown, request: AutocompleteRequest) => AutocompleteAnswer;
+  };
   /** the field the query matches (default: the label field) */
   searchField?: string;
   /** how the query matches: anywhere in the field, or at its start */
@@ -195,7 +210,8 @@ function configOf(root) {
   return { ...base, ...root._config };
 }
 
-const labelOf = (cfg, record) => (typeof cfg.label === 'function' ? cfg.label(record) : String(record?.[cfg.labelField] ?? ''));
+const labelOf = (cfg, record) =>
+  typeof cfg.label === 'function' ? cfg.label(record) : String(record?.[cfg.labelField] ?? '');
 const valueOf = (cfg, record) => (typeof cfg.value === 'function' ? cfg.value(record) : record?.[cfg.valueField]);
 
 /** the dataview request for a query and a page */
@@ -215,9 +231,12 @@ function normalize(answer, request) {
   const raw = Array.isArray(answer) ? { rows: answer } : answer || {};
   const rows = raw.rows ?? raw.items ?? raw.data ?? raw.results ?? [];
   const total = Number.isFinite(raw.total) ? raw.total : undefined;
-  const hasMore = typeof raw.hasMore === 'boolean'
-    ? raw.hasMore
-    : total !== undefined ? (request.page + 1) * request.pageSize < total : rows.length >= request.pageSize;
+  const hasMore =
+    typeof raw.hasMore === 'boolean'
+      ? raw.hasMore
+      : total !== undefined
+        ? (request.page + 1) * request.pageSize < total
+        : rows.length >= request.pageSize;
   return { rows, hasMore, total };
 }
 
@@ -231,7 +250,11 @@ async function networkLoad(cfg, request, signal) {
   let url;
   if (typeof cfg.url === 'function') url = cfg.url(request);
   else {
-    const params = new URLSearchParams({ q: request.query, page: String(request.page), pageSize: String(request.pageSize) });
+    const params = new URLSearchParams({
+      q: request.query,
+      page: String(request.page),
+      pageSize: String(request.pageSize),
+    });
     if (request.sorters[0]) params.set('sort', `${request.sorters[0].field}:${request.sorters[0].direction || 'asc'}`);
     url = `${cfg.url}${String(cfg.url).includes('?') ? '&' : '?'}${params}`;
   }
@@ -311,7 +334,12 @@ function describe(root) {
   if (!n) return;
   const num = (v) => v.toLocaleString(textLocale(root)); // the text's locale, never the browser's
   const total = run.total !== undefined ? ` of ${num(run.total)}` : '';
-  setStatus(root, run.loadingMore ? `${num(n)}${total} · loading more…` : `${num(n)}${total}${run.hasMore ? ' · scroll for more' : ''}`);
+  setStatus(
+    root,
+    run.loadingMore
+      ? `${num(n)}${total} · loading more…`
+      : `${num(n)}${total}${run.hasMore ? ' · scroll for more' : ''}`,
+  );
 }
 
 /** move the active option (keyboard / pointer), keep it in view */
@@ -351,7 +379,16 @@ async function search(root, query) {
   abort(root);
   const cfg = configOf(root);
   const input = inputOf(root);
-  root._run = { query, records: [], page: 0, hasMore: false, total: undefined, active: -1, loadingMore: false, seq: (root._run?.seq || 0) + 1 };
+  root._run = {
+    query,
+    records: [],
+    page: 0,
+    hasMore: false,
+    total: undefined,
+    active: -1,
+    loadingMore: false,
+    seq: (root._run?.seq || 0) + 1,
+  };
   listOf(root).textContent = '';
   input.removeAttribute('aria-activedescendant');
   if (query.length < cfg.minChars) {
@@ -371,7 +408,9 @@ async function fetchPage(root, page) {
   root._controller = controller;
   const request = requestFor(cfg, run.query, page);
   // Fires before every request (each page) - detail.request is the dataview request the loader receives.
-  root.dispatchEvent(new CustomEvent<AutocompleteRequestDetail>('autocomplete-request', { bubbles: true, detail: { request } }));
+  root.dispatchEvent(
+    new CustomEvent<AutocompleteRequestDetail>('autocomplete-request', { bubbles: true, detail: { request } }),
+  );
   try {
     const answer = normalize(await runLoad(root, cfg, request, controller.signal), request);
     if (controller.signal.aborted || seq !== root._run.seq) return; // a newer query owns the list
@@ -429,7 +468,12 @@ function choose(root, index) {
   abort(root);
   autocompleteApi.setState(root, 'default', { query: label, value: value ?? null, label });
   // Fires when a suggestion is taken - its record, value and label.
-  root.dispatchEvent(new CustomEvent<AutocompleteSelectDetail>('autocomplete-select', { bubbles: true, detail: { record, value, label } }));
+  root.dispatchEvent(
+    new CustomEvent<AutocompleteSelectDetail>('autocomplete-select', {
+      bubbles: true,
+      detail: { record, value, label },
+    }),
+  );
 }
 
 // -- State API ---------------------------------------------------------------------------
@@ -446,7 +490,11 @@ function triggerStateChange(root, state, incoming) {
     if (SHOWN.has(state.name)) {
       if (!popover.matches(':popover-open')) safeShowPopover(popover);
     } else if (popover.matches(':popover-open')) {
-      try { popover.hidePopover(); } catch { /* already closed */ }
+      try {
+        popover.hidePopover();
+      } catch {
+        /* already closed */
+      }
     }
   }
   if (state.name === 'default') {
@@ -455,7 +503,8 @@ function triggerStateChange(root, state, incoming) {
   }
   if (state.name === 'error') setStatus(root, '');
   const message = dfDollar(root).find('.autocomplete-error-text').get(0);
-  if (message) message.textContent = state.name === 'error' ? String(state.config.message || 'Something went wrong.') : '';
+  if (message)
+    message.textContent = state.name === 'error' ? String(state.config.message || 'Something went wrong.') : '';
   // a query passed in from outside: show it and search for it
   // 'open' with nothing listed yet: the suggestions for what is typed
   const typed = inputOf(root)?.value.trim() ?? '';
@@ -519,7 +568,9 @@ df$.autocomplete = {
    * Close the popup and cancel what is in flight.
    * @param target - the .autocomplete element or its selector
    */
-  close: (target: string | HTMLElement): void => { autocompleteApi.setState(resolve(target), 'default'); },
+  close: (target: string | HTMLElement): void => {
+    autocompleteApi.setState(resolve(target), 'default');
+  },
   /**
    * The records the list holds now.
    * @param target - the .autocomplete element or its selector
@@ -531,136 +582,155 @@ df$.autocomplete = {
 // -- init --------------------------------------------------------------------------------------
 
 function init() {
-  dfDollar('.autocomplete:not([data-init])').toArray().forEach((root) => {
-    root.dataset.init = '';
-    const input = inputOf(root);
-    if (!input) return;
-    root._uid = root.id || `autocomplete-${++uid}`;
-    // the popup: authored, or made - a manual popover (focus stays in the input)
-    let popover = popoverOf(root);
-    if (!popover) {
-      popover = document.createElement('div');
-      popover.className = 'autocomplete-popover';
-      dfDollar(root).append(popover);
-    }
-    popover.setAttribute('popover', 'manual');
-    if (!popover.id) popover.id = `${root._uid}-popover`;
-    let list = listOf(root);
-    if (!list) {
-      list = document.createElement('div');
-      list.className = 'autocomplete-list';
-      dfDollar(popover).append(list);
-    }
-    list.setAttribute('role', 'listbox');
-    if (!list.id) list.id = `${root._uid}-list`;
-    if (!list.hasAttribute('aria-label') && !list.hasAttribute('aria-labelledby')) list.setAttribute('aria-label', input.getAttribute('aria-label') || 'Suggestions');
-    if (!dfDollar(popover).find('.autocomplete-status').get(0)) {
-      const status = document.createElement('div');
-      status.className = 'autocomplete-status';
-      status.setAttribute('role', 'status');
-      dfDollar(popover).append(status);
-    }
-    if (!dfDollar(popover).find('.autocomplete-error').get(0)) {
-      const error = document.createElement('div');
-      error.className = 'autocomplete-error';
-      const text = document.createElement('span');
-      text.className = 'autocomplete-error-text';
-      const retry = document.createElement('button');
-      retry.type = 'button';
-      retry.className = 'autocomplete-retry';
-      retry.textContent = 'Retry';
-      error.append(text, retry);
-      dfDollar(popover).append(error);
-    }
-    if (!dfDollar(popover).find('.autocomplete-empty').get(0)) {
-      const empty = document.createElement('div');
-      empty.className = 'autocomplete-empty';
-      empty.textContent = root.dataset.emptyText || 'No matches.';
-      dfDollar(popover).append(empty);
-    }
-    // the APG combobox wiring
-    input.setAttribute('role', 'combobox');
-    input.setAttribute('aria-autocomplete', 'list');
-    input.setAttribute('aria-controls', list.id);
-    input.setAttribute('autocomplete', 'off');
-    if (!input.hasAttribute('aria-expanded')) input.setAttribute('aria-expanded', 'false');
-    // anchored under the input (CSS anchor positioning)
-    const anchor = `--autocomplete-${root._uid}`;
-    input.style.anchorName = anchor;
-    popover.style.positionAnchor = anchor;
-    root._run = { query: '', records: [], page: 0, hasMore: false, active: -1, seq: 0 };
-    // the closed state's markup, from the start (data-state, aria-expanded)
-    applyMarkup(root, { name: 'default' });
-
-    // typing: debounced search (a newer keystroke restarts the wait) - and
-    // whatever is in flight is already stale: abort it now, not after the wait
-    input.addEventListener('input', () => {
-      abort(root);
-      const query = input.value.trim();
-      const hidden = dfDollar(root).find<HTMLInputElement>('.autocomplete-value').get(0);
-      if (hidden) hidden.value = '';
-      root._timer = setTimeout(() => search(root, query), configOf(root).debounce);
-    });
-    input.addEventListener('keydown', (e) => {
-      const name = root.store.value.name;
-      const run = root._run;
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          if (name === 'default') search(root, input.value.trim());
-          else activate(root, run.active + 1);
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          if (name !== 'default') activate(root, run.active - 1);
-          break;
-        case 'PageDown':
-          if (name !== 'default') { e.preventDefault(); activate(root, run.active + 10); }
-          break;
-        case 'PageUp':
-          if (name !== 'default') { e.preventDefault(); activate(root, run.active - 10); }
-          break;
-        case 'Enter':
-          if (name === 'open' && run.active >= 0) { e.preventDefault(); choose(root, run.active); }
-          break;
-        case 'Escape':
-          // APG: Escape closes the popup; a second Escape clears the input
-          if (name !== 'default') autocompleteApi.setState(root, 'default');
-          else if (input.value) { input.value = ''; input.dispatchEvent(new Event('input', { bubbles: true })); }
-          e.preventDefault();
-          break;
-        case 'Tab':
-          if (name !== 'default') autocompleteApi.setState(root, 'default');
-          break;
+  dfDollar('.autocomplete:not([data-init])')
+    .toArray()
+    .forEach((root) => {
+      root.dataset.init = '';
+      const input = inputOf(root);
+      if (!input) return;
+      root._uid = root.id || `autocomplete-${++uid}`;
+      // the popup: authored, or made - a manual popover (focus stays in the input)
+      let popover = popoverOf(root);
+      if (!popover) {
+        popover = document.createElement('div');
+        popover.className = 'autocomplete-popover';
+        dfDollar(root).append(popover);
       }
-    });
-    // pointer: pressing an option takes it (pointerdown keeps the focus in the input)
-    list.addEventListener('pointerdown', (e) => {
-      const option = (e.target as HTMLElement).closest?.<HTMLElement>('.autocomplete-option');
-      if (!option) return;
-      e.preventDefault();
-      choose(root, Number(option.dataset.index));
-    });
-    list.addEventListener('pointermove', (e) => {
-      const option = (e.target as HTMLElement).closest?.<HTMLElement>('.autocomplete-option');
-      if (option && Number(option.dataset.index) !== root._run.active) activate(root, Number(option.dataset.index));
-    });
-    // infinite: near the end of the list, the next page
-    list.addEventListener('scroll', () => {
-      if (list.scrollTop + list.clientHeight >= list.scrollHeight - 48) loadMore(root);
-    }, { passive: true });
-    popover.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest?.('.autocomplete-retry')) search(root, root._run.query);
-    });
-    // leaving the widget closes it
-    root.addEventListener('focusout', (e) => {
-      if (e.relatedTarget && root.contains(e.relatedTarget as Node)) return;
-      if (root.store.value.name !== 'default') autocompleteApi.setState(root, 'default');
-    });
+      popover.setAttribute('popover', 'manual');
+      if (!popover.id) popover.id = `${root._uid}-popover`;
+      let list = listOf(root);
+      if (!list) {
+        list = document.createElement('div');
+        list.className = 'autocomplete-list';
+        dfDollar(popover).append(list);
+      }
+      list.setAttribute('role', 'listbox');
+      if (!list.id) list.id = `${root._uid}-list`;
+      if (!list.hasAttribute('aria-label') && !list.hasAttribute('aria-labelledby'))
+        list.setAttribute('aria-label', input.getAttribute('aria-label') || 'Suggestions');
+      if (!dfDollar(popover).find('.autocomplete-status').get(0)) {
+        const status = document.createElement('div');
+        status.className = 'autocomplete-status';
+        status.setAttribute('role', 'status');
+        dfDollar(popover).append(status);
+      }
+      if (!dfDollar(popover).find('.autocomplete-error').get(0)) {
+        const error = document.createElement('div');
+        error.className = 'autocomplete-error';
+        const text = document.createElement('span');
+        text.className = 'autocomplete-error-text';
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'autocomplete-retry';
+        retry.textContent = 'Retry';
+        error.append(text, retry);
+        dfDollar(popover).append(error);
+      }
+      if (!dfDollar(popover).find('.autocomplete-empty').get(0)) {
+        const empty = document.createElement('div');
+        empty.className = 'autocomplete-empty';
+        empty.textContent = root.dataset.emptyText || 'No matches.';
+        dfDollar(popover).append(empty);
+      }
+      // the APG combobox wiring
+      input.setAttribute('role', 'combobox');
+      input.setAttribute('aria-autocomplete', 'list');
+      input.setAttribute('aria-controls', list.id);
+      input.setAttribute('autocomplete', 'off');
+      if (!input.hasAttribute('aria-expanded')) input.setAttribute('aria-expanded', 'false');
+      // anchored under the input (CSS anchor positioning)
+      const anchor = `--autocomplete-${root._uid}`;
+      input.style.anchorName = anchor;
+      popover.style.positionAnchor = anchor;
+      root._run = { query: '', records: [], page: 0, hasMore: false, active: -1, seq: 0 };
+      // the closed state's markup, from the start (data-state, aria-expanded)
+      applyMarkup(root, { name: 'default' });
 
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(root, autocompleteApi, { name: 'default', config: { query: '', value: null, label: '' } });
-  });
+      // typing: debounced search (a newer keystroke restarts the wait) - and
+      // whatever is in flight is already stale: abort it now, not after the wait
+      input.addEventListener('input', () => {
+        abort(root);
+        const query = input.value.trim();
+        const hidden = dfDollar(root).find<HTMLInputElement>('.autocomplete-value').get(0);
+        if (hidden) hidden.value = '';
+        root._timer = setTimeout(() => search(root, query), configOf(root).debounce);
+      });
+      input.addEventListener('keydown', (e) => {
+        const name = root.store.value.name;
+        const run = root._run;
+        switch (e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            if (name === 'default') search(root, input.value.trim());
+            else activate(root, run.active + 1);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            if (name !== 'default') activate(root, run.active - 1);
+            break;
+          case 'PageDown':
+            if (name !== 'default') {
+              e.preventDefault();
+              activate(root, run.active + 10);
+            }
+            break;
+          case 'PageUp':
+            if (name !== 'default') {
+              e.preventDefault();
+              activate(root, run.active - 10);
+            }
+            break;
+          case 'Enter':
+            if (name === 'open' && run.active >= 0) {
+              e.preventDefault();
+              choose(root, run.active);
+            }
+            break;
+          case 'Escape':
+            // APG: Escape closes the popup; a second Escape clears the input
+            if (name !== 'default') autocompleteApi.setState(root, 'default');
+            else if (input.value) {
+              input.value = '';
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            e.preventDefault();
+            break;
+          case 'Tab':
+            if (name !== 'default') autocompleteApi.setState(root, 'default');
+            break;
+        }
+      });
+      // pointer: pressing an option takes it (pointerdown keeps the focus in the input)
+      list.addEventListener('pointerdown', (e) => {
+        const option = (e.target as HTMLElement).closest?.<HTMLElement>('.autocomplete-option');
+        if (!option) return;
+        e.preventDefault();
+        choose(root, Number(option.dataset.index));
+      });
+      list.addEventListener('pointermove', (e) => {
+        const option = (e.target as HTMLElement).closest?.<HTMLElement>('.autocomplete-option');
+        if (option && Number(option.dataset.index) !== root._run.active) activate(root, Number(option.dataset.index));
+      });
+      // infinite: near the end of the list, the next page
+      list.addEventListener(
+        'scroll',
+        () => {
+          if (list.scrollTop + list.clientHeight >= list.scrollHeight - 48) loadMore(root);
+        },
+        { passive: true },
+      );
+      popover.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest?.('.autocomplete-retry')) search(root, root._run.query);
+      });
+      // leaving the widget closes it
+      root.addEventListener('focusout', (e) => {
+        if (e.relatedTarget && root.contains(e.relatedTarget as Node)) return;
+        if (root.store.value.name !== 'default') autocompleteApi.setState(root, 'default');
+      });
+
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(root, autocompleteApi, { name: 'default', config: { query: '', value: null, label: '' } });
+    });
 }
 
 init();

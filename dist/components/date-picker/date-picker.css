@@ -18,7 +18,9 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
     cursor: pointer;
 
     &:focus {
@@ -39,11 +41,31 @@
     /* -- Sizes: same ladder as .input (md = 2.25rem; the unsized default
        stays at the historical 2.5rem) so date fields sit in the same row
        rhythm as text inputs at every step. */
-    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;    font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem;  font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;   font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;      font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;   font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding: 0 0.625rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding: 0 0.75rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding: 0 1rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      padding: 0 1.25rem;
+      font-size: 1.125rem;
+    }
 
     /* -- Out of range / invalid ----------------------------------
        The browser already rejects a TYPED date outside min/max (validity
@@ -66,7 +88,9 @@
       opacity: 0.6;
       transition: opacity 150ms;
 
-      &:hover { opacity: 1; }
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
@@ -82,11 +106,12 @@
     color: var(--muted-foreground);
   }
 
-  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *))
+    ~ .date-input-hint {
     color: var(--destructive);
 
     &::before {
-      content: '⚠\FE0E  ';
+      content: "⚠\FE0E  ";
       font-weight: 600;
     }
   }
@@ -122,7 +147,8 @@
       border-width: 2px;
     }
 
-    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *))
+      ~ .date-input-hint {
       color: LinkText;
     }
   }

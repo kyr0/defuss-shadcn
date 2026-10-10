@@ -48,9 +48,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```html example label="Default" hint="Radio &quot;tabs&quot; switch the install command - read by :has(), no script. The copy button uses the Clipboard API (one line of page script) and announces &quot;Copied&quot;." previewStyle="align-items:stretch;"
 <figure class="mk-code-block">
   <div class="mk-code-block-head">
-  <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
-    <label><input type="radio" name="cb-pm" value="npm" checked>npm</label><label><input type="radio" name="cb-pm" value="pnpm">pnpm</label><label><input type="radio" name="cb-pm" value="bun">bun</label>
-  </div>
+    <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
+      <label><input type="radio" name="cb-pm" value="npm" checked />npm</label
+      ><label><input type="radio" name="cb-pm" value="pnpm" />pnpm</label
+      ><label><input type="radio" name="cb-pm" value="bun" />bun</label>
+    </div>
     <button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button>
   </div>
   <pre data-tab="npm"><code><span>npm install defuss-shadcn</span></code></pre>
@@ -59,21 +61,35 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <span class="mk-code-block-status" role="status"></span>
 </figure>
 <script>
-  document.querySelectorAll('.mk-code-block-copy').forEach((b) => b.addEventListener('click', async () => {
-    const fig = b.closest('.mk-code-block');
-    const pre = [...fig.querySelectorAll('pre')].find((p) => p.checkVisibility());
-    try { await navigator.clipboard.writeText(pre.innerText.trim()); } catch { return; }
-    b.toggleAttribute('data-copied', true);
-    fig.querySelector('.mk-code-block-status').textContent = 'Copied';
-    setTimeout(() => { b.removeAttribute('data-copied'); fig.querySelector('.mk-code-block-status').textContent = ''; }, 1500);
-  }));
+  document.querySelectorAll('.mk-code-block-copy').forEach((b) =>
+    b.addEventListener('click', async () => {
+      const fig = b.closest('.mk-code-block');
+      const pre = [...fig.querySelectorAll('pre')].find((p) => p.checkVisibility());
+      try {
+        await navigator.clipboard.writeText(pre.innerText.trim());
+      } catch {
+        return;
+      }
+      b.toggleAttribute('data-copied', true);
+      fig.querySelector('.mk-code-block-status').textContent = 'Copied';
+      setTimeout(() => {
+        b.removeAttribute('data-copied');
+        fig.querySelector('.mk-code-block-status').textContent = '';
+      }, 1500);
+    }),
+  );
 </script>
 ```
 
 ```html example label="File" hint="data-variant='file': the file name in the header, line numbers from a CSS counter (data-numbers) and two highlighted lines (data-highlight)." previewStyle="align-items:stretch;"
 <figure class="mk-code-block" data-variant="file">
-  <div class="mk-code-block-head"><span class="mk-code-block-file"><i data-lucide="file-code"></i>app/layout.html</span><button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button></div>
-  <pre data-numbers><code><span><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"theme/utils/default-semantic-tokens.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"components/all.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;script</span> type=<span class="mk-code-block-s">"module"</span> src=<span class="mk-code-block-s">"components/all.js"</span><span class="mk-code-block-k">&gt;&lt;/script&gt;</span></span><span><span class="mk-code-block-c">&lt;!-- that's it: every component, styled and wired --&gt;</span></span></code></pre>
+  <div class="mk-code-block-head"
+    ><span class="mk-code-block-file"><i data-lucide="file-code"></i>app/layout.html</span
+    ><button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button
+  ></div>
+  <pre
+    data-numbers
+  ><code><span><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"theme/utils/default-semantic-tokens.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;link</span> rel=<span class="mk-code-block-s">"stylesheet"</span> href=<span class="mk-code-block-s">"components/all.css"</span><span class="mk-code-block-k">&gt;</span></span><span data-highlight><span class="mk-code-block-k">&lt;script</span> type=<span class="mk-code-block-s">"module"</span> src=<span class="mk-code-block-s">"components/all.js"</span><span class="mk-code-block-k">&gt;&lt;/script&gt;</span></span><span><span class="mk-code-block-c">&lt;!-- that's it: every component, styled and wired --&gt;</span></span></code></pre>
   <span class="mk-code-block-status" role="status"></span>
 </figure>
 ```

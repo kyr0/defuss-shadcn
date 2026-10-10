@@ -10,7 +10,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -34,9 +40,16 @@ export interface MenubarStateConfigs {
   };
 }
 
-const triggersOf = (bar) => Array.from(dfDollar(bar).find<HTMLButtonElement>('.menubar-trigger').toArray()).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
-const menuOf = (trigger) => dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '')).get(0);
-const openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(':popover-open')) ?? null;
+const triggersOf = (bar) =>
+  Array.from(dfDollar(bar).find<HTMLButtonElement>('.menubar-trigger').toArray()).filter(
+    (t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true',
+  );
+const menuOf = (trigger) =>
+  dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '')).get(0);
+const openMenuOf = (bar) =>
+  triggersOf(bar)
+    .map(menuOf)
+    .find((m) => m?.matches(':popover-open')) ?? null;
 
 function setRoving(bar, active) {
   triggersOf(bar).forEach((t) => t.setAttribute('tabindex', t === active ? '0' : '-1'));
@@ -48,7 +61,10 @@ function openMenu(bar, trigger, quiet = false) {
   const menu = menuOf(trigger);
   if (!menu) return;
   setRoving(bar, trigger);
-  if (menu.matches(':popover-open')) { if (!quiet) focusItem(menu); return; }
+  if (menu.matches(':popover-open')) {
+    if (!quiet) focusItem(menu);
+    return;
+  }
   menu._noFocus = quiet;
   if (quiet) trigger.focus({ preventScroll: true });
   safeShowPopover(menu);
@@ -56,7 +72,12 @@ function openMenu(bar, trigger, quiet = false) {
 
 /** Focus the first (or last) own item of an open menu. */
 function focusItem(menu, last = false) {
-  const own = Array.from(dfDollar(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !(x as HTMLButtonElement).disabled && x.getAttribute('aria-disabled') !== 'true');
+  const own = Array.from(dfDollar(menu).find('[role^="menuitem"]').toArray()).filter(
+    (x) =>
+      x.closest('[role="menu"]') === menu &&
+      !(x as HTMLButtonElement).disabled &&
+      x.getAttribute('aria-disabled') !== 'true',
+  );
   own.forEach((x) => x.removeAttribute('data-highlighted'));
   const item = last ? own.at(-1) : own[0];
   item?.setAttribute('data-highlighted', '');
@@ -79,12 +100,23 @@ function triggerStateChange(bar, stateName, config) {
   switch (stateName) {
     case 'default': {
       const open = openMenuOf(bar);
-      if (open) { try { open.hidePopover(); } catch { /* closed */ } }
+      if (open) {
+        try {
+          open.hidePopover();
+        } catch {
+          /* closed */
+        }
+      }
       break;
     }
     case 'open': {
       const ts = triggersOf(bar);
-      const t = typeof config.menu === 'number' ? ts[config.menu] : config.menu ? ts.find((x) => x.dataset.dropdownTrigger === config.menu) : ts[0];
+      const t =
+        typeof config.menu === 'number'
+          ? ts[config.menu]
+          : config.menu
+            ? ts.find((x) => x.dataset.dropdownTrigger === config.menu)
+            : ts[0];
       if (t) openMenu(bar, t);
       break;
     }
@@ -110,76 +142,117 @@ df$.menubarApi = menubarApi;
 df$.menubarStates = menubarStates;
 
 function init() {
-  dfDollar('.menubar:not([data-init])').toArray().forEach((bar) => {
-    bar.dataset.init = '';
-    if (!bar.hasAttribute('role')) bar.setAttribute('role', 'menubar');
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(bar, menubarApi);
-    const triggers = triggersOf(bar);
-    triggers.forEach((t) => { if (!t.hasAttribute('role')) t.setAttribute('role', 'menuitem'); });
-    setRoving(bar, triggers[0]);
+  dfDollar('.menubar:not([data-init])')
+    .toArray()
+    .forEach((bar) => {
+      bar.dataset.init = '';
+      if (!bar.hasAttribute('role')) bar.setAttribute('role', 'menubar');
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(bar, menubarApi);
+      const triggers = triggersOf(bar);
+      triggers.forEach((t) => {
+        if (!t.hasAttribute('role')) t.setAttribute('role', 'menuitem');
+      });
+      setRoving(bar, triggers[0]);
 
-    // keep the state name honest whatever opened / closed a menu
-    triggers.forEach((t) => {
-      menuOf(t)?.addEventListener('toggle', () => { bar.dataset.stateName = openMenuOf(bar) ? 'open' : 'default'; });
-    });
+      // keep the state name honest whatever opened / closed a menu
+      triggers.forEach((t) => {
+        menuOf(t)?.addEventListener('toggle', () => {
+          bar.dataset.stateName = openMenuOf(bar) ? 'open' : 'default';
+        });
+      });
 
-    // hover switching while a menu is open
-    bar.addEventListener('pointerover', (e) => {
-      const t = e.target instanceof Element ? e.target.closest<HTMLButtonElement>('.menubar-trigger') : null;
-      if (!t || t.closest('.menubar') !== bar || !triggersOf(bar).includes(t)) return;
-      const open = openMenuOf(bar);
-      if (open && menuOf(t) !== open) openMenu(bar, t, true);
-    });
+      // hover switching while a menu is open
+      bar.addEventListener('pointerover', (e) => {
+        const t = e.target instanceof Element ? e.target.closest<HTMLButtonElement>('.menubar-trigger') : null;
+        if (!t || t.closest('.menubar') !== bar || !triggersOf(bar).includes(t)) return;
+        const open = openMenuOf(bar);
+        if (open && menuOf(t) !== open) openMenu(bar, t, true);
+      });
 
-    bar.addEventListener('keydown', (e) => {
-      const ts = triggersOf(bar);
-      const rtl = getComputedStyle(bar).direction === 'rtl';
-      const next = rtl ? 'ArrowLeft' : 'ArrowRight';
-      const prev = rtl ? 'ArrowRight' : 'ArrowLeft';
-      const onTrigger = e.target instanceof Element && e.target.classList.contains('menubar-trigger');
-      const openMenuEl = openMenuOf(bar);
-      const i = onTrigger ? ts.indexOf(e.target as HTMLButtonElement) : ts.findIndex((t) => menuOf(t) === openMenuEl);
-      if (i < 0) return;
-      const step = (d) => ts[(i + d + ts.length) % ts.length];
+      bar.addEventListener('keydown', (e) => {
+        const ts = triggersOf(bar);
+        const rtl = getComputedStyle(bar).direction === 'rtl';
+        const next = rtl ? 'ArrowLeft' : 'ArrowRight';
+        const prev = rtl ? 'ArrowRight' : 'ArrowLeft';
+        const onTrigger = e.target instanceof Element && e.target.classList.contains('menubar-trigger');
+        const openMenuEl = openMenuOf(bar);
+        const i = onTrigger ? ts.indexOf(e.target as HTMLButtonElement) : ts.findIndex((t) => menuOf(t) === openMenuEl);
+        if (i < 0) return;
+        const step = (d) => ts[(i + d + ts.length) % ts.length];
 
-      if (onTrigger) {
-        // with a menu open (hover switching left focus on its trigger), the
-        // arrows switch the open menu; otherwise they just move focus
-        const moveTo = (t) => { if (openMenuEl) openMenu(bar, t); else { setRoving(bar, t); t.focus(); } };
-        switch (e.key) {
-          case next: e.preventDefault(); moveTo(step(1)); break;
-          case prev: e.preventDefault(); moveTo(step(-1)); break;
-          case 'Home': e.preventDefault(); setRoving(bar, ts[0]); ts[0].focus(); break;
-          case 'End': e.preventDefault(); setRoving(bar, ts[ts.length - 1]); ts[ts.length - 1].focus(); break;
-          case 'ArrowDown': case 'Enter': case ' ':
-            e.preventDefault(); openMenu(bar, ts[i]); break;
-          case 'ArrowUp': {
-            e.preventDefault();
-            const menu = menuOf(ts[i]);
-            // up opens with the LAST item highlighted - in the open toggle,
-            // after the dropdown's own handler highlighted the first one (the
-            // toggle event is a queued task; a timer raced it under load)
-            if (menu && !menu.matches(':popover-open')) {
-              menu.addEventListener('toggle', (ev) => { if ((ev as ToggleEvent).newState === 'open') focusItem(menu, true); }, { once: true });
-              openMenu(bar, ts[i]);
-            } else {
-              openMenu(bar, ts[i]);
-              if (menu) focusItem(menu, true);
+        if (onTrigger) {
+          // with a menu open (hover switching left focus on its trigger), the
+          // arrows switch the open menu; otherwise they just move focus
+          const moveTo = (t) => {
+            if (openMenuEl) openMenu(bar, t);
+            else {
+              setRoving(bar, t);
+              t.focus();
             }
-            break;
+          };
+          switch (e.key) {
+            case next:
+              e.preventDefault();
+              moveTo(step(1));
+              break;
+            case prev:
+              e.preventDefault();
+              moveTo(step(-1));
+              break;
+            case 'Home':
+              e.preventDefault();
+              setRoving(bar, ts[0]);
+              ts[0].focus();
+              break;
+            case 'End':
+              e.preventDefault();
+              setRoving(bar, ts[ts.length - 1]);
+              ts[ts.length - 1].focus();
+              break;
+            case 'ArrowDown':
+            case 'Enter':
+            case ' ':
+              e.preventDefault();
+              openMenu(bar, ts[i]);
+              break;
+            case 'ArrowUp': {
+              e.preventDefault();
+              const menu = menuOf(ts[i]);
+              // up opens with the LAST item highlighted - in the open toggle,
+              // after the dropdown's own handler highlighted the first one (the
+              // toggle event is a queued task; a timer raced it under load)
+              if (menu && !menu.matches(':popover-open')) {
+                menu.addEventListener(
+                  'toggle',
+                  (ev) => {
+                    if ((ev as ToggleEvent).newState === 'open') focusItem(menu, true);
+                  },
+                  { once: true },
+                );
+                openMenu(bar, ts[i]);
+              } else {
+                openMenu(bar, ts[i]);
+                if (menu) focusItem(menu, true);
+              }
+              break;
+            }
           }
+          return;
         }
-        return;
-      }
-      // inside an open menu: left / right that the dropdown did not use
-      // (a submenu trigger opens on right, a submenu closes on left) move to
-      // the neighbouring menu
-      if (e.defaultPrevented) return;
-      if (e.key === next) { e.preventDefault(); openMenu(bar, step(1)); }
-      else if (e.key === prev) { e.preventDefault(); openMenu(bar, step(-1)); }
+        // inside an open menu: left / right that the dropdown did not use
+        // (a submenu trigger opens on right, a submenu closes on left) move to
+        // the neighbouring menu
+        if (e.defaultPrevented) return;
+        if (e.key === next) {
+          e.preventDefault();
+          openMenu(bar, step(1));
+        } else if (e.key === prev) {
+          e.preventDefault();
+          openMenu(bar, step(-1));
+        }
+      });
     });
-  });
 }
 
 init();

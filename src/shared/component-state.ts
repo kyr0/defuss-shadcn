@@ -122,7 +122,17 @@ export interface ElementStateApi {
   settled: () => Promise<void>;
 }
 
-type Entry = { store: Store<ComponentState>; model: ElementModel; recorded: WeakSet<ComponentState>; spec: StateSpec<HTMLElement>; queued: boolean; observer?: MutationObserver; unlisten?: () => void; pending?: Promise<unknown>; bound?: unknown };
+type Entry = {
+  store: Store<ComponentState>;
+  model: ElementModel;
+  recorded: WeakSet<ComponentState>;
+  spec: StateSpec<HTMLElement>;
+  queued: boolean;
+  observer?: MutationObserver;
+  unlisten?: () => void;
+  pending?: Promise<unknown>;
+  bound?: unknown;
+};
 const entries = new WeakMap<Element, Entry>();
 
 /** name + JSON-equal config: no notification for a re-read of the same state */
@@ -162,16 +172,27 @@ function quietly(entry: Entry, next: ComponentState): void {
  * 'default' reports 'running') - seen in the observer's records, even when
  * the value did not change.
  */
-function applyAndRecord(el: HTMLElement, entry: Entry, next: ComponentState, previous: ComponentState, incoming: Record<string, unknown> = next.config): unknown {
+function applyAndRecord(
+  el: HTMLElement,
+  entry: Entry,
+  next: ComponentState,
+  previous: ComponentState,
+  incoming: Record<string, unknown> = next.config,
+): unknown {
   entry.observer?.takeRecords();
   const result = entry.spec.apply(el, next, previous, incoming);
-  const named = entry.observer?.takeRecords().some((r) => r.attributeName === 'data-state-name') && el.dataset.stateName;
+  const named =
+    entry.observer?.takeRecords().some((r) => r.attributeName === 'data-state-name') && el.dataset.stateName;
   quietly(entry, named && entry.spec.states.includes(named) ? { name: named, config: next.config } : { ...next });
   // an async state (a diagram renders): settled() waits for it, then reads back
   if (result && typeof (result as Promise<unknown>).then === 'function') {
     const pending = Promise.resolve(result).then(
-      () => { if (entries.get(el) === entry) sync(el, entry); },
-      () => { if (entries.get(el) === entry) sync(el, entry); },
+      () => {
+        if (entries.get(el) === entry) sync(el, entry);
+      },
+      () => {
+        if (entries.get(el) === entry) sync(el, entry);
+      },
     );
     entry.pending = pending;
   }

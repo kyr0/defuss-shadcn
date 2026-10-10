@@ -110,10 +110,49 @@ function parse(text) {
   }
   return entries;
 }
-var MONTHS = { jan: "January", feb: "February", mar: "March", apr: "April", may: "May", jun: "June", jul: "July", aug: "August", sep: "September", oct: "October", nov: "November", dec: "December" };
-var IEEE_MONTH = { January: "Jan.", February: "Feb.", March: "Mar.", April: "Apr.", May: "May", June: "Jun.", July: "Jul.", August: "Aug.", September: "Sep.", October: "Oct.", November: "Nov.", December: "Dec." };
+var MONTHS = {
+  jan: "January",
+  feb: "February",
+  mar: "March",
+  apr: "April",
+  may: "May",
+  jun: "June",
+  jul: "July",
+  aug: "August",
+  sep: "September",
+  oct: "October",
+  nov: "November",
+  dec: "December"
+};
+var IEEE_MONTH = {
+  January: "Jan.",
+  February: "Feb.",
+  March: "Mar.",
+  April: "Apr.",
+  May: "May",
+  June: "Jun.",
+  July: "Jul.",
+  August: "Aug.",
+  September: "Sep.",
+  October: "Oct.",
+  November: "Nov.",
+  December: "Dec."
+};
 var ACCENTS = { '"': "̈", "'": "́", "`": "̀", "^": "̂", "~": "̃", "=": "̄", ".": "̇", c: "̧", v: "̌", u: "̆", H: "̋", k: "̨" };
-var SYMBOLS = { ss: "ß", o: "ø", O: "Ø", aa: "å", AA: "Å", ae: "æ", AE: "Æ", l: "ł", L: "Ł", i: "ı", oe: "œ", OE: "Œ" };
+var SYMBOLS = {
+  ss: "ß",
+  o: "ø",
+  O: "Ø",
+  aa: "å",
+  AA: "Å",
+  ae: "æ",
+  AE: "Æ",
+  l: "ł",
+  L: "Ł",
+  i: "ı",
+  oe: "œ",
+  OE: "Œ"
+};
 function clean(value) {
   return String(value ?? "").replace(/\{?\\([`'"^~=.])\s*\{?([A-Za-z])\}?\}?/g, (_m, a, ch) => (ch + ACCENTS[a]).normalize("NFC")).replace(/\{?\\([cvuHk])\s*\{([A-Za-z])\}\}?/g, (_m, a, ch) => (ch + ACCENTS[a]).normalize("NFC")).replace(/\{?\\(ss|aa|AA|ae|AE|oe|OE|o|O|l|L|i)\b\s*\}?/g, (_m, c) => SYMBOLS[c]).replace(/\\(TeX|LaTeX|BibTeX|XeTeX|LuaTeX)\b\s*(\{\})?/g, "$1").replace(/\\([&%$#_{}])/g, "$1").replace(/---/g, "—").replace(/--/g, "–").replace(/~/g, " ").replace(/\\[A-Za-z]+\s*/g, "").replace(/[{}]/g, "").replace(/\s+/g, " ").trim();
 }
@@ -309,7 +348,10 @@ function bibtexOut(entries, { align = true, highlight = true } = {}) {
       const href = k === "doi" ? doiUrl(value.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")) : /^https?:\/\/\S+$/.test(value) ? value : null;
       const shown = href && highlight ? `<span class="bibtex-value">${anchor(href, value)}</span>` : span("value", value);
       const [open, close] = raw === undefined ? ["{", "}"] : ["", ""];
-      return { html: `  ${span("field", k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`, text: `  ${k}${pad} = ${open}${value}${close},` };
+      return {
+        html: `  ${span("field", k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`,
+        text: `  ${k}${pad} = ${open}${value}${close},`
+      };
     });
     html.push([`@${span("type", e.type)}{${span("key", e.key)},`, ...lines.map((l) => l.html), "}"].join(`
 `));
@@ -412,7 +454,10 @@ function triggerStateChange(root, state) {
   if (fmt !== root._shown) {
     root._shown = fmt;
     show(root, fmt);
-    root.dispatchEvent(new CustomEvent("bibtex-format", { bubbles: true, detail: { format: fmt, text: root._text } }));
+    root.dispatchEvent(new CustomEvent("bibtex-format", {
+      bubbles: true,
+      detail: { format: fmt, text: root._text }
+    }));
   }
   const copied = state.name === "copied";
   dfDollar(root._bar).find(".bibtex-copy-label").text(copied ? "Copied" : "Copy");
@@ -429,7 +474,10 @@ var bibtexApi = componentState({
   component: "bibtex",
   states: bibtexStates,
   apply: (root, state) => triggerStateChange(root, state),
-  read: (root, state) => ({ name: dfDollar(root).attr("data-state-name") || state.name, config: { ...state.config, format: dfDollar(root).attr("data-format") } }),
+  read: (root, state) => ({
+    name: dfDollar(root).attr("data-state-name") || state.name,
+    config: { ...state.config, format: dfDollar(root).attr("data-format") }
+  }),
   markup: (el, state) => {
     const authored = state.model.attrs.find(([name]) => name === "data-format");
     applyMarkup(el, state, authored ? authored[1] : null);
@@ -448,7 +496,10 @@ async function copy(root) {
   }
   if (ok)
     root.api.setState("copied", { format: fmt });
-  root.dispatchEvent(new CustomEvent("bibtex-copy", { bubbles: true, detail: { format: fmt, text: root._text, ok } }));
+  root.dispatchEvent(new CustomEvent("bibtex-copy", {
+    bubbles: true,
+    detail: { format: fmt, text: root._text, ok }
+  }));
   return ok;
 }
 var resolve = (target) => typeof target === "string" ? dfDollar(target).get(0) : target;
@@ -498,5 +549,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=71BCE3AB6B76AF3064756E2164756E21
+//# debugId=CB7C749DC621EE7264756E2164756E21
 //# sourceMappingURL=papers.js.map

@@ -27,9 +27,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:0.85rem; align-items:flex-start;">
+<div style="display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-start">
   <div id="anim-zoom-target" class="anim-zoom-box">zoom me</div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-pause">Pause</button>
@@ -37,9 +37,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-reset">Reset</button>
   </div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center">
     <label class="text-sm" for="anim-zoom-duration">Duration</label>
-    <input class="input" id="anim-zoom-duration" type="number" min="0" step="50" value="1500" style="width:6rem;" />
+    <input class="input" id="anim-zoom-duration" type="number" min="0" step="50" value="1500" style="width: 6rem" />
     <label class="text-sm" for="anim-zoom-origin">Origin</label>
     <select class="select" id="anim-zoom-origin">
       <option value="50% 50%" selected>center</option>
@@ -65,8 +65,14 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   // the lifecycle buttons act on whichever channel played last
   let last = 'zoomIn';
   const on = (id, fn) => document.getElementById(id).addEventListener('click', fn);
-  on('anim-zoom-in', () => { last = 'zoomIn'; df$.anim.zoomIn.play(target, opts()); });
-  on('anim-zoom-out', () => { last = 'zoomOut'; df$.anim.zoomOut.play(target, opts()); });
+  on('anim-zoom-in', () => {
+    last = 'zoomIn';
+    df$.anim.zoomIn.play(target, opts());
+  });
+  on('anim-zoom-out', () => {
+    last = 'zoomOut';
+    df$.anim.zoomOut.play(target, opts());
+  });
   on('anim-zoom-pause', () => df$.anim[last].pause(target));
   on('anim-zoom-resume', () => df$.anim[last].resume(target));
   on('anim-zoom-finish', () => df$.anim[last].finish(target));
@@ -89,8 +95,11 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div id="anim-zoom-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
-  <div style="height: 600px; display: flex; align-items: center; justify-content: center;">
+<div
+  id="anim-zoom-scroller"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div style="height: 600px; display: flex; align-items: center; justify-content: center">
     <div id="anim-zoom-scroll-target" class="anim-zoom-box">scroll to grow</div>
   </div>
 </div>

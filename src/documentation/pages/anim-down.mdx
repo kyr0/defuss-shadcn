@@ -29,9 +29,9 @@ Slide Down is the directional slide animation: `slideIn` starts the element at t
     font-size: 0.85rem;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:0.75rem;">
+<div style="display: flex; flex-direction: column; gap: 0.75rem">
   <div id="anim-down-target">slide me</div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-down-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-down-out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim-down-dir="north" aria-pressed="true">N</button>
@@ -43,9 +43,9 @@ Slide Down is the directional slide animation: `slideIn` starts the element at t
     <button class="btn" data-variant="outline" data-size="sm" id="anim-down-finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-down-reset">Reset</button>
   </div>
-  <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.85rem;">
+  <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem">
     <label for="anim-down-duration">Duration (ms)</label>
-    <input class="input" id="anim-down-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <input class="input" id="anim-down-duration" type="number" min="50" step="50" value="1500" style="width: 6rem" />
     <label for="anim-down-easing">Easing</label>
     <select class="select" id="anim-down-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default (ease-out-expo)</option>
@@ -61,7 +61,7 @@ Slide Down is the directional slide animation: `slideIn` starts the element at t
   const durationInput = document.getElementById('anim-down-duration');
   const easingSelect = document.getElementById('anim-down-easing');
   let currentDirection = 'north'; // default: slides down (matches motion.css "down")
-  let lastChannel = 'slideIn';    // lifecycle buttons act on the last-played channel
+  let lastChannel = 'slideIn'; // lifecycle buttons act on the last-played channel
 
   const config = () => ({
     direction: currentDirection,
@@ -81,8 +81,9 @@ Slide Down is the directional slide animation: `slideIn` starts the element at t
   document.querySelectorAll('[data-anim-down-dir]').forEach((btn) => {
     btn.addEventListener('click', () => {
       currentDirection = btn.dataset.animDownDir;
-      document.querySelectorAll('[data-anim-down-dir]').forEach((b) =>
-        b.setAttribute('aria-pressed', String(b === btn)));
+      document
+        .querySelectorAll('[data-anim-down-dir]')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
     });
   });
 
@@ -111,9 +112,18 @@ Slide Down is the directional slide animation: `slideIn` starts the element at t
     font-size: 0.85rem;
   }
 </style>
-<div id="anim-down-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
-  <div style="height: 600px; display: flex; flex-direction: column; justify-content: space-between;">
-    <p class="text-sm text-muted-foreground" style="margin:0;">Scroll down - the box slides in as you go.</p>
+<div
+  id="anim-down-scroller"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div style="height: 600px; display: flex; flex-direction: column; justify-content: space-between">
+    <p class="text-sm text-muted-foreground" style="margin: 0">Scroll down - the box slides in as you go.</p>
     <div id="anim-down-scroll-target">scroll-driven</div>
   </div>
 </div>

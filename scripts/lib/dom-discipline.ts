@@ -27,8 +27,11 @@ export const apiName = (component: string): string => component.replace(/-([a-z]
  *  State API (AGENTS.md "State API" → render). The object is cut out by
  *  brace depth, so a render function elsewhere in the file does not count. */
 export function hasRender(component: string, src: string): boolean {
-  // componentState() builds render() from the component's markup function
-  if (new RegExp(`${apiName(component)}\\s*=\\s*(Object\\.assign\\()?componentState\\s*(<[^>]*>)?\\(`).test(src)) return true;
+  // componentState() builds render() from the component's markup function -
+  // `Object.assign(` may end its line. VERIFIED: oxfmt wraps the long call and
+  // calendar + theme-switcher lost their render() recognition until the regex
+  // accepted the newline (tests/dom-discipline.test.ts pins it)
+  if (new RegExp(`${apiName(component)}\\s*=\\s*(Object\\.assign\\(\\s*)?componentState\\s*(<[^>]*>)?\\(`).test(src)) return true;
   const m = new RegExp(`${apiName(component)}\\s*=\\s*\\{`).exec(src);
   if (!m) return false;
   let depth = 0;

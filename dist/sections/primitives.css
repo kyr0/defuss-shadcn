@@ -34,7 +34,9 @@
     border-block-end: 1px solid var(--border);
     padding-block-end: 0.5rem;
 
-    &:first-child { margin-block-start: 0; }
+    &:first-child {
+      margin-block-start: 0;
+    }
   }
 
   .h3 {
@@ -63,7 +65,9 @@
     text-wrap: pretty;
     color: var(--foreground);
 
-    &:not(:first-child) { margin-block-start: 1.5rem; }
+    &:not(:first-child) {
+      margin-block-start: 1.5rem;
+    }
   }
 
   /* -- Lead --------------------------------------------------- */
@@ -113,7 +117,9 @@
     hanging-punctuation: first last;
     color: var(--foreground);
 
-    & p { margin: 0; }
+    & p {
+      margin: 0;
+    }
   }
 
   /* -- Inline code -------------------------------------------- */
@@ -190,8 +196,12 @@
     text-emphasis: filled dot;
     text-emphasis-position: over right;
   }
-  .text-emphasis:lang(ja) { text-emphasis-style: filled sesame; }
-  .text-emphasis:lang(zh) { text-emphasis-position: under right; }
+  .text-emphasis:lang(ja) {
+    text-emphasis-style: filled sesame;
+  }
+  .text-emphasis:lang(zh) {
+    text-emphasis-position: under right;
+  }
 
   /* ruby annotations (furigana, pinyin, zhuyin) read as small, muted type */
   :is(.p, .lead, .blockquote, .h1, .h2, .h3, .h4) rt {
@@ -246,27 +256,65 @@
     orphans: 2;
     widows: 2;
 
-    & > p { margin-block: 0 1em; }
+    & > p {
+      margin-block: 0 1em;
+    }
     /* every block keeps the same distance from the text around it */
-    & > :is(figure, table, blockquote, pre, hr, .separator, .typeset-group, .chart, .diagram, .mockup-code, .table-container) {
+    &
+      > :is(
+        figure,
+        table,
+        blockquote,
+        pre,
+        hr,
+        .separator,
+        .typeset-group,
+        .chart,
+        .diagram,
+        .mockup-code,
+        .table-container
+      ) {
       margin-block: var(--typeset-gap);
     }
     /* a figure spans the measure (the browser indents it 40px by default) */
-    & > :is(figure, blockquote) { margin-inline: 0; }
-    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { margin-block: var(--typeset-gap) 0.5em; }
-    & > :first-child { margin-block-start: 0; }
-    & :is(figure, blockquote, table, pre, .typeset-group) { break-inside: avoid; }
-    & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { break-after: avoid; }
-    & .typeset-span { column-span: all; }
+    & > :is(figure, blockquote) {
+      margin-inline: 0;
+    }
+    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
+      margin-block: var(--typeset-gap) 0.5em;
+    }
+    & > :first-child {
+      margin-block-start: 0;
+    }
+    & :is(figure, blockquote, table, pre, .typeset-group) {
+      break-inside: avoid;
+    }
+    & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
+      break-after: avoid;
+    }
+    & .typeset-span {
+      column-span: all;
+    }
     /* the columns below a spanning heading or figure start level: the first
        block keeps no top margin - across the column break it cannot collapse
        into the spanner's, so a subheading sat lower than the text beside it */
-    &[data-columns] > .typeset-span + :not(.typeset-span) { margin-block-start: 0; }
+    &[data-columns] > .typeset-span + :not(.typeset-span) {
+      margin-block-start: 0;
+    }
 
-    &[data-columns] { max-inline-size: none; column-gap: var(--typeset-column-gap); }
-    &[data-columns="2"] { columns: 2 var(--typeset-column-width); }
-    &[data-columns="3"] { columns: 3 var(--typeset-column-width); }
-    &[data-rule] { column-rule: 1px solid var(--border); }
+    &[data-columns] {
+      max-inline-size: none;
+      column-gap: var(--typeset-column-gap);
+    }
+    &[data-columns="2"] {
+      columns: 2 var(--typeset-column-width);
+    }
+    &[data-columns="3"] {
+      columns: 3 var(--typeset-column-width);
+    }
+    &[data-rule] {
+      column-rule: 1px solid var(--border);
+    }
 
     &[data-align="justify"] {
       text-align: justify;
@@ -277,20 +325,34 @@
       /* text-align-last inherits: a centered caption inside a justified setting
          kept its last line flush left (a two-line figure caption looked
          off-center) - what centers itself takes its last line from its own alignment */
-      & :where(figcaption, caption, .typeset-caption) { text-align-last: auto; }
+      & :where(figcaption, caption, .typeset-caption) {
+        text-align-last: auto;
+      }
     }
 
     /* leading and tracking move together: tight lines close up a little,
        airy lines open up a little, so the grey of the column stays even */
-    &[data-leading="tight"] { --typeset-leading: 1.45; --typeset-tracking: -0.01em; }
-    &[data-leading="loose"] { --typeset-leading: 1.9; --typeset-tracking: 0.01em; }
+    &[data-leading="tight"] {
+      --typeset-leading: 1.45;
+      --typeset-tracking: -0.01em;
+    }
+    &[data-leading="loose"] {
+      --typeset-leading: 1.9;
+      --typeset-tracking: 0.01em;
+    }
 
-    &[data-indent] > p { margin-block: 0; }
-    &[data-indent] > p + p { text-indent: var(--typeset-indent); }
+    &[data-indent] > p {
+      margin-block: 0;
+    }
+    &[data-indent] > p + p {
+      text-indent: var(--typeset-indent);
+    }
     /* text-indent inherits into an inline-block, which then indents ITS first line: a badge,
        a key cap or an epistemic tag at the start of an indented paragraph grew a blank
        inside its left edge */
-    &[data-indent] > p :where(.badge, kbd, .paper-tag) { text-indent: 0; }
+    &[data-indent] > p :where(.badge, kbd, .paper-tag) {
+      text-indent: 0;
+    }
 
     /* the gap is a margin: Chromium ignores logical padding on ::first-letter
        (VERIFIED: probe 2026-10-07 - padding-inline-end computed 0, margin-inline-end 2.52px) */
@@ -367,9 +429,18 @@
     text-wrap: pretty;
     caption-side: top;
 
-    &[data-align="justify"] { text-align: justify; text-align-last: start; hyphens: auto; }
-    &[data-align="center"] { text-align: center; text-wrap: balance; }
-    table > & { margin-block: 0 0.6em; }
+    &[data-align="justify"] {
+      text-align: justify;
+      text-align-last: start;
+      hyphens: auto;
+    }
+    &[data-align="center"] {
+      text-align: center;
+      text-wrap: balance;
+    }
+    table > & {
+      margin-block: 0 0.6em;
+    }
   }
   .typeset-numbered :is(figcaption.typeset-caption)::before {
     counter-increment: typeset-figure;
@@ -377,7 +448,12 @@
     color: var(--foreground);
     font-weight: 600;
   }
-  .typeset-numbered :is(caption.typeset-caption, figure:has(> table) > figcaption.typeset-caption, figure:has(> .table-container) > figcaption.typeset-caption)::before {
+  .typeset-numbered
+    :is(
+      caption.typeset-caption,
+      figure:has(> table) > figcaption.typeset-caption,
+      figure:has(> .table-container) > figcaption.typeset-caption
+    )::before {
     counter-increment: typeset-table;
     content: var(--typeset-table-label) counter(typeset-table) ". ";
   }
@@ -419,10 +495,21 @@
       margin: 0;
       min-inline-size: 0;
     }
-    & > figcaption { grid-column: 1 / -1; margin-block-start: 0.25em; }
-    & img, & video { display: block; inline-size: 100%; block-size: auto; border-radius: var(--radius-md); }
+    & > figcaption {
+      grid-column: 1 / -1;
+      margin-block-start: 0.25em;
+    }
+    & img,
+    & video {
+      display: block;
+      inline-size: 100%;
+      block-size: auto;
+      border-radius: var(--radius-md);
+    }
 
-    &[data-align="middle"] > figure > :first-child { align-self: center; }
+    &[data-align="middle"] > figure > :first-child {
+      align-self: center;
+    }
 
     &[data-variant="cards"] {
       padding: 0;
@@ -443,8 +530,15 @@
       overflow: hidden;
       background: var(--border);
 
-      & > figure { padding: 1rem; background: var(--card); }
-      & > figcaption { margin: 0; padding: 0.75rem 1rem 1rem; background: var(--card); }
+      & > figure {
+        padding: 1rem;
+        background: var(--card);
+      }
+      & > figcaption {
+        margin: 0;
+        padding: 0.75rem 1rem 1rem;
+        background: var(--card);
+      }
     }
   }
   .typeset-subcaption {
@@ -464,7 +558,10 @@
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-contrast: more) {
-    .h1, .h2, .h3, .h4 {
+    .h1,
+    .h2,
+    .h3,
+    .h4 {
       letter-spacing: 0;
     }
 
@@ -547,15 +644,26 @@
       height: 1lh;
       white-space: nowrap;
     }
-    &[data-align="center"] > span > * { text-align: center; }
-    &[data-align="end"] > span > * { text-align: end; }
+    &[data-align="center"] > span > * {
+      text-align: center;
+    }
+    &[data-align="end"] > span > * {
+      text-align: end;
+    }
 
     &:hover > span,
-    &:focus-within > span { animation-play-state: paused; }
+    &:focus-within > span {
+      animation-play-state: paused;
+    }
     &[data-pause="none"]:hover > span,
-    &[data-pause="none"]:focus-within > span { animation-play-state: running; }
+    &[data-pause="none"]:focus-within > span {
+      animation-play-state: running;
+    }
 
-    &[data-direction="down"] > span { flex-direction: column-reverse; animation-name: var(--_down, none); }
+    &[data-direction="down"] > span {
+      flex-direction: column-reverse;
+      animation-name: var(--_down, none);
+    }
 
     /* fade: every line in the same cell, each fades through its slot */
     &[data-effect="fade"] > span {
@@ -568,118 +676,352 @@
       animation: var(--_fade, none) var(--_dur) ease infinite both;
     }
     &[data-effect="fade"]:hover > span > *,
-    &[data-effect="fade"]:focus-within > span > * { animation-play-state: paused; }
-    &[data-effect="fade"][data-pause="none"]:hover > span > * { animation-play-state: running; }
+    &[data-effect="fade"]:focus-within > span > * {
+      animation-play-state: paused;
+    }
+    &[data-effect="fade"][data-pause="none"]:hover > span > * {
+      animation-play-state: running;
+    }
   }
 
   /* the line count picks the keyframes */
-  .text-rotate:has(> span > :nth-child(2):last-child) { --_n: 2; --_name: text-rotate-2; --_down: text-rotate-2-down; --_fade: text-rotate-fade-2; }
-  .text-rotate:has(> span > :nth-child(3):last-child) { --_n: 3; --_name: text-rotate-3; --_down: text-rotate-3-down; --_fade: text-rotate-fade-3; }
-  .text-rotate:has(> span > :nth-child(4):last-child) { --_n: 4; --_name: text-rotate-4; --_down: text-rotate-4-down; --_fade: text-rotate-fade-4; }
-  .text-rotate:has(> span > :nth-child(5):last-child) { --_n: 5; --_name: text-rotate-5; --_down: text-rotate-5-down; --_fade: text-rotate-fade-5; }
-  .text-rotate:has(> span > :nth-child(6):last-child) { --_n: 6; --_name: text-rotate-6; --_down: text-rotate-6-down; --_fade: text-rotate-fade-6; }
+  .text-rotate:has(> span > :nth-child(2):last-child) {
+    --_n: 2;
+    --_name: text-rotate-2;
+    --_down: text-rotate-2-down;
+    --_fade: text-rotate-fade-2;
+  }
+  .text-rotate:has(> span > :nth-child(3):last-child) {
+    --_n: 3;
+    --_name: text-rotate-3;
+    --_down: text-rotate-3-down;
+    --_fade: text-rotate-fade-3;
+  }
+  .text-rotate:has(> span > :nth-child(4):last-child) {
+    --_n: 4;
+    --_name: text-rotate-4;
+    --_down: text-rotate-4-down;
+    --_fade: text-rotate-fade-4;
+  }
+  .text-rotate:has(> span > :nth-child(5):last-child) {
+    --_n: 5;
+    --_name: text-rotate-5;
+    --_down: text-rotate-5-down;
+    --_fade: text-rotate-fade-5;
+  }
+  .text-rotate:has(> span > :nth-child(6):last-child) {
+    --_n: 6;
+    --_name: text-rotate-6;
+    --_down: text-rotate-6-down;
+    --_fade: text-rotate-fade-6;
+  }
 
   /* fade: line k starts its slot k-1 slots later */
-  .text-rotate[data-effect="fade"] > span > :nth-child(2) { animation-delay: calc(var(--_dur) * 1 / var(--_n)); }
-  .text-rotate[data-effect="fade"] > span > :nth-child(3) { animation-delay: calc(var(--_dur) * 2 / var(--_n)); }
-  .text-rotate[data-effect="fade"] > span > :nth-child(4) { animation-delay: calc(var(--_dur) * 3 / var(--_n)); }
-  .text-rotate[data-effect="fade"] > span > :nth-child(5) { animation-delay: calc(var(--_dur) * 4 / var(--_n)); }
-  .text-rotate[data-effect="fade"] > span > :nth-child(6) { animation-delay: calc(var(--_dur) * 5 / var(--_n)); }
+  .text-rotate[data-effect="fade"] > span > :nth-child(2) {
+    animation-delay: calc(var(--_dur) * 1 / var(--_n));
+  }
+  .text-rotate[data-effect="fade"] > span > :nth-child(3) {
+    animation-delay: calc(var(--_dur) * 2 / var(--_n));
+  }
+  .text-rotate[data-effect="fade"] > span > :nth-child(4) {
+    animation-delay: calc(var(--_dur) * 3 / var(--_n));
+  }
+  .text-rotate[data-effect="fade"] > span > :nth-child(5) {
+    animation-delay: calc(var(--_dur) * 4 / var(--_n));
+  }
+  .text-rotate[data-effect="fade"] > span > :nth-child(6) {
+    animation-delay: calc(var(--_dur) * 5 / var(--_n));
+  }
 
   @keyframes text-rotate-2 {
-    0%, 46% { translate: 0 0; }
-    50%, 96% { translate: 0 -50%; }
-    100% { translate: 0 0; }
+    0%,
+    46% {
+      translate: 0 0;
+    }
+    50%,
+    96% {
+      translate: 0 -50%;
+    }
+    100% {
+      translate: 0 0;
+    }
   }
   @keyframes text-rotate-2-down {
-    0%, 46% { translate: 0 -50%; }
-    50%, 96% { translate: 0 0; }
-    100% { translate: 0 -50%; }
+    0%,
+    46% {
+      translate: 0 -50%;
+    }
+    50%,
+    96% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 0 -50%;
+    }
   }
   @keyframes text-rotate-fade-2 {
-    0% { opacity: 0; translate: 0 0.25lh; }
-    4%, 46% { opacity: 1; translate: 0 0; }
-    50%, 100% { opacity: 0; translate: 0 -0.25lh; }
+    0% {
+      opacity: 0;
+      translate: 0 0.25lh;
+    }
+    4%,
+    46% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    50%,
+    100% {
+      opacity: 0;
+      translate: 0 -0.25lh;
+    }
   }
   @keyframes text-rotate-3 {
-    0%, 30.667% { translate: 0 0; }
-    33.333%, 64% { translate: 0 -33.3333%; }
-    66.667%, 97.333% { translate: 0 -66.6667%; }
-    100% { translate: 0 0; }
+    0%,
+    30.667% {
+      translate: 0 0;
+    }
+    33.333%,
+    64% {
+      translate: 0 -33.3333%;
+    }
+    66.667%,
+    97.333% {
+      translate: 0 -66.6667%;
+    }
+    100% {
+      translate: 0 0;
+    }
   }
   @keyframes text-rotate-3-down {
-    0%, 30.667% { translate: 0 -66.6667%; }
-    33.333%, 64% { translate: 0 -33.3333%; }
-    66.667%, 97.333% { translate: 0 0; }
-    100% { translate: 0 -66.6667%; }
+    0%,
+    30.667% {
+      translate: 0 -66.6667%;
+    }
+    33.333%,
+    64% {
+      translate: 0 -33.3333%;
+    }
+    66.667%,
+    97.333% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 0 -66.6667%;
+    }
   }
   @keyframes text-rotate-fade-3 {
-    0% { opacity: 0; translate: 0 0.25lh; }
-    2.667%, 30.667% { opacity: 1; translate: 0 0; }
-    33.333%, 100% { opacity: 0; translate: 0 -0.25lh; }
+    0% {
+      opacity: 0;
+      translate: 0 0.25lh;
+    }
+    2.667%,
+    30.667% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    33.333%,
+    100% {
+      opacity: 0;
+      translate: 0 -0.25lh;
+    }
   }
   @keyframes text-rotate-4 {
-    0%, 23% { translate: 0 0; }
-    25%, 48% { translate: 0 -25%; }
-    50%, 73% { translate: 0 -50%; }
-    75%, 98% { translate: 0 -75%; }
-    100% { translate: 0 0; }
+    0%,
+    23% {
+      translate: 0 0;
+    }
+    25%,
+    48% {
+      translate: 0 -25%;
+    }
+    50%,
+    73% {
+      translate: 0 -50%;
+    }
+    75%,
+    98% {
+      translate: 0 -75%;
+    }
+    100% {
+      translate: 0 0;
+    }
   }
   @keyframes text-rotate-4-down {
-    0%, 23% { translate: 0 -75%; }
-    25%, 48% { translate: 0 -50%; }
-    50%, 73% { translate: 0 -25%; }
-    75%, 98% { translate: 0 0; }
-    100% { translate: 0 -75%; }
+    0%,
+    23% {
+      translate: 0 -75%;
+    }
+    25%,
+    48% {
+      translate: 0 -50%;
+    }
+    50%,
+    73% {
+      translate: 0 -25%;
+    }
+    75%,
+    98% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 0 -75%;
+    }
   }
   @keyframes text-rotate-fade-4 {
-    0% { opacity: 0; translate: 0 0.25lh; }
-    2%, 23% { opacity: 1; translate: 0 0; }
-    25%, 100% { opacity: 0; translate: 0 -0.25lh; }
+    0% {
+      opacity: 0;
+      translate: 0 0.25lh;
+    }
+    2%,
+    23% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    25%,
+    100% {
+      opacity: 0;
+      translate: 0 -0.25lh;
+    }
   }
   @keyframes text-rotate-5 {
-    0%, 18.4% { translate: 0 0; }
-    20%, 38.4% { translate: 0 -20%; }
-    40%, 58.4% { translate: 0 -40%; }
-    60%, 78.4% { translate: 0 -60%; }
-    80%, 98.4% { translate: 0 -80%; }
-    100% { translate: 0 0; }
+    0%,
+    18.4% {
+      translate: 0 0;
+    }
+    20%,
+    38.4% {
+      translate: 0 -20%;
+    }
+    40%,
+    58.4% {
+      translate: 0 -40%;
+    }
+    60%,
+    78.4% {
+      translate: 0 -60%;
+    }
+    80%,
+    98.4% {
+      translate: 0 -80%;
+    }
+    100% {
+      translate: 0 0;
+    }
   }
   @keyframes text-rotate-5-down {
-    0%, 18.4% { translate: 0 -80%; }
-    20%, 38.4% { translate: 0 -60%; }
-    40%, 58.4% { translate: 0 -40%; }
-    60%, 78.4% { translate: 0 -20%; }
-    80%, 98.4% { translate: 0 0; }
-    100% { translate: 0 -80%; }
+    0%,
+    18.4% {
+      translate: 0 -80%;
+    }
+    20%,
+    38.4% {
+      translate: 0 -60%;
+    }
+    40%,
+    58.4% {
+      translate: 0 -40%;
+    }
+    60%,
+    78.4% {
+      translate: 0 -20%;
+    }
+    80%,
+    98.4% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 0 -80%;
+    }
   }
   @keyframes text-rotate-fade-5 {
-    0% { opacity: 0; translate: 0 0.25lh; }
-    1.6%, 18.4% { opacity: 1; translate: 0 0; }
-    20%, 100% { opacity: 0; translate: 0 -0.25lh; }
+    0% {
+      opacity: 0;
+      translate: 0 0.25lh;
+    }
+    1.6%,
+    18.4% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    20%,
+    100% {
+      opacity: 0;
+      translate: 0 -0.25lh;
+    }
   }
   @keyframes text-rotate-6 {
-    0%, 15.333% { translate: 0 0; }
-    16.667%, 32% { translate: 0 -16.6667%; }
-    33.333%, 48.667% { translate: 0 -33.3333%; }
-    50%, 65.333% { translate: 0 -50%; }
-    66.667%, 82% { translate: 0 -66.6667%; }
-    83.333%, 98.667% { translate: 0 -83.3333%; }
-    100% { translate: 0 0; }
+    0%,
+    15.333% {
+      translate: 0 0;
+    }
+    16.667%,
+    32% {
+      translate: 0 -16.6667%;
+    }
+    33.333%,
+    48.667% {
+      translate: 0 -33.3333%;
+    }
+    50%,
+    65.333% {
+      translate: 0 -50%;
+    }
+    66.667%,
+    82% {
+      translate: 0 -66.6667%;
+    }
+    83.333%,
+    98.667% {
+      translate: 0 -83.3333%;
+    }
+    100% {
+      translate: 0 0;
+    }
   }
   @keyframes text-rotate-6-down {
-    0%, 15.333% { translate: 0 -83.3333%; }
-    16.667%, 32% { translate: 0 -66.6667%; }
-    33.333%, 48.667% { translate: 0 -50%; }
-    50%, 65.333% { translate: 0 -33.3333%; }
-    66.667%, 82% { translate: 0 -16.6667%; }
-    83.333%, 98.667% { translate: 0 0; }
-    100% { translate: 0 -83.3333%; }
+    0%,
+    15.333% {
+      translate: 0 -83.3333%;
+    }
+    16.667%,
+    32% {
+      translate: 0 -66.6667%;
+    }
+    33.333%,
+    48.667% {
+      translate: 0 -50%;
+    }
+    50%,
+    65.333% {
+      translate: 0 -33.3333%;
+    }
+    66.667%,
+    82% {
+      translate: 0 -16.6667%;
+    }
+    83.333%,
+    98.667% {
+      translate: 0 0;
+    }
+    100% {
+      translate: 0 -83.3333%;
+    }
   }
   @keyframes text-rotate-fade-6 {
-    0% { opacity: 0; translate: 0 0.25lh; }
-    1.333%, 15.333% { opacity: 1; translate: 0 0; }
-    16.667%, 100% { opacity: 0; translate: 0 -0.25lh; }
+    0% {
+      opacity: 0;
+      translate: 0 0.25lh;
+    }
+    1.333%,
+    15.333% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    16.667%,
+    100% {
+      opacity: 0;
+      translate: 0 -0.25lh;
+    }
   }
 
   /* -- Accessibility ----------------------------------------------------
@@ -687,8 +1029,12 @@
      the DOM, so assistive tech reads the full list. */
   @media (prefers-reduced-motion: reduce) {
     .text-rotate > span,
-    .text-rotate[data-effect="fade"] > span > * { animation: none; }
-    .text-rotate[data-effect="fade"] > span > :first-child { opacity: 1; }
+    .text-rotate[data-effect="fade"] > span > * {
+      animation: none;
+    }
+    .text-rotate[data-effect="fade"] > span > :first-child {
+      opacity: 1;
+    }
   }
 }
 
@@ -706,7 +1052,9 @@
     display: inline;
 
     /* no script (or not yet initialized): the first string, as text */
-    &:not([data-init]) > :not(:first-child) { display: none; }
+    &:not([data-init]) > :not(:first-child) {
+      display: none;
+    }
 
     /* initialized: the authored strings are read, not seen */
     & > .typewriter-source {
@@ -721,7 +1069,9 @@
       border: 0;
     }
 
-    & > .typewriter-line { white-space: pre-wrap; }
+    & > .typewriter-line {
+      white-space: pre-wrap;
+    }
 
     /* -- Cursor: a bar by default; solid while typing, blinking idle -- */
     & .typewriter-cursor {
@@ -733,55 +1083,84 @@
       background: var(--_cursor);
       animation: typewriter-blink 1s steps(1) infinite;
     }
-    &:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor { animation: none; }
+    &:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor {
+      animation: none;
+    }
 
-    &[data-cursor="block"] .typewriter-cursor { width: 0.55em; opacity: 0.85; }
+    &[data-cursor="block"] .typewriter-cursor {
+      width: 0.55em;
+      opacity: 0.85;
+    }
     &[data-cursor="underscore"] .typewriter-cursor {
       width: 0.6em;
       height: max(2px, 0.1em);
       vertical-align: -0.1em;
     }
-    &[data-cursor="none"] .typewriter-cursor { display: none; }
+    &[data-cursor="none"] .typewriter-cursor {
+      display: none;
+    }
     /* data-cursor-hide: "typing" = only while idle; "done" = gone at the end */
     &[data-cursor-hide="typing"]:is([data-phase="typing"], [data-phase="deleting"]) .typewriter-cursor,
-    &[data-cursor-hide="done"][data-state-name="done"] .typewriter-cursor { visibility: hidden; }
+    &[data-cursor-hide="done"][data-state-name="done"] .typewriter-cursor {
+      visibility: hidden;
+    }
 
     /* -- data-reserve: as wide as the longest string from the start --- */
     &[data-reserve] {
       display: inline-grid;
       justify-items: start;
       vertical-align: bottom;
-      & > :is(.typewriter-line, .typewriter-ghost) { grid-area: 1 / 1; }
+      & > :is(.typewriter-line, .typewriter-ghost) {
+        grid-area: 1 / 1;
+      }
       & > .typewriter-ghost {
         display: grid;
         visibility: hidden;
         pointer-events: none;
         /* room for the cursor after the longest string */
         padding-inline-end: 0.2em;
-        & > span { grid-area: 1 / 1; white-space: pre; }
+        & > span {
+          grid-area: 1 / 1;
+          white-space: pre;
+        }
       }
-      & > .typewriter-line { white-space: pre; }
+      & > .typewriter-line {
+        white-space: pre;
+      }
     }
-    &[data-reserve][data-align="center"] { justify-items: center; }
-    &[data-reserve][data-align="end"] { justify-items: end; }
+    &[data-reserve][data-align="center"] {
+      justify-items: center;
+    }
+    &[data-reserve][data-align="end"] {
+      justify-items: end;
+    }
   }
 
   @keyframes typewriter-blink {
-    50% { opacity: 0; }
+    50% {
+      opacity: 0;
+    }
   }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     /* the runtime swaps whole strings instead of typing; the cursor stays still */
-    .typewriter .typewriter-cursor { animation: none; }
+    .typewriter .typewriter-cursor {
+      animation: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .typewriter[data-cursor="block"] .typewriter-cursor { opacity: 1; }
+    .typewriter[data-cursor="block"] .typewriter-cursor {
+      opacity: 1;
+    }
   }
 
   @media (forced-colors: active) {
-    .typewriter .typewriter-cursor { background: CanvasText; forced-color-adjust: none; }
+    .typewriter .typewriter-cursor {
+      background: CanvasText;
+      forced-color-adjust: none;
+    }
   }
 }
 
@@ -840,22 +1219,29 @@
 
       &::before,
       &::after {
-        content: '';
+        content: "";
         flex: 1 1 0;
         height: var(--_thick);
         background: var(--_line);
       }
 
       /* text position along the line */
-      &[data-align="start"]::before { display: none; }
-      &[data-align="end"]::after { display: none; }
+      &[data-align="start"]::before {
+        display: none;
+      }
+      &[data-align="end"]::after {
+        display: none;
+      }
 
       /* a bare glyph - an asterism, a dinkus, a fleuron - without the lines.
          VERIFIED: (separator.e2e "data-line=none") no pseudo lines, centred */
       &[data-line="none"] {
         justify-content: center;
 
-        &::before, &::after { display: none; }
+        &::before,
+        &::after {
+          display: none;
+        }
       }
 
       &[data-orientation="vertical"] {
@@ -873,31 +1259,65 @@
     }
 
     /* -- Colors (the line; the text stays muted) -------------- */
-    &[data-variant="neutral"] { --_line: var(--foreground); }
-    &[data-variant="primary"] { --_line: var(--primary); }
+    &[data-variant="neutral"] {
+      --_line: var(--foreground);
+    }
+    &[data-variant="primary"] {
+      --_line: var(--primary);
+    }
     /* the tweakcn --secondary / --accent are pale surfaces, too faint for a
        line: the theme's vivid chart colors instead (like the status dot) */
-    &[data-variant="secondary"] { --_line: var(--chart-2); }
-    &[data-variant="accent"] { --_line: var(--chart-4); }
+    &[data-variant="secondary"] {
+      --_line: var(--chart-2);
+    }
+    &[data-variant="accent"] {
+      --_line: var(--chart-4);
+    }
     &[data-variant="destructive"],
-    &[data-variant="error"] { --_line: var(--destructive); }
+    &[data-variant="error"] {
+      --_line: var(--destructive);
+    }
     /* success / warning / info: literals - the token set has no such pairs */
-    &[data-variant="success"] { --_line: #16a34a; }
-    &[data-variant="warning"] { --_line: #f59e0b; }
-    &[data-variant="info"] { --_line: #0ea5e9; }
+    &[data-variant="success"] {
+      --_line: #16a34a;
+    }
+    &[data-variant="warning"] {
+      --_line: #f59e0b;
+    }
+    &[data-variant="info"] {
+      --_line: #0ea5e9;
+    }
 
     /* -- Thickness -------------------------------------------- */
-    &[data-size="sm"] { --_thick: 1px; }
-    &[data-size="md"] { --_thick: 2px; }
-    &[data-size="lg"] { --_thick: 4px; }
-    &[data-size="xl"] { --_thick: 8px; }
+    &[data-size="sm"] {
+      --_thick: 1px;
+    }
+    &[data-size="md"] {
+      --_thick: 2px;
+    }
+    &[data-size="lg"] {
+      --_thick: 4px;
+    }
+    &[data-size="xl"] {
+      --_thick: 8px;
+    }
 
     /* -- Gap between the text and the lines ------------------- */
-    &[data-gap="none"] { --_gap: 0; }
-    &[data-gap="sm"] { --_gap: 0.375rem; }
-    &[data-gap="md"] { --_gap: 0.75rem; }
-    &[data-gap="lg"] { --_gap: 1.5rem; }
-    &[data-gap="xl"] { --_gap: 2.5rem; }
+    &[data-gap="none"] {
+      --_gap: 0;
+    }
+    &[data-gap="sm"] {
+      --_gap: 0.375rem;
+    }
+    &[data-gap="md"] {
+      --_gap: 0.75rem;
+    }
+    &[data-gap="lg"] {
+      --_gap: 1.5rem;
+    }
+    &[data-gap="xl"] {
+      --_gap: 2.5rem;
+    }
 
     /* -- Responsive: a vertical line from a breakpoint up (DaisyUI's
        lg:divider-horizontal). The PARENT must turn into a row at the
@@ -912,7 +1332,12 @@
           flex-direction: column;
           width: auto;
 
-          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+          &::before,
+          &::after {
+            width: var(--_thick);
+            height: auto;
+            min-height: 0.5rem;
+          }
         }
       }
     }
@@ -926,7 +1351,12 @@
           flex-direction: column;
           width: auto;
 
-          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+          &::before,
+          &::after {
+            width: var(--_thick);
+            height: auto;
+            min-height: 0.5rem;
+          }
         }
       }
     }
@@ -939,7 +1369,9 @@
     align-items: center;
     gap: 0.75rem;
 
-    & .separator { flex: 1; }
+    & .separator {
+      flex: 1;
+    }
 
     & span {
       font-size: 0.75rem;
@@ -963,8 +1395,12 @@
   }
 
   @media (prefers-contrast: more) {
-    .separator:not([data-variant]) { --_line: var(--foreground); }
-    .separator:not([data-size]) { --_thick: 2px; }
+    .separator:not([data-variant]) {
+      --_line: var(--foreground);
+    }
+    .separator:not([data-size]) {
+      --_thick: 2px;
+    }
   }
 }
 
@@ -985,11 +1421,26 @@
     pointer-events: none;
 
     /* -- Sizes via data-size --------------------------------- */
-    &[data-size="xs"] { width: 0.75rem; height: 0.75rem; }
-    &[data-size="sm"] { width: 0.875rem; height: 0.875rem; }
-    &[data-size="md"] { width: 1.25rem; height: 1.25rem; }
-    &[data-size="lg"] { width: 1.5rem; height: 1.5rem; }
-    &[data-size="xl"] { width: 2rem; height: 2rem; }
+    &[data-size="xs"] {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+    &[data-size="sm"] {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+    &[data-size="md"] {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    &[data-size="lg"] {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    &[data-size="xl"] {
+      width: 2rem;
+      height: 2rem;
+    }
 
     /* -- Spin animation ------------------------------------- */
     &[data-animate="spin"] {
@@ -998,7 +1449,9 @@
   }
 
   @keyframes icon-spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* ---- Accessibility ---------------------------------------- */
@@ -1050,7 +1503,10 @@
     line-height: 1;
     white-space: nowrap;
     vertical-align: middle;
-    transition: translate 0.08s ease-out, border-bottom-width 0.08s ease-out, background-color 0.08s ease-out;
+    transition:
+      translate 0.08s ease-out,
+      border-bottom-width 0.08s ease-out,
+      background-color 0.08s ease-out;
 
     &[data-size="sm"] {
       --kbd-size: 1.125rem;
@@ -1190,11 +1646,21 @@
       margin-left: 0.375rem;
     }
 
-    &[data-size="xs"] { font-size: 0.75rem; }
-    &[data-size="sm"] { font-size: 0.875rem; }
-    &[data-size="md"] { font-size: 1rem; }
-    &[data-size="lg"] { font-size: 1.125rem; }
-    &[data-size="xl"] { font-size: 1.25rem; }
+    &[data-size="xs"] {
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      font-size: 0.875rem;
+    }
+    &[data-size="md"] {
+      font-size: 1rem;
+    }
+    &[data-size="lg"] {
+      font-size: 1.125rem;
+    }
+    &[data-size="xl"] {
+      font-size: 1.25rem;
+    }
 
     &:hover {
       color: var(--primary);
@@ -1209,6 +1675,8 @@
   }
 
   @media (forced-colors: active) {
-    .heading-anchor { color: LinkText; }
+    .heading-anchor {
+      color: LinkText;
+    }
   }
 }

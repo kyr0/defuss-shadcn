@@ -85,7 +85,10 @@
     font: 500 0.75rem/1 var(--font-mono);
     letter-spacing: 0.02em;
     cursor: pointer;
-    transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+    transition:
+      color 0.15s,
+      background-color 0.15s,
+      border-color 0.15s;
 
     &:hover {
       color: var(--foreground);
@@ -122,8 +125,13 @@
   .bibtex[data-copied] .bibtex-copy {
     color: var(--foreground);
 
-    & .bibtex-icon-copy { display: none; }
-    & .bibtex-icon-done { display: block; color: var(--chart-2); }
+    & .bibtex-icon-copy {
+      display: none;
+    }
+    & .bibtex-icon-done {
+      display: block;
+      color: var(--chart-2);
+    }
   }
   .bibtex-status {
     position: absolute;
@@ -172,10 +180,20 @@
     font-size: inherit;
     line-height: inherit;
   }
-  .bibtex-type { color: var(--chart-4); font-weight: 600; }
-  .bibtex-key { color: var(--foreground); font-weight: 600; }
-  .bibtex-field { color: var(--chart-2); }
-  .bibtex-value { color: var(--foreground); }
+  .bibtex-type {
+    color: var(--chart-4);
+    font-weight: 600;
+  }
+  .bibtex-key {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+  .bibtex-field {
+    color: var(--chart-2);
+  }
+  .bibtex-value {
+    color: var(--foreground);
+  }
   .bibtex[data-highlight="none"] .bibtex-code {
     color: var(--foreground);
   }

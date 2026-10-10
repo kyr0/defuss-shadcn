@@ -36,7 +36,10 @@ export interface ImageStateConfigs {
  * the e2e render round trip proves they agree.
  */
 function applyMarkup(el, stateName) {
-  dfDollar(el).find('img').first().attr('data-error', stateName === 'error' ? '' : null);
+  dfDollar(el)
+    .find('img')
+    .first()
+    .attr('data-error', stateName === 'error' ? '' : null);
 }
 
 /**
@@ -76,22 +79,25 @@ export const imageApi = componentState({
 df$.imageApi = imageApi;
 df$.imageStates = imageStates;
 
-
 /* -- Hover gallery: preload + decode before switching -------------------
    A hover gallery shows its images instantly as the pointer crosses the
    strips - an image that is still downloading or not yet decoded would
    flash the first one through. So every image loads eagerly, and once the
    gallery comes near the viewport all of them are decoded (img.decode());
    only then does it switch (data-ready - until then the first stays). */
-const galleryIO = typeof IntersectionObserver === 'function'
-  ? new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue;
-        galleryIO.unobserve(e.target);
-        readyGallery(e.target);
-      }
-    }, { rootMargin: '300px' })
-  : null;
+const galleryIO =
+  typeof IntersectionObserver === 'function'
+    ? new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            galleryIO.unobserve(e.target);
+            readyGallery(e.target);
+          }
+        },
+        { rootMargin: '300px' },
+      )
+    : null;
 function readyGallery(gallery) {
   const imgs = [...dfDollar(gallery).find<HTMLImageElement>(':scope > img, :scope > picture img').toArray()];
   Promise.all(imgs.map((img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => undefined))).then(() => {
@@ -99,68 +105,75 @@ function readyGallery(gallery) {
   });
 }
 function initHoverGalleries() {
-  dfDollar('.hover-gallery:not([data-init])').toArray().forEach((gallery) => {
-    gallery.dataset.init = '';
-    dfDollar(gallery).find<HTMLImageElement>(':scope > img, :scope > picture img').toArray().forEach((img, i) => {
-      if (img.loading === 'lazy') img.loading = 'eager';
-      if (i > 0 && !img.hasAttribute('fetchpriority')) img.fetchPriority = 'low';
+  dfDollar('.hover-gallery:not([data-init])')
+    .toArray()
+    .forEach((gallery) => {
+      gallery.dataset.init = '';
+      dfDollar(gallery)
+        .find<HTMLImageElement>(':scope > img, :scope > picture img')
+        .toArray()
+        .forEach((img, i) => {
+          if (img.loading === 'lazy') img.loading = 'eager';
+          if (i > 0 && !img.hasAttribute('fetchpriority')) img.fetchPriority = 'low';
+        });
+      if (galleryIO) galleryIO.observe(gallery);
+      else readyGallery(gallery);
     });
-    if (galleryIO) galleryIO.observe(gallery);
-    else readyGallery(gallery);
-  });
 }
 
 function init() {
-initHoverGalleries();
-/* -- Fallback: mark images that fail to load ----------------- */
-dfDollar('.image:not([data-init])').toArray().forEach((figure) => {
-  figure.dataset.init = '';
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(figure, imageApi);
-  const img = dfDollar(figure).find('img')[0];
-  if (!img) return;
+  initHoverGalleries();
+  /* -- Fallback: mark images that fail to load ----------------- */
+  dfDollar('.image:not([data-init])')
+    .toArray()
+    .forEach((figure) => {
+      figure.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(figure, imageApi);
+      const img = dfDollar(figure).find('img')[0];
+      if (!img) return;
 
-  if (img.complete && img.naturalWidth === 0) {
-    dfDollar(img).data('error', '');
-  }
+      if (img.complete && img.naturalWidth === 0) {
+        dfDollar(img).data('error', '');
+      }
 
-  img.addEventListener('error', () => {
-    dfDollar(img).data('error', '');
-    figure.dataset.stateName = 'error'; // State API marker stays dataset.*
-  });
+      img.addEventListener('error', () => {
+        dfDollar(img).data('error', '');
+        figure.dataset.stateName = 'error'; // State API marker stays dataset.*
+      });
 
-  img.addEventListener('load', () => {
-    dfDollar(img).data('error', null);
-    figure.dataset.stateName = 'default';
-  });
+      img.addEventListener('load', () => {
+        dfDollar(img).data('error', null);
+        figure.dataset.stateName = 'default';
+      });
 
-  /* -- Progressive sources (data-src-low / data-src-high) -------
+      /* -- Progressive sources (data-src-low / data-src-high) -------
      Why: data-src-low paints a cheap placeholder while the real
      source preloads off-DOM (new Image()); data-src-high is a
      retina-only upgrade - paying its bytes on 1dppx displays (or
      before a lightbox zoom-in) would waste bandwidth. */
-  const srcLow = img.dataset.srcLow;
-  const srcHigh = img.dataset.srcHigh;
-  if (srcLow || srcHigh) {
-    const retina = !!srcHigh && globalThis.matchMedia('(min-resolution: 2dppx)').matches;
-    const finalSrc = retina ? srcHigh : img.getAttribute('src');
-    if (retina) img.dataset.srcHighLoaded = ''; // first zoom-in must not re-fetch
-    if (srcLow && finalSrc) {
-      dfDollar(img).data('loading', ''); // CSS blurs the placeholder
-      img.src = srcLow;
-      const preload = new Image();
-      // either way the img gets the real source - its own load/error
-      // listeners above then settle the State API marker
-      preload.onload = preload.onerror = () => {
-        img.src = finalSrc;
-        dfDollar(img).data('loading', null);
-      };
-      preload.src = finalSrc;
-    } else if (retina) {
-      img.src = srcHigh;
-    }
-  }
-});
+      const srcLow = img.dataset.srcLow;
+      const srcHigh = img.dataset.srcHigh;
+      if (srcLow || srcHigh) {
+        const retina = !!srcHigh && globalThis.matchMedia('(min-resolution: 2dppx)').matches;
+        const finalSrc = retina ? srcHigh : img.getAttribute('src');
+        if (retina) img.dataset.srcHighLoaded = ''; // first zoom-in must not re-fetch
+        if (srcLow && finalSrc) {
+          dfDollar(img).data('loading', ''); // CSS blurs the placeholder
+          img.src = srcLow;
+          const preload = new Image();
+          // either way the img gets the real source - its own load/error
+          // listeners above then settle the State API marker
+          preload.onload = preload.onerror = () => {
+            img.src = finalSrc;
+            dfDollar(img).data('loading', null);
+          };
+          preload.src = finalSrc;
+        } else if (retina) {
+          img.src = srcHigh;
+        }
+      }
+    });
 }
 
 init();
@@ -210,23 +223,29 @@ function getLightbox() {
   lightboxImg = dfDollar(lightbox).find('.image-lightbox-content > img')[0];
 
   /* Toolbar actions */
-  dfDollar(lightbox).find('.image-lightbox-toolbar')[0].addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
-    if (!btn) return;
+  dfDollar(lightbox)
+    .find('.image-lightbox-toolbar')[0]
+    .addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
+      if (!btn) return;
 
-    const action = btn.dataset.action;
-    if (action === 'zoom-in') {
-      zoom = Math.min(zoom + 0.25, 5);
-      upgradeLightboxToHigh(); // the first zoom earns the high-res bytes
-    }
-    else if (action === 'zoom-out') zoom = Math.max(zoom - 0.25, 0.25);
-    else if (action === 'rotate-left')  rotation -= 90;
-    else if (action === 'rotate-right') rotation += 90;
-    else if (action === 'reset') { zoom = 1; rotation = 0; }
-    else if (action === 'close') { lightbox.close(); return; }
+      const action = btn.dataset.action;
+      if (action === 'zoom-in') {
+        zoom = Math.min(zoom + 0.25, 5);
+        upgradeLightboxToHigh(); // the first zoom earns the high-res bytes
+      } else if (action === 'zoom-out') zoom = Math.max(zoom - 0.25, 0.25);
+      else if (action === 'rotate-left') rotation -= 90;
+      else if (action === 'rotate-right') rotation += 90;
+      else if (action === 'reset') {
+        zoom = 1;
+        rotation = 0;
+      } else if (action === 'close') {
+        lightbox.close();
+        return;
+      }
 
-    applyTransform();
-  });
+      applyTransform();
+    });
 
   /* Close on backdrop click */
   lightbox.addEventListener('click', (e) => {
@@ -265,7 +284,11 @@ function openLightbox(figure) {
   const $img = dfDollar(lightboxImg);
   // consumer-provided src flows in via <img> attributes already (§5.2: the
   // figure's own src/alt are the trusted source, attr writes mirror them)
-  $img.attr('src', img.src).attr('alt', img.alt || '').css('transform', null).css('width', null);
+  $img
+    .attr('src', img.src)
+    .attr('alt', img.alt || '')
+    .css('transform', null)
+    .css('width', null);
   /* data-src-full: the lightbox-only original (much larger than the inline
      src). Why: the page should never pay for it - only an actual preview
      does. The cached inline src opens instantly, pre-sized to the fitted

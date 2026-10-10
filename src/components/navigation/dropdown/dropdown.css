@@ -8,7 +8,9 @@
     border-radius: var(--radius-lg);
     padding: 0.25rem;
     min-width: 8rem;
-    box-shadow: 0 4px 16px oklch(0 0 0 / 0.12), 0 0 0 1px var(--border);
+    box-shadow:
+      0 4px 16px oklch(0 0 0 / 0.12),
+      0 0 0 1px var(--border);
 
     /* -- Anchor positioning ------------------------------------ */
     position: fixed;
@@ -20,7 +22,10 @@
     /* the preferred edge first; when the menu would leave the viewport it
        flips to the trigger's OTHER edge (flip-inline swaps left: anchor(left)
        <-> right: anchor(right)), above the trigger (flip-block), or both */
-    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+    position-try-fallbacks:
+      flip-inline,
+      flip-block,
+      flip-block flip-inline;
 
     /* data-align="end": the menu's end edge lines up with the trigger's end
        (a split button's chevron, an icon trigger at a row's end) instead of
@@ -38,9 +43,11 @@
        animation ends - otherwise a closing SUBMENU drops back into its
        parent menu for 150ms, where the parent's transform makes it the
        containing block: the parent grew scrollbars and resized */
-    transition: opacity 150ms ease, transform 150ms ease,
-                overlay 150ms allow-discrete,
-                display 150ms allow-discrete;
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease,
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
     /* a menu never scrolls sideways; submenus live in the top layer */
     overflow-x: hidden;
 
@@ -76,30 +83,44 @@
     font: inherit;
     font-size: 0.875rem;
 
-    &:hover, &[data-highlighted] {
+    &:hover,
+    &[data-highlighted] {
       background-color: var(--accent);
       color: var(--accent-foreground);
     }
 
     &[data-variant="destructive"] {
-      &:hover, &[data-highlighted] {
+      &:hover,
+      &[data-highlighted] {
         background-color: var(--destructive);
         color: var(--destructive-foreground);
       }
     }
 
-    &:disabled, &[aria-disabled="true"] {
+    &:disabled,
+    &[aria-disabled="true"] {
       pointer-events: none;
       opacity: 0.5;
     }
 
     /* data-inset: lines a plain item (or a label) up with the text of
        checkbox / radio items */
-    &[data-inset] { padding-inline-start: 1.5rem; }
-    & > svg { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground); }
-    &[data-variant="destructive"] > svg { color: currentColor; }
+    &[data-inset] {
+      padding-inline-start: 1.5rem;
+    }
+    & > svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      color: var(--muted-foreground);
+    }
+    &[data-variant="destructive"] > svg {
+      color: currentColor;
+    }
   }
-  .dropdown-label[data-inset] { padding-inline-start: 1.5rem; }
+  .dropdown-label[data-inset] {
+    padding-inline-start: 1.5rem;
+  }
 
   /* -- Submenus ----------------------------------------------------
      <div class="dropdown-sub">
@@ -110,7 +131,9 @@
      the parent open while it shows, closes open siblings and light-dismisses
      the whole tree - any depth. It opens beside its trigger (flipping to
      the other side, or up, when there is no room); dropdown.js anchors it. */
-  .dropdown-sub { display: contents; }
+  .dropdown-sub {
+    display: contents;
+  }
   .dropdown-sub-trigger {
     &::after {
       content: "";
@@ -120,12 +143,19 @@
       flex-shrink: 0;
       background-color: currentColor;
       opacity: 0.6;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+        center / contain no-repeat;
     }
-    &:dir(rtl)::after { scale: -1 1; }
+    &:dir(rtl)::after {
+      scale: -1 1;
+    }
     /* the shortcut sits before the chevron */
-    & .dropdown-shortcut { margin-inline-start: auto; }
-    &:has(.dropdown-shortcut)::after { margin-inline-start: 0.5rem; }
+    & .dropdown-shortcut {
+      margin-inline-start: auto;
+    }
+    &:has(.dropdown-shortcut)::after {
+      margin-inline-start: 0.5rem;
+    }
     &[aria-expanded="true"] {
       background-color: var(--accent);
       color: var(--accent-foreground);
@@ -137,11 +167,19 @@
     margin: 0;
     margin-block-start: calc(-0.25rem - 1px);
     margin-inline-start: 0.125rem;
-    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+    position-try-fallbacks:
+      flip-inline,
+      flip-block,
+      flip-block flip-inline;
     transform: scale(0.96) translateX(-0.25rem);
 
-    &:popover-open { transform: none; }
-    &:dir(rtl) { left: auto; right: anchor(left); }
+    &:popover-open {
+      transform: none;
+    }
+    &:dir(rtl) {
+      left: auto;
+      right: anchor(left);
+    }
   }
   @starting-style {
     .dropdown-content.dropdown-sub-content:popover-open {
@@ -157,7 +195,7 @@
     position: relative;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       inset-inline-start: 0.375rem;
       top: 50%;
@@ -210,7 +248,10 @@
   }
   /* on a destructive highlight the shortcut follows the item's foreground
      (muted grey on red was unreadable) */
-  .dropdown-item[data-variant="destructive"]:is(:hover, [data-highlighted]) .dropdown-shortcut { color: inherit; opacity: 0.8; }
+  .dropdown-item[data-variant="destructive"]:is(:hover, [data-highlighted]) .dropdown-shortcut {
+    color: inherit;
+    opacity: 0.8;
+  }
 
   /* -- Sizes ----------------------------------------------------
      data-size goes on the .dropdown-content popover; items, labels,
@@ -219,27 +260,60 @@
      rules; it only touches block padding/font so the check/radio inline
      padding (padding-inline-start) keeps working. */
   .dropdown-content[data-size="xs"] {
-    & .dropdown-item { padding-block: 0.1875rem; font-size: 0.75rem; }
-    & .dropdown-label { padding-block: 0.1875rem; font-size: 0.6875rem; }
-    & .dropdown-shortcut { font-size: 0.6875rem; }
-    & :is(.dropdown-check, .dropdown-radio)::before { width: 0.75rem; height: 0.75rem; }
+    & .dropdown-item {
+      padding-block: 0.1875rem;
+      font-size: 0.75rem;
+    }
+    & .dropdown-label {
+      padding-block: 0.1875rem;
+      font-size: 0.6875rem;
+    }
+    & .dropdown-shortcut {
+      font-size: 0.6875rem;
+    }
+    & :is(.dropdown-check, .dropdown-radio)::before {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
   }
   .dropdown-content[data-size="sm"] {
-    & .dropdown-item { padding-block: 0.25rem; font-size: 0.8125rem; }
-    & .dropdown-shortcut { font-size: 0.75rem; }
+    & .dropdown-item {
+      padding-block: 0.25rem;
+      font-size: 0.8125rem;
+    }
+    & .dropdown-shortcut {
+      font-size: 0.75rem;
+    }
   }
   .dropdown-content[data-size="md"] {
-    & .dropdown-item { padding-block: 0.375rem; font-size: 0.875rem; }
+    & .dropdown-item {
+      padding-block: 0.375rem;
+      font-size: 0.875rem;
+    }
   }
   .dropdown-content[data-size="lg"] {
-    & .dropdown-item { padding-block: 0.5rem; font-size: 1rem; }
-    & .dropdown-label { font-size: 0.8125rem; }
-    & .dropdown-shortcut { font-size: 0.875rem; }
+    & .dropdown-item {
+      padding-block: 0.5rem;
+      font-size: 1rem;
+    }
+    & .dropdown-label {
+      font-size: 0.8125rem;
+    }
+    & .dropdown-shortcut {
+      font-size: 0.875rem;
+    }
   }
   .dropdown-content[data-size="xl"] {
-    & .dropdown-item { padding-block: 0.625rem; font-size: 1.125rem; }
-    & .dropdown-label { font-size: 0.875rem; }
-    & .dropdown-shortcut { font-size: 1rem; }
+    & .dropdown-item {
+      padding-block: 0.625rem;
+      font-size: 1.125rem;
+    }
+    & .dropdown-label {
+      font-size: 0.875rem;
+    }
+    & .dropdown-shortcut {
+      font-size: 1rem;
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */
@@ -258,7 +332,8 @@
       border-color: ButtonText;
     }
     .dropdown-item {
-      &:hover, &[data-highlighted] {
+      &:hover,
+      &[data-highlighted] {
         forced-color-adjust: none;
         background: Highlight;
         color: HighlightText;

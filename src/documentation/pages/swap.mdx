@@ -45,12 +45,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Default" schema="none" hint="The faces crossfade in place - click one: the hidden checkbox is the state. The box sizes to the widest face, so nothing shifts."
 <div class="flex items-center gap-6">
   <label class="swap">
-    <input type="checkbox" aria-label="Toggle text">
+    <input type="checkbox" aria-label="Toggle text" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
   <label class="swap">
-    <input type="checkbox" checked aria-label="Toggle text, checked">
+    <input type="checkbox" checked aria-label="Toggle text, checked" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
@@ -60,17 +60,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Icons" schema="none" hint="Any content is a face. Hide decorative glyphs with aria-hidden and name the checkbox."
 <div class="flex items-center gap-6">
   <label class="swap">
-    <input type="checkbox" aria-label="Mute">
+    <input type="checkbox" aria-label="Mute" />
     <span class="swap-on" aria-hidden="true"><i data-lucide="volume-x"></i></span>
     <span class="swap-off" aria-hidden="true"><i data-lucide="volume-2"></i></span>
   </label>
   <label class="swap">
-    <input type="checkbox" aria-label="Play">
+    <input type="checkbox" aria-label="Play" />
     <span class="swap-on" aria-hidden="true"><i data-lucide="pause"></i></span>
     <span class="swap-off" aria-hidden="true"><i data-lucide="play"></i></span>
   </label>
   <label class="swap">
-    <input type="checkbox" aria-label="Bookmark">
+    <input type="checkbox" aria-label="Bookmark" />
     <span class="swap-on" aria-hidden="true"><i data-lucide="bookmark-check"></i></span>
     <span class="swap-off" aria-hidden="true"><i data-lucide="bookmark"></i></span>
   </label>
@@ -80,12 +80,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Rotate" schema="none" hint="data-variant='rotate' swings the faces in and out over ±45° - the theme toggle and the menu button."
 <div class="flex items-center gap-6">
   <label class="swap" data-variant="rotate">
-    <input type="checkbox" aria-label="Dark mode">
+    <input type="checkbox" aria-label="Dark mode" />
     <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
     <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
   </label>
   <label class="swap" data-variant="rotate">
-    <input type="checkbox" aria-label="Menu">
+    <input type="checkbox" aria-label="Menu" />
     <span class="swap-on" aria-hidden="true"><i data-lucide="x"></i></span>
     <span class="swap-off" aria-hidden="true"><i data-lucide="menu"></i></span>
   </label>
@@ -95,12 +95,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Flip" schema="none" hint="data-variant='flip' turns the control over on its Y axis, like a card."
 <div class="flex items-center gap-6">
   <label class="swap" data-variant="flip" data-size="lg">
-    <input type="checkbox" aria-label="Mood">
+    <input type="checkbox" aria-label="Mood" />
     <span class="swap-on" aria-hidden="true">😇</span>
     <span class="swap-off" aria-hidden="true">😈</span>
   </label>
   <label class="swap" data-variant="flip" data-size="lg">
-    <input type="checkbox" checked aria-label="Weather">
+    <input type="checkbox" checked aria-label="Weather" />
     <span class="swap-on" aria-hidden="true">🌤️</span>
     <span class="swap-off" aria-hidden="true">🌧️</span>
   </label>
@@ -110,17 +110,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg sets the minimum box, the type and the icon scale; the control still grows to its widest face."
 <div class="flex items-center gap-6">
   <label class="swap" data-size="sm">
-    <input type="checkbox" aria-label="Small swap">
+    <input type="checkbox" aria-label="Small swap" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
   <label class="swap">
-    <input type="checkbox" aria-label="Medium swap">
+    <input type="checkbox" aria-label="Medium swap" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
   <label class="swap" data-size="lg">
-    <input type="checkbox" aria-label="Large swap">
+    <input type="checkbox" aria-label="Large swap" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
@@ -129,23 +129,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Third face (indeterminate)" schema="none" hint="A .swap-indeterminate face shows while the checkbox is indeterminate - an IDL property only, so one line of script sets it. The first click leaves the mixed state for on."
 <label class="swap" data-size="lg">
-  <input type="checkbox" id="swap-tri" aria-label="Selection">
+  <input type="checkbox" id="swap-tri" aria-label="Selection" />
   <span class="swap-on">All</span>
   <span class="swap-indeterminate">Some</span>
   <span class="swap-off">None</span>
 </label>
-<script>document.getElementById('swap-tri').indeterminate = true;</script>
+<script>
+  document.getElementById('swap-tri').indeterminate = true;
+</script>
 ```
 
 ```html example label="Active (forced)" schema="none" hint="data-active shows the on face without a checked checkbox - server-rendered state; remove it to hand control back to the checkbox."
 <div class="flex items-center gap-6">
   <label class="swap" data-active>
-    <input type="checkbox" aria-label="Forced on">
+    <input type="checkbox" aria-label="Forced on" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
   <label class="swap" data-variant="rotate" data-active>
-    <input type="checkbox" aria-label="Forced on, rotate">
+    <input type="checkbox" aria-label="Forced on, rotate" />
     <span class="swap-on" aria-hidden="true"><i data-lucide="heart"></i></span>
     <span class="swap-off" aria-hidden="true"><i data-lucide="heart-off"></i></span>
   </label>
@@ -155,12 +157,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Disabled" schema="none" hint="disabled on the checkbox dims the control and blocks the pointer - it keeps its current face."
 <div class="flex items-center gap-6">
   <label class="swap">
-    <input type="checkbox" disabled aria-label="Disabled">
+    <input type="checkbox" disabled aria-label="Disabled" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>
   <label class="swap">
-    <input type="checkbox" checked disabled aria-label="Disabled, checked">
+    <input type="checkbox" checked disabled aria-label="Disabled, checked" />
     <span class="swap-on">ON</span>
     <span class="swap-off">OFF</span>
   </label>

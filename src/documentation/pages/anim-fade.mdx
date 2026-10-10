@@ -27,9 +27,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:0.85rem; align-items:flex-start;">
+<div style="display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-start">
   <div id="anim-fade-target">fade me</div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-pause">Pause</button>
@@ -38,9 +38,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     <button class="btn" data-variant="outline" data-size="sm" id="anim-fade-reset">Reset</button>
     <span class="badge" data-variant="secondary" id="anim-fade-state">idle</span>
   </div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center">
     <label class="text-sm" for="anim-fade-duration">Duration (ms)</label>
-    <input class="input" type="number" id="anim-fade-duration" value="1500" min="0" step="50" style="width:6rem;" />
+    <input class="input" type="number" id="anim-fade-duration" value="1500" min="0" step="50" style="width: 6rem" />
     <label class="text-sm" for="anim-fade-easing">Easing</label>
     <select class="select" id="anim-fade-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
@@ -60,7 +60,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   const easing = document.getElementById('anim-fade-easing');
   let channel = 'fadeIn'; // the channel the lifecycle controls act on
   const opts = () => ({ duration: Number(duration.value) || 1500, easing: easing.value });
-  const report = () => { status.textContent = df$.anim[channel].state(target); };
+  const report = () => {
+    status.textContent = df$.anim[channel].state(target);
+  };
 
   document.getElementById('anim-fade-in').addEventListener('click', () => {
     channel = 'fadeIn';
@@ -72,10 +74,22 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     df$.anim.fadeOut.play(target, opts());
     report();
   });
-  document.getElementById('anim-fade-pause').addEventListener('click', () => { df$.anim[channel].pause(target); report(); });
-  document.getElementById('anim-fade-resume').addEventListener('click', () => { df$.anim[channel].resume(target); report(); });
-  document.getElementById('anim-fade-finish').addEventListener('click', () => { df$.anim[channel].finish(target); report(); });
-  document.getElementById('anim-fade-reset').addEventListener('click', () => { df$.anim[channel].reset(target); report(); });
+  document.getElementById('anim-fade-pause').addEventListener('click', () => {
+    df$.anim[channel].pause(target);
+    report();
+  });
+  document.getElementById('anim-fade-resume').addEventListener('click', () => {
+    df$.anim[channel].resume(target);
+    report();
+  });
+  document.getElementById('anim-fade-finish').addEventListener('click', () => {
+    df$.anim[channel].finish(target);
+    report();
+  });
+  document.getElementById('anim-fade-reset').addEventListener('click', () => {
+    df$.anim[channel].reset(target);
+    report();
+  });
 </script>
 ```
 
@@ -95,10 +109,23 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div id="anim-fade-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
-  <div style="height: 600px; display:flex; align-items:flex-start; justify-content:center; padding:1rem; color:var(--muted-foreground);">Scroll down - the scroll position is the fade's timeline.</div>
+<div
+  id="anim-fade-scroller"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div
+    style="
+      height: 600px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1rem;
+      color: var(--muted-foreground);
+    "
+    >Scroll down - the scroll position is the fade's timeline.</div
+  >
   <div id="anim-fade-scroll-target">scroll-driven</div>
-  <div style="height: 200px;"></div>
+  <div style="height: 200px"></div>
 </div>
 <script type="module">
   // play() with a scroll binding pauses the animation and lets scroll drive

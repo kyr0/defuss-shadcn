@@ -38,15 +38,33 @@
     text-wrap: balance;
   }
 
-  .mk-newsletter-desc { margin: 0; max-width: 42rem; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
+  .mk-newsletter-desc {
+    margin: 0;
+    max-width: 42rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    text-wrap: pretty;
+  }
 
-  .mk-newsletter-form-col { display: flex; flex-direction: column; gap: 0.5rem; }
+  .mk-newsletter-form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-  .mk-newsletter-form { display: flex; flex-direction: column; gap: 0.5rem; }
+  .mk-newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-  .mk-newsletter-form .input { width: 100%; }
+  .mk-newsletter-form .input {
+    width: 100%;
+  }
 
-  .mk-newsletter-form .btn { width: 100%; }
+  .mk-newsletter-form .btn {
+    width: 100%;
+  }
 
   /* note and error sit just inside the input's edge */
   .mk-newsletter-note,
@@ -54,7 +72,9 @@
     padding-inline-start: 0.375rem;
     font-size: 0.75rem;
   }
-  .mk-newsletter-note { color: var(--muted-foreground); }
+  .mk-newsletter-note {
+    color: var(--muted-foreground);
+  }
 
   /* the error shows only after an attempt - :user-invalid, no script */
   .mk-newsletter-error {
@@ -64,25 +84,49 @@
     color: var(--destructive);
     font-weight: 500;
 
-    & svg { width: 0.875rem; height: 0.875rem; flex: none; }
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      flex: none;
+    }
   }
   .mk-newsletter-form-col:has(input:user-invalid) {
-    & .mk-newsletter-error { display: flex; }
-    & .mk-newsletter-note { display: none; }
+    & .mk-newsletter-error {
+      display: flex;
+    }
+    & .mk-newsletter-note {
+      display: none;
+    }
   }
 
   @container mk-newsletter (min-width: 30rem) {
-    .mk-newsletter-layout { flex-direction: row; }
-    .mk-newsletter-form-col { align-self: flex-end; }
-    .mk-newsletter-form { flex-direction: row; }
-    .mk-newsletter-form .input { width: fit-content; }
-    .mk-newsletter-form .btn { width: auto; }
+    .mk-newsletter-layout {
+      flex-direction: row;
+    }
+    .mk-newsletter-form-col {
+      align-self: flex-end;
+    }
+    .mk-newsletter-form {
+      flex-direction: row;
+    }
+    .mk-newsletter-form .input {
+      width: fit-content;
+    }
+    .mk-newsletter-form .btn {
+      width: auto;
+    }
   }
 
   @container mk-newsletter (min-width: 52rem) {
-    .mk-newsletter-layout { gap: 4rem; }
-    .mk-newsletter-title { font-size: 2.25rem; }
-    .mk-newsletter-form-col { gap: 0.75rem; }
+    .mk-newsletter-layout {
+      gap: 4rem;
+    }
+    .mk-newsletter-title {
+      font-size: 2.25rem;
+    }
+    .mk-newsletter-form-col {
+      gap: 0.75rem;
+    }
   }
   /* card: centered on a surface - an icon, the form, social proof */
   .mk-newsletter[data-variant="card"] .mk-newsletter-layout {
@@ -99,14 +143,28 @@
       var(--card);
     text-align: center;
 
-    & .mk-newsletter-copy { align-items: center; text-align: center; }
-    & .mk-newsletter-form-col { align-self: stretch; }
+    & .mk-newsletter-copy {
+      align-items: center;
+      text-align: center;
+    }
+    & .mk-newsletter-form-col {
+      align-self: stretch;
+    }
     /* centered card: the input + button row and the note/error under it center too */
-    & :is(.mk-newsletter-note, .mk-newsletter-error) { justify-content: center; padding-inline-start: 0; text-align: center; }
+    & :is(.mk-newsletter-note, .mk-newsletter-error) {
+      justify-content: center;
+      padding-inline-start: 0;
+      text-align: center;
+    }
   }
   @container mk-newsletter (min-width: 30rem) {
-    .mk-newsletter[data-variant="card"] .mk-newsletter-form { justify-content: center; }
-    .mk-newsletter[data-variant="card"] .mk-newsletter-form .input { flex: 0 1 18rem; width: auto; }
+    .mk-newsletter[data-variant="card"] .mk-newsletter-form {
+      justify-content: center;
+    }
+    .mk-newsletter[data-variant="card"] .mk-newsletter-form .input {
+      flex: 0 1 18rem;
+      width: auto;
+    }
   }
   .mk-newsletter-icon {
     display: grid;
@@ -117,7 +175,10 @@
     background: var(--primary);
     color: var(--primary-foreground);
 
-    & svg { width: 1.375rem; height: 1.375rem; }
+    & svg {
+      width: 1.375rem;
+      height: 1.375rem;
+    }
   }
   .mk-newsletter-proof {
     display: flex;
@@ -127,7 +188,9 @@
     color: var(--muted-foreground);
     font-size: 0.8125rem;
 
-    & strong { color: var(--foreground); }
+    & strong {
+      color: var(--foreground);
+    }
   }
 
   /* banner: a gradient strip - copy and form on one row */
@@ -138,11 +201,21 @@
     background: linear-gradient(120deg, var(--primary), color-mix(in oklch, var(--chart-2) 70%, var(--primary)));
     color: var(--primary-foreground);
 
-    & .mk-newsletter-title { font-size: 1.5rem; }
+    & .mk-newsletter-title {
+      font-size: 1.5rem;
+    }
     & .mk-newsletter-desc,
-    & .mk-newsletter-note { color: color-mix(in oklch, var(--primary-foreground) 75%, transparent); }
-    & .input { background: color-mix(in oklch, var(--primary-foreground) 92%, transparent); color: #111; }
-    & .btn { background: var(--primary-foreground); color: var(--primary); }
+    & .mk-newsletter-note {
+      color: color-mix(in oklch, var(--primary-foreground) 75%, transparent);
+    }
+    & .input {
+      background: color-mix(in oklch, var(--primary-foreground) 92%, transparent);
+      color: #111;
+    }
+    & .btn {
+      background: var(--primary-foreground);
+      color: var(--primary);
+    }
   }
 
   /* topics: pick lists with Checkboxes */
@@ -153,7 +226,11 @@
     padding: 0;
     border: 0;
 
-    & legend { margin-block-end: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+    & legend {
+      margin-block-end: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
   }
   .mk-newsletter-split {
     display: grid;
@@ -161,12 +238,22 @@
     gap: 2rem 3rem;
     align-items: center;
 
-    & img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-xl); }
-    & form { display: grid; gap: 1rem; }
+    & img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: var(--radius-xl);
+    }
+    & form {
+      display: grid;
+      gap: 1rem;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (forced-colors: active) {
-    .mk-newsletter[data-variant="banner"] .mk-newsletter-layout { border: 1px solid CanvasText; }
+    .mk-newsletter[data-variant="banner"] .mk-newsletter-layout {
+      border: 1px solid CanvasText;
+    }
   }
 }

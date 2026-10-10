@@ -79,11 +79,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Horizontal" hint="Default horizontal separator."
-<hr class="separator">
+<hr class="separator" />
 ```
 
 ```html example label="Vertical" hint="Vertical separator between inline items. Parent must be flex."
-<div style="display:flex;align-items:center;gap:1.0rem;font-size:0.875rem;height:1.25rem;">
+<div style="display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; height: 1.25rem">
   <span>Blog</span>
   <div class="separator" data-orientation="vertical" role="separator"></div>
   <span>Docs</span>
@@ -93,35 +93,79 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="With text" hint="Text inside the separator sits on the line - the lines draw themselves left and right of it. Meaningful text keeps role=&quot;separator&quot; off, so screen readers read it."
-<div class="stack gap-4" style="max-width:24rem;">
-  <div class="grid place-items-center rounded-lg" style="height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Sign in with a passkey</div>
+<div class="stack gap-4" style="max-width: 24rem">
+  <div
+    class="grid place-items-center rounded-lg"
+    style="height: 5rem; background: var(--muted); color: var(--muted-foreground); font-size: 0.875rem"
+    >Sign in with a passkey</div
+  >
   <div class="separator">OR</div>
-  <div class="grid place-items-center rounded-lg" style="height:5rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Sign in with email</div>
+  <div
+    class="grid place-items-center rounded-lg"
+    style="height: 5rem; background: var(--muted); color: var(--muted-foreground); font-size: 0.875rem"
+    >Sign in with email</div
+  >
 </div>
 ```
 
 ```html example label="Side by side" hint="data-orientation=&quot;vertical&quot; in a flex row: the text sits on a vertical line between the two blocks (DaisyUI calls this divider-horizontal - it divides horizontally placed items)."
-<div class="flex gap-4" style="max-width:32rem;">
-  <div class="grid place-items-center rounded-lg" style="flex:1;height:8rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Free</div>
+<div class="flex gap-4" style="max-width: 32rem">
+  <div
+    class="grid place-items-center rounded-lg"
+    style="flex: 1; height: 8rem; background: var(--muted); color: var(--muted-foreground); font-size: 0.875rem"
+    >Free</div
+  >
   <div class="separator" data-orientation="vertical">OR</div>
-  <div class="grid place-items-center rounded-lg" style="flex:1;height:8rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Pro</div>
+  <div
+    class="grid place-items-center rounded-lg"
+    style="flex: 1; height: 8rem; background: var(--muted); color: var(--muted-foreground); font-size: 0.875rem"
+    >Pro</div
+  >
 </div>
 ```
 
 ```html example label="Responsive" hint="data-orientation-lg=&quot;vertical&quot;: stacked with a horizontal line on small screens, side by side with a vertical one from 64rem - the parent switches to a row at the same width. Try the device sizes in the toolbar."
 <style>
-  .sep-demo-row { display: flex; flex-direction: column; gap: 1rem; }
-  @media (min-width: 64rem) { .sep-demo-row { flex-direction: row; } }
+  .sep-demo-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 64rem) {
+    .sep-demo-row {
+      flex-direction: row;
+    }
+  }
 </style>
 <div class="sep-demo-row">
-  <div class="grid place-items-center rounded-lg" style="flex:1 1 auto;min-height:6rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Content</div>
+  <div
+    class="grid place-items-center rounded-lg"
+    style="
+      flex: 1 1 auto;
+      min-height: 6rem;
+      background: var(--muted);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    "
+    >Content</div
+  >
   <div class="separator" data-orientation-lg="vertical">OR</div>
-  <div class="grid place-items-center rounded-lg" style="flex:1 1 auto;min-height:6rem;background:var(--muted);color:var(--muted-foreground);font-size:0.875rem;">Content</div>
+  <div
+    class="grid place-items-center rounded-lg"
+    style="
+      flex: 1 1 auto;
+      min-height: 6rem;
+      background: var(--muted);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    "
+    >Content</div
+  >
 </div>
 ```
 
 ```html example label="Colors" hint="data-variant colors the line (the text stays muted): neutral, primary, secondary, accent, info, success, warning and destructive (alias error). Secondary and accent take the theme's chart colors - its --secondary / --accent are pale surfaces; success, warning and info are fixed colors."
-<div class="stack gap-3" style="max-width:28rem;">
+<div class="stack gap-3" style="max-width: 28rem">
   <div class="separator">Default</div>
   <div class="separator" data-variant="neutral">Neutral</div>
   <div class="separator" data-variant="primary">Primary</div>
@@ -135,7 +179,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Text position" hint="data-align=&quot;start&quot; or &quot;end&quot; moves the text to the start or end of the line (default: centered)."
-<div class="stack gap-4" style="max-width:28rem;">
+<div class="stack gap-4" style="max-width: 28rem">
   <div class="separator" data-align="start">Start</div>
   <div class="separator">Center</div>
   <div class="separator" data-align="end">End</div>
@@ -143,7 +187,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Text position (vertical)" hint="The same on a vertical line: start is the top, end the bottom."
-<div class="flex gap-8" style="height:10rem;">
+<div class="flex gap-8" style="height: 10rem">
   <div class="separator" data-orientation="vertical" data-align="start">Start</div>
   <div class="separator" data-orientation="vertical">Center</div>
   <div class="separator" data-orientation="vertical" data-align="end">End</div>
@@ -151,17 +195,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Sizes" hint="data-size sets the thickness: sm 1px (the default), md 2px, lg 4px, xl 8px - with or without text."
-<div class="stack gap-5" style="max-width:28rem;">
+<div class="stack gap-5" style="max-width: 28rem">
   <div class="separator" data-size="sm" data-variant="primary">sm</div>
   <div class="separator" data-size="md" data-variant="primary">md</div>
   <div class="separator" data-size="lg" data-variant="primary">lg</div>
   <div class="separator" data-size="xl" data-variant="primary">xl</div>
-  <hr class="separator" data-size="lg" data-variant="neutral">
+  <hr class="separator" data-size="lg" data-variant="neutral" />
 </div>
 ```
 
 ```html example label="Gaps" hint="data-gap sets the space between the text and the lines: none, sm, md (the default), lg, xl. For space around a separator, use the margin utilities (my-4, my-8 …)."
-<div class="stack gap-4" style="max-width:28rem;">
+<div class="stack gap-4" style="max-width: 28rem">
   <div class="separator" data-gap="none">gap none</div>
   <div class="separator" data-gap="sm">gap sm</div>
   <div class="separator" data-gap="md">gap md</div>
@@ -172,25 +216,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="With Label" hint="The older wrapper form - two separators around a span - still works; text inside the separator itself (above) is simpler."
 <div class="separator-label">
-  <hr class="separator">
+  <hr class="separator" />
   <span>or continue with</span>
-  <hr class="separator">
+  <hr class="separator" />
 </div>
 ```
 
 ```html example label="Menu" hint="Vertical separators between menu items with descriptions."
-<div style="display:flex;align-items:stretch;">
-  <div style="flex:1;padding:1rem;">
+<div style="display: flex; align-items: stretch">
+  <div style="flex: 1; padding: 1rem">
     <p>Settings</p>
     <p>Manage preferences</p>
   </div>
   <div class="separator" data-orientation="vertical" role="separator"></div>
-  <div style="flex:1;padding:1rem;">
+  <div style="flex: 1; padding: 1rem">
     <p>Account</p>
     <p>Profile &amp; security</p>
   </div>
   <div class="separator" data-orientation="vertical" role="separator"></div>
-  <div style="flex:1;padding:1rem;">
+  <div style="flex: 1; padding: 1rem">
     <p>Help</p>
     <p>Support &amp; docs</p>
   </div>
@@ -200,27 +244,53 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="List" hint="Horizontal separators between list items."
 <div>
   <div>Item 1 - Value 1</div>
-  <hr class="separator">
+  <hr class="separator" />
   <div>Item 2 - Value 2</div>
-  <hr class="separator">
+  <hr class="separator" />
   <div>Item 3 - Value 3</div>
 </div>
 ```
 
 ```html example label="Decorative" hint="Ornamental section breaks in running text - a text separator with a glyph (✦ ✦ ✦, ❦) and aria-hidden, so assistive technology never reads the ornament, or a bare glyph without its lines (data-line='none': ⁂) - and a short accent rule closing the chapter, an <hr> with role='none' (no separator semantics)."
-<article style="max-width:30rem;margin-inline:auto;display:grid;gap:1rem;font-size:0.875rem;line-height:1.6;">
-  <p>The tide came in slower than the forecast promised, and the harbour lights were already on when the last boat tied up.</p>
+<article style="max-width: 30rem; margin-inline: auto; display: grid; gap: 1rem; font-size: 0.875rem; line-height: 1.6">
+  <p
+    >The tide came in slower than the forecast promised, and the harbour lights were already on when the last boat tied
+    up.</p
+  >
   <!-- an ornamental section break: hidden from assistive technology, so the glyphs are never read out -->
   <div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
   <p>By morning the fog had lifted. Someone had chalked the new times on the board outside the ferry office.</p>
-  <div class="separator" aria-hidden="true" data-variant="accent" data-size="md" data-gap="md" style="font-size:1.125rem;">❦</div>
+  <div
+    class="separator"
+    aria-hidden="true"
+    data-variant="accent"
+    data-size="md"
+    data-gap="md"
+    style="font-size: 1.125rem"
+    >❦</div
+  >
   <p>Nobody read them. Everyone already knew.</p>
   <!-- a bare glyph without its lines: data-line="none" (an asterism, a dinkus) -->
-  <div class="separator" aria-hidden="true" data-line="none" style="font-size:1.125rem;">⁂</div>
+  <div class="separator" aria-hidden="true" data-line="none" style="font-size: 1.125rem">⁂</div>
   <p>The ferry left at seven, as it always had.</p>
   <!-- a short accent rule to close the chapter: role="none" drops the <hr>'s separator semantics -->
-  <hr class="separator" role="none" data-variant="primary" data-size="lg" style="width:3rem;margin-inline:auto;border-radius:999px;">
-  <p style="text-align:center;color:var(--muted-foreground);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;">End of chapter one</p>
+  <hr
+    class="separator"
+    role="none"
+    data-variant="primary"
+    data-size="lg"
+    style="width: 3rem; margin-inline: auto; border-radius: 999px"
+  />
+  <p
+    style="
+      text-align: center;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    "
+    >End of chapter one</p
+  >
 </article>
 ```
 

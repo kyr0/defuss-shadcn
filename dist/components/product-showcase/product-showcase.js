@@ -51,7 +51,9 @@ function triggerStateChange(showcase, stateName, _config) {
             // screenshot/agent drives setState without a user gesture
             if (video) {
                 video.muted = true;
-                video.play().catch(() => { });
+                video.play().catch(() => {
+                    /* autoplay blocked - poster stays, controls still work */
+                });
             }
             break;
     }
@@ -74,17 +76,25 @@ export const productShowcaseApi = componentState({
 df$.productShowcaseApi = productShowcaseApi;
 df$.productShowcaseStates = productShowcaseStates;
 function init() {
-    dfDollar('.mk-showcase:not([data-init])').toArray().forEach((showcase) => {
+    dfDollar('.mk-showcase:not([data-init])')
+        .toArray()
+        .forEach((showcase) => {
         showcase.dataset.init = '';
         showcase.dataset.state = 'default';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(showcase, productShowcaseApi);
-        dfDollar(showcase).find('.mk-showcase-play').get(0)?.addEventListener('click', () => {
+        dfDollar(showcase)
+            .find('.mk-showcase-play')
+            .get(0)
+            ?.addEventListener('click', () => {
             productShowcaseApi.setState(showcase, 'playing');
         });
         // native pause/ended returns to the poster: route it through the API so
         // the visible state and getState() never diverge (pause covers `ended` too)
-        dfDollar(showcase).find('video').get(0)?.addEventListener('pause', () => {
+        dfDollar(showcase)
+            .find('video')
+            .get(0)
+            ?.addEventListener('pause', () => {
             if (showcase.dataset.state === 'playing')
                 productShowcaseApi.setState(showcase, 'default');
         });

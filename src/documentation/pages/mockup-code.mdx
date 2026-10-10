@@ -61,12 +61,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Long lines" schema="none" hint="A long line scrolls the window sideways (the lines keep one width, so the scroll is shared); data-wrap wraps instead, with a hanging indent under the prompt."
-<div class="flex flex-col gap-4" style="max-width:32rem;">
+<div class="flex flex-col gap-4" style="max-width: 32rem">
   <div class="mockup-code">
-    <pre data-prefix="~"><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
+    <pre
+      data-prefix="~"
+    ><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
   </div>
   <div class="mockup-code" data-wrap>
-    <pre data-prefix="~"><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
+    <pre
+      data-prefix="~"
+    ><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
   </div>
 </div>
 ```
@@ -116,13 +120,20 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <script type="module">
   import { codeToTokens } from 'https://esm.sh/shiki@3.0.0';
   const lines = [...document.querySelectorAll('#mc-source > pre > code')];
-  const { tokens } = await codeToTokens(lines.map((code) => code.textContent).join('\n'), { lang: 'html', theme: 'github-dark' });
-  tokens.forEach((line, i) => lines[i].replaceChildren(...line.map((token) => {
-    const span = document.createElement('span');
-    span.textContent = token.content;
-    span.style.color = token.color;
-    return span;
-  })));
+  const { tokens } = await codeToTokens(lines.map((code) => code.textContent).join('\n'), {
+    lang: 'html',
+    theme: 'github-dark',
+  });
+  tokens.forEach((line, i) =>
+    lines[i].replaceChildren(
+      ...line.map((token) => {
+        const span = document.createElement('span');
+        span.textContent = token.content;
+        span.style.color = token.color;
+        return span;
+      }),
+    ),
+  );
 </script>
 ```
 
@@ -154,9 +165,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 <script>
   const win = document.getElementById('diff-demo');
-  const play = () => { win.removeAttribute('data-animate'); void win.offsetWidth; win.setAttribute('data-animate', ''); };
+  const play = () => {
+    win.removeAttribute('data-animate');
+    void win.offsetWidth;
+    win.setAttribute('data-animate', '');
+  };
   new IntersectionObserver((entries, io) => {
-    if (entries.some((e) => e.isIntersecting)) { play(); io.disconnect(); }
+    if (entries.some((e) => e.isIntersecting)) {
+      play();
+      io.disconnect();
+    }
   }).observe(win);
   document.getElementById('diff-replay').addEventListener('click', play);
 </script>
@@ -180,9 +198,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg - text, padding and the bar scale together."
 <div class="flex flex-col gap-4">
-  <div class="mockup-code" data-size="sm"><pre data-prefix="$"><code>npm i defuss-shadcn</code></pre></div>
-  <div class="mockup-code"><pre data-prefix="$"><code>npm i defuss-shadcn</code></pre></div>
-  <div class="mockup-code" data-size="lg"><pre data-prefix="$"><code>npm i defuss-shadcn</code></pre></div>
+  <div class="mockup-code" data-size="sm">
+    <pre data-prefix="$"><code>npm i defuss-shadcn</code></pre>
+  </div>
+  <div class="mockup-code">
+    <pre data-prefix="$"><code>npm i defuss-shadcn</code></pre>
+  </div>
+  <div class="mockup-code" data-size="lg">
+    <pre data-prefix="$"><code>npm i defuss-shadcn</code></pre>
+  </div>
 </div>
 ```
 

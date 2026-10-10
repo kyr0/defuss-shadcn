@@ -90,7 +90,9 @@ function clear(box) {
     box.dispatchEvent(new CustomEvent('search-clear', { bubbles: true }));
 }
 function init() {
-    dfDollar('.search-box:not([data-init])').toArray().forEach((box) => {
+    dfDollar('.search-box:not([data-init])')
+        .toArray()
+        .forEach((box) => {
         box.dataset.init = '';
         const field = dfDollar(box).find(':scope > input').get(0);
         if (!field)
@@ -119,7 +121,10 @@ function init() {
                 clear(box);
             }
         });
-        dfDollar(box).find(':scope > .search-box-clear').get(0)?.addEventListener('click', () => clear(box));
+        dfDollar(box)
+            .find(':scope > .search-box-clear')
+            .get(0)
+            ?.addEventListener('click', () => clear(box));
         // a click on the frame (icon, padding) lands in the field
         box.addEventListener('mousedown', (e) => {
             if (e.target !== field && !e.target.closest('button, a')) {

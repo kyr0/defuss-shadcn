@@ -34,7 +34,10 @@ const imageStates = ['default', 'error'];
  * the e2e render round trip proves they agree.
  */
 function applyMarkup(el, stateName) {
-    dfDollar(el).find('img').first().attr('data-error', stateName === 'error' ? '' : null);
+    dfDollar(el)
+        .find('img')
+        .first()
+        .attr('data-error', stateName === 'error' ? '' : null);
 }
 /**
  * UI side of setState (per figure): 'error' marks the img like a failed load
@@ -94,9 +97,14 @@ function readyGallery(gallery) {
     });
 }
 function initHoverGalleries() {
-    dfDollar('.hover-gallery:not([data-init])').toArray().forEach((gallery) => {
+    dfDollar('.hover-gallery:not([data-init])')
+        .toArray()
+        .forEach((gallery) => {
         gallery.dataset.init = '';
-        dfDollar(gallery).find(':scope > img, :scope > picture img').toArray().forEach((img, i) => {
+        dfDollar(gallery)
+            .find(':scope > img, :scope > picture img')
+            .toArray()
+            .forEach((img, i) => {
             if (img.loading === 'lazy')
                 img.loading = 'eager';
             if (i > 0 && !img.hasAttribute('fetchpriority'))
@@ -111,7 +119,9 @@ function initHoverGalleries() {
 function init() {
     initHoverGalleries();
     /* -- Fallback: mark images that fail to load ----------------- */
-    dfDollar('.image:not([data-init])').toArray().forEach((figure) => {
+    dfDollar('.image:not([data-init])')
+        .toArray()
+        .forEach((figure) => {
         figure.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(figure, imageApi);
@@ -130,10 +140,10 @@ function init() {
             figure.dataset.stateName = 'default';
         });
         /* -- Progressive sources (data-src-low / data-src-high) -------
-           Why: data-src-low paints a cheap placeholder while the real
-           source preloads off-DOM (new Image()); data-src-high is a
-           retina-only upgrade - paying its bytes on 1dppx displays (or
-           before a lightbox zoom-in) would waste bandwidth. */
+       Why: data-src-low paints a cheap placeholder while the real
+       source preloads off-DOM (new Image()); data-src-high is a
+       retina-only upgrade - paying its bytes on 1dppx displays (or
+       before a lightbox zoom-in) would waste bandwidth. */
         const srcLow = img.dataset.srcLow;
         const srcHigh = img.dataset.srcHigh;
         if (srcLow || srcHigh) {
@@ -201,7 +211,9 @@ function getLightbox() {
     </div>`);
     lightboxImg = dfDollar(lightbox).find('.image-lightbox-content > img')[0];
     /* Toolbar actions */
-    dfDollar(lightbox).find('.image-lightbox-toolbar')[0].addEventListener('click', (e) => {
+    dfDollar(lightbox)
+        .find('.image-lightbox-toolbar')[0]
+        .addEventListener('click', (e) => {
         const btn = e.target.closest('[data-action]');
         if (!btn)
             return;
@@ -264,7 +276,11 @@ function openLightbox(figure) {
     const $img = dfDollar(lightboxImg);
     // consumer-provided src flows in via <img> attributes already (§5.2: the
     // figure's own src/alt are the trusted source, attr writes mirror them)
-    $img.attr('src', img.src).attr('alt', img.alt || '').css('transform', null).css('width', null);
+    $img
+        .attr('src', img.src)
+        .attr('alt', img.alt || '')
+        .css('transform', null)
+        .css('width', null);
     /* data-src-full: the lightbox-only original (much larger than the inline
        src). Why: the page should never pay for it - only an actual preview
        does. The cached inline src opens instantly, pre-sized to the fitted

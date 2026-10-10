@@ -46,7 +46,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Determinate" hint="A .progress-field pairs the bar with a label and an <output class='progress-value'> - the script writes the percent into it and keeps it in sync with every change."
-<div class="progress-field" style="max-width:24rem;">
+<div class="progress-field" style="max-width: 24rem">
   <div class="progress-header">
     <span class="progress-label" id="dl-label">Uploading photos</span>
     <output class="progress-value" for="dl"></output>
@@ -56,7 +56,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Values" schema="none" hint="Different completion amounts."
-<div class="flex flex-col gap-3 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-3 w-full" style="max-width: 24rem">
   <progress class="progress" value="10" max="100">10%</progress>
   <progress class="progress" value="40" max="100">40%</progress>
   <progress class="progress" value="75" max="100">75%</progress>
@@ -64,26 +64,42 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Colors" schema="none" hint="data-tone paints the fill: success, warning, info, destructive - any other color through style='--progress-color: …'. data-tone='auto' follows the value: red below a third, amber below two thirds, green above."
-<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-4 w-full" style="max-width: 24rem">
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Tests passing</span><output class="progress-value" for="c-ok"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Tests passing</span><output class="progress-value" for="c-ok"></output
+    ></div>
     <progress class="progress" id="c-ok" data-tone="success" value="92" max="100"></progress>
   </div>
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Disk space</span><output class="progress-value" for="c-warn"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Disk space</span><output class="progress-value" for="c-warn"></output
+    ></div>
     <progress class="progress" id="c-warn" data-tone="warning" value="78" max="100"></progress>
   </div>
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Sync</span><output class="progress-value" for="c-info"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Sync</span><output class="progress-value" for="c-info"></output
+    ></div>
     <progress class="progress" id="c-info" data-tone="info" value="45" max="100"></progress>
   </div>
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Quota</span><output class="progress-value" for="c-bad"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Quota</span><output class="progress-value" for="c-bad"></output
+    ></div>
     <progress class="progress" id="c-bad" data-tone="destructive" value="97" max="100"></progress>
   </div>
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Brand color</span><output class="progress-value" for="c-custom"></output></div>
-    <progress class="progress" id="c-custom" value="60" max="100" style="--progress-color: oklch(0.62 0.2 300);"></progress>
+    <div class="progress-header"
+      ><span class="progress-label">Brand color</span><output class="progress-value" for="c-custom"></output
+    ></div>
+    <progress
+      class="progress"
+      id="c-custom"
+      value="60"
+      max="100"
+      style="--progress-color: oklch(0.62 0.2 300)"
+    ></progress>
   </div>
   <div class="flex flex-col gap-2">
     <span class="progress-label">Auto: 20 · 50 · 85</span>
@@ -95,17 +111,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Labels" schema="none" hint="data-format on the output: percent (default), fraction (x / n) or value; data-template fills in the value, max and percent tokens (in curly braces). A fraction or template also becomes the bar's aria-valuetext, so a screen reader says '3 / 8', not '38%'."
-<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-4 w-full" style="max-width: 24rem">
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Percent</span><output class="progress-value" for="l-pct"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Percent</span><output class="progress-value" for="l-pct"></output
+    ></div>
     <progress class="progress" id="l-pct" value="38" max="100"></progress>
   </div>
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Lessons</span><output class="progress-value" for="l-frac" data-format="fraction"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Lessons</span
+      ><output class="progress-value" for="l-frac" data-format="fraction"></output
+    ></div>
     <progress class="progress" id="l-frac" value="3" max="8"></progress>
   </div>
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Upload</span><output class="progress-value" for="l-tpl" data-template="{value} of {max} files · {percent}"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Upload</span
+      ><output class="progress-value" for="l-tpl" data-template="{value} of {max} files · {percent}"></output
+    ></div>
     <progress class="progress" id="l-tpl" value="12" max="40"></progress>
     <span class="progress-hint">About 2 minutes left</span>
   </div>
@@ -113,33 +137,58 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Label inside the bar" schema="none" hint="data-label='inside' on the field puts the output in the bar (1.25rem tall). Over the fill the text switches to the fill's own foreground - a copy clipped to the filled part - so it reads on both halves."
-<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-4 w-full" style="max-width: 24rem">
   <div class="progress-field" data-label="inside">
     <progress class="progress" id="in-1" value="45" max="100" aria-label="Import"></progress>
     <output class="progress-value" for="in-1"></output>
   </div>
   <div class="progress-field" data-label="inside">
-    <progress class="progress" id="in-2" data-tone="success" data-size="lg" value="7" max="10" aria-label="Steps"></progress>
+    <progress
+      class="progress"
+      id="in-2"
+      data-tone="success"
+      data-size="lg"
+      value="7"
+      max="10"
+      aria-label="Steps"
+    ></progress>
     <output class="progress-value" for="in-2" data-format="fraction"></output>
   </div>
   <div class="progress-field" data-label="inside">
-    <progress class="progress" id="in-3" data-tone="warning" data-size="xl" data-striped value="62" max="100" aria-label="Backup"></progress>
+    <progress
+      class="progress"
+      id="in-3"
+      data-tone="warning"
+      data-size="xl"
+      data-striped
+      value="62"
+      max="100"
+      aria-label="Backup"
+    ></progress>
     <output class="progress-value" for="in-3" data-template="Backup {percent}"></output>
   </div>
 </div>
 ```
 
 ```html example label="Step by step" schema="none" hint="Jumps: --increment / --decrement move the bar by data-step (10% by default) at once, --reset empties it - plain buttons with commandfor + command, no script. 'Run' steps through a task in 10% jumps via the State API."
-<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-4 w-full" style="max-width: 24rem">
   <div class="progress-field">
-    <div class="progress-header"><span class="progress-label">Installing packages</span><output class="progress-value" for="st"></output></div>
+    <div class="progress-header"
+      ><span class="progress-label">Installing packages</span><output class="progress-value" for="st"></output
+    ></div>
     <progress class="progress" id="st" value="30" max="100" data-step="10" aria-label="Installing packages"></progress>
   </div>
   <div class="flex flex-wrap gap-2">
-    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="st" command="--decrement">− 10%</button>
-    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="st" command="--increment">+ 10%</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="st" command="--decrement"
+      >− 10%</button
+    >
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="st" command="--increment"
+      >+ 10%</button
+    >
     <button class="btn" data-variant="secondary" data-size="sm" type="button" onclick="runSteps()">Run</button>
-    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="st" command="--reset">Reset</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="st" command="--reset"
+      >Reset</button
+    >
   </div>
 </div>
 <script>
@@ -157,51 +206,89 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Linear (interpolated)" schema="none" hint="Glides: --play runs the bar to the end linearly over data-duration (ms) - the readout counts every frame; --pause holds it, --reset starts over. setState('default', with value and duration) interpolates to any value."
-<div class="flex flex-col gap-4 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-4 w-full" style="max-width: 24rem">
   <div class="progress-field" data-label="inside">
-    <progress class="progress" id="lin" data-size="lg" data-duration="4000" value="0" max="100" aria-label="Rendering video"></progress>
+    <progress
+      class="progress"
+      id="lin"
+      data-size="lg"
+      data-duration="4000"
+      value="0"
+      max="100"
+      aria-label="Rendering video"
+    ></progress>
     <output class="progress-value" for="lin"></output>
   </div>
   <div class="flex flex-wrap gap-2">
     <button class="btn" data-size="sm" type="button" commandfor="lin" command="--play">Play</button>
-    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="lin" command="--pause">Pause</button>
-    <button class="btn" data-variant="outline" data-size="sm" type="button" onclick="document.getElementById('lin').api.setState('default', { value: 75, duration: 1200 })">Glide to 75%</button>
-    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="lin" command="--reset">Reset</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" commandfor="lin" command="--pause"
+      >Pause</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      onclick="document.getElementById('lin').api.setState('default', { value: 75, duration: 1200 })"
+      >Glide to 75%</button
+    >
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" commandfor="lin" command="--reset"
+      >Reset</button
+    >
   </div>
 </div>
 ```
 
 ```html example label="Striped" schema="none" hint="data-striped lays diagonal bands over the fill; data-striped='animated' moves them - a busy task that still has a known value."
-<div class="flex flex-col gap-3 w-full" style="max-width:24rem;">
+<div class="flex flex-col gap-3 w-full" style="max-width: 24rem">
   <progress class="progress" data-size="lg" data-striped value="55" max="100" aria-label="Striped"></progress>
-  <progress class="progress" data-size="lg" data-striped="animated" data-tone="info" value="70" max="100" aria-label="Striped, animated"></progress>
+  <progress
+    class="progress"
+    data-size="lg"
+    data-striped="animated"
+    data-tone="info"
+    value="70"
+    max="100"
+    aria-label="Striped, animated"
+  ></progress>
 </div>
 ```
 
 ```html example label="Indeterminate" schema="none" hint="No value attribute: the animated sweep for an unknown amount - the readout shows '…' (or its data-indeterminate text)."
-<div class="progress-field" style="max-width:24rem;">
-  <div class="progress-header"><span class="progress-label">Connecting</span><output class="progress-value" for="ind" data-indeterminate="Waiting…"></output></div>
+<div class="progress-field" style="max-width: 24rem">
+  <div class="progress-header"
+    ><span class="progress-label">Connecting</span
+    ><output class="progress-value" for="ind" data-indeterminate="Waiting…"></output
+  ></div>
   <progress class="progress" id="ind" max="100" aria-label="Connecting">Loading...</progress>
 </div>
 ```
 
 ```html example label="In cards" schema="none" hint="Progress fields composed with .card for a dashboard - each readout bound to its bar." previewStyle="flex-direction:column;align-items:stretch;"
-<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr));gap:1rem;max-width:42rem;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; max-width: 42rem">
   <article class="card">
-    <div class="card-content progress-field" style="padding:1.5rem;">
-      <div class="progress-header"><span class="progress-label">Storage</span><output class="progress-value" for="k-1" data-template="{value} / {max} GB"></output></div>
+    <div class="card-content progress-field" style="padding: 1.5rem">
+      <div class="progress-header"
+        ><span class="progress-label">Storage</span
+        ><output class="progress-value" for="k-1" data-template="{value} / {max} GB"></output
+      ></div>
       <progress class="progress" id="k-1" data-tone="auto" value="75" max="100" aria-label="Storage"></progress>
     </div>
   </article>
   <article class="card">
-    <div class="card-content progress-field" style="padding:1.5rem;">
-      <div class="progress-header"><span class="progress-label">Bandwidth</span><output class="progress-value" for="k-2"></output></div>
+    <div class="card-content progress-field" style="padding: 1.5rem">
+      <div class="progress-header"
+        ><span class="progress-label">Bandwidth</span><output class="progress-value" for="k-2"></output
+      ></div>
       <progress class="progress" id="k-2" data-tone="auto" value="42" max="100" aria-label="Bandwidth"></progress>
     </div>
   </article>
   <article class="card">
-    <div class="card-content progress-field" style="padding:1.5rem;">
-      <div class="progress-header"><span class="progress-label">Onboarding</span><output class="progress-value" for="k-3" data-format="fraction"></output></div>
+    <div class="card-content progress-field" style="padding: 1.5rem">
+      <div class="progress-header"
+        ><span class="progress-label">Onboarding</span
+        ><output class="progress-value" for="k-3" data-format="fraction"></output
+      ></div>
       <progress class="progress" id="k-3" data-tone="success" value="5" max="6" aria-label="Onboarding"></progress>
     </div>
   </article>
@@ -211,28 +298,28 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Sizes" schema="none" hint="{'Bar thickness scales via '}data-size{' on the '}{''}{' - the default equals '}md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
-  <progress class="progress flex-1" value="65" max="100" data-size="xs" style="max-width:16rem;"></progress>
+  <progress class="progress flex-1" value="65" max="100" data-size="xs" style="max-width: 16rem"></progress>
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Small</span>
-  <progress class="progress flex-1" value="65" max="100" data-size="sm" style="max-width:16rem;"></progress>
+  <progress class="progress flex-1" value="65" max="100" data-size="sm" style="max-width: 16rem"></progress>
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Medium</span>
-  <progress class="progress flex-1" value="65" max="100" data-size="md" style="max-width:16rem;"></progress>
+  <progress class="progress flex-1" value="65" max="100" data-size="md" style="max-width: 16rem"></progress>
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Large</span>
-  <progress class="progress flex-1" value="65" max="100" data-size="lg" style="max-width:16rem;"></progress>
+  <progress class="progress flex-1" value="65" max="100" data-size="lg" style="max-width: 16rem"></progress>
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra large</span>
-  <progress class="progress flex-1" value="65" max="100" data-size="xl" style="max-width:16rem;"></progress>
+  <progress class="progress flex-1" value="65" max="100" data-size="xl" style="max-width: 16rem"></progress>
 </div>
 ```
 
 ```html example label="Right to left" schema="none" hint="The bar fills from the right in dir='rtl', and the two-color inside label clips from the right too."
-<div dir="rtl" lang="ar" class="progress-field" data-label="inside" style="max-width:24rem;">
+<div dir="rtl" lang="ar" class="progress-field" data-label="inside" style="max-width: 24rem">
   <progress class="progress" id="rtl-p" data-size="lg" value="40" max="100" aria-label="تحميل"></progress>
   <output class="progress-value" for="rtl-p"></output>
 </div>

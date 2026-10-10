@@ -47,7 +47,9 @@
     width: max-content;
     animation: mk-news-ticker-scroll var(--_duration) linear infinite;
   }
-  .mk-news-ticker:is(:hover, :focus-within) .mk-news-ticker-track { animation-play-state: paused; }
+  .mk-news-ticker:is(:hover, :focus-within) .mk-news-ticker-track {
+    animation-play-state: paused;
+  }
 
   .mk-news-ticker-items {
     display: flex;
@@ -81,8 +83,15 @@
       text-decoration: none;
       white-space: nowrap;
 
-      &:hover { text-decoration: underline; text-underline-offset: 0.2em; }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: var(--radius-sm); }
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -2px;
+        border-radius: var(--radius-sm);
+      }
     }
 
     & time {
@@ -113,11 +122,21 @@
 
   /* static: no motion at all - the row scrolls by hand */
   .mk-news-ticker[data-variant="static"],
-  .mk-news-ticker[data-variant="static"] .mk-news-ticker-viewport { mask-image: none; }
+  .mk-news-ticker[data-variant="static"] .mk-news-ticker-viewport {
+    mask-image: none;
+  }
   .mk-news-ticker[data-variant="static"] {
-    & .mk-news-ticker-viewport { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
-    & .mk-news-ticker-track { animation: none; }
-    & .mk-news-ticker-items[aria-hidden="true"] { display: none; }
+    & .mk-news-ticker-viewport {
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: thin;
+    }
+    & .mk-news-ticker-track {
+      animation: none;
+    }
+    & .mk-news-ticker-items[aria-hidden="true"] {
+      display: none;
+    }
   }
 
   /* a change readout (market, scores): green up, red down */
@@ -129,15 +148,37 @@
     font-weight: 600;
     font-variant-numeric: tabular-nums;
 
-    &[data-trend="up"] { color: oklch(0.6 0.16 150); &::before { content: "▲"; font-size: 0.625em; } }
-    &[data-trend="down"] { color: oklch(0.6 0.2 27); &::before { content: "▼"; font-size: 0.625em; } }
+    &[data-trend="up"] {
+      color: oklch(0.6 0.16 150);
+      &::before {
+        content: "▲";
+        font-size: 0.625em;
+      }
+    }
+    &[data-trend="down"] {
+      color: oklch(0.6 0.2 27);
+      &::before {
+        content: "▼";
+        font-size: 0.625em;
+      }
+    }
   }
 
   /* market: a stock strip - symbol, price, change; mono numbers */
   .mk-news-ticker[data-variant="market"] {
-    & .mk-news-ticker-label { background: var(--foreground); color: var(--background); }
-    & .mk-news-ticker-items a { gap: 0.625rem; font-family: var(--font-mono); font-size: 0.8125rem; }
-    & .mk-news-ticker-items b { font-weight: 700; letter-spacing: 0.02em; }
+    & .mk-news-ticker-label {
+      background: var(--foreground);
+      color: var(--background);
+    }
+    & .mk-news-ticker-items a {
+      gap: 0.625rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+    }
+    & .mk-news-ticker-items b {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
   }
 
   /* inverse: a dark band */
@@ -146,9 +187,17 @@
     background: var(--foreground);
     color: var(--background);
 
-    & .mk-news-ticker-label { background: var(--primary); color: var(--primary-foreground); box-shadow: 0.75rem 0 1rem -0.5rem rgb(0 0 0 / 0.5); }
-    & .mk-news-ticker-items time { color: color-mix(in oklch, var(--background) 65%, transparent); }
-    & .mk-news-ticker-items li::after { background: var(--background); }
+    & .mk-news-ticker-label {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      box-shadow: 0.75rem 0 1rem -0.5rem rgb(0 0 0 / 0.5);
+    }
+    & .mk-news-ticker-items time {
+      color: color-mix(in oklch, var(--background) 65%, transparent);
+    }
+    & .mk-news-ticker-items li::after {
+      background: var(--background);
+    }
   }
 
   /* pill: a rounded floating strip with a badge label */
@@ -157,41 +206,74 @@
     border-radius: 999px;
     box-shadow: var(--shadow-md);
 
-    & .mk-news-ticker-label { border-radius: 999px; padding-block: 0.25rem; }
-    & .mk-news-ticker-items a { padding-block: 0.375rem; }
+    & .mk-news-ticker-label {
+      border-radius: 999px;
+      padding-block: 0.25rem;
+    }
+    & .mk-news-ticker-items a {
+      padding-block: 0.375rem;
+    }
   }
 
   /* sizes */
   .mk-news-ticker[data-size="sm"] {
     font-size: 0.8125rem;
-    & .mk-news-ticker-items a { padding-block: 0.375rem; }
-    & .mk-news-ticker-label { padding-inline: 0.625rem; font-size: 0.6875rem; }
+    & .mk-news-ticker-items a {
+      padding-block: 0.375rem;
+    }
+    & .mk-news-ticker-label {
+      padding-inline: 0.625rem;
+      font-size: 0.6875rem;
+    }
   }
 
   @keyframes mk-news-ticker-scroll {
-    to { translate: -50% 0; }
+    to {
+      translate: -50% 0;
+    }
   }
   @keyframes mk-news-ticker-pulse {
-    50% { opacity: 0.3; }
+    50% {
+      opacity: 0.3;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .mk-news-ticker {
-      & .mk-news-ticker-viewport { overflow-x: auto; mask-image: none; }
-      & .mk-news-ticker-track { animation: none; }
-      & .mk-news-ticker-items[aria-hidden="true"] { display: none; }
-      & .mk-news-ticker-label::before { animation: none; }
+      & .mk-news-ticker-viewport {
+        overflow-x: auto;
+        mask-image: none;
+      }
+      & .mk-news-ticker-track {
+        animation: none;
+      }
+      & .mk-news-ticker-items[aria-hidden="true"] {
+        display: none;
+      }
+      & .mk-news-ticker-label::before {
+        animation: none;
+      }
     }
   }
 
   @media (prefers-contrast: more) {
-    .mk-news-ticker { border-color: var(--foreground); }
-    .mk-news-ticker-items time { color: var(--foreground); }
+    .mk-news-ticker {
+      border-color: var(--foreground);
+    }
+    .mk-news-ticker-items time {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-news-ticker-label { forced-color-adjust: none; background: Highlight; color: HighlightText; }
-    .mk-news-ticker-items a { color: LinkText; }
+    .mk-news-ticker-label {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
+    }
+    .mk-news-ticker-items a {
+      color: LinkText;
+    }
   }
 }

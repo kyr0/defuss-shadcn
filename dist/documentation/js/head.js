@@ -3879,7 +3879,10 @@
   var areas = {};
   var inMemory = new Set;
   function storageOf(area) {
-    return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+    return areas[area] ??= createWebStorage(area, {
+      fallback: createMemoryStorage(),
+      onUnavailable: () => inMemory.add(area)
+    });
   }
   function storageAvailable(area = "local") {
     try {

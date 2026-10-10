@@ -15,7 +15,10 @@
     /* Entry/exit animation */
     opacity: 0;
     transform: translateY(-0.5rem) scale(0.98);
-    transition: opacity 200ms ease, transform 200ms ease, display 200ms allow-discrete;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease,
+      display 200ms allow-discrete;
 
     &[open] {
       opacity: 1;
@@ -25,7 +28,9 @@
     &::backdrop {
       background: oklch(0 0 0 / 0);
       backdrop-filter: blur(0px);
-      transition: all 200ms ease, display 200ms allow-discrete;
+      transition:
+        all 200ms ease,
+        display 200ms allow-discrete;
     }
 
     &[open]::backdrop {
@@ -66,9 +71,15 @@
      data-density on the .alert-dialog root scales the content padding
      (0.75 / 1 / 1.25 of the 1.5rem default); comfortable matches the
      unsized default. */
-  .alert-dialog:where([data-density="compact"]) .alert-dialog-content     { padding: 1rem; }
-  .alert-dialog:where([data-density="comfortable"]) .alert-dialog-content { padding: 1.5rem; }
-  .alert-dialog:where([data-density="spacious"]) .alert-dialog-content    { padding: 2rem; }
+  .alert-dialog:where([data-density="compact"]) .alert-dialog-content {
+    padding: 1rem;
+  }
+  .alert-dialog:where([data-density="comfortable"]) .alert-dialog-content {
+    padding: 1.5rem;
+  }
+  .alert-dialog:where([data-density="spacious"]) .alert-dialog-content {
+    padding: 2rem;
+  }
 
   .alert-dialog-header {
     margin-bottom: 1.25rem;

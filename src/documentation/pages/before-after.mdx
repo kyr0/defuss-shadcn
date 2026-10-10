@@ -49,35 +49,76 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```html example label="Slider" hint="Drag anywhere on the picture or focus it and use ← →: a transparent range input covers the stage, and one line of page script copies its value into --mk-ba-pos, which clips the after picture." previewStyle="align-items:stretch;"
 <figure class="mk-before-after">
   <div class="mk-before-after-stage">
-    <img class="mk-before-after-before" src="https://picsum.photos/seed/ba-street/1200/800?grayscale&amp;blur=2" alt="Before: the photo, faded and blurred">
-    <img class="mk-before-after-after" src="https://picsum.photos/seed/ba-street/1200/800" alt="After: the same photo, restored in color">
+    <img
+      class="mk-before-after-before"
+      src="https://picsum.photos/seed/ba-street/1200/800?grayscale&amp;blur=2"
+      alt="Before: the photo, faded and blurred"
+    />
+    <img
+      class="mk-before-after-after"
+      src="https://picsum.photos/seed/ba-street/1200/800"
+      alt="After: the same photo, restored in color"
+    />
     <span class="mk-before-after-handle" aria-hidden="true"></span>
     <span class="mk-before-after-label" data-side="before">Before</span>
     <span class="mk-before-after-label" data-side="after">After</span>
-    <input class="mk-before-after-range" type="range" min="0" max="100" value="50" aria-label="Divider position: drag to compare before and after">
+    <input
+      class="mk-before-after-range"
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      aria-label="Divider position: drag to compare before and after"
+    />
   </div>
   <figcaption class="mk-before-after-caption">Restoring a faded photo: color and detail back.</figcaption>
 </figure>
 <script>
-  document.querySelectorAll('.mk-before-after-range').forEach((r) => r.addEventListener('input', () => r.closest('.mk-before-after').style.setProperty('--mk-ba-pos', r.value + '%')));
+  document
+    .querySelectorAll('.mk-before-after-range')
+    .forEach((r) =>
+      r.addEventListener('input', () => r.closest('.mk-before-after').style.setProperty('--mk-ba-pos', r.value + '%')),
+    );
 </script>
 ```
 
 ```html example label="Toggle" hint="data-variant='toggle': a Switch reveals the after picture with a wipe - a checkbox read by :has(), no script at all." previewStyle="align-items:stretch;"
-<figure class="mk-before-after" data-variant="toggle" style="max-width:40rem">
+<figure class="mk-before-after" data-variant="toggle" style="max-width: 40rem">
   <div class="mk-before-after-stage">
-    <img class="mk-before-after-before" src="https://picsum.photos/seed/ba-room/1200/800?grayscale" alt="Before: the living room, grey and empty">
-    <img class="mk-before-after-after" src="https://picsum.photos/seed/ba-room/1200/800" alt="After: the living room, furnished and warm">
+    <img
+      class="mk-before-after-before"
+      src="https://picsum.photos/seed/ba-room/1200/800?grayscale"
+      alt="Before: the living room, grey and empty"
+    />
+    <img
+      class="mk-before-after-after"
+      src="https://picsum.photos/seed/ba-room/1200/800"
+      alt="After: the living room, furnished and warm"
+    />
   </div>
-  <div class="switch-item mk-before-after-toggle"><input class="switch" type="checkbox" role="switch" id="ba-toggle"><label for="ba-toggle">Show after</label></div>
+  <div class="switch-item mk-before-after-toggle"
+    ><input class="switch" type="checkbox" role="switch" id="ba-toggle" /><label for="ba-toggle">Show after</label></div
+  >
 </figure>
 ```
 
 ```html example label="Side by side" hint="data-variant='split': the two pictures aligned next to each other, each labelled - stacked when narrow." previewStyle="align-items:stretch;"
 <figure class="mk-before-after" data-variant="split">
   <div class="mk-before-after-stage">
-    <div><img class="mk-before-after-before" src="https://picsum.photos/seed/ba-garden/900/600?grayscale" alt="Before: the garden in winter"><span class="mk-before-after-label" data-side="before">Before</span></div>
-    <div><img class="mk-before-after-after" src="https://picsum.photos/seed/ba-garden/900/600" alt="After: the garden in spring"><span class="mk-before-after-label" data-side="after">After</span></div>
+    <div
+      ><img
+        class="mk-before-after-before"
+        src="https://picsum.photos/seed/ba-garden/900/600?grayscale"
+        alt="Before: the garden in winter"
+      /><span class="mk-before-after-label" data-side="before">Before</span></div
+    >
+    <div
+      ><img
+        class="mk-before-after-after"
+        src="https://picsum.photos/seed/ba-garden/900/600"
+        alt="After: the garden in spring"
+      /><span class="mk-before-after-label" data-side="after">After</span></div
+    >
   </div>
   <figcaption class="mk-before-after-caption">The same garden, five months apart.</figcaption>
 </figure>

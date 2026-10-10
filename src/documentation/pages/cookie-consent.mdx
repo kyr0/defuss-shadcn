@@ -39,18 +39,49 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
 </SkillPanel>
 
 ```html example label="Service preferences" hint="Open settings. Edits do not enable services until Save. This sandbox keeps choices in memory." height="42"
-<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-demo" aria-haspopup="dialog">Privacy settings</button>
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-demo" aria-haspopup="dialog"
+  >Privacy settings</button
+>
 <div id="privacy-demo" class="cookie-consent" data-state-demo>
   <script type="application/json" data-cookie-consent-config>
     {
-      "autoShow": false, "storage": null, "showFloatingButton": false,
-      "defaultLanguage": "en", "revision": "example-v1",
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "defaultLanguage": "en",
+      "revision": "example-v1",
       "cookieOrigins": [
-        { "id": "session", "name": "Session", "category": "essential", "description": { "en": "Required site functions.", "de": "Notwendige Website-Funktionen." } },
-        { "id": "measurement", "name": "Measurement", "category": "functional", "description": { "en": "Optional usage measurement.", "de": "Optionale Nutzungsmessung." } },
-        { "id": "video", "name": "Video player", "category": "functional", "description": "Optional embedded videos.", "dataCollected": { "en": ["IP address", "Player events"], "de": ["IP-Adresse", "Player-Ereignisse"] } },
-        { "id": "ads", "name": "Advertising", "category": "marketing", "description": "Optional advertising integration." },
-        { "id": "newsletter", "name": "Newsletter", "category": "other", "description": "Optional newsletter integration." }
+        {
+          "id": "session",
+          "name": "Session",
+          "category": "essential",
+          "description": { "en": "Required site functions.", "de": "Notwendige Website-Funktionen." }
+        },
+        {
+          "id": "measurement",
+          "name": "Measurement",
+          "category": "functional",
+          "description": { "en": "Optional usage measurement.", "de": "Optionale Nutzungsmessung." }
+        },
+        {
+          "id": "video",
+          "name": "Video player",
+          "category": "functional",
+          "description": "Optional embedded videos.",
+          "dataCollected": { "en": ["IP address", "Player events"], "de": ["IP-Adresse", "Player-Ereignisse"] }
+        },
+        {
+          "id": "ads",
+          "name": "Advertising",
+          "category": "marketing",
+          "description": "Optional advertising integration."
+        },
+        {
+          "id": "newsletter",
+          "name": "Newsletter",
+          "category": "other",
+          "description": "Optional newsletter integration."
+        }
       ]
     }
   </script>
@@ -60,28 +91,66 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
 ```html example label="What consent gates" schema="none" sandbox="embed" height="44" hint="A YouTube video in the Product Showcase: the poster and play button are the placeholder (data-consent-placeholder='none'), the iframe has no source. Press play without consent and the dialog opens on Services; allow YouTube and the poster gives way to the playing video. Reject optional: the player unloads, the poster returns. The poster is local - a YouTube thumbnail would already be a request to Google. The measurement script stays inert until you allow it, then runs once."
 <div class="flex flex-col gap-3">
   <div class="flex flex-wrap items-center gap-2">
-    <button type="button" class="btn" data-variant="outline" data-cookie-consent-open="gate-demo" aria-haspopup="dialog">Privacy settings</button>
+    <button type="button" class="btn" data-variant="outline" data-cookie-consent-open="gate-demo" aria-haspopup="dialog"
+      >Privacy settings</button
+    >
     <output class="text-sm text-muted-foreground" id="gate-log">No choice yet - only essential services run.</output>
   </div>
   <figure class="mk-showcase" id="gate-video">
-    <img class="mk-showcase-poster" alt="Big Buck Bunny - an open movie by the Blender Foundation" src="images/mk-wide2.png">
-    <iframe title="Big Buck Bunny on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
-            data-cookie-consent="youtube" data-consent-placeholder="none"
-            data-consent-src="https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ?rel=0"></iframe>
-    <button type="button" class="mk-showcase-play" aria-label="Play video"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+    <img
+      class="mk-showcase-poster"
+      alt="Big Buck Bunny - an open movie by the Blender Foundation"
+      src="images/mk-wide2.png"
+    />
+    <iframe
+      title="Big Buck Bunny on YouTube"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowfullscreen
+      data-cookie-consent="youtube"
+      data-consent-placeholder="none"
+      data-consent-src="https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ?rel=0"
+    ></iframe>
+    <button type="button" class="mk-showcase-play" aria-label="Play video"
+      ><svg
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polygon points="6 3 20 12 6 21 6 3"></polygon></svg
+    ></button>
   </figure>
   <output class="text-sm" id="gate-measure">Measurement has not run.</output>
 </div>
 <div id="gate-demo" class="cookie-consent">
   <script type="application/json" data-cookie-consent-config>
     {
-      "autoShow": false, "storage": null, "showFloatingButton": false, "revision": "gate-v1",
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "revision": "gate-v1",
       "cookieOrigins": [
         { "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." },
-        { "id": "measurement", "name": "Measurement", "category": "functional", "description": "Counts page views - runs once, after you allow it." },
-        { "id": "youtube", "name": "YouTube", "category": "functional", "domain": "youtube.com",
+        {
+          "id": "measurement",
+          "name": "Measurement",
+          "category": "functional",
+          "description": "Counts page views - runs once, after you allow it."
+        },
+        {
+          "id": "youtube",
+          "name": "YouTube",
+          "category": "functional",
+          "domain": "youtube.com",
           "description": "Plays embedded videos. YouTube (Google) receives your IP address and may set cookies.",
-          "url": "https://policies.google.com/privacy", "dataCollected": { "en": ["IP address", "Device information", "Watch activity"] } }
+          "url": "https://policies.google.com/privacy",
+          "dataCollected": { "en": ["IP address", "Device information", "Watch activity"] }
+        }
       ]
     }
   </script>
@@ -105,19 +174,26 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
     };
 
     // the play button asks first - capture runs before the showcase's own handler
-    df$(video).on('click', (e) => {
-      if (!e.target.closest('.mk-showcase-play')) return;
-      e.stopPropagation();
-      if (consent.api.isServiceAccepted('youtube')) return play();
-      wantsToPlay = true;
-      consent.api.setState('services');
-    }, { capture: true });
+    df$(video).on(
+      'click',
+      (e) => {
+        if (!e.target.closest('.mk-showcase-play')) return;
+        e.stopPropagation();
+        if (consent.api.isServiceAccepted('youtube')) return play();
+        wantsToPlay = true;
+        consent.api.setState('services');
+      },
+      { capture: true },
+    );
 
     df$(consent).on('cookie-consent:change', (e) => {
       const { acceptedServices } = e.detail.state;
       df$('#gate-log').text(`${e.detail.reason}: ${acceptedServices.join(', ')}`);
       if (acceptedServices.includes('youtube')) {
-        if (wantsToPlay) { wantsToPlay = false; play(); }
+        if (wantsToPlay) {
+          wantsToPlay = false;
+          play();
+        }
       } else {
         // withdrawn: the runtime unloaded the player - the poster returns
         wantsToPlay = false;
@@ -130,30 +206,50 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
 ```
 
 ```html example label="Your texts, any language" schema="none" height="40" hint="translations overrides any text per language - here the title, intro and buttons in English and German - and adds languages: fr only lists what French needs; every key it leaves out falls back to English, and the picker names each language in its own words (Intl.DisplayNames). Per service, description, url and dataCollected take one value per language. Switch the language inside the dialog."
-<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="i18n-demo" aria-haspopup="dialog">Privacy settings</button>
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="i18n-demo" aria-haspopup="dialog"
+  >Privacy settings</button
+>
 <div id="i18n-demo" class="cookie-consent">
   <script type="application/json" data-cookie-consent-config>
     {
-      "autoShow": false, "storage": null, "showFloatingButton": false, "defaultLanguage": "en",
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "defaultLanguage": "en",
       "translations": {
         "en": {
           "title": "Cookies at Studio",
           "text": "Studio needs a few essential services to work. Everything else is up to you - and you can change it any time.",
-          "acceptAll": "Allow all", "denyAll": "Essential only"
+          "acceptAll": "Allow all",
+          "denyAll": "Essential only"
         },
         "de": {
           "title": "Cookies bei Studio",
           "text": "Studio braucht einige notwendige Dienste. Alles andere entscheiden Sie - und können es jederzeit ändern.",
-          "acceptAll": "Alle erlauben", "denyAll": "Nur notwendige"
+          "acceptAll": "Alle erlauben",
+          "denyAll": "Nur notwendige"
         },
         "fr": {
           "title": "Les cookies chez Studio",
           "text": "Studio a besoin de quelques services essentiels. Pour le reste, c'est vous qui décidez - et vous pouvez changer d'avis à tout moment.",
-          "settings": "Paramètres de confidentialité", "close": "Fermer sans enregistrer", "language": "Langue",
-          "preferences": "Préférences de confidentialité", "preferencesText": "Choisissez des catégories ou des services. Les changements s'appliquent à l'enregistrement.",
-          "categories": "Catégories", "services": "Services", "acceptAll": "Tout autoriser", "denyAll": "Essentiels uniquement",
-          "save": "Enregistrer", "required": "Requis", "moreInformation": "Plus d'informations",
-          "categoryNames": { "essential": "Essentiels", "functional": "Fonctionnels", "marketing": "Marketing", "other": "Autres" },
+          "settings": "Paramètres de confidentialité",
+          "close": "Fermer sans enregistrer",
+          "language": "Langue",
+          "preferences": "Préférences de confidentialité",
+          "preferencesText": "Choisissez des catégories ou des services. Les changements s'appliquent à l'enregistrement.",
+          "categories": "Catégories",
+          "services": "Services",
+          "acceptAll": "Tout autoriser",
+          "denyAll": "Essentiels uniquement",
+          "save": "Enregistrer",
+          "required": "Requis",
+          "moreInformation": "Plus d'informations",
+          "categoryNames": {
+            "essential": "Essentiels",
+            "functional": "Fonctionnels",
+            "marketing": "Marketing",
+            "other": "Autres"
+          },
           "categoryDescriptions": {
             "essential": "Nécessaires au fonctionnement du site.",
             "functional": "Fonctions optionnelles et mesure d'audience.",
@@ -163,11 +259,27 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
         }
       },
       "cookieOrigins": [
-        { "id": "session", "name": "Session", "category": "essential",
-          "description": { "en": "Keeps you signed in.", "de": "Hält Sie angemeldet.", "fr": "Vous garde connecté." } },
-        { "id": "support", "name": "Support chat", "category": "functional",
-          "description": { "en": "Lets you chat with our team.", "de": "Damit Sie mit unserem Team chatten können.", "fr": "Pour discuter avec notre équipe." },
-          "dataCollected": { "en": ["Messages", "Browser language"], "de": ["Nachrichten", "Browsersprache"], "fr": ["Messages", "Langue du navigateur"] } }
+        {
+          "id": "session",
+          "name": "Session",
+          "category": "essential",
+          "description": { "en": "Keeps you signed in.", "de": "Hält Sie angemeldet.", "fr": "Vous garde connecté." }
+        },
+        {
+          "id": "support",
+          "name": "Support chat",
+          "category": "functional",
+          "description": {
+            "en": "Lets you chat with our team.",
+            "de": "Damit Sie mit unserem Team chatten können.",
+            "fr": "Pour discuter avec notre équipe."
+          },
+          "dataCollected": {
+            "en": ["Messages", "Browser language"],
+            "de": ["Nachrichten", "Browsersprache"],
+            "fr": ["Messages", "Langue du navigateur"]
+          }
+        }
       ]
     }
   </script>
@@ -175,39 +287,97 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
 ```
 
 ```html example label="Small / compact" hint="28rem maximum width; 1rem content padding." height="34"
-<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-small" aria-haspopup="dialog">Open small</button>
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-small" aria-haspopup="dialog"
+  >Open small</button
+>
 <div id="privacy-small" class="cookie-consent" data-size="sm" data-density="compact">
-  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [{ "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." }, { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }] }</script>
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." },
+        { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }
+      ]
+    }
+  </script>
 </div>
 ```
 
 ```html example label="Medium / comfortable" hint="40rem maximum width; 1.5rem padding matches the default." height="34"
-<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-medium" aria-haspopup="dialog">Open medium</button>
+<button
+  type="button"
+  class="btn"
+  data-variant="outline"
+  data-cookie-consent-open="privacy-medium"
+  aria-haspopup="dialog"
+  >Open medium</button
+>
 <div id="privacy-medium" class="cookie-consent" data-size="md" data-density="comfortable">
-  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [{ "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." }, { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }] }</script>
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." },
+        { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }
+      ]
+    }
+  </script>
 </div>
 ```
 
 ```html example label="Large / spacious" hint="48rem maximum width; 2rem content padding." height="34"
-<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-large" aria-haspopup="dialog">Open large</button>
+<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-large" aria-haspopup="dialog"
+  >Open large</button
+>
 <div id="privacy-large" class="cookie-consent" data-size="lg" data-density="spacious">
-  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "cookieOrigins": [{ "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." }, { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }] }</script>
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "cookieOrigins": [
+        { "id": "session", "name": "Session", "category": "essential", "description": "Required site functions." },
+        { "id": "feature", "name": "Feature", "category": "functional", "description": "Optional feature." }
+      ]
+    }
+  </script>
 </div>
 ```
 
 ```html example label="Banner (first visit)" schema="none" height="26" hint="data-variant='banner' with autoShow: on a first visit the consent is a bar along the bottom of the page - NOT a modal, the page stays usable (show(), no inert background). Copy sits beside the buttons on wide screens. Settings switches it to the full modal dialog; any decision closes it. (storage: null here, so it comes back on every load - a real page persists the choice.)" previewStyle="align-items:stretch;"
-<div style="display:grid;gap:1rem;max-width:40rem;padding-block-end:12rem">
-  <h2 style="margin:0;font-size:1.5rem">Welcome to Acme</h2>
-  <p style="margin:0;color:var(--muted-foreground)">The page stays usable while the banner waits at the bottom - it is not a modal. Choose Settings and it becomes the full dialog.</p>
-  <button type="button" class="btn" data-variant="outline" style="justify-self:start" data-cookie-consent-open="banner-demo">Show the banner again</button>
+<div style="display: grid; gap: 1rem; max-width: 40rem; padding-block-end: 12rem">
+  <h2 style="margin: 0; font-size: 1.5rem">Welcome to Acme</h2>
+  <p style="margin: 0; color: var(--muted-foreground)"
+    >The page stays usable while the banner waits at the bottom - it is not a modal. Choose Settings and it becomes the
+    full dialog.</p
+  >
+  <button
+    type="button"
+    class="btn"
+    data-variant="outline"
+    style="justify-self: start"
+    data-cookie-consent-open="banner-demo"
+    >Show the banner again</button
+  >
 </div>
 <div id="banner-demo" class="cookie-consent" data-variant="banner">
   <script type="application/json" data-cookie-consent-config>
     {
-      "autoShow": true, "storage": null, "showFloatingButton": false,
+      "autoShow": true,
+      "storage": null,
+      "showFloatingButton": false,
       "cookieOrigins": [
         { "id": "session", "name": "Session", "category": "essential", "description": "Keeps you signed in." },
-        { "id": "analytics", "name": "Analytics", "category": "functional", "description": "Counts visits so we know what to improve." },
+        {
+          "id": "analytics",
+          "name": "Analytics",
+          "category": "functional",
+          "description": "Counts visits so we know what to improve."
+        },
         { "id": "ads", "name": "Campaigns", "category": "marketing", "description": "Measures our advertising." }
       ]
     }
@@ -216,9 +386,37 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
 ```
 
 ```html example label="Corner / German" hint="Bottom-right modal using the same consent contract and keyboard controls." height="34"
-<button type="button" class="btn" data-variant="outline" data-cookie-consent-open="privacy-corner" aria-haspopup="dialog">Einstellungen</button>
+<button
+  type="button"
+  class="btn"
+  data-variant="outline"
+  data-cookie-consent-open="privacy-corner"
+  aria-haspopup="dialog"
+  >Einstellungen</button
+>
 <div id="privacy-corner" class="cookie-consent" data-variant="corner">
-  <script type="application/json" data-cookie-consent-config>{ "autoShow": false, "storage": null, "showFloatingButton": false, "defaultLanguage": "de", "cookieOrigins": [{ "id": "session", "name": "Sitzung", "category": "essential", "description": "Notwendige Website-Funktionen." }, { "id": "feature", "name": "Zusatzfunktion", "category": "functional", "description": "Optionale Zusatzfunktion." }] }</script>
+  <script type="application/json" data-cookie-consent-config>
+    {
+      "autoShow": false,
+      "storage": null,
+      "showFloatingButton": false,
+      "defaultLanguage": "de",
+      "cookieOrigins": [
+        {
+          "id": "session",
+          "name": "Sitzung",
+          "category": "essential",
+          "description": "Notwendige Website-Funktionen."
+        },
+        {
+          "id": "feature",
+          "name": "Zusatzfunktion",
+          "category": "functional",
+          "description": "Optionale Zusatzfunktion."
+        }
+      ]
+    }
+  </script>
 </div>
 ```
 
@@ -231,8 +429,12 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, Skill
         data-consent-src="/measurement.js" nonce="csp-nonce"></script>
 <script type="text/plain" data-cookie-consent="feature"
         data-consent-type="module" data-consent-src="/feature.mjs"></script>
-<iframe title="Optional video" data-cookie-consent="video"
-        data-consent-src="/video-player.html" loading="lazy"></iframe>
+<iframe
+  title="Optional video"
+  data-cookie-consent="video"
+  data-consent-src="/video-player.html"
+  loading="lazy"
+></iframe>
 ```
 
 <p>Use programmatic configuration for revocation hooks or custom storage. The existing <code>cookieOrigins</code> field and category identifiers are preserved. The <code>other</code> category is optional; legacy optional <code>consent: true</code> values do not bypass choice.</p>

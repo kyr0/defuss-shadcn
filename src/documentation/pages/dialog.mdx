@@ -69,29 +69,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </SkillPanel>
 
 ```html example label="Form Dialog" hint="Dialog with form inputs. Click 'Edit Profile' to open." height="30"
-<button class="btn" data-variant="default"
-        data-dialog-trigger="edit-dialog"
-        aria-haspopup="dialog">
+<button class="btn" data-variant="default" data-dialog-trigger="edit-dialog" aria-haspopup="dialog">
   Edit Profile
 </button>
 
-<dialog id="edit-dialog" class="dialog"
-        role="dialog" aria-modal="true"
-        aria-labelledby="edit-title">
+<dialog id="edit-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="edit-title">
   <div class="dialog-content">
     <div class="dialog-header">
       <h2 class="dialog-title" id="edit-title">Edit Profile</h2>
       <p class="dialog-description">Make changes to your profile here.</p>
     </div>
     <div class="dialog-body">
-      <div style="display:flex;flex-direction:column;gap:1rem;">
+      <div style="display: flex; flex-direction: column; gap: 1rem">
         <div>
           <label class="label" for="name">Name</label>
-          <input class="input" id="name" type="text" value="Aron Homberg">
+          <input class="input" id="name" type="text" value="Aron Homberg" />
         </div>
         <div>
           <label class="label" for="username">Username</label>
-          <input class="input" id="username" type="text" value="@kyr0">
+          <input class="input" id="username" type="text" value="@kyr0" />
         </div>
       </div>
     </div>
@@ -104,39 +100,43 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 ```html example label="Confirmation" hint="Destructive action confirmation. Click 'Confirm Delete' to open." height="30"
-<button class="btn" data-variant="outline"
-        data-dialog-trigger="confirm-dialog"
-        aria-haspopup="dialog">
+<button class="btn" data-variant="outline" data-dialog-trigger="confirm-dialog" aria-haspopup="dialog">
   Confirm Delete
 </button>
 
-<dialog id="confirm-dialog" class="dialog"
-        role="dialog" aria-modal="true"
-        aria-labelledby="confirm-title">
+<dialog id="confirm-dialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
   <div class="dialog-content">
     <div class="dialog-header">
       <h2 class="dialog-title" id="confirm-title">Delete account?</h2>
-      <p class="dialog-description">This action cannot be undone.
-        This will permanently delete your account.</p>
+      <p class="dialog-description">This action cannot be undone. This will permanently delete your account.</p>
     </div>
     <div class="dialog-footer">
-      <button class="btn" data-variant="outline"
-              data-dialog-close>Cancel</button>
-      <button class="btn" data-variant="destructive"
-              data-dialog-close>Delete account</button>
+      <button class="btn" data-variant="outline" data-dialog-close>Cancel</button>
+      <button class="btn" data-variant="destructive" data-dialog-close>Delete account</button>
     </div>
   </div>
 </dialog>
 ```
 
 ```html example label="Density" hint="Set data-density on the {''} root to scale the content padding. A whitespace policy, not a zoom: only padding scales (ratio 0.75 / 1 / 1.25), typography and the width ladder (data-size) stay identical. comfortable matches the unsized default." height="30"
-<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-  <button class="btn" data-variant="outline" data-dialog-trigger="density-compact-dialog" aria-haspopup="dialog">Compact</button>
-  <button class="btn" data-variant="outline" data-dialog-trigger="density-comfortable-dialog" aria-haspopup="dialog">Comfortable</button>
-  <button class="btn" data-variant="outline" data-dialog-trigger="density-spacious-dialog" aria-haspopup="dialog">Spacious</button>
+<div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+  <button class="btn" data-variant="outline" data-dialog-trigger="density-compact-dialog" aria-haspopup="dialog"
+    >Compact</button
+  >
+  <button class="btn" data-variant="outline" data-dialog-trigger="density-comfortable-dialog" aria-haspopup="dialog"
+    >Comfortable</button
+  >
+  <button class="btn" data-variant="outline" data-dialog-trigger="density-spacious-dialog" aria-haspopup="dialog"
+    >Spacious</button
+  >
 </div>
 
-<dialog id="density-compact-dialog" class="dialog" data-density="compact" aria-labelledby="density-compact-dialog-title">
+<dialog
+  id="density-compact-dialog"
+  class="dialog"
+  data-density="compact"
+  aria-labelledby="density-compact-dialog-title"
+>
   <div class="dialog-content">
     <div class="dialog-header">
       <h3 class="dialog-title" id="density-compact-dialog-title">Compact</h3>

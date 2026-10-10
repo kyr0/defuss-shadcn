@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { apiGaps, apiMarkdown, apiSectionOf, parseArgs, parseDoc, readComponentApi, returnTypeAfter, sharedStateApi, signatureOf, withApiSection } from '../src/documentation/lib/component-api.ts';
+import { apiGaps, apiMarkdown, apiSectionOf, parseArgs, parseDoc, readComponentApi, returnTypeAfter, sharedStateApi, signatureOf, tidyType, withApiSection } from '../src/documentation/lib/component-api.ts';
 
 /**
  * Why: every JS component's API section (the skill's ## API, the page's
@@ -143,6 +143,63 @@ describe('readComponentApi()', () => {
     expect(api.events.find((e) => e.name === 'foo-move')).toMatchObject({ detail: ['posOf(el)'], doc: '', type: '' });
   });
 
+  it('finds the comment above a brace-less if head and an open call (oxfmt sets a long consequent on its own line)', () => {
+    const split = readComponentApi('x', `
+interface XGoDetail { /** where */ to: string }
+function go(el, announce) {
+  // Fires when it goes - the target.
+  if (announce)
+    el.dispatchEvent(
+      new CustomEvent<XGoDetail>('x-go', { bubbles: true, detail: { to: 'a' } }),
+    );
+  // Fires when it stops.
+  if (announce) el.dispatchEvent(new CustomEvent('x-stop'));
+  else
+    el.dispatchEvent(new CustomEvent('x-else'));
+}`);
+    expect(split.events.find((e) => e.name === 'x-go')!.doc).toBe('Fires when it goes - the target.');
+    expect(split.events.find((e) => e.name === 'x-stop')!.doc).toBe('Fires when it stops.');
+    // an else branch reaches back to the comment above its if
+    expect(split.events.find((e) => e.name === 'x-else')!.doc).toBe('');
+  });
+
+  it('reads a member whose generic type a formatter set over several lines (oxfmt: questionnaire validate)', () => {
+    const wrapped = readComponentApi('q', `
+/** one assert */
+interface QAssert { /** what */ assert: string }
+/** the config */
+interface QConfig {
+  /** per-step checks */
+  validate?: Record<
+    string,
+    | QAssert[]
+    | ((answers: string[], step: string) => string | null | undefined)
+  >;
+  /** a union one member per line */
+  mode?:
+    | 'a'
+    | 'b';
+}
+/** configure */
+df$.q = {
+  /** set it up
+   * @param config the config
+   * @returns nothing */
+  configure(config: QConfig): void {},
+};`);
+    const config = wrapped.types.find((t) => t.name === 'QConfig')!;
+    expect(config.fields.map((f) => [f.name, f.type])).toEqual([
+      ['validate', 'Record<string, QAssert[] | ((answers: string[], step: string) => string | null | undefined)>'],
+      ['mode', "'a' | 'b'"],
+    ]);
+    expect(wrapped.types.map((t) => t.name)).toEqual(['QAssert', 'QConfig']);
+    // the formatter's layout undone, the type itself kept
+    expect(tidyType("\n  | 'a'\n  | 'b'")).toBe("'a' | 'b'");
+    expect(tidyType('Record<\n  string,\n  | A[]\n  | ((x: Y) => Z)\n>;')).toBe('Record<string, A[] | ((x: Y) => Z)>');
+    expect(tidyType('{\n  headers?: H;\n  parse?: (j: unknown) => R;\n}')).toBe('{ headers?: H; parse?: (j: unknown) => R }');
+    expect(tidyType('(typeof xStates)[number]')).toBe('(typeof xStates)[number]');
+  });
+
   it('collects the declared types the API names', () => {
     expect(api.types.map((t) => t.name)).toEqual(['FooOpenDetail', 'Row']);
     expect(api.types.find((t) => t.name === 'Row')).toMatchObject({ doc: 'One row of the source.', fields: [
@@ -186,7 +243,8 @@ df$.g = {
   it('reads the state contract: each state, its description and its config fields', () => {
     expect(api.stateConfigs).toEqual([
       { name: 'default', doc: 'Closed.', type: '{}', fields: [] },
-      { name: 'open', doc: 'Open on a day.', type: '{ day?: number; }', fields: [{ name: 'day', type: 'number', optional: true, doc: 'the day to show, 1-31' }] },
+      // tidyType drops the `;` a formatter puts before `}` - the literal reads the same
+      { name: 'open', doc: 'Open on a day.', type: '{ day?: number }', fields: [{ name: 'day', type: 'number', optional: true, doc: 'the day to show, 1-31' }] },
     ]);
   });
 

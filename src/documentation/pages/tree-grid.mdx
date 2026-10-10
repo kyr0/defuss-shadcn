@@ -18,15 +18,39 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <button class="btn" data-variant="outline" data-size="sm" type="button" id="tg-open">Expand all</button>
     <button class="btn" data-variant="outline" data-size="sm" type="button" id="tg-close">Collapse all</button>
   </div>
-  <div class="data-grid" id="tg-geo" aria-label="Regions" data-parent-field="parentId" data-select="single" data-empty-text="No place matches." style="height:26rem;">
+  <div
+    class="data-grid"
+    id="tg-geo"
+    aria-label="Regions"
+    data-parent-field="parentId"
+    data-select="single"
+    data-empty-text="No place matches."
+    style="height: 26rem"
+  >
     <div class="data-grid-viewport">
       <div class="data-grid-head">
         <div class="data-grid-row">
           <div class="data-grid-header" data-field="name" data-width="18rem" data-filter="text" data-locked>Name</div>
-          <div class="data-grid-header" data-field="kind" data-width="7rem" data-filter="select" data-options="region,country,city,district">Kind</div>
-          <div class="data-grid-header" data-field="population" data-type="number" data-width="9rem" data-filter="number">Population</div>
+          <div
+            class="data-grid-header"
+            data-field="kind"
+            data-width="7rem"
+            data-filter="select"
+            data-options="region,country,city,district"
+            >Kind</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="population"
+            data-type="number"
+            data-width="9rem"
+            data-filter="number"
+            >Population</div
+          >
           <div class="data-grid-header" data-field="area" data-type="number" data-width="8rem">Area km²</div>
-          <div class="data-grid-header" data-field="growth" data-type="number" data-format="percent" data-width="7rem">Growth</div>
+          <div class="data-grid-header" data-field="growth" data-type="number" data-format="percent" data-width="7rem"
+            >Growth</div
+          >
         </div>
       </div>
       <div class="data-grid-body"></div>
@@ -39,7 +63,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     const rows = [];
     let id = 0;
     const node = (parentId, name, kind, i) => {
-      rows.push({ id: ++id, parentId, name, kind, population: 1000 + ((id * 7919) % 900_000), area: 10 + ((id * 131) % 5000), growth: (((id * 37) % 60) - 20) / 1000 });
+      rows.push({
+        id: ++id,
+        parentId,
+        name,
+        kind,
+        population: 1000 + ((id * 7919) % 900_000),
+        area: 10 + ((id * 131) % 5000),
+        growth: (((id * 37) % 60) - 20) / 1000,
+      });
       return id;
     };
     for (let a = 1; a <= 10; a++) {
@@ -62,13 +94,28 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Paged tree" schema="none" hint="data-paging='pages' pages the VISIBLE rows: open a branch and the pages after it shift; a filter opens the paths to its matches and pages through them."
-<div class="data-grid" id="tg-pages" aria-label="Departments" data-parent-field="parentId" data-paging="pages" data-page-size="15" style="height:24rem;max-width:40rem;">
+<div
+  class="data-grid"
+  id="tg-pages"
+  aria-label="Departments"
+  data-parent-field="parentId"
+  data-paging="pages"
+  data-page-size="15"
+  style="height: 24rem; max-width: 40rem"
+>
   <div class="data-grid-viewport">
     <div class="data-grid-head">
       <div class="data-grid-row">
         <div class="data-grid-header" data-field="name" data-width="minmax(14rem, 1fr)" data-filter="text">Team</div>
         <div class="data-grid-header" data-field="headcount" data-type="number" data-width="7rem">People</div>
-        <div class="data-grid-header" data-field="budget" data-type="number" data-format="currency:EUR" data-width="9rem">Budget</div>
+        <div
+          class="data-grid-header"
+          data-field="budget"
+          data-type="number"
+          data-format="currency:EUR"
+          data-width="9rem"
+          >Budget</div
+        >
       </div>
     </div>
     <div class="data-grid-body"></div>
@@ -85,7 +132,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       for (let t = 1; t <= 12; t++) {
         const team = ++id;
         rows.push({ id: team, parentId: top, name: area + ' team ' + t, headcount: 0, budget: 0 });
-        for (let p = 1; p <= 8; p++) rows.push({ id: ++id, parentId: team, name: area + ' ' + t + '.' + p, headcount: 1, budget: 40_000 + ((id * 7919) % 90_000) });
+        for (let p = 1; p <= 8; p++)
+          rows.push({
+            id: ++id,
+            parentId: team,
+            name: area + ' ' + t + '.' + p,
+            headcount: 1,
+            budget: 40_000 + ((id * 7919) % 90_000),
+          });
       }
     });
     df$.shadcn.dataGrid.setSource(document.getElementById('tg-pages'), rows);
@@ -94,13 +148,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Driven through the store" schema="none" hint="Open branches are config.expanded - plain JSON in the grid's store. The list below subscribes to it; the buttons only write it."
-<div class="flex flex-col gap-3" style="max-width:36rem;">
+<div class="flex flex-col gap-3" style="max-width: 36rem">
   <div class="flex flex-wrap gap-2">
     <button class="btn" data-variant="outline" data-size="sm" type="button" data-open="src">Open src</button>
-    <button class="btn" data-variant="outline" data-size="sm" type="button" data-open="src,src/components">Open src/components</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-open="src,src/components"
+      >Open src/components</button
+    >
     <button class="btn" data-variant="ghost" data-size="sm" type="button" data-open="">Close all</button>
   </div>
-  <div class="data-grid" id="tg-files" aria-label="Repository" data-parent-field="parentId" style="height:16rem;">
+  <div class="data-grid" id="tg-files" aria-label="Repository" data-parent-field="parentId" style="height: 16rem">
     <div class="data-grid-viewport">
       <div class="data-grid-head">
         <div class="data-grid-row">
@@ -122,18 +178,32 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       { id: 'tests', parentId: null, name: 'tests', size: 0 },
       { id: 'README.md', parentId: null, name: 'README.md', size: 18_204 },
     ];
-    ['accordion', 'button', 'data-grid', 'data-tree', 'dialog', 'virtual-list'].forEach((n, i) => files.push({ id: 'src/components/' + n, parentId: 'src/components', name: n + '.ts', size: 2000 + i * 1733 }));
-    ['store.ts', 'dataview.ts', 'virtual.ts'].forEach((n, i) => files.push({ id: 'src/shared/' + n, parentId: 'src/shared', name: n, size: 3000 + i * 911 }));
-    ['ui.test.ts', 'store.test.ts'].forEach((n, i) => files.push({ id: 'tests/' + n, parentId: 'tests', name: n, size: 9000 + i * 4096 }));
+    ['accordion', 'button', 'data-grid', 'data-tree', 'dialog', 'virtual-list'].forEach((n, i) =>
+      files.push({ id: 'src/components/' + n, parentId: 'src/components', name: n + '.ts', size: 2000 + i * 1733 }),
+    );
+    ['store.ts', 'dataview.ts', 'virtual.ts'].forEach((n, i) =>
+      files.push({ id: 'src/shared/' + n, parentId: 'src/shared', name: n, size: 3000 + i * 911 }),
+    );
+    ['ui.test.ts', 'store.test.ts'].forEach((n, i) =>
+      files.push({ id: 'tests/' + n, parentId: 'tests', name: n, size: 9000 + i * 4096 }),
+    );
     const grid = document.getElementById('tg-files');
     const { dataGrid } = df$.shadcn;
     dataGrid.setSource(grid, files);
-    document.querySelectorAll('[data-open]').forEach((button) =>
-      button.addEventListener('click', () => dataGrid.query(grid, { expanded: button.dataset.open ? button.dataset.open.split(',') : [] })));
+    document
+      .querySelectorAll('[data-open]')
+      .forEach((button) =>
+        button.addEventListener('click', () =>
+          dataGrid.query(grid, { expanded: button.dataset.open ? button.dataset.open.split(',') : [] }),
+        ),
+      );
     const line = document.getElementById('tg-files-open');
-    grid.store.subscribe(({ config }) => {
-      line.textContent = 'expanded: ' + (config.expanded.length ? config.expanded.join(', ') : 'nothing');
-    }, { immediate: true });
+    grid.store.subscribe(
+      ({ config }) => {
+        line.textContent = 'expanded: ' + (config.expanded.length ? config.expanded.join(', ') : 'nothing');
+      },
+      { immediate: true },
+    );
   });
 </script>
 ```

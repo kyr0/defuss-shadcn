@@ -32,7 +32,7 @@ const num = (el, key, fallback) => {
     return Number.isFinite(v) ? v : fallback;
 };
 const reduced = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+const resolve = (t) => (typeof t === 'string' ? (dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0)) : t);
 const parts = (s) => ({
     viewport: dfDollar(s).find(':scope > .session-viewport').get(0),
     content: dfDollar(s).find(':scope > .session-viewport > .session-content').get(0),
@@ -66,7 +66,10 @@ function measure(s) {
         s.setAttribute('data-scrollable', tokens);
     else
         s.removeAttribute('data-scrollable');
-    dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
+    dfDollar(s)
+        .find('.session-scroll-button')
+        .toArray()
+        .forEach((b) => {
         const active = b.dataset.to === 'start' ? start : end;
         b.dataset.active = String(active);
         b.inert = !active;
@@ -94,7 +97,9 @@ function setStick(s, stick) {
 function hold(s, target, ms) {
     s._opening = target;
     clearTimeout(s._holdTimer);
-    s._holdTimer = setTimeout(() => { s._opening = null; }, ms);
+    s._holdTimer = setTimeout(() => {
+        s._opening = null;
+    }, ms);
 }
 /**
  * Room under the latest anchored turn: a short reply leaves nothing to
@@ -137,7 +142,9 @@ function scrollToStart(s, { smooth = true } = {}) {
     scrollViewport(s, 0, smooth);
 }
 function scrollToMessage(s, id, { smooth = true } = {}) {
-    const item = dfDollar(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
+    const item = dfDollar(s._parts.content)
+        .find(`.session-item[data-message-id="${CSS.escape(id)}"]`)
+        .get(0);
     if (!item)
         return false;
     s.removeAttribute('data-stick');
@@ -232,10 +239,14 @@ function onItems(s, records) {
         // an estimate - render the new ones once so the shift is their real
         // height; 'auto' then remembers it, so nothing moves later.
         const added = records.flatMap((r) => [...r.addedNodes]).filter((n) => n.nodeType === 1);
-        added.forEach((n) => { n.style.contentVisibility = 'visible'; });
+        added.forEach((n) => {
+            n.style.contentVisibility = 'visible';
+        });
         s.setAttribute('data-autoscrolling', '');
         viewport.scrollTop += viewport.scrollHeight - before;
-        added.forEach((n) => { n.style.contentVisibility = ''; });
+        added.forEach((n) => {
+            n.style.contentVisibility = '';
+        });
         settle(s);
         return;
     }
@@ -307,25 +318,42 @@ function track(s) {
     s._visibleIds = ids.join();
     items.forEach((it) => it.toggleAttribute('data-current', it === current));
     // Fires when the messages in view change - the current anchor's id and the ids of the visible messages.
-    s.dispatchEvent(new CustomEvent('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+    s.dispatchEvent(new CustomEvent('session-visibility', {
+        bubbles: true,
+        detail: { currentAnchorId: currentId, visibleMessageIds: ids },
+    }));
 }
 // -- Drop target (data-drop) ----------------------------------------------------
 function bindDrop(s) {
     const hasFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files');
     if (!s.dataset.dropLabel)
         s.dataset.dropLabel = 'Drop files to attach';
-    const accept = (s.dataset.dropAccept || '').split(',').map((a) => a.trim()).filter(Boolean);
-    const ok = (file) => !accept.length || accept.some((a) => a.endsWith('/*') ? file.type.startsWith(a.slice(0, -1)) : a.startsWith('.') ? file.name.toLowerCase().endsWith(a.toLowerCase()) : file.type === a);
-    s.addEventListener('dragenter', (e) => { if (hasFiles(e)) {
-        e.preventDefault();
-        s.setAttribute('data-drop-active', '');
-    } });
-    s.addEventListener('dragover', (e) => { if (hasFiles(e)) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
-    } });
-    s.addEventListener('dragleave', (e) => { if (!s.contains(e.relatedTarget))
-        s.removeAttribute('data-drop-active'); });
+    const accept = (s.dataset.dropAccept || '')
+        .split(',')
+        .map((a) => a.trim())
+        .filter(Boolean);
+    const ok = (file) => !accept.length ||
+        accept.some((a) => a.endsWith('/*')
+            ? file.type.startsWith(a.slice(0, -1))
+            : a.startsWith('.')
+                ? file.name.toLowerCase().endsWith(a.toLowerCase())
+                : file.type === a);
+    s.addEventListener('dragenter', (e) => {
+        if (hasFiles(e)) {
+            e.preventDefault();
+            s.setAttribute('data-drop-active', '');
+        }
+    });
+    s.addEventListener('dragover', (e) => {
+        if (hasFiles(e)) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }
+    });
+    s.addEventListener('dragleave', (e) => {
+        if (!s.contains(e.relatedTarget))
+            s.removeAttribute('data-drop-active');
+    });
     s.addEventListener('drop', (e) => {
         if (!hasFiles(e))
             return;
@@ -346,7 +374,9 @@ function follow(s, options = {}) {
 }
 // -- init ---------------------------------------------------------------------
 function init() {
-    dfDollar('.session:not([data-init])').toArray().forEach((s) => {
+    dfDollar('.session:not([data-init])')
+        .toArray()
+        .forEach((s) => {
         const p = parts(s);
         if (!p.viewport || !p.content)
             return; // not a session yet
@@ -371,12 +401,17 @@ function init() {
             measure(s);
         }, { passive: true });
         // any reader input ends the opening hold too
-        ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) => viewport.addEventListener(type, () => { s._opening = null; }, { passive: true }));
+        ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) => viewport.addEventListener(type, () => {
+            s._opening = null;
+        }, { passive: true }));
         viewport.addEventListener('scrollend', () => settle(s));
         new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
         new ResizeObserver(() => onResize(s)).observe(content);
         new ResizeObserver(() => measure(s)).observe(viewport);
-        dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
+        dfDollar(s)
+            .find('.session-scroll-button')
+            .toArray()
+            .forEach((b) => {
             b.addEventListener('click', () => (b.dataset.to === 'start' ? scrollToStart(s) : follow(s)));
         });
         if (s.hasAttribute('data-drop'))
@@ -454,15 +489,21 @@ df$.session = {
      * @param target - the .session element, its id or a selector
      * @param options - smooth: false jumps instead of scrolling smoothly (default true)
      */
-    scrollToEnd: (target, options) => { const s = resolve(target); if (s)
-        follow(s, options); },
+    scrollToEnd: (target, options) => {
+        const s = resolve(target);
+        if (s)
+            follow(s, options);
+    },
     /**
      * Scroll to the oldest message (the session stops following).
      * @param target - the .session element, its id or a selector
      * @param options - smooth: false jumps instead of scrolling smoothly (default true)
      */
-    scrollToStart: (target, options) => { const s = resolve(target); if (s)
-        scrollToStart(s, options); },
+    scrollToStart: (target, options) => {
+        const s = resolve(target);
+        if (s)
+            scrollToStart(s, options);
+    },
     /**
      * Bring a message into view by id.
      * @param target - the .session element, its id or a selector
@@ -470,13 +511,19 @@ df$.session = {
      * @param options - smooth: false jumps instead of scrolling smoothly (default true)
      * @returns false when the session has no such message
      */
-    scrollToMessage: (target, id, options) => { const s = resolve(target); return s ? scrollToMessage(s, id, options) : false; },
+    scrollToMessage: (target, id, options) => {
+        const s = resolve(target);
+        return s ? scrollToMessage(s, id, options) : false;
+    },
     /**
      * Whether the reader is at the end (within data-threshold, 48px by default).
      * @param target - the .session element, its id or a selector
      * @returns true when following is on - new messages scroll into view
      */
-    isAtEnd: (target) => { const s = resolve(target); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
+    isAtEnd: (target) => {
+        const s = resolve(target);
+        return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48);
+    },
 };
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });

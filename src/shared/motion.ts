@@ -68,9 +68,9 @@ const active = new WeakMap<Element, Animation[]>();
 const owned = (el: Element, prefix: string): Animation[] =>
   el
     .getAnimations({ subtree: false })
-    .filter((a) =>
-      typeof (a as CSSAnimation).animationName === 'string' &&
-      (a as CSSAnimation).animationName.startsWith(prefix),
+    .filter(
+      (a) =>
+        typeof (a as CSSAnimation).animationName === 'string' && (a as CSSAnimation).animationName.startsWith(prefix),
     ) as Animation[];
 
 /** Shared trigger machinery: apply vars + attribute, then deterministically
@@ -105,9 +105,7 @@ function trigger(
   for (const animation of animations) animation.play();
   active.set(el, animations);
 
-  const finished = Promise.all(
-    animations.map((a) => a.finished.catch(() => undefined)),
-  ).then(() => {
+  const finished = Promise.all(animations.map((a) => a.finished.catch(() => undefined))).then(() => {
     if (active.get(el) !== animations) return; // superseded by a newer trigger
     // The attribute STAYS (fill:both already holds the settled state - the
     // settled state IS the element's natural style, so this is visually a
@@ -163,9 +161,7 @@ export function draw(element: SVGElement, options: MotionOptions = {}): MotionHa
  * (fail-soft: a typo degrades the entrance, never breaks the slide).
  */
 export function revealAttr(direction: Entrance | string, delay?: unknown): Record<string, string> {
-  const dir = (ENTRANCES as readonly string[]).includes(String(direction))
-    ? String(direction)
-    : 'up';
+  const dir = (ENTRANCES as readonly string[]).includes(String(direction)) ? String(direction) : 'up';
   const ms = delay === undefined ? -1 : Math.max(0, Number(delay) || 0);
   const attrs: Record<string, string> = { 'data-df-entrance': dir };
   if (ms > 0) attrs.style = `--df-motion-delay:${ms}ms`;

@@ -111,11 +111,14 @@ function syncValue(picker) {
   const text = formatColor(input.value, format);
   const display = dfDollar(picker).find('.color-picker-value').get(0);
   if (display && display.textContent !== text) display.textContent = text;
-  dfDollar(picker).find<HTMLInputElement>('input[data-color-output]').toArray().forEach((out) => {
-    if (out.value === text) return;
-    out.value = text;
-    out.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  dfDollar(picker)
+    .find<HTMLInputElement>('input[data-color-output]')
+    .toArray()
+    .forEach((out) => {
+      if (out.value === text) return;
+      out.value = text;
+      out.dispatchEvent(new Event('change', { bubbles: true }));
+    });
   const switcher = dfDollar(picker).find<HTMLSelectElement>('select.color-picker-format').get(0);
   if (switcher && switcher.value !== format) switcher.value = format;
 }
@@ -130,7 +133,8 @@ function applyMarkup(el, config) {
   // the one state's markup is the value label: { format } (an attribute -
   // written only when it differs from the authored one) and { value } (the
   // input's property) feed the same syncValue() the live picker runs
-  if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format) && config.format !== formatOf(el)) dfDollar(el).attr('data-format', config.format);
+  if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format) && config.format !== formatOf(el))
+    dfDollar(el).attr('data-format', config.format);
   const input = getInput(el);
   if (input && typeof config?.value === 'string') input.value = config.value;
   syncValue(el);
@@ -142,7 +146,11 @@ function applyMarkup(el, config) {
  */
 function triggerStateChange(picker, config) {
   // only a format that differs is written: setState(getState()) changes nothing
-  if (typeof config?.format === 'string' && COLOR_FORMATS.includes(config.format) && config.format !== formatOf(picker)) {
+  if (
+    typeof config?.format === 'string' &&
+    COLOR_FORMATS.includes(config.format) &&
+    config.format !== formatOf(picker)
+  ) {
     picker.dataset.format = config.format;
     syncValue(picker);
   }
@@ -179,22 +187,32 @@ df$.colorPickerApi = colorPickerApi;
 df$.colorPickerStates = colorPickerStates;
 
 function init() {
-  dfDollar('.color-picker:not([data-init])').toArray().forEach((picker) => {
-  picker.dataset.init = '';
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(picker, colorPickerApi);
-  const input = dfDollar(picker).find<HTMLInputElement>('input[type="color"]').get(0);
-  if (!input) return;
-  syncValue(picker);
-  input.addEventListener('input', () => { syncValue(picker); });
-  // user-switchable notation: <select class="color-picker-format">
-  dfDollar(picker).find('select.color-picker-format').get(0)?.addEventListener('change', (e) => {
-    picker.dataset.format = (e.target as HTMLSelectElement).value;
-    syncValue(picker);
-  });
-  // authors may flip data-format at runtime too
-  new MutationObserver(() => syncValue(picker)).observe(picker, { attributes: true, attributeFilter: ['data-format'] });
-});
+  dfDollar('.color-picker:not([data-init])')
+    .toArray()
+    .forEach((picker) => {
+      picker.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(picker, colorPickerApi);
+      const input = dfDollar(picker).find<HTMLInputElement>('input[type="color"]').get(0);
+      if (!input) return;
+      syncValue(picker);
+      input.addEventListener('input', () => {
+        syncValue(picker);
+      });
+      // user-switchable notation: <select class="color-picker-format">
+      dfDollar(picker)
+        .find('select.color-picker-format')
+        .get(0)
+        ?.addEventListener('change', (e) => {
+          picker.dataset.format = (e.target as HTMLSelectElement).value;
+          syncValue(picker);
+        });
+      // authors may flip data-format at runtime too
+      new MutationObserver(() => syncValue(picker)).observe(picker, {
+        attributes: true,
+        attributeFilter: ['data-format'],
+      });
+    });
 }
 
 init();

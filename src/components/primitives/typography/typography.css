@@ -33,7 +33,9 @@
     border-block-end: 1px solid var(--border);
     padding-block-end: 0.5rem;
 
-    &:first-child { margin-block-start: 0; }
+    &:first-child {
+      margin-block-start: 0;
+    }
   }
 
   .h3 {
@@ -62,7 +64,9 @@
     text-wrap: pretty;
     color: var(--foreground);
 
-    &:not(:first-child) { margin-block-start: 1.5rem; }
+    &:not(:first-child) {
+      margin-block-start: 1.5rem;
+    }
   }
 
   /* -- Lead --------------------------------------------------- */
@@ -112,7 +116,9 @@
     hanging-punctuation: first last;
     color: var(--foreground);
 
-    & p { margin: 0; }
+    & p {
+      margin: 0;
+    }
   }
 
   /* -- Inline code -------------------------------------------- */
@@ -189,8 +195,12 @@
     text-emphasis: filled dot;
     text-emphasis-position: over right;
   }
-  .text-emphasis:lang(ja) { text-emphasis-style: filled sesame; }
-  .text-emphasis:lang(zh) { text-emphasis-position: under right; }
+  .text-emphasis:lang(ja) {
+    text-emphasis-style: filled sesame;
+  }
+  .text-emphasis:lang(zh) {
+    text-emphasis-position: under right;
+  }
 
   /* ruby annotations (furigana, pinyin, zhuyin) read as small, muted type */
   :is(.p, .lead, .blockquote, .h1, .h2, .h3, .h4) rt {
@@ -245,27 +255,65 @@
     orphans: 2;
     widows: 2;
 
-    & > p { margin-block: 0 1em; }
+    & > p {
+      margin-block: 0 1em;
+    }
     /* every block keeps the same distance from the text around it */
-    & > :is(figure, table, blockquote, pre, hr, .separator, .typeset-group, .chart, .diagram, .mockup-code, .table-container) {
+    &
+      > :is(
+        figure,
+        table,
+        blockquote,
+        pre,
+        hr,
+        .separator,
+        .typeset-group,
+        .chart,
+        .diagram,
+        .mockup-code,
+        .table-container
+      ) {
       margin-block: var(--typeset-gap);
     }
     /* a figure spans the measure (the browser indents it 40px by default) */
-    & > :is(figure, blockquote) { margin-inline: 0; }
-    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { margin-block: var(--typeset-gap) 0.5em; }
-    & > :first-child { margin-block-start: 0; }
-    & :is(figure, blockquote, table, pre, .typeset-group) { break-inside: avoid; }
-    & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) { break-after: avoid; }
-    & .typeset-span { column-span: all; }
+    & > :is(figure, blockquote) {
+      margin-inline: 0;
+    }
+    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
+      margin-block: var(--typeset-gap) 0.5em;
+    }
+    & > :first-child {
+      margin-block-start: 0;
+    }
+    & :is(figure, blockquote, table, pre, .typeset-group) {
+      break-inside: avoid;
+    }
+    & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
+      break-after: avoid;
+    }
+    & .typeset-span {
+      column-span: all;
+    }
     /* the columns below a spanning heading or figure start level: the first
        block keeps no top margin - across the column break it cannot collapse
        into the spanner's, so a subheading sat lower than the text beside it */
-    &[data-columns] > .typeset-span + :not(.typeset-span) { margin-block-start: 0; }
+    &[data-columns] > .typeset-span + :not(.typeset-span) {
+      margin-block-start: 0;
+    }
 
-    &[data-columns] { max-inline-size: none; column-gap: var(--typeset-column-gap); }
-    &[data-columns="2"] { columns: 2 var(--typeset-column-width); }
-    &[data-columns="3"] { columns: 3 var(--typeset-column-width); }
-    &[data-rule] { column-rule: 1px solid var(--border); }
+    &[data-columns] {
+      max-inline-size: none;
+      column-gap: var(--typeset-column-gap);
+    }
+    &[data-columns="2"] {
+      columns: 2 var(--typeset-column-width);
+    }
+    &[data-columns="3"] {
+      columns: 3 var(--typeset-column-width);
+    }
+    &[data-rule] {
+      column-rule: 1px solid var(--border);
+    }
 
     &[data-align="justify"] {
       text-align: justify;
@@ -276,20 +324,34 @@
       /* text-align-last inherits: a centered caption inside a justified setting
          kept its last line flush left (a two-line figure caption looked
          off-center) - what centers itself takes its last line from its own alignment */
-      & :where(figcaption, caption, .typeset-caption) { text-align-last: auto; }
+      & :where(figcaption, caption, .typeset-caption) {
+        text-align-last: auto;
+      }
     }
 
     /* leading and tracking move together: tight lines close up a little,
        airy lines open up a little, so the grey of the column stays even */
-    &[data-leading="tight"] { --typeset-leading: 1.45; --typeset-tracking: -0.01em; }
-    &[data-leading="loose"] { --typeset-leading: 1.9; --typeset-tracking: 0.01em; }
+    &[data-leading="tight"] {
+      --typeset-leading: 1.45;
+      --typeset-tracking: -0.01em;
+    }
+    &[data-leading="loose"] {
+      --typeset-leading: 1.9;
+      --typeset-tracking: 0.01em;
+    }
 
-    &[data-indent] > p { margin-block: 0; }
-    &[data-indent] > p + p { text-indent: var(--typeset-indent); }
+    &[data-indent] > p {
+      margin-block: 0;
+    }
+    &[data-indent] > p + p {
+      text-indent: var(--typeset-indent);
+    }
     /* text-indent inherits into an inline-block, which then indents ITS first line: a badge,
        a key cap or an epistemic tag at the start of an indented paragraph grew a blank
        inside its left edge */
-    &[data-indent] > p :where(.badge, kbd, .paper-tag) { text-indent: 0; }
+    &[data-indent] > p :where(.badge, kbd, .paper-tag) {
+      text-indent: 0;
+    }
 
     /* the gap is a margin: Chromium ignores logical padding on ::first-letter
        (VERIFIED: probe 2026-10-07 - padding-inline-end computed 0, margin-inline-end 2.52px) */
@@ -366,9 +428,18 @@
     text-wrap: pretty;
     caption-side: top;
 
-    &[data-align="justify"] { text-align: justify; text-align-last: start; hyphens: auto; }
-    &[data-align="center"] { text-align: center; text-wrap: balance; }
-    table > & { margin-block: 0 0.6em; }
+    &[data-align="justify"] {
+      text-align: justify;
+      text-align-last: start;
+      hyphens: auto;
+    }
+    &[data-align="center"] {
+      text-align: center;
+      text-wrap: balance;
+    }
+    table > & {
+      margin-block: 0 0.6em;
+    }
   }
   .typeset-numbered :is(figcaption.typeset-caption)::before {
     counter-increment: typeset-figure;
@@ -376,7 +447,12 @@
     color: var(--foreground);
     font-weight: 600;
   }
-  .typeset-numbered :is(caption.typeset-caption, figure:has(> table) > figcaption.typeset-caption, figure:has(> .table-container) > figcaption.typeset-caption)::before {
+  .typeset-numbered
+    :is(
+      caption.typeset-caption,
+      figure:has(> table) > figcaption.typeset-caption,
+      figure:has(> .table-container) > figcaption.typeset-caption
+    )::before {
     counter-increment: typeset-table;
     content: var(--typeset-table-label) counter(typeset-table) ". ";
   }
@@ -418,10 +494,21 @@
       margin: 0;
       min-inline-size: 0;
     }
-    & > figcaption { grid-column: 1 / -1; margin-block-start: 0.25em; }
-    & img, & video { display: block; inline-size: 100%; block-size: auto; border-radius: var(--radius-md); }
+    & > figcaption {
+      grid-column: 1 / -1;
+      margin-block-start: 0.25em;
+    }
+    & img,
+    & video {
+      display: block;
+      inline-size: 100%;
+      block-size: auto;
+      border-radius: var(--radius-md);
+    }
 
-    &[data-align="middle"] > figure > :first-child { align-self: center; }
+    &[data-align="middle"] > figure > :first-child {
+      align-self: center;
+    }
 
     &[data-variant="cards"] {
       padding: 0;
@@ -442,8 +529,15 @@
       overflow: hidden;
       background: var(--border);
 
-      & > figure { padding: 1rem; background: var(--card); }
-      & > figcaption { margin: 0; padding: 0.75rem 1rem 1rem; background: var(--card); }
+      & > figure {
+        padding: 1rem;
+        background: var(--card);
+      }
+      & > figcaption {
+        margin: 0;
+        padding: 0.75rem 1rem 1rem;
+        background: var(--card);
+      }
     }
   }
   .typeset-subcaption {
@@ -463,7 +557,10 @@
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-contrast: more) {
-    .h1, .h2, .h3, .h4 {
+    .h1,
+    .h2,
+    .h3,
+    .h4 {
       letter-spacing: 0;
     }
 

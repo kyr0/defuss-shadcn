@@ -332,8 +332,9 @@ function resolveColors(el: HTMLElement, value: unknown, cs?: CSSStyleDeclaration
   if (typeof value === 'string') {
     if (!CSS_COLOR.test(value)) return value;
     const style = cs ?? getComputedStyle(el);
-    const css = value.replace(/var\((--[\w-]+)\s*(?:,\s*([^()]*))?\)/g, (_m, name: string, fallback?: string) =>
-      style.getPropertyValue(name).trim() || (fallback ?? '').trim(),
+    const css = value.replace(
+      /var\((--[\w-]+)\s*(?:,\s*([^()]*))?\)/g,
+      (_m, name: string, fallback?: string) => style.getPropertyValue(name).trim() || (fallback ?? '').trim(),
     );
     return toRgb(css) || value;
   }
@@ -354,7 +355,10 @@ function resolveColors(el: HTMLElement, value: unknown, cs?: CSSStyleDeclaration
  * after a theme change so token references re-resolve. A long-running merge
  * stream (a bar race ticking setOption) stops recording past the cap; such a
  * chart still re-themes its chrome, just not its per-series token colors. */
-interface Journal { ops: [Option, unknown, unknown][]; overflow: boolean }
+interface Journal {
+  ops: [Option, unknown, unknown][];
+  overflow: boolean;
+}
 const journals = new WeakMap<HTMLElement, Journal>();
 const JOURNAL_CAP = 64;
 
@@ -409,7 +413,9 @@ export function mount(el: HTMLElement, option: Option = {}): ChartMount {
   let frame = 0;
   const ro = new ResizeObserver(() => {
     cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => { if (!instance.isDisposed?.()) instance.resize(); });
+    frame = requestAnimationFrame(() => {
+      if (!instance.isDisposed?.()) instance.resize();
+    });
   });
   ro.observe(el);
   observers.set(el, ro);
@@ -569,7 +575,9 @@ function morphable(option: Option): Option {
   const list = (Array.isArray(series) ? series : [series]) as Option[];
   return {
     ...option,
-    series: list.map((s) => (s.universalTransition === undefined && s.type !== 'custom' ? { ...s, universalTransition: { enabled: true } } : s)),
+    series: list.map((s) =>
+      s.universalTransition === undefined && s.type !== 'custom' ? { ...s, universalTransition: { enabled: true } } : s,
+    ),
   };
 }
 
@@ -586,11 +594,7 @@ function morphable(option: Option): Option {
  * @param options - loop: true wraps past the ends instead of clamping
  * @returns the story's controls
  */
-export function chartStory(
-  el: HTMLElement,
-  states: Option[],
-  { loop = false }: { loop?: boolean } = {},
-): ChartStory {
+export function chartStory(el: HTMLElement, states: Option[], { loop = false }: { loop?: boolean } = {}): ChartStory {
   if (!Array.isArray(states) || states.length === 0) {
     throw new Error('chart: chartStory needs at least one option state');
   }
@@ -616,7 +620,12 @@ export interface ChartDeck {
 
 /** Deck tempo: entrances and morphs take the slides' 1.5s - slow and legible
  * at presentation distance (a base or state may still override it). */
-const DECK_TEMPO: Option = { animationDuration: 1500, animationEasing: 'cubicOut', animationDurationUpdate: 1500, animationEasingUpdate: 'cubicInOut' };
+const DECK_TEMPO: Option = {
+  animationDuration: 1500,
+  animationEasing: 'cubicOut',
+  animationDurationUpdate: 1500,
+  animationEasingUpdate: 'cubicInOut',
+};
 
 /**
  * Why: the deck stage - ONE chart instance for a whole presentation, so
@@ -635,11 +644,16 @@ const DECK_TEMPO: Option = { animationDuration: 1500, animationEasing: 'cubicOut
  * @param options - base: the chrome every state shares; states: the option of each named state
  * @returns the stage's controls
  */
-export function chartDeck(deck: HTMLElement, { base = {}, states }: { base?: Option; states: Record<string, Option> }): ChartDeck {
-  const stage = ((dfDollar(deck).find(':scope > .presentation-stage').get(0) ?? null) as HTMLElement | null);
-  if (!stage) throw new Error('chart: chart.deck() needs a <div class="chart presentation-stage"> child of the .presentation');
-  if (!isPlain(states) || Object.keys(states).length === 0) throw new Error('chart: chart.deck() needs at least one named state');
-  const slides = Array.from((dfDollar(deck).find(':scope > [data-slide]').toArray() as HTMLElement[]));
+export function chartDeck(
+  deck: HTMLElement,
+  { base = {}, states }: { base?: Option; states: Record<string, Option> },
+): ChartDeck {
+  const stage = (dfDollar(deck).find(':scope > .presentation-stage').get(0) ?? null) as HTMLElement | null;
+  if (!stage)
+    throw new Error('chart: chart.deck() needs a <div class="chart presentation-stage"> child of the .presentation');
+  if (!isPlain(states) || Object.keys(states).length === 0)
+    throw new Error('chart: chart.deck() needs at least one named state');
+  const slides = Array.from(dfDollar(deck).find(':scope > [data-slide]').toArray() as HTMLElement[]);
   let current: string | null = null;
   let last: string | null = null;
 

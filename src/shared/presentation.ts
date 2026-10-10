@@ -73,8 +73,7 @@ export function animateCount(el: HTMLElement, opts: CountOptions = {}): () => vo
   const from = opts.from ?? num(el.dataset.countFrom, 0);
   const duration = Math.max(0, opts.duration ?? num(el.dataset.countDuration, 1200));
   const delay = Math.max(0, opts.delay ?? num(el.dataset.countDelay, 0));
-  const decimals =
-    opts.decimals ?? num(el.dataset.countDecimals, String(to).split('.')[1]?.length ?? 0);
+  const decimals = opts.decimals ?? num(el.dataset.countDecimals, String(to).split('.')[1]?.length ?? 0);
   const fmt =
     opts.format ??
     ((n: number) =>
@@ -92,8 +91,7 @@ export function animateCount(el: HTMLElement, opts: CountOptions = {}): () => vo
   const settle = (): void => {
     el.textContent = fmt(to);
   };
-  const reduced =
-    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const start = (): void => {
     if (reduced || duration === 0 || from === to) {
@@ -172,13 +170,11 @@ export function presentationScope(el?: Element | null): PresentationScope {
     (el?.closest('.presentation') as HTMLElement | null) ??
     (typeof document !== 'undefined' ? ((defussQuery()('.presentation').get(0) ?? null) as HTMLElement | null) : null);
   if (!mount) throw new Error('ddf$: no .presentation element found');
-  const slides = (): HTMLElement[] =>
-    defussQuery()(mount).find(':scope > [data-slide]').toArray() as HTMLElement[];
+  const slides = (): HTMLElement[] => defussQuery()(mount).find(':scope > [data-slide]').toArray() as HTMLElement[];
   // every mutation drives the component's own State API; the live index is the
   // data-current-slide the runtime mirrors - never a module-scope cache
   const apply = (index: number): number => {
-    const api = (mount as HTMLElement & { api?: { setState(n: string, c?: Record<string, unknown>): void } })
-      .api;
+    const api = (mount as HTMLElement & { api?: { setState(n: string, c?: Record<string, unknown>): void } }).api;
     if (!api) throw new Error(PRESENTATION_NOT_INITIALIZED);
     api.setState('default', { index });
     return coerceIndex(mount.dataset.currentSlide, index);
@@ -197,8 +193,7 @@ export function presentationScope(el?: Element | null): PresentationScope {
     // rejected-request fallback - the honest state the runtime maintains
     fullscreen: () => mount.hasAttribute('data-fullscreen'),
     toggleFullscreen: (on) => {
-      const api = (mount as HTMLElement & { api?: { setState(n: string, c?: Record<string, unknown>): void } })
-        .api;
+      const api = (mount as HTMLElement & { api?: { setState(n: string, c?: Record<string, unknown>): void } }).api;
       if (!api) throw new Error(PRESENTATION_NOT_INITIALIZED);
       const want = on ?? !mount.hasAttribute('data-fullscreen');
       api.setState('fullscreen', { value: want });

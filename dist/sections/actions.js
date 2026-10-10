@@ -18,7 +18,10 @@ var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
   apply: (toggle, state) => triggerStateChange(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  read: (toggle, state) => ({
+    name: dfDollar(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
     applyMarkup(toggle, state.name, authored ? authored[1] : "false");
@@ -225,5 +228,5 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-//# debugId=B402CAE9D7227E1064756E2164756E21
+//# debugId=AF83EF313B6E64C764756E2164756E21
 //# sourceMappingURL=actions.js.map

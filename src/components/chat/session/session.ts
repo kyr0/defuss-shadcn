@@ -72,7 +72,7 @@ const num = (el, key, fallback) => {
   return Number.isFinite(v) ? v : fallback;
 };
 const reduced = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+const resolve = (t) => (typeof t === 'string' ? (dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0)) : t);
 
 const parts = (s) => ({
   viewport: dfDollar(s).find(':scope > .session-viewport').get(0),
@@ -108,11 +108,14 @@ function measure(s) {
   const tokens = [start && 'start', end && 'end'].filter(Boolean).join(' ');
   if (tokens) s.setAttribute('data-scrollable', tokens);
   else s.removeAttribute('data-scrollable');
-  dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
-    const active = b.dataset.to === 'start' ? start : end;
-    b.dataset.active = String(active);
-    b.inert = !active;
-  });
+  dfDollar(s)
+    .find('.session-scroll-button')
+    .toArray()
+    .forEach((b) => {
+      const active = b.dataset.to === 'start' ? start : end;
+      b.dataset.active = String(active);
+      b.inert = !active;
+    });
   s._height = viewport.scrollHeight;
   // only the reader's own scrolling moves the follow flag
   if (!s.hasAttribute('data-autoscrolling')) {
@@ -136,7 +139,9 @@ function setStick(s, stick) {
 function hold(s, target, ms) {
   s._opening = target;
   clearTimeout(s._holdTimer);
-  s._holdTimer = setTimeout(() => { s._opening = null; }, ms);
+  s._holdTimer = setTimeout(() => {
+    s._opening = null;
+  }, ms);
 }
 
 /**
@@ -180,7 +185,9 @@ function scrollToStart(s, { smooth = true } = {}) {
   scrollViewport(s, 0, smooth);
 }
 function scrollToMessage(s, id, { smooth = true } = {}) {
-  const item = dfDollar(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
+  const item = dfDollar(s._parts.content)
+    .find(`.session-item[data-message-id="${CSS.escape(id)}"]`)
+    .get(0);
   if (!item) return false;
   s.removeAttribute('data-stick');
   scrollViewport(s, anchorTop(s, item), smooth);
@@ -260,7 +267,8 @@ function onItems(s, records) {
     // nothing after the insertion = an append; nothing before it = a prepend
     if (r.nextSibling === null) {
       appended = true;
-      for (const node of r.addedNodes) if (node.nodeType === 1 && node.matches('.session-item[data-anchor]')) anchored = node;
+      for (const node of r.addedNodes)
+        if (node.nodeType === 1 && node.matches('.session-item[data-anchor]')) anchored = node;
     } else if (r.previousSibling === null) prepended = true;
   }
   if (prepended && !appended) {
@@ -269,10 +277,14 @@ function onItems(s, records) {
     // an estimate - render the new ones once so the shift is their real
     // height; 'auto' then remembers it, so nothing moves later.
     const added = records.flatMap((r) => [...r.addedNodes]).filter((n) => n.nodeType === 1);
-    added.forEach((n) => { n.style.contentVisibility = 'visible'; });
+    added.forEach((n) => {
+      n.style.contentVisibility = 'visible';
+    });
     s.setAttribute('data-autoscrolling', '');
     viewport.scrollTop += viewport.scrollHeight - before;
-    added.forEach((n) => { n.style.contentVisibility = ''; });
+    added.forEach((n) => {
+      n.style.contentVisibility = '';
+    });
     settle(s);
     return;
   }
@@ -286,7 +298,8 @@ function onItems(s, records) {
     if (s.dataset.stateName !== 'streaming') sessionApi.commit(s, 'detached', {});
     return;
   }
-  if (appended && s.hasAttribute('data-stick')) scrollViewport(s, viewport.scrollHeight, s.dataset.stateName !== 'streaming');
+  if (appended && s.hasAttribute('data-stick'))
+    scrollViewport(s, viewport.scrollHeight, s.dataset.stateName !== 'streaming');
   else measure(s);
 }
 
@@ -337,7 +350,12 @@ function track(s) {
   s._visibleIds = ids.join();
   items.forEach((it) => it.toggleAttribute('data-current', it === current));
   // Fires when the messages in view change - the current anchor's id and the ids of the visible messages.
-  s.dispatchEvent(new CustomEvent<SessionVisibilityDetail>('session-visibility', { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+  s.dispatchEvent(
+    new CustomEvent<SessionVisibilityDetail>('session-visibility', {
+      bubbles: true,
+      detail: { currentAnchorId: currentId, visibleMessageIds: ids },
+    }),
+  );
 }
 
 // -- Drop target (data-drop) ----------------------------------------------------
@@ -345,19 +363,42 @@ function track(s) {
 function bindDrop(s) {
   const hasFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files');
   if (!s.dataset.dropLabel) s.dataset.dropLabel = 'Drop files to attach';
-  const accept = (s.dataset.dropAccept || '').split(',').map((a) => a.trim()).filter(Boolean);
-  const ok = (file) => !accept.length || accept.some((a) =>
-    a.endsWith('/*') ? file.type.startsWith(a.slice(0, -1)) : a.startsWith('.') ? file.name.toLowerCase().endsWith(a.toLowerCase()) : file.type === a);
-  s.addEventListener('dragenter', (e) => { if (hasFiles(e)) { e.preventDefault(); s.setAttribute('data-drop-active', ''); } });
-  s.addEventListener('dragover', (e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
-  s.addEventListener('dragleave', (e) => { if (!s.contains(e.relatedTarget)) s.removeAttribute('data-drop-active'); });
+  const accept = (s.dataset.dropAccept || '')
+    .split(',')
+    .map((a) => a.trim())
+    .filter(Boolean);
+  const ok = (file) =>
+    !accept.length ||
+    accept.some((a) =>
+      a.endsWith('/*')
+        ? file.type.startsWith(a.slice(0, -1))
+        : a.startsWith('.')
+          ? file.name.toLowerCase().endsWith(a.toLowerCase())
+          : file.type === a,
+    );
+  s.addEventListener('dragenter', (e) => {
+    if (hasFiles(e)) {
+      e.preventDefault();
+      s.setAttribute('data-drop-active', '');
+    }
+  });
+  s.addEventListener('dragover', (e) => {
+    if (hasFiles(e)) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    }
+  });
+  s.addEventListener('dragleave', (e) => {
+    if (!s.contains(e.relatedTarget)) s.removeAttribute('data-drop-active');
+  });
   s.addEventListener('drop', (e) => {
     if (!hasFiles(e)) return;
     e.preventDefault();
     s.removeAttribute('data-drop-active');
     const files = [...e.dataTransfer.files].filter(ok);
     // Fires when files are dropped on the session (data-drop) - the accepted files.
-    if (files.length) s.dispatchEvent(new CustomEvent<SessionDropDetail>('session-drop', { bubbles: true, detail: { files } }));
+    if (files.length)
+      s.dispatchEvent(new CustomEvent<SessionDropDetail>('session-drop', { bubbles: true, detail: { files } }));
   });
 }
 
@@ -370,58 +411,75 @@ function follow(s, options = {}) {
 // -- init ---------------------------------------------------------------------
 
 function init() {
-  dfDollar('.session:not([data-init])').toArray().forEach((s) => {
-    const p = parts(s);
-    if (!p.viewport || !p.content) return; // not a session yet
-    s.dataset.init = '';
-    s._parts = p;
-    const { viewport, content } = p;
+  dfDollar('.session:not([data-init])')
+    .toArray()
+    .forEach((s) => {
+      const p = parts(s);
+      if (!p.viewport || !p.content) return; // not a session yet
+      s.dataset.init = '';
+      s._parts = p;
+      const { viewport, content } = p;
 
-    // accessible defaults, unless authored
-    if (!viewport.hasAttribute('role')) viewport.setAttribute('role', 'region');
-    if (!viewport.hasAttribute('aria-label')) viewport.setAttribute('aria-label', 'Messages');
-    if (!viewport.hasAttribute('tabindex')) viewport.tabIndex = 0;
-    if (!content.hasAttribute('role')) content.setAttribute('role', 'log');
-    if (!content.hasAttribute('aria-relevant')) content.setAttribute('aria-relevant', 'additions');
+      // accessible defaults, unless authored
+      if (!viewport.hasAttribute('role')) viewport.setAttribute('role', 'region');
+      if (!viewport.hasAttribute('aria-label')) viewport.setAttribute('aria-label', 'Messages');
+      if (!viewport.hasAttribute('tabindex')) viewport.tabIndex = 0;
+      if (!content.hasAttribute('role')) content.setAttribute('role', 'log');
+      if (!content.hasAttribute('aria-relevant')) content.setAttribute('aria-relevant', 'additions');
 
-    viewport.addEventListener('scroll', () => {
-      if (s.hasAttribute('data-autoscrolling')) return track(s);
-      s._opening = null; // the reader moved - the opening position is theirs now
-      measure(s);
-    }, { passive: true });
-    // any reader input ends the opening hold too
-    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) => viewport.addEventListener(type, () => { s._opening = null; }, { passive: true }));
-    viewport.addEventListener('scrollend', () => settle(s));
-    new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
-    new ResizeObserver(() => onResize(s)).observe(content);
-    new ResizeObserver(() => measure(s)).observe(viewport);
+      viewport.addEventListener(
+        'scroll',
+        () => {
+          if (s.hasAttribute('data-autoscrolling')) return track(s);
+          s._opening = null; // the reader moved - the opening position is theirs now
+          measure(s);
+        },
+        { passive: true },
+      );
+      // any reader input ends the opening hold too
+      ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((type) =>
+        viewport.addEventListener(
+          type,
+          () => {
+            s._opening = null;
+          },
+          { passive: true },
+        ),
+      );
+      viewport.addEventListener('scrollend', () => settle(s));
+      new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
+      new ResizeObserver(() => onResize(s)).observe(content);
+      new ResizeObserver(() => measure(s)).observe(viewport);
 
-    dfDollar(s).find('.session-scroll-button').toArray().forEach((b) => {
-      b.addEventListener('click', () => (b.dataset.to === 'start' ? scrollToStart(s) : follow(s)));
+      dfDollar(s)
+        .find('.session-scroll-button')
+        .toArray()
+        .forEach((b) => {
+          b.addEventListener('click', () => (b.dataset.to === 'start' ? scrollToStart(s) : follow(s)));
+        });
+      if (s.hasAttribute('data-drop')) bindDrop(s);
+
+      // el.store + el.api (AGENTS.md "State through stores")
+
+      bindComponent(s, sessionApi);
+
+      // the opening position - applied once, before anyone reads the thread
+      s.setAttribute('data-pending-scroll', '');
+      s.dataset.stateName = 'default';
+      const where = s.dataset.defaultPosition || 'end';
+      const last = [...dfDollar(content).find(':scope > .session-item[data-anchor]').toArray()].pop();
+      if (where === 'start') s._opening = () => 0;
+      else if (where === 'last-anchor' && last) s._opening = () => anchorTop(s, last);
+      if (s._opening) {
+        scrollViewport(s, s._opening(), false);
+        // rows settle within the first frames; after that the position is free
+        hold(s, s._opening, 1000);
+      } else {
+        s.setAttribute('data-stick', '');
+        scrollViewport(s, viewport.scrollHeight, false);
+      }
+      s.removeAttribute('data-pending-scroll');
     });
-    if (s.hasAttribute('data-drop')) bindDrop(s);
-
-    // el.store + el.api (AGENTS.md "State through stores")
-
-    bindComponent(s, sessionApi);
-
-    // the opening position - applied once, before anyone reads the thread
-    s.setAttribute('data-pending-scroll', '');
-    s.dataset.stateName = 'default';
-    const where = s.dataset.defaultPosition || 'end';
-    const last = [...dfDollar(content).find(':scope > .session-item[data-anchor]').toArray()].pop();
-    if (where === 'start') s._opening = () => 0;
-    else if (where === 'last-anchor' && last) s._opening = () => anchorTop(s, last);
-    if (s._opening) {
-      scrollViewport(s, s._opening(), false);
-      // rows settle within the first frames; after that the position is free
-      hold(s, s._opening, 1000);
-    } else {
-      s.setAttribute('data-stick', '');
-      scrollViewport(s, viewport.scrollHeight, false);
-    }
-    s.removeAttribute('data-pending-scroll');
-  });
 }
 
 // -- df$.shadcn.session: the imperative surface ---------------------------------
@@ -462,7 +520,11 @@ df$.session = {
    * @param options - an id and the anchor flag for every message added
    * @returns the .session-items added, in order
    */
-  prepend(target: string | HTMLElement, content: string | Node | Array<string | Node>, options?: SessionItemOptions): HTMLElement[] {
+  prepend(
+    target: string | HTMLElement,
+    content: string | Node | Array<string | Node>,
+    options?: SessionItemOptions,
+  ): HTMLElement[] {
     const s = resolve(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
@@ -473,13 +535,19 @@ df$.session = {
    * @param target - the .session element, its id or a selector
    * @param options - smooth: false jumps instead of scrolling smoothly (default true)
    */
-  scrollToEnd: (target: string | HTMLElement, options?: SessionScrollOptions): void => { const s = resolve(target); if (s) follow(s, options); },
+  scrollToEnd: (target: string | HTMLElement, options?: SessionScrollOptions): void => {
+    const s = resolve(target);
+    if (s) follow(s, options);
+  },
   /**
    * Scroll to the oldest message (the session stops following).
    * @param target - the .session element, its id or a selector
    * @param options - smooth: false jumps instead of scrolling smoothly (default true)
    */
-  scrollToStart: (target: string | HTMLElement, options?: SessionScrollOptions): void => { const s = resolve(target); if (s) scrollToStart(s, options); },
+  scrollToStart: (target: string | HTMLElement, options?: SessionScrollOptions): void => {
+    const s = resolve(target);
+    if (s) scrollToStart(s, options);
+  },
   /**
    * Bring a message into view by id.
    * @param target - the .session element, its id or a selector
@@ -487,13 +555,19 @@ df$.session = {
    * @param options - smooth: false jumps instead of scrolling smoothly (default true)
    * @returns false when the session has no such message
    */
-  scrollToMessage: (target: string | HTMLElement, id: string, options?: SessionScrollOptions): boolean => { const s = resolve(target); return s ? scrollToMessage(s, id, options) : false; },
+  scrollToMessage: (target: string | HTMLElement, id: string, options?: SessionScrollOptions): boolean => {
+    const s = resolve(target);
+    return s ? scrollToMessage(s, id, options) : false;
+  },
   /**
    * Whether the reader is at the end (within data-threshold, 48px by default).
    * @param target - the .session element, its id or a selector
    * @returns true when following is on - new messages scroll into view
    */
-  isAtEnd: (target: string | HTMLElement): boolean => { const s = resolve(target); return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48); },
+  isAtEnd: (target: string | HTMLElement): boolean => {
+    const s = resolve(target);
+    return !!s && fromEnd(s._parts.viewport) <= num(s, 'threshold', 48);
+  },
 };
 
 init();

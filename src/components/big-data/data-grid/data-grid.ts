@@ -129,7 +129,14 @@ function format(value, spec, el) {
     const [style, currency] = spec.split(':');
     numberFormat.set(
       key,
-      new Intl.NumberFormat(locale, style === 'currency' ? { style, currency: currency || 'USD' } : style === 'percent' ? { style, maximumFractionDigits: 1 } : {}),
+      new Intl.NumberFormat(
+        locale,
+        style === 'currency'
+          ? { style, currency: currency || 'USD' }
+          : style === 'percent'
+            ? { style, maximumFractionDigits: 1 }
+            : {},
+      ),
     );
   }
   return typeof value === 'number' ? numberFormat.get(key).format(value) : String(value);
@@ -140,7 +147,7 @@ const headerRowOf = (root) => dfDollar(root).find('.data-grid-head > .data-grid-
 /** the authored column headers of a grid (or of a detached copy), in DOM order */
 const headersOf = (root) => {
   const row = headerRowOf(root);
-  return row ? (dfDollar(row).children('.data-grid-header').toArray()) : [];
+  return row ? dfDollar(row).children('.data-grid-header').toArray() : [];
 };
 
 /** The columns, read once from the authored headers (authored order). */
@@ -168,9 +175,21 @@ function readColumns(grid) {
  */
 function attachPersistence(grid, config) {
   grid._saved?.destroy();
-  const where = viewPersistence(grid, 'data-grid', String(dfDollar('.data-grid').toArray().indexOf(grid)), config || {});
+  const where = viewPersistence(
+    grid,
+    'data-grid',
+    String(dfDollar('.data-grid').toArray().indexOf(grid)),
+    config || {},
+  );
   grid._saved = where
-    ? persisted<Record<string, unknown>>(where.key, {}, { area: where.area, validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v) })
+    ? persisted<Record<string, unknown>>(
+        where.key,
+        {},
+        {
+          area: where.area,
+          validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v),
+        },
+      )
     : null;
   const kept = {};
   for (const k of SAVED_KEYS) if (Array.isArray(grid._saved?.value[k])) kept[k] = grid._saved.value[k];
@@ -179,7 +198,9 @@ function attachPersistence(grid, config) {
 
 /** the authored sort: data-sort="asc|desc" on headers, in column order */
 const authoredSort = (grid) =>
-  grid._columns.filter((c) => c.el.dataset.sort === 'asc' || c.el.dataset.sort === 'desc').map((c) => ({ field: c.sortField, direction: c.el.dataset.sort }));
+  grid._columns
+    .filter((c) => c.el.dataset.sort === 'asc' || c.el.dataset.sort === 'desc')
+    .map((c) => ({ field: c.sortField, direction: c.el.dataset.sort }));
 
 /** locked fields first (in authored order), then the rest */
 function ordered(items, locked, fieldOf) {
@@ -205,7 +226,7 @@ function applyMarkup(root, state) {
   }
   for (const el of headers) {
     const at = sorters.findIndex((s) => s.field === (el.dataset.sortField || el.dataset.field));
-    const dir = at < 0 ? null : (sorters[at].direction || sorters[at].dir || 'asc');
+    const dir = at < 0 ? null : sorters[at].direction || sorters[at].dir || 'asc';
     dfDollar(el)
       .attr('data-locked', locked.has(el.dataset.field) ? '' : null)
       .attr('aria-sort', dir ? (dir === 'asc' ? 'ascending' : 'descending') : null)
@@ -307,7 +328,10 @@ function syncFilters(grid, config) {
           const all = document.createElement('option');
           all.value = '';
           all.textContent = 'All';
-          input.append(all, ...options.map((o) => Object.assign(document.createElement('option'), { value: o, textContent: o })));
+          input.append(
+            all,
+            ...options.map((o) => Object.assign(document.createElement('option'), { value: o, textContent: o })),
+          );
         } else {
           input = document.createElement('input');
           input.type = 'search';
@@ -467,7 +491,9 @@ function renderFooter(grid, config) {
   let text;
   if (isTree(grid)) {
     text = `${count(visible)} rows shown`;
-    text += filtered ? ` · ${count(result.matchedRows)} of ${count(result.totalRows)} match` : ` of ${count(result.totalRows)}`;
+    text += filtered
+      ? ` · ${count(result.matchedRows)} of ${count(result.totalRows)} match`
+      : ` of ${count(result.totalRows)}`;
   } else {
     text = filtered ? `${count(visible)} of ${count(result.totalRows)} rows match` : `${count(visible)} rows`;
   }
@@ -489,7 +515,13 @@ function renderFooter(grid, config) {
   if (!grid._parts.pager) {
     const pager = document.createElement('div');
     pager.className = 'data-grid-pager';
-    for (const [act, name] of [['first', 'First page'], ['prev', 'Previous page'], ['label'], ['next', 'Next page'], ['last', 'Last page']]) {
+    for (const [act, name] of [
+      ['first', 'First page'],
+      ['prev', 'Previous page'],
+      ['label'],
+      ['next', 'Next page'],
+      ['last', 'Last page'],
+    ]) {
       if (act === 'label') {
         const label = document.createElement('span');
         label.className = 'data-grid-page-label';
@@ -508,7 +540,9 @@ function renderFooter(grid, config) {
   }
   const page = Math.max(0, config.page || 0);
   const pages = pageCount(grid);
-  dfDollar(grid._parts.pager).find('.data-grid-page-label').get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
+  dfDollar(grid._parts.pager)
+    .find('.data-grid-page-label')
+    .get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
   for (const button of dfDollar(grid._parts.pager).find<HTMLButtonElement>('[data-page]').toArray()) {
     const back = button.dataset.page === 'first' || button.dataset.page === 'prev';
     button.disabled = back ? page <= 0 : page >= pages - 1;
@@ -529,7 +563,9 @@ function refresh(grid, config, previous) {
   grid._gen = (grid._gen || 0) + 1;
   const prev = previous?.config || {};
   // a new query starts at the top
-  const moved = ['filters', 'sorters', 'page'].some((k) => JSON.stringify(prev[k] ?? null) !== JSON.stringify(config[k] ?? null));
+  const moved = ['filters', 'sorters', 'page'].some(
+    (k) => JSON.stringify(prev[k] ?? null) !== JSON.stringify(config[k] ?? null),
+  );
   if (moved && paging(grid) !== 'infinite') grid._parts.viewport.scrollTop = 0;
   if (moved) grid._focus = { row: grid._focus.row < 0 ? -1 : 0, col: grid._focus.col };
   grid.setAttribute('aria-rowcount', String((grid._result.entries.length || 0) + (grid._parts.filters ? 2 : 1)));
@@ -576,18 +612,22 @@ df$.dataGridStates = dataGridStates;
 // -- interaction --------------------------------------------------------------
 
 /** merge into the query (the store applies it) */
-const query = (grid, patch) => dataGridApi.setState(grid, grid.store.value.name === 'loading' ? 'loading' : 'default', patch);
+const query = (grid, patch) =>
+  dataGridApi.setState(grid, grid.store.value.name === 'loading' ? 'loading' : 'default', patch);
 
 function toggleRow(grid, index, mode) {
   const entry = grid._shown[index];
   if (!entry || !grid.dataset.select) return;
   const id = entry.row[grid._source.idField];
   let next;
-  if (grid.dataset.select === 'single' || mode === 'only') next = grid._selected.has(id) && grid._selected.size === 1 && mode !== 'only' ? [] : [id];
+  if (grid.dataset.select === 'single' || mode === 'only')
+    next = grid._selected.has(id) && grid._selected.size === 1 && mode !== 'only' ? [] : [id];
   else if (mode === 'range' && grid._anchor != null) {
     const from = Math.min(grid._anchor, index);
     const to = Math.max(grid._anchor, index);
-    next = [...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])];
+    next = [
+      ...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])]),
+    ];
   } else {
     next = grid._selected.has(id) ? [...grid._selected].filter((x) => x !== id) : [...grid._selected, id];
   }
@@ -635,41 +675,67 @@ function focusCell(grid, row, col) {
   }
   renderRows(grid);
   for (const [c, header] of grid._order.entries()) header.el.tabIndex = row === -1 && c === col ? 0 : -1;
-  const target = row === -1
-    ? grid._order[col].el
-    : dfDollar(grid._parts.pool).children('.data-grid-row').toArray().find((r) => r._index === row)?.children[col];
+  const target =
+    row === -1
+      ? grid._order[col].el
+      : dfDollar(grid._parts.pool)
+          .children('.data-grid-row')
+          .toArray()
+          .find((r) => r._index === row)?.children[col];
   target?.focus({ preventScroll: row === -1 });
 }
 
 function onKeydown(grid, e) {
   if (e.target.closest?.('.data-grid-filters, .data-grid-footer')) return;
   const { row, col } = grid._focus;
-  const page = Math.max(1, Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1);
+  const page = Math.max(
+    1,
+    Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1,
+  );
   const last = grid._shown.length - 1;
   const entry = row >= 0 ? grid._shown[row] : null;
   let next = null;
   switch (e.key) {
-    case 'ArrowDown': next = [Math.min(last, row + 1), col]; break;
-    case 'ArrowUp': next = [Math.max(-1, row - 1), col]; break;
+    case 'ArrowDown':
+      next = [Math.min(last, row + 1), col];
+      break;
+    case 'ArrowUp':
+      next = [Math.max(-1, row - 1), col];
+      break;
     case 'ArrowRight':
-      if (isTree(grid) && entry && col === 0 && entry.meta.hasChildren && !entry.meta.isExpanded) { toggleExpand(grid, row, true); next = [row, 0]; }
-      else next = [row, col + 1];
+      if (isTree(grid) && entry && col === 0 && entry.meta.hasChildren && !entry.meta.isExpanded) {
+        toggleExpand(grid, row, true);
+        next = [row, 0];
+      } else next = [row, col + 1];
       break;
     case 'ArrowLeft':
       if (isTree(grid) && entry && col === 0) {
-        if (entry.meta.hasChildren && entry.meta.isExpanded) { toggleExpand(grid, row, false); next = [row, 0]; }
-        else if (entry.meta.parentId != null) {
+        if (entry.meta.hasChildren && entry.meta.isExpanded) {
+          toggleExpand(grid, row, false);
+          next = [row, 0];
+        } else if (entry.meta.parentId != null) {
           const parent = grid._shown.findIndex((x) => x.row[grid._source.idField] === entry.meta.parentId);
           next = [parent >= 0 ? parent : row, 0];
         } else next = [row, 0];
       } else next = [row, col - 1];
       break;
-    case 'Home': next = e.ctrlKey || e.metaKey ? [Math.min(row, 0), col] : [row, 0]; break;
-    case 'End': next = e.ctrlKey || e.metaKey ? [last, col] : [row, grid._order.length - 1]; break;
-    case 'PageDown': next = [Math.min(last, Math.max(0, row) + page), col]; break;
-    case 'PageUp': next = [Math.max(0, row - page), col]; break;
+    case 'Home':
+      next = e.ctrlKey || e.metaKey ? [Math.min(row, 0), col] : [row, 0];
+      break;
+    case 'End':
+      next = e.ctrlKey || e.metaKey ? [last, col] : [row, grid._order.length - 1];
+      break;
+    case 'PageDown':
+      next = [Math.min(last, Math.max(0, row) + page), col];
+      break;
+    case 'PageUp':
+      next = [Math.max(0, row - page), col];
+      break;
     case ' ':
-      if (row >= 0) { toggleRow(grid, row, e.shiftKey ? 'range' : 'toggle'); next = [row, col]; }
+      if (row >= 0) {
+        toggleRow(grid, row, e.shiftKey ? 'range' : 'toggle');
+        next = [row, col];
+      }
       break;
     case 'a':
     case 'A':
@@ -681,11 +747,17 @@ function onKeydown(grid, e) {
     case 'Enter':
       if (row === -1) {
         const column = grid._order[col];
-        if (column.sortable) query(grid, { sorters: cycleSort(configOf(grid).sorters, column.sortField, e.shiftKey), page: 0 });
+        if (column.sortable)
+          query(grid, { sorters: cycleSort(configOf(grid).sorters, column.sortField, e.shiftKey), page: 0 });
         next = [-1, col];
       } else if (entry) {
         // Fires on Enter on a row - its record and its position in the query.
-        grid.dispatchEvent(new CustomEvent<DataGridActivateDetail>('data-grid-activate', { bubbles: true, detail: { record: entry.row, index: row } }));
+        grid.dispatchEvent(
+          new CustomEvent<DataGridActivateDetail>('data-grid-activate', {
+            bubbles: true,
+            detail: { record: entry.row, index: row },
+          }),
+        );
       }
       break;
     default:
@@ -715,7 +787,8 @@ function onClick(grid, e) {
   const header = t.closest('.data-grid-header');
   if (header && grid.contains(header)) {
     const column = grid._columns.find((c) => c.el === header);
-    if (column?.sortable) query(grid, { sorters: cycleSort(configOf(grid).sorters, column.sortField, e.shiftKey), page: 0 });
+    if (column?.sortable)
+      query(grid, { sorters: cycleSort(configOf(grid).sorters, column.sortField, e.shiftKey), page: 0 });
     grid._focus = { row: -1, col: grid._order.indexOf(column) };
     return;
   }
@@ -734,12 +807,17 @@ function onFilterInput(grid, e) {
   const input = (e.target as HTMLElement).closest?.<HTMLInputElement>('.data-grid-filter');
   if (!input) return;
   clearTimeout(grid._filterTimer);
-  grid._filterTimer = setTimeout(() => {
-    const filters = dfDollar(grid._parts.filters).find<HTMLInputElement>('.data-grid-filter').toArray()
-      .map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind as 'text' | 'number' | 'select'))
-      .filter(Boolean);
-    query(grid, { filters, page: 0, collapsed: [] });
-  }, e.type === 'change' ? 0 : 200);
+  grid._filterTimer = setTimeout(
+    () => {
+      const filters = dfDollar(grid._parts.filters)
+        .find<HTMLInputElement>('.data-grid-filter')
+        .toArray()
+        .map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind as 'text' | 'number' | 'select'))
+        .filter(Boolean);
+      query(grid, { filters, page: 0, collapsed: [] });
+    },
+    e.type === 'change' ? 0 : 200,
+  );
 }
 
 /** infinite: near the end, load the next page (from the rows, or the loader) */
@@ -814,7 +892,9 @@ df$.dataGrid = {
    * @param target - the .data-grid element or its selector
    * @param patch - the query keys to change
    */
-  query: (target: string | HTMLElement, patch: DataGridQuery): void => { query(resolve(target), patch); },
+  query: (target: string | HTMLElement, patch: DataGridQuery): void => {
+    query(resolve(target), patch);
+  },
   /**
    * The records the query shows.
    * @param target - the .data-grid element or its selector
@@ -840,7 +920,9 @@ df$.dataGrid = {
    * Select nothing.
    * @param target - the .data-grid element or its selector
    */
-  clearSelection: (target: string | HTMLElement): void => { query(resolve(target), { selected: [] }); },
+  clearSelection: (target: string | HTMLElement): void => {
+    query(resolve(target), { selected: [] });
+  },
   /**
    * Tree grid: open every branch.
    * @param target - the .data-grid element or its selector
@@ -863,79 +945,94 @@ df$.dataGrid = {
 // -- init --------------------------------------------------------------------------
 
 function init() {
-  dfDollar('.data-grid:not([data-init])').toArray().forEach((grid) => {
-    grid.dataset.init = '';
-    const viewport = dfDollar(grid).children('.data-grid-viewport').get(0);
-    const head = viewport && dfDollar(viewport).children('.data-grid-head').get(0);
-    const body = viewport && dfDollar(viewport).children('.data-grid-body').get(0);
-    if (!viewport || !head || !body) return;
-    let footer = dfDollar(grid).children('.data-grid-footer').get(0);
-    if (!footer) {
-      footer = document.createElement('div');
-      footer.className = 'data-grid-footer';
-      dfDollar(grid).append(footer);
-    }
-    // the empty message: CSS attr() reads the body's own attribute
-    body.dataset.emptyText = grid.dataset.emptyText || 'No rows match.';
-    const pool = document.createElement('div');
-    pool.className = 'data-grid-rows';
-    pool.setAttribute('role', 'presentation');
-    dfDollar(body).append(pool);
-    grid._parts = { viewport, head, body, pool, footer };
-    grid._columns = readColumns(grid);
-    grid._focus = { row: 0, col: 0 };
-    grid._selected = new Set();
-    grid._rowHeight = parseFloat(getComputedStyle(grid).getPropertyValue('--data-grid-row-height')) || 36;
-    if (!grid.hasAttribute('role')) grid.setAttribute('role', grid.dataset.parentField ? 'treegrid' : 'grid');
-    if (grid.dataset.select === 'multiple') grid.setAttribute('aria-multiselectable', 'true');
-    for (const column of grid._columns) {
-      column.el.setAttribute('role', 'columnheader');
-      column.el.tabIndex = -1;
-    }
-    buildPins(grid);
-    buildFilters(grid);
+  dfDollar('.data-grid:not([data-init])')
+    .toArray()
+    .forEach((grid) => {
+      grid.dataset.init = '';
+      const viewport = dfDollar(grid).children('.data-grid-viewport').get(0);
+      const head = viewport && dfDollar(viewport).children('.data-grid-head').get(0);
+      const body = viewport && dfDollar(viewport).children('.data-grid-body').get(0);
+      if (!viewport || !head || !body) return;
+      let footer = dfDollar(grid).children('.data-grid-footer').get(0);
+      if (!footer) {
+        footer = document.createElement('div');
+        footer.className = 'data-grid-footer';
+        dfDollar(grid).append(footer);
+      }
+      // the empty message: CSS attr() reads the body's own attribute
+      body.dataset.emptyText = grid.dataset.emptyText || 'No rows match.';
+      const pool = document.createElement('div');
+      pool.className = 'data-grid-rows';
+      pool.setAttribute('role', 'presentation');
+      dfDollar(body).append(pool);
+      grid._parts = { viewport, head, body, pool, footer };
+      grid._columns = readColumns(grid);
+      grid._focus = { row: 0, col: 0 };
+      grid._selected = new Set();
+      grid._rowHeight = parseFloat(getComputedStyle(grid).getPropertyValue('--data-grid-row-height')) || 36;
+      if (!grid.hasAttribute('role')) grid.setAttribute('role', grid.dataset.parentField ? 'treegrid' : 'grid');
+      if (grid.dataset.select === 'multiple') grid.setAttribute('aria-multiselectable', 'true');
+      for (const column of grid._columns) {
+        column.el.setAttribute('role', 'columnheader');
+        column.el.tabIndex = -1;
+      }
+      buildPins(grid);
+      buildFilters(grid);
 
-    // the authored query (data-locked / data-sort headers), then setSource's
-    // starting query (records may arrive first), then the kept view
-    const early = grid._sourceOptions || {};
-    const config = {
-      filters: [], sorters: authoredSort(grid), locked: grid._columns.filter((c) => c.el.hasAttribute('data-locked')).map((c) => c.field),
-      page: 0, expanded: [], collapsed: [], selected: [],
-      ...early.query,
-      ...attachPersistence(grid, early.persist),
-    };
+      // the authored query (data-locked / data-sort headers), then setSource's
+      // starting query (records may arrive first), then the kept view
+      const early = grid._sourceOptions || {};
+      const config = {
+        filters: [],
+        sorters: authoredSort(grid),
+        locked: grid._columns.filter((c) => c.el.hasAttribute('data-locked')).map((c) => c.field),
+        page: 0,
+        expanded: [],
+        collapsed: [],
+        selected: [],
+        ...early.query,
+        ...attachPersistence(grid, early.persist),
+      };
 
-    // one render per animation frame, however many scroll events arrive
-    let queued = false;
-    viewport.addEventListener('scroll', () => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => {
-        queued = false;
+      // one render per animation frame, however many scroll events arrive
+      let queued = false;
+      viewport.addEventListener(
+        'scroll',
+        () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            renderRows(grid);
+            onNearEnd(grid);
+          });
+        },
+        { passive: true },
+      );
+      new ResizeObserver(() => {
+        if (!grid._order) return;
+        layoutColumns(grid, configOf(grid));
+        grid._gen++;
         renderRows(grid);
-        onNearEnd(grid);
+      }).observe(grid);
+      grid.addEventListener('click', (e) => onClick(grid, e));
+      grid.addEventListener('keydown', (e) => onKeydown(grid, e));
+      grid.addEventListener('input', (e) => onFilterInput(grid, e));
+      grid.addEventListener('change', (e) => onFilterInput(grid, e));
+      grid.addEventListener('focusin', (e) => {
+        // the first Tab lands on the active cell
+        if (e.target === grid) focusCell(grid, grid._focus.row, grid._focus.col);
       });
-    }, { passive: true });
-    new ResizeObserver(() => {
-      if (!grid._order) return;
-      layoutColumns(grid, configOf(grid));
-      grid._gen++;
-      renderRows(grid);
-    }).observe(grid);
-    grid.addEventListener('click', (e) => onClick(grid, e));
-    grid.addEventListener('keydown', (e) => onKeydown(grid, e));
-    grid.addEventListener('input', (e) => onFilterInput(grid, e));
-    grid.addEventListener('change', (e) => onFilterInput(grid, e));
-    grid.addEventListener('focusin', (e) => {
-      // the first Tab lands on the active cell
-      if (e.target === grid) focusCell(grid, grid._focus.row, grid._focus.col);
-    });
 
-    // el.store + el.api (AGENTS.md "State through stores"): no records yet = loading
-    bindComponent(grid, dataGridApi, { name: grid._source ? 'default' : 'loading', config });
-    dataGridApi.setState(grid, grid._source && !(grid._load && !grid._source.rows.length) ? 'default' : 'loading', config);
-    if (grid._load && !grid._source.rows.length) onNearEnd(grid, true);
-  });
+      // el.store + el.api (AGENTS.md "State through stores"): no records yet = loading
+      bindComponent(grid, dataGridApi, { name: grid._source ? 'default' : 'loading', config });
+      dataGridApi.setState(
+        grid,
+        grid._source && !(grid._load && !grid._source.rows.length) ? 'default' : 'loading',
+        config,
+      );
+      if (grid._load && !grid._source.rows.length) onNearEnd(grid, true);
+    });
 }
 
 init();

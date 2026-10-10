@@ -5,7 +5,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -36,7 +42,11 @@ function applyMarkup(_el, _stateName) {}
 function triggerStateChange(tip, stateName, _config) {
   switch (stateName) {
     case 'default':
-      try { tip.hidePopover(); } catch { /* already closed */ }
+      try {
+        tip.hidePopover();
+      } catch {
+        /* already closed */
+      }
       break;
     case 'visible':
       // deferred show (safeShowPopover): showPopover() mid-exit (after
@@ -58,12 +68,12 @@ export const tooltipApi = componentState({
 df$.tooltipApi = tooltipApi;
 df$.tooltipStates = tooltipStates;
 
-const DELAY_DEFAULT = 700;      // ms before first tooltip opens
-const CLOSE_DELAY_DEFAULT = 0;  // ms before tooltip closes
-const GROUP_TIMEOUT = 400;      // ms after last tooltip hides before delay resets
+const DELAY_DEFAULT = 700; // ms before first tooltip opens
+const CLOSE_DELAY_DEFAULT = 0; // ms before tooltip closes
+const GROUP_TIMEOUT = 400; // ms after last tooltip hides before delay resets
 
-let groupOpen = false;       // true while any tooltip is visible
-let groupTimer = null;       // timeout to reset groupOpen
+let groupOpen = false; // true while any tooltip is visible
+let groupTimer = null; // timeout to reset groupOpen
 
 function markGroupOpen() {
   groupOpen = true;
@@ -72,60 +82,74 @@ function markGroupOpen() {
 
 function scheduleGroupReset() {
   clearTimeout(groupTimer);
-  groupTimer = setTimeout(() => { groupOpen = false; }, GROUP_TIMEOUT);
+  groupTimer = setTimeout(() => {
+    groupOpen = false;
+  }, GROUP_TIMEOUT);
 }
 
 function init() {
-dfDollar('[data-tooltip-trigger]:not([data-init])').toArray().forEach((trigger) => {
-  trigger.dataset.init = '';
-  const tip = dfDollar('#' + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
-  if (!tip) return;
+  dfDollar('[data-tooltip-trigger]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const tip = dfDollar('#' + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
+      if (!tip) return;
 
-  // CSS anchor positioning - unique name per trigger-tooltip pair
-  const anchorId = `--tooltip-${tip.id}`;
-  trigger.style.anchorName = anchorId;
-  tip.style.positionAnchor = anchorId;
+      // CSS anchor positioning - unique name per trigger-tooltip pair
+      const anchorId = `--tooltip-${tip.id}`;
+      trigger.style.anchorName = anchorId;
+      tip.style.positionAnchor = anchorId;
 
-  // ARIA - link trigger to tooltip
-  trigger.setAttribute('aria-describedby', tip.id);
+      // ARIA - link trigger to tooltip
+      trigger.setAttribute('aria-describedby', tip.id);
 
-  const delay = Number(trigger.dataset.delay ?? DELAY_DEFAULT);
-  const closeDelay = Number(trigger.dataset.closeDelay ?? CLOSE_DELAY_DEFAULT);
+      const delay = Number(trigger.dataset.delay ?? DELAY_DEFAULT);
+      const closeDelay = Number(trigger.dataset.closeDelay ?? CLOSE_DELAY_DEFAULT);
 
-  let openTimer = null;
-  let closeTimer = null;
+      let openTimer = null;
+      let closeTimer = null;
 
-  function show() {
-    clearTimeout(closeTimer);
-    clearTimeout(openTimer);
-    const wait = groupOpen ? 0 : delay;
-    openTimer = setTimeout(() => {
-      try { tip.showPopover(); } catch { /* already open */ }
-      markGroupOpen();
-    }, wait);
-  }
+      function show() {
+        clearTimeout(closeTimer);
+        clearTimeout(openTimer);
+        const wait = groupOpen ? 0 : delay;
+        openTimer = setTimeout(() => {
+          try {
+            tip.showPopover();
+          } catch {
+            /* already open */
+          }
+          markGroupOpen();
+        }, wait);
+      }
 
-  function hide() {
-    clearTimeout(openTimer);
-    clearTimeout(closeTimer);
-    closeTimer = setTimeout(() => {
-      try { tip.hidePopover(); } catch { /* already closed */ }
-      scheduleGroupReset();
-    }, closeDelay);
-  }
+      function hide() {
+        clearTimeout(openTimer);
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(() => {
+          try {
+            tip.hidePopover();
+          } catch {
+            /* already closed */
+          }
+          scheduleGroupReset();
+        }, closeDelay);
+      }
 
-  trigger.addEventListener('mouseenter', show);
-  trigger.addEventListener('mouseleave', hide);
-  trigger.addEventListener('focus', show);
-  trigger.addEventListener('blur', hide);
-});
+      trigger.addEventListener('mouseenter', show);
+      trigger.addEventListener('mouseleave', hide);
+      trigger.addEventListener('focus', show);
+      trigger.addEventListener('blur', hide);
+    });
 
   // bind-scope the api per tooltip instance: `$('#tip').api.setState('visible')`
-  dfDollar('.tooltip[popover]:not([data-init])').toArray().forEach((tip) => {
-    tip.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(tip, tooltipApi);
-  });
+  dfDollar('.tooltip[popover]:not([data-init])')
+    .toArray()
+    .forEach((tip) => {
+      tip.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(tip, tooltipApi);
+    });
 }
 
 init();
@@ -135,9 +159,17 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // Hide any open tooltip when the page scrolls.
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
-  document.addEventListener('scroll', () => {
-    dfDollar('.tooltip:popover-open').toArray().forEach((tip) => {
-      try { tip.hidePopover(); } catch {}
-    });
-  }, { passive: true, capture: true });
+  document.addEventListener(
+    'scroll',
+    () => {
+      dfDollar('.tooltip:popover-open')
+        .toArray()
+        .forEach((tip) => {
+          try {
+            tip.hidePopover();
+          } catch {}
+        });
+    },
+    { passive: true, capture: true },
+  );
 }

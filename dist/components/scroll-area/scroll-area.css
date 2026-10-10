@@ -11,20 +11,31 @@
     scrollbar-gutter: stable;
 
     /* Webkit custom scrollbar */
-    &::-webkit-scrollbar { width: var(--scrollbar-size); height: var(--scrollbar-size); }
-    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar {
+      width: var(--scrollbar-size);
+      height: var(--scrollbar-size);
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
     &::-webkit-scrollbar-thumb {
       background-color: var(--border);
       border-radius: calc(var(--scrollbar-size) / 2);
-      &:hover { background-color: var(--muted-foreground); }
+      &:hover {
+        background-color: var(--muted-foreground);
+      }
     }
 
     /* Standard scrollbar */
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
 
-    &[data-density="compact"] { --scrollbar-size: 4px; }
-    &[data-density="comfortable"] { --scrollbar-size: 6px; }
+    &[data-density="compact"] {
+      --scrollbar-size: 4px;
+    }
+    &[data-density="comfortable"] {
+      --scrollbar-size: 6px;
+    }
     &[data-density="spacious"] {
       --scrollbar-size: 8px;
       scrollbar-width: medium;

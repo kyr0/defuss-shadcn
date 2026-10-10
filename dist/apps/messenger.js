@@ -2119,15 +2119,9 @@ function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
     case "wipeOut":
       return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
     case "irisIn":
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case "irisOut":
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
   }
@@ -3160,7 +3154,10 @@ function attachPersistence(store, options) {
 var areas = {};
 var inMemory = new Set;
 function storageOf(area) {
-  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+  return areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area)
+  });
 }
 function sameShape(initial) {
   const check = (model, value) => {
@@ -3876,7 +3873,12 @@ function dataSource(rows, options = {}) {
         } : undefined
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows
+      };
       cacheKey = key;
       return cache;
     },
@@ -3913,7 +3915,14 @@ function parseFilter(field, text, kind = "text") {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m)
       return null;
-    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    const ops = {
+      ">=": "gte",
+      "<=": "lte",
+      "!=": "neq",
+      ">": "gt",
+      "<": "lt",
+      "=": "eq"
+    };
     return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
   }
   return { field, op: "contains", value: raw };
@@ -4368,7 +4377,10 @@ function activate(menu, item) {
   if (role === "menuitemcheckbox") {
     const checked = item.getAttribute("aria-checked") !== "true";
     item.setAttribute("aria-checked", String(checked));
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked }
+    }));
     return;
   }
   if (role === "menuitemradio") {
@@ -4377,10 +4389,16 @@ function activate(menu, item) {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true }
+    }));
     return;
   }
-  item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  item.dispatchEvent(new CustomEvent("dropdown:select", {
+    bubbles: true,
+    detail: { item, value: item.dataset.value ?? item.textContent.trim() }
+  }));
   try {
     rootOf2(menu).hidePopover();
   } catch {}
@@ -4937,7 +4955,10 @@ function init5() {
         if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5)
           applySize(wrapper, axis, v);
       }
-    }).observe(wrapper, { attributes: true, attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"] });
+    }).observe(wrapper, {
+      attributes: true,
+      attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"]
+    });
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
@@ -5180,7 +5201,10 @@ function track(s) {
   s._currentId = currentId;
   s._visibleIds = ids.join();
   items.forEach((it) => it.toggleAttribute("data-current", it === current));
-  s.dispatchEvent(new CustomEvent("session-visibility", { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+  s.dispatchEvent(new CustomEvent("session-visibility", {
+    bubbles: true,
+    detail: { currentAnchorId: currentId, visibleMessageIds: ids }
+  }));
 }
 function bindDrop(s) {
   const hasFiles = (e) => [...e.dataTransfer?.types ?? []].includes("Files");
@@ -5403,7 +5427,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -5563,7 +5590,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -5580,6 +5610,6 @@ var toastActions = {
 };
 df$7.toast = toastActions;
 
-//# debugId=AAF53A7E83441D4964756E2164756E21
+//# debugId=30B2AB2B1853D33964756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=messenger.js.map

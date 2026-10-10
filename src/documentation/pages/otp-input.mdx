@@ -45,7 +45,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <div class="flex flex-col gap-2 items-start">
   <label class="label" for="otp-code">Verification code</label>
   <div class="otp-input">
-    <input id="otp-code" name="code" type="text" aria-describedby="otp-code-hint">
+    <input id="otp-code" name="code" type="text" aria-describedby="otp-code-hint" />
   </div>
   <p class="field-description" id="otp-code-hint">We sent a code to your phone.</p>
 </div>
@@ -53,25 +53,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Grouped" schema="none" hint="data-group-size='3' draws a separator every three slots - a 3-3 code reads faster."
 <div class="otp-input" data-group-size="3">
-  <input name="grouped" type="text" aria-label="Grouped code">
+  <input name="grouped" type="text" aria-label="Grouped code" />
 </div>
 ```
 
 ```html example label="Letters allowed" schema="none" hint="data-length='4' and data-pattern='alphanumeric' - anything else is dropped as it arrives, with the caret kept where typing left it."
 <div class="otp-input" data-length="4" data-pattern="alphanumeric">
-  <input name="alpha" type="text" aria-label="Alphanumeric code">
+  <input name="alpha" type="text" aria-label="Alphanumeric code" />
 </div>
 ```
 
 ```html example label="Masked PIN" schema="none" hint="data-mask draws a dot instead of each character; the value underneath is unchanged."
 <div class="otp-input" data-length="4" data-mask>
-  <input name="pin" type="text" aria-label="PIN">
+  <input name="pin" type="text" aria-label="PIN" />
 </div>
 ```
 
 ```html example label="Disabled" schema="none" hint="disabled on the input: the surface dims but the digits keep their contrast - no opacity wash."
 <div class="otp-input" data-length="4">
-  <input name="disabled-code" type="text" value="1234" aria-label="Disabled code" disabled>
+  <input name="disabled-code" type="text" value="1234" aria-label="Disabled code" disabled />
 </div>
 ```
 
@@ -79,7 +79,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <form class="flex flex-col gap-2 items-start" id="otp-form" onsubmit="event.preventDefault()">
   <label class="label" for="otp-verify">Enter the code - hint: 424242</label>
   <div class="otp-input" id="otp-verify-wrap" data-group-size="3">
-    <input id="otp-verify" name="code" type="text" aria-describedby="otp-verify-msg">
+    <input id="otp-verify" name="code" type="text" aria-describedby="otp-verify-msg" />
   </div>
   <p class="field-description" id="otp-verify-msg" aria-live="polite">6 digits</p>
 </form>
@@ -105,11 +105,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Slot size" schema="none" hint="The public --otp-input-slot-size sizes every slot - a large PIN pad or a compact inline code."
 <div class="flex flex-col gap-4 items-start">
-  <div class="otp-input" data-length="4" style="--otp-input-slot-size: 3.5rem;">
-    <input name="large" type="text" aria-label="Large PIN">
+  <div class="otp-input" data-length="4" style="--otp-input-slot-size: 3.5rem">
+    <input name="large" type="text" aria-label="Large PIN" />
   </div>
-  <div class="otp-input" data-length="6" style="--otp-input-slot-size: 2.25rem;">
-    <input name="compact" type="text" aria-label="Compact code">
+  <div class="otp-input" data-length="6" style="--otp-input-slot-size: 2.25rem">
+    <input name="compact" type="text" aria-label="Compact code" />
   </div>
 </div>
 ```

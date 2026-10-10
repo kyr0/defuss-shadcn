@@ -77,7 +77,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SkillField, SkillText, Sk
   <button class="play-button" type="button" aria-label="Play"></button>
   <button class="play-button" type="button" data-variant="secondary" aria-label="Play (secondary)"></button>
   <button class="play-button" type="button" data-variant="outline" aria-label="Play (outline)"></button>
-  <div class="grid place-items-center" style="inline-size:14rem; aspect-ratio:16/9; border-radius:var(--radius-lg); background:url(images/mk-wide3.png) center/cover;">
+  <div
+    class="grid place-items-center"
+    style="
+      inline-size: 14rem;
+      aspect-ratio: 16/9;
+      border-radius: var(--radius-lg);
+      background: url(images/mk-wide3.png) center/cover;
+    "
+  >
     <button class="play-button" type="button" data-variant="glass" aria-label="Play the trailer"></button>
   </div>
 </div>
@@ -93,11 +101,23 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SkillField, SkillText, Sk
 
 ```html example label="In a teaser" hint="The play button starts a Teaser: the card's template content - here a video - takes its place." component="teaser"
 <section class="teaser" data-ratio="16/9" aria-label="The product tour">
-  <img class="teaser-media" src="images/mk-wide3.png" alt="">
-  <button class="play-button" type="button" data-variant="glass" data-size="lg" aria-label="Play the product tour"></button>
+  <img class="teaser-media" src="images/mk-wide3.png" alt="" />
+  <button
+    class="play-button"
+    type="button"
+    data-variant="glass"
+    data-size="lg"
+    aria-label="Play the product tour"
+  ></button>
   <p class="teaser-title">The product tour</p>
   <template class="teaser-content">
-    <video src="videos/demo.mp4" controls autoplay playsinline style="inline-size:100%; display:block; border-radius:var(--radius-xl);"></video>
+    <video
+      src="videos/demo.mp4"
+      controls
+      autoplay
+      playsinline
+      style="inline-size: 100%; display: block; border-radius: var(--radius-xl)"
+    ></video>
   </template>
 </section>
 ```

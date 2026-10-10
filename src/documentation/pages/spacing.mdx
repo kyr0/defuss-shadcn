@@ -29,7 +29,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div>
     <p class="demo-label">gap-6 - independent cards get room to breathe</p>
     <div class="flex flex-wrap gap-6">
-      <div class="card" style="width:9rem;">
+      <div class="card" style="width: 9rem">
         <div class="card-header">
           <p class="card-title card-title-xs">Research</p>
         </div>
@@ -37,7 +37,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <p class="text-muted-foreground meta-xs">12 open</p>
         </div>
       </div>
-      <div class="card" style="width:9rem;">
+      <div class="card" style="width: 9rem">
         <div class="card-header">
           <p class="card-title card-title-xs">Design</p>
         </div>
@@ -49,9 +49,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
   <div>
     <p class="demo-label">p-6 - padding keeps content off the card's edge</p>
-    <div class="card p-6" style="max-width:20rem;">
+    <div class="card p-6" style="max-width: 20rem">
       <p class="row-title">Weekly digest</p>
-      <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">The same p-6 on every side - no measuring, no magic numbers.</p>
+      <p class="text-muted-foreground" style="margin: 0.25rem 0 0; font-size: 0.8125rem"
+        >The same p-6 on every side - no measuring, no magic numbers.</p
+      >
     </div>
   </div>
 </div>
@@ -66,13 +68,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="flex justify-center">
-  <div class="demo-tile p-6" data-variant="outline" style="display:block;">
-    <p class="demo-label" style="text-align:center;">m-6 - margin pushes siblings away (outside the border)</p>
-    <div class="demo-tile p-6" data-variant="secondary" style="display:block;border-style:solid;">
-      <p class="demo-label" style="text-align:center;color:var(--muted-foreground);">p-6 - padding pushes content inward (inside the border)</p>
+  <div class="demo-tile p-6" data-variant="outline" style="display: block">
+    <p class="demo-label" style="text-align: center">m-6 - margin pushes siblings away (outside the border)</p>
+    <div class="demo-tile p-6" data-variant="secondary" style="display: block; border-style: solid">
+      <p class="demo-label" style="text-align: center; color: var(--muted-foreground)"
+        >p-6 - padding pushes content inward (inside the border)</p
+      >
       <div class="demo-tile h-16">content</div>
     </div>
-    <div class="flex justify-between" style="margin-top:0.5rem;">
+    <div class="flex justify-between" style="margin-top: 0.5rem">
       <span class="demo-label demo-label-inline">ms/me-\* - start/end</span>
       <span class="demo-label demo-label-inline">mt/mr/mb/ml-\* - physical</span>
     </div>
@@ -88,7 +92,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText><code>gap-x-\*</code> sets <code>column-gap</code>, <code>gap-y-\*</code> sets <code>row-gap</code> - the two axes are independent. A calendar makes that tangible: days of a week sit <code>gap-x-3</code> apart while the weeks stack tightly at <code>gap-y-1</code>.</DocText>
 
 ```html example schema="none"
-<div style="max-width:22rem;">
+<div style="max-width: 22rem">
   <div class="flex flex-wrap gap-x-3 gap-y-1">
     <div class="demo-tile w-10 h-8" data-variant="muted">Mon</div>
     <div class="demo-tile w-10 h-8" data-variant="muted">Tue</div>
@@ -179,10 +183,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p class="demo-label">dir="ltr"</p>
     <div class="stack gap-3">
       <div class="demo-tile ps-4 pe-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 - logical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex: 1">ps-4 pe-8 - logical</div>
       </div>
       <div class="demo-tile pl-4 pr-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 - physical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex: 1">pl-4 pr-8 - physical</div>
       </div>
     </div>
   </div>
@@ -190,10 +194,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p class="demo-label">dir="rtl" - same classes</p>
     <div class="stack gap-3">
       <div class="demo-tile ps-4 pe-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">ps-4 pe-8 - logical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex: 1">ps-4 pe-8 - logical</div>
       </div>
       <div class="demo-tile pl-4 pr-8" data-variant="outline">
-        <div class="demo-tile h-8" data-variant="muted" style="flex:1;">pl-4 pr-8 - physical</div>
+        <div class="demo-tile h-8" data-variant="muted" style="flex: 1">pl-4 pr-8 - physical</div>
       </div>
     </div>
   </div>
@@ -271,23 +275,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText>A whole component on one rhythm: <code>p-6</code> around the card, <code>stack gap-3</code> between line items, <code>ms-auto</code> to push amounts right, and <code>mt-4 pt-4</code> with a top border to separate the total. No custom CSS anywhere.</DocText>
 
 ```html example schema="none"
-<div class="card p-6 stack gap-3" style="max-width:22rem;margin-inline:auto;">
-  <p style="margin:0;font-size:0.9375rem;font-weight:600;">Order #1042</p>
+<div class="card p-6 stack gap-3" style="max-width: 22rem; margin-inline: auto">
+  <p style="margin: 0; font-size: 0.9375rem; font-weight: 600">Order #1042</p>
   <div class="flex items-baseline gap-2">
-    <span style="font-size:0.875rem;">Pro plan, monthly</span>
+    <span style="font-size: 0.875rem">Pro plan, monthly</span>
     <span class="demo-label ms-auto demo-label-inline">$24.00</span>
   </div>
   <div class="flex items-baseline gap-2">
-    <span style="font-size:0.875rem;">Extra seats × 2</span>
+    <span style="font-size: 0.875rem">Extra seats × 2</span>
     <span class="demo-label ms-auto demo-label-inline">$12.00</span>
   </div>
   <div class="flex items-baseline gap-2">
-    <span style="font-size:0.875rem;">Priority support</span>
+    <span style="font-size: 0.875rem">Priority support</span>
     <span class="demo-label ms-auto demo-label-inline">$8.00</span>
   </div>
-  <div class="flex items-baseline gap-2 mt-4 pt-4" style="border-top:1px solid var(--border);">
-    <span style="font-size:0.875rem;font-weight:600;">Total</span>
-    <span class="ms-auto" style="font-size:0.875rem;font-weight:600;">$44.00</span>
+  <div class="flex items-baseline gap-2 mt-4 pt-4" style="border-top: 1px solid var(--border)">
+    <span style="font-size: 0.875rem; font-weight: 600">Total</span>
+    <span class="ms-auto" style="font-size: 0.875rem; font-weight: 600">$44.00</span>
   </div>
 </div>
 ```
@@ -298,7 +302,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 id="overrides" class="h2-display">Custom gaps and cascade</h2>
 
 ```html
-<div class="stack" style="--layout-gap:clamp(1rem, 2vw, 2rem);">
+<div class="stack" style="--layout-gap: clamp(1rem, 2vw, 2rem)">
   <p>First block</p>
   <p>Second block</p>
 </div>

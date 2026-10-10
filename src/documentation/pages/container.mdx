@@ -18,11 +18,32 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="demo-stripes p-6" data-demo="container">
-  <p class="demo-label" style="text-align:center;">▼ frame width - the boxes clamp at their caps and center ▼</p>
-  <div class="container" style="--layout-max:36rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--background);">
-    <p class="text-sm" style="margin:0;text-align:center;">Outer container: max-width clamps, gutters keep content off the edge.</p>
-    <div class="container" style="--layout-max:20rem;margin-top:0.75rem;border:1px dashed var(--border);border-radius:var(--radius-md);background:var(--background);">
-      <p class="text-sm text-muted-foreground" style="margin:0;text-align:center;">Nested: its own cap and gutter, not the outer ones.</p>
+  <p class="demo-label" style="text-align: center">▼ frame width - the boxes clamp at their caps and center ▼</p>
+  <div
+    class="container"
+    style="
+      --layout-max: 36rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--background);
+    "
+  >
+    <p class="text-sm" style="margin: 0; text-align: center"
+      >Outer container: max-width clamps, gutters keep content off the edge.</p
+    >
+    <div
+      class="container"
+      style="
+        --layout-max: 20rem;
+        margin-top: 0.75rem;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-md);
+        background: var(--background);
+      "
+    >
+      <p class="text-sm text-muted-foreground" style="margin: 0; text-align: center"
+        >Nested: its own cap and gutter, not the outer ones.</p
+      >
     </div>
   </div>
 </div>
@@ -36,12 +57,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <div class="demo-stripes p-6">
-  <section class="container stack gap-4" style="--layout-max:34rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--background);padding-block:1.5rem;">
+  <section
+    class="container stack gap-4"
+    style="
+      --layout-max: 34rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--background);
+      padding-block: 1.5rem;
+    "
+  >
     <div>
-      <h3 style="margin:0;font-size:1.125rem;font-weight:600;">Changelog</h3>
-      <p class="text-muted-foreground" style="margin:0.25rem 0 0;font-size:0.8125rem;">Everything that shipped this week, in one bounded reading column.</p>
+      <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600">Changelog</h3>
+      <p class="text-muted-foreground" style="margin: 0.25rem 0 0; font-size: 0.8125rem"
+        >Everything that shipped this week, in one bounded reading column.</p
+      >
     </div>
-    <div class="grid grid-cols-auto gap-3" style="--layout-min:9rem;">
+    <div class="grid grid-cols-auto gap-3" style="--layout-min: 9rem">
       <div class="demo-tile h-16" data-variant="muted">New</div>
       <div class="demo-tile h-16" data-variant="muted">Improved</div>
       <div class="demo-tile h-16" data-variant="muted">Fixed</div>
@@ -71,7 +103,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example schema="none"
 <style>
-  .cq-demo-row { flex-direction: column; }
+  .cq-demo-row {
+    flex-direction: column;
+  }
   @container layout (inline-size >= 24rem) {
     .cq-demo-row {
       flex-direction: row;
@@ -81,7 +115,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   }
   /* the narrow box fixes its own width: a shrink-to-fit query wrapper needs
      an externally determined inline size (that is the point of the demo) */
-  .cq-demo-narrow { inline-size: 14rem; }
+  .cq-demo-narrow {
+    inline-size: 14rem;
+  }
 </style>
 
 <div class="stack gap-4">
@@ -89,7 +125,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p class="demo-label">inline-size: 14rem - always below the 24rem threshold, stacked</p>
     <div class="query cq-demo-narrow demo-outline p-3">
       <div class="flex flex-col gap-2 cq-demo-row">
-        <strong style="font-size:0.875rem;">Workspace</strong>
+        <strong style="font-size: 0.875rem">Workspace</strong>
         <div class="flex flex-wrap gap-2">
           <button class="btn" type="button" data-size="sm">Save</button>
           <button class="btn" type="button" data-variant="outline" data-size="sm">Cancel</button>
@@ -101,7 +137,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p class="demo-label">fluid - flips to a row at ≥ 24rem; switch the card to Phone to see it stack again</p>
     <div class="query demo-outline p-3">
       <div class="flex flex-col gap-2 cq-demo-row">
-        <strong style="font-size:0.875rem;">Workspace</strong>
+        <strong style="font-size: 0.875rem">Workspace</strong>
         <div class="flex flex-wrap gap-2">
           <button class="btn" type="button" data-size="sm">Save</button>
           <button class="btn" type="button" data-variant="outline" data-size="sm">Cancel</button>

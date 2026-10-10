@@ -517,7 +517,10 @@ function init3() {
         });
       new MutationObserver(() => {
         setupCurrency(wrapper, input);
-      }).observe(wrapper, { attributes: true, attributeFilter: ["data-locale", "data-currency", "data-currency-display"] });
+      }).observe(wrapper, {
+        attributes: true,
+        attributeFilter: ["data-locale", "data-currency", "data-currency-display"]
+      });
       return;
     }
     formatDecimals(wrapper, input);
@@ -576,7 +579,12 @@ function formatSize(el, bytes) {
     n /= 1000;
     i++;
   }
-  return new Intl.NumberFormat(lang(el), { style: "unit", unit: units[i], unitDisplay: "short", maximumFractionDigits: i ? 1 : 0 }).format(n);
+  return new Intl.NumberFormat(lang(el), {
+    style: "unit",
+    unit: units[i],
+    unitDisplay: "short",
+    maximumFractionDigits: i ? 1 : 0
+  }).format(n);
 }
 var ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 function setFiles(input, files) {
@@ -642,7 +650,10 @@ function apply(el, rejected, quiet = false) {
   el.dataset.stateName = rejected.length ? "error" : input.files.length ? "selected" : "default";
   renderList(el);
   if (!quiet && rejected.length)
-    el.dispatchEvent(new CustomEvent("file-drop:rejected", { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
+    el.dispatchEvent(new CustomEvent("file-drop:rejected", {
+      bubbles: true,
+      detail: { files: rejected.map((r) => r.file), message }
+    }));
 }
 function onPick(el) {
   const input = inputOf(el);
@@ -900,7 +911,10 @@ function init5() {
       picker.dataset.format = e.target.value;
       syncValue(picker);
     });
-    new MutationObserver(() => syncValue(picker)).observe(picker, { attributes: true, attributeFilter: ["data-format"] });
+    new MutationObserver(() => syncValue(picker)).observe(picker, {
+      attributes: true,
+      attributeFilter: ["data-format"]
+    });
   });
 }
 init5();
@@ -1045,7 +1059,10 @@ function initTags(wrapper) {
       input.dataset.placeholder = input.placeholder;
     input.placeholder = labels.length ? "" : input.dataset.placeholder;
     if (announce)
-      wrapper.dispatchEvent(new CustomEvent("combobox:change", { bubbles: true, detail: { values, labels, created } }));
+      wrapper.dispatchEvent(new CustomEvent("combobox:change", {
+        bubbles: true,
+        detail: { values, labels, created }
+      }));
   };
   const commit = (row) => {
     const text = input.value.trim();
@@ -1506,5 +1523,5 @@ function init7() {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=7FC3B262CC72A03F64756E2164756E21
+//# debugId=11E1FA05AD7BDEDC64756E2164756E21
 //# sourceMappingURL=forms-inputs.js.map

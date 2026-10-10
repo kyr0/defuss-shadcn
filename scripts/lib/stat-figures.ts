@@ -63,7 +63,9 @@ type Figure = { index: number; length: number; open: string; tag: string; path: 
 function figures(text: string): Figure[] {
   return [...text.matchAll(FIGURE)].map((m) => {
     const format = (m[2].match(/\bdata-stat-format="([^"]+)"/)?.[1] ?? 'int') as StatFormat;
-    return { index: m.index!, length: m[0].length, open: `<${m[1]}${m[2]}>`, tag: m[1], path: m[3], format, shown: m[4] };
+    // the figure is compared trimmed. VERIFIED: (tests/stat-figures.test.ts) a
+    // formatter may set the figure on its own line; the value is the same
+    return { index: m.index!, length: m[0].length, open: `<${m[1]}${m[2]}>`, tag: m[1], path: m[3], format, shown: m[4].trim() };
   });
 }
 

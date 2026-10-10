@@ -19,30 +19,55 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Dependency graph</span>
     <span class="diagram-title">packages/ - who imports whom</span>
-    <span class="diagram-dek">Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the stack.</span>
+    <span class="diagram-dek"
+      >Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the
+      stack.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <div class="diagram-node" data-node="web" data-badge="0 in" data-step-label="Entry points" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <div
+      class="diagram-node"
+      data-node="web"
+      data-badge="0 in"
+      data-step-label="Entry points"
+      style="--col: 1; --row: 1"
+    >
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/web</span>
     </div>
-    <div class="diagram-node" data-node="admin" data-badge="0 in" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="admin" data-badge="0 in" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/admin</span>
     </div>
-    <div class="diagram-node" data-node="cli" data-badge="0 in" style="--col:4;--row:1">
+    <div class="diagram-node" data-node="cli" data-badge="0 in" style="--col: 4; --row: 1">
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/cli</span>
     </div>
-    <div class="diagram-node" data-node="ui" data-badge="2 in" style="--col:1;--row:2"><span class="diagram-node-name">ui-kit</span></div>
-    <div class="diagram-node" data-node="client" data-tone="accent" data-badge="3 in" data-step-label="Shared by three" style="--col:3;--row:2"><span class="diagram-node-name">api-client</span></div>
-    <div class="diagram-node" data-node="auth" data-badge="2 in" style="--col:2;--row:3"><span class="diagram-node-name">auth</span></div>
-    <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" style="--col:3;--row:3"><span class="diagram-node-name">utils</span></div>
-    <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="ui" data-badge="2 in" style="--col: 1; --row: 2"
+      ><span class="diagram-node-name">ui-kit</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="client"
+      data-tone="accent"
+      data-badge="3 in"
+      data-step-label="Shared by three"
+      style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">api-client</span></div
+    >
+    <div class="diagram-node" data-node="auth" data-badge="2 in" style="--col: 2; --row: 3"
+      ><span class="diagram-node-name">auth</span></div
+    >
+    <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" style="--col: 3; --row: 3"
+      ><span class="diagram-node-name">utils</span></div
+    >
+    <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" style="--col: 4; --row: 3">
       <span class="diagram-node-eyebrow">Third-party</span>
       <span class="diagram-node-name">zod</span>
     </div>
-    <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" style="--col:2;--row:4"><span class="diagram-node-name">config</span></div>
+    <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" style="--col: 2; --row: 4"
+      ><span class="diagram-node-name">config</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="web" data-to="ui"></li>
@@ -55,7 +80,15 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <li class="diagram-edge" data-from="client" data-to="zod"></li>
     <li class="diagram-edge" data-from="ui" data-to="utils"></li>
     <li class="diagram-edge" data-from="auth" data-to="config"></li>
-    <li class="diagram-edge" data-from="config" data-to="client" data-curve="around" data-line="dashed" data-tone="accent">cycle</li>
+    <li
+      class="diagram-edge"
+      data-from="config"
+      data-to="client"
+      data-curve="around"
+      data-line="dashed"
+      data-tone="accent"
+      >cycle</li
+    >
   </ol>
   <ul class="diagram-legend">
     <li data-swatch="line">imports</li>
@@ -69,34 +102,87 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Rank by rank" component="diagram" hint="Entry points first, then each depth; the cycle last."
-<figure class="diagram" id="dg-dep-steps" data-type="dependency" data-steps data-autoplay aria-label="Monorepo package dependency graph">
+<figure
+  class="diagram"
+  id="dg-dep-steps"
+  data-type="dependency"
+  data-steps
+  data-autoplay
+  aria-label="Monorepo package dependency graph"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Dependency graph</span>
     <span class="diagram-title">packages/ - who imports whom</span>
-    <span class="diagram-dek">Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the stack.</span>
+    <span class="diagram-dek"
+      >Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the
+      stack.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <div class="diagram-node" data-node="web" data-badge="0 in" data-step="1" data-step-label="Entry points" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <div
+      class="diagram-node"
+      data-node="web"
+      data-badge="0 in"
+      data-step="1"
+      data-step-label="Entry points"
+      style="--col: 1; --row: 1"
+    >
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/web</span>
     </div>
-    <div class="diagram-node" data-node="admin" data-badge="0 in" data-step="1" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="admin" data-badge="0 in" data-step="1" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/admin</span>
     </div>
-    <div class="diagram-node" data-node="cli" data-badge="0 in" data-step="1" style="--col:4;--row:1">
+    <div class="diagram-node" data-node="cli" data-badge="0 in" data-step="1" style="--col: 4; --row: 1">
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/cli</span>
     </div>
-    <div class="diagram-node" data-node="ui" data-badge="2 in" data-step="2" style="--col:1;--row:2"><span class="diagram-node-name">ui-kit</span></div>
-    <div class="diagram-node" data-node="client" data-tone="accent" data-badge="3 in" data-step="2" data-step-label="Shared by three" style="--col:3;--row:2"><span class="diagram-node-name">api-client</span></div>
-    <div class="diagram-node" data-node="auth" data-badge="2 in" data-step="3" style="--col:2;--row:3"><span class="diagram-node-name">auth</span></div>
-    <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" data-step="3" style="--col:3;--row:3"><span class="diagram-node-name">utils</span></div>
-    <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" data-step="3" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="ui" data-badge="2 in" data-step="2" style="--col: 1; --row: 2"
+      ><span class="diagram-node-name">ui-kit</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="client"
+      data-tone="accent"
+      data-badge="3 in"
+      data-step="2"
+      data-step-label="Shared by three"
+      style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">api-client</span></div
+    >
+    <div class="diagram-node" data-node="auth" data-badge="2 in" data-step="3" style="--col: 2; --row: 3"
+      ><span class="diagram-node-name">auth</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="utils"
+      data-tone="muted"
+      data-badge="3 in"
+      data-step="3"
+      style="--col: 3; --row: 3"
+      ><span class="diagram-node-name">utils</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="zod"
+      data-tone="external"
+      data-badge="1 in"
+      data-step="3"
+      style="--col: 4; --row: 3"
+    >
       <span class="diagram-node-eyebrow">Third-party</span>
       <span class="diagram-node-name">zod</span>
     </div>
-    <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" data-step="4" style="--col:2;--row:4"><span class="diagram-node-name">config</span></div>
+    <div
+      class="diagram-node"
+      data-node="config"
+      data-tone="muted"
+      data-badge="1 in"
+      data-step="4"
+      style="--col: 2; --row: 4"
+      ><span class="diagram-node-name">config</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="web" data-to="ui"></li>
@@ -109,7 +195,16 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <li class="diagram-edge" data-from="client" data-to="zod"></li>
     <li class="diagram-edge" data-from="ui" data-to="utils"></li>
     <li class="diagram-edge" data-from="auth" data-to="config"></li>
-    <li class="diagram-edge" data-from="config" data-to="client" data-curve="around" data-line="dashed" data-tone="accent" data-step="5">cycle</li>
+    <li
+      class="diagram-edge"
+      data-from="config"
+      data-to="client"
+      data-curve="around"
+      data-line="dashed"
+      data-tone="accent"
+      data-step="5"
+      >cycle</li
+    >
   </ol>
   <ul class="diagram-legend">
     <li data-swatch="line">imports</li>
@@ -126,39 +221,78 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Dependency Graph, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-dep-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-dep-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-dep-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-dep-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-dep-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-dep-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-dep-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-dep-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-dep-live" data-interactive data-type="dependency" aria-label="Monorepo package dependency graph">
+<figure
+  class="diagram"
+  id="dg-dep-live"
+  data-interactive
+  data-type="dependency"
+  aria-label="Monorepo package dependency graph"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Dependency graph</span>
     <span class="diagram-title">packages/ - who imports whom</span>
-    <span class="diagram-dek">Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the stack.</span>
+    <span class="diagram-dek"
+      >Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the
+      stack.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <div class="diagram-node" data-node="web" data-badge="0 in" data-step-label="Entry points" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <div
+      class="diagram-node"
+      data-node="web"
+      data-badge="0 in"
+      data-step-label="Entry points"
+      style="--col: 1; --row: 1"
+    >
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/web</span>
     </div>
-    <div class="diagram-node" data-node="admin" data-badge="0 in" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="admin" data-badge="0 in" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/admin</span>
     </div>
-    <div class="diagram-node" data-node="cli" data-badge="0 in" style="--col:4;--row:1">
+    <div class="diagram-node" data-node="cli" data-badge="0 in" style="--col: 4; --row: 1">
       <span class="diagram-node-eyebrow">App</span>
       <span class="diagram-node-name">apps/cli</span>
     </div>
-    <div class="diagram-node" data-node="ui" data-badge="2 in" style="--col:1;--row:2"><span class="diagram-node-name">ui-kit</span></div>
-    <div class="diagram-node" data-node="client" data-tone="accent" data-badge="3 in" data-step-label="Shared by three" style="--col:3;--row:2"><span class="diagram-node-name">api-client</span></div>
-    <div class="diagram-node" data-node="auth" data-badge="2 in" style="--col:2;--row:3"><span class="diagram-node-name">auth</span></div>
-    <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" style="--col:3;--row:3"><span class="diagram-node-name">utils</span></div>
-    <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="ui" data-badge="2 in" style="--col: 1; --row: 2"
+      ><span class="diagram-node-name">ui-kit</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="client"
+      data-tone="accent"
+      data-badge="3 in"
+      data-step-label="Shared by three"
+      style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">api-client</span></div
+    >
+    <div class="diagram-node" data-node="auth" data-badge="2 in" style="--col: 2; --row: 3"
+      ><span class="diagram-node-name">auth</span></div
+    >
+    <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" style="--col: 3; --row: 3"
+      ><span class="diagram-node-name">utils</span></div
+    >
+    <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" style="--col: 4; --row: 3">
       <span class="diagram-node-eyebrow">Third-party</span>
       <span class="diagram-node-name">zod</span>
     </div>
-    <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" style="--col:2;--row:4"><span class="diagram-node-name">config</span></div>
+    <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" style="--col: 2; --row: 4"
+      ><span class="diagram-node-name">config</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="web" data-to="ui"></li>
@@ -171,7 +305,15 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <li class="diagram-edge" data-from="client" data-to="zod"></li>
     <li class="diagram-edge" data-from="ui" data-to="utils"></li>
     <li class="diagram-edge" data-from="auth" data-to="config"></li>
-    <li class="diagram-edge" data-from="config" data-to="client" data-curve="around" data-line="dashed" data-tone="accent">cycle</li>
+    <li
+      class="diagram-edge"
+      data-from="config"
+      data-to="client"
+      data-curve="around"
+      data-line="dashed"
+      data-tone="accent"
+      >cycle</li
+    >
   </ol>
   <ul class="diagram-legend">
     <li data-swatch="line">imports</li>
@@ -188,39 +330,72 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Dependency Graph, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-dep-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-dep-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-dep-edit" data-interactive data-type="dependency" aria-label="Monorepo package dependency graph">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-dep-edit"
+      data-interactive
+      data-type="dependency"
+      aria-label="Monorepo package dependency graph"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Dependency graph</span>
         <span class="diagram-title">packages/ - who imports whom</span>
-        <span class="diagram-dek">Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the stack.</span>
+        <span class="diagram-dek"
+          >Ranked by depth; the fan-in badge shows how many packages depend on each. One cycle, routed around the
+          stack.</span
+        >
       </figcaption>
-      <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-        <div class="diagram-node" data-node="web" data-badge="0 in" data-step-label="Entry points" style="--col:1;--row:1">
+      <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+        <div
+          class="diagram-node"
+          data-node="web"
+          data-badge="0 in"
+          data-step-label="Entry points"
+          style="--col: 1; --row: 1"
+        >
           <span class="diagram-node-eyebrow">App</span>
           <span class="diagram-node-name">apps/web</span>
         </div>
-        <div class="diagram-node" data-node="admin" data-badge="0 in" style="--col:2;--row:1">
+        <div class="diagram-node" data-node="admin" data-badge="0 in" style="--col: 2; --row: 1">
           <span class="diagram-node-eyebrow">App</span>
           <span class="diagram-node-name">apps/admin</span>
         </div>
-        <div class="diagram-node" data-node="cli" data-badge="0 in" style="--col:4;--row:1">
+        <div class="diagram-node" data-node="cli" data-badge="0 in" style="--col: 4; --row: 1">
           <span class="diagram-node-eyebrow">App</span>
           <span class="diagram-node-name">apps/cli</span>
         </div>
-        <div class="diagram-node" data-node="ui" data-badge="2 in" style="--col:1;--row:2"><span class="diagram-node-name">ui-kit</span></div>
-        <div class="diagram-node" data-node="client" data-tone="accent" data-badge="3 in" data-step-label="Shared by three" style="--col:3;--row:2"><span class="diagram-node-name">api-client</span></div>
-        <div class="diagram-node" data-node="auth" data-badge="2 in" style="--col:2;--row:3"><span class="diagram-node-name">auth</span></div>
-        <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" style="--col:3;--row:3"><span class="diagram-node-name">utils</span></div>
-        <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" style="--col:4;--row:3">
+        <div class="diagram-node" data-node="ui" data-badge="2 in" style="--col: 1; --row: 2"
+          ><span class="diagram-node-name">ui-kit</span></div
+        >
+        <div
+          class="diagram-node"
+          data-node="client"
+          data-tone="accent"
+          data-badge="3 in"
+          data-step-label="Shared by three"
+          style="--col: 3; --row: 2"
+          ><span class="diagram-node-name">api-client</span></div
+        >
+        <div class="diagram-node" data-node="auth" data-badge="2 in" style="--col: 2; --row: 3"
+          ><span class="diagram-node-name">auth</span></div
+        >
+        <div class="diagram-node" data-node="utils" data-tone="muted" data-badge="3 in" style="--col: 3; --row: 3"
+          ><span class="diagram-node-name">utils</span></div
+        >
+        <div class="diagram-node" data-node="zod" data-tone="external" data-badge="1 in" style="--col: 4; --row: 3">
           <span class="diagram-node-eyebrow">Third-party</span>
           <span class="diagram-node-name">zod</span>
         </div>
-        <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" style="--col:2;--row:4"><span class="diagram-node-name">config</span></div>
+        <div class="diagram-node" data-node="config" data-tone="muted" data-badge="1 in" style="--col: 2; --row: 4"
+          ><span class="diagram-node-name">config</span></div
+        >
       </div>
       <ol class="diagram-edges">
         <li class="diagram-edge" data-from="web" data-to="ui"></li>
@@ -233,7 +408,15 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li class="diagram-edge" data-from="client" data-to="zod"></li>
         <li class="diagram-edge" data-from="ui" data-to="utils"></li>
         <li class="diagram-edge" data-from="auth" data-to="config"></li>
-        <li class="diagram-edge" data-from="config" data-to="client" data-curve="around" data-line="dashed" data-tone="accent">cycle</li>
+        <li
+          class="diagram-edge"
+          data-from="config"
+          data-to="client"
+          data-curve="around"
+          data-line="dashed"
+          data-tone="accent"
+          >cycle</li
+        >
       </ol>
       <ul class="diagram-legend">
         <li data-swatch="line">imports</li>
@@ -248,11 +431,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-dep-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-dep-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-dep-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -281,27 +477,57 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="delta">Delta</H2>
 
 ```html example label="Breaking the cycle" component="diagram" hint="Badges change too: data-before-badge restores the old fan-in in Before."
-<figure class="diagram" id="dg-dep-delta" data-type="dependency" data-delta aria-label="Dependency graph after breaking the cycle">
+<figure
+  class="diagram"
+  id="dg-dep-delta"
+  data-type="dependency"
+  data-delta
+  aria-label="Dependency graph after breaking the cycle"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Refactor</span>
     <span class="diagram-title">Breaking the config → api-client cycle</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:9.5rem">
-    <div class="diagram-node" data-node="client" data-badge="3 in" style="--col:2;--row:1"><span class="diagram-node-name">api-client</span></div>
-    <div class="diagram-node" data-node="auth" data-badge="1 in" data-before-badge="2 in" style="--col:1;--row:2"><span class="diagram-node-name">auth</span></div>
-    <div class="diagram-node" data-node="config" data-badge="2 in" data-change="changed" data-change-note="no longer imports api-client" data-before-badge="1 in" style="--col:1;--row:3"><span class="diagram-node-name">config</span></div>
-    <div class="diagram-node" data-node="endpoints" data-tone="accent" data-change="added" style="--col:2;--row:3">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 9.5rem">
+    <div class="diagram-node" data-node="client" data-badge="3 in" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">api-client</span></div
+    >
+    <div class="diagram-node" data-node="auth" data-badge="1 in" data-before-badge="2 in" style="--col: 1; --row: 2"
+      ><span class="diagram-node-name">auth</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="config"
+      data-badge="2 in"
+      data-change="changed"
+      data-change-note="no longer imports api-client"
+      data-before-badge="1 in"
+      style="--col: 1; --row: 3"
+      ><span class="diagram-node-name">config</span></div
+    >
+    <div class="diagram-node" data-node="endpoints" data-tone="accent" data-change="added" style="--col: 2; --row: 3">
       <span class="diagram-node-name">endpoints</span>
       <span class="diagram-node-meta">extracted from api-client</span>
     </div>
-    <div class="diagram-node" data-node="legacy" data-tone="external" data-change="removed" style="--col:3;--row:2"><span class="diagram-node-name">legacy-http</span></div>
+    <div class="diagram-node" data-node="legacy" data-tone="external" data-change="removed" style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">legacy-http</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="client" data-to="auth"></li>
     <li class="diagram-edge" data-from="client" data-to="endpoints" data-change="added"></li>
     <li class="diagram-edge" data-from="auth" data-to="config"></li>
     <li class="diagram-edge" data-from="client" data-to="config" data-change="added"></li>
-    <li class="diagram-edge" data-from="config" data-to="client" data-curve="around" data-line="dashed" data-tone="accent" data-change="removed">cycle</li>
+    <li
+      class="diagram-edge"
+      data-from="config"
+      data-to="client"
+      data-curve="around"
+      data-line="dashed"
+      data-tone="accent"
+      data-change="removed"
+      >cycle</li
+    >
     <li class="diagram-edge" data-from="client" data-to="legacy" data-change="removed"></li>
   </ol>
 </figure>

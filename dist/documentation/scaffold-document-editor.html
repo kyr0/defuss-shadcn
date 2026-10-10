@@ -17,54 +17,213 @@
   }
   /* the document list is open or closed, never an icon rail, and sits in the flow (the page
      narrows, nothing overlays it) - the trigger in the header stays visible either way */
-  .de .app-sidebar { position: relative; flex: none; height: 100%; display: flex; }
-  .de .app-sidebar[data-state="collapsed"] { display: none; }
-  .de .sidebar-link[data-de-doc] .badge { margin-inline-start: auto; }
-  .de-search { padding: 0.5rem 0.75rem 0.25rem; }
-  .de-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
-  .de-top { display: flex; flex: none; align-items: center; gap: 0.5rem; height: 3.25rem; padding-inline: 0.75rem; border-block-end: 1px solid var(--border); }
-  .de-title { flex: 1; min-width: 0; margin: 0; padding: 0.25rem 0.5rem; border: 1px solid transparent; border-radius: var(--radius-md); background: none; color: inherit; font: inherit; font-size: 1.0625rem; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-    &amp;:hover { border-color: var(--border); }
-    &amp;:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+  .de .app-sidebar {
+    position: relative;
+    flex: none;
+    height: 100%;
+    display: flex;
   }
-  .de-saved { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--muted-foreground); font-size: 0.75rem; white-space: nowrap; &amp; svg { width: 0.875rem; height: 0.875rem; } }
-  .de-saved[data-state="editing"] { color: var(--foreground); }
-  .de .toolbar { flex: none; flex-wrap: wrap; margin: 0.5rem 0.75rem 0; }
-  .de-body { display: flex; flex: 1; min-height: 0; }
-  .de-page { flex: 1; min-width: 0; overflow: auto; overscroll-behavior: contain; padding: 2rem clamp(1rem, 6cqi, 4rem) 6rem; background: color-mix(in oklch, var(--muted) 40%, var(--background)); }
-  .de-sheet { max-width: 46rem; min-height: 100%; margin-inline: auto; padding: 3rem clamp(1.5rem, 5cqi, 4rem) 4rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow-sm); }
-  .de .editorjs { --editorjs-measure: 100%; --editorjs-min-height: 24rem; }
-  .de .doc-comments { flex: none; border-inline-start: 1px solid var(--border); background: var(--background); }
-  .de-status { display: flex; flex: none; align-items: center; gap: 0.75rem; height: 2rem; padding-inline: 0.75rem; border-block-start: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.75rem; &amp; .badge { font-size: 0.6875rem; } }
-  .de-status-spacer { flex: 1; }
-  .de-quote { margin: 0 0 0.75rem; padding: 0.5rem 0.75rem; border-inline-start: 3px solid var(--primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--muted); color: var(--muted-foreground); font-style: italic; }
-  .de-colors .toggle { width: 2rem; padding: 0; }
-  .de-colors .toggle::before { content: ""; display: block; width: 0.875rem; height: 0.875rem; border-radius: 50%; background: var(--de-c); }
-  .de-colors .toggle[aria-pressed="true"] { outline: 2px solid var(--de-c); outline-offset: -2px; }
-  .de-share-link { display: flex; gap: 0.5rem; }
-  .de [hidden] { display: none !important; }
-  .de-comments-toggle { display: none; }
+  .de .app-sidebar[data-state='collapsed'] {
+    display: none;
+  }
+  .de .sidebar-link[data-de-doc] .badge {
+    margin-inline-start: auto;
+  }
+  .de-search {
+    padding: 0.5rem 0.75rem 0.25rem;
+  }
+  .de-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+  .de-top {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3.25rem;
+    padding-inline: 0.75rem;
+    border-block-end: 1px solid var(--border);
+  }
+  .de-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    &amp;:hover {
+      border-color: var(--border);
+    }
+    &amp;:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+  .de-saved {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    &amp; svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+  .de-saved[data-state='editing'] {
+    color: var(--foreground);
+  }
+  .de .toolbar {
+    flex: none;
+    flex-wrap: wrap;
+    margin: 0.5rem 0.75rem 0;
+  }
+  .de-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  .de-page {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 2rem clamp(1rem, 6cqi, 4rem) 6rem;
+    background: color-mix(in oklch, var(--muted) 40%, var(--background));
+  }
+  .de-sheet {
+    max-width: 46rem;
+    min-height: 100%;
+    margin-inline: auto;
+    padding: 3rem clamp(1.5rem, 5cqi, 4rem) 4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+  }
+  .de .editorjs {
+    --editorjs-measure: 100%;
+    --editorjs-min-height: 24rem;
+  }
+  .de .doc-comments {
+    flex: none;
+    border-inline-start: 1px solid var(--border);
+    background: var(--background);
+  }
+  .de-status {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.75rem;
+    height: 2rem;
+    padding-inline: 0.75rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    &amp; .badge {
+      font-size: 0.6875rem;
+    }
+  }
+  .de-status-spacer {
+    flex: 1;
+  }
+  .de-quote {
+    margin: 0 0 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-inline-start: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+  .de-colors .toggle {
+    width: 2rem;
+    padding: 0;
+  }
+  .de-colors .toggle::before {
+    content: '';
+    display: block;
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    background: var(--de-c);
+  }
+  .de-colors .toggle[aria-pressed='true'] {
+    outline: 2px solid var(--de-c);
+    outline-offset: -2px;
+  }
+  .de-share-link {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .de [hidden] {
+    display: none !important;
+  }
+  .de-comments-toggle {
+    display: none;
+  }
   @container de (width &lt; 56rem) {
-    .de-comments-toggle { display: inline-flex; }
-    .de .doc-comments { display: none; }
-    .de[data-comments] .doc-comments { display: flex; position: absolute; inset-block: 3.25rem 2rem; inset-inline-end: 0; z-index: 2; box-shadow: var(--shadow-lg); }
-    .de-page { padding-inline: 1rem; }
-    .de-sheet { padding: 2rem 1.25rem 3rem; }
+    .de-comments-toggle {
+      display: inline-flex;
+    }
+    .de .doc-comments {
+      display: none;
+    }
+    .de[data-comments] .doc-comments {
+      display: flex;
+      position: absolute;
+      inset-block: 3.25rem 2rem;
+      inset-inline-end: 0;
+      z-index: 2;
+      box-shadow: var(--shadow-lg);
+    }
+    .de-page {
+      padding-inline: 1rem;
+    }
+    .de-sheet {
+      padding: 2rem 1.25rem 3rem;
+    }
   }
 &lt;/style&gt;
 &lt;div class="de sidebar-layout" id="de"&gt;
   &lt;aside class="app-sidebar" id="de-sidebar" data-state="collapsed" aria-label="Documents"&gt;
     &lt;div class="sidebar-header"&gt;
-      &lt;a class="sidebar-logo" href="#"&gt;&lt;i data-lucide="file-pen-line"&gt;&lt;/i&gt;&lt;span class="sidebar-logo-text"&gt;Margin&lt;/span&gt;&lt;/a&gt;
+      &lt;a class="sidebar-logo" href="#"
+        &gt;&lt;i data-lucide="file-pen-line"&gt;&lt;/i&gt;&lt;span class="sidebar-logo-text"&gt;Margin&lt;/span&gt;&lt;/a
+      &gt;
     &lt;/div&gt;
-    &lt;div class="de-search"&gt;&lt;input class="input" type="search" placeholder="Search documents" aria-label="Search documents" data-size="sm"&gt;&lt;/div&gt;
+    &lt;div class="de-search"
+      &gt;&lt;input class="input" type="search" placeholder="Search documents" aria-label="Search documents" data-size="sm"
+    /&gt;&lt;/div&gt;
     &lt;div class="sidebar-content"&gt;
       &lt;details class="sidebar-group" open&gt;
         &lt;summary&gt;&lt;span&gt;My documents&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
         &lt;nav class="sidebar-nav"&gt;
-          &lt;a class="sidebar-link" href="#" data-de-doc="launch" aria-current="page"&gt;&lt;i data-lucide="file-text"&gt;&lt;/i&gt; &lt;span&gt;Q4 launch plan&lt;/span&gt;&lt;span class="badge" data-variant="secondary" data-de-count="launch"&gt;5&lt;/span&gt;&lt;/a&gt;
-          &lt;a class="sidebar-link" href="#" data-de-doc="brief"&gt;&lt;i data-lucide="file-text"&gt;&lt;/i&gt; &lt;span&gt;Design brief&lt;/span&gt;&lt;span class="badge" data-variant="secondary" data-de-count="brief"&gt;2&lt;/span&gt;&lt;/a&gt;
-          &lt;a class="sidebar-link" href="#" data-de-doc="notes"&gt;&lt;i data-lucide="file-text"&gt;&lt;/i&gt; &lt;span&gt;Meeting notes&lt;/span&gt;&lt;span class="badge" data-variant="secondary" data-de-count="notes" hidden&gt;0&lt;/span&gt;&lt;/a&gt;
+          &lt;a class="sidebar-link" href="#" data-de-doc="launch" aria-current="page"
+            &gt;&lt;i data-lucide="file-text"&gt;&lt;/i&gt; &lt;span&gt;Q4 launch plan&lt;/span
+            &gt;&lt;span class="badge" data-variant="secondary" data-de-count="launch"&gt;5&lt;/span&gt;&lt;/a
+          &gt;
+          &lt;a class="sidebar-link" href="#" data-de-doc="brief"
+            &gt;&lt;i data-lucide="file-text"&gt;&lt;/i&gt; &lt;span&gt;Design brief&lt;/span
+            &gt;&lt;span class="badge" data-variant="secondary" data-de-count="brief"&gt;2&lt;/span&gt;&lt;/a
+          &gt;
+          &lt;a class="sidebar-link" href="#" data-de-doc="notes"
+            &gt;&lt;i data-lucide="file-text"&gt;&lt;/i&gt; &lt;span&gt;Meeting notes&lt;/span
+            &gt;&lt;span class="badge" data-variant="secondary" data-de-count="notes" hidden&gt;0&lt;/span&gt;&lt;/a
+          &gt;
         &lt;/nav&gt;
       &lt;/details&gt;
       &lt;details class="sidebar-group" open&gt;
@@ -75,12 +234,16 @@
         &lt;/nav&gt;
       &lt;/details&gt;
     &lt;/div&gt;
-    &lt;div class="sidebar-footer"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;YO&lt;/span&gt;&lt;/span&gt; You&lt;/div&gt;
+    &lt;div class="sidebar-footer"
+      &gt;&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;YO&lt;/span&gt;&lt;/span&gt; You&lt;/div
+    &gt;
   &lt;/aside&gt;
 
   &lt;div class="de-main"&gt;
     &lt;header class="de-top"&gt;
-      &lt;button class="sidebar-trigger" data-sidebar-trigger="de-sidebar" aria-label="Toggle documents"&gt;&lt;i data-lucide="panel-left"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;button class="sidebar-trigger" data-sidebar-trigger="de-sidebar" aria-label="Toggle documents"
+        &gt;&lt;i data-lucide="panel-left"&gt;&lt;/i
+      &gt;&lt;/button&gt;
       &lt;h1 class="de-title" id="de-title"&gt;Q4 launch plan&lt;/h1&gt;
       &lt;span class="de-saved" id="de-saved" data-state="saved"&gt;&lt;i data-lucide="cloud"&gt;&lt;/i&gt; &lt;span&gt;Saved&lt;/span&gt;&lt;/span&gt;
       &lt;div class="avatar-group" aria-label="Editing now"&gt;
@@ -88,37 +251,127 @@
         &lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;JP&lt;/span&gt;&lt;/span&gt;
         &lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;AN&lt;/span&gt;&lt;/span&gt;
       &lt;/div&gt;
-      &lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-dialog-trigger="de-share" aria-haspopup="dialog"&gt;&lt;i data-lucide="share-2"&gt;&lt;/i&gt; Share&lt;/button&gt;
-      &lt;button class="btn de-comments-toggle" data-variant="ghost" data-size="icon-sm" type="button" id="de-comments-toggle" aria-label="Toggle comments" aria-pressed="false"&gt;&lt;i data-lucide="message-square-text"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;button
+        class="btn"
+        data-variant="outline"
+        data-size="sm"
+        type="button"
+        data-dialog-trigger="de-share"
+        aria-haspopup="dialog"
+        &gt;&lt;i data-lucide="share-2"&gt;&lt;/i&gt; Share&lt;/button
+      &gt;
+      &lt;button
+        class="btn de-comments-toggle"
+        data-variant="ghost"
+        data-size="icon-sm"
+        type="button"
+        id="de-comments-toggle"
+        aria-label="Toggle comments"
+        aria-pressed="false"
+        &gt;&lt;i data-lucide="message-square-text"&gt;&lt;/i
+      &gt;&lt;/button&gt;
     &lt;/header&gt;
 
     &lt;div class="toolbar" role="toolbar" aria-label="Formatting" id="de-bar" data-size="sm"&gt;
       &lt;div class="toggle-group" role="group" aria-label="Block" data-type="single"&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="paragraph" aria-label="Paragraph" type="button"&gt;&lt;i data-lucide="pilcrow"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="header:1" aria-label="Heading 1" type="button"&gt;&lt;i data-lucide="heading-1"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="header:2" aria-label="Heading 2" type="button"&gt;&lt;i data-lucide="heading-2"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="header:3" aria-label="Heading 3" type="button"&gt;&lt;i data-lucide="heading-3"&gt;&lt;/i&gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="paragraph" aria-label="Paragraph" type="button"
+          &gt;&lt;i data-lucide="pilcrow"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="header:1" aria-label="Heading 1" type="button"
+          &gt;&lt;i data-lucide="heading-1"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="header:2" aria-label="Heading 2" type="button"
+          &gt;&lt;i data-lucide="heading-2"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="header:3" aria-label="Heading 3" type="button"
+          &gt;&lt;i data-lucide="heading-3"&gt;&lt;/i
+        &gt;&lt;/button&gt;
       &lt;/div&gt;
       &lt;div class="separator" data-orientation="vertical" role="separator"&gt;&lt;/div&gt;
       &lt;div class="toggle-group" role="group" aria-label="Text style" data-type="multiple"&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="bold" aria-label="Bold" type="button"&gt;&lt;i data-lucide="bold"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="italic" aria-label="Italic" type="button"&gt;&lt;i data-lucide="italic"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="underline" aria-label="Underline" type="button"&gt;&lt;i data-lucide="underline"&gt;&lt;/i&gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="bold" aria-label="Bold" type="button"
+          &gt;&lt;i data-lucide="bold"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="italic" aria-label="Italic" type="button"
+          &gt;&lt;i data-lucide="italic"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="underline" aria-label="Underline" type="button"
+          &gt;&lt;i data-lucide="underline"&gt;&lt;/i
+        &gt;&lt;/button&gt;
       &lt;/div&gt;
-      &lt;button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="marker" aria-label="Highlight" type="button"&gt;&lt;i data-lucide="highlighter"&gt;&lt;/i&gt;&lt;/button&gt;
-      &lt;button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="inline-code" aria-label="Inline code" type="button"&gt;&lt;i data-lucide="code"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-editor-command="marker"
+        aria-label="Highlight"
+        type="button"
+        &gt;&lt;i data-lucide="highlighter"&gt;&lt;/i
+      &gt;&lt;/button&gt;
+      &lt;button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-editor-command="inline-code"
+        aria-label="Inline code"
+        type="button"
+        &gt;&lt;i data-lucide="code"&gt;&lt;/i
+      &gt;&lt;/button&gt;
       &lt;div class="separator" data-orientation="vertical" role="separator"&gt;&lt;/div&gt;
       &lt;div class="toggle-group" role="group" aria-label="Lists" data-type="single"&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="list:unordered" aria-label="Bulleted list" type="button"&gt;&lt;i data-lucide="list"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="list:ordered" aria-label="Numbered list" type="button"&gt;&lt;i data-lucide="list-ordered"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="list:checklist" aria-label="Checklist" type="button"&gt;&lt;i data-lucide="list-checks"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="quote" aria-label="Quote" type="button"&gt;&lt;i data-lucide="quote"&gt;&lt;/i&gt;&lt;/button&gt;
-        &lt;button class="toggle" aria-pressed="false" data-editor-command="code" aria-label="Code block" type="button"&gt;&lt;i data-lucide="square-code"&gt;&lt;/i&gt;&lt;/button&gt;
+        &lt;button
+          class="toggle"
+          aria-pressed="false"
+          data-editor-command="list:unordered"
+          aria-label="Bulleted list"
+          type="button"
+          &gt;&lt;i data-lucide="list"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button
+          class="toggle"
+          aria-pressed="false"
+          data-editor-command="list:ordered"
+          aria-label="Numbered list"
+          type="button"
+          &gt;&lt;i data-lucide="list-ordered"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button
+          class="toggle"
+          aria-pressed="false"
+          data-editor-command="list:checklist"
+          aria-label="Checklist"
+          type="button"
+          &gt;&lt;i data-lucide="list-checks"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="quote" aria-label="Quote" type="button"
+          &gt;&lt;i data-lucide="quote"&gt;&lt;/i
+        &gt;&lt;/button&gt;
+        &lt;button class="toggle" aria-pressed="false" data-editor-command="code" aria-label="Code block" type="button"
+          &gt;&lt;i data-lucide="square-code"&gt;&lt;/i
+        &gt;&lt;/button&gt;
       &lt;/div&gt;
-      &lt;button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="delimiter" aria-label="Divider" type="button"&gt;&lt;i data-lucide="minus"&gt;&lt;/i&gt;&lt;/button&gt;
-      &lt;button class="btn" data-variant="ghost" data-size="icon-sm" data-editor-command="table" aria-label="Table" type="button"&gt;&lt;i data-lucide="table"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-editor-command="delimiter"
+        aria-label="Divider"
+        type="button"
+        &gt;&lt;i data-lucide="minus"&gt;&lt;/i
+      &gt;&lt;/button&gt;
+      &lt;button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-editor-command="table"
+        aria-label="Table"
+        type="button"
+        &gt;&lt;i data-lucide="table"&gt;&lt;/i
+      &gt;&lt;/button&gt;
       &lt;div class="separator" data-orientation="vertical" role="separator"&gt;&lt;/div&gt;
-      &lt;button class="btn" data-variant="outline" data-size="sm" type="button" id="de-comment" data-de-action="comment"&gt;&lt;i data-lucide="message-square-plus"&gt;&lt;/i&gt; Comment&lt;/button&gt;
+      &lt;button class="btn" data-variant="outline" data-size="sm" type="button" id="de-comment" data-de-action="comment"
+        &gt;&lt;i data-lucide="message-square-plus"&gt;&lt;/i&gt; Comment&lt;/button
+      &gt;
     &lt;/div&gt;
 
     &lt;div class="de-body"&gt;
@@ -164,13 +417,58 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
       &lt;/div&gt;
       &lt;aside class="doc-comments" id="de-comments" data-for="de-editor" data-author="You" aria-label="Comments"&gt;
         &lt;script type="application/json" class="doc-comments-source"&gt;
-        { "version": 1, "comments": [
-          { "id": "c1", "author": "Mira Chen", "time": "2026-10-06T09:12:00Z", "color": "chart-2", "anchor": { "block": "b2", "text": "living document" }, "body": "Say **who** owns it - a living document without an owner dies quietly.", "quotes": [{ "block": "b12", "text": "Owner: the platform team", "note": "it is at the very end - move it up here?" }] },
-          { "id": "c2", "author": "Jon Park", "time": "2026-10-06T09:30:00Z", "parent": "c1", "body": "Moving it into the first paragraph in the next revision." },
-          { "id": "c3", "author": "Ada Novak", "time": "2026-10-06T10:02:00Z", "color": "chart-5", "anchor": { "block": "b8", "text": "scroll independently" }, "body": "Already true here: the column has its own `overflow: auto` and `overscroll-behavior: contain`." },
-          { "id": "c4", "author": "Lin Osei", "time": "2026-10-06T10:15:00Z", "color": "chart-1", "anchor": { "block": "b8", "text": "Marks must survive edits around them" }, "body": "Anchors are block + text, *not* offsets - see [Document Comments](https://kyr0.github.io/defuss-shadcn/documentation/doc-comments.html)." },
-          { "id": "c5", "author": "Mira Chen", "time": "2026-10-06T11:40:00Z", "color": "chart-4", "anchor": { "block": "b9", "text": "smallest thing" }, "body": "Is a table a small thing? The timeline is one, and partners will comment on cells.", "quotes": [{ "block": "b6", "text": "Beta to design partners", "note": "this row" }] }
-        ] }
+          {
+            "version": 1,
+            "comments": [
+              {
+                "id": "c1",
+                "author": "Mira Chen",
+                "time": "2026-10-06T09:12:00Z",
+                "color": "chart-2",
+                "anchor": { "block": "b2", "text": "living document" },
+                "body": "Say **who** owns it - a living document without an owner dies quietly.",
+                "quotes": [
+                  {
+                    "block": "b12",
+                    "text": "Owner: the platform team",
+                    "note": "it is at the very end - move it up here?"
+                  }
+                ]
+              },
+              {
+                "id": "c2",
+                "author": "Jon Park",
+                "time": "2026-10-06T09:30:00Z",
+                "parent": "c1",
+                "body": "Moving it into the first paragraph in the next revision."
+              },
+              {
+                "id": "c3",
+                "author": "Ada Novak",
+                "time": "2026-10-06T10:02:00Z",
+                "color": "chart-5",
+                "anchor": { "block": "b8", "text": "scroll independently" },
+                "body": "Already true here: the column has its own `overflow: auto` and `overscroll-behavior: contain`."
+              },
+              {
+                "id": "c4",
+                "author": "Lin Osei",
+                "time": "2026-10-06T10:15:00Z",
+                "color": "chart-1",
+                "anchor": { "block": "b8", "text": "Marks must survive edits around them" },
+                "body": "Anchors are block + text, *not* offsets - see [Document Comments](https://kyr0.github.io/defuss-shadcn/documentation/doc-comments.html)."
+              },
+              {
+                "id": "c5",
+                "author": "Mira Chen",
+                "time": "2026-10-06T11:40:00Z",
+                "color": "chart-4",
+                "anchor": { "block": "b9", "text": "smallest thing" },
+                "body": "Is a table a small thing? The timeline is one, and partners will comment on cells.",
+                "quotes": [{ "block": "b6", "text": "Beta to design partners", "note": "this row" }]
+              }
+            ]
+          }
         &lt;/script&gt;
       &lt;/aside&gt;
     &lt;/div&gt;
@@ -190,8 +488,17 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
         &lt;p class="dialog-description"&gt;Anyone with the link can comment. Editing stays with the workspace.&lt;/p&gt;
       &lt;/div&gt;
       &lt;div class="dialog-body de-share-link"&gt;
-        &lt;input class="input" type="url" readonly value="https://margin.example/d/q4-launch-plan" aria-label="Share link" id="de-share-url"&gt;
-        &lt;button class="btn" data-variant="outline" type="button" id="de-share-copy"&gt;&lt;i data-lucide="copy"&gt;&lt;/i&gt; Copy&lt;/button&gt;
+        &lt;input
+          class="input"
+          type="url"
+          readonly
+          value="https://margin.example/d/q4-launch-plan"
+          aria-label="Share link"
+          id="de-share-url"
+        /&gt;
+        &lt;button class="btn" data-variant="outline" type="button" id="de-share-copy"
+          &gt;&lt;i data-lucide="copy"&gt;&lt;/i&gt; Copy&lt;/button
+        &gt;
       &lt;/div&gt;
       &lt;div class="dialog-footer"&gt;
         &lt;button class="btn" type="button" data-dialog-close&gt;Done&lt;/button&gt;
@@ -207,15 +514,64 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
       &lt;/div&gt;
       &lt;div class="dialog-body"&gt;
         &lt;blockquote class="de-quote" id="de-new-comment-quote"&gt;&lt;/blockquote&gt;
-        &lt;textarea class="textarea" id="de-new-comment-body" data-rows="3" data-max-rows="8" required aria-label="Comment" placeholder="What should change?"&gt;&lt;/textarea&gt;
+        &lt;textarea
+          class="textarea"
+          id="de-new-comment-body"
+          data-rows="3"
+          data-max-rows="8"
+          required
+          aria-label="Comment"
+          placeholder="What should change?"
+        &gt;&lt;/textarea&gt;
         &lt;div class="flex items-center gap-2 mt-3"&gt;
           &lt;span class="text-sm text-muted-foreground"&gt;Colour&lt;/span&gt;
-          &lt;div class="toggle-group de-colors" role="group" aria-label="Comment colour" data-type="single" id="de-new-comment-colors"&gt;
-            &lt;button class="toggle" type="button" aria-pressed="true" data-color="chart-1" aria-label="Red" style="--de-c: var(--chart-1)"&gt;&lt;/button&gt;
-            &lt;button class="toggle" type="button" aria-pressed="false" data-color="chart-2" aria-label="Blue" style="--de-c: var(--chart-2)"&gt;&lt;/button&gt;
-            &lt;button class="toggle" type="button" aria-pressed="false" data-color="chart-3" aria-label="Green" style="--de-c: var(--chart-3)"&gt;&lt;/button&gt;
-            &lt;button class="toggle" type="button" aria-pressed="false" data-color="chart-4" aria-label="Yellow" style="--de-c: var(--chart-4)"&gt;&lt;/button&gt;
-            &lt;button class="toggle" type="button" aria-pressed="false" data-color="chart-5" aria-label="Purple" style="--de-c: var(--chart-5)"&gt;&lt;/button&gt;
+          &lt;div
+            class="toggle-group de-colors"
+            role="group"
+            aria-label="Comment colour"
+            data-type="single"
+            id="de-new-comment-colors"
+          &gt;
+            &lt;button
+              class="toggle"
+              type="button"
+              aria-pressed="true"
+              data-color="chart-1"
+              aria-label="Red"
+              style="--de-c: var(--chart-1)"
+            &gt;&lt;/button&gt;
+            &lt;button
+              class="toggle"
+              type="button"
+              aria-pressed="false"
+              data-color="chart-2"
+              aria-label="Blue"
+              style="--de-c: var(--chart-2)"
+            &gt;&lt;/button&gt;
+            &lt;button
+              class="toggle"
+              type="button"
+              aria-pressed="false"
+              data-color="chart-3"
+              aria-label="Green"
+              style="--de-c: var(--chart-3)"
+            &gt;&lt;/button&gt;
+            &lt;button
+              class="toggle"
+              type="button"
+              aria-pressed="false"
+              data-color="chart-4"
+              aria-label="Yellow"
+              style="--de-c: var(--chart-4)"
+            &gt;&lt;/button&gt;
+            &lt;button
+              class="toggle"
+              type="button"
+              aria-pressed="false"
+              data-color="chart-5"
+              aria-label="Purple"
+              style="--de-c: var(--chart-5)"
+            &gt;&lt;/button&gt;
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -227,11 +583,36 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
   &lt;/dialog&gt;
 
   &lt;script type="application/json" id="de-docs"&gt;
-  { "brief": { "title": "Design brief", "markdown": "# Design brief: the comment column\n\nThe Document Editor needs a comment column on the right-hand side that scrolls independently of the document. Comments are cards tied to highlighted parts of the text; clicking a highlight scrolls to the comment and clicking the comment scrolls to the highlight.\n\n## Must have\n\n- A JSON format that stores comments in relation to spans of the text\n- Replies under a comment, with an input box that opens in place\n- A quote section that points at another span and flashes it\n\n## Colours\n\nColours come from the chart tokens. One document maps them to severity, another to the author - the legend says which.\n", "comments": [
-    { "id": "d1", "author": "Ada Novak", "time": "2026-10-05T15:10:00Z", "color": "chart-3", "anchor": { "block": "b2", "text": "scrolls independently" }, "body": "Done in the scaffold - try the wheel over the column." },
-    { "id": "d2", "author": "Jon Park", "time": "2026-10-05T16:00:00Z", "color": "chart-2", "anchor": { "block": "b6", "text": "the legend says which" }, "body": "We have no legend yet. A small list under the title?", "quotes": [{ "block": "b4", "text": "A JSON format", "note": "the colour is one field of it" }] }
-  ] },
-  "notes": { "title": "Meeting notes", "markdown": "# Meeting notes - October 6\n\nPresent: Mira, Jon, Ada, Lin. Fifteen minutes.\n\n## Decisions\n\n1. The launch date stays October 28.\n2. Comments ship with the editor, not after it.\n3. Lin writes the anchoring section of the docs.\n\n## Open\n\n- Do replies notify the thread by email or in the app?\n\n&gt; Next sync: Thursday, same slot.\n", "comments": [] } }
+    {
+      "brief": {
+        "title": "Design brief",
+        "markdown": "# Design brief: the comment column\n\nThe Document Editor needs a comment column on the right-hand side that scrolls independently of the document. Comments are cards tied to highlighted parts of the text; clicking a highlight scrolls to the comment and clicking the comment scrolls to the highlight.\n\n## Must have\n\n- A JSON format that stores comments in relation to spans of the text\n- Replies under a comment, with an input box that opens in place\n- A quote section that points at another span and flashes it\n\n## Colours\n\nColours come from the chart tokens. One document maps them to severity, another to the author - the legend says which.\n",
+        "comments": [
+          {
+            "id": "d1",
+            "author": "Ada Novak",
+            "time": "2026-10-05T15:10:00Z",
+            "color": "chart-3",
+            "anchor": { "block": "b2", "text": "scrolls independently" },
+            "body": "Done in the scaffold - try the wheel over the column."
+          },
+          {
+            "id": "d2",
+            "author": "Jon Park",
+            "time": "2026-10-05T16:00:00Z",
+            "color": "chart-2",
+            "anchor": { "block": "b6", "text": "the legend says which" },
+            "body": "We have no legend yet. A small list under the title?",
+            "quotes": [{ "block": "b4", "text": "A JSON format", "note": "the colour is one field of it" }]
+          }
+        ]
+      },
+      "notes": {
+        "title": "Meeting notes",
+        "markdown": "# Meeting notes - October 6\n\nPresent: Mira, Jon, Ada, Lin. Fifteen minutes.\n\n## Decisions\n\n1. The launch date stays October 28.\n2. Comments ship with the editor, not after it.\n3. Lin writes the anchoring section of the docs.\n\n## Open\n\n- Do replies notify the thread by email or in the app?\n\n&gt; Next sync: Thursday, same slot.\n",
+        "comments": []
+      }
+    }
   &lt;/script&gt;
 &lt;/div&gt;
 &lt;script&gt;
@@ -249,16 +630,28 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
 
     const words = async () =&gt; {
       const md = await $.shadcn.editorjs.markdown(editor);
-      const n = md.replace(/[#&gt;*`|\-\[\]]/g, ' ').split(/\s+/).filter(Boolean).length;
+      const n = md
+        .replace(/[#&gt;*`|\-\[\]]/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean).length;
       $('#de-words').text(`${n} words`);
     };
     const saved = (state) =&gt; {
-      $('#de-saved').attr('data-state', state).find('span').text(state === 'editing' ? 'Editing...' : `Saved ${new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date())}`);
+      $('#de-saved')
+        .attr('data-state', state)
+        .find('span')
+        .text(
+          state === 'editing'
+            ? 'Editing...'
+            : `Saved ${new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date())}`,
+        );
     };
     const counts = () =&gt; {
       const n = $.shadcn.docComments.data(column).comments.length;
       docs[current].count = n;
-      $(`[data-de-count="${current}"]`).text(String(n)).prop('hidden', n === 0);
+      $(`[data-de-count="${current}"]`)
+        .text(String(n))
+        .prop('hidden', n === 0);
     };
 
     // open a document: keep the current one's edits, render the next one and its comments
@@ -275,16 +668,23 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
       words();
       saved('saved');
     };
-    $('[data-de-doc]').on('click', (e) =&gt; { e.preventDefault(); open(e.currentTarget.dataset.deDoc); });
+    $('[data-de-doc]').on('click', (e) =&gt; {
+      e.preventDefault();
+      open(e.currentTarget.dataset.deDoc);
+    });
 
     // comment on the selection: the block the caret is in + the selected text
     let pending = null;
     const commentOnSelection = () =&gt; {
       const sel = globalThis.getSelection();
       const text = sel ? sel.toString().trim() : '';
-      const node = sel &amp;&amp; sel.anchorNode ? (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement) : null;
+      const node =
+        sel &amp;&amp; sel.anchorNode ? (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement) : null;
       const block = node &amp;&amp; node.closest('#de-editor .ce-block');
-      if (!text || !block) { $('#de-words').text('Select some text to comment on it'); return; }
+      if (!text || !block) {
+        $('#de-words').text('Select some text to comment on it');
+        return;
+      }
       pending = { block: block.dataset.id, text };
       $('#de-new-comment-quote').text(text);
       $('#de-new-comment-body').val('');
@@ -293,7 +693,16 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
     };
     $('#de-comment').on('mousedown', (e) =&gt; e.preventDefault());
     $('#de-comment').on('click', commentOnSelection);
-    document.addEventListener('keydown', (e) =&gt; { if ((e.metaKey || e.ctrlKey) &amp;&amp; e.key.toLowerCase() === 'k' &amp;&amp; $('#de-editor').get(0).contains(document.activeElement)) { e.preventDefault(); commentOnSelection(); } });
+    document.addEventListener('keydown', (e) =&gt; {
+      if (
+        (e.metaKey || e.ctrlKey) &amp;&amp;
+        e.key.toLowerCase() === 'k' &amp;&amp;
+        $('#de-editor').get(0).contains(document.activeElement)
+      ) {
+        e.preventDefault();
+        commentOnSelection();
+      }
+    });
     $('#de-new-comment-form').on('submit', (e) =&gt; {
       e.preventDefault();
       const body = $('#de-new-comment-body').val().trim();
@@ -301,7 +710,13 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
       const color = $('#de-new-comment-colors .toggle[aria-pressed="true"]').attr('data-color') || 'chart-1';
       const id = $.shadcn.docComments.add(column, { author: 'You', color, anchor: pending, body });
       $('#de-new-comment').get(0).close();
-      if (id) { $.shadcn.docComments.go(column, id); df$.shadcn.toast.show({ title: 'Comment added', description: `On "${pending.text.length &gt; 40 ? pending.text.slice(0, 40) + '...' : pending.text}"` }); }
+      if (id) {
+        $.shadcn.docComments.go(column, id);
+        df$.shadcn.toast.show({
+          title: 'Comment added',
+          description: `On "${pending.text.length &gt; 40 ? pending.text.slice(0, 40) + '...' : pending.text}"`,
+        });
+      }
       pending = null;
     });
 
@@ -318,7 +733,12 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
 
     // share: copy the link
     $('#de-share-copy').on('click', async () =&gt; {
-      try { await navigator.clipboard.writeText($('#de-share-url').val()); df$.shadcn.toast.success('Link copied'); } catch { $('#de-share-url').get(0).select(); }
+      try {
+        await navigator.clipboard.writeText($('#de-share-url').val());
+        df$.shadcn.toast.success('Link copied');
+      } catch {
+        $('#de-share-url').get(0).select();
+      }
     });
     // narrow: the comment column as an overlay
     $('#de-comments-toggle').on('click', () =&gt; {

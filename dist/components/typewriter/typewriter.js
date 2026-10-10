@@ -43,7 +43,9 @@ function paint(tw, index, count) {
     tw._count = count;
 }
 /** Sets the phase CSS keys on (the cursor is solid while typing, blinks idle). */
-const phase = (tw, name) => { tw.dataset.phase = name; };
+const phase = (tw, name) => {
+    tw.dataset.phase = name;
+};
 function stop(tw) {
     clearTimeout(tw._timer);
     tw._timer = 0;
@@ -64,7 +66,9 @@ function step(tw) {
     const src = tw._sources[tw._index];
     const last = tw._index === tw._sources.length - 1;
     const loop = tw.hasAttribute('data-loop');
-    const next = (fn, ms) => { tw._timer = setTimeout(() => fn(tw), ms); };
+    const next = (fn, ms) => {
+        tw._timer = setTimeout(() => fn(tw), ms);
+    };
     if (tw._deleting) {
         if (tw._count > 0) {
             phase(tw, 'deleting');
@@ -81,7 +85,10 @@ function step(tw) {
         return next(step, keyDelay(tw, num(tw, 'speed', 70)));
     }
     // the string is complete
-    tw.dispatchEvent(new CustomEvent('typewriter-typed', { bubbles: true, detail: { index: tw._index, text: src.text } }));
+    tw.dispatchEvent(new CustomEvent('typewriter-typed', {
+        bubbles: true,
+        detail: { index: tw._index, text: src.text },
+    }));
     if (last && !loop)
         return finish(tw);
     phase(tw, 'holding');
@@ -176,7 +183,9 @@ export const typewriterApi = componentState({
 df$.typewriterApi = typewriterApi;
 df$.typewriterStates = typewriterStates;
 function init() {
-    dfDollar('.typewriter:not([data-init])').toArray().forEach((tw) => {
+    dfDollar('.typewriter:not([data-init])')
+        .toArray()
+        .forEach((tw) => {
         tw.dataset.init = '';
         const children = Array.from(tw.children);
         if (!children.length)

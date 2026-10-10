@@ -26,9 +26,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div style="display:flex; flex-direction:column; align-items:flex-start; gap:1rem;">
+<div style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem">
   <div id="anim-pop-target">pop</div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-pause">Pause</button>
@@ -36,9 +36,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-pop-reset">Reset</button>
   </div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem;">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem">
     <label class="label" for="anim-pop-duration">Duration (ms)</label>
-    <input class="input" type="number" id="anim-pop-duration" value="1500" min="50" step="50" style="width:6rem;" />
+    <input class="input" type="number" id="anim-pop-duration" value="1500" min="50" step="50" style="width: 6rem" />
     <label class="label" for="anim-pop-easing">Easing</label>
     <select class="select" id="anim-pop-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>cubic-bezier(0.16, 1, 0.3, 1) - default</option>
@@ -78,10 +78,35 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```
 
 ```html example label="Scroll binding (parallax)" schema="none" hint="Pass opts.scroll and scroll position - not time - drives the animation progress. Here the scroller's own offset scrubs popIn over its full scroll range (ScrollTimeline where the platform has it, a rAF-throttled scrub elsewhere)."
-<div id="anim-pop-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
-  <div style="height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+<div
+  id="anim-pop-scroller"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div
+    style="height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: space-between"
+  >
     <span class="text-sm text-muted-foreground">Scroll down - the scroll position pops the card in ↓</span>
-    <div id="anim-pop-scroll-target" style="width:160px; height:100px; display:grid; place-items:center; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground); font-weight:600;">pop</div>
+    <div
+      id="anim-pop-scroll-target"
+      style="
+        width: 160px;
+        height: 100px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+        font-weight: 600;
+      "
+      >pop</div
+    >
     <span class="text-sm text-muted-foreground">↑ fully popped at the bottom</span>
   </div>
 </div>

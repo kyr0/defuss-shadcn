@@ -19,7 +19,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, settleTemplates } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, settleTemplates, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const teaserStates = ['default', 'played'];
@@ -60,7 +60,9 @@ df$.teaserApi = teaserApi;
 df$.teaserStates = teaserStates;
 /** after a click the keyboard continues in the content: its first control, else the teaser itself */
 function focusContent(el) {
-    const first = dfDollar(el).find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])').get(0);
+    const first = dfDollar(el)
+        .find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])')
+        .get(0);
     if (first) {
         first.focus({ preventScroll: true });
         return;

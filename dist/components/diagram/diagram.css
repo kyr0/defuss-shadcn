@@ -32,8 +32,8 @@
     --diagram-node-w: 10.5rem;
     /* steps reveal: future elements are hidden, each step fades in, then holds */
     --diagram-element-ms: 900ms; /* one element after the other */
-    --diagram-step-ms: 800ms;    /* how long an element takes to appear */
-    --diagram-hold: 400ms;       /* the rest after a step's last element */
+    --diagram-step-ms: 800ms; /* how long an element takes to appear */
+    --diagram-hold: 400ms; /* the rest after a step's last element */
     --diagram-future-opacity: 0;
     --diagram-dim-opacity: 0.25;
 
@@ -456,15 +456,32 @@
   }
   /* a dot's name on the side its wires leave free (set by diagram.js, or authored) */
   .diagram-node[data-shape="dot"][data-label-side="below"] {
-    & > .diagram-node-name { bottom: auto; top: calc(100% + 0.3rem); }
-    & > .diagram-node-meta { top: calc(100% + 1.45rem); }
+    & > .diagram-node-name {
+      bottom: auto;
+      top: calc(100% + 0.3rem);
+    }
+    & > .diagram-node-meta {
+      top: calc(100% + 1.45rem);
+    }
   }
   .diagram-node[data-shape="dot"]:is([data-label-side="left"], [data-label-side="right"]) {
-    & > .diagram-node-name { bottom: auto; top: 50%; translate: 0 -50%; }
-    & > .diagram-node-meta { top: calc(50% + 0.65rem); translate: 0 0; }
+    & > .diagram-node-name {
+      bottom: auto;
+      top: 50%;
+      translate: 0 -50%;
+    }
+    & > .diagram-node-meta {
+      top: calc(50% + 0.65rem);
+      translate: 0 0;
+    }
   }
-  .diagram-node[data-shape="dot"][data-label-side="right"] > * { left: calc(100% + 0.45rem); }
-  .diagram-node[data-shape="dot"][data-label-side="left"] > * { left: auto; right: calc(100% + 0.45rem); }
+  .diagram-node[data-shape="dot"][data-label-side="right"] > * {
+    left: calc(100% + 0.45rem);
+  }
+  .diagram-node[data-shape="dot"][data-label-side="left"] > * {
+    left: auto;
+    right: calc(100% + 0.45rem);
+  }
 
   .diagram-node[data-shape="ghost"] {
     inline-size: 1px;
@@ -643,25 +660,33 @@
     &[data-status="pass"] {
       border-color: var(--diagram-added);
       color: color-mix(in oklab, var(--diagram-added) 75%, var(--diagram-ink));
-      &::before { content: "✓"; }
+      &::before {
+        content: "✓";
+      }
     }
     &[data-status="fail"] {
       border-color: var(--diagram-accent);
       background: var(--diagram-accent-tint);
       color: color-mix(in oklab, var(--diagram-accent) 80%, var(--diagram-ink));
-      &::before { content: "×"; }
+      &::before {
+        content: "×";
+      }
     }
     &[data-status="skip"] {
       border-style: dashed;
       color: var(--diagram-muted);
-      &::before { content: "—"; }
+      &::before {
+        content: "—";
+      }
     }
     &[data-status="unreached"] {
       border-style: dotted;
       border-color: color-mix(in oklab, var(--diagram-ink) 30%, transparent);
       background: var(--diagram-soft);
       color: var(--diagram-muted);
-      &::before { content: "○"; }
+      &::before {
+        content: "○";
+      }
     }
   }
 
@@ -769,7 +794,9 @@
     }
     &[data-tone="muted"] {
       border-top: 1px dashed var(--diagram-rule);
-      & > span { color: var(--diagram-muted); }
+      & > span {
+        color: var(--diagram-muted);
+      }
     }
   }
   .diagram-note {
@@ -823,15 +850,51 @@
       border-radius: var(--radius-sm);
       background: var(--diagram-paper);
     }
-    & > li[data-swatch="accent"]::before { border-color: var(--diagram-accent); background: var(--diagram-accent-tint); }
-    & > li[data-swatch="external"]::before { border-style: dashed; background: var(--diagram-soft); }
-    & > li[data-swatch="muted"]::before { background: var(--diagram-soft); }
-    & > li[data-swatch="line"]::before { block-size: 0; border-width: 1.5px 0 0; border-radius: 0; border-color: var(--diagram-wire); }
-    & > li[data-swatch="dashed"]::before { block-size: 0; border-width: 1.5px 0 0; border-radius: 0; border-style: dashed; border-color: var(--diagram-wire); }
-    & > li[data-swatch="accent-line"]::before { block-size: 0; border-width: 1.5px 0 0; border-radius: 0; border-color: var(--diagram-accent); }
-    & > li[data-swatch="link-line"]::before { block-size: 0; border-width: 1.5px 0 0; border-radius: 0; border-color: var(--diagram-link); }
-    & > li[data-swatch="dot"]::before { inline-size: 0.625rem; border-radius: 50%; border-color: var(--diagram-ink); }
-    & > li[data-swatch="warn"]::before { border-style: dashed; border-color: var(--diagram-changed); }
+    & > li[data-swatch="accent"]::before {
+      border-color: var(--diagram-accent);
+      background: var(--diagram-accent-tint);
+    }
+    & > li[data-swatch="external"]::before {
+      border-style: dashed;
+      background: var(--diagram-soft);
+    }
+    & > li[data-swatch="muted"]::before {
+      background: var(--diagram-soft);
+    }
+    & > li[data-swatch="line"]::before {
+      block-size: 0;
+      border-width: 1.5px 0 0;
+      border-radius: 0;
+      border-color: var(--diagram-wire);
+    }
+    & > li[data-swatch="dashed"]::before {
+      block-size: 0;
+      border-width: 1.5px 0 0;
+      border-radius: 0;
+      border-style: dashed;
+      border-color: var(--diagram-wire);
+    }
+    & > li[data-swatch="accent-line"]::before {
+      block-size: 0;
+      border-width: 1.5px 0 0;
+      border-radius: 0;
+      border-color: var(--diagram-accent);
+    }
+    & > li[data-swatch="link-line"]::before {
+      block-size: 0;
+      border-width: 1.5px 0 0;
+      border-radius: 0;
+      border-color: var(--diagram-link);
+    }
+    & > li[data-swatch="dot"]::before {
+      inline-size: 0.625rem;
+      border-radius: 50%;
+      border-color: var(--diagram-ink);
+    }
+    & > li[data-swatch="warn"]::before {
+      border-style: dashed;
+      border-color: var(--diagram-changed);
+    }
   }
 
   /* -- the edge list: readable without JS, a screen-reader list once wired ---- */
@@ -876,20 +939,40 @@
     color: var(--diagram-wire);
     transition: opacity var(--diagram-step-ms) ease;
 
-    &[data-tone="accent"] { color: var(--diagram-accent); }
-    &[data-tone="link"] { color: var(--diagram-link); }
-    &[data-tone="ink"] { color: var(--diagram-ink); }
-    &[data-tone="ok"] { color: var(--diagram-added); }
-    &[data-tone="danger"] { color: var(--diagram-removed); }
-    &[data-line="dashed"] .diagram-wire-line { stroke-dasharray: 5 4; }
-    &[data-line="dotted"] .diagram-wire-line { stroke-dasharray: 1.5 3.5; }
-    &[data-line="thick"] .diagram-wire-line { stroke-width: 2.25; }
+    &[data-tone="accent"] {
+      color: var(--diagram-accent);
+    }
+    &[data-tone="link"] {
+      color: var(--diagram-link);
+    }
+    &[data-tone="ink"] {
+      color: var(--diagram-ink);
+    }
+    &[data-tone="ok"] {
+      color: var(--diagram-added);
+    }
+    &[data-tone="danger"] {
+      color: var(--diagram-removed);
+    }
+    &[data-line="dashed"] .diagram-wire-line {
+      stroke-dasharray: 5 4;
+    }
+    &[data-line="dotted"] .diagram-wire-line {
+      stroke-dasharray: 1.5 3.5;
+    }
+    &[data-line="thick"] .diagram-wire-line {
+      stroke-width: 2.25;
+    }
     &[data-lifeline] .diagram-wire-line {
       stroke-dasharray: 3 4;
       opacity: 0.55;
     }
-    &[data-spine] .diagram-wire-line { stroke-width: 1.75; }
-    &[data-bone] .diagram-wire-line { stroke-width: 1.25; }
+    &[data-spine] .diagram-wire-line {
+      stroke-width: 1.75;
+    }
+    &[data-bone] .diagram-wire-line {
+      stroke-width: 1.25;
+    }
   }
   .diagram-wire-line {
     fill: none;
@@ -902,9 +985,18 @@
     stroke-width: 1.25;
     stroke-linejoin: round;
 
-    &[data-paint="fill"] { fill: currentColor; stroke: none; }
-    &[data-paint="stroke"] { fill: none; stroke: currentColor; }
-    &[data-paint="hollow"] { fill: var(--diagram-paper); stroke: currentColor; }
+    &[data-paint="fill"] {
+      fill: currentColor;
+      stroke: none;
+    }
+    &[data-paint="stroke"] {
+      fill: none;
+      stroke: currentColor;
+    }
+    &[data-paint="hollow"] {
+      fill: var(--diagram-paper);
+      stroke: currentColor;
+    }
   }
   .diagram-wire-labels {
     position: absolute;
@@ -925,8 +1017,12 @@
     white-space: nowrap;
     transition: opacity var(--diagram-step-ms) ease;
 
-    &[data-tone="accent"] { color: var(--diagram-accent); }
-    &[data-tone="link"] { color: var(--diagram-link); }
+    &[data-tone="accent"] {
+      color: var(--diagram-accent);
+    }
+    &[data-tone="link"] {
+      color: var(--diagram-link);
+    }
   }
   .diagram-wire-end {
     padding: 0 0.125rem;
@@ -956,8 +1052,12 @@
     box-shadow: 0 0 0 2px var(--diagram-paper);
     offset-rotate: 0deg;
 
-    &[data-tone="accent"] { background: var(--diagram-accent); }
-    &[data-tone="link"] { background: var(--diagram-link); }
+    &[data-tone="accent"] {
+      background: var(--diagram-accent);
+    }
+    &[data-tone="link"] {
+      background: var(--diagram-link);
+    }
   }
 
   /* -- steps (data-steps / state playing · paused) ----------------------------- */
@@ -970,7 +1070,8 @@
   .diagram :is(.diagram-node, .diagram-group, tr, .diagram-cell)[data-step-state="current"] {
     outline: 2px solid var(--diagram-accent);
     outline-offset: 3px;
-    animation: diagram-enter var(--diagram-step-ms) cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--step-i, 0) * var(--diagram-element-ms)) both;
+    animation: diagram-enter var(--diagram-step-ms) cubic-bezier(0.2, 0.8, 0.2, 1)
+      calc(var(--step-i, 0) * var(--diagram-element-ms)) both;
   }
   .diagram .diagram-node[data-shape="ghost"][data-step-state="current"] {
     outline: 0;
@@ -978,7 +1079,8 @@
   /* a wire appears on its beat - just after its later end - and solid ones draw in;
      one that already entered (data-step-entered, kept across a redraw) stays as it is */
   .diagram .diagram-wire[data-step-state="current"]:not([data-step-entered]) {
-    animation: diagram-fade calc(var(--diagram-step-ms) * 0.4) ease calc(var(--step-i, 0) * var(--diagram-element-ms)) both;
+    animation: diagram-fade calc(var(--diagram-step-ms) * 0.4) ease calc(var(--step-i, 0) * var(--diagram-element-ms))
+      both;
   }
   .diagram .diagram-wire[data-step-state="current"]:not([data-step-entered]) .diagram-wire-line[pathLength] {
     stroke-dasharray: 1;
@@ -988,13 +1090,19 @@
     color: var(--diagram-accent);
   }
   @keyframes diagram-enter {
-    from { opacity: 0; translate: 0 0.5rem; }
+    from {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
   }
   .diagram .diagram-wire-label[data-step-state="current"]:not([data-step-entered]) {
-    animation: diagram-fade calc(var(--diagram-step-ms) * 0.6) ease calc(var(--step-i, 0) * var(--diagram-element-ms) + var(--diagram-step-ms) * 0.6) both;
+    animation: diagram-fade calc(var(--diagram-step-ms) * 0.6) ease
+      calc(var(--step-i, 0) * var(--diagram-element-ms) + var(--diagram-step-ms) * 0.6) both;
   }
   @keyframes diagram-fade {
-    from { opacity: 0; }
+    from {
+      opacity: 0;
+    }
   }
 
   /* -- activation (state 'active', data-interactive) ------------------------------------ */
@@ -1008,12 +1116,17 @@
   }
   .diagram tr[data-active-state="active"] > * {
     background-color: color-mix(in oklab, var(--diagram-accent) 12%, var(--diagram-paper));
-    box-shadow: inset 0 2px 0 var(--diagram-accent), inset 0 -2px 0 var(--diagram-accent);
+    box-shadow:
+      inset 0 2px 0 var(--diagram-accent),
+      inset 0 -2px 0 var(--diagram-accent);
   }
   .diagram[data-interactive] tr[data-node] {
     cursor: pointer;
 
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
   }
   .diagram .diagram-node[data-active-state="related"] {
     outline: 1px dashed color-mix(in oklab, var(--diagram-accent) 70%, transparent);
@@ -1022,7 +1135,9 @@
   .diagram .diagram-wire:is([data-active-state="active"], [data-active-state="related"]) {
     color: var(--diagram-accent);
 
-    & .diagram-wire-line { stroke-width: 2; }
+    & .diagram-wire-line {
+      stroke-width: 2;
+    }
   }
   .diagram .diagram-wire-label:is([data-active-state="active"], [data-active-state="related"]) {
     color: var(--diagram-accent);
@@ -1033,7 +1148,10 @@
   .diagram[data-interactive] {
     & .diagram-node[role="button"] {
       cursor: pointer;
-      transition: opacity 0.3s ease, outline-color 0.3s ease, box-shadow 0.3s ease;
+      transition:
+        opacity 0.3s ease,
+        outline-color 0.3s ease,
+        box-shadow 0.3s ease;
     }
     & .diagram-node[role="button"]:hover {
       border-color: var(--diagram-accent);
@@ -1056,8 +1174,12 @@
   }
 
   @keyframes diagram-draw {
-    from { stroke-dashoffset: 1; }
-    to { stroke-dashoffset: 0; }
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
   }
 
   .diagram-controls {
@@ -1144,7 +1266,9 @@
       outline: 2px solid var(--diagram-changed);
       outline-offset: 2px;
 
-      &[data-change="added"] { outline-color: var(--diagram-added); }
+      &[data-change="added"] {
+        outline-color: var(--diagram-added);
+      }
       &[data-change="removed"] {
         outline-color: var(--diagram-removed);
         outline-style: dashed;
@@ -1154,13 +1278,28 @@
     & .diagram-canvas :is(li, td, th)[data-change] {
       outline-offset: -2px;
     }
-    & .diagram-wire[data-change="added"] { color: var(--diagram-added); }
-    & .diagram-wire[data-change="removed"] { color: var(--diagram-removed); }
-    & .diagram-wire[data-change="removed"] .diagram-wire-line { stroke-dasharray: 5 4; }
-    & .diagram-wire:is([data-change="changed"], [data-change="rewired"]) { color: var(--diagram-changed); }
-    & .diagram-wire[data-change="rewired"] .diagram-wire-line { stroke-dasharray: 8 3 2 3; }
-    & .diagram-wire-label[data-change="added"] { color: var(--diagram-added); }
-    & .diagram-wire-label[data-change="removed"] { color: var(--diagram-removed); text-decoration: line-through; }
+    & .diagram-wire[data-change="added"] {
+      color: var(--diagram-added);
+    }
+    & .diagram-wire[data-change="removed"] {
+      color: var(--diagram-removed);
+    }
+    & .diagram-wire[data-change="removed"] .diagram-wire-line {
+      stroke-dasharray: 5 4;
+    }
+    & .diagram-wire:is([data-change="changed"], [data-change="rewired"]) {
+      color: var(--diagram-changed);
+    }
+    & .diagram-wire[data-change="rewired"] .diagram-wire-line {
+      stroke-dasharray: 8 3 2 3;
+    }
+    & .diagram-wire-label[data-change="added"] {
+      color: var(--diagram-added);
+    }
+    & .diagram-wire-label[data-change="removed"] {
+      color: var(--diagram-removed);
+      text-decoration: line-through;
+    }
   }
   .diagram-badge {
     position: absolute;
@@ -1174,8 +1313,12 @@
     color: var(--diagram-paper);
     font: 700 0.6875rem/1 var(--font-mono);
 
-    &[data-change="added"] { background: var(--diagram-added); }
-    &[data-change="removed"] { background: var(--diagram-removed); }
+    &[data-change="added"] {
+      background: var(--diagram-added);
+    }
+    &[data-change="removed"] {
+      background: var(--diagram-removed);
+    }
   }
   .diagram-ledger {
     display: grid;
@@ -1195,8 +1338,13 @@
     background: var(--diagram-soft);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 
-    &[data-change="added"] { border-color: var(--diagram-added); }
-    &[data-change="removed"] { border-color: var(--diagram-removed); border-inline-start-style: dashed; }
+    &[data-change="added"] {
+      border-color: var(--diagram-added);
+    }
+    &[data-change="removed"] {
+      border-color: var(--diagram-removed);
+      border-inline-start-style: dashed;
+    }
   }
   .diagram-ledger-kind {
     color: var(--diagram-changed);
@@ -1204,8 +1352,12 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
-  .diagram-ledger-item[data-change="added"] .diagram-ledger-kind { color: var(--diagram-added); }
-  .diagram-ledger-item[data-change="removed"] .diagram-ledger-kind { color: var(--diagram-removed); }
+  .diagram-ledger-item[data-change="added"] .diagram-ledger-kind {
+    color: var(--diagram-added);
+  }
+  .diagram-ledger-item[data-change="removed"] .diagram-ledger-kind {
+    color: var(--diagram-removed);
+  }
   .diagram-ledger-note {
     flex-basis: 100%;
     color: var(--diagram-muted);
@@ -1260,9 +1412,24 @@
     /* the axes sit in the left / bottom padding, 1.25rem (diagram.ts CLEARANCE) off the border */
     padding: 1.5rem 1.5rem 3.5rem 4rem;
     background-image:
-      linear-gradient(to right, transparent calc(25% - 0.5px), color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(25% - 0.5px) calc(25% + 0.5px), transparent calc(25% + 0.5px)),
-      linear-gradient(to right, transparent calc(50% - 0.5px), color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
-      linear-gradient(to right, transparent calc(75% - 0.5px), color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(75% - 0.5px) calc(75% + 0.5px), transparent calc(75% + 0.5px));
+      linear-gradient(
+        to right,
+        transparent calc(25% - 0.5px),
+        color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(25% - 0.5px) calc(25% + 0.5px),
+        transparent calc(25% + 0.5px)
+      ),
+      linear-gradient(
+        to right,
+        transparent calc(50% - 0.5px),
+        color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(50% - 0.5px) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+      ),
+      linear-gradient(
+        to right,
+        transparent calc(75% - 0.5px),
+        color-mix(in oklab, var(--diagram-ink) 14%, transparent) calc(75% - 0.5px) calc(75% + 0.5px),
+        transparent calc(75% + 0.5px)
+      );
     background-size: auto;
     background-repeat: no-repeat;
     background-origin: content-box;
@@ -1322,7 +1489,9 @@
     }
     & > .diagram-node {
       position: absolute;
-      left: calc(1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100);
+      left: calc(
+        1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100
+      );
       top: var(--axis, 55%);
       inline-size: 0.625rem;
       block-size: 0.625rem;
@@ -1372,7 +1541,9 @@
     }
     & > .diagram-tick {
       position: absolute;
-      left: calc(1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100);
+      left: calc(
+        1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 50) / 100
+      );
       top: var(--axis, 55%);
       translate: -50% 0.375rem;
       color: var(--diagram-muted);
@@ -1390,7 +1561,9 @@
     }
     & > .diagram-span {
       position: absolute;
-      left: calc(1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 0) / 100);
+      left: calc(
+        1.5rem + var(--_inset-left) + (100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--x, 0) / 100
+      );
       inline-size: calc((100% - 3rem - var(--_inset-left) - var(--_inset-right)) * var(--w, 10) / 100);
       top: calc(var(--axis, 55%) - 0.375rem);
       block-size: 0.75rem;
@@ -1505,10 +1678,18 @@
       background: transparent;
     }
     /* scenarios in reading order: top-left, top-right, bottom-left, bottom-right */
-    & > :nth-child(1 of .diagram-node) { grid-area: 1 / 2; }
-    & > :nth-child(2 of .diagram-node) { grid-area: 1 / 3; }
-    & > :nth-child(3 of .diagram-node) { grid-area: 2 / 2; }
-    & > :nth-child(4 of .diagram-node) { grid-area: 2 / 3; }
+    & > :nth-child(1 of .diagram-node) {
+      grid-area: 1 / 2;
+    }
+    & > :nth-child(2 of .diagram-node) {
+      grid-area: 1 / 3;
+    }
+    & > :nth-child(3 of .diagram-node) {
+      grid-area: 2 / 2;
+    }
+    & > :nth-child(4 of .diagram-node) {
+      grid-area: 2 / 3;
+    }
     & > :is(:nth-child(1 of .diagram-node), :nth-child(3 of .diagram-node)) {
       border-inline-end: 1px solid var(--diagram-ink);
     }
@@ -1650,7 +1831,11 @@
       font: 400 0.625rem/1.4 var(--font-mono);
     }
     & td[style*="--v"] {
-      background: color-mix(in oklab, var(--diagram-heat, var(--diagram-accent)) calc(var(--v, 0) * 62%), var(--diagram-paper));
+      background: color-mix(
+        in oklab,
+        var(--diagram-heat, var(--diagram-accent)) calc(var(--v, 0) * 62%),
+        var(--diagram-paper)
+      );
       font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
     }

@@ -81,12 +81,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```html example label="With thumbnails" hint="data-variant='media': a thumbnail on each card - on the outer side of each link." previewStyle="align-items:stretch;"
 <nav class="mk-article-nav" data-variant="media" aria-label="More articles">
   <a class="mk-article-nav-link" href="#" rel="prev">
-    <img src="images/mk-wide2.png" alt="">
+    <img src="images/mk-wide2.png" alt="" />
     <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> Previous</span>
     <span class="mk-article-nav-title">Designing for calm</span>
   </a>
   <a class="mk-article-nav-link" href="#" rel="next">
-    <img src="images/mk-wide.png" alt="">
+    <img src="images/mk-wide.png" alt="" />
     <span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span>
     <span class="mk-article-nav-title">Testing sync with a lossy network</span>
   </a>
@@ -94,17 +94,20 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```
 
 ```html example label="Series" hint="Navigation inside a series: a Progress bar shows where the reader is, the compact variant keeps it to one line." previewStyle="align-items:stretch;"
-<div style="display:grid;gap:.75rem;width:100%">
-  <div style="display:flex;align-items:center;gap:.75rem;font-size:.8125rem;color:var(--muted-foreground)"><span>Sync, explained - part 2 of 4</span><progress class="progress" value="2" max="4" aria-label="Part 2 of 4" style="flex:1;max-width:12rem"></progress></div>
+<div style="display: grid; gap: 0.75rem; width: 100%">
+  <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.8125rem; color: var(--muted-foreground)"
+    ><span>Sync, explained - part 2 of 4</span
+    ><progress class="progress" value="2" max="4" aria-label="Part 2 of 4" style="flex: 1; max-width: 12rem"></progress
+  ></div>
   <nav class="mk-article-nav" data-variant="compact" aria-label="Series">
-  <a class="mk-article-nav-link" href="#" rel="prev">
-    <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> <span>Previous</span></span>
-    <span class="mk-article-nav-title">Part 1: Why CRDTs</span>
-  </a>
-  <a class="mk-article-nav-link" href="#" rel="next">
-    <span class="mk-article-nav-dir"><span>Next</span> <i data-lucide="arrow-right" aria-hidden="true"></i></span>
-    <span class="mk-article-nav-title">Part 3: Testing with a lossy network</span>
-  </a>
+    <a class="mk-article-nav-link" href="#" rel="prev">
+      <span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> <span>Previous</span></span>
+      <span class="mk-article-nav-title">Part 1: Why CRDTs</span>
+    </a>
+    <a class="mk-article-nav-link" href="#" rel="next">
+      <span class="mk-article-nav-dir"><span>Next</span> <i data-lucide="arrow-right" aria-hidden="true"></i></span>
+      <span class="mk-article-nav-title">Part 3: Testing with a lossy network</span>
+    </a>
   </nav>
 </div>
 ```

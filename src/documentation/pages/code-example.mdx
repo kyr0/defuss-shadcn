@@ -52,16 +52,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 The component ships in the extra bundle - include it after the system:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.min.css" />
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.min.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.min.js"></script>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.min.js"
+></script>
 ```
 
 ## Example
 
 ```html example label="Source, preview and state controls" hint="A .code-example around one &lt;textarea&gt; - the runtime builds the card: the preview runs the source in a sandbox, Code opens the source (Shiki colours, Tab indents), State the controls generated from data-schema. Toggle the switch in the preview: the State tab and the source follow." height="22"
-<div class="code-example" id="cx-switch" aria-label="Switch preview" data-preview-style="display:flex;justify-content:center" data-schema='{"schemaVersion":1,"name":"switch","states":{"checked":{"type":"boolean","default":false,"target":{"kind":"selector","selector":".switch"},"mutation":{"kind":"property","name":"checked"},"observation":{"kind":"property","name":"checked"},"editor":{"component":"checkbox"}}},"actions":{}}'>
+<div
+  class="code-example"
+  id="cx-switch"
+  aria-label="Switch preview"
+  data-preview-style="display:flex;justify-content:center"
+  data-schema='{"schemaVersion":1,"name":"switch","states":{"checked":{"type":"boolean","default":false,"target":{"kind":"selector","selector":".switch"},"mutation":{"kind":"property","name":"checked"},"observation":{"kind":"property","name":"checked"},"editor":{"component":"checkbox"}}},"actions":{}}'
+>
   <textarea>
 <div class="switch-item flex items-center gap-2">
   <input class="switch" type="checkbox" role="switch" id="wifi">
@@ -74,7 +83,12 @@ The component ships in the extra bundle - include it after the system:
 ## Without a schema
 
 ```html example label="Just a source and its preview" hint="No data-schema, no State tab. data-preview-style styles the preview body - here a centred row."
-<div class="code-example" id="cx-buttons" aria-label="Buttons preview" data-preview-style="display:flex;gap:0.5rem;justify-content:center">
+<div
+  class="code-example"
+  id="cx-buttons"
+  aria-label="Buttons preview"
+  data-preview-style="display:flex;gap:0.5rem;justify-content:center"
+>
   <textarea>
 <button class="btn">Save</button>
 <button class="btn" data-variant="outline">Cancel</button>
@@ -100,7 +114,7 @@ The component ships in the extra bundle - include it after the system:
 ## Driven from outside
 
 ```html example label="A playground with an API" hint="el.api.setState('code' | 'state' | 'fullscreen' | 'default'), df$.shadcn.codeExample.setSource / reset / viewport drive the card; code-example-change reports every rerun of the preview."
-<div class="grid gap-3" style="width:100%">
+<div class="grid gap-3" style="width: 100%">
   <div class="flex flex-wrap gap-2">
     <button class="btn" data-size="sm" data-variant="outline" id="cx-load">Load a card</button>
     <button class="btn" data-size="sm" data-variant="outline" id="cx-source">Show the source</button>
@@ -119,9 +133,16 @@ The component ships in the extra bundle - include it after the system:
     const lib = df$.shadcn.codeExample;
     const card = df$('#cx-play').get(0);
     card.addEventListener('code-example-change', (e) => {
-      df$('#cx-log').text('code-example-change (' + e.detail.origin + '): ' + e.detail.source.trim().length + ' characters');
+      df$('#cx-log').text(
+        'code-example-change (' + e.detail.origin + '): ' + e.detail.source.trim().length + ' characters',
+      );
     });
-    df$('#cx-load').on('click', () => lib.setSource(card, '<div class="card">\n  <div class="card-header">\n    <h3 class="card-title">A card</h3>\n    <p class="card-description">Loaded with setSource().</p>\n  </div>\n</div>'));
+    df$('#cx-load').on('click', () =>
+      lib.setSource(
+        card,
+        '<div class="card">\n  <div class="card-header">\n    <h3 class="card-title">A card</h3>\n    <p class="card-description">Loaded with setSource().</p>\n  </div>\n</div>',
+      ),
+    );
     df$('#cx-source').on('click', () => card.api.setState(card.api.getState().name === 'code' ? 'default' : 'code'));
     df$('#cx-tablet').on('click', () => lib.viewport(card, 'tablet'));
     df$('#cx-reset').on('click', () => lib.reset(card));

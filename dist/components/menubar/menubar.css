@@ -16,12 +16,28 @@
     background: var(--background);
     box-shadow: var(--shadow-2xs);
 
-    &[data-variant="ghost"] { border-color: transparent; box-shadow: none; padding: 0; }
-    &[data-variant="muted"] { background: var(--muted); border-color: transparent; box-shadow: none; }
+    &[data-variant="ghost"] {
+      border-color: transparent;
+      box-shadow: none;
+      padding: 0;
+    }
+    &[data-variant="muted"] {
+      background: var(--muted);
+      border-color: transparent;
+      box-shadow: none;
+    }
 
     /* -- Sizes: the triggers scale (the menus keep their own data-size) */
-    &[data-size="sm"] .menubar-trigger { height: 1.625rem; padding-inline: 0.5rem; font-size: 0.8125rem; }
-    &[data-size="lg"] .menubar-trigger { height: 2.25rem; padding-inline: 0.875rem; font-size: 0.9375rem; }
+    &[data-size="sm"] .menubar-trigger {
+      height: 1.625rem;
+      padding-inline: 0.5rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="lg"] .menubar-trigger {
+      height: 2.25rem;
+      padding-inline: 0.875rem;
+      font-size: 0.9375rem;
+    }
   }
 
   .menubar-trigger {
@@ -41,28 +57,61 @@
     user-select: none;
     outline: none;
 
-    & svg { width: 1rem; height: 1rem; flex-shrink: 0; }
-    &:hover, &:focus-visible { background-color: var(--accent); color: var(--accent-foreground); }
-    &[aria-expanded="true"] { background-color: var(--accent); color: var(--accent-foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-    &:disabled, &[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+    }
+    &:hover,
+    &:focus-visible {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &[aria-expanded="true"] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+    &:disabled,
+    &[aria-disabled="true"] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
 
   /* the menus hang just under the bar */
-  .menubar > .dropdown-content { margin-top: 0.5rem; }
-  .menubar:dir(rtl) > .dropdown-content:not(.dropdown-sub-content) { left: auto; right: anchor(right); }
+  .menubar > .dropdown-content {
+    margin-top: 0.5rem;
+  }
+  .menubar:dir(rtl) > .dropdown-content:not(.dropdown-sub-content) {
+    left: auto;
+    right: anchor(right);
+  }
 }
 
 @media (prefers-contrast: more) {
   @layer components {
-    .menubar { border-color: var(--foreground); }
-    .menubar-trigger[aria-expanded="true"] { outline: 1px solid var(--foreground); }
+    .menubar {
+      border-color: var(--foreground);
+    }
+    .menubar-trigger[aria-expanded="true"] {
+      outline: 1px solid var(--foreground);
+    }
   }
 }
 
 @media (forced-colors: active) {
   @layer components {
-    .menubar { border-color: CanvasText; }
-    .menubar-trigger:is(:hover, :focus-visible, [aria-expanded="true"]) { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+    .menubar {
+      border-color: CanvasText;
+    }
+    .menubar-trigger:is(:hover, :focus-visible, [aria-expanded="true"]) {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }

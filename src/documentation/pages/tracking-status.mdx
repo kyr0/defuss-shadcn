@@ -47,30 +47,58 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```html example label="Default" hint="The estimated arrival, the carrier and tracking number, an <ol> of steps (done ones checked, the current one with aria-current=&quot;step&quot;) on a line filled to --mk-tracking-progress, and the carrier log in a <details>." previewStyle="align-items:stretch;"
 <section class="mk-tracking-status" aria-labelledby="ts-title">
   <div class="mk-tracking-status-head">
-    <div><h2 id="ts-title">Estimated arrival</h2><p><time datetime="2026-10-02">Thursday, 2 October</time></p></div>
-    <div class="mk-tracking-status-carrier"><span>DHL Express</span><a href="#" target="_blank" rel="noopener">JD0146 0012 3456<span class="sr-only"> (opens the carrier site)</span></a></div>
+    <div
+      ><h2 id="ts-title">Estimated arrival</h2><p><time datetime="2026-10-02">Thursday, 2 October</time></p></div
+    >
+    <div class="mk-tracking-status-carrier"
+      ><span>DHL Express</span
+      ><a href="#" target="_blank" rel="noopener"
+        >JD0146 0012 3456<span class="sr-only"> (opens the carrier site)</span></a
+      ></div
+    >
   </div>
-  <ol class="mk-tracking-status-steps" style="--mk-tracking-progress:66%">
-    <li data-done><span class="mk-tracking-status-dot" aria-hidden="true"><i data-lucide="check"></i></span><strong>Ordered</strong><small>1 Oct, 14:32</small></li>
-    <li data-done><span class="mk-tracking-status-dot" aria-hidden="true"><i data-lucide="check"></i></span><strong>Shipped</strong><small>1 Oct, 18:05</small></li>
-    <li aria-current="step"><span class="mk-tracking-status-dot" aria-hidden="true"></span><strong>Out for delivery</strong><small>Today, 07:40</small></li>
-    <li><span class="mk-tracking-status-dot" aria-hidden="true"></span><strong>Delivered</strong><small>Expected by 18:00</small></li>
+  <ol class="mk-tracking-status-steps" style="--mk-tracking-progress: 66%">
+    <li data-done
+      ><span class="mk-tracking-status-dot" aria-hidden="true"><i data-lucide="check"></i></span><strong>Ordered</strong
+      ><small>1 Oct, 14:32</small></li
+    >
+    <li data-done
+      ><span class="mk-tracking-status-dot" aria-hidden="true"><i data-lucide="check"></i></span><strong>Shipped</strong
+      ><small>1 Oct, 18:05</small></li
+    >
+    <li aria-current="step"
+      ><span class="mk-tracking-status-dot" aria-hidden="true"></span><strong>Out for delivery</strong
+      ><small>Today, 07:40</small></li
+    >
+    <li
+      ><span class="mk-tracking-status-dot" aria-hidden="true"></span><strong>Delivered</strong
+      ><small>Expected by 18:00</small></li
+    >
   </ol>
   <details class="mk-tracking-status-log">
     <summary>Shipment history</summary>
     <ol>
-      <li><time datetime="2026-10-02T07:40">2 Oct, 07:40</time><div>Out for delivery <span>· Lisbon</span></div></li>
-      <li><time datetime="2026-10-02T02:10">2 Oct, 02:10</time><div>Arrived at delivery centre <span>· Lisbon</span></div></li>
-      <li><time datetime="2026-10-01T18:05">1 Oct, 18:05</time><div>Picked up by DHL <span>· Porto</span></div></li>
+      <li
+        ><time datetime="2026-10-02T07:40">2 Oct, 07:40</time><div>Out for delivery <span>· Lisbon</span></div></li
+      >
+      <li
+        ><time datetime="2026-10-02T02:10">2 Oct, 02:10</time
+        ><div>Arrived at delivery centre <span>· Lisbon</span></div></li
+      >
+      <li
+        ><time datetime="2026-10-01T18:05">1 Oct, 18:05</time><div>Picked up by DHL <span>· Porto</span></div></li
+      >
     </ol>
   </details>
 </section>
 ```
 
 ```html example label="Compact" hint="data-variant='compact': the status line and a bar filled to --mk-tracking-progress - for an order list." previewStyle="align-items:stretch;"
-<section class="mk-tracking-status" data-variant="compact" aria-label="Order A-20481" style="max-width:26rem">
-  <div class="mk-tracking-status-head"><div><h2>Order A-20481 · Out for delivery</h2><p>Arrives today by 18:00</p></div></div>
-  <div class="mk-tracking-status-bar" style="--mk-tracking-progress:66%" role="img" aria-label="Step 3 of 4"></div>
+<section class="mk-tracking-status" data-variant="compact" aria-label="Order A-20481" style="max-width: 26rem">
+  <div class="mk-tracking-status-head"
+    ><div><h2>Order A-20481 · Out for delivery</h2><p>Arrives today by 18:00</p></div></div
+  >
+  <div class="mk-tracking-status-bar" style="--mk-tracking-progress: 66%" role="img" aria-label="Step 3 of 4"></div>
 </section>
 ```
 

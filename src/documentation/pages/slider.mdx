@@ -71,34 +71,64 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example label="Default" hint="Range slider with default value."
 <div class="w-full max-w-80">
-  <input class="slider" type="range" min="0" max="100" value="50"></input>
+  <input class="slider" type="range" min="0" max="100" value="50" />
 </div>
 ```
 
 ```html example label="With label"
 <div class="w-full max-w-80">
   <label class="label" for="d-vol">Volume</label>
-  <input class="slider" type="range" id="d-vol" min="0" max="100" value="75"></input>
+  <input class="slider" type="range" id="d-vol" min="0" max="100" value="75" />
 </div>
 ```
 
 ```html example label="With value display" hint="Shows current value using a native &lt;output&gt; element."
 <div class="w-full max-w-80">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
-    <label class="label" for="d-temp" style="margin:0;">Temperature</label>
-    <output id="d-temp-output" class="text-muted-foreground" for="d-temp" style="font-size:0.875rem;font-family:var(--font-mono);">0.5</output>
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem">
+    <label class="label" for="d-temp" style="margin: 0">Temperature</label>
+    <output
+      id="d-temp-output"
+      class="text-muted-foreground"
+      for="d-temp"
+      style="font-size: 0.875rem; font-family: var(--font-mono)"
+      >0.5</output
+    >
   </div>
-  <input class="slider" type="range" id="d-temp" min="0" max="1" step="0.1" value="0.5" oninput="document.getElementById('d-temp-output').value = this.value"></input>
+  <input
+    class="slider"
+    type="range"
+    id="d-temp"
+    min="0"
+    max="1"
+    step="0.1"
+    value="0.5"
+    oninput="document.getElementById('d-temp-output').value = this.value"
+  />
 </div>
 ```
 
 ```html example label="With steps" hint="Slider with discrete step increments."
 <div class="w-full max-w-80">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
-    <label class="label" for="d-step" style="margin:0;">Step: 25</label>
-    <output id="d-step-output" class="text-muted-foreground" for="d-step" style="font-size:0.875rem;font-family:var(--font-mono);">50</output>
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem">
+    <label class="label" for="d-step" style="margin: 0">Step: 25</label>
+    <output
+      id="d-step-output"
+      class="text-muted-foreground"
+      for="d-step"
+      style="font-size: 0.875rem; font-family: var(--font-mono)"
+      >50</output
+    >
   </div>
-  <input class="slider" type="range" id="d-step" min="0" max="100" step="25" value="50" oninput="document.getElementById('d-step-output').value = this.value"></input>
+  <input
+    class="slider"
+    type="range"
+    id="d-step"
+    min="0"
+    max="100"
+    step="25"
+    value="50"
+    oninput="document.getElementById('d-step-output').value = this.value"
+  />
 </div>
 ```
 
@@ -106,14 +136,24 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-col gap-6 w-full max-w-80">
   <div>
     <label class="label" for="d-marks">Volume</label>
-    <input class="slider" type="range" id="d-marks" min="0" max="100" step="25" value="50">
+    <input class="slider" type="range" id="d-marks" min="0" max="100" step="25" value="50" />
     <div class="slider-marks" aria-hidden="true">
       <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
     </div>
   </div>
   <div>
     <label class="label" for="d-marks-lg">Rating</label>
-    <input class="slider" type="range" id="d-marks-lg" data-size="lg" data-tone="warning" min="1" max="5" step="1" value="4">
+    <input
+      class="slider"
+      type="range"
+      id="d-marks-lg"
+      data-size="lg"
+      data-tone="warning"
+      min="1"
+      max="5"
+      step="1"
+      value="4"
+    />
     <div class="slider-marks" aria-hidden="true">
       <span>1★</span><span></span><span>3★</span><span></span><span>5★</span>
     </div>
@@ -122,22 +162,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 ```html example label="Vertical" hint="Vertical orientation using data-orientation='vertical'." height="14"
-<input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="60"></input>
+<input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="60" />
 ```
 
 ```html example label="Disabled" hint="Slider in disabled state."
 <div class="w-full max-w-80">
-  <input class="slider" type="range" min="0" max="100" value="30" disabled></input>
+  <input class="slider" type="range" min="0" max="100" value="30" disabled />
 </div>
 ```
 
 ```html example label="Colors" hint="data-tone paints the fill and the thumb ring: success, warning, info, destructive - or any color through style='--slider-color: …'."
 <div class="stack gap-4 w-full max-w-80">
-  <input class="slider" type="range" value="70" data-tone="success" aria-label="Success">
-  <input class="slider" type="range" value="55" data-tone="warning" aria-label="Warning">
-  <input class="slider" type="range" value="40" data-tone="info" aria-label="Info">
-  <input class="slider" type="range" value="25" data-tone="destructive" aria-label="Destructive">
-  <input class="slider" type="range" value="85" style="--slider-color: oklch(0.6 0.22 300);" aria-label="Custom violet">
+  <input class="slider" type="range" value="70" data-tone="success" aria-label="Success" />
+  <input class="slider" type="range" value="55" data-tone="warning" aria-label="Warning" />
+  <input class="slider" type="range" value="40" data-tone="info" aria-label="Info" />
+  <input class="slider" type="range" value="25" data-tone="destructive" aria-label="Destructive" />
+  <input
+    class="slider"
+    type="range"
+    value="85"
+    style="--slider-color: oklch(0.6 0.22 300)"
+    aria-label="Custom violet"
+  />
 </div>
 ```
 
@@ -145,18 +191,26 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="stack gap-5 w-full max-w-96">
   <div class="slider-field">
     <span class="slider-icon" aria-hidden="true"><i data-lucide="volume"></i></span>
-    <input class="slider" type="range" id="sl-vol" value="60" aria-label="Volume">
+    <input class="slider" type="range" id="sl-vol" value="60" aria-label="Volume" />
     <span class="slider-icon" aria-hidden="true"><i data-lucide="volume-2"></i></span>
   </div>
   <div class="slider-field">
     <span class="slider-icon" aria-hidden="true">🌙</span>
-    <input class="slider" type="range" id="sl-bright" value="40" data-tone="warning" data-unit="percent" aria-label="Brightness">
+    <input
+      class="slider"
+      type="range"
+      id="sl-bright"
+      value="40"
+      data-tone="warning"
+      data-unit="percent"
+      aria-label="Brightness"
+    />
     <span class="slider-icon" aria-hidden="true">☀️</span>
     <output class="slider-value" for="sl-bright">40%</output>
   </div>
   <div class="slider-field">
     <span class="slider-icon" aria-hidden="true">🐢</span>
-    <input class="slider" type="range" min="1" max="10" value="7" data-tone="success" aria-label="Speed">
+    <input class="slider" type="range" min="1" max="10" value="7" data-tone="success" aria-label="Speed" />
     <span class="slider-icon" aria-hidden="true">🐇</span>
   </div>
 </div>
@@ -166,11 +220,27 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="stack gap-6 w-full max-w-80">
   <div>
     <label class="label" for="sl-mood">How was your day?</label>
-    <input class="slider" type="range" id="sl-mood" min="0" max="100" value="70" data-thumb-emoji="😫 😕 😐 🙂 😄" data-tone="warning">
+    <input
+      class="slider"
+      type="range"
+      id="sl-mood"
+      min="0"
+      max="100"
+      value="70"
+      data-thumb-emoji="😫 😕 😐 🙂 😄"
+      data-tone="warning"
+    />
   </div>
   <div>
     <label class="label" for="sl-rocket">Launch progress</label>
-    <input class="slider" type="range" id="sl-rocket" value="35" data-thumb-emoji="🚀" style="--slider-color: oklch(0.6 0.2 25);">
+    <input
+      class="slider"
+      type="range"
+      id="sl-rocket"
+      value="35"
+      data-thumb-emoji="🚀"
+      style="--slider-color: oklch(0.6 0.2 25)"
+    />
   </div>
 </div>
 ```
@@ -178,18 +248,45 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="Units" hint="data-unit (any Intl unit - celsius, percent, kilometer-per-hour, megabyte …) or data-currency formats the value into every output[for] and into aria-valuetext, so a screen reader says '21 °C', not '21'. A .slider-scale labels the ends."
 <div class="stack gap-6 w-full max-w-96">
   <div>
-    <div class="flex items-center justify-between"><label class="label m-0" for="sl-temp">Temperature</label><output for="sl-temp" class="slider-value">21°C</output></div>
-    <input class="slider" type="range" id="sl-temp" min="5" max="30" step="0.5" value="21" data-unit="celsius" data-tone="destructive">
+    <div class="flex items-center justify-between"
+      ><label class="label m-0" for="sl-temp">Temperature</label
+      ><output for="sl-temp" class="slider-value">21°C</output></div
+    >
+    <input
+      class="slider"
+      type="range"
+      id="sl-temp"
+      min="5"
+      max="30"
+      step="0.5"
+      value="21"
+      data-unit="celsius"
+      data-tone="destructive"
+    />
     <div class="slider-scale"><span>5 °C</span><span>30 °C</span></div>
   </div>
   <div>
-    <div class="flex items-center justify-between"><label class="label m-0" for="sl-speed">Speed limit</label><output for="sl-speed" class="slider-value">80 km/h</output></div>
-    <input class="slider" type="range" id="sl-speed" min="30" max="130" step="10" value="80" data-unit="kilometer-per-hour">
+    <div class="flex items-center justify-between"
+      ><label class="label m-0" for="sl-speed">Speed limit</label
+      ><output for="sl-speed" class="slider-value">80 km/h</output></div
+    >
+    <input
+      class="slider"
+      type="range"
+      id="sl-speed"
+      min="30"
+      max="130"
+      step="10"
+      value="80"
+      data-unit="kilometer-per-hour"
+    />
     <div class="slider-scale"><span>30</span><span>80</span><span>130</span></div>
   </div>
   <div>
-    <div class="flex items-center justify-between"><label class="label m-0" for="sl-tip">Tip</label><output for="sl-tip" class="slider-value">€5</output></div>
-    <input class="slider" type="range" id="sl-tip" min="0" max="20" value="5" data-currency="EUR" data-tone="success">
+    <div class="flex items-center justify-between"
+      ><label class="label m-0" for="sl-tip">Tip</label><output for="sl-tip" class="slider-value">€5</output></div
+    >
+    <input class="slider" type="range" id="sl-tip" min="0" max="20" value="5" data-currency="EUR" data-tone="success" />
   </div>
 </div>
 ```
@@ -197,30 +294,58 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="Range slider" hint="Two .slider inputs in a .slider-range: both thumbs move, the span between them fills, the low value never passes the high one (data-min-gap keeps a distance). An output[for] naming both ids shows the range, formatted (Intl formatRange)." height="20"
 <div class="stack gap-8 w-full max-w-96">
   <div>
-    <div class="flex items-center justify-between"><span class="label m-0" id="price-label">Price</span><output for="pr-min pr-max" class="slider-value">€200 – €800</output></div>
+    <div class="flex items-center justify-between"
+      ><span class="label m-0" id="price-label">Price</span
+      ><output for="pr-min pr-max" class="slider-value">€200 – €800</output></div
+    >
     <div class="slider-range" data-currency="EUR" data-min-gap="50" role="group" aria-labelledby="price-label">
-      <input class="slider" type="range" id="pr-min" min="0" max="1000" step="10" value="200" aria-label="Minimum price">
-      <input class="slider" type="range" id="pr-max" min="0" max="1000" step="10" value="800" aria-label="Maximum price">
+      <input
+        class="slider"
+        type="range"
+        id="pr-min"
+        min="0"
+        max="1000"
+        step="10"
+        value="200"
+        aria-label="Minimum price"
+      />
+      <input
+        class="slider"
+        type="range"
+        id="pr-max"
+        min="0"
+        max="1000"
+        step="10"
+        value="800"
+        aria-label="Maximum price"
+      />
     </div>
     <div class="slider-scale"><span>€0</span><span>€1,000</span></div>
   </div>
   <div class="slider-field">
     <span class="slider-icon" aria-hidden="true">🌡️</span>
-    <div class="slider-range" data-unit="celsius" data-tone="info" data-size="lg" role="group" aria-label="Comfort zone">
-      <input class="slider" type="range" id="cz-min" min="10" max="30" value="19" aria-label="Lowest temperature">
-      <input class="slider" type="range" id="cz-max" min="10" max="30" value="23" aria-label="Highest temperature">
+    <div
+      class="slider-range"
+      data-unit="celsius"
+      data-tone="info"
+      data-size="lg"
+      role="group"
+      aria-label="Comfort zone"
+    >
+      <input class="slider" type="range" id="cz-min" min="10" max="30" value="19" aria-label="Lowest temperature" />
+      <input class="slider" type="range" id="cz-max" min="10" max="30" value="23" aria-label="Highest temperature" />
     </div>
-    <output for="cz-min cz-max" class="slider-value" style="min-width:6.5em;">19°C – 23°C</output>
+    <output for="cz-min cz-max" class="slider-value" style="min-width: 6.5em">19°C – 23°C</output>
   </div>
 </div>
 ```
 
 ```html example label="Right to left" hint="In dir='rtl' the range runs right to left and so do the fill and the two-thumb span."
 <div class="stack gap-6 w-full max-w-80" dir="rtl" lang="ar">
-  <input class="slider" type="range" value="30" aria-label="مستوى الصوت">
+  <input class="slider" type="range" value="30" aria-label="مستوى الصوت" />
   <div class="slider-range" data-tone="success" role="group" aria-label="نطاق">
-    <input class="slider" type="range" value="20" aria-label="الحد الأدنى">
-    <input class="slider" type="range" value="60" aria-label="الحد الأقصى">
+    <input class="slider" type="range" value="20" aria-label="الحد الأدنى" />
+    <input class="slider" type="range" value="60" aria-label="الحد الأقصى" />
   </div>
 </div>
 ```
@@ -228,23 +353,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="Sizes" hint="{'Track and thumb scale together via '}data-size{' on the '}{''}{' - the default equals '}md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
-  <input class="slider flex-1" type="range" value="60" data-size="xs" aria-label="Volume xs" style="max-width:16rem;"></input>
+  <input class="slider flex-1" type="range" value="60" data-size="xs" aria-label="Volume xs" style="max-width: 16rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Small</span>
-  <input class="slider flex-1" type="range" value="60" data-size="sm" aria-label="Volume sm" style="max-width:16rem;"></input>
+  <input class="slider flex-1" type="range" value="60" data-size="sm" aria-label="Volume sm" style="max-width: 16rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Medium</span>
-  <input class="slider flex-1" type="range" value="60" data-size="md" aria-label="Volume md" style="max-width:16rem;"></input>
+  <input class="slider flex-1" type="range" value="60" data-size="md" aria-label="Volume md" style="max-width: 16rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Large</span>
-  <input class="slider flex-1" type="range" value="60" data-size="lg" aria-label="Volume lg" style="max-width:16rem;"></input>
+  <input class="slider flex-1" type="range" value="60" data-size="lg" aria-label="Volume lg" style="max-width: 16rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra large</span>
-  <input class="slider flex-1" type="range" value="60" data-size="xl" aria-label="Volume xl" style="max-width:16rem;"></input>
+  <input class="slider flex-1" type="range" value="60" data-size="xl" aria-label="Volume xl" style="max-width: 16rem" />
 </div>
 ```
 

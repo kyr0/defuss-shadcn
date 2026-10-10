@@ -127,7 +127,11 @@ function initRange(range) {
   };
   lo.addEventListener('input', () => clamp(lo));
   hi.addEventListener('input', () => clamp(hi));
-  for (const s of [lo, hi]) s.addEventListener('pointerdown', () => { lo.toggleAttribute('data-active', s === lo); hi.toggleAttribute('data-active', s === hi); });
+  for (const s of [lo, hi])
+    s.addEventListener('pointerdown', () => {
+      lo.toggleAttribute('data-active', s === lo);
+      hi.toggleAttribute('data-active', s === hi);
+    });
   paintRange(range);
 }
 
@@ -178,20 +182,24 @@ df$.sliderApi = sliderApi;
 df$.sliderStates = sliderStates;
 
 function init() {
-  dfDollar('.slider-range:not([data-init])').toArray().forEach((range) => {
-    range.dataset.init = '';
-    initRange(range);
-  });
-  dfDollar<HTMLInputElement>('.slider:not([data-init])').toArray().forEach((el) => {
-    el.dataset.init = '';
-    // remember the authored disabled state so setState('default') restores it
-    el._defaultDisabled = el.disabled;
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(el, sliderApi);
-    if (el.dataset.thumbEmoji && !el.dataset.thumb) el.dataset.thumb = 'emoji';
-    updateSliderValue(el);
-    el.addEventListener('input', () => updateSliderValue(el));
-  });
+  dfDollar('.slider-range:not([data-init])')
+    .toArray()
+    .forEach((range) => {
+      range.dataset.init = '';
+      initRange(range);
+    });
+  dfDollar<HTMLInputElement>('.slider:not([data-init])')
+    .toArray()
+    .forEach((el) => {
+      el.dataset.init = '';
+      // remember the authored disabled state so setState('default') restores it
+      el._defaultDisabled = el.disabled;
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(el, sliderApi);
+      if (el.dataset.thumbEmoji && !el.dataset.thumb) el.dataset.thumb = 'emoji';
+      updateSliderValue(el);
+      el.addEventListener('input', () => updateSliderValue(el));
+    });
 }
 
 init();

@@ -37,11 +37,24 @@
     opacity: 0.75;
     transition: opacity 150ms ease;
 
-    &:hover { opacity: 1; }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
+    &:hover {
+      opacity: 1;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 4px;
+    }
 
-    & svg { width: 1.875rem; height: 1.875rem; aspect-ratio: 1; flex-shrink: 0; fill: currentColor; }
-    & .mk-logo-name { color: var(--muted-foreground); }
+    & svg {
+      width: 1.875rem;
+      height: 1.875rem;
+      aspect-ratio: 1;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+    & .mk-logo-name {
+      color: var(--muted-foreground);
+    }
   }
 
   .mk-logo-name {
@@ -59,8 +72,13 @@
   }
 
   @container mk-logos (min-width: 30rem) {
-    .mk-logo svg { width: 2.5rem; height: 2.5rem; }
-    .mk-logo-name { font-size: 1.25rem; }
+    .mk-logo svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    .mk-logo-name {
+      font-size: 1.25rem;
+    }
   }
 
   /* -- Rolling marquee ------------------------------------------
@@ -90,7 +108,9 @@
   }
 
   .mk-logos-roll:hover .mk-logos-roll-track,
-  .mk-logos-roll:focus-within .mk-logos-roll-track { animation-play-state: paused; }
+  .mk-logos-roll:focus-within .mk-logos-roll-track {
+    animation-play-state: paused;
+  }
 
   /* vertical roll: column track in a fixed-height viewport, mask on
      the block edges instead */
@@ -109,21 +129,29 @@
   }
 
   @keyframes mk-logos-roll {
-    to { transform: translateX(-50%); }
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   @keyframes mk-logos-roll-y {
-    to { transform: translateY(-50%); }
+    to {
+      transform: translateY(-50%);
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .mk-logo { transition: none; }
+    .mk-logo {
+      transition: none;
+    }
 
     /* static fallback: the roll collapses back into the plain wrapped
        row and the duplicated copy drops out so nothing renders twice */
     .mk-logos-roll,
-    .mk-logos-roll[data-direction="y"] { height: auto; }
+    .mk-logos-roll[data-direction="y"] {
+      height: auto;
+    }
     .mk-logos-roll-track {
       animation: none;
       flex-wrap: wrap;
@@ -132,14 +160,24 @@
       padding-inline-end: 0;
       padding-block-end: 0;
     }
-    .mk-logos-roll[data-direction="y"] .mk-logos-roll-track { flex-direction: row; animation: none; }
-    .mk-logos-roll-track > [aria-hidden="true"] { display: none; }
+    .mk-logos-roll[data-direction="y"] .mk-logos-roll-track {
+      flex-direction: row;
+      animation: none;
+    }
+    .mk-logos-roll-track > [aria-hidden="true"] {
+      display: none;
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-logo { color: CanvasText; }
+    .mk-logo {
+      color: CanvasText;
+    }
     /* masks hide content in forced-colors mode - show the full roll */
     .mk-logos-roll,
-    .mk-logos-roll[data-direction="y"] { -webkit-mask-image: none; mask-image: none; }
+    .mk-logos-roll[data-direction="y"] {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
   }
 }

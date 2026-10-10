@@ -21,8 +21,12 @@
       background: var(--card);
     }
 
-    &[data-size="sm"] { --qr-code-size: 8rem; }
-    &[data-size="lg"] { --qr-code-size: 16rem; }
+    &[data-size="sm"] {
+      --qr-code-size: 8rem;
+    }
+    &[data-size="lg"] {
+      --qr-code-size: 16rem;
+    }
 
     & > :is(.qr-code-symbol, .qr-code-status) {
       inline-size: var(--qr-code-size);
@@ -43,8 +47,12 @@
         aspect-ratio: 1;
         overflow: visible;
 
-        & > rect { fill: var(--qr-code-light); }
-        & > path { fill: var(--qr-code-dark); }
+        & > rect {
+          fill: var(--qr-code-light);
+        }
+        & > path {
+          fill: var(--qr-code-dark);
+        }
       }
     }
 
@@ -72,12 +80,18 @@
       overflow-wrap: anywhere;
     }
 
-    & > :is(.qr-code-symbol, .qr-code-status)[hidden] { display: none; }
+    & > :is(.qr-code-symbol, .qr-code-status)[hidden] {
+      display: none;
+    }
 
     @media (prefers-contrast: more) {
       &[data-variant="outline"],
-      & > .qr-code-status { border-color: var(--foreground); }
-      & > :is(.qr-code-caption, .qr-code-status) { color: var(--foreground); }
+      & > .qr-code-status {
+        border-color: var(--foreground);
+      }
+      & > :is(.qr-code-caption, .qr-code-status) {
+        color: var(--foreground);
+      }
     }
 
     @media (forced-colors: active) {
@@ -86,8 +100,12 @@
         background: Canvas;
         color: CanvasText;
       }
-      & > .qr-code-status { border-color: CanvasText; }
-      & > :is(.qr-code-caption, .qr-code-status) { color: CanvasText; }
+      & > .qr-code-status {
+        border-color: CanvasText;
+      }
+      & > :is(.qr-code-caption, .qr-code-status) {
+        color: CanvasText;
+      }
     }
   }
 }

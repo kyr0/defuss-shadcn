@@ -75,7 +75,9 @@ function writeValue(span, n) {
 
 /** The value spans a root owns (a group: every descendant .countdown's). */
 const valuesOf = (el) =>
-  el.classList.contains('countdown') ? [...dfDollar(el).find(':scope > span').toArray()] : [...dfDollar(el).find('.countdown > span').toArray()];
+  el.classList.contains('countdown')
+    ? [...dfDollar(el).find(':scope > span').toArray()]
+    : [...dfDollar(el).find('.countdown > span').toArray()];
 
 /** Seconds left → the present units, largest first; the largest absorbs the rest. */
 function split(seconds, spans) {
@@ -92,7 +94,8 @@ function split(seconds, spans) {
 }
 
 const fmt = (() => {
-  const DF = (Intl as unknown as { DurationFormat?: new (l?: string, o?: object) => { format(d: object): string } }).DurationFormat;
+  const DF = (Intl as unknown as { DurationFormat?: new (l?: string, o?: object) => { format(d: object): string } })
+    .DurationFormat;
   return DF ? new DF(undefined, { style: 'long' }) : null;
 })();
 
@@ -101,7 +104,11 @@ function label(el, parts) {
   if (el._authorLabel) return;
   const d = {};
   for (const [span, v] of parts) d[span.dataset.unit] = v;
-  const text = fmt ? fmt.format(d) : Object.entries(d).map(([u, v]) => `${v} ${u}`).join(', ');
+  const text = fmt
+    ? fmt.format(d)
+    : Object.entries(d)
+        .map(([u, v]) => `${v} ${u}`)
+        .join(', ');
   el.setAttribute('aria-label', text || '0');
 }
 
@@ -127,7 +134,7 @@ function schedule(el) {
   stop(el);
   paintTimer(el);
   if (el.dataset.stateName !== 'running') return;
-  const ms = ((el._deadline - Date.now()) % 1000 + 1000) % 1000 || 1000;
+  const ms = (((el._deadline - Date.now()) % 1000) + 1000) % 1000 || 1000;
   el._tick = setTimeout(() => schedule(el), ms + 5);
 }
 
@@ -160,7 +167,9 @@ function applyMarkup(el, stateName, config) {
   }
   if (isTimer(el) || stateName !== 'default') return;
   if (config?.value !== undefined && spans[0]) writeValue(spans[0], config.value);
-  if (config?.values) for (const span of spans) if (span.dataset.unit in config.values) writeValue(span, config.values[span.dataset.unit]);
+  if (config?.values)
+    for (const span of spans)
+      if (span.dataset.unit in config.values) writeValue(span, config.values[span.dataset.unit]);
 }
 
 function triggerStateChange(el, stateName, config) {
@@ -180,7 +189,8 @@ function triggerStateChange(el, stateName, config) {
       } else {
         const spans = valuesOf(el);
         if (config?.value !== undefined && spans[0]) writeValue(spans[0], config.value);
-        if (config?.values) for (const s of spans) if (s.dataset.unit in config.values) writeValue(s, config.values[s.dataset.unit]);
+        if (config?.values)
+          for (const s of spans) if (s.dataset.unit in config.values) writeValue(s, config.values[s.dataset.unit]);
         if (config?.value === undefined && !config?.values) el._authored?.forEach((v, s) => writeValue(s, v));
         el.dataset.stateName = 'default';
       }
@@ -214,7 +224,9 @@ export const countdownApi = componentState({
   apply: (el, state) => triggerStateChange(el, state.name, state.config),
   read: (el, state) => {
     const values = {};
-    valuesOf(el).forEach((s, i) => (values[s.dataset.unit || i] = parseFloat(s.style.getPropertyValue('--value')) || 0));
+    valuesOf(el).forEach(
+      (s, i) => (values[s.dataset.unit || i] = parseFloat(s.style.getPropertyValue('--value')) || 0),
+    );
     const config: Record<string, unknown> = { ...state.config, values };
     if (isTimer(el)) config.remaining = Math.round(remaining(el));
     return { name: el.dataset.stateName || 'default', config };
@@ -226,22 +238,29 @@ df$.countdownApi = countdownApi;
 df$.countdownStates = countdownStates;
 
 function init() {
-  dfDollar('.countdown-group:not([data-init]), .countdown:not([data-init])').toArray().forEach((el) => {
-    // a .countdown inside a timer group belongs to the group
-    if (el.classList.contains('countdown') && !isTimer(el) && el.parentElement?.closest('.countdown-group[data-until], .countdown-group[data-duration]')) return;
-    if (el.classList.contains('countdown-group') && !isTimer(el)) return;
-    el.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(el, countdownApi);
-    el._authored = new Map(valuesOf(el).map((s) => [s, parseFloat(s.style.getPropertyValue('--value')) || 0]));
-    if (isTimer(el)) {
-      el._authorLabel = el.hasAttribute('aria-label');
-      if (!el.hasAttribute('role')) el.setAttribute('role', 'timer');
-      triggerStateChange(el, 'default', {});
-    } else {
-      el.dataset.stateName = 'default';
-    }
-  });
+  dfDollar('.countdown-group:not([data-init]), .countdown:not([data-init])')
+    .toArray()
+    .forEach((el) => {
+      // a .countdown inside a timer group belongs to the group
+      if (
+        el.classList.contains('countdown') &&
+        !isTimer(el) &&
+        el.parentElement?.closest('.countdown-group[data-until], .countdown-group[data-duration]')
+      )
+        return;
+      if (el.classList.contains('countdown-group') && !isTimer(el)) return;
+      el.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(el, countdownApi);
+      el._authored = new Map(valuesOf(el).map((s) => [s, parseFloat(s.style.getPropertyValue('--value')) || 0]));
+      if (isTimer(el)) {
+        el._authorLabel = el.hasAttribute('aria-label');
+        if (!el.hasAttribute('role')) el.setAttribute('role', 'timer');
+        triggerStateChange(el, 'default', {});
+      } else {
+        el.dataset.stateName = 'default';
+      }
+    });
 }
 
 init();

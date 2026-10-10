@@ -23,7 +23,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, dataSource, safeShowPopover, textLocale } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, dataSource, safeShowPopover, textLocale, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const autocompleteStates = ['default', 'open', 'loading', 'empty', 'error'];
@@ -73,7 +73,7 @@ function configOf(root) {
     };
     return { ...base, ...root._config };
 }
-const labelOf = (cfg, record) => (typeof cfg.label === 'function' ? cfg.label(record) : String(record?.[cfg.labelField] ?? ''));
+const labelOf = (cfg, record) => typeof cfg.label === 'function' ? cfg.label(record) : String(record?.[cfg.labelField] ?? '');
 const valueOf = (cfg, record) => (typeof cfg.value === 'function' ? cfg.value(record) : record?.[cfg.valueField]);
 /** the dataview request for a query and a page */
 function requestFor(cfg, query, page) {
@@ -93,7 +93,9 @@ function normalize(answer, request) {
     const total = Number.isFinite(raw.total) ? raw.total : undefined;
     const hasMore = typeof raw.hasMore === 'boolean'
         ? raw.hasMore
-        : total !== undefined ? (request.page + 1) * request.pageSize < total : rows.length >= request.pageSize;
+        : total !== undefined
+            ? (request.page + 1) * request.pageSize < total
+            : rows.length >= request.pageSize;
     return { rows, hasMore, total };
 }
 /**
@@ -107,7 +109,11 @@ async function networkLoad(cfg, request, signal) {
     if (typeof cfg.url === 'function')
         url = cfg.url(request);
     else {
-        const params = new URLSearchParams({ q: request.query, page: String(request.page), pageSize: String(request.pageSize) });
+        const params = new URLSearchParams({
+            q: request.query,
+            page: String(request.page),
+            pageSize: String(request.pageSize),
+        });
         if (request.sorters[0])
             params.set('sort', `${request.sorters[0].field}:${request.sorters[0].direction || 'asc'}`);
         url = `${cfg.url}${String(cfg.url).includes('?') ? '&' : '?'}${params}`;
@@ -189,7 +195,9 @@ function describe(root) {
         return;
     const num = (v) => v.toLocaleString(textLocale(root)); // the text's locale, never the browser's
     const total = run.total !== undefined ? ` of ${num(run.total)}` : '';
-    setStatus(root, run.loadingMore ? `${num(n)}${total} · loading more…` : `${num(n)}${total}${run.hasMore ? ' · scroll for more' : ''}`);
+    setStatus(root, run.loadingMore
+        ? `${num(n)}${total} · loading more…`
+        : `${num(n)}${total}${run.hasMore ? ' · scroll for more' : ''}`);
 }
 /** move the active option (keyboard / pointer), keep it in view */
 function activate(root, index) {
@@ -227,7 +235,16 @@ async function search(root, query) {
     abort(root);
     const cfg = configOf(root);
     const input = inputOf(root);
-    root._run = { query, records: [], page: 0, hasMore: false, total: undefined, active: -1, loadingMore: false, seq: (root._run?.seq || 0) + 1 };
+    root._run = {
+        query,
+        records: [],
+        page: 0,
+        hasMore: false,
+        total: undefined,
+        active: -1,
+        loadingMore: false,
+        seq: (root._run?.seq || 0) + 1,
+    };
     listOf(root).textContent = '';
     input.removeAttribute('aria-activedescendant');
     if (query.length < cfg.minChars) {
@@ -313,7 +330,10 @@ function choose(root, index) {
     abort(root);
     autocompleteApi.setState(root, 'default', { query: label, value: value ?? null, label });
     // Fires when a suggestion is taken - its record, value and label.
-    root.dispatchEvent(new CustomEvent('autocomplete-select', { bubbles: true, detail: { record, value, label } }));
+    root.dispatchEvent(new CustomEvent('autocomplete-select', {
+        bubbles: true,
+        detail: { record, value, label },
+    }));
 }
 // -- State API ---------------------------------------------------------------------------
 /**
@@ -333,7 +353,9 @@ function triggerStateChange(root, state, incoming) {
             try {
                 popover.hidePopover();
             }
-            catch { /* already closed */ }
+            catch {
+                /* already closed */
+            }
         }
     }
     if (state.name === 'default') {
@@ -404,7 +426,9 @@ df$.autocomplete = {
      * Close the popup and cancel what is in flight.
      * @param target - the .autocomplete element or its selector
      */
-    close: (target) => { autocompleteApi.setState(resolve(target), 'default'); },
+    close: (target) => {
+        autocompleteApi.setState(resolve(target), 'default');
+    },
     /**
      * The records the list holds now.
      * @param target - the .autocomplete element or its selector
@@ -414,7 +438,9 @@ df$.autocomplete = {
 };
 // -- init --------------------------------------------------------------------------------------
 function init() {
-    dfDollar('.autocomplete:not([data-init])').toArray().forEach((root) => {
+    dfDollar('.autocomplete:not([data-init])')
+        .toArray()
+        .forEach((root) => {
         root.dataset.init = '';
         const input = inputOf(root);
         if (!input)

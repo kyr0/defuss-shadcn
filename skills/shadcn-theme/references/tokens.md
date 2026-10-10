@@ -8,59 +8,61 @@ A theme sets these 48 custom properties - in `:root` (light) and `.dark` (dark) 
 
 | Token | Role | Light default | Dark default |
 | --- | --- | --- | --- |
-| `--background` | the page surface | `oklch(1 0 0)` | `oklch(0.1450 0 0)` |
-| `--foreground` | body text on --background | `oklch(0.1450 0 0)` | `oklch(0.9850 0 0)` |
-| `--card` | cards, panels, table and form surfaces | `oklch(1 0 0)` | `oklch(0.2050 0 0)` |
-| `--card-foreground` | text on --card | `oklch(0.1450 0 0)` | `oklch(0.9850 0 0)` |
-| `--popover` | floating surfaces: popovers, menus, dropdowns, the command palette | `oklch(1 0 0)` | `oklch(0.2690 0 0)` |
-| `--popover-foreground` | text on --popover | `oklch(0.1450 0 0)` | `oklch(0.9850 0 0)` |
-| `--primary` | the main action and selection: primary buttons, checked controls, active items | `oklch(0.2050 0 0)` | `oklch(0.9220 0 0)` |
-| `--primary-foreground` | text and icons on --primary | `oklch(0.9850 0 0)` | `oklch(0.2050 0 0)` |
-| `--secondary` | secondary buttons and quieter fills | `oklch(0.9700 0 0)` | `oklch(0.2690 0 0)` |
-| `--secondary-foreground` | text on --secondary | `oklch(0.2050 0 0)` | `oklch(0.9850 0 0)` |
-| `--muted` | subdued fills: stripes, skeletons, disabled areas | `oklch(0.9700 0 0)` | `oklch(0.2690 0 0)` |
-| `--muted-foreground` | secondary text - descriptions, hints, placeholders - on --muted AND on --background | `oklch(0.5560 0 0)` | `oklch(0.7080 0 0)` |
-| `--accent` | hover and highlight: menu items, ghost buttons, focused rows | `oklch(0.9700 0 0)` | `oklch(0.3710 0 0)` |
-| `--accent-foreground` | text on --accent | `oklch(0.2050 0 0)` | `oklch(0.9850 0 0)` |
-| `--destructive` | delete actions and errors | `oklch(0.5770 0.2450 27.3250)` | `oklch(0.7040 0.1910 22.2160)` |
-| `--destructive-foreground` | text on --destructive | `oklch(1 0 0)` | `oklch(0.9850 0 0)` |
+| `--background` | the page surface | `oklch(1 0 0)` | `oklch(0.145 0 0)` |
+| `--foreground` | body text on --background | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `--card` | cards, panels, table and form surfaces | `oklch(1 0 0)` | `oklch(0.205 0 0)` |
+| `--card-foreground` | text on --card | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `--popover` | floating surfaces: popovers, menus, dropdowns, the command palette | `oklch(1 0 0)` | `oklch(0.269 0 0)` |
+| `--popover-foreground` | text on --popover | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `--primary` | the main action and selection: primary buttons, checked controls, active items | `oklch(0.205 0 0)` | `oklch(0.922 0 0)` |
+| `--primary-foreground` | text and icons on --primary | `oklch(0.985 0 0)` | `oklch(0.205 0 0)` |
+| `--secondary` | secondary buttons and quieter fills | `oklch(0.97 0 0)` | `oklch(0.269 0 0)` |
+| `--secondary-foreground` | text on --secondary | `oklch(0.205 0 0)` | `oklch(0.985 0 0)` |
+| `--muted` | subdued fills: stripes, skeletons, disabled areas | `oklch(0.97 0 0)` | `oklch(0.269 0 0)` |
+| `--muted-foreground` | secondary text - descriptions, hints, placeholders - on --muted AND on --background | `oklch(0.556 0 0)` | `oklch(0.708 0 0)` |
+| `--accent` | hover and highlight: menu items, ghost buttons, focused rows | `oklch(0.97 0 0)` | `oklch(0.371 0 0)` |
+| `--accent-foreground` | text on --accent | `oklch(0.205 0 0)` | `oklch(0.985 0 0)` |
+| `--destructive` | delete actions and errors | `oklch(0.577 0.245 27.325)` | `oklch(0.704 0.191 22.216)` |
+| `--destructive-foreground` | text on --destructive | `oklch(1 0 0)` | `oklch(0.985 0 0)` |
 
 ## Utility
 
 | Token | Role | Light default | Dark default |
 | --- | --- | --- | --- |
-| `--border` | dividers and component outlines | `oklch(0.9220 0 0)` | `oklch(0.2750 0 0)` |
-| `--input` | form control borders | `oklch(0.9220 0 0)` | `oklch(0.3250 0 0)` |
-| `--ring` | the focus ring (keyboard focus must stay visible on --background) | `oklch(0.7080 0 0)` | `oklch(0.5560 0 0)` |
+| `--border` | dividers and component outlines | `oklch(0.922 0 0)` | `oklch(0.275 0 0)` |
+| `--input` | form control borders | `oklch(0.922 0 0)` | `oklch(0.325 0 0)` |
+| `--ring` | the focus ring (keyboard focus must stay visible on --background) | `oklch(0.708 0 0)` | `oklch(0.556 0 0)` |
 
 ## Chart
 
 | Token | Role | Light default | Dark default |
 | --- | --- | --- | --- |
-| `--chart-1` | chart series 1; also diagram and status accents | `oklch(0.8100 0.1000 252)` | `oklch(0.8100 0.1000 252)` |
-| `--chart-2` | chart series 2 | `oklch(0.6200 0.1900 260)` | `oklch(0.6200 0.1900 260)` |
-| `--chart-3` | chart series 3 | `oklch(0.5500 0.2200 263)` | `oklch(0.5500 0.2200 263)` |
-| `--chart-4` | chart series 4 | `oklch(0.4900 0.2200 264)` | `oklch(0.4900 0.2200 264)` |
-| `--chart-5` | chart series 5 | `oklch(0.4200 0.1800 266)` | `oklch(0.4200 0.1800 266)` |
+| `--chart-1` | chart series 1; also diagram and status accents | `oklch(0.81 0.1 252)` | `oklch(0.81 0.1 252)` |
+| `--chart-2` | chart series 2 | `oklch(0.62 0.19 260)` | `oklch(0.62 0.19 260)` |
+| `--chart-3` | chart series 3 | `oklch(0.55 0.22 263)` | `oklch(0.55 0.22 263)` |
+| `--chart-4` | chart series 4 | `oklch(0.49 0.22 264)` | `oklch(0.49 0.22 264)` |
+| `--chart-5` | chart series 5 | `oklch(0.42 0.18 266)` | `oklch(0.42 0.18 266)` |
 
 ## Sidebar
 
 | Token | Role | Light default | Dark default |
 | --- | --- | --- | --- |
-| `--sidebar` | the application sidebar surface | `oklch(0.9850 0 0)` | `oklch(0.2050 0 0)` |
-| `--sidebar-foreground` | idle sidebar text | `oklch(0.1450 0 0)` | `oklch(0.9850 0 0)` |
-| `--sidebar-primary` | the sidebar brand mark and primary item | `oklch(0.2050 0 0)` | `oklch(0.4880 0.2430 264.3760)` |
-| `--sidebar-primary-foreground` | text on --sidebar-primary | `oklch(0.9850 0 0)` | `oklch(0.9850 0 0)` |
-| `--sidebar-accent` | the active / hovered sidebar item | `oklch(0.9400 0 0)` | `oklch(0.2690 0 0)` |
-| `--sidebar-accent-foreground` | text on --sidebar-accent | `oklch(0.2050 0 0)` | `oklch(0.9850 0 0)` |
-| `--sidebar-border` | sidebar dividers | `oklch(0.9220 0 0)` | `oklch(0.2750 0 0)` |
-| `--sidebar-ring` | focus ring inside the sidebar | `oklch(0.7080 0 0)` | `oklch(0.4390 0 0)` |
+| `--sidebar` | the application sidebar surface | `oklch(0.985 0 0)` | `oklch(0.205 0 0)` |
+| `--sidebar-foreground` | idle sidebar text | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `--sidebar-primary` | the sidebar brand mark and primary item | `oklch(0.205 0 0)` | `oklch(0.488 0.243 264.376)` |
+| `--sidebar-primary-foreground` | text on --sidebar-primary | `oklch(0.985 0 0)` | `oklch(0.985 0 0)` |
+| `--sidebar-accent` | the active / hovered sidebar item | `oklch(0.94 0 0)` | `oklch(0.269 0 0)` |
+| `--sidebar-accent-foreground` | text on --sidebar-accent | `oklch(0.205 0 0)` | `oklch(0.985 0 0)` |
+| `--sidebar-border` | sidebar dividers | `oklch(0.922 0 0)` | `oklch(0.275 0 0)` |
+| `--sidebar-ring` | focus ring inside the sidebar | `oklch(0.708 0 0)` | `oklch(0.439 0 0)` |
 
 ## Typography
 
 | Token | Role | Light default | Dark default |
 | --- | --- | --- | --- |
-| `--font-sans` | UI and body text stack | `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'` | `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'` |
+| `--font-sans` | UI and body text stack | `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"` | `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"` |
 | `--font-serif` | serif stack (papers, editorial blocks) | `ui-serif, Georgia, Cambria, "Times New Roman", Times, serif` | `ui-serif, Georgia, Cambria, "Times New Roman", Times, serif` |
 | `--font-mono` | code, keys, numbers in tables | `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace` | `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace` |
 
@@ -76,11 +78,11 @@ A theme sets these 48 custom properties - in `:root` (light) and `.dark` (dark) 
 | --- | --- | --- | --- |
 | `--shadow-2xs` | elevation scale, smallest | `0 1px 3px 0px hsl(0 0% 0% / 0.05)` | `0 1px 3px 0px hsl(0 0% 0% / 0.05)` |
 | `--shadow-xs` | elevation scale | `0 1px 3px 0px hsl(0 0% 0% / 0.05)` | `0 1px 3px 0px hsl(0 0% 0% / 0.05)` |
-| `--shadow-sm` | elevation scale (cards, inputs) | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)` | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)` |
-| `--shadow` | elevation scale (default) | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)` | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)` |
-| `--shadow-md` | elevation scale (popovers, menus) | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)` | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)` |
-| `--shadow-lg` | elevation scale (dialogs) | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)` | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)` |
-| `--shadow-xl` | elevation scale | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)` | `0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)` |
+| `--shadow-sm` | elevation scale (cards, inputs) | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1)` | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1)` |
+| `--shadow` | elevation scale (default) | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1)` | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1)` |
+| `--shadow-md` | elevation scale (popovers, menus) | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1)` | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1)` |
+| `--shadow-lg` | elevation scale (dialogs) | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1)` | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1)` |
+| `--shadow-xl` | elevation scale | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1)` | `0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1)` |
 | `--shadow-2xl` | elevation scale, largest | `0 1px 3px 0px hsl(0 0% 0% / 0.25)` | `0 1px 3px 0px hsl(0 0% 0% / 0.25)` |
 
 ## Spacing

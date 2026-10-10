@@ -52,40 +52,77 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <span class="mk-news-ticker-label">Latest</span>
   <div class="mk-news-ticker-viewport">
     <div class="mk-news-ticker-track">
-    <ul class="mk-news-ticker-items">
-      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
-      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
-      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
-    </ul>
-    <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
-      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
-      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
-    </ul>
+      <ul class="mk-news-ticker-items">
+        <li
+          ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+        >
+        <li
+          ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+        >
+        <li
+          ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+        >
+        <li
+          ><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li
+        >
+        <li
+          ><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li
+        >
+      </ul>
+      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+        <li
+          ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+        >
+        <li
+          ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+        >
+        <li
+          ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+        >
+        <li
+          ><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li
+        >
+        <li
+          ><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li
+        >
+      </ul>
     </div>
   </div>
 </section>
 ```
 
 ```html example label="Breaking" hint="data-variant='breaking': a red label with a pulsing dot. --mk-news-ticker-duration sets the speed (here 25s)." previewStyle="align-items:stretch;"
-<section class="mk-news-ticker" data-variant="breaking" style="--mk-news-ticker-duration:25s" aria-label="Breaking news">
+<section
+  class="mk-news-ticker"
+  data-variant="breaking"
+  style="--mk-news-ticker-duration: 25s"
+  aria-label="Breaking news"
+>
   <span class="mk-news-ticker-label">Breaking</span>
   <div class="mk-news-ticker-viewport">
     <div class="mk-news-ticker-track">
-    <ul class="mk-news-ticker-items">
-      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
-    </ul>
-    <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
-    </ul>
+      <ul class="mk-news-ticker-items">
+        <li
+          ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+        >
+        <li
+          ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+        >
+        <li
+          ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+        >
+      </ul>
+      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+        <li
+          ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+        >
+        <li
+          ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+        >
+        <li
+          ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+        >
+      </ul>
     </div>
   </div>
 </section>
@@ -96,20 +133,40 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <span class="mk-news-ticker-label">Updates</span>
   <div class="mk-news-ticker-viewport">
     <div class="mk-news-ticker-track">
-    <ul class="mk-news-ticker-items">
-      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
-      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
-      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
-    </ul>
-    <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-      <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-      <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-      <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
-      <li><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li>
-      <li><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li>
-    </ul>
+      <ul class="mk-news-ticker-items">
+        <li
+          ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+        >
+        <li
+          ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+        >
+        <li
+          ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+        >
+        <li
+          ><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li
+        >
+        <li
+          ><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li
+        >
+      </ul>
+      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+        <li
+          ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+        >
+        <li
+          ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+        >
+        <li
+          ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+        >
+        <li
+          ><a href="#"><time>07:55</time> Acme opens an office in Lisbon</a></li
+        >
+        <li
+          ><a href="#"><time>Yesterday</time> Status: eu-west sync delays resolved</a></li
+        >
+      </ul>
     </div>
   </div>
 </section>
@@ -121,18 +178,38 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <div class="mk-news-ticker-viewport">
     <div class="mk-news-ticker-track">
       <ul class="mk-news-ticker-items">
-        <li><a href="#"><b>ACME</b> 182.40 <span class="mk-news-ticker-trend" data-trend="up">2.1%</span></a></li>
-        <li><a href="#"><b>GLBX</b> 91.05 <span class="mk-news-ticker-trend" data-trend="down">0.8%</span></a></li>
-        <li><a href="#"><b>INIT</b> 44.12 <span class="mk-news-ticker-trend" data-trend="up">5.4%</span></a></li>
-        <li><a href="#"><b>NOVA</b> 310.77 <span class="mk-news-ticker-trend" data-trend="down">1.2%</span></a></li>
-        <li><a href="#"><b>ORBT</b> 12.90 <span class="mk-news-ticker-trend" data-trend="up">0.3%</span></a></li>
+        <li
+          ><a href="#"><b>ACME</b> 182.40 <span class="mk-news-ticker-trend" data-trend="up">2.1%</span></a></li
+        >
+        <li
+          ><a href="#"><b>GLBX</b> 91.05 <span class="mk-news-ticker-trend" data-trend="down">0.8%</span></a></li
+        >
+        <li
+          ><a href="#"><b>INIT</b> 44.12 <span class="mk-news-ticker-trend" data-trend="up">5.4%</span></a></li
+        >
+        <li
+          ><a href="#"><b>NOVA</b> 310.77 <span class="mk-news-ticker-trend" data-trend="down">1.2%</span></a></li
+        >
+        <li
+          ><a href="#"><b>ORBT</b> 12.90 <span class="mk-news-ticker-trend" data-trend="up">0.3%</span></a></li
+        >
       </ul>
       <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-        <li><a href="#"><b>ACME</b> 182.40 <span class="mk-news-ticker-trend" data-trend="up">2.1%</span></a></li>
-        <li><a href="#"><b>GLBX</b> 91.05 <span class="mk-news-ticker-trend" data-trend="down">0.8%</span></a></li>
-        <li><a href="#"><b>INIT</b> 44.12 <span class="mk-news-ticker-trend" data-trend="up">5.4%</span></a></li>
-        <li><a href="#"><b>NOVA</b> 310.77 <span class="mk-news-ticker-trend" data-trend="down">1.2%</span></a></li>
-        <li><a href="#"><b>ORBT</b> 12.90 <span class="mk-news-ticker-trend" data-trend="up">0.3%</span></a></li>
+        <li
+          ><a href="#"><b>ACME</b> 182.40 <span class="mk-news-ticker-trend" data-trend="up">2.1%</span></a></li
+        >
+        <li
+          ><a href="#"><b>GLBX</b> 91.05 <span class="mk-news-ticker-trend" data-trend="down">0.8%</span></a></li
+        >
+        <li
+          ><a href="#"><b>INIT</b> 44.12 <span class="mk-news-ticker-trend" data-trend="up">5.4%</span></a></li
+        >
+        <li
+          ><a href="#"><b>NOVA</b> 310.77 <span class="mk-news-ticker-trend" data-trend="down">1.2%</span></a></li
+        >
+        <li
+          ><a href="#"><b>ORBT</b> 12.90 <span class="mk-news-ticker-trend" data-trend="up">0.3%</span></a></li
+        >
       </ul>
     </div>
   </div>
@@ -145,14 +222,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <div class="mk-news-ticker-viewport">
     <div class="mk-news-ticker-track">
       <ul class="mk-news-ticker-items">
-        <li><a href="#"><span class="badge" data-variant="secondary">Product</span> Offline sync reaches every workspace</a></li>
-        <li><a href="#"><span class="badge" data-variant="secondary">Security</span> Passkeys become the default</a></li>
-        <li><a href="#"><span class="badge" data-variant="secondary">Company</span> Lisbon office opens</a></li>
+        <li
+          ><a href="#"
+            ><span class="badge" data-variant="secondary">Product</span> Offline sync reaches every workspace</a
+          ></li
+        >
+        <li
+          ><a href="#"><span class="badge" data-variant="secondary">Security</span> Passkeys become the default</a></li
+        >
+        <li
+          ><a href="#"><span class="badge" data-variant="secondary">Company</span> Lisbon office opens</a></li
+        >
       </ul>
       <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-        <li><a href="#"><span class="badge" data-variant="secondary">Product</span> Offline sync reaches every workspace</a></li>
-        <li><a href="#"><span class="badge" data-variant="secondary">Security</span> Passkeys become the default</a></li>
-        <li><a href="#"><span class="badge" data-variant="secondary">Company</span> Lisbon office opens</a></li>
+        <li
+          ><a href="#"
+            ><span class="badge" data-variant="secondary">Product</span> Offline sync reaches every workspace</a
+          ></li
+        >
+        <li
+          ><a href="#"><span class="badge" data-variant="secondary">Security</span> Passkeys become the default</a></li
+        >
+        <li
+          ><a href="#"><span class="badge" data-variant="secondary">Company</span> Lisbon office opens</a></li
+        >
       </ul>
     </div>
   </div>
@@ -160,24 +253,24 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```
 
 ```html example label="Pill" hint="data-variant='pill': a rounded, floating strip - announcements above a landing page." previewStyle="align-items:stretch;"
-<div style="width:100%;max-width:40rem">
-<section class="mk-news-ticker" data-variant="pill" aria-label="Announcements">
-  <span class="mk-news-ticker-label">New</span>
-  <div class="mk-news-ticker-viewport">
-    <div class="mk-news-ticker-track">
-      <ul class="mk-news-ticker-items">
-        <li><a href="#">Acme 4.0 is here - see what is new</a></li>
-        <li><a href="#">Join the launch livestream on 1 October</a></li>
-        <li><a href="#">Students get Acme Pro free</a></li>
-      </ul>
-      <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-        <li><a href="#">Acme 4.0 is here - see what is new</a></li>
-        <li><a href="#">Join the launch livestream on 1 October</a></li>
-        <li><a href="#">Students get Acme Pro free</a></li>
-      </ul>
+<div style="width: 100%; max-width: 40rem">
+  <section class="mk-news-ticker" data-variant="pill" aria-label="Announcements">
+    <span class="mk-news-ticker-label">New</span>
+    <div class="mk-news-ticker-viewport">
+      <div class="mk-news-ticker-track">
+        <ul class="mk-news-ticker-items">
+          <li><a href="#">Acme 4.0 is here - see what is new</a></li>
+          <li><a href="#">Join the launch livestream on 1 October</a></li>
+          <li><a href="#">Students get Acme Pro free</a></li>
+        </ul>
+        <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+          <li><a href="#">Acme 4.0 is here - see what is new</a></li>
+          <li><a href="#">Join the launch livestream on 1 October</a></li>
+          <li><a href="#">Students get Acme Pro free</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 </div>
 ```
 

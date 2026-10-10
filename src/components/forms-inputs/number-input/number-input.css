@@ -59,7 +59,9 @@
       cursor: pointer;
       font-size: 1rem;
       font-family: var(--font-sans);
-      transition: background 150ms, color 150ms;
+      transition:
+        background 150ms,
+        color 150ms;
       flex-shrink: 0;
 
       &:hover {
@@ -94,23 +96,37 @@
       cursor: text;
 
       /* edge of the box (no stepper on that side): field padding */
-      &:first-child { padding-inline-start: 0.75rem; }
-      &:last-child { padding-inline-end: 0.75rem; }
+      &:first-child {
+        padding-inline-start: 0.75rem;
+      }
+      &:last-child {
+        padding-inline-end: 0.75rem;
+      }
     }
 
     /* NOT user-select: none - the unit is part of the value when text is
        selected, copied or exported ("72,5 kg", not a bare "72,5") */
 
-    &:has(input:not([type="hidden"]) + .number-input-unit) input { text-align: end; }
-    &:has(.number-input-unit + input:not([type="hidden"])) input { text-align: start; }
+    &:has(input:not([type="hidden"]) + .number-input-unit) input {
+      text-align: end;
+    }
+    &:has(.number-input-unit + input:not([type="hidden"])) input {
+      text-align: start;
+    }
 
     /* currency fields carry grouped amounts ("1.234.567,89") */
-    &[data-currency] input { width: 8rem; }
+    &[data-currency] input {
+      width: 8rem;
+    }
 
     /* stepper-less field (currency, measurements): the input reaches the box
        edge - give it the regular field padding there */
-    & input:first-child { padding-inline-start: 0.75rem; }
-    & input:last-child { padding-inline-end: 0.75rem; }
+    & input:first-child {
+      padding-inline-start: 0.75rem;
+    }
+    & input:last-child {
+      padding-inline-end: 0.75rem;
+    }
 
     &:focus-within {
       border-color: var(--ring);
@@ -124,32 +140,77 @@
        height:100% so they can't fight the container. */
     &[data-size="xs"] {
       height: 1.75rem;
-      & input { height: 100%; width: 3rem; font-size: 0.75rem; }
-      & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
-      & .number-input-unit { font-size: 0.75rem; }
+      & input {
+        height: 100%;
+        width: 3rem;
+        font-size: 0.75rem;
+      }
+      & button {
+        height: 100%;
+        width: 1.5rem;
+        font-size: 0.875rem;
+      }
+      & .number-input-unit {
+        font-size: 0.75rem;
+      }
     }
     &[data-size="sm"] {
       height: 2rem;
-      & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
-      & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
-      & .number-input-unit { font-size: 0.8125rem; }
+      & input {
+        height: 100%;
+        width: 3.5rem;
+        font-size: 0.8125rem;
+      }
+      & button {
+        height: 100%;
+        width: 1.75rem;
+        font-size: 0.9375rem;
+      }
+      & .number-input-unit {
+        font-size: 0.8125rem;
+      }
     }
     &[data-size="md"] {
       height: 2.25rem;
-      & input { height: 100%; font-size: 0.875rem; }
-      & button { height: 100%; }
+      & input {
+        height: 100%;
+        font-size: 0.875rem;
+      }
+      & button {
+        height: 100%;
+      }
     }
     &[data-size="lg"] {
       height: 2.75rem;
-      & input { height: 100%; width: 4.5rem; font-size: 1rem; }
-      & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
-      & .number-input-unit { font-size: 1rem; }
+      & input {
+        height: 100%;
+        width: 4.5rem;
+        font-size: 1rem;
+      }
+      & button {
+        height: 100%;
+        width: 2.25rem;
+        font-size: 1.125rem;
+      }
+      & .number-input-unit {
+        font-size: 1rem;
+      }
     }
     &[data-size="xl"] {
       height: 3.25rem;
-      & input { height: 100%; width: 5rem; font-size: 1.125rem; }
-      & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
-      & .number-input-unit { font-size: 1.125rem; }
+      & input {
+        height: 100%;
+        width: 5rem;
+        font-size: 1.125rem;
+      }
+      & button {
+        height: 100%;
+        width: 2.5rem;
+        font-size: 1.25rem;
+      }
+      & .number-input-unit {
+        font-size: 1.125rem;
+      }
     }
   }
 }

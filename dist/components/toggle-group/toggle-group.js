@@ -59,7 +59,9 @@ export const toggleGroupApi = componentState({
 df$.toggleGroupApi = toggleGroupApi;
 df$.toggleGroupStates = toggleGroupStates;
 function init() {
-    dfDollar('.toggle-group:not([data-init])').toArray().forEach((group) => {
+    dfDollar('.toggle-group:not([data-init])')
+        .toArray()
+        .forEach((group) => {
         group.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(group, toggleGroupApi);

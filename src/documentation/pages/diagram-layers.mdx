@@ -19,7 +19,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Layer stack</span>
     <span class="diagram-title">The stack, top to bottom</span>
-    <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+    <span class="diagram-dek"
+      >Each layer only talks to the one below it; the API layer is where the contract lives.</span
+    >
   </figcaption>
   <div class="diagram-canvas">
     <div class="diagram-node" data-node="ux">
@@ -54,11 +56,20 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="The stack, built bottom-up" component="diagram" hint="Explicit steps run against the markup order: infrastructure first."
-<figure class="diagram" id="dg-layers-steps" data-type="layers" data-steps data-autoplay aria-label="Web platform stack">
+<figure
+  class="diagram"
+  id="dg-layers-steps"
+  data-type="layers"
+  data-steps
+  data-autoplay
+  aria-label="Web platform stack"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Layer stack</span>
     <span class="diagram-title">The stack, top to bottom</span>
-    <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+    <span class="diagram-dek"
+      >Each layer only talks to the one below it; the API layer is where the contract lives.</span
+    >
   </figcaption>
   <div class="diagram-canvas">
     <div class="diagram-node" data-node="ux" data-step="5">
@@ -96,16 +107,26 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Layers, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-layers-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-layers-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
 <figure class="diagram" id="dg-layers-live" data-interactive data-type="layers" aria-label="Web platform stack">
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Layer stack</span>
     <span class="diagram-title">The stack, top to bottom</span>
-    <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+    <span class="diagram-dek"
+      >Each layer only talks to the one below it; the API layer is where the contract lives.</span
+    >
   </figcaption>
   <div class="diagram-canvas">
     <div class="diagram-node" data-node="ux">
@@ -143,16 +164,20 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Layers, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-layers-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-layers-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
+  <div style="flex: 1 1 0; min-width: 0">
     <figure class="diagram" id="dg-layers-edit" data-interactive data-type="layers" aria-label="Web platform stack">
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Layer stack</span>
         <span class="diagram-title">The stack, top to bottom</span>
-        <span class="diagram-dek">Each layer only talks to the one below it; the API layer is where the contract lives.</span>
+        <span class="diagram-dek"
+          >Each layer only talks to the one below it; the API layer is where the contract lives.</span
+        >
       </figcaption>
       <div class="diagram-canvas">
         <div class="diagram-node" data-node="ux">
@@ -188,11 +213,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-layers-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-layers-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-layers-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>

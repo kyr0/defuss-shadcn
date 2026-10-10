@@ -59,7 +59,10 @@ function step(tw) {
     paint(tw, tw._index, tw._count + 1);
     return next(step, keyDelay(tw, num(tw, "speed", 70)));
   }
-  tw.dispatchEvent(new CustomEvent("typewriter-typed", { bubbles: true, detail: { index: tw._index, text: src.text } }));
+  tw.dispatchEvent(new CustomEvent("typewriter-typed", {
+    bubbles: true,
+    detail: { index: tw._index, text: src.text }
+  }));
   if (last && !loop)
     return finish(tw);
   phase(tw, "holding");
@@ -184,5 +187,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=9D5D9310B530867364756E2164756E21
+//# debugId=154AA3D8EACC4DB764756E2164756E21
 //# sourceMappingURL=primitives.js.map

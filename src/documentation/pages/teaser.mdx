@@ -59,14 +59,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <p class="teaser-text">Revenue, orders and returns - loaded when you ask for them.</p>
   <template class="teaser-content">
     <div class="card">
-      <div class="card-header"><h3 class="card-title">Q3 at a glance</h3><p class="card-description">July to September</p></div>
+      <div class="card-header"
+        ><h3 class="card-title">Q3 at a glance</h3><p class="card-description">July to September</p></div
+      >
       <div class="card-content">
         <table class="table">
-          <thead><tr><th scope="col">Month</th><th scope="col" style="text-align:end">Revenue</th><th scope="col" style="text-align:end">Orders</th></tr></thead>
+          <thead
+            ><tr
+              ><th scope="col">Month</th><th scope="col" style="text-align: end">Revenue</th
+              ><th scope="col" style="text-align: end">Orders</th></tr
+            ></thead
+          >
           <tbody>
-            <tr><td>July</td><td style="text-align:end">$41,200</td><td style="text-align:end">1,204</td></tr>
-            <tr><td>August</td><td style="text-align:end">$45,231</td><td style="text-align:end">1,318</td></tr>
-            <tr><td>September</td><td style="text-align:end">$48,960</td><td style="text-align:end">1,402</td></tr>
+            <tr><td>July</td><td style="text-align: end">$41,200</td><td style="text-align: end">1,204</td></tr>
+            <tr><td>August</td><td style="text-align: end">$45,231</td><td style="text-align: end">1,318</td></tr>
+            <tr><td>September</td><td style="text-align: end">$48,960</td><td style="text-align: end">1,402</td></tr>
           </tbody>
         </table>
       </div>
@@ -82,7 +89,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <h3 class="teaser-title">Click here to start the presentation!</h3>
     <p class="teaser-text">The system in numbers - every feature of defuss-shadcn, slide by slide.</p>
     <template class="teaser-content">
-      <iframe src="deck-system-in-numbers.html" title="The System in Numbers" style="display:block; inline-size:100%; aspect-ratio:16/9; border:0; border-radius:var(--radius-xl);"></iframe>
+      <iframe
+        src="deck-system-in-numbers.html"
+        title="The System in Numbers"
+        style="display: block; inline-size: 100%; aspect-ratio: 16/9; border: 0; border-radius: var(--radius-xl)"
+      ></iframe>
     </template>
   </section>
 </div>
@@ -90,12 +101,24 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="With a poster" hint="A .teaser-media image behind the text, a glass play button: the video and its file load only once it is played - and then it starts." height="26"
 <section class="teaser" data-ratio="16/9" aria-label="The product tour">
-  <img class="teaser-media" src="images/mk-wide3.png" alt="">
-  <button class="play-button" type="button" data-variant="glass" data-size="lg" aria-label="Play the product tour"></button>
+  <img class="teaser-media" src="images/mk-wide3.png" alt="" />
+  <button
+    class="play-button"
+    type="button"
+    data-variant="glass"
+    data-size="lg"
+    aria-label="Play the product tour"
+  ></button>
   <p class="teaser-title">The product tour</p>
   <p class="teaser-text">Two minutes, no sign-up.</p>
   <template class="teaser-content">
-    <video src="videos/demo.mp4" controls autoplay playsinline style="inline-size:100%; display:block; border-radius:var(--radius-xl);"></video>
+    <video
+      src="videos/demo.mp4"
+      controls
+      autoplay
+      playsinline
+      style="inline-size: 100%; display: block; border-radius: var(--radius-xl)"
+    ></video>
   </template>
 </section>
 ```

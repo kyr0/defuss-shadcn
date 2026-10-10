@@ -783,12 +783,18 @@ if (!document.__iframeInit) {
         return;
       if (data.kind === "hello") {
         if (document.documentElement.hasAttribute("data-iframe-child"))
-          sendToParent({ type: PROTOCOL, kind: "size", height: Math.ceil(document.documentElement.getBoundingClientRect().height) });
+          sendToParent({
+            type: PROTOCOL,
+            kind: "size",
+            height: Math.ceil(document.documentElement.getBoundingClientRect().height)
+          });
         return;
       }
       if (data.kind !== "message")
         return;
-      document.dispatchEvent(new CustomEvent("iframe-message", { detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin } }));
+      document.dispatchEvent(new CustomEvent("iframe-message", {
+        detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin }
+      }));
       return;
     }
     const el = dfDollar6(".iframe[data-init]").toArray().find((f) => frameOf(f)?.contentWindow === e.source);
@@ -797,7 +803,10 @@ if (!document.__iframeInit) {
     if (data.kind === "size" && dfDollar6(el).attr("data-fit") === "content" && typeof data.height === "number")
       setHeight(el, data.height);
     if (data.kind === "message") {
-      el.dispatchEvent(new CustomEvent("iframe-message", { bubbles: true, detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin } }));
+      el.dispatchEvent(new CustomEvent("iframe-message", {
+        bubbles: true,
+        detail: { name: String(data.name ?? ""), detail: data.detail, origin: e.origin }
+      }));
     }
   });
 }
@@ -1840,7 +1849,10 @@ function syncSelection(table, announce = true) {
   }
   if (announce) {
     const selected = rows.filter((r) => r.getAttribute("aria-selected") === "true");
-    table.dispatchEvent(new CustomEvent("table-select", { bubbles: true, detail: { rows: selected, count: selected.length } }));
+    table.dispatchEvent(new CustomEvent("table-select", {
+      bubbles: true,
+      detail: { rows: selected, count: selected.length }
+    }));
   }
 }
 function selectRows(table, which) {
@@ -1856,7 +1868,10 @@ function selectRows(table, which) {
   syncSelection(table);
 }
 function announceMove(table, row) {
-  table.dispatchEvent(new CustomEvent("table-reorder", { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
+  table.dispatchEvent(new CustomEvent("table-reorder", {
+    bubbles: true,
+    detail: { row, index: bodyRows(table).indexOf(row) }
+  }));
 }
 function moved(table, row) {
   dfDollar8(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
@@ -1974,7 +1989,10 @@ var tableApi = componentState8({
   apply: (table, state) => triggerStateChange8(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
-    return { name: table.dataset.stateName || "default", config: { ...state.config, sort: table._sort ?? null, selected } };
+    return {
+      name: table.dataset.stateName || "default",
+      config: { ...state.config, sort: table._sort ?? null, selected }
+    };
   },
   markup: (el, state) => {
     enhanceHead(el);
@@ -2002,7 +2020,10 @@ function init8() {
         else
           sortBy(table, col, next);
         table.dataset.stateName = next === "none" ? "default" : "sorted";
-        table.dispatchEvent(new CustomEvent("table-sort", { bubbles: true, detail: { column: col, direction: next } }));
+        table.dispatchEvent(new CustomEvent("table-sort", {
+          bubbles: true,
+          detail: { column: col, direction: next }
+        }));
       });
     });
     const pre = dfDollar8(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
@@ -2148,7 +2169,10 @@ function onCheck(tree, item) {
     rollUp(tree, item);
   }
   syncAria(tree);
-  tree.dispatchEvent(new CustomEvent("tree-check", { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
+  tree.dispatchEvent(new CustomEvent("tree-check", {
+    bubbles: true,
+    detail: { item, checked: box.checked, values: checkedValues(tree) }
+  }));
 }
 function initChecks(tree) {
   let n = 0;
@@ -2183,7 +2207,10 @@ function clearDrop(tree) {
 function announceMove2(tree, item) {
   const parentItem = item.parentElement.closest('[role="treeitem"]');
   const index = [...item.parentElement.children].indexOf(item);
-  tree.dispatchEvent(new CustomEvent("tree-reorder", { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
+  tree.dispatchEvent(new CustomEvent("tree-reorder", {
+    bubbles: true,
+    detail: { item, parent: parentItem ?? tree, index }
+  }));
 }
 function initSortable(tree) {
   let dragged = null;
@@ -2547,7 +2574,10 @@ function renderRange(owner) {
 }
 function syncRange(owner) {
   const r = rangeState(owner);
-  for (const [key, value] of [["rangeStart", r.start], ["rangeEnd", r.end]]) {
+  for (const [key, value] of [
+    ["rangeStart", r.start],
+    ["rangeEnd", r.end]
+  ]) {
     if (value)
       owner.dataset[key] = value;
     else
@@ -2607,7 +2637,12 @@ function dayData(days, iso, full) {
   if (d.label)
     attrs += ` title="${esc(d.label)}"`;
   const aria = ` aria-label="${esc([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
-  return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "", aria, blocked: d.disabled === true };
+  return {
+    attrs,
+    note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "",
+    aria,
+    blocked: d.disabled === true
+  };
 }
 var YEARS_PER_PAGE = 12;
 var pageStart = (year) => year - (year % YEARS_PER_PAGE + YEARS_PER_PAGE) % YEARS_PER_PAGE;
@@ -2734,7 +2769,10 @@ function setView(el, view) {
     const pick = dfDollar10(panel).find(".calendar-pick[aria-current]:not([disabled])").get(0) ?? dfDollar10(panel).find(".calendar-pick:not([disabled])").get(0);
     pick?.focus();
   }
-  el.dispatchEvent(new CustomEvent("calendar:view", { bubbles: true, detail: { view, year: st.year, month: st.month } }));
+  el.dispatchEvent(new CustomEvent("calendar:view", {
+    bubbles: true,
+    detail: { view, year: st.year, month: st.month }
+  }));
 }
 var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null)) => {
   const full = locale.full;
@@ -3646,5 +3684,5 @@ function init12() {
 init12();
 new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
-//# debugId=DCADD3053C97199164756E2164756E21
+//# debugId=07483208BC41575264756E2164756E21
 //# sourceMappingURL=data-display.js.map

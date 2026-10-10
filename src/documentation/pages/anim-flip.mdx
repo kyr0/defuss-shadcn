@@ -28,9 +28,9 @@ Flip is the rotational reveal: the element tips through 70° on a shared 900px p
     font-weight: 600;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:0.85rem;">
+<div style="display: flex; flex-direction: column; gap: 0.85rem">
   <div id="anim-flip-target">Flip me</div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-flip-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-flip-out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" data-flip-dir="north" aria-pressed="true">N</button>
@@ -42,9 +42,9 @@ Flip is the rotational reveal: the element tips through 70° on a shared 900px p
     <button class="btn" data-variant="outline" data-size="sm" data-flip-op="finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" data-flip-op="reset">Reset</button>
   </div>
-  <div style="display:flex; align-items:center; gap:0.75rem;">
+  <div style="display: flex; align-items: center; gap: 0.75rem">
     <label for="anim-flip-duration" class="text-sm">Duration</label>
-    <input class="input" id="anim-flip-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <input class="input" id="anim-flip-duration" type="number" min="50" step="50" value="1500" style="width: 6rem" />
     <label for="anim-flip-easing" class="text-sm">Easing</label>
     <select class="select" id="anim-flip-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
@@ -76,8 +76,7 @@ Flip is the rotational reveal: the element tips through 70° on a shared 900px p
   document.querySelectorAll('[data-flip-dir]').forEach((btn) => {
     btn.addEventListener('click', () => {
       direction = btn.dataset.flipDir;
-      document.querySelectorAll('[data-flip-dir]').forEach((b) =>
-        b.setAttribute('aria-pressed', String(b === btn)));
+      document.querySelectorAll('[data-flip-dir]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
     });
   });
   document.querySelectorAll('[data-flip-op]').forEach((btn) => {
@@ -87,18 +86,45 @@ Flip is the rotational reveal: the element tips through 70° on a shared 900px p
 ```
 
 ```html example label="Scroll-bound flip" schema="none" hint="The scroller's progress drives flipIn: at the top the card is tipped away, at the bottom it rests flat. ScrollTimeline where the platform has it, a rAF-throttled scrub elsewhere."
-<div id="anim-flip-stage" style="height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem;">
-  <div style="height:600px; display:flex; align-items:flex-end;">
-    <div id="anim-flip-scroll-target" style="width:160px; height:100px; display:grid; place-items:center; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground); font-weight:600;">Scroll-driven</div>
+<div
+  id="anim-flip-stage"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div style="height: 600px; display: flex; align-items: flex-end">
+    <div
+      id="anim-flip-scroll-target"
+      style="
+        width: 160px;
+        height: 100px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+        font-weight: 600;
+      "
+      >Scroll-driven</div
+    >
   </div>
 </div>
 <script type="module">
   // binds on click so the demo only takes over the scroll position on demand
-  document.getElementById('anim-flip-stage').addEventListener('click', () => {
-    df$.anim.flipIn.play(document.getElementById('anim-flip-scroll-target'), {
-      scroll: { target: document.getElementById('anim-flip-stage'), axis: 'y' },
-    });
-  }, { once: true });
+  document.getElementById('anim-flip-stage').addEventListener(
+    'click',
+    () => {
+      df$.anim.flipIn.play(document.getElementById('anim-flip-scroll-target'), {
+        scroll: { target: document.getElementById('anim-flip-stage'), axis: 'y' },
+      });
+    },
+    { once: true },
+  );
 </script>
 ```
 

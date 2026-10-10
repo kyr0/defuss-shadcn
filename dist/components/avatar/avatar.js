@@ -72,7 +72,9 @@ export const avatarApi = componentState({
 df$.avatarApi = avatarApi;
 df$.avatarStates = avatarStates;
 function init() {
-    dfDollar('.avatar:not([data-init])').toArray().forEach((wrapper) => {
+    dfDollar('.avatar:not([data-init])')
+        .toArray()
+        .forEach((wrapper) => {
         wrapper.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(wrapper, avatarApi);

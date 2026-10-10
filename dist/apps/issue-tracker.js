@@ -2119,15 +2119,9 @@ function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
     case "wipeOut":
       return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
     case "irisIn":
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case "irisOut":
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
   }
@@ -3160,7 +3154,10 @@ function attachPersistence(store, options) {
 var areas = {};
 var inMemory = new Set;
 function storageOf(area) {
-  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+  return areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area)
+  });
 }
 function sameShape(initial) {
   const check = (model, value) => {
@@ -3876,7 +3873,12 @@ function dataSource(rows, options = {}) {
         } : undefined
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows
+      };
       cacheKey = key;
       return cache;
     },
@@ -3913,7 +3915,14 @@ function parseFilter(field, text, kind = "text") {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m)
       return null;
-    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    const ops = {
+      ">=": "gte",
+      "<=": "lte",
+      "!=": "neq",
+      ">": "gt",
+      "<": "lt",
+      "=": "eq"
+    };
     return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
   }
   return { field, op: "contains", value: raw };
@@ -4550,7 +4559,10 @@ function readColumns(grid) {
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
   const where = viewPersistence(grid, "data-grid", String(dfDollar4(".data-grid").toArray().indexOf(grid)), config || {});
-  grid._saved = where ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v) }) : null;
+  grid._saved = where ? persisted(where.key, {}, {
+    area: where.area,
+    validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v)
+  }) : null;
   const kept = {};
   for (const k of SAVED_KEYS)
     if (Array.isArray(grid._saved?.value[k]))
@@ -4847,7 +4859,13 @@ function renderFooter(grid, config) {
   if (!grid._parts.pager) {
     const pager = document.createElement("div");
     pager.className = "data-grid-pager";
-    for (const [act, name] of [["first", "First page"], ["prev", "Previous page"], ["label"], ["next", "Next page"], ["last", "Last page"]]) {
+    for (const [act, name] of [
+      ["first", "First page"],
+      ["prev", "Previous page"],
+      ["label"],
+      ["next", "Next page"],
+      ["last", "Last page"]
+    ]) {
       if (act === "label") {
         const label = document.createElement("span");
         label.className = "data-grid-page-label";
@@ -4931,7 +4949,9 @@ function toggleRow(grid, index, mode) {
   else if (mode === "range" && grid._anchor != null) {
     const from = Math.min(grid._anchor, index);
     const to = Math.max(grid._anchor, index);
-    next = [...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])];
+    next = [
+      ...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])
+    ];
   } else {
     next = grid._selected.has(id) ? [...grid._selected].filter((x) => x !== id) : [...grid._selected, id];
   }
@@ -5051,7 +5071,10 @@ function onKeydown2(grid, e) {
           query(grid, { sorters: cycleSort(configOf(grid).sorters, column.sortField, e.shiftKey), page: 0 });
         next = [-1, col];
       } else if (entry) {
-        grid.dispatchEvent(new CustomEvent("data-grid-activate", { bubbles: true, detail: { record: entry.row, index: row } }));
+        grid.dispatchEvent(new CustomEvent("data-grid-activate", {
+          bubbles: true,
+          detail: { record: entry.row, index: row }
+        }));
       }
       break;
     default:
@@ -5392,7 +5415,10 @@ function activate(menu, item) {
   if (role === "menuitemcheckbox") {
     const checked = item.getAttribute("aria-checked") !== "true";
     item.setAttribute("aria-checked", String(checked));
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked }
+    }));
     return;
   }
   if (role === "menuitemradio") {
@@ -5401,10 +5427,16 @@ function activate(menu, item) {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true }
+    }));
     return;
   }
-  item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  item.dispatchEvent(new CustomEvent("dropdown:select", {
+    bubbles: true,
+    detail: { item, value: item.dataset.value ?? item.textContent.trim() }
+  }));
   try {
     rootOf2(menu).hidePopover();
   } catch {}
@@ -5721,7 +5753,10 @@ function commit(el, v, emit = true) {
   const done = v >= maxOf(el);
   el.dataset.stateName = done ? "complete" : "default";
   if (emit)
-    el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+    el.dispatchEvent(new CustomEvent("progress:change", {
+      bubbles: true,
+      detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) }
+    }));
   if (done && before !== "complete")
     el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
 }
@@ -5806,7 +5841,12 @@ var progressApi = componentState({
     const indeterminate = el.position < 0;
     return {
       name: el.dataset.stateName || "default",
-      config: { ...state.config, value: indeterminate ? null : el.value, max: el.max, percent: indeterminate ? null : el.value / maxOf(el) }
+      config: {
+        ...state.config,
+        value: indeterminate ? null : el.value,
+        max: el.max,
+        percent: indeterminate ? null : el.value / maxOf(el)
+      }
     };
   },
   markup: (el, state) => applyMarkup7(el, state.name, state.config)
@@ -5967,7 +6007,10 @@ function commit2(el, v) {
   setValue(el, v);
   const done = v >= maxOf2(el);
   el.dataset.stateName = done ? "complete" : "default";
-  el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: v, max: maxOf2(el), percent: v / maxOf2(el) } }));
+  el.dispatchEvent(new CustomEvent("progress:change", {
+    bubbles: true,
+    detail: { value: v, max: maxOf2(el), percent: v / maxOf2(el) }
+  }));
   if (done && before !== "complete")
     el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
 }
@@ -6311,7 +6354,10 @@ function syncSelection(table, announce = true) {
   }
   if (announce) {
     const selected = rows.filter((r) => r.getAttribute("aria-selected") === "true");
-    table.dispatchEvent(new CustomEvent("table-select", { bubbles: true, detail: { rows: selected, count: selected.length } }));
+    table.dispatchEvent(new CustomEvent("table-select", {
+      bubbles: true,
+      detail: { rows: selected, count: selected.length }
+    }));
   }
 }
 function selectRows(table, which) {
@@ -6327,7 +6373,10 @@ function selectRows(table, which) {
   syncSelection(table);
 }
 function announceMove(table, row) {
-  table.dispatchEvent(new CustomEvent("table-reorder", { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
+  table.dispatchEvent(new CustomEvent("table-reorder", {
+    bubbles: true,
+    detail: { row, index: bodyRows(table).indexOf(row) }
+  }));
 }
 function moved(table, row) {
   dfDollar10(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
@@ -6445,7 +6494,10 @@ var tableApi = componentState({
   apply: (table, state) => triggerStateChange10(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
-    return { name: table.dataset.stateName || "default", config: { ...state.config, sort: table._sort ?? null, selected } };
+    return {
+      name: table.dataset.stateName || "default",
+      config: { ...state.config, sort: table._sort ?? null, selected }
+    };
   },
   markup: (el, state) => {
     enhanceHead(el);
@@ -6473,7 +6525,10 @@ function init10() {
         else
           sortBy(table, col, next);
         table.dataset.stateName = next === "none" ? "default" : "sorted";
-        table.dispatchEvent(new CustomEvent("table-sort", { bubbles: true, detail: { column: col, direction: next } }));
+        table.dispatchEvent(new CustomEvent("table-sort", {
+          bubbles: true,
+          detail: { column: col, direction: next }
+        }));
       });
     });
     const pre = dfDollar10(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
@@ -6602,7 +6657,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -6762,7 +6820,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -6793,7 +6854,10 @@ var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
   apply: (toggle, state) => triggerStateChange12(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar12(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  read: (toggle, state) => ({
+    name: dfDollar12(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
     applyMarkup11(toggle, state.name, authored ? authored[1] : "false");
@@ -6913,6 +6977,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=7002A263CF6C623564756E2164756E21
+//# debugId=1E85A6258A54EA3F64756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

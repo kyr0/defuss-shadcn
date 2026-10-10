@@ -1,15 +1,28 @@
 @layer components {
   .breadcrumb-list {
-    display: flex; flex-wrap: wrap; align-items: center;
-    gap: 0.375rem; list-style: none; margin: 0; padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
     font-size: 0.875rem;
   }
-  .breadcrumb-item { display: inline-flex; align-items: center; gap: 0.375rem; }
+  .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
   .breadcrumb-link {
-    color: var(--muted-foreground); text-decoration: none;
-    border-radius: var(--radius-sm); outline: none;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    outline: none;
     transition: color 150ms ease;
-    &:hover { color: var(--foreground); }
+    &:hover {
+      color: var(--foreground);
+    }
     /* only a real link underlines - a .breadcrumb-link button (dropdown /
        ellipsis trigger) is not navigation and keeps the color-only hover */
     &:is(a[href]):hover {
@@ -17,43 +30,81 @@
       text-decoration-thickness: 1px;
       text-underline-offset: 3px;
     }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
   }
   /* -- Sizes ------------------------------------------------------
      data-size on the .breadcrumb nav scales the trail's type and separators,
      mirroring the shared field/button ladder (md = 0.875rem = default). */
-  .breadcrumb[data-size="xs"] .breadcrumb-list { font-size: 0.75rem; }
-  .breadcrumb[data-size="xs"] .breadcrumb-separator svg { width: 0.75rem; height: 0.75rem; }
-  .breadcrumb[data-size="sm"] .breadcrumb-list { font-size: 0.8125rem; }
-  .breadcrumb[data-size="md"] .breadcrumb-list { font-size: 0.875rem; }
-  .breadcrumb[data-size="lg"] .breadcrumb-list { font-size: 1rem; }
-  .breadcrumb[data-size="lg"] .breadcrumb-separator svg { width: 1rem; height: 1rem; }
-  .breadcrumb[data-size="xl"] .breadcrumb-list { font-size: 1.125rem; }
-  .breadcrumb[data-size="xl"] .breadcrumb-separator svg { width: 1.125rem; height: 1.125rem; }
+  .breadcrumb[data-size="xs"] .breadcrumb-list {
+    font-size: 0.75rem;
+  }
+  .breadcrumb[data-size="xs"] .breadcrumb-separator svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+  .breadcrumb[data-size="sm"] .breadcrumb-list {
+    font-size: 0.8125rem;
+  }
+  .breadcrumb[data-size="md"] .breadcrumb-list {
+    font-size: 0.875rem;
+  }
+  .breadcrumb[data-size="lg"] .breadcrumb-list {
+    font-size: 1rem;
+  }
+  .breadcrumb[data-size="lg"] .breadcrumb-separator svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .breadcrumb[data-size="xl"] .breadcrumb-list {
+    font-size: 1.125rem;
+  }
+  .breadcrumb[data-size="xl"] .breadcrumb-separator svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
 
   .breadcrumb-separator {
-    color: var(--muted-foreground); font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
     /* flex (not inline): an inline <svg> sits on the text baseline, so icon
        separators render a few px above the labels' optical center */
-    display: flex; align-items: center;
-    & svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+    display: flex;
+    align-items: center;
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      flex-shrink: 0;
+    }
 
     /* RTL: auto-flip chevron separators */
-    [dir="rtl"] & svg { scale: -1 1; }
+    [dir="rtl"] & svg {
+      scale: -1 1;
+    }
   }
-  .breadcrumb-page { color: var(--foreground); font-weight: 400; }
+  .breadcrumb-page {
+    color: var(--foreground);
+    font-weight: 400;
+  }
 
   /* -- Icons / emoji in front of a crumb ---------------------------
      An <svg> or a <span class="breadcrumb-icon"> (emoji) before the label:
      link and page line them up on the label's center and size them to the
      text (1em - so data-size scales them too). */
-  .breadcrumb-link, .breadcrumb-page {
+  .breadcrumb-link,
+  .breadcrumb-page {
     &:has(> :is(svg, .breadcrumb-icon)) {
       display: inline-flex;
       align-items: center;
       gap: 0.375em;
     }
-    & > svg { width: 1em; height: 1em; flex-shrink: 0; }
+    & > svg {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+    }
   }
   .breadcrumb-icon {
     display: inline-grid;
@@ -65,27 +116,52 @@
     font-style: normal;
   }
   .breadcrumb-ellipsis {
-    display: flex; align-items: center; justify-content: center;
-    width: 1.5rem; height: 1.5rem; color: var(--muted-foreground);
-    & span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--muted-foreground);
+    & span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
-    .breadcrumb-link { transition: none; }
+    .breadcrumb-link {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .breadcrumb-link { text-decoration: underline; }
-    .breadcrumb-page { font-weight: 600; }
+    .breadcrumb-link {
+      text-decoration: underline;
+    }
+    .breadcrumb-page {
+      font-weight: 600;
+    }
   }
 
   @media (forced-colors: active) {
     .breadcrumb-link {
-      &:hover { forced-color-adjust: none; color: HighlightText; background: Highlight; }
+      &:hover {
+        forced-color-adjust: none;
+        color: HighlightText;
+        background: Highlight;
+      }
     }
-    .breadcrumb-page { color: CanvasText; }
-    .breadcrumb-separator { color: GrayText; }
+    .breadcrumb-page {
+      color: CanvasText;
+    }
+    .breadcrumb-separator {
+      color: GrayText;
+    }
   }
 }

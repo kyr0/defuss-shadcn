@@ -197,7 +197,12 @@ function renderItems(tree) {
 /** evaluate the config's query, re-render; returns the visible count */
 function refresh(tree, config, previous) {
   if (!tree._source) return 0;
-  tree._result = tree._source.query({ filters: config.filters, sorters: config.sorters, expanded: config.expanded, collapsed: config.collapsed });
+  tree._result = tree._source.query({
+    filters: config.filters,
+    sorters: config.sorters,
+    expanded: config.expanded,
+    collapsed: config.collapsed,
+  });
   tree._gen = (tree._gen || 0) + 1;
   const prev = previous?.config || {};
   if (JSON.stringify(prev.filters ?? []) !== JSON.stringify(config.filters ?? [])) {
@@ -226,7 +231,12 @@ function triggerStateChange(tree, state, previous) {
   applyMarkup(tree, { name, config: state.config });
   tree.dataset.stateName = name;
   if (tree._saved) {
-    tree._saved.set({ filters: state.config.filters ?? [], sorters: state.config.sorters ?? [], expanded: state.config.expanded ?? [], selected: state.config.selected ?? null });
+    tree._saved.set({
+      filters: state.config.filters ?? [],
+      sorters: state.config.sorters ?? [],
+      expanded: state.config.expanded ?? [],
+      selected: state.config.selected ?? null,
+    });
   }
   // bound filter inputs show the query (a restored one too) - never the one being typed in
   if (tree.id) {
@@ -242,9 +252,21 @@ function triggerStateChange(tree, state, previous) {
 const KEPT = ['filters', 'sorters', 'expanded'];
 function attachPersistence(tree, config) {
   tree._saved?.destroy();
-  const where = viewPersistence(tree, 'data-tree', String(dfDollar('.data-tree').toArray().indexOf(tree)), config || {});
+  const where = viewPersistence(
+    tree,
+    'data-tree',
+    String(dfDollar('.data-tree').toArray().indexOf(tree)),
+    config || {},
+  );
   tree._saved = where
-    ? persisted<Record<string, unknown>>(where.key, {}, { area: where.area, validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v) })
+    ? persisted<Record<string, unknown>>(
+        where.key,
+        {},
+        {
+          area: where.area,
+          validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v),
+        },
+      )
     : null;
   const kept: Record<string, unknown> = {};
   for (const k of KEPT) if (Array.isArray(tree._saved?.value[k])) kept[k] = tree._saved.value[k];
@@ -267,7 +289,8 @@ df$.dataTreeStates = dataTreeStates;
 
 // -- interaction ------------------------------------------------------------------
 
-const query = (tree, patch) => dataTreeApi.setState(tree, tree.store.value.name === 'loading' ? 'loading' : 'default', patch);
+const query = (tree, patch) =>
+  dataTreeApi.setState(tree, tree.store.value.name === 'loading' ? 'loading' : 'default', patch);
 const entryAt = (tree, index) => tree._result?.entries[index];
 
 function setExpanded(tree, index, open) {
@@ -294,7 +317,12 @@ function select(tree, index) {
   if (!entry) return;
   query(tree, { selected: entry.row[tree._source.idField] });
   // Fires when an item is selected (click, Enter, Space) - its record and its tree meta (depth, hasChildren ...).
-  tree.dispatchEvent(new CustomEvent<DataTreeSelectDetail>('data-tree-select', { bubbles: true, detail: { record: entry.row, meta: entry.meta } }));
+  tree.dispatchEvent(
+    new CustomEvent<DataTreeSelectDetail>('data-tree-select', {
+      bubbles: true,
+      detail: { record: entry.row, meta: entry.meta },
+    }),
+  );
 }
 
 /** move the active item and keep it on screen */
@@ -312,8 +340,12 @@ function onKeydown(tree, e) {
   if (!entry) return;
   const page = Math.max(1, Math.floor(tree.clientHeight / tree._rowHeight) - 1);
   switch (e.key) {
-    case 'ArrowDown': activate(tree, index + 1); break;
-    case 'ArrowUp': activate(tree, index - 1); break;
+    case 'ArrowDown':
+      activate(tree, index + 1);
+      break;
+    case 'ArrowUp':
+      activate(tree, index - 1);
+      break;
     case 'ArrowRight':
       // closed: open it; open: step to its first child
       if (entry.meta.hasChildren && !setExpanded(tree, index, true)) activate(tree, index + 1);
@@ -325,10 +357,18 @@ function onKeydown(tree, e) {
         if (parent >= 0) activate(tree, parent);
       }
       break;
-    case 'Home': activate(tree, 0); break;
-    case 'End': activate(tree, tree._result.entries.length - 1); break;
-    case 'PageDown': activate(tree, index + page); break;
-    case 'PageUp': activate(tree, index - page); break;
+    case 'Home':
+      activate(tree, 0);
+      break;
+    case 'End':
+      activate(tree, tree._result.entries.length - 1);
+      break;
+    case 'PageDown':
+      activate(tree, index + page);
+      break;
+    case 'PageUp':
+      activate(tree, index - page);
+      break;
     case 'Enter':
     case ' ':
       select(tree, index);
@@ -336,7 +376,9 @@ function onKeydown(tree, e) {
     case '*': {
       // APG: open every sibling of the active item
       const parent = entry.meta.parentId ?? null;
-      const ids = tree._result.entries.filter((x) => (x.meta.parentId ?? null) === parent && x.meta.hasChildren).map((x) => x.row[tree._source.idField]);
+      const ids = tree._result.entries
+        .filter((x) => (x.meta.parentId ?? null) === parent && x.meta.hasChildren)
+        .map((x) => x.row[tree._source.idField]);
       query(tree, { expanded: [...new Set([...(configOf(tree).expanded || []), ...ids])] });
       break;
     }
@@ -396,14 +438,20 @@ df$.dataTree = {
     tree._render = options.render || null;
     tree._sourceOptions = options;
     // options.query starts the view; a kept view (options.persist moves it) wins
-    if (tree.store) dataTreeApi.setState(tree, 'default', { ...options.query, ...(options.persist ? attachPersistence(tree, options.persist) : {}) });
+    if (tree.store)
+      dataTreeApi.setState(tree, 'default', {
+        ...options.query,
+        ...(options.persist ? attachPersistence(tree, options.persist) : {}),
+      });
   },
   /**
    * Merge into the query: { filters?, sorters?, expanded?, selected? }.
    * @param target - the .data-tree element or its selector
    * @param patch - the query keys to change
    */
-  query: (target: string | HTMLElement, patch: DataTreeQuery): void => { query(resolve(target), patch); },
+  query: (target: string | HTMLElement, patch: DataTreeQuery): void => {
+    query(resolve(target), patch);
+  },
   /**
    * Open every branch.
    * @param target - the .data-tree element or its selector
@@ -436,43 +484,57 @@ df$.dataTree = {
 // -- init --------------------------------------------------------------------------
 
 function init() {
-  dfDollar('.data-tree:not([data-init])').toArray().forEach((tree) => {
-    tree.dataset.init = '';
-    tree._uid = tree.id || `data-tree-${++uid}`;
-    const sizer = document.createElement('div');
-    sizer.className = 'data-tree-sizer';
-    const pool = document.createElement('div');
-    pool.className = 'data-tree-items';
-    pool.setAttribute('role', 'presentation');
-    sizer.append(pool);
-    dfDollar(tree).append(sizer);
-    tree._sizer = sizer;
-    tree._pool = pool;
-    tree._active = 0;
-    tree._rowHeight = parseFloat(getComputedStyle(tree).getPropertyValue('--data-tree-row-height')) || 32;
-    tree.setAttribute('role', 'tree');
-    if (!tree.hasAttribute('tabindex')) tree.tabIndex = 0;
+  dfDollar('.data-tree:not([data-init])')
+    .toArray()
+    .forEach((tree) => {
+      tree.dataset.init = '';
+      tree._uid = tree.id || `data-tree-${++uid}`;
+      const sizer = document.createElement('div');
+      sizer.className = 'data-tree-sizer';
+      const pool = document.createElement('div');
+      pool.className = 'data-tree-items';
+      pool.setAttribute('role', 'presentation');
+      sizer.append(pool);
+      dfDollar(tree).append(sizer);
+      tree._sizer = sizer;
+      tree._pool = pool;
+      tree._active = 0;
+      tree._rowHeight = parseFloat(getComputedStyle(tree).getPropertyValue('--data-tree-row-height')) || 32;
+      tree.setAttribute('role', 'tree');
+      if (!tree.hasAttribute('tabindex')) tree.tabIndex = 0;
 
-    const early = tree._sourceOptions || {};
-    const config = { filters: [], sorters: [], expanded: [], collapsed: [], selected: null, ...early.query, ...attachPersistence(tree, early.persist) };
+      const early = tree._sourceOptions || {};
+      const config = {
+        filters: [],
+        sorters: [],
+        expanded: [],
+        collapsed: [],
+        selected: null,
+        ...early.query,
+        ...attachPersistence(tree, early.persist),
+      };
 
-    let queued = false;
-    tree.addEventListener('scroll', () => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => {
-        queued = false;
-        renderItems(tree);
-      });
-    }, { passive: true });
-    new ResizeObserver(() => renderItems(tree)).observe(tree);
-    tree.addEventListener('click', (e) => onClick(tree, e));
-    tree.addEventListener('keydown', (e) => onKeydown(tree, e));
+      let queued = false;
+      tree.addEventListener(
+        'scroll',
+        () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            renderItems(tree);
+          });
+        },
+        { passive: true },
+      );
+      new ResizeObserver(() => renderItems(tree)).observe(tree);
+      tree.addEventListener('click', (e) => onClick(tree, e));
+      tree.addEventListener('keydown', (e) => onKeydown(tree, e));
 
-    // el.store + el.api (AGENTS.md "State through stores"): no records yet = loading
-    bindComponent(tree, dataTreeApi, { name: tree._source ? 'default' : 'loading', config });
-    dataTreeApi.setState(tree, tree._source ? 'default' : 'loading', config);
-  });
+      // el.store + el.api (AGENTS.md "State through stores"): no records yet = loading
+      bindComponent(tree, dataTreeApi, { name: tree._source ? 'default' : 'loading', config });
+      dataTreeApi.setState(tree, tree._source ? 'default' : 'loading', config);
+    });
 }
 
 init();

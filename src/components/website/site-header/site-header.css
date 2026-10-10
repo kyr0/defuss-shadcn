@@ -40,7 +40,11 @@
     color: var(--primary);
     text-decoration: none;
 
-    & svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+    & svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
   }
 
   .mk-header-name {
@@ -54,14 +58,26 @@
      The nav composes the navigation-menu component (.nav-menu-list /
      .nav-menu-trigger / .nav-menu-content) - its dropdown popovers are the
      native Popover API, so the header stays CSS-only. */
-  .mk-header-nav { display: none; align-items: center; }
+  .mk-header-nav {
+    display: none;
+    align-items: center;
+  }
 
-  .mk-header-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .mk-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
 
   /* narrow: the nav moves into a Sheet behind a menu button; secondary
      actions (.mk-header-wide) step aside */
-  .mk-header-menu { display: inline-flex; }
-  .mk-header-actions .mk-header-wide { display: none; }
+  .mk-header-menu {
+    display: inline-flex;
+  }
+  .mk-header-actions .mk-header-wide {
+    display: none;
+  }
 
   /* the navigation inside the sheet: big tap targets, groups with a label */
   .mk-header-sheet-nav {
@@ -85,10 +101,22 @@
       font-weight: 500;
       text-decoration: none;
 
-      &:hover { background: var(--accent); color: var(--accent-foreground); }
-      &[aria-current] { background: var(--accent); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
-      & small { color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 400; }
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &[aria-current] {
+        background: var(--accent);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -2px;
+      }
+      & small {
+        color: var(--muted-foreground);
+        font-size: 0.8125rem;
+        font-weight: 400;
+      }
     }
   }
   .mk-header-sheet-label {
@@ -100,16 +128,28 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .mk-header-sheet-actions { display: grid; gap: 0.5rem; }
-  .mk-header-sheet-actions .btn { width: 100%; }
-
-  @container mk-header (min-width: 40rem) {
-    .mk-header-inner { padding-inline: 2rem; }
-    .mk-header-nav { display: flex; }
-    .mk-header-menu { display: none; }
-    .mk-header-actions .mk-header-wide { display: inline-flex; }
+  .mk-header-sheet-actions {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .mk-header-sheet-actions .btn {
+    width: 100%;
   }
 
+  @container mk-header (min-width: 40rem) {
+    .mk-header-inner {
+      padding-inline: 2rem;
+    }
+    .mk-header-nav {
+      display: flex;
+    }
+    .mk-header-menu {
+      display: none;
+    }
+    .mk-header-actions .mk-header-wide {
+      display: inline-flex;
+    }
+  }
 
   /* -- variants ------------------------------------------------- */
   /* floating: a blurred pill that hovers over the page (sticky) */
@@ -130,7 +170,9 @@
       box-shadow: var(--shadow-lg);
       backdrop-filter: blur(12px) saturate(1.4);
     }
-    & .btn { border-radius: 999px; }
+    & .btn {
+      border-radius: 999px;
+    }
   }
 
   /* an announcement bar above the header row */
@@ -146,10 +188,26 @@
     font-size: 0.8125rem;
     text-align: center;
 
-    & p { margin: 0; }
-    & a { display: inline-flex; align-items: center; gap: 0.25rem; color: inherit; font-weight: 600; text-underline-offset: 3px; }
-    & svg { width: 0.875rem; height: 0.875rem; }
-    & a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--radius-sm); }
+    & p {
+      margin: 0;
+    }
+    & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: inherit;
+      font-weight: 600;
+      text-underline-offset: 3px;
+    }
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+    & a:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
   }
 
   /* overlay: transparent over a hero picture, white text */
@@ -163,9 +221,16 @@
     & .mk-header-brand,
     & .mk-header-name,
     & .nav-menu-link,
-    & .btn[data-variant="ghost"] { color: inherit; }
-    & .nav-menu-link:hover { background: oklch(1 0 0 / 0.12); color: inherit; }
-    & .nav-menu-link[aria-current] { background: oklch(1 0 0 / 0.16); }
+    & .btn[data-variant="ghost"] {
+      color: inherit;
+    }
+    & .nav-menu-link:hover {
+      background: oklch(1 0 0 / 0.12);
+      color: inherit;
+    }
+    & .nav-menu-link[aria-current] {
+      background: oklch(1 0 0 / 0.16);
+    }
   }
 
   /* centered: the brand in the middle, the nav left, the actions right */
@@ -174,10 +239,25 @@
     /* minmax(0, …): a wide actions column must not push the brand off-center */
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 
-    & .mk-header-brand { grid-column: 2; grid-row: 1; }
-    & .mk-header-nav { grid-column: 1; grid-row: 1; justify-self: start; }
-    & .mk-header-actions { grid-column: 3; grid-row: 1; justify-self: end; }
-    & .mk-header-name { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+    & .mk-header-brand {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    & .mk-header-nav {
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: start;
+    }
+    & .mk-header-actions {
+      grid-column: 3;
+      grid-row: 1;
+      justify-self: end;
+    }
+    & .mk-header-name {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
   }
 
   /* search: an inline search field (wide only - the sheet carries it when narrow) */
@@ -187,12 +267,25 @@
     width: 100%;
     max-width: 20rem;
 
-    & svg { position: absolute; inset-inline-start: 0.75rem; top: 50%; translate: 0 -50%; width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
-    & .input { padding-inline-start: 2.25rem; }
+    & svg {
+      position: absolute;
+      inset-inline-start: 0.75rem;
+      top: 50%;
+      translate: 0 -50%;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+      pointer-events: none;
+    }
+    & .input {
+      padding-inline-start: 2.25rem;
+    }
   }
 
   /* an icon button with a count (cart, inbox) */
-  .mk-header-icon { position: relative; }
+  .mk-header-icon {
+    position: relative;
+  }
   .mk-header-count {
     position: absolute;
     top: -0.125rem;
@@ -213,31 +306,49 @@
 
   /* elevate: a sticky header gains a rule and a shadow once the page scrolls */
   @keyframes mk-header-elevate {
-    to { border-block-end-color: var(--border); box-shadow: var(--shadow-md); }
+    to {
+      border-block-end-color: var(--border);
+      box-shadow: var(--shadow-md);
+    }
   }
   .mk-header[data-elevate] {
     border-block-end: 1px solid transparent;
     animation: mk-header-elevate linear both;
   }
   @supports (animation-timeline: scroll()) {
-    .mk-header[data-elevate] { animation-timeline: scroll(nearest block); animation-range: 0 64px; }
+    .mk-header[data-elevate] {
+      animation-timeline: scroll(nearest block);
+      animation-range: 0 64px;
+    }
   }
   @supports not (animation-timeline: scroll()) {
-    .mk-header[data-elevate] { animation: none; border-block-end-color: var(--border); }
+    .mk-header[data-elevate] {
+      animation: none;
+      border-block-end-color: var(--border);
+    }
   }
 
   @container mk-header (min-width: 48rem) {
-    .mk-header-search { display: block; }
+    .mk-header-search {
+      display: block;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .mk-header[data-elevate] { animation: none; border-block-end-color: var(--border); }
+    .mk-header[data-elevate] {
+      animation: none;
+      border-block-end-color: var(--border);
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-header[data-variant="floating"] .mk-header-inner { border-color: CanvasText; }
-    .mk-header-count { border-color: Canvas; }
+    .mk-header[data-variant="floating"] .mk-header-inner {
+      border-color: CanvasText;
+    }
+    .mk-header-count {
+      border-color: Canvas;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -246,6 +357,8 @@
   }
 
   @media (forced-colors: active) {
-    .mk-header { border-bottom: 1px solid CanvasText; }
+    .mk-header {
+      border-bottom: 1px solid CanvasText;
+    }
   }
 }

@@ -89,7 +89,9 @@ export const sortableApi = componentState({
 df$.sortableApi = sortableApi;
 df$.sortableStates = sortableStates;
 function init() {
-    dfDollar('.sortable:not([data-init])').toArray().forEach((list) => {
+    dfDollar('.sortable:not([data-init])')
+        .toArray()
+        .forEach((list) => {
         list.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(list, sortableApi);
@@ -116,7 +118,9 @@ function init() {
         function announce(msg) {
             // double write re-triggers the live region for repeated identical messages
             dfDollar(liveRegion).text('');
-            requestAnimationFrame(() => { dfDollar(liveRegion).text(msg); });
+            requestAnimationFrame(() => {
+                dfDollar(liveRegion).text(msg);
+            });
         }
         function getItems() {
             return Array.from(dfDollar(list).find('.sortable-item:not([aria-disabled="true"])'));
@@ -173,12 +177,16 @@ function init() {
             const free = all.map((el) => !isLocked(el));
             all.forEach((item, i) => {
                 const label = getItemLabel(item);
-                dfDollar(item).find('.sortable-move').each(function () {
+                dfDollar(item)
+                    .find('.sortable-move')
+                    .each(function () {
                     const up = this.dataset.move === 'up';
                     const room = up ? free.slice(0, i).some(Boolean) : free.slice(i + 1).some(Boolean);
                     dfDollar(this).prop('disabled', isLocked(item) || !room);
                     if (!this.hasAttribute('aria-label') || this.dataset.autoLabel !== undefined) {
-                        dfDollar(this).attr('aria-label', `Move ${label} ${up ? 'up' : 'down'}`).data('autoLabel', '');
+                        dfDollar(this)
+                            .attr('aria-label', `Move ${label} ${up ? 'up' : 'down'}`)
+                            .data('autoLabel', '');
                     }
                 });
             });
@@ -193,7 +201,7 @@ function init() {
             // Fires after a move (drag or keyboard) - the item, its new index, and the positions it moved from and to.
             list.dispatchEvent(new CustomEvent('sortable-change', {
                 bubbles: true,
-                detail: { item, index: slot }
+                detail: { item, index: slot },
             }));
         }
         /**
@@ -216,7 +224,7 @@ function init() {
             from._released?.(item);
             list.dispatchEvent(new CustomEvent('sortable-change', {
                 bubbles: true,
-                detail: { item, index: slot, from }
+                detail: { item, index: slot, from },
             }));
         }
         list._receive = receive;
@@ -231,7 +239,7 @@ function init() {
             syncMoves();
             list.dispatchEvent(new CustomEvent('sortable-change', {
                 bubbles: true,
-                detail: { item, index: -1, to: item.closest('.sortable') }
+                detail: { item, index: -1, to: item.closest('.sortable') },
             }));
         };
         /** Lists this one exchanges items with (same data-group), document order. */
@@ -246,7 +254,9 @@ function init() {
         }
         function setActive(item, focus = true) {
             // active flag + roving tabindex through query scalars
-            getAllItems().forEach((el) => { dfDollar(el).data('active', null).attr('tabindex', '-1'); });
+            getAllItems().forEach((el) => {
+                dfDollar(el).data('active', null).attr('tabindex', '-1');
+            });
             if (item) {
                 dfDollar(item).data('active', '').attr('tabindex', '0');
                 // mirror the active position onto the LIST root - the schema's
@@ -266,7 +276,10 @@ function init() {
         list._defaultOrder = getAllItems();
         function getItemLabel(item) {
             const clone = item.cloneNode(true);
-            dfDollar(clone).find('.sortable-handle, .sortable-moves, .sortable-move').toArray().forEach((el) => el.remove());
+            dfDollar(clone)
+                .find('.sortable-handle, .sortable-moves, .sortable-move')
+                .toArray()
+                .forEach((el) => el.remove());
             return clone.textContent.trim();
         }
         // -- Initialize tabindex + move buttons --
@@ -365,7 +378,9 @@ function init() {
             // at the list's edge the button disables itself - hand focus to its twin
             moved(item, slot, false);
             const target = button.disabled
-                ? dfDollar(item).find(`.sortable-move[data-move="${button.dataset.move === 'up' ? 'down' : 'up'}"]`).get(0)
+                ? dfDollar(item)
+                    .find(`.sortable-move[data-move="${button.dataset.move === 'up' ? 'down' : 'up'}"]`)
+                    .get(0)
                 : button;
             target?.focus();
         });

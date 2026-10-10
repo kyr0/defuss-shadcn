@@ -13,7 +13,8 @@
     min-height: 18rem;
     border-radius: var(--radius-lg);
     background:
-      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 12%, transparent) 1px, transparent 0) 0 0 / 1.25rem 1.25rem,
+      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 12%, transparent) 1px, transparent 0) 0
+        0 / 1.25rem 1.25rem,
       var(--muted);
     isolation: isolate;
   }
@@ -46,7 +47,9 @@
     overflow: hidden;
     transition: box-shadow 150ms;
 
-    &[open] { display: flex; }
+    &[open] {
+      display: flex;
+    }
 
     /* native resize handle, bottom-right */
     &[data-resizable] {
@@ -113,7 +116,9 @@
       background: transparent;
       color: var(--foreground);
       cursor: default;
-      transition: background-color 120ms, color 120ms;
+      transition:
+        background-color 120ms,
+        color 120ms;
 
       &::before,
       &::after {
@@ -124,8 +129,13 @@
         box-sizing: border-box;
       }
 
-      &:hover { background: color-mix(in oklch, var(--foreground) 10%, transparent); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+      &:hover {
+        background: color-mix(in oklch, var(--foreground) 10%, transparent);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -2px;
+      }
     }
 
     /* minimize: a bar */
@@ -142,7 +152,11 @@
       border-radius: 1px;
     }
     &[data-maximized] .window-maximize {
-      &::before { translate: -40% -60%; width: 0.5rem; height: 0.5rem; }
+      &::before {
+        translate: -40% -60%;
+        width: 0.5rem;
+        height: 0.5rem;
+      }
       &::after {
         translate: -65% -35%;
         width: 0.5rem;
@@ -161,7 +175,9 @@
         background: currentColor;
         rotate: 45deg;
       }
-      &::after { rotate: -45deg; }
+      &::after {
+        rotate: -45deg;
+      }
     }
     /* Windows chrome: the × turns red with a white glyph. Stated through
        .window-controls > so it outranks the shared control hover (a light
@@ -193,7 +209,9 @@
       overflow: auto;
       overscroll-behavior: contain;
     }
-    & > .window-body[data-flush] { padding: 0; }
+    & > .window-body[data-flush] {
+      padding: 0;
+    }
 
     & > .window-statusbar {
       display: flex;
@@ -210,7 +228,9 @@
     /* -- Active / inactive ---------------------------------------------- */
     &:not([data-active]) {
       box-shadow: var(--shadow-sm);
-      & > .window-titlebar { color: var(--muted-foreground); }
+      & > .window-titlebar {
+        color: var(--muted-foreground);
+      }
     }
 
     /* -- Maximized: fill the desktop; minimized: rolled up to the bar -- */
@@ -227,15 +247,23 @@
       height: auto;
       min-height: 0;
       resize: none;
-      & > :not(.window-titlebar) { display: none; }
-      & > .window-titlebar { border-bottom: 0; }
+      & > :not(.window-titlebar) {
+        display: none;
+      }
+      & > .window-titlebar {
+        border-bottom: 0;
+      }
     }
-    &[data-dragging] { transition: none; }
+    &[data-dragging] {
+      transition: none;
+    }
 
     /* -- Chrome: macOS - traffic lights on the left, centred title ------- */
     &[data-chrome="mac"] {
       --_ctl: 1.25rem;
-      & > .window-titlebar { padding-inline: 0.75rem; }
+      & > .window-titlebar {
+        padding-inline: 0.75rem;
+      }
       & .window-controls {
         order: -1;
         align-self: center;
@@ -247,42 +275,88 @@
         height: 0.75rem;
         border-radius: 999px;
         color: oklch(0.3 0.05 30 / 0);
-        &:hover { background: var(--_light); }
+        &:hover {
+          background: var(--_light);
+        }
         &::before,
-        &::after { scale: 0.7; }
+        &::after {
+          scale: 0.7;
+        }
       }
       /* the glyphs appear when the pointer is over the lights */
-      & .window-controls:hover > button { color: oklch(0.3 0.05 30 / 0.8); }
-      & .window-close { order: 1; --_light: oklch(0.68 0.2 25); }
-      & .window-minimize { order: 2; --_light: oklch(0.82 0.16 85); }
-      & .window-maximize { order: 3; --_light: oklch(0.74 0.17 145); }
-      & .window-controls > button { background: var(--_light); }
-      & .window-close:hover { color: oklch(0.3 0.05 30 / 0.8); }
-      & .window-title { text-align: center; }
+      & .window-controls:hover > button {
+        color: oklch(0.3 0.05 30 / 0.8);
+      }
+      & .window-close {
+        order: 1;
+        --_light: oklch(0.68 0.2 25);
+      }
+      & .window-minimize {
+        order: 2;
+        --_light: oklch(0.82 0.16 85);
+      }
+      & .window-maximize {
+        order: 3;
+        --_light: oklch(0.74 0.17 145);
+      }
+      & .window-controls > button {
+        background: var(--_light);
+      }
+      & .window-close:hover {
+        color: oklch(0.3 0.05 30 / 0.8);
+      }
+      & .window-title {
+        text-align: center;
+      }
       /* the icon sits beside the centred title */
-      & .window-icon { order: 1; }
-      & .window-title { order: 0; }
-      &[data-maximized] .window-maximize::after { background: var(--_light); }
-      &:not([data-active]) .window-controls:not(:hover) > button { background: color-mix(in oklch, var(--muted-foreground) 35%, transparent); }
+      & .window-icon {
+        order: 1;
+      }
+      & .window-title {
+        order: 0;
+      }
+      &[data-maximized] .window-maximize::after {
+        background: var(--_light);
+      }
+      &:not([data-active]) .window-controls:not(:hover) > button {
+        background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+      }
     }
 
     /* -- Chrome: Linux (GNOME) - round grey buttons on the right --------- */
     &[data-chrome="linux"] {
       --_ctl: 1.5rem;
-      & > .window-titlebar { padding-inline-end: 0.5rem; }
-      & .window-title { text-align: center; font-weight: 600; }
-      & .window-controls { align-self: center; gap: 0.5rem; }
+      & > .window-titlebar {
+        padding-inline-end: 0.5rem;
+      }
+      & .window-title {
+        text-align: center;
+        font-weight: 600;
+      }
+      & .window-controls {
+        align-self: center;
+        gap: 0.5rem;
+      }
       & .window-controls > button {
         width: var(--_ctl);
         height: var(--_ctl);
         border-radius: 999px;
         background: color-mix(in oklch, var(--foreground) 9%, transparent);
         &::before,
-        &::after { scale: 0.8; }
-        &:hover { background: color-mix(in oklch, var(--foreground) 16%, transparent); }
+        &::after {
+          scale: 0.8;
+        }
+        &:hover {
+          background: color-mix(in oklch, var(--foreground) 16%, transparent);
+        }
       }
-      & .window-close:hover { background: color-mix(in oklch, var(--foreground) 16%, transparent); color: var(--foreground); }
-      &[data-maximized] .window-maximize::after { background: transparent; }
+      & .window-close:hover {
+        background: color-mix(in oklch, var(--foreground) 16%, transparent);
+        color: var(--foreground);
+      }
+      &[data-maximized] .window-maximize::after {
+        background: transparent;
+      }
     }
 
     /* -- Chrome: retro - a bevelled 9x window with a gradient title ------ */
@@ -297,8 +371,10 @@
       background: var(--_face);
       color: oklch(0.15 0 0);
       box-shadow:
-        inset -1px -1px 0 oklch(0.1 0 0), inset 1px 1px 0 var(--_face),
-        inset -2px -2px 0 var(--_lo), inset 2px 2px 0 var(--_hi);
+        inset -1px -1px 0 oklch(0.1 0 0),
+        inset 1px 1px 0 var(--_face),
+        inset -2px -2px 0 var(--_lo),
+        inset 2px 2px 0 var(--_hi);
       & > .window-titlebar {
         height: 1.375rem;
         padding-inline: 0.25rem 0.125rem;
@@ -307,32 +383,66 @@
         background: linear-gradient(90deg, oklch(0.3 0.16 264), oklch(0.62 0.12 240));
         color: oklch(1 0 0);
       }
-      & .window-icon { color: inherit; }
-      & .window-title { font-weight: 700; font-size: 0.75rem; }
-      & .window-controls { align-self: center; gap: 2px; }
+      & .window-icon {
+        color: inherit;
+      }
+      & .window-title {
+        font-weight: 700;
+        font-size: 0.75rem;
+      }
+      & .window-controls {
+        align-self: center;
+        gap: 2px;
+      }
       & .window-controls > button {
         width: calc(var(--_ctl) + 2px);
         height: var(--_ctl);
         background: var(--_face);
         color: oklch(0.1 0 0);
         box-shadow:
-          inset -1px -1px 0 oklch(0.1 0 0), inset 1px 1px 0 var(--_hi),
+          inset -1px -1px 0 oklch(0.1 0 0),
+          inset 1px 1px 0 var(--_hi),
           inset -2px -2px 0 var(--_lo);
-        &:hover { background: var(--_face); color: oklch(0.1 0 0); }
-        &:active { box-shadow: inset 1px 1px 0 oklch(0.1 0 0), inset -1px -1px 0 var(--_hi), inset 2px 2px 0 var(--_lo); }
+        &:hover {
+          background: var(--_face);
+          color: oklch(0.1 0 0);
+        }
+        &:active {
+          box-shadow:
+            inset 1px 1px 0 oklch(0.1 0 0),
+            inset -1px -1px 0 var(--_hi),
+            inset 2px 2px 0 var(--_lo);
+        }
         &::before,
-        &::after { scale: 0.75; }
+        &::after {
+          scale: 0.75;
+        }
       }
-      & .window-close { margin-inline-start: 2px; }
-      & .window-minimize::before { height: 2px; translate: -50% 150%; }
-      & .window-maximize::before { border-top-width: 2px; }
+      & .window-close {
+        margin-inline-start: 2px;
+      }
+      & .window-minimize::before {
+        height: 2px;
+        translate: -50% 150%;
+      }
+      & .window-maximize::before {
+        border-top-width: 2px;
+      }
       & .window-close::before,
-      & .window-close::after { height: 2px; }
-      &[data-maximized] .window-maximize::after { background: var(--_face); border-top-width: 2px; }
+      & .window-close::after {
+        height: 2px;
+      }
+      &[data-maximized] .window-maximize::after {
+        background: var(--_face);
+        border-top-width: 2px;
+      }
       & > .window-body {
         margin-top: 2px;
         background: oklch(1 0 0);
-        box-shadow: inset 1px 1px 0 var(--_lo), inset -1px -1px 0 var(--_hi), inset 2px 2px 0 oklch(0.1 0 0);
+        box-shadow:
+          inset 1px 1px 0 var(--_lo),
+          inset -1px -1px 0 var(--_hi),
+          inset 2px 2px 0 oklch(0.1 0 0);
       }
       & > .window-toolbar {
         margin-top: 2px;
@@ -345,36 +455,52 @@
         border: 0;
         background: var(--_face);
         color: oklch(0.15 0 0);
-        box-shadow: inset 1px 1px 0 var(--_lo), inset -1px -1px 0 var(--_hi);
+        box-shadow:
+          inset 1px 1px 0 var(--_lo),
+          inset -1px -1px 0 var(--_hi);
       }
       &:not([data-active]) > .window-titlebar {
         background: linear-gradient(90deg, oklch(0.55 0 0), oklch(0.72 0 0));
         color: oklch(0.85 0 0);
       }
-      &[data-maximized] { padding: 3px; }
+      &[data-maximized] {
+        padding: 3px;
+      }
     }
   }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .window,
-    .window .window-controls > button { transition: none; }
+    .window .window-controls > button {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .window { border-color: var(--foreground); }
-    .window > .window-titlebar { border-bottom-color: var(--foreground); }
-    .window:not([data-active]) > .window-titlebar { color: var(--foreground); }
+    .window {
+      border-color: var(--foreground);
+    }
+    .window > .window-titlebar {
+      border-bottom-color: var(--foreground);
+    }
+    .window:not([data-active]) > .window-titlebar {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .window { border: 1px solid CanvasText; }
+    .window {
+      border: 1px solid CanvasText;
+    }
     .window[data-active] > .window-titlebar {
       background: Highlight;
       color: HighlightText;
       forced-color-adjust: none;
     }
     .window .window-controls > button::before,
-    .window .window-controls > button::after { border-color: ButtonText; }
+    .window .window-controls > button::after {
+      border-color: ButtonText;
+    }
   }
 }

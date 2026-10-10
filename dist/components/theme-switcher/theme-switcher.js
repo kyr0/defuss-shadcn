@@ -24,7 +24,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, loadTheme, safeShowPopover, componentState, bindComponent, persisted } = __df$shared;
+const { defussGlobals, defussQuery, loadTheme, safeShowPopover, componentState, bindComponent, persisted, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 // VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
@@ -52,8 +52,7 @@ const remembered = () => (chosen ??= persisted(STORAGE_KEY, 'default'));
 function themeHref(root, id) {
     if (root.dataset.themeBase)
         return `${root.dataset.themeBase}/${id}.css`;
-    const tokens = dfDollar('#tokens-css').get(0) ||
-        dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
+    const tokens = dfDollar('#tokens-css').get(0) || dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
     // link.href (the property) is absolute → URL resolution is exact, incl.
     // the jsDelivr CDN URLs the docs mirror rewrites to
     if (tokens)
@@ -83,8 +82,7 @@ function applyThemeId(root, id) {
     link.rel = 'stylesheet';
     link.dataset.themeId = id;
     link.href = themeHref(root, id);
-    const tokens = dfDollar('#tokens-css').get(0) ||
-        dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
+    const tokens = dfDollar('#tokens-css').get(0) || dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
     // insert right after the token sheet (later source order ⇒ the theme
     // overrides it); without a token sheet, append at the end of <head>
     // (§5.1: both branches ride query's exact insertion ops)
@@ -136,7 +134,9 @@ function triggerStateChange(menu, stateName, _config) {
             try {
                 menu.hidePopover();
             }
-            catch { /* already closed */ }
+            catch {
+                /* already closed */
+            }
             break;
         case 'open':
             // deferred show (safeShowPopover): showPopover() mid-exit crashes the

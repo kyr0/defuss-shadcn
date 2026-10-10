@@ -16,9 +16,18 @@
 
   /* centered stack: eyebrow/title/desc + toggle all share the section's
      center line (align-items, not text-align - the toggle is a box) */
-  .mk-pricing-head { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  .mk-pricing-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
 
-  .mk-pricing-eyebrow { color: var(--primary); font-size: 1rem; font-weight: 500; }
+  .mk-pricing-eyebrow {
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 500;
+  }
 
   .mk-pricing-title {
     line-height: 1.15;
@@ -29,7 +38,13 @@
     text-wrap: balance;
   }
 
-  .mk-pricing-desc { margin: 0; max-width: 42rem; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
+  .mk-pricing-desc {
+    margin: 0;
+    max-width: 42rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    text-wrap: pretty;
+  }
 
   /* Segmented billing toggle: real radios + :has() - keyboard, screen
      readers, and form semantics work natively; one checked radio flips
@@ -61,19 +76,32 @@
     }
 
     /* keyboard focus lands on the radio - show the ring on its label */
-    & label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+    & label:has(input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
   }
 
   /* price swap: each plan ships yearly + monthly rows; the checked radio
      anywhere in the section flips every plan at once via :has() */
-  .mk-plan-price.mk-price-monthly { display: none; }
-
-  .mk-pricing:has(.mk-bill-monthly:checked) {
-    & .mk-plan-price.mk-price-yearly { display: none; }
-    & .mk-plan-price.mk-price-monthly { display: flex; }
+  .mk-plan-price.mk-price-monthly {
+    display: none;
   }
 
-  .mk-plans { display: grid; align-items: stretch; gap: 1.25rem; }
+  .mk-pricing:has(.mk-bill-monthly:checked) {
+    & .mk-plan-price.mk-price-yearly {
+      display: none;
+    }
+    & .mk-plan-price.mk-price-monthly {
+      display: flex;
+    }
+  }
+
+  .mk-plans {
+    display: grid;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
 
   .mk-plan {
     position: relative;
@@ -98,7 +126,6 @@
         var(--card);
       box-shadow: var(--shadow-lg);
     }
-
   }
 
   /* in an aura (shapes.css): the light is the border - the plan drops its own */
@@ -106,7 +133,9 @@
     border-color: transparent;
     border-radius: var(--radius-lg);
   }
-  .mk-plans > .aura { --shape-round: var(--radius-lg); }
+  .mk-plans > .aura {
+    --shape-round: var(--radius-lg);
+  }
 
   .mk-plan-header {
     display: flex;
@@ -127,14 +156,33 @@
     border-radius: var(--radius-md);
     background: var(--muted);
 
-    & svg { width: 1rem; height: 1rem; color: var(--primary); }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      color: var(--primary);
+    }
   }
 
-  .mk-plan-body { display: flex; flex-direction: column; gap: 0.5rem; padding-inline: 1.5rem; }
+  .mk-plan-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-inline: 1.5rem;
+  }
 
-  .mk-plan-title { font-size: 1.125rem; font-weight: 600; line-height: 1.3; margin: 0; }
+  .mk-plan-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0;
+  }
 
-  .mk-plan-desc { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--muted-foreground); }
+  .mk-plan-desc {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+  }
 
   .mk-plan-price {
     display: flex;
@@ -152,11 +200,26 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .mk-plan-unit { display: flex; flex-direction: column; align-self: flex-end; }
-  .mk-plan-unit-label { font-size: 0.875rem; font-weight: 500; }
-  .mk-plan-unit-note { font-size: 0.875rem; color: var(--muted-foreground); }
+  .mk-plan-unit {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+  }
+  .mk-plan-unit-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .mk-plan-unit-note {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
 
-  .mk-plan-cta { padding-inline: 1.5rem; & .btn { width: 100%; } }
+  .mk-plan-cta {
+    padding-inline: 1.5rem;
+    & .btn {
+      width: 100%;
+    }
+  }
 
   .mk-plan-features {
     display: flex;
@@ -166,7 +229,12 @@
     padding-inline: 1.5rem;
   }
 
-  .mk-plan-features { margin: 0 1.5rem; padding: 1.25rem 0 0; border-block-start: 1px dashed var(--border); list-style: none; }
+  .mk-plan-features {
+    margin: 0 1.5rem;
+    padding: 1.25rem 0 0;
+    border-block-start: 1px dashed var(--border);
+    list-style: none;
+  }
 
   /* the check sits in a small tinted disc */
   .mk-plan-feature {
@@ -186,23 +254,41 @@
       flex-shrink: 0;
       box-sizing: border-box;
     }
-    & span { flex: 1; }
-    &[data-muted] { color: var(--muted-foreground); }
-    &[data-muted] svg { background: var(--muted); color: var(--muted-foreground); }
+    & span {
+      flex: 1;
+    }
+    &[data-muted] {
+      color: var(--muted-foreground);
+    }
+    &[data-muted] svg {
+      background: var(--muted);
+      color: var(--muted-foreground);
+    }
   }
 
   /* the featured plan's label: a filled Badge with a sparkle */
-  .mk-plan-badge { gap: 0.25rem; }
+  .mk-plan-badge {
+    gap: 0.25rem;
+  }
 
   /* a saving next to the billing choice (a Badge) */
-  .mk-pricing-billing .badge { margin-inline-start: 0.125rem; }
+  .mk-pricing-billing .badge {
+    margin-inline-start: 0.125rem;
+  }
 
   @container mk-pricing (min-width: 44rem) {
-    .mk-pricing-title { font-size: 2.25rem; }
-    .mk-plans { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; }
+    .mk-pricing-title {
+      font-size: 2.25rem;
+    }
+    .mk-plans {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: center;
+    }
     /* the featured plan stands a little taller than its neighbours */
     .mk-plans > .mk-plan[data-featured],
-    .mk-plans > .aura > .mk-plan { padding-block: 2.25rem; }
+    .mk-plans > .aura > .mk-plan {
+      padding-block: 2.25rem;
+    }
   }
 
   /* compare: a Table of features per plan - the featured column tinted */
@@ -212,14 +298,34 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
 
-    & .table { min-width: 36rem; }
-    & :is(th, td):not(:first-child) { text-align: center; }
-    & [data-featured] { background: color-mix(in oklch, var(--primary) 6%, transparent); }
-    & thead [data-featured] { box-shadow: inset 0 3px 0 var(--primary); }
-    & .mk-pricing-yes { color: var(--primary); }
-    & .mk-pricing-no { color: var(--muted-foreground); opacity: 0.5; }
-    & svg { width: 1rem; height: 1rem; vertical-align: middle; }
-    & tbody th { font-weight: 500; text-align: start; }
+    & .table {
+      min-width: 36rem;
+    }
+    & :is(th, td):not(:first-child) {
+      text-align: center;
+    }
+    & [data-featured] {
+      background: color-mix(in oklch, var(--primary) 6%, transparent);
+    }
+    & thead [data-featured] {
+      box-shadow: inset 0 3px 0 var(--primary);
+    }
+    & .mk-pricing-yes {
+      color: var(--primary);
+    }
+    & .mk-pricing-no {
+      color: var(--muted-foreground);
+      opacity: 0.5;
+    }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      vertical-align: middle;
+    }
+    & tbody th {
+      font-weight: 500;
+      text-align: start;
+    }
   }
 
   /* compact: plans as rows of one list - name, price, CTA */
@@ -241,10 +347,21 @@
       border-radius: 0;
       box-shadow: none;
 
-      &:last-child { border-block-end: 0; }
-      &[data-featured] { border: 0; border-block-end: 1px solid var(--border); background: color-mix(in oklch, var(--primary) 5%, var(--card)); }
-      & :is(.mk-plan-body, .mk-plan-price, .mk-plan-cta) { padding: 0; margin: 0; }
-      & .mk-plan-amount { font-size: 2rem; }
+      &:last-child {
+        border-block-end: 0;
+      }
+      &[data-featured] {
+        border: 0;
+        border-block-end: 1px solid var(--border);
+        background: color-mix(in oklch, var(--primary) 5%, var(--card));
+      }
+      & :is(.mk-plan-body, .mk-plan-price, .mk-plan-cta) {
+        padding: 0;
+        margin: 0;
+      }
+      & .mk-plan-amount {
+        font-size: 2rem;
+      }
     }
   }
 
@@ -255,9 +372,20 @@
     gap: 1.5rem 2.5rem;
     padding: 2rem;
 
-    & > * { padding-inline: 0; }
-    & .mk-plan-features { margin: 0; padding: 0; border: 0; columns: 2 12rem; display: block; }
-    & .mk-plan-feature { margin-block-end: 0.75rem; break-inside: avoid; }
+    & > * {
+      padding-inline: 0;
+    }
+    & .mk-plan-features {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      columns: 2 12rem;
+      display: block;
+    }
+    & .mk-plan-feature {
+      margin-block-end: 0.75rem;
+      break-inside: avoid;
+    }
   }
 
   /* usage: a Slider picks the seats, an <output> shows the price */
@@ -271,8 +399,18 @@
     border-radius: var(--radius-xl);
     background: var(--card);
 
-    & .mk-pricing-usage-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-    & output { font-size: 2.5rem; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    & .mk-pricing-usage-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    & output {
+      font-size: 2.5rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
   }
 
   /* cta: an enterprise strip - talk to sales */
@@ -287,14 +425,24 @@
     background: var(--foreground);
     color: var(--background);
 
-    & p { margin: 0.25rem 0 0; color: color-mix(in oklch, var(--background) 70%, transparent); font-size: 0.9375rem; }
-    & strong { font-size: 1.125rem; }
+    & p {
+      margin: 0.25rem 0 0;
+      color: color-mix(in oklch, var(--background) 70%, transparent);
+      font-size: 0.9375rem;
+    }
+    & strong {
+      font-size: 1.125rem;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
 
   @media (forced-colors: active) {
-    .mk-plan { border-color: CanvasText; }
-    .mk-pricing-billing label:has(input:checked) { outline: 1px solid Highlight; }
+    .mk-plan {
+      border-color: CanvasText;
+    }
+    .mk-pricing-billing label:has(input:checked) {
+      outline: 1px solid Highlight;
+    }
   }
 }

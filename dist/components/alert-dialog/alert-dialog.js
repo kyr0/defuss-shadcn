@@ -62,7 +62,9 @@ df$.alertDialogApi = alertDialogApi;
 df$.alertDialogStates = alertDialogStates;
 function init() {
     /* Wire triggers */
-    dfDollar('[data-alert-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-alert-dialog-trigger]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const dialog = dfDollar('#' + CSS.escape(trigger.dataset.alertDialogTrigger)).get(0);
         if (!dialog)
@@ -73,7 +75,9 @@ function init() {
         });
     });
     /* Wire close buttons and block Escape */
-    dfDollar('dialog.alert-dialog:not([data-init])').toArray().forEach((dialog) => {
+    dfDollar('dialog.alert-dialog:not([data-init])')
+        .toArray()
+        .forEach((dialog) => {
         dialog.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(dialog, alertDialogApi, { name: shown(dialog), config: {} });
@@ -82,7 +86,10 @@ function init() {
             e.preventDefault();
         });
         /* Wire close buttons */
-        dfDollar(dialog).find('[data-alert-dialog-close]').toArray().forEach((btn) => {
+        dfDollar(dialog)
+            .find('[data-alert-dialog-close]')
+            .toArray()
+            .forEach((btn) => {
             btn.addEventListener('click', () => {
                 dialog.close();
             });

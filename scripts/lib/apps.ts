@@ -109,12 +109,15 @@ export function stylesPage(css: string): boolean {
 /** The non-class init hooks of a component script: attribute names
  *  (`data-context-menu`, `popovertarget`) and bare tags (`dialog`) of its
  *  `:not([data-init])` init selectors - with or without a type argument
- *  (`dfDollar<HTMLDialogElement>('dialog:not(…)')`). VERIFIED: (tests/apps.test.ts) typing a
- *  query once hid dialog's hook and dropped dialog.js from the Notes app bundle. */
+ *  (`dfDollar<HTMLDialogElement>('dialog:not(…)')`), the selector on the same
+ *  line or on its own (a formatter wraps a long call: `dfDollar<T>(` ⏎
+ *  `'dialog:not(…)',` ⏎ `)`). VERIFIED: (tests/apps.test.ts) typing a query
+ *  once hid dialog's hook and dropped dialog.js from the Notes app bundle;
+ *  oxfmt's wrap of the same call did it again. */
 export function initHooks(ts: string): { attrs: string[]; tags: string[] } {
   const attrs = new Set<string>();
   const tags = new Set<string>();
-  for (const m of ts.matchAll(/dfDollar(?:<[^>()]*>)?\((['"`])([^'"`]*?:not\(\[data-init\]\))/g)) {
+  for (const m of ts.matchAll(/dfDollar(?:<[^>()]*>)?\(\s*(['"`])([^'"`]*?:not\(\[data-init\]\))/g)) {
     for (const sel of m[2].split(',')) {
       const s = sel.trim();
       const tag = s.match(/^([a-z]+)(?=[:[]|$)/);

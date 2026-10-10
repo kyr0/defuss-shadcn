@@ -4,7 +4,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -35,7 +41,11 @@ function applyMarkup(_el, _stateName) {}
 function triggerStateChange(popover, stateName, _config) {
   switch (stateName) {
     case 'default':
-      try { popover.hidePopover(); } catch { /* already closed */ }
+      try {
+        popover.hidePopover();
+      } catch {
+        /* already closed */
+      }
       break;
     case 'open':
       // deferred show (safeShowPopover): showPopover() mid-exit (right after
@@ -57,29 +67,33 @@ df$.popoverApi = popoverApi;
 df$.popoverStates = popoverStates;
 
 function init() {
-  dfDollar('[popovertarget]:not([data-init])').toArray().forEach((trigger) => {
-    const id = trigger.getAttribute('popovertarget');
-    const popover = dfDollar('#' + CSS.escape(id)).get(0);
-    // Ownership boundary (AGENTS.md "Each component owns its dialog", popover
-    // edition): only claim triggers whose target is a .popover panel. Stamping
-    // every [popovertarget] starved sibling components - navigation-menu's
-    // triggers got claimed here, then skipped (panel isn't .popover), and
-    // nav-menu's own :not([data-init]) scan never anchored them.
-    if (!popover || !popover.classList.contains('popover')) return;
-    trigger.dataset.init = '';
+  dfDollar('[popovertarget]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      const id = trigger.getAttribute('popovertarget');
+      const popover = dfDollar('#' + CSS.escape(id)).get(0);
+      // Ownership boundary (AGENTS.md "Each component owns its dialog", popover
+      // edition): only claim triggers whose target is a .popover panel. Stamping
+      // every [popovertarget] starved sibling components - navigation-menu's
+      // triggers got claimed here, then skipped (panel isn't .popover), and
+      // nav-menu's own :not([data-init]) scan never anchored them.
+      if (!popover || !popover.classList.contains('popover')) return;
+      trigger.dataset.init = '';
 
-    // CSS anchor positioning - unique name per trigger-popover pair
-    const anchorId = `--popover-${id}`;
-    trigger.style.anchorName = anchorId;
-    popover.style.positionAnchor = anchorId;
-  });
+      // CSS anchor positioning - unique name per trigger-popover pair
+      const anchorId = `--popover-${id}`;
+      trigger.style.anchorName = anchorId;
+      popover.style.positionAnchor = anchorId;
+    });
 
   // bind-scope the api per popover instance: `$('#demo').api.setState('open')`
-  dfDollar('.popover[popover]:not([data-init])').toArray().forEach((popover) => {
-    popover.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(popover, popoverApi);
-  });
+  dfDollar('.popover[popover]:not([data-init])')
+    .toArray()
+    .forEach((popover) => {
+      popover.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(popover, popoverApi);
+    });
 }
 
 init();

@@ -36,6 +36,10 @@ describe('initHooks', () => {
     const ts = `dfDollar<HTMLDialogElement>('dialog:not(.sheet):not([data-init])'); dfDollar<HTMLElement>('[data-context-menu]:not([data-init])');`;
     expect(initHooks(ts)).toEqual({ attrs: ['data-context-menu'], tags: ['dialog'] });
   });
+  it('sees a call a formatter wrapped (oxfmt put the long dialog selector on its own line - and dialog.js out of Notes)', () => {
+    const ts = `dfDollar<HTMLDialogElement>(\n    'dialog:not(.alert-dialog):not(.sheet):not([data-init])',\n  )\n    .toArray()`;
+    expect(initHooks(ts)).toEqual({ attrs: [], tags: ['dialog'] });
+  });
 });
 
 describe('usedClasses', () => {

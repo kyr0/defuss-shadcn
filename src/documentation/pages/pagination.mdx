@@ -46,13 +46,49 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Default" hint="Data-driven: declare data-active-page / data-min-page / data-max-page / data-page-display-count and the component renders the page window, ellipses and prev/next disabled states itself."
-<nav class="pagination" aria-label="Pagination" data-active-page="5" data-min-page="1" data-max-page="10" data-page-display-count="3">
+<nav
+  class="pagination"
+  aria-label="Pagination"
+  data-active-page="5"
+  data-min-page="1"
+  data-max-page="10"
+  data-page-display-count="3"
+>
   <ul class="pagination-list">
     <li>
-      <a class="pagination-prev" href="#" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a>
+      <a class="pagination-prev" href="#" aria-label="Go to previous page"
+        ><svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Previous</a
+      >
     </li>
     <li>
-      <a class="pagination-next" href="#" aria-label="Go to next page">Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a>
+      <a class="pagination-next" href="#" aria-label="Go to next page"
+        >Next
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m9 18 6-6-6-6" /></svg
+      ></a>
     </li>
   </ul>
 </nav>
@@ -63,17 +99,37 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <ul class="pagination-list">
     <li>
       <a class="pagination-prev" href="#" aria-label="Go to previous page" aria-disabled="true">
-        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="m15 18-6-6 6-6" />
         </svg>
       </a>
     </li>
     <li>
-      <span style="font-size:0.875rem;color:var(--muted-foreground);padding:0 0.5rem;">Page 1 of 10</span>
+      <span style="font-size: 0.875rem; color: var(--muted-foreground); padding: 0 0.5rem">Page 1 of 10</span>
     </li>
     <li>
       <a class="pagination-next" href="#" aria-label="Go to next page">
-        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="m9 18 6-6-6-6" />
         </svg>
       </a>
@@ -86,8 +142,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <nav class="pagination" aria-label="Pagination">
   <ul class="pagination-list">
     <li><a class="pagination-link" href="#">1</a></li>
-    <li><a class="pagination-link pagination-active" href="#"
-            aria-current="page">2</a></li>
+    <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
     <li><a class="pagination-link" href="#">3</a></li>
     <li><a class="pagination-link" href="#">4</a></li>
     <li><a class="pagination-link" href="#">5</a></li>
@@ -97,26 +152,54 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Disabled at boundaries" hint="Previous is disabled on the first page; next is disabled on the last page." previewStyle="display: flex; flex-direction: column; gap: 1.5rem;"
 <!-- First page: previous disabled -->
-<a class="pagination-prev" href="#"
-   aria-label="Go to previous page"
-   aria-disabled="true">…</a>
+<a class="pagination-prev" href="#" aria-label="Go to previous page" aria-disabled="true">…</a>
 
 <!-- Last page: next disabled -->
-<a class="pagination-next" href="#"
-   aria-label="Go to next page"
-   aria-disabled="true">…</a>
+<a class="pagination-next" href="#" aria-label="Go to next page" aria-disabled="true">…</a>
 ```
 
 ```html example label="Outline" hint="data-variant='outline' - every cell a bordered button; the active page fills with the accent surface so it still stands out."
 <nav class="pagination" data-variant="outline" aria-label="Pagination outline">
   <ul class="pagination-list">
-    <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a></li>
+    <li
+      ><a class="pagination-prev" href="#" aria-label="Go to previous page"
+        ><svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Previous</a
+      ></li
+    >
     <li><a class="pagination-link" href="#">1</a></li>
     <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
     <li><a class="pagination-link" href="#">3</a></li>
     <li><span class="pagination-ellipsis" aria-hidden="true">&hellip;</span></li>
     <li><a class="pagination-link" href="#">10</a></li>
-    <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a></li>
+    <li
+      ><a class="pagination-next" href="#" aria-label="Go to next page"
+        >Next
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m9 18 6-6-6-6" /></svg></a
+    ></li>
   </ul>
 </nav>
 ```
@@ -124,69 +207,213 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Joined" hint="data-variant='joined' - one segmented bar: neighbours share a border, only the outer corners round (logical radii - mirrors in RTL), the ellipsis joins the chain."
 <nav class="pagination" data-variant="joined" aria-label="Pagination joined">
   <ul class="pagination-list">
-    <li><a class="pagination-prev" href="#" aria-label="Go to previous page"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a></li>
+    <li
+      ><a class="pagination-prev" href="#" aria-label="Go to previous page"
+        ><svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Previous</a
+      ></li
+    >
     <li><a class="pagination-link" href="#">1</a></li>
     <li><a class="pagination-link pagination-active" href="#" aria-current="page">2</a></li>
     <li><a class="pagination-link" href="#">3</a></li>
     <li><span class="pagination-ellipsis" aria-hidden="true">&hellip;</span></li>
     <li><a class="pagination-link" href="#">10</a></li>
-    <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a></li>
+    <li
+      ><a class="pagination-next" href="#" aria-label="Go to next page"
+        >Next
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m9 18 6-6-6-6" /></svg></a
+    ></li>
   </ul>
 </nav>
 ```
 
 ```html example label="Previous / next (split)" hint="data-layout='split' - two equal columns across the container, the pager under an article; combines with any variant. aria-disabled='true' alone mutes a boundary link."
 <div class="flex flex-col gap-4 w-full">
-<nav class="pagination" data-layout="split" data-variant="outline" aria-label="Article pages">
-  <ul class="pagination-list">
-    <li><a class="pagination-prev" href="#" aria-label="Go to previous page" aria-disabled="true"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Previous</a></li>
-    <li><a class="pagination-next" href="#" aria-label="Go to next page">Next <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a></li>
-  </ul>
-</nav>
-<nav class="pagination" data-layout="split" data-variant="joined" data-size="lg" aria-label="Chapters">
-  <ul class="pagination-list">
-    <li><a class="pagination-prev" href="#" aria-label="Previous chapter"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg> Chapter 3</a></li>
-    <li><a class="pagination-next" href="#" aria-label="Next chapter">Chapter 5 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg></a></li>
-  </ul>
-</nav>
+  <nav class="pagination" data-layout="split" data-variant="outline" aria-label="Article pages">
+    <ul class="pagination-list">
+      <li
+        ><a class="pagination-prev" href="#" aria-label="Go to previous page" aria-disabled="true"
+          ><svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Previous</a
+        ></li
+      >
+      <li
+        ><a class="pagination-next" href="#" aria-label="Go to next page"
+          >Next
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m9 18 6-6-6-6" /></svg></a
+      ></li>
+    </ul>
+  </nav>
+  <nav class="pagination" data-layout="split" data-variant="joined" data-size="lg" aria-label="Chapters">
+    <ul class="pagination-list">
+      <li
+        ><a class="pagination-prev" href="#" aria-label="Previous chapter"
+          ><svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Chapter 3</a
+        ></li
+      >
+      <li
+        ><a class="pagination-next" href="#" aria-label="Next chapter"
+          >Chapter 5
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m9 18 6-6-6-6" /></svg></a
+      ></li>
+    </ul>
+  </nav>
 </div>
 ```
 
 ```html example label="Sizes" hint="Set data-size on the .pagination nav; every cell scales - the default equals md."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
-  <nav class="pagination" data-size="xs" aria-label="Pagination xs"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-size="xs" aria-label="Pagination xs"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Small</span>
-  <nav class="pagination" data-size="sm" aria-label="Pagination sm"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-size="sm" aria-label="Pagination sm"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Medium</span>
-  <nav class="pagination" data-size="md" aria-label="Pagination md"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-size="md" aria-label="Pagination md"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Large</span>
-  <nav class="pagination" data-size="lg" aria-label="Pagination lg"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-size="lg" aria-label="Pagination lg"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra large</span>
-  <nav class="pagination" data-size="xl" aria-label="Pagination xl"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-size="xl" aria-label="Pagination xl"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w75">Compact</span>
-  <nav class="pagination" data-density="compact" aria-label="Pagination compact"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-density="compact" aria-label="Pagination compact"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w75">Comfortable</span>
-  <nav class="pagination" data-density="comfortable" aria-label="Pagination comfortable"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-density="comfortable" aria-label="Pagination comfortable"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w75">Spacious</span>
-  <nav class="pagination" data-density="spacious" aria-label="Pagination spacious"><ol class="pagination-list"><li><a class="pagination-link" href="#">1</a></li><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li><li><a class="pagination-link" href="#">3</a></li></ol></nav>
+  <nav class="pagination" data-density="spacious" aria-label="Pagination spacious"
+    ><ol class="pagination-list"
+      ><li><a class="pagination-link" href="#">1</a></li
+      ><li><a class="pagination-link pagination-active" aria-current="page" href="#">2</a></li
+      ><li><a class="pagination-link" href="#">3</a></li></ol
+    ></nav
+  >
 </div>
 ```
 

@@ -16,7 +16,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const navigationMenuStates = ['default', 'open'];
@@ -36,7 +36,9 @@ function triggerStateChange(content, stateName, _config) {
             try {
                 content.hidePopover();
             }
-            catch { /* already closed */ }
+            catch {
+                /* already closed */
+            }
             break;
         case 'open':
             // deferred show (safeShowPopover): calling showPopover() on an element
@@ -62,7 +64,9 @@ function init() {
     // .nav-menu ancestor. Scanning wrappers left those panels unanchored —
     // position-anchor stayed 'normal' and the popover fell back to the viewport
     // top-left (reported twice: site-header Default + Sticky).
-    dfDollar('.nav-menu-trigger[popovertarget]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('.nav-menu-trigger[popovertarget]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const content = dfDollar('#' + CSS.escape(trigger.getAttribute('popovertarget'))).get(0);
         if (!content)
@@ -73,7 +77,9 @@ function init() {
         content.style.positionAnchor = anchorId;
     });
     // bind-scope the api per content element: `$('#nav-products').api.setState('open')`
-    dfDollar('.nav-menu-content[popover]:not([data-init])').toArray().forEach((content) => {
+    dfDollar('.nav-menu-content[popover]:not([data-init])')
+        .toArray()
+        .forEach((content) => {
         content.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(content, navigationMenuApi);

@@ -109,7 +109,11 @@ interface PropertyGridOptions {
   /** the value cell's content: text or a node; null keeps the default */
   valueRenderFn?: (value: PropertyGridValue, key: string, ctx: PropertyGridContext) => string | Node | null;
   /** an editor for a property: an element or a PropertyGridEditor; null: the built-in one; false: read-only */
-  getEditorFn?: (key: string, value: PropertyGridValue, ctx: PropertyGridContext) => HTMLElement | PropertyGridEditor | null | false;
+  getEditorFn?: (
+    key: string,
+    value: PropertyGridValue,
+    ctx: PropertyGridContext,
+  ) => HTMLElement | PropertyGridEditor | null | false;
 }
 
 /** What property-grid-beforechange carries. */
@@ -165,7 +169,12 @@ export interface PropertyGridStateConfigs {
 
 const isGroup = (v) => v !== null && typeof v === 'object';
 const pathKey = (path) => path.join('.');
-const toPath = (path) => (Array.isArray(path) ? path.map(String) : String(path).split('.').filter((s) => s !== ''));
+const toPath = (path) =>
+  Array.isArray(path)
+    ? path.map(String)
+    : String(path)
+        .split('.')
+        .filter((s) => s !== '');
 const clone = (v) => (v === undefined ? undefined : structuredClone(v));
 const configOf = (root) => root._config ?? root.store?.value.config ?? {};
 const optionsOf = (root) => root._options ?? {};
@@ -228,7 +237,9 @@ function defaultValue(cell, value, type) {
   if (type === 'object' || type === 'array') {
     span.className = 'property-grid-summary';
     const n = Object.keys(value).length;
-    dfDollar(span).text(type === 'array' ? `[${n} ${n === 1 ? 'item' : 'items'}]` : `{${n} ${n === 1 ? 'property' : 'properties'}}`);
+    dfDollar(span).text(
+      type === 'array' ? `[${n} ${n === 1 ? 'item' : 'items'}]` : `{${n} ${n === 1 ? 'property' : 'properties'}}`,
+    );
   } else if (type === 'boolean') {
     span.className = 'property-grid-bool';
     span.dataset.value = String(value);
@@ -286,7 +297,10 @@ function renderRows(root) {
     table.className = 'property-grid-table';
     const head = document.createElement('thead');
     const tr = document.createElement('tr');
-    for (const [label, cls] of [[root.dataset.keyLabel || 'Property', 'property-grid-key'], [root.dataset.valueLabel || 'Value', 'property-grid-value']]) {
+    for (const [label, cls] of [
+      [root.dataset.keyLabel || 'Property', 'property-grid-key'],
+      [root.dataset.valueLabel || 'Value', 'property-grid-value'],
+    ]) {
       const th = document.createElement('th');
       th.scope = 'col';
       th.className = cls;
@@ -319,7 +333,8 @@ function renderRows(root) {
     // the key: keyRenderFn, else the displayName, else the key
     const keyText = document.createElement('span');
     keyText.className = 'property-grid-label';
-    if (!fill(keyText, opts.keyRenderFn?.(row.key, row.value, ctx))) dfDollar(keyText).text(row.conf?.displayName ?? row.key);
+    if (!fill(keyText, opts.keyRenderFn?.(row.key, row.value, ctx)))
+      dfDollar(keyText).text(row.conf?.displayName ?? row.key);
     if (row.group) {
       const toggle = document.createElement('button');
       toggle.type = 'button';
@@ -352,7 +367,10 @@ function renderRows(root) {
   }
   // one row in the tab order (roving)
   const target = focusTargets(root);
-  const keep = target.find((t) => t.closest('tr')?.dataset.path === focused) ?? target.find((t) => t.closest('tr')?.dataset.path === root._current) ?? target[0];
+  const keep =
+    target.find((t) => t.closest('tr')?.dataset.path === focused) ??
+    target.find((t) => t.closest('tr')?.dataset.path === root._current) ??
+    target[0];
   if (keep) {
     keep.tabIndex = 0;
     root._current = keep.closest('tr').dataset.path;
@@ -365,13 +383,20 @@ const focusTargets = (root) =>
   dfDollar(root)
     .find('.property-grid-table > tbody > tr')
     .toArray()
-    .map((tr) => (tr.classList.contains('property-grid-group') ? dfDollar(tr).find('.property-grid-toggle').get(0) : dfDollar(tr).children('.property-grid-value').get(0)))
+    .map((tr) =>
+      tr.classList.contains('property-grid-group')
+        ? dfDollar(tr).find('.property-grid-toggle').get(0)
+        : dfDollar(tr).children('.property-grid-value').get(0),
+    )
     .filter(Boolean);
 
 function moveFocus(root, from, by) {
   const targets = focusTargets(root);
   const at = targets.indexOf(from);
-  const next = targets[by === Infinity ? targets.length - 1 : by === -Infinity ? 0 : Math.max(0, Math.min(targets.length - 1, at + by))];
+  const next =
+    targets[
+      by === Infinity ? targets.length - 1 : by === -Infinity ? 0 : Math.max(0, Math.min(targets.length - 1, at + by))
+    ];
   if (!next) return;
   for (const t of targets) t.tabIndex = -1;
   next.tabIndex = 0;
@@ -442,8 +467,20 @@ function defaultEditor(type, value, conf) {
   return {
     el,
     immediate: type === 'color' || type === 'date',
-    getValue: () => (type === 'number' ? (el.value === '' ? null : el.valueAsNumber) : type === 'null' && el.value === '' ? null : el.value),
-    validate: () => (type === 'number' && el.value !== '' && Number.isNaN(el.valueAsNumber) ? 'not a number' : el.validity && !el.validity.valid ? el.validationMessage : ''),
+    getValue: () =>
+      type === 'number'
+        ? el.value === ''
+          ? null
+          : el.valueAsNumber
+        : type === 'null' && el.value === ''
+          ? null
+          : el.value,
+    validate: () =>
+      type === 'number' && el.value !== '' && Number.isNaN(el.valueAsNumber)
+        ? 'not a number'
+        : el.validity && !el.validity.valid
+          ? el.validationMessage
+          : '',
   };
 }
 
@@ -456,7 +493,12 @@ function editorFor(root, row, value) {
   if (custom === false) return null;
   if (custom instanceof HTMLElement) {
     const el = custom as HTMLInputElement;
-    return { el, immediate: el.type === 'checkbox' || el.tagName === 'SELECT', getValue: () => (el.type === 'checkbox' ? el.checked : el.type === 'number' || el.type === 'range' ? el.valueAsNumber : el.value) };
+    return {
+      el,
+      immediate: el.type === 'checkbox' || el.tagName === 'SELECT',
+      getValue: () =>
+        el.type === 'checkbox' ? el.checked : el.type === 'number' || el.type === 'range' ? el.valueAsNumber : el.value,
+    };
   }
   if (custom && custom.el) return custom;
   return defaultEditor(type, value, conf);
@@ -465,7 +507,10 @@ function editorFor(root, row, value) {
 /** open a value's editor in its cell */
 function openEditor(root, path) {
   closeEditor(root);
-  const row = dfDollar(root).find('.property-grid-table > tbody > tr').toArray().find((tr) => tr.dataset.path === path);
+  const row = dfDollar(root)
+    .find('.property-grid-table > tbody > tr')
+    .toArray()
+    .find((tr) => tr.dataset.path === path);
   if (!row || row.hasAttribute('data-readonly')) return false;
   const cell = dfDollar(row).children('.property-grid-value').get(0);
   const value = getAt(configOf(root).source, row._path);
@@ -477,7 +522,9 @@ function openEditor(root, path) {
   cell.dataset.editing = '';
   dfDollar(cell).empty().append(wrap);
   root._editor = { path, row, cell, editor, value };
-  const target = editor.el.matches?.('input, select, textarea, button, [tabindex]') ? editor.el : dfDollar(editor.el).find('input, select, textarea, button, [tabindex]').get(0) ?? editor.el;
+  const target = editor.el.matches?.('input, select, textarea, button, [tabindex]')
+    ? editor.el
+    : (dfDollar(editor.el).find('input, select, textarea, button, [tabindex]').get(0) ?? editor.el);
   (editor.focus ?? (() => target.focus?.()))();
   if (target.select && target.type !== 'checkbox' && target.type !== 'color' && target.type !== 'date') target.select();
   return true;
@@ -503,7 +550,8 @@ function ruleProblem(conf, value) {
   if (typeof value === 'string') {
     if (conf.minLength != null && value.length < conf.minLength) return say(`At least ${conf.minLength} characters`);
     if (conf.maxLength != null && value.length > conf.maxLength) return say(`At most ${conf.maxLength} characters`);
-    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value)) return say('Does not match the expected format');
+    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value))
+      return say('Does not match the expected format');
   }
   if (Array.isArray(value)) {
     if (conf.minItems != null && value.length < conf.minItems) return say(`At least ${conf.minItems}`);
@@ -558,7 +606,13 @@ function commit(root, then = 'stay') {
   // the key's rules (sourceConfig), then the grid's validateFn
   if (!problem) problem = ruleProblem(confOf(root, row._path), value);
   if (!problem) {
-    const answer = optionsOf(root).validateFn?.(key, value, { path: [...row._path], type: row.dataset.type, config: confOf(root, row._path), source: configOf(root).source, grid: root });
+    const answer = optionsOf(root).validateFn?.(key, value, {
+      path: [...row._path],
+      type: row.dataset.type,
+      config: confOf(root, row._path),
+      source: configOf(root).source,
+      grid: root,
+    });
     if (typeof answer === 'string' && answer) problem = answer;
     else if (answer === false) problem = 'Invalid value';
   }
@@ -570,7 +624,11 @@ function commit(root, then = 'stay') {
   closeEditor(root);
   const same = JSON.stringify(value) === JSON.stringify(oldValue);
   // Fires before a committed value is written - cancelable: preventDefault() keeps the old value. detail.path is the property's path ("owner.team").
-  const before = new CustomEvent<PropertyGridBeforeChangeDetail>('property-grid-beforechange', { bubbles: true, cancelable: true, detail: { path, key, value, oldValue } });
+  const before = new CustomEvent<PropertyGridBeforeChangeDetail>('property-grid-beforechange', {
+    bubbles: true,
+    cancelable: true,
+    detail: { path, key, value, oldValue },
+  });
   if (same || !root.dispatchEvent(before)) {
     root.api.setState('default', { editing: null });
     restoreFocus(root, path, then);
@@ -579,7 +637,12 @@ function commit(root, then = 'stay') {
   const source = setAt(configOf(root).source, row._path, value);
   root.api.setState('default', { source, editing: null });
   // Fires after a value was written - its path, key, the new and the old value and the whole new source object.
-  root.dispatchEvent(new CustomEvent<PropertyGridChangeDetail>('property-grid-change', { bubbles: true, detail: { path, key, value, oldValue, source: clone(source) } }));
+  root.dispatchEvent(
+    new CustomEvent<PropertyGridChangeDetail>('property-grid-change', {
+      bubbles: true,
+      detail: { path, key, value, oldValue, source: clone(source) },
+    }),
+  );
   restoreFocus(root, path, then);
   return true;
 }
@@ -595,21 +658,28 @@ function restoreFocus(root, path, then) {
 
 /** The markup of a state, for render() AND the live element: the path being edited. */
 function applyMarkup(el, state) {
-  dfDollar(el).attr('data-editing', state.name === 'editing' && state.config?.editing ? String(state.config.editing) : null);
+  dfDollar(el).attr(
+    'data-editing',
+    state.name === 'editing' && state.config?.editing ? String(state.config.editing) : null,
+  );
 }
 
 /** UI side of setState: rebuild the table when the source or the groups changed, open / close the editor */
 function triggerStateChange(root, state, incoming) {
   root._config = state.config ?? {};
   applyMarkup(root, state);
-  const rebuild = !dfDollar(root).children('.property-grid-table').get(0) || 'source' in (incoming ?? {}) || 'collapsed' in (incoming ?? {});
+  const rebuild =
+    !dfDollar(root).children('.property-grid-table').get(0) ||
+    'source' in (incoming ?? {}) ||
+    'collapsed' in (incoming ?? {});
   if (rebuild) {
     root._editor = null;
     renderRows(root);
   }
   if (state.name === 'editing' && state.config?.editing) {
     if (root._editor?.path !== state.config.editing) {
-      if (!openEditor(root, state.config.editing)) queueMicrotask(() => root.api.setState('default', { editing: null }));
+      if (!openEditor(root, state.config.editing))
+        queueMicrotask(() => root.api.setState('default', { editing: null }));
     }
   } else if (root._editor) {
     // leaving 'editing' without a commit: the cell shows its value again
@@ -695,8 +765,16 @@ df$.propertyGrid = {
     const p = toPath(path);
     const oldValue = getAt(configOf(root).source, p);
     const source = setAt(configOf(root).source, p, clone(value));
-    root.api.setState(root.store.value.name === 'editing' ? 'default' : root.store.value.name, { source, editing: null });
-    root.dispatchEvent(new CustomEvent<PropertyGridChangeDetail>('property-grid-change', { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
+    root.api.setState(root.store.value.name === 'editing' ? 'default' : root.store.value.name, {
+      source,
+      editing: null,
+    });
+    root.dispatchEvent(
+      new CustomEvent<PropertyGridChangeDetail>('property-grid-change', {
+        bubbles: true,
+        detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) },
+      }),
+    );
   },
   /**
    * One property's value ("a.b" or ['a', 'b']).
@@ -704,13 +782,16 @@ df$.propertyGrid = {
    * @param path - the property: "a.b" or ['a', 'b']
    * @returns a copy of its value (undefined when there is no such property)
    */
-  getProperty: (target: string | HTMLElement, path: string | string[]): PropertyGridValue => clone(getAt(configOf(resolve(target)).source, toPath(path))),
+  getProperty: (target: string | HTMLElement, path: string | string[]): PropertyGridValue =>
+    clone(getAt(configOf(resolve(target)).source, toPath(path))),
   /**
    * Open a property's editor (state 'editing').
    * @param target - the .property-grid element or its selector
    * @param path - the property: "a.b" or ['a', 'b']
    */
-  edit: (target: string | HTMLElement, path: string | string[]): void => { resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) }); },
+  edit: (target: string | HTMLElement, path: string | string[]): void => {
+    resolve(target)?.api.setState('editing', { editing: pathKey(toPath(path)) });
+  },
   /**
    * Commit the open editor.
    * @param target - the .property-grid element or its selector
@@ -721,7 +802,9 @@ df$.propertyGrid = {
    * Close the open editor without writing.
    * @param target - the .property-grid element or its selector
    */
-  cancel: (target: string | HTMLElement): void => { resolve(target)?.api.setState('default', { editing: null }); },
+  cancel: (target: string | HTMLElement): void => {
+    resolve(target)?.api.setState('default', { editing: null });
+  },
   /**
    * Expand a group (an object / array property).
    * @param target - the .property-grid element or its selector
@@ -756,98 +839,111 @@ function toggleGroup(root, path) {
 }
 
 function init() {
-  dfDollar('.property-grid:not([data-init])').toArray().forEach((root) => {
-    root.dataset.init = '';
-    let source = root._pendingSource ?? {};
-    const script = dfDollar(root).children('script.property-grid-source').get(0);
-    try {
-      if (root._pendingSource) delete root._pendingSource;
-      else if (script) source = JSON.parse(script.textContent || '{}');
-      else if (root.dataset.source) source = JSON.parse(root.dataset.source);
-    } catch (error) {
-      console.error('[property-grid] invalid source JSON', error);
-    }
-    // per-key settings without script: <script type="application/json" class="property-grid-config">
-    const conf = dfDollar(root).children('script.property-grid-config').get(0);
-    if (conf) {
+  dfDollar('.property-grid:not([data-init])')
+    .toArray()
+    .forEach((root) => {
+      root.dataset.init = '';
+      let source = root._pendingSource ?? {};
+      const script = dfDollar(root).children('script.property-grid-source').get(0);
       try {
-        root._options = { ...root._options, sourceConfig: JSON.parse(conf.textContent || '{}') };
+        if (root._pendingSource) delete root._pendingSource;
+        else if (script) source = JSON.parse(script.textContent || '{}');
+        else if (root.dataset.source) source = JSON.parse(root.dataset.source);
       } catch (error) {
-        console.error('[property-grid] invalid config JSON', error);
+        console.error('[property-grid] invalid source JSON', error);
       }
-    }
-    if (!root.getAttribute('role')) root.setAttribute('role', 'group');
-
-    dfDollar(root).on('click', (e) => {
-      const t = e.target;
-      if (!(t as HTMLElement | null)?.closest || (t as HTMLElement).closest('.property-grid-editor')) return;
-      const toggle = (t as HTMLElement).closest<HTMLElement>('.property-grid-toggle');
-      if (toggle) {
-        toggleGroup(root, toggle.closest('tr').dataset.path);
-        return;
-      }
-      const cell = (t as HTMLElement).closest<HTMLElement>('.property-grid-value');
-      const row = cell?.closest('tr');
-      if (!row || row.closest('thead') || row.hasAttribute('data-readonly')) return;
-      root.api.setState('editing', { editing: row.dataset.path });
-    });
-
-    dfDollar(root).on('keydown', (e) => {
-      const t = e.target;
-      if (root._editor && root._editor.cell.contains(t)) {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          e.stopPropagation();
-          const { path } = root._editor;
-          root.api.setState('default', { editing: null });
-          restoreFocus(root, path, 'stay');
-        } else if (e.key === 'Enter' && (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)) {
-          e.preventDefault();
-          commit(root);
-        } else if (e.key === 'Tab') {
-          const targets = focusTargets(root);
-          const at = targets.findIndex((x) => x.closest('tr') === root._editor.row);
-          const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;
-          if (!edge) e.preventDefault();
-          commit(root, edge ? 'none' : e.shiftKey ? 'prev' : 'next');
+      // per-key settings without script: <script type="application/json" class="property-grid-config">
+      const conf = dfDollar(root).children('script.property-grid-config').get(0);
+      if (conf) {
+        try {
+          root._options = { ...root._options, sourceConfig: JSON.parse(conf.textContent || '{}') };
+        } catch (error) {
+          console.error('[property-grid] invalid config JSON', error);
         }
-        return;
       }
-      const row = (t as HTMLElement).closest?.('tr');
-      if (!row || !root.contains(row) || row.closest('thead')) return;
-      const keys = { ArrowDown: 1, ArrowUp: -1, Home: -Infinity, End: Infinity, PageDown: 10, PageUp: -10 };
-      if (e.key in keys) {
-        e.preventDefault();
-        moveFocus(root, t, keys[e.key]);
-      } else if (row.classList.contains('property-grid-group') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ')) {
-        const open = !(configOf(root).collapsed ?? []).includes(row.dataset.path);
-        if ((e.key === 'ArrowLeft' && open) || (e.key === 'ArrowRight' && !open) || e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          toggleGroup(root, row.dataset.path);
+      if (!root.getAttribute('role')) root.setAttribute('role', 'group');
+
+      dfDollar(root).on('click', (e) => {
+        const t = e.target;
+        if (!(t as HTMLElement | null)?.closest || (t as HTMLElement).closest('.property-grid-editor')) return;
+        const toggle = (t as HTMLElement).closest<HTMLElement>('.property-grid-toggle');
+        if (toggle) {
+          toggleGroup(root, toggle.closest('tr').dataset.path);
+          return;
         }
-      } else if ((e.key === 'Enter' || e.key === 'F2') && !row.hasAttribute('data-readonly')) {
-        e.preventDefault();
+        const cell = (t as HTMLElement).closest<HTMLElement>('.property-grid-value');
+        const row = cell?.closest('tr');
+        if (!row || row.closest('thead') || row.hasAttribute('data-readonly')) return;
         root.api.setState('editing', { editing: row.dataset.path });
-      }
-    });
+      });
 
-    // an editor that commits on change (a switch, a select, a color, a date) or when focus leaves it
-    dfDollar(root).on('change', (e) => {
-      if (root._editor?.editor.immediate && root._editor.cell.contains(e.target)) commit(root, 'stay');
-    });
-    dfDollar(root).on('focusout', (e) => {
-      const ed = root._editor;
-      if (!ed || !ed.cell.contains(e.target) || ed.cell.contains(e.relatedTarget)) return;
-      // after the click that moved focus has been handled (it may open another editor)
-      setTimeout(() => {
-        if (root._editor === ed && !ed.cell.contains(document.activeElement)) commit(root, 'none');
-      }, 0);
-    });
+      dfDollar(root).on('keydown', (e) => {
+        const t = e.target;
+        if (root._editor && root._editor.cell.contains(t)) {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            const { path } = root._editor;
+            root.api.setState('default', { editing: null });
+            restoreFocus(root, path, 'stay');
+          } else if (
+            e.key === 'Enter' &&
+            (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)
+          ) {
+            e.preventDefault();
+            commit(root);
+          } else if (e.key === 'Tab') {
+            const targets = focusTargets(root);
+            const at = targets.findIndex((x) => x.closest('tr') === root._editor.row);
+            const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;
+            if (!edge) e.preventDefault();
+            commit(root, edge ? 'none' : e.shiftKey ? 'prev' : 'next');
+          }
+          return;
+        }
+        const row = (t as HTMLElement).closest?.('tr');
+        if (!row || !root.contains(row) || row.closest('thead')) return;
+        const keys = { ArrowDown: 1, ArrowUp: -1, Home: -Infinity, End: Infinity, PageDown: 10, PageUp: -10 };
+        if (e.key in keys) {
+          e.preventDefault();
+          moveFocus(root, t, keys[e.key]);
+        } else if (
+          row.classList.contains('property-grid-group') &&
+          (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ')
+        ) {
+          const open = !(configOf(root).collapsed ?? []).includes(row.dataset.path);
+          if (
+            (e.key === 'ArrowLeft' && open) ||
+            (e.key === 'ArrowRight' && !open) ||
+            e.key === 'Enter' ||
+            e.key === ' '
+          ) {
+            e.preventDefault();
+            toggleGroup(root, row.dataset.path);
+          }
+        } else if ((e.key === 'Enter' || e.key === 'F2') && !row.hasAttribute('data-readonly')) {
+          e.preventDefault();
+          root.api.setState('editing', { editing: row.dataset.path });
+        }
+      });
 
-    // el.store + el.api (AGENTS.md "State through stores") - the source is the state
-    bindComponent(root, propertyGridApi, { name: 'default', config: { source, editing: null, collapsed: [] } });
-    triggerStateChange(root, { name: 'default', config: { source, editing: null, collapsed: [] } }, { source });
-  });
+      // an editor that commits on change (a switch, a select, a color, a date) or when focus leaves it
+      dfDollar(root).on('change', (e) => {
+        if (root._editor?.editor.immediate && root._editor.cell.contains(e.target)) commit(root, 'stay');
+      });
+      dfDollar(root).on('focusout', (e) => {
+        const ed = root._editor;
+        if (!ed || !ed.cell.contains(e.target) || ed.cell.contains(e.relatedTarget)) return;
+        // after the click that moved focus has been handled (it may open another editor)
+        setTimeout(() => {
+          if (root._editor === ed && !ed.cell.contains(document.activeElement)) commit(root, 'none');
+        }, 0);
+      });
+
+      // el.store + el.api (AGENTS.md "State through stores") - the source is the state
+      bindComponent(root, propertyGridApi, { name: 'default', config: { source, editing: null, collapsed: [] } });
+      triggerStateChange(root, { name: 'default', config: { source, editing: null, collapsed: [] } }, { source });
+    });
 }
 
 init();

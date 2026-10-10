@@ -18,7 +18,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const dropdownStates = ['default', 'open'];
@@ -53,7 +53,9 @@ function triggerStateChange(menu, stateName, _config) {
             try {
                 menu.hidePopover();
             }
-            catch { /* already closed */ }
+            catch {
+                /* already closed */
+            }
             break;
         case 'open':
             // deferred show (safeShowPopover): showPopover() mid-exit (right after
@@ -73,8 +75,10 @@ df$.dropdownApi = dropdownApi;
 df$.dropdownStates = dropdownStates;
 let anchorSeq = 0;
 function highlight(menu, item, focus = true) {
-    itemsOf(menu).forEach((i) => { if (i !== item)
-        i.removeAttribute('data-highlighted'); });
+    itemsOf(menu).forEach((i) => {
+        if (i !== item)
+            i.removeAttribute('data-highlighted');
+    });
     if (item) {
         item.setAttribute('data-highlighted', '');
         if (focus)
@@ -94,22 +98,38 @@ function activate(menu, item) {
         const checked = item.getAttribute('aria-checked') !== 'true';
         item.setAttribute('aria-checked', String(checked));
         // Fires when an item is chosen - the item, its value (data-value or its text) and, for a checkbox item, whether it is checked now.
-        item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+        item.dispatchEvent(new CustomEvent('dropdown:select', {
+            bubbles: true,
+            detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked },
+        }));
         return; // stays open: toggling several options in one go
     }
     if (role === 'menuitemradio') {
         const group = item.closest('[role="group"]') ?? menu;
-        dfDollar(group).find('[role="menuitemradio"]').toArray().forEach((r) => { if (r.closest('[role="menu"]') === menu)
-            r.setAttribute('aria-checked', String(r === item)); });
-        item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+        dfDollar(group)
+            .find('[role="menuitemradio"]')
+            .toArray()
+            .forEach((r) => {
+            if (r.closest('[role="menu"]') === menu)
+                r.setAttribute('aria-checked', String(r === item));
+        });
+        item.dispatchEvent(new CustomEvent('dropdown:select', {
+            bubbles: true,
+            detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true },
+        }));
         return;
     }
-    item.dispatchEvent(new CustomEvent('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+    item.dispatchEvent(new CustomEvent('dropdown:select', {
+        bubbles: true,
+        detail: { item, value: item.dataset.value ?? item.textContent.trim() },
+    }));
     // a plain item acts and closes the whole menu tree
     try {
         rootOf(menu).hidePopover();
     }
-    catch { /* closed */ }
+    catch {
+        /* closed */
+    }
 }
 function openSub(trigger, focusFirst) {
     const sub = subOf(trigger);
@@ -121,7 +141,9 @@ function openSub(trigger, focusFirst) {
         try {
             sub.showPopover();
         }
-        catch { /* detached */ }
+        catch {
+            /* detached */
+        }
     }
     else if (focusFirst)
         highlight(sub, itemsOf(sub)[0]);
@@ -131,7 +153,9 @@ function closeSub(sub) {
         try {
             sub.hidePopover();
         }
-        catch { /* closed */ }
+        catch {
+            /* closed */
+        }
     }
 }
 /** Behavior shared by a root menu and every submenu: pointer highlight,
@@ -158,8 +182,10 @@ function wireMenu(menu) {
         clearTimeout(menu._hoverTimer);
         const sub = item.classList.contains('dropdown-sub-trigger') ? subOf(item) : null;
         menu._hoverTimer = setTimeout(() => {
-            openSubs().forEach((s) => { if (s !== sub)
-                closeSub(s); });
+            openSubs().forEach((s) => {
+                if (s !== sub)
+                    closeSub(s);
+            });
             if (sub)
                 openSub(item, false);
         }, sub ? HOVER_OPEN : HOVER_CLOSE);
@@ -171,8 +197,10 @@ function wireMenu(menu) {
         const to = e.relatedTarget;
         if (to instanceof Element && to.closest('.dropdown-sub-content') && menu.contains(to))
             return;
-        itemsOf(menu).forEach((i) => { if (!(i.classList.contains('dropdown-sub-trigger') && subOf(i)?.matches(':popover-open')))
-            i.removeAttribute('data-highlighted'); });
+        itemsOf(menu).forEach((i) => {
+            if (!(i.classList.contains('dropdown-sub-trigger') && subOf(i)?.matches(':popover-open')))
+                i.removeAttribute('data-highlighted');
+        });
     });
     // a press on a gap, a label or a disabled item keeps focus in the menu
     // (otherwise it falls to <body> and the arrow keys stop working)
@@ -242,7 +270,9 @@ function wireMenu(menu) {
                 try {
                     rootOf(menu).hidePopover();
                 }
-                catch { /* closed */ }
+                catch {
+                    /* closed */
+                }
                 break;
             case 'Enter':
             case ' ':
@@ -293,7 +323,9 @@ function wireSub(wrap) {
                 highlight(sub, itemsOf(sub)[0]);
         }
         else {
-            itemsOf(sub).forEach((i) => { i.removeAttribute('data-highlighted'); });
+            itemsOf(sub).forEach((i) => {
+                i.removeAttribute('data-highlighted');
+            });
             if (sub.contains(document.activeElement) || document.activeElement === document.body)
                 trigger.focus({ preventScroll: true });
         }
@@ -307,7 +339,9 @@ function wireSub(wrap) {
     });
 }
 function init() {
-    dfDollar('[data-dropdown-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-dropdown-trigger]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const menu = dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
         if (!menu)
@@ -341,14 +375,20 @@ function init() {
                 menu._noFocus = false;
             }
             else {
-                itemsOf(menu).forEach((i) => { i.removeAttribute('data-highlighted'); });
+                itemsOf(menu).forEach((i) => {
+                    i.removeAttribute('data-highlighted');
+                });
                 // focus back to the trigger - unless it moved on to another trigger
                 // whose menu is open now (a menubar switching menus). The browser's
                 // own popover focus restore may have put it on the trigger that
                 // was focused when this menu opened; that one is taken back.
                 const active = document.activeElement;
                 const other = active instanceof Element && active !== trigger ? active.closest('[data-dropdown-trigger]') : null;
-                const otherOpen = other ? dfDollar('#' + CSS.escape(other.getAttribute('data-dropdown-trigger'))).get(0)?.matches(':popover-open') : false;
+                const otherOpen = other
+                    ? dfDollar('#' + CSS.escape(other.getAttribute('data-dropdown-trigger')))
+                        .get(0)
+                        ?.matches(':popover-open')
+                    : false;
                 if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
                     trigger.focus({ preventScroll: true });
             }
@@ -359,7 +399,9 @@ function init() {
     // submenus added later (dynamic menus)
     dfDollar('.dropdown-sub').toArray().forEach(wireSub);
     // bind-scope the api per menu instance: `$('#menu').api.setState('open')`
-    dfDollar('.dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])').toArray().forEach((menu) => {
+    dfDollar('.dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])')
+        .toArray()
+        .forEach((menu) => {
         menu.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(menu, dropdownApi);

@@ -52,7 +52,9 @@
       content: var(--rating-glyph, "★");
       font-size: var(--rating-size);
       color: var(--rating-empty);
-      transition: color 150ms, scale 150ms;
+      transition:
+        color 150ms,
+        scale 150ms;
     }
   }
 

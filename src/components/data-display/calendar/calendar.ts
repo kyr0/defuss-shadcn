@@ -187,43 +187,48 @@ const isoDate = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 /** Registry-level API; pass the calendar element explicitly. Unknown names throw. */
-export const calendarApi = Object.assign(componentState({
-  component: 'calendar',
-  states: calendarStates,
-  apply: (cal, state) => triggerStateChange(cal, state.name, state.config),
-  read: (cal, current) => {
-    const view = cal._calState ?? {};
-    return {
-      name: cal.dataset.stateName || 'default',
-      // live view - reflects nav clicks and day selection, not just setState
-      config: {
-        ...current.config,
-        year: view.year,
-        month: view.month,
-        selected: view.selected,
-        minDate: view.minDate ?? null,
-        maxDate: view.maxDate ?? null,
-        view: cal.dataset.view || 'days',
-        // range mode: the shared range of the calendar's owner (ISO or null)
-        ...(rangeOwnerOf(cal) ? { rangeStart: rangeState(rangeOwnerOf(cal)).start, rangeEnd: rangeState(rangeOwnerOf(cal)).end } : {}),
-      },
-    };
+export const calendarApi = Object.assign(
+  componentState({
+    component: 'calendar',
+    states: calendarStates,
+    apply: (cal, state) => triggerStateChange(cal, state.name, state.config),
+    read: (cal, current) => {
+      const view = cal._calState ?? {};
+      return {
+        name: cal.dataset.stateName || 'default',
+        // live view - reflects nav clicks and day selection, not just setState
+        config: {
+          ...current.config,
+          year: view.year,
+          month: view.month,
+          selected: view.selected,
+          minDate: view.minDate ?? null,
+          maxDate: view.maxDate ?? null,
+          view: cal.dataset.view || 'days',
+          // range mode: the shared range of the calendar's owner (ISO or null)
+          ...(rangeOwnerOf(cal)
+            ? { rangeStart: rangeState(rangeOwnerOf(cal)).start, rangeEnd: rangeState(rangeOwnerOf(cal)).end }
+            : {}),
+        },
+      };
+    },
+    markup: (el, state) => applyMarkup(el, state.config),
+  }),
+  {
+    /**
+     * Day data for this calendar (a range picker: for its whole .calendar-range).
+     * Replaces the map unless { merge: true }; re-renders without moving the view.
+     * @param cal - the .calendar element
+     * @param days - the day data by ISO date ('YYYY-MM-DD')
+     * @param options - merge: true adds to the current map instead of replacing it
+     */
+    setDays(cal: HTMLElement, days: Record<string, CalendarDay>, options: { merge?: boolean } = {}): void {
+      const holder = dayHolderOf(cal);
+      holder._calDays = options.merge ? { ...holder._calDays, ...days } : { ...days };
+      rerender(cal);
+    },
   },
-  markup: (el, state) => applyMarkup(el, state.config),
-}), {
-  /**
-   * Day data for this calendar (a range picker: for its whole .calendar-range).
-   * Replaces the map unless { merge: true }; re-renders without moving the view.
-   * @param cal - the .calendar element
-   * @param days - the day data by ISO date ('YYYY-MM-DD')
-   * @param options - merge: true adds to the current map instead of replacing it
-   */
-  setDays(cal: HTMLElement, days: Record<string, CalendarDay>, options: { merge?: boolean } = {}): void {
-    const holder = dayHolderOf(cal);
-    holder._calDays = options.merge ? { ...holder._calDays, ...days } : { ...days };
-    rerender(cal);
-  },
-});
+);
 
 df$.calendarApi = calendarApi;
 df$.calendarStates = calendarStates;
@@ -234,8 +239,12 @@ function names(el) {
   const locale = textLocale(el);
   if (!nameSets.has(locale)) {
     nameSets.set(locale, {
-      days: Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, i))),
-      months: Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2024, i, 1))),
+      days: Array.from({ length: 7 }, (_, i) =>
+        new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, i)),
+      ),
+      months: Array.from({ length: 12 }, (_, i) =>
+        new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2024, i, 1)),
+      ),
       full: new Intl.DateTimeFormat(locale, { dateStyle: 'full' }),
     });
   }
@@ -289,7 +298,8 @@ function rangeState(owner) {
   if (end && (!start || end < start)) end = null;
   // first visible month: the range start, else an authored data-current-date
   // ('YYYY-MM[-DD]'), else today
-  const anchor = start ?? (/^\d{4}-\d{2}/.test(owner.dataset.currentDate ?? '') ? owner.dataset.currentDate : isoDate(new Date()));
+  const anchor =
+    start ?? (/^\d{4}-\d{2}/.test(owner.dataset.currentDate ?? '') ? owner.dataset.currentDate : isoDate(new Date()));
   const [y, m] = anchor.split('-').map(Number);
   owner._range = { start, end, hover: null, year: y, month: m - 1 };
   return owner._range;
@@ -327,16 +337,22 @@ function renderRange(owner) {
  */
 function syncRange(owner) {
   const r = rangeState(owner);
-  for (const [key, value] of [['rangeStart', r.start], ['rangeEnd', r.end]]) {
+  for (const [key, value] of [
+    ['rangeStart', r.start],
+    ['rangeEnd', r.end],
+  ]) {
     if (value) owner.dataset[key] = value;
     else delete owner.dataset[key];
   }
-  dfDollar(owner).find<HTMLInputElement>('input[data-range-input]').toArray().forEach((input) => {
-    const value = (input.dataset.rangeInput === 'end' ? r.end : r.start) ?? '';
-    if (input.value === value) return;
-    input.value = value;
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  dfDollar(owner)
+    .find<HTMLInputElement>('input[data-range-input]')
+    .toArray()
+    .forEach((input) => {
+      const value = (input.dataset.rangeInput === 'end' ? r.end : r.start) ?? '';
+      if (input.value === value) return;
+      input.value = value;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
   renderRange(owner);
 }
 
@@ -393,7 +409,12 @@ function dayData(days, iso, full) {
   // the button names the full date plus the extras - a screen reader hears
   // "Friday, 25 December 2026, Christmas Day, €129", not just "25"
   const aria = ` aria-label="${esc([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(', '))}"`;
-  return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : '', aria, blocked: d.disabled === true };
+  return {
+    attrs,
+    note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : '',
+    aria,
+    blocked: d.disabled === true,
+  };
 }
 
 // -- Month / year picker ------------------------------------------------------------
@@ -405,7 +426,8 @@ const YEARS_PER_PAGE = 12;
 const pageStart = (year) => year - (((year % YEARS_PER_PAGE) + YEARS_PER_PAGE) % YEARS_PER_PAGE);
 const pad2 = (n) => String(n).padStart(2, '0');
 const monthOff = (y, m, min, max) =>
-  !isoInRange(`${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`, min, null) || !isoInRange(`${y}-${pad2(m + 1)}-01`, null, max);
+  !isoInRange(`${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`, min, null) ||
+  !isoInRange(`${y}-${pad2(m + 1)}-01`, null, max);
 const yearOff = (y, min, max) => !isoInRange(`${y}-12-31`, min, null) || !isoInRange(`${y}-01-01`, null, max);
 
 function renderPicker(el) {
@@ -416,12 +438,14 @@ function renderPicker(el) {
   let html = '';
   if (el.dataset.view === 'months') {
     const y = st.pickYear;
-    html = names(el).months.map((name, m) => {
-      const current = y === st.year && m === st.month ? ' aria-current="true"' : '';
-      const today = y === now.getFullYear() && m === now.getMonth() ? ' data-today' : '';
-      const off = monthOff(y, m, st.minDate, st.maxDate) ? ' disabled' : '';
-      return `<button type="button" class="calendar-pick" data-month="${m}" id="${el.dataset.calId}-m${m}"${current}${today}${off}>${esc(name.slice(0, 3))}</button>`;
-    }).join('');
+    html = names(el)
+      .months.map((name, m) => {
+        const current = y === st.year && m === st.month ? ' aria-current="true"' : '';
+        const today = y === now.getFullYear() && m === now.getMonth() ? ' data-today' : '';
+        const off = monthOff(y, m, st.minDate, st.maxDate) ? ' disabled' : '';
+        return `<button type="button" class="calendar-pick" data-month="${m}" id="${el.dataset.calId}-m${m}"${current}${today}${off}>${esc(name.slice(0, 3))}</button>`;
+      })
+      .join('');
   } else {
     const start = st.pickPage;
     for (let y = start; y < start + YEARS_PER_PAGE; y++) {
@@ -442,19 +466,30 @@ function renderHeader(el) {
   const heading = dfDollar(el).find('.calendar-heading').get(0);
   if (heading) {
     const text =
-      view === 'months' ? String(st.pickYear)
-      : view === 'years' ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}`
-      : `${names(el).months[st.month]} ${st.year}`;
+      view === 'months'
+        ? String(st.pickYear)
+        : view === 'years'
+          ? `${st.pickPage} – ${st.pickPage + YEARS_PER_PAGE - 1}`
+          : `${names(el).months[st.month]} ${st.year}`;
     dfDollar(heading).text(text);
     if (heading.tagName === 'BUTTON') {
-      dfDollar(heading).attr('aria-label',
-        view === 'months' ? `${text}, choose a year`
-        : view === 'years' ? `Years ${text}, back to the days`
-        : `${text}, choose a month and year`);
+      dfDollar(heading).attr(
+        'aria-label',
+        view === 'months'
+          ? `${text}, choose a year`
+          : view === 'years'
+            ? `Years ${text}, back to the days`
+            : `${text}, choose a month and year`,
+      );
       dfDollar(heading).attr('aria-expanded', String(view !== 'days'));
     }
   }
-  const labels = view === 'months' ? ['Previous year', 'Next year'] : view === 'years' ? ['Previous years', 'Next years'] : ['Previous month', 'Next month'];
+  const labels =
+    view === 'months'
+      ? ['Previous year', 'Next year']
+      : view === 'years'
+        ? ['Previous years', 'Next years']
+        : ['Previous month', 'Next month'];
   dfDollar(el).find('.calendar-nav[data-action="prev-month"]').attr('aria-label', labels[0]);
   dfDollar(el).find('.calendar-nav[data-action="next-month"]').attr('aria-label', labels[1]);
   // dropdown caption: reflect the view into the two selects
@@ -465,7 +500,9 @@ function renderHeader(el) {
     yearSel.value = String(st.year);
   }
   if (monthSel) {
-    Array.from(monthSel.options).forEach((o, m) => { o.disabled = monthOff(st.year, m, st.minDate, st.maxDate); });
+    Array.from(monthSel.options).forEach((o, m) => {
+      o.disabled = monthOff(st.year, m, st.minDate, st.maxDate);
+    });
     monthSel.value = String(st.month);
   }
 }
@@ -532,11 +569,18 @@ function setView(el, view) {
       dfDollar(el).find('.calendar-day:not([data-outside]):not([data-disabled]) button').get(0);
     (pick as HTMLElement | null)?.focus();
   } else {
-    const pick = dfDollar(panel).find('.calendar-pick[aria-current]:not([disabled])').get(0) ?? dfDollar(panel).find('.calendar-pick:not([disabled])').get(0);
+    const pick =
+      dfDollar(panel).find('.calendar-pick[aria-current]:not([disabled])').get(0) ??
+      dfDollar(panel).find('.calendar-pick:not([disabled])').get(0);
     (pick as HTMLElement | null)?.focus();
   }
   // Fires when the panel changes - the view (days, months, years) and the year and month it shows.
-  el.dispatchEvent(new CustomEvent<CalendarViewDetail>('calendar:view', { bubbles: true, detail: { view, year: st.year, month: st.month } }));
+  el.dispatchEvent(
+    new CustomEvent<CalendarViewDetail>('calendar:view', {
+      bubbles: true,
+      detail: { view, year: st.year, month: st.month },
+    }),
+  );
 }
 
 const renderGrid = (year, month, selectedDay, calId, minDate?, maxDate?, range?, days?, locale = names(null)) => {
@@ -555,7 +599,8 @@ const renderGrid = (year, month, selectedDay, calId, minDate?, maxDate?, range?,
     if (range.end && iso === range.end && iso !== range.start) a += ' data-range-end aria-selected="true"' + span;
     else if (range.end && iso === range.end) a += ' data-range-end';
     else if (!range.end && end && iso === end && iso !== range.start) a += ' data-range-end data-range-preview' + span;
-    if (end && iso > range.start && iso < end) a += range.end ? ' data-in-range aria-selected="true"' : ' data-in-range data-range-preview';
+    if (end && iso > range.start && iso < end)
+      a += range.end ? ' data-in-range aria-selected="true"' : ' data-in-range data-range-preview';
     return a;
   };
   const total = daysInMonth(year, month);
@@ -643,9 +688,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
   // the ISO key on the <td> (data-cal-date), so walk up to the cell
   const active = el.ownerDocument.activeElement;
   const focusKey =
-    active && el.contains(active)
-      ? active.closest('.calendar-day')?.getAttribute('data-cal-date')
-      : null;
+    active && el.contains(active) ? active.closest('.calendar-day')?.getAttribute('data-cal-date') : null;
 
   const owner = rangeOwnerOf(el);
   const r = owner ? rangeState(owner) : null;
@@ -654,8 +697,13 @@ const renderCalendar = (el, year, month, selectedDay) => {
     : null;
   const days = daysOf(el);
   // cells grow a second line when any day carries a note
-  el.toggleAttribute('data-notes', Object.values(days).some((d: any) => d && d.note != null && d.note !== ''));
-  dfDollar(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate, range, days, names(el)));
+  el.toggleAttribute(
+    'data-notes',
+    Object.values(days).some((d: any) => d && d.note != null && d.note !== ''),
+  );
+  dfDollar(grid).morph(
+    renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate, range, days, names(el)),
+  );
 
   // refocus the cell's button (the td itself isn't focusable) - morph usually
   // kept it, but after a month change the old cell is gone; stay put then
@@ -670,292 +718,315 @@ const renderCalendar = (el, year, month, selectedDay) => {
   const viewKey = `${year}-${month}`;
   if (el._viewKey !== viewKey) {
     el._viewKey = viewKey;
-    el.dispatchEvent(new CustomEvent<CalendarViewDetail>('calendar:view', { bubbles: true, detail: { view: 'days', year, month } }));
+    el.dispatchEvent(
+      new CustomEvent<CalendarViewDetail>('calendar:view', { bubbles: true, detail: { view: 'days', year, month } }),
+    );
   }
 };
 
 function init() {
-dfDollar('.calendar:not([data-init])').toArray().forEach((cal) => {
-  cal.dataset.init = '';
-  // stable id prefix for the grid's day-cell morph keys (§3) - the
-  // generated fallback uses a dfsc- prefix so it can't collide with any
-  // calendar's real #id
-  cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
-  const now = new Date();
-    // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
-    const state: CalendarViewState = (cal._calState = {
-      year: now.getFullYear(),
-      month: now.getMonth(),
-      selected: null,
-      // selectable range authored as attributes (ISO substrings - the markup
-      // may carry 'YYYY', 'YYYY-MM' or 'YYYY-MM-DD' bounds, compared as given)
-      minDate: cal.dataset.minDate || null,
-      maxDate: cal.dataset.maxDate || null,
-    });
-    // authored view (not just range): data-current-date = 'YYYY-MM' / 'YYYY-MM-DD'
-    if (/^\d{4}(-\d{2}(-\d{2})?)?$/.test(cal.dataset.currentDate ?? '')) {
-      const [y, m, d] = cal.dataset.currentDate!.split('-').map(Number);
-      state.year = y;
-      state.month = (m ?? now.getMonth() + 1) - 1;
-      state.selected = d ?? null;
-    }
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(cal, calendarApi);
-    Object.assign(cal.api, {
-      setDays: (days, options) => calendarApi.setDays(cal, days, options),
-    });
-
-    // -- caption: a heading button (month / year picker) or native dropdowns --
-    const header = dfDollar(cal).find('.calendar-header').get(0);
-    let heading = dfDollar(cal).find('.calendar-heading').get(0);
-    if (cal.dataset.caption === 'dropdown' && header) {
-      // two native selects between the arrows; the heading stays for
-      // assistive tech only (the selects already show the month and year)
-      if (heading) dfDollar(heading).attr('hidden', '');
-      const caption = document.createElement('span');
-      caption.className = 'calendar-caption';
-      dfDollar(caption).html(
-        `<select class="calendar-select" data-part="month" aria-label="Month">${names(cal).months.map((n, m) => `<option value="${m}">${esc(n)}</option>`).join('')}</select>` +
-        `<select class="calendar-select" data-part="year" aria-label="Year"></select>`,
-      );
-      if (heading) dfDollar(heading).after(caption);
-      else dfDollar(header).append(caption);
-      fillYears(cal, dfDollar(caption).find('[data-part="year"]').get(0));
-      caption.addEventListener('change', (e) => {
-        const sel = e.target as HTMLSelectElement;
-        const m = Number((dfDollar(caption).find('[data-part="month"]').get(0) as HTMLSelectElement).value);
-        const y = Number((dfDollar(caption).find('[data-part="year"]').get(0) as HTMLSelectElement).value);
-        jumpTo(cal, y, m);
-        sel.focus();
+  dfDollar('.calendar:not([data-init])')
+    .toArray()
+    .forEach((cal) => {
+      cal.dataset.init = '';
+      // stable id prefix for the grid's day-cell morph keys (§3) - the
+      // generated fallback uses a dfsc- prefix so it can't collide with any
+      // calendar's real #id
+      cal.dataset.calId = cal.id || `dfsc-${++calSeq}`;
+      const now = new Date();
+      // state lives on the ELEMENT, not module scope (AGENTS.md "State API")
+      const state: CalendarViewState = (cal._calState = {
+        year: now.getFullYear(),
+        month: now.getMonth(),
+        selected: null,
+        // selectable range authored as attributes (ISO substrings - the markup
+        // may carry 'YYYY', 'YYYY-MM' or 'YYYY-MM-DD' bounds, compared as given)
+        minDate: cal.dataset.minDate || null,
+        maxDate: cal.dataset.maxDate || null,
       });
-    } else if (heading && heading.tagName !== 'BUTTON') {
-      // the month + year are the obvious thing to click: make the heading a
-      // real button (authored <button class="calendar-heading"> skips this)
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = heading.className;
-      button.setAttribute('aria-live', heading.getAttribute('aria-live') || 'polite');
-      dfDollar(heading).replaceWith(button);
-      heading = button;
-    }
-    if (heading && heading.tagName === 'BUTTON') {
-      dfDollar(heading).attr('aria-haspopup', 'grid');
-      if (!dfDollar(cal).find('.calendar-picker').get(0)) {
-        const panel = document.createElement('div');
-        panel.className = 'calendar-picker';
-        panel.setAttribute('role', 'group');
-        const grid = dfDollar(cal).find('.calendar-grid').get(0);
-        if (grid) dfDollar(grid).after(panel);
-        else dfDollar(cal).append(panel);
+      // authored view (not just range): data-current-date = 'YYYY-MM' / 'YYYY-MM-DD'
+      if (/^\d{4}(-\d{2}(-\d{2})?)?$/.test(cal.dataset.currentDate ?? '')) {
+        const [y, m, d] = cal.dataset.currentDate!.split('-').map(Number);
+        state.year = y;
+        state.month = (m ?? now.getMonth() + 1) - 1;
+        state.selected = d ?? null;
       }
-      heading.addEventListener('click', () => {
-        const view = cal.dataset.view || 'days';
-        setView(cal, view === 'days' ? 'months' : view === 'months' ? 'years' : 'days');
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(cal, calendarApi);
+      Object.assign(cal.api, {
+        setDays: (days, options) => calendarApi.setDays(cal, days, options),
       });
-    }
 
-    const owner = rangeOwnerOf(cal);
-    if (owner) {
-      const r = rangeState(owner);
-      const { year, month } = monthAt(r.year, r.month, calendarsOf(owner).indexOf(cal));
-      state.year = year;
-      state.month = month;
-      state.selected = null;
-      syncRange(owner); // mirrors the authored range into form fields too
-      if (!owner._rangeWired) {
-        owner._rangeWired = true;
-        // the preview ends when the pointer leaves the whole picker
-        owner.addEventListener('mouseleave', () => {
-          const rs = rangeState(owner);
-          if (!rs.hover) return;
-          rs.hover = null;
-          renderRange(owner);
+      // -- caption: a heading button (month / year picker) or native dropdowns --
+      const header = dfDollar(cal).find('.calendar-header').get(0);
+      let heading = dfDollar(cal).find('.calendar-heading').get(0);
+      if (cal.dataset.caption === 'dropdown' && header) {
+        // two native selects between the arrows; the heading stays for
+        // assistive tech only (the selects already show the month and year)
+        if (heading) dfDollar(heading).attr('hidden', '');
+        const caption = document.createElement('span');
+        caption.className = 'calendar-caption';
+        dfDollar(caption).html(
+          `<select class="calendar-select" data-part="month" aria-label="Month">${names(cal)
+            .months.map((n, m) => `<option value="${m}">${esc(n)}</option>`)
+            .join('')}</select>` + `<select class="calendar-select" data-part="year" aria-label="Year"></select>`,
+        );
+        if (heading) dfDollar(heading).after(caption);
+        else dfDollar(header).append(caption);
+        fillYears(cal, dfDollar(caption).find('[data-part="year"]').get(0));
+        caption.addEventListener('change', (e) => {
+          const sel = e.target as HTMLSelectElement;
+          const m = Number((dfDollar(caption).find('[data-part="month"]').get(0) as HTMLSelectElement).value);
+          const y = Number((dfDollar(caption).find('[data-part="year"]').get(0) as HTMLSelectElement).value);
+          jumpTo(cal, y, m);
+          sel.focus();
+        });
+      } else if (heading && heading.tagName !== 'BUTTON') {
+        // the month + year are the obvious thing to click: make the heading a
+        // real button (authored <button class="calendar-heading"> skips this)
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = heading.className;
+        button.setAttribute('aria-live', heading.getAttribute('aria-live') || 'polite');
+        dfDollar(heading).replaceWith(button);
+        heading = button;
+      }
+      if (heading && heading.tagName === 'BUTTON') {
+        dfDollar(heading).attr('aria-haspopup', 'grid');
+        if (!dfDollar(cal).find('.calendar-picker').get(0)) {
+          const panel = document.createElement('div');
+          panel.className = 'calendar-picker';
+          panel.setAttribute('role', 'group');
+          const grid = dfDollar(cal).find('.calendar-grid').get(0);
+          if (grid) dfDollar(grid).after(panel);
+          else dfDollar(cal).append(panel);
+        }
+        heading.addEventListener('click', () => {
+          const view = cal.dataset.view || 'days';
+          setView(cal, view === 'days' ? 'months' : view === 'months' ? 'years' : 'days');
         });
       }
-    } else {
-      renderCalendar(cal, state.year, state.month, state.selected);
-    }
 
-    /* Range preview: hovering (or focusing) a day after the start is chosen
+      const owner = rangeOwnerOf(cal);
+      if (owner) {
+        const r = rangeState(owner);
+        const { year, month } = monthAt(r.year, r.month, calendarsOf(owner).indexOf(cal));
+        state.year = year;
+        state.month = month;
+        state.selected = null;
+        syncRange(owner); // mirrors the authored range into form fields too
+        if (!owner._rangeWired) {
+          owner._rangeWired = true;
+          // the preview ends when the pointer leaves the whole picker
+          owner.addEventListener('mouseleave', () => {
+            const rs = rangeState(owner);
+            if (!rs.hover) return;
+            rs.hover = null;
+            renderRange(owner);
+          });
+        }
+      } else {
+        renderCalendar(cal, state.year, state.month, state.selected);
+      }
+
+      /* Range preview: hovering (or focusing) a day after the start is chosen
        draws the would-be span across every calendar of the owner */
-    const preview = (e) => {
-      const o = rangeOwnerOf(cal);
-      if (!o) return;
-      const rs = rangeState(o);
-      if (!rs.start || rs.end) return;
-      const cell = e.target.closest?.('.calendar-day:not([data-outside]):not([data-disabled])');
-      const iso = cell?.getAttribute('data-cal-date') ?? null;
-      if (!iso || iso === rs.hover) return;
-      rs.hover = iso;
-      renderRange(o);
-    };
-    cal.addEventListener('mouseover', preview);
-    cal.addEventListener('focusin', preview);
+      const preview = (e) => {
+        const o = rangeOwnerOf(cal);
+        if (!o) return;
+        const rs = rangeState(o);
+        if (!rs.start || rs.end) return;
+        const cell = e.target.closest?.('.calendar-day:not([data-outside]):not([data-disabled])');
+        const iso = cell?.getAttribute('data-cal-date') ?? null;
+        if (!iso || iso === rs.hover) return;
+        rs.hover = iso;
+        renderRange(o);
+      };
+      cal.addEventListener('mouseover', preview);
+      cal.addEventListener('focusin', preview);
 
-    /* Navigation */
-    cal.addEventListener('click', (e) => {
-      const nav = (e.target as HTMLElement).closest<HTMLElement>('.calendar-nav');
-      // month / year picker: arrows page the picker, a pick moves the view
-      const view = cal.dataset.view;
-      if (view && nav) {
-        const dir = nav.dataset.action === 'prev-month' ? -1 : 1;
-        if (view === 'months') state.pickYear += dir;
-        else state.pickPage += dir * YEARS_PER_PAGE;
-        renderPicker(cal);
-        renderHeader(cal);
-        return;
-      }
-      const pick = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-pick');
-      if (pick && !pick.disabled) {
-        if (pick.dataset.year !== undefined) {
-          state.pickYear = Number(pick.dataset.year);
-          setView(cal, 'months');
-        } else {
-          jumpTo(cal, state.pickYear, Number(pick.dataset.month));
-          setView(cal, 'days');
-        }
-        return;
-      }
-      const rangeOwner = rangeOwnerOf(cal);
-      if (nav && rangeOwner) {
-        // every calendar of the owner moves together (consecutive months)
-        const rs = rangeState(rangeOwner);
-        const { year, month } = monthAt(rs.year, rs.month, nav.dataset.action === 'prev-month' ? -1 : 1);
-        rs.year = year;
-        rs.month = month;
-        renderRange(rangeOwner);
-        return;
-      }
-      const rangeBtn = rangeOwner && (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
-      if (rangeBtn) {
-        const cell = rangeBtn.closest('.calendar-day');
-        // outside days are hidden in range mode; disabled days never select
-        if (cell.hasAttribute('data-outside') || cell.hasAttribute('data-disabled')) return;
-        const iso = cell.getAttribute('data-cal-date');
-        const rs = rangeState(rangeOwner);
-        // first pick (or a fresh start after a complete range) sets the start;
-        // a day BEFORE the start restarts there - an end can never precede
-        // its start; anything else closes the range
-        if (!rs.start || rs.end || iso < rs.start) {
-          rs.start = iso;
-          rs.end = null;
-        } else {
-          rs.end = iso;
-        }
-        rs.hover = null;
-        syncRange(rangeOwner);
-        // Fires when a range is complete (its second date) - start and end as Dates and as ISO dates.
-        rangeOwner.dispatchEvent(new CustomEvent<CalendarRangeDetail>('calendar:range', {
-          detail: {
-            start: rs.start ? isoToDate(rs.start) : null,
-            end: rs.end ? isoToDate(rs.end) : null,
-            startIso: rs.start,
-            endIso: rs.end,
-          },
-          bubbles: true,
-        }));
-        return;
-      }
-      if (nav) {
-        const action = nav.dataset.action;
-        if (action === 'prev-month') {
-          state.month--;
-          if (state.month < 0) { state.month = 11; state.year--; }
-          state.selected = null;
-        } else if (action === 'next-month') {
-          state.month++;
-          if (state.month > 11) { state.month = 0; state.year++; }
-          state.selected = null;
-        }
-        renderCalendar(cal, state.year, state.month, state.selected);
-        return;
-      }
-
-      /* Day selection */
-      const dayBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
-      if (dayBtn && !dayBtn.closest('[data-disabled]')) {
-        const day = parseInt(dayBtn.dataset.day, 10);
-        const outside = dayBtn.dataset.outside;
-        if (outside === 'prev') {
-          state.month--;
-          if (state.month < 0) { state.month = 11; state.year--; }
-          state.selected = day;
-        } else if (outside === 'next') {
-          state.month++;
-          if (state.month > 11) { state.month = 0; state.year++; }
-          state.selected = day;
-        } else {
-          state.selected = day;
-        }
-        renderCalendar(cal, state.year, state.month, state.selected);
-
-        // Fires when a day is picked (click or Enter) - the date.
-        cal.dispatchEvent(new CustomEvent<CalendarSelectDetail>('calendar:select', {
-          detail: { date: new Date(state.year, state.month, state.selected) },
-          bubbles: true
-        }));
-      }
-    });
-
-    /* Keyboard navigation in grid */
-    cal.addEventListener('keydown', (e) => {
-      // month / year picker: Escape goes back to the days, arrows walk the 4-column grid
-      if (cal.dataset.view) {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          setView(cal, 'days');
+      /* Navigation */
+      cal.addEventListener('click', (e) => {
+        const nav = (e.target as HTMLElement).closest<HTMLElement>('.calendar-nav');
+        // month / year picker: arrows page the picker, a pick moves the view
+        const view = cal.dataset.view;
+        if (view && nav) {
+          const dir = nav.dataset.action === 'prev-month' ? -1 : 1;
+          if (view === 'months') state.pickYear += dir;
+          else state.pickPage += dir * YEARS_PER_PAGE;
+          renderPicker(cal);
+          renderHeader(cal);
           return;
         }
-        const pickBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-pick');
-        const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 4, ArrowUp: -4 }[e.key];
-        if (pickBtn && step) {
-          e.preventDefault();
-          const picks = Array.from(dfDollar(cal).find('.calendar-pick').toArray());
-          (picks[picks.indexOf(pickBtn) + step] as HTMLElement | undefined)?.focus();
+        const pick = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-pick');
+        if (pick && !pick.disabled) {
+          if (pick.dataset.year !== undefined) {
+            state.pickYear = Number(pick.dataset.year);
+            setView(cal, 'months');
+          } else {
+            jumpTo(cal, state.pickYear, Number(pick.dataset.month));
+            setView(cal, 'days');
+          }
+          return;
         }
-        return;
-      }
-      const dayBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
-      if (!dayBtn) return;
+        const rangeOwner = rangeOwnerOf(cal);
+        if (nav && rangeOwner) {
+          // every calendar of the owner moves together (consecutive months)
+          const rs = rangeState(rangeOwner);
+          const { year, month } = monthAt(rs.year, rs.month, nav.dataset.action === 'prev-month' ? -1 : 1);
+          rs.year = year;
+          rs.month = month;
+          renderRange(rangeOwner);
+          return;
+        }
+        const rangeBtn = rangeOwner && (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
+        if (rangeBtn) {
+          const cell = rangeBtn.closest('.calendar-day');
+          // outside days are hidden in range mode; disabled days never select
+          if (cell.hasAttribute('data-outside') || cell.hasAttribute('data-disabled')) return;
+          const iso = cell.getAttribute('data-cal-date');
+          const rs = rangeState(rangeOwner);
+          // first pick (or a fresh start after a complete range) sets the start;
+          // a day BEFORE the start restarts there - an end can never precede
+          // its start; anything else closes the range
+          if (!rs.start || rs.end || iso < rs.start) {
+            rs.start = iso;
+            rs.end = null;
+          } else {
+            rs.end = iso;
+          }
+          rs.hover = null;
+          syncRange(rangeOwner);
+          // Fires when a range is complete (its second date) - start and end as Dates and as ISO dates.
+          rangeOwner.dispatchEvent(
+            new CustomEvent<CalendarRangeDetail>('calendar:range', {
+              detail: {
+                start: rs.start ? isoToDate(rs.start) : null,
+                end: rs.end ? isoToDate(rs.end) : null,
+                startIso: rs.start,
+                endIso: rs.end,
+              },
+              bubbles: true,
+            }),
+          );
+          return;
+        }
+        if (nav) {
+          const action = nav.dataset.action;
+          if (action === 'prev-month') {
+            state.month--;
+            if (state.month < 0) {
+              state.month = 11;
+              state.year--;
+            }
+            state.selected = null;
+          } else if (action === 'next-month') {
+            state.month++;
+            if (state.month > 11) {
+              state.month = 0;
+              state.year++;
+            }
+            state.selected = null;
+          }
+          renderCalendar(cal, state.year, state.month, state.selected);
+          return;
+        }
 
-      const keyOwner = rangeOwnerOf(cal);
-      const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 7, ArrowUp: -7 }[e.key];
-      if (keyOwner && step) {
-        // range pickers hide outside days and span several grids, so move by
-        // DATE: the target day is found in whichever calendar shows it
-        e.preventDefault();
-        const from = isoToDate(dayBtn.closest('.calendar-day').getAttribute('data-cal-date'));
-        from.setDate(from.getDate() + step);
-        const target = dfDollar(keyOwner).find(`.calendar-day:not([data-outside])[data-cal-date="${isoDate(from)}"] button`).get(0);
-        target?.focus();
-        return;
-      }
+        /* Day selection */
+        const dayBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
+        if (dayBtn && !dayBtn.closest('[data-disabled]')) {
+          const day = parseInt(dayBtn.dataset.day, 10);
+          const outside = dayBtn.dataset.outside;
+          if (outside === 'prev') {
+            state.month--;
+            if (state.month < 0) {
+              state.month = 11;
+              state.year--;
+            }
+            state.selected = day;
+          } else if (outside === 'next') {
+            state.month++;
+            if (state.month > 11) {
+              state.month = 0;
+              state.year++;
+            }
+            state.selected = day;
+          } else {
+            state.selected = day;
+          }
+          renderCalendar(cal, state.year, state.month, state.selected);
 
-      const allBtns = Array.from(dfDollar(cal).find('.calendar-day button').toArray());
-      const idx = allBtns.indexOf(dayBtn);
-      let next = null;
+          // Fires when a day is picked (click or Enter) - the date.
+          cal.dispatchEvent(
+            new CustomEvent<CalendarSelectDetail>('calendar:select', {
+              detail: { date: new Date(state.year, state.month, state.selected) },
+              bubbles: true,
+            }),
+          );
+        }
+      });
 
-      switch (e.key) {
-        case 'ArrowRight':
+      /* Keyboard navigation in grid */
+      cal.addEventListener('keydown', (e) => {
+        // month / year picker: Escape goes back to the days, arrows walk the 4-column grid
+        if (cal.dataset.view) {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            setView(cal, 'days');
+            return;
+          }
+          const pickBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-pick');
+          const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 4, ArrowUp: -4 }[e.key];
+          if (pickBtn && step) {
+            e.preventDefault();
+            const picks = Array.from(dfDollar(cal).find('.calendar-pick').toArray());
+            (picks[picks.indexOf(pickBtn) + step] as HTMLElement | undefined)?.focus();
+          }
+          return;
+        }
+        const dayBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('.calendar-day button');
+        if (!dayBtn) return;
+
+        const keyOwner = rangeOwnerOf(cal);
+        const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 7, ArrowUp: -7 }[e.key];
+        if (keyOwner && step) {
+          // range pickers hide outside days and span several grids, so move by
+          // DATE: the target day is found in whichever calendar shows it
           e.preventDefault();
-          next = allBtns[idx + 1];
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          next = allBtns[idx - 1];
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          next = allBtns[idx + 7];
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          next = allBtns[idx - 7];
-          break;
-      }
-      if (next) next.focus();
+          const from = isoToDate(dayBtn.closest('.calendar-day').getAttribute('data-cal-date'));
+          from.setDate(from.getDate() + step);
+          const target = dfDollar(keyOwner)
+            .find(`.calendar-day:not([data-outside])[data-cal-date="${isoDate(from)}"] button`)
+            .get(0);
+          target?.focus();
+          return;
+        }
+
+        const allBtns = Array.from(dfDollar(cal).find('.calendar-day button').toArray());
+        const idx = allBtns.indexOf(dayBtn);
+        let next = null;
+
+        switch (e.key) {
+          case 'ArrowRight':
+            e.preventDefault();
+            next = allBtns[idx + 1];
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            next = allBtns[idx - 1];
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            next = allBtns[idx + 7];
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            next = allBtns[idx - 7];
+            break;
+        }
+        if (next) next.focus();
+      });
     });
-});
 }
 
 init();

@@ -58,8 +58,10 @@ const setLabel = (tab, text) => {
         label.textContent = text;
         return;
     }
-    Array.from(tab.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE)
-        n.remove(); });
+    Array.from(tab.childNodes).forEach((n) => {
+        if (n.nodeType === Node.TEXT_NODE)
+            n.remove();
+    });
     tab.append(document.createTextNode(text));
 };
 /** A lucide name ("inbox") mounts <i data-lucide> for lucide to render; anything
@@ -151,17 +153,25 @@ function triggerStateChange(el, stateName, config) {
                     break;
                 }
                 case 'active':
-                    triggers.forEach((t) => { if (t.disabled && !t._authored.disabled)
-                        t.disabled = false; });
+                    triggers.forEach((t) => {
+                        if (t.disabled && !t._authored.disabled)
+                            t.disabled = false;
+                    });
                     break;
                 case 'disabled':
-                    triggers.forEach((t) => { t.disabled = true; t.dataset.stateName = 'disabled'; });
+                    triggers.forEach((t) => {
+                        t.disabled = true;
+                        t.dataset.stateName = 'disabled';
+                    });
                     break;
             }
         }
         // config.index (or config.id) picks the selected tab
-        const pick = typeof config.index === 'number' ? triggers[config.index]
-            : typeof config.id === 'string' ? triggers.find((t) => t.id === config.id) : null;
+        const pick = typeof config.index === 'number'
+            ? triggers[config.index]
+            : typeof config.id === 'string'
+                ? triggers.find((t) => t.id === config.id)
+                : null;
         if (pick && !pick.disabled)
             activateTab(pick, triggers);
         return;
@@ -226,8 +236,11 @@ function listMarkup(list, stateName, config) {
     }
     else if (stateName === 'disabled')
         triggers.forEach((t) => dfDollar(t).attr('disabled', ''));
-    const pick = typeof config?.index === 'number' ? triggers[config.index]
-        : typeof config?.id === 'string' ? triggers.find((t) => t.id === config.id) : null;
+    const pick = typeof config?.index === 'number'
+        ? triggers[config.index]
+        : typeof config?.id === 'string'
+            ? triggers.find((t) => t.id === config.id)
+            : null;
     if (pick && !disabledOf(pick))
         selectMarkup(pick, triggers);
 }
@@ -254,8 +267,11 @@ export const tabsApi = componentState({
             const triggers = triggersOf(el);
             const selected = triggers.findIndex((t) => t.getAttribute('aria-selected') === 'true');
             const authored = triggers.findIndex((t) => t._authored?.selected);
-            const name = triggers.every((t) => t.disabled) ? 'disabled'
-                : selected === authored || (authored < 0 && selected <= 0) ? 'default' : 'active';
+            const name = triggers.every((t) => t.disabled)
+                ? 'disabled'
+                : selected === authored || (authored < 0 && selected <= 0)
+                    ? 'default'
+                    : 'active';
             return { name, config: { ...state.config, index: selected, id: triggers[selected]?.id ?? '' } };
         }
         return {
@@ -272,7 +288,9 @@ function init() {
     // only tablists built from .tab-trigger are this component's - another
     // component's tablist stays unclaimed. VERIFIED: (section-bundles.e2e, Papers)
     // stamping every tablist marked BibTeX's format tabs data-init
-    dfDollar('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
+    dfDollar('[role="tablist"]:not([data-init]):has(.tab-trigger)')
+        .toArray()
+        .forEach((tablist) => {
         tablist.dataset.init = '';
         const triggers = Array.from(dfDollar(tablist).find('[role="tab"]').toArray());
         // remember the authored tab so setState('default') restores it
@@ -305,7 +323,9 @@ function init() {
             return tablist.getAttribute('aria-orientation') === 'vertical';
         };
         triggers.forEach((trigger) => {
-            trigger.addEventListener('click', () => { activateTab(trigger, triggers); });
+            trigger.addEventListener('click', () => {
+                activateTab(trigger, triggers);
+            });
             trigger.addEventListener('keydown', (e) => {
                 const current = triggers.indexOf(trigger);
                 let next;
@@ -338,7 +358,10 @@ function init() {
                         break;
                     case 'End':
                         e.preventDefault();
-                        next = triggers.slice().reverse().find((t) => !t.disabled);
+                        next = triggers
+                            .slice()
+                            .reverse()
+                            .find((t) => !t.disabled);
                         break;
                 }
                 if (next && !next.disabled) {

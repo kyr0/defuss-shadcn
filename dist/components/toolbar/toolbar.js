@@ -70,7 +70,9 @@ df$.toolbarApi = toolbarApi;
 df$.toolbarStates = toolbarStates;
 const toolbarItems = (toolbar) => Array.from(dfDollar(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
 function init() {
-    dfDollar('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
+    dfDollar('.toolbar[role="toolbar"]:not([data-init])')
+        .toArray()
+        .forEach((toolbar) => {
         toolbar.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(toolbar, toolbarApi);

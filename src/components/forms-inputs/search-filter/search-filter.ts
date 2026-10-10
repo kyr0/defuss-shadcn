@@ -104,51 +104,56 @@ function clear(box) {
 }
 
 function init() {
-  dfDollar('.search-box:not([data-init])').toArray().forEach((box) => {
-    box.dataset.init = '';
+  dfDollar('.search-box:not([data-init])')
+    .toArray()
+    .forEach((box) => {
+      box.dataset.init = '';
 
-    const field = dfDollar(box).find<HTMLInputElement>(':scope > input').get(0);
-    if (!field) return; // the input is authored, not generated — nothing to drive
-    box._field = field;
-    if (!field.getAttribute('enterkeyhint')) field.setAttribute('enterkeyhint', 'search');
+      const field = dfDollar(box).find<HTMLInputElement>(':scope > input').get(0);
+      if (!field) return; // the input is authored, not generated — nothing to drive
+      box._field = field;
+      if (!field.getAttribute('enterkeyhint')) field.setAttribute('enterkeyhint', 'search');
 
-    // typing (or a setValue) moves between empty and filled; a pending
-    // 'searching' survives further typing - the page ends it
-    field.addEventListener('input', () => {
-      const name = box.dataset.stateName;
-      if (field.value === '') {
-        if (name !== 'default') searchFilterApi.setState(box, 'default', {});
-      } else if (name !== 'searching' && name !== 'filled') {
-        searchFilterApi.setState(box, 'filled', {});
-      }
+      // typing (or a setValue) moves between empty and filled; a pending
+      // 'searching' survives further typing - the page ends it
+      field.addEventListener('input', () => {
+        const name = box.dataset.stateName;
+        if (field.value === '') {
+          if (name !== 'default') searchFilterApi.setState(box, 'default', {});
+        } else if (name !== 'searching' && name !== 'filled') {
+          searchFilterApi.setState(box, 'filled', {});
+        }
+      });
+
+      // Escape clears a filled box first; the default is prevented so an
+      // enclosing dialog or popover closes only on the next Escape
+      field.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && field.value !== '') {
+          e.preventDefault();
+          e.stopPropagation();
+          clear(box);
+        }
+      });
+
+      dfDollar(box)
+        .find(':scope > .search-box-clear')
+        .get(0)
+        ?.addEventListener('click', () => clear(box));
+
+      // a click on the frame (icon, padding) lands in the field
+      box.addEventListener('mousedown', (e) => {
+        if (e.target !== field && !(e.target as HTMLElement).closest('button, a')) {
+          e.preventDefault();
+          field.focus();
+        }
+      });
+
+      // el.store + el.api (AGENTS.md "State through stores")
+
+      bindComponent(box, searchFilterApi);
+
+      searchFilterApi.setState(box, field.value === '' ? 'default' : 'filled', {});
     });
-
-    // Escape clears a filled box first; the default is prevented so an
-    // enclosing dialog or popover closes only on the next Escape
-    field.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && field.value !== '') {
-        e.preventDefault();
-        e.stopPropagation();
-        clear(box);
-      }
-    });
-
-    dfDollar(box).find(':scope > .search-box-clear').get(0)?.addEventListener('click', () => clear(box));
-
-    // a click on the frame (icon, padding) lands in the field
-    box.addEventListener('mousedown', (e) => {
-      if (e.target !== field && !(e.target as HTMLElement).closest('button, a')) {
-        e.preventDefault();
-        field.focus();
-      }
-    });
-
-    // el.store + el.api (AGENTS.md "State through stores")
-
-    bindComponent(box, searchFilterApi);
-
-    searchFilterApi.setState(box, field.value === '' ? 'default' : 'filled', {});
-  });
 }
 
 init();

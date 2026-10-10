@@ -53,43 +53,41 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Default" hint="Basic label paired with an input. Click the label to focus the input - for='demo-email' and id='demo-email' must always match; changing one without the other breaks the link."
 <! for and id are one value in two places - keep them identical -->
 <label class="label" for="email">Email</label>
-<input class="input" type="email" id="email" placeholder="you@example.com">
+<input class="input" type="email" id="email" placeholder="you@example.com" />
 ```
 
 ```html example label="Required" hint="The red asterisk renders automatically from :has(+ input[required]) - no markup to add or forget."
 <label class="label" for="name">Name</label>
-<input class="input" type="text" id="name" required>
+<input class="input" type="text" id="name" required />
 ```
 
 ```html example label="Optional hint" hint="Hint text indicating the field is optional."
-<label class="label" for="bio">
-  Bio <span class="label-hint">(optional)</span>
-</label>
+<label class="label" for="bio"> Bio <span class="label-hint">(optional)</span> </label>
 ```
 
 ```html example label="Disabled" hint="Dimmed label for disabled fields. The label auto-detects the disabled input via :has() - no data-disabled attribute needed."
 <label class="label" for="disabled">Disabled field</label>
-<input class="input" type="text" id="disabled" disabled>
+<input class="input" type="text" id="disabled" disabled />
 ```
 
 ```html example label="With Checkbox" hint="Inline label paired with a checkbox control."
 <div class="checkbox-item">
-  <input class="checkbox" type="checkbox" id="terms">
-  <label class="label" for="terms" style="margin:0;">Accept terms and conditions</label>
+  <input class="checkbox" type="checkbox" id="terms" />
+  <label class="label" for="terms" style="margin: 0">Accept terms and conditions</label>
 </div>
 ```
 
 ```html example label="With Switch" hint="Inline label paired with a switch control."
 <div class="switch-item">
-  <input class="switch" type="checkbox" role="switch" id="airplane">
-  <label class="label" for="airplane" style="margin:0;">Airplane Mode</label>
+  <input class="switch" type="checkbox" role="switch" id="airplane" />
+  <label class="label" for="airplane" style="margin: 0">Airplane Mode</label>
 </div>
 ```
 
 ```html example label="Form Field" hint="Label composed with an input and description text, as used in forms."
 <div>
   <label class="label" for="username">Username</label>
-  <input class="input" type="text" id="username" placeholder="shadcn" aria-describedby="username-desc">
+  <input class="input" type="text" id="username" placeholder="shadcn" aria-describedby="username-desc" />
   <p class="field-description" id="username-desc">This is your public display name.</p>
 </div>
 ```

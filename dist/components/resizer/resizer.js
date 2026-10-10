@@ -72,7 +72,9 @@ function targetOf(wrapper) {
  *  against a cursor that promises nothing). */
 function handleSet(wrapper) {
     const spec = (wrapper.dataset.handles || 'se').trim();
-    const requested = spec === 'all' ? [...HANDLES] : spec.split(/[\s,]+/).filter((h) => HANDLES.includes(h));
+    const requested = spec === 'all'
+        ? [...HANDLES]
+        : spec.split(/[\s,]+/).filter((h) => HANDLES.includes(h));
     const axis = wrapper.dataset.axis || 'both';
     if (axis === 'both')
         return requested;
@@ -202,8 +204,16 @@ function applySize(wrapper, axis, px) {
         bubbles: true,
         detail: {
             axis,
-            width: axis === 'w' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'w')) : currentPx(wrapper, 'w'),
-            height: axis === 'h' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'h')) : currentPx(wrapper, 'h'),
+            width: axis === 'w'
+                ? mode === 'controlled'
+                    ? Math.round(wanted)
+                    : currentPx(wrapper, 'w')
+                : currentPx(wrapper, 'w'),
+            height: axis === 'h'
+                ? mode === 'controlled'
+                    ? Math.round(wanted)
+                    : currentPx(wrapper, 'h')
+                : currentPx(wrapper, 'h'),
         },
     }));
 }
@@ -252,8 +262,14 @@ export const resizerApi = componentState({
 df$.resizerApi = resizerApi;
 df$.resizerStates = resizerStates;
 const HANDLE_LABEL = {
-    n: 'top edge', s: 'bottom edge', e: 'right edge', w: 'left edge',
-    ne: 'top-right corner', nw: 'top-left corner', se: 'bottom-right corner', sw: 'bottom-left corner',
+    n: 'top edge',
+    s: 'bottom edge',
+    e: 'right edge',
+    w: 'left edge',
+    ne: 'top-right corner',
+    nw: 'top-left corner',
+    se: 'bottom-right corner',
+    sw: 'bottom-left corner',
 };
 function makeHandle(wrapper, h) {
     const el = document.createElement('span');
@@ -305,8 +321,16 @@ function handleKeys(wrapper, handle, ev) {
     const OUT = { e: 'ArrowRight', w: 'ArrowLeft', s: 'ArrowDown', n: 'ArrowUp' };
     const IN = { e: 'ArrowLeft', w: 'ArrowRight', s: 'ArrowUp', n: 'ArrowDown' };
     const dir = edge
-        ? ev.key === OUT[sides] ? 1 : ev.key === IN[sides] ? -1 : 0
-        : ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -1 : 0;
+        ? ev.key === OUT[sides]
+            ? 1
+            : ev.key === IN[sides]
+                ? -1
+                : 0
+        : ev.key === 'ArrowRight' || ev.key === 'ArrowUp'
+            ? 1
+            : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown'
+                ? -1
+                : 0;
     if (dir === 0 && ev.key !== 'Home' && ev.key !== 'End')
         return;
     ev.preventDefault();
@@ -377,7 +401,10 @@ function startDrag(wrapper, handle, ev) {
     handle.addEventListener('lostpointercapture', onUp);
 }
 function init() {
-    const fresh = dfDollar('.resizer:not([data-init])').toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
+    const fresh = dfDollar('.resizer:not([data-init])')
+        .toArray()
+        .filter((wrapper) => wrapper instanceof HTMLElement)
+        .filter((wrapper) => {
         wrapper.dataset.init = '';
         return !!targetOf(wrapper); // a resizer wraps exactly ONE element
     });
@@ -409,7 +436,10 @@ function init() {
                 if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5)
                     applySize(wrapper, axis, v);
             }
-        }).observe(wrapper, { attributes: true, attributeFilter: ['data-width', 'data-height', 'data-handles', 'data-axis'] });
+        }).observe(wrapper, {
+            attributes: true,
+            attributeFilter: ['data-width', 'data-height', 'data-handles', 'data-axis'],
+        });
         // schema action surface: `resizer-reset` → authored size
         wrapper.addEventListener('resizer-reset', () => resizerApi.setState(wrapper, 'default'));
     });

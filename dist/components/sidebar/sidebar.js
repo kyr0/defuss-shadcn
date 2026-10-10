@@ -17,7 +17,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { bindGlobalKeys, defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { bindGlobalKeys, defussGlobals, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const sidebarStates = ['default', 'collapsed'];
@@ -68,7 +68,9 @@ export const sidebarApi = componentState({
 df$.sidebarApi = sidebarApi;
 df$.sidebarStates = sidebarStates;
 function init() {
-    dfDollar('.app-sidebar:not([data-init])').toArray().forEach((sidebar) => {
+    dfDollar('.app-sidebar:not([data-init])')
+        .toArray()
+        .forEach((sidebar) => {
         sidebar.dataset.init = '';
         // snapshot the authored state + bind per sidebar: `$('#my-sidebar').api.setState('collapsed')`
         sidebar._defaultState = sidebar.dataset.state || 'expanded';
@@ -79,7 +81,9 @@ function init() {
         bindComponent(sidebar, sidebarApi);
         // -- Toggle button → collapse/expand -----------------------
         const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : '.sidebar-trigger';
-        dfDollar(triggerId).toArray().forEach((trigger) => {
+        dfDollar(triggerId)
+            .toArray()
+            .forEach((trigger) => {
             trigger.addEventListener('click', () => {
                 const state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
                 sidebar.dataset.state = state;
@@ -94,7 +98,9 @@ function init() {
         autoCollapseSidebar(sidebar);
     });
     // -- Mobile dialog triggers ----------------------------------
-    dfDollar('[data-sidebar-mobile]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-sidebar-mobile]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const dialog = dfDollar('#' + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
         if (!dialog)
@@ -103,8 +109,13 @@ function init() {
             dialog.showModal();
         });
         // Close button inside the dialog
-        dfDollar(dialog).find('.sidebar-mobile-close').toArray().forEach((btn) => {
-            btn.addEventListener('click', () => { dialog.close(); });
+        dfDollar(dialog)
+            .find('.sidebar-mobile-close')
+            .toArray()
+            .forEach((btn) => {
+            btn.addEventListener('click', () => {
+                dialog.close();
+            });
         });
     });
 }

@@ -3,17 +3,54 @@
 
 @layer components {
   /* every box in the block measures border-box - the same on any page */
-  :where(.mk-tag-list, .mk-tag-list *, .mk-tag-list ::before, .mk-tag-list ::after) { box-sizing: border-box; }
-
-  .mk-tag-list { display: flex; flex-wrap: wrap; gap: 0.375rem; margin: 0; padding: 0; list-style: none;
-    & a { display: inline-flex; align-items: center; height: 1.5rem; padding-inline: 0.625rem; border: 1px solid var(--border); border-radius: 999px; color: var(--foreground); font-size: 0.75rem; font-weight: 500; text-decoration: none; }
-    & a:hover { border-color: color-mix(in oklch, var(--foreground) 40%, var(--border)); }
-    & a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  :where(.mk-tag-list, .mk-tag-list *, .mk-tag-list ::before, .mk-tag-list ::after) {
+    box-sizing: border-box;
   }
-  .mk-tag-list[data-variant="plain"] { gap: 0.25rem 0.75rem;
-    & a { height: auto; padding: 0; border: 0; color: var(--primary); font-size: 0.875rem; }
-    & a::before { content: "#" / ""; opacity: 0.6; }
-    & a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .mk-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    & a {
+      display: inline-flex;
+      align-items: center;
+      height: 1.5rem;
+      padding-inline: 0.625rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    & a:hover {
+      border-color: color-mix(in oklch, var(--foreground) 40%, var(--border));
+    }
+    & a:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+  .mk-tag-list[data-variant="plain"] {
+    gap: 0.25rem 0.75rem;
+    & a {
+      height: auto;
+      padding: 0;
+      border: 0;
+      color: var(--primary);
+      font-size: 0.875rem;
+    }
+    & a::before {
+      content: "#" / "";
+      opacity: 0.6;
+    }
+    & a:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
   .mk-tag-list[data-variant="colored"] a {
     --mk-tag-color: var(--muted-foreground);
@@ -26,6 +63,8 @@
 
   /* -- Accessibility ------------------------------------------- */
   @media (forced-colors: active) {
-    .mk-tag-list a { border: 1px solid LinkText; }
+    .mk-tag-list a {
+      border: 1px solid LinkText;
+    }
   }
 }

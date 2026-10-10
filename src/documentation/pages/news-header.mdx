@@ -56,7 +56,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     <time class="mk-news-header-date" datetime="2026-10-01">Thursday, 1 October 2026</time>
   </div>
   <h1 class="mk-news-header-title">Acme News</h1>
-  <p class="mk-news-header-desc">Product updates, company announcements and the stories behind them - written by the people who build Acme.</p>
+  <p class="mk-news-header-desc"
+    >Product updates, company announcements and the stories behind them - written by the people who build Acme.</p
+  >
   <nav class="mk-news-header-topics" aria-label="Topics">
     <a href="#" aria-current="page">All news</a>
     <a href="#">Product</a>
@@ -87,33 +89,33 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```
 
 ```html example label="Many topics: scroll or wrap" hint="On a phone the topics do not fit. Top: the row scrolls - its end fades out under a › hint that is driven by the scroll itself and disappears once you reach the end (no script). Bottom: data-wrap on the topics breaks them onto lines instead." previewStyle="align-items:stretch;"
-<div style="display:grid;gap:2rem;width:100%;max-width:22rem">
-<header class="mk-news-header" data-topics-demo>
-  <h1 class="mk-news-header-title">Scrolling</h1>
-  <nav class="mk-news-header-topics" aria-label="Topics">
-    <a href="#" aria-current="page">All</a>
-    <a href="#">Product</a>
-    <a href="#">Company</a>
-    <a href="#">Engineering</a>
-    <a href="#">Security</a>
-    <a href="#">Design</a>
-    <a href="#">Press</a>
-    <a href="#">Events</a>
-  </nav>
-</header>
-<header class="mk-news-header" data-topics-demo>
-  <h1 class="mk-news-header-title">Wrapped</h1>
-  <nav class="mk-news-header-topics" data-wrap aria-label="Topics">
-    <a href="#" aria-current="page">All</a>
-    <a href="#">Product</a>
-    <a href="#">Company</a>
-    <a href="#">Engineering</a>
-    <a href="#">Security</a>
-    <a href="#">Design</a>
-    <a href="#">Press</a>
-    <a href="#">Events</a>
-  </nav>
-</header>
+<div style="display: grid; gap: 2rem; width: 100%; max-width: 22rem">
+  <header class="mk-news-header" data-topics-demo>
+    <h1 class="mk-news-header-title">Scrolling</h1>
+    <nav class="mk-news-header-topics" aria-label="Topics">
+      <a href="#" aria-current="page">All</a>
+      <a href="#">Product</a>
+      <a href="#">Company</a>
+      <a href="#">Engineering</a>
+      <a href="#">Security</a>
+      <a href="#">Design</a>
+      <a href="#">Press</a>
+      <a href="#">Events</a>
+    </nav>
+  </header>
+  <header class="mk-news-header" data-topics-demo>
+    <h1 class="mk-news-header-title">Wrapped</h1>
+    <nav class="mk-news-header-topics" data-wrap aria-label="Topics">
+      <a href="#" aria-current="page">All</a>
+      <a href="#">Product</a>
+      <a href="#">Company</a>
+      <a href="#">Engineering</a>
+      <a href="#">Security</a>
+      <a href="#">Design</a>
+      <a href="#">Press</a>
+      <a href="#">Events</a>
+    </nav>
+  </header>
 </div>
 ```
 
@@ -128,7 +130,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </nav>
   <h1 class="mk-news-header-title">Product news</h1>
   <p class="mk-news-header-desc">Every release, every fix, every experiment - as it happens.</p>
-  <span class="mk-news-header-live"><span class="indicator-dot" data-variant="destructive" data-animate="ping" role="img" aria-label="Live"></span><strong>Live</strong> Updated <time datetime="2026-10-01T09:41">2 minutes ago</time></span>
+  <span class="mk-news-header-live"
+    ><span class="indicator-dot" data-variant="destructive" data-animate="ping" role="img" aria-label="Live"></span
+    ><strong>Live</strong> Updated <time datetime="2026-10-01T09:41">2 minutes ago</time></span
+  >
   <nav class="mk-news-header-topics" aria-label="Product topics">
     <a href="#" aria-current="page">Releases</a>
     <a href="#">Roadmap</a>
@@ -148,10 +153,19 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     <a href="#">Security</a>
   </nav>
   <div class="mk-news-header-tools">
-    <input class="input" type="search" data-size="sm" placeholder="Search news…" aria-label="Search news" style="width:10rem">
+    <input
+      class="input"
+      type="search"
+      data-size="sm"
+      placeholder="Search news…"
+      aria-label="Search news"
+      style="width: 10rem"
+    />
     <div class="toggle-group" role="group" aria-label="View" data-type="single" data-size="sm">
       <button class="toggle" aria-pressed="true" value="list" aria-label="List view"><i data-lucide="list"></i></button>
-      <button class="toggle" aria-pressed="false" value="grid" aria-label="Grid view"><i data-lucide="layout-grid"></i></button>
+      <button class="toggle" aria-pressed="false" value="grid" aria-label="Grid view"
+        ><i data-lucide="layout-grid"></i
+      ></button>
     </div>
     <a class="btn" data-size="sm" href="#"><i data-lucide="bell"></i> Subscribe</a>
   </div>

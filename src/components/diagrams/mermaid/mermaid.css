@@ -1,8 +1,20 @@
 /* -- Mermaid component ---------------------------------------------- */
 
 @layer components {
-  @keyframes mermaid-wait { from { background-position: 150% 0; } to { background-position: -50% 0; } }
-  @keyframes mermaid-reveal { to { color: var(--muted-foreground); user-select: auto; } }
+  @keyframes mermaid-wait {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+  @keyframes mermaid-reveal {
+    to {
+      color: var(--muted-foreground);
+      user-select: auto;
+    }
+  }
 
   /* figure.mermaid-diagram > pre.mermaid (the source) [+ .mermaid-output,
      the rendered SVG, + output.mermaid-error]. Without JavaScript - or
@@ -34,7 +46,9 @@
     }
 
     /* rendered: the SVG takes the stage, the source stays for re-renders */
-    &[data-state="rendered"] > pre.mermaid { display: none; }
+    &[data-state="rendered"] > pre.mermaid {
+      display: none;
+    }
 
     /* no flash of the source: before the first render (not initialized yet,
        or pending) the source box is a quiet placeholder - same box, text
@@ -45,9 +59,16 @@
       &:is(:not([data-init]), [data-state="pending"]) > pre.mermaid {
         color: transparent;
         user-select: none;
-        background-image: linear-gradient(90deg, transparent, color-mix(in oklch, var(--foreground) 6%, transparent), transparent);
+        background-image: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in oklch, var(--foreground) 6%, transparent),
+          transparent
+        );
         background-size: 200% 100%;
-        animation: mermaid-wait 1.4s linear infinite, mermaid-reveal 0s 4s forwards;
+        animation:
+          mermaid-wait 1.4s linear infinite,
+          mermaid-reveal 0s 4s forwards;
       }
     }
 
@@ -94,17 +115,28 @@
 
   /* -- Accessibility / print ------------------------------------------ */
   @media (forced-colors: active) {
-    .mermaid-output svg { forced-color-adjust: auto; }
-    .mermaid-error { border-color: CanvasText; color: CanvasText; }
+    .mermaid-output svg {
+      forced-color-adjust: auto;
+    }
+    .mermaid-error {
+      border-color: CanvasText;
+      color: CanvasText;
+    }
   }
 
   @media print {
-    .mermaid-output { overflow: visible; }
-    .mermaid-diagram { break-inside: avoid; }
+    .mermaid-output {
+      overflow: visible;
+    }
+    .mermaid-diagram {
+      break-inside: avoid;
+    }
   }
 
   /* no shimmer for reduced motion - the 4s fallback reveal stays */
   @media (prefers-reduced-motion: reduce) {
-    .mermaid-diagram > pre.mermaid { animation-name: none, mermaid-reveal; }
+    .mermaid-diagram > pre.mermaid {
+      animation-name: none, mermaid-reveal;
+    }
   }
 }

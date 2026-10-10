@@ -116,7 +116,10 @@ const ICONS: Record<string, string> = (() => {
   const src = readFileSync(componentPath('code-example', 'code-example.ts'), 'utf8');
   const block = /const ICONS = \{([\s\S]*?)\n\};/.exec(src)?.[1] ?? '';
   const out: Record<string, string> = {};
-  for (const m of block.matchAll(/'([a-z-]+)': '([^']*)'/g)) out[m[1]] = m[2];
+  // a key quoted or bare, the value on the same line or the next. VERIFIED: oxfmt unquoted `'smartphone':`
+  // and 369 rendered pages carried "FATAL ERROR: [JsxError] in Icon" in their toolbars; verify's
+  // `rendered pages are error-free` gate reads the output for a recurrence
+  for (const m of block.matchAll(/(?:'([a-z-]+)'|\b([a-z-]+))\s*:\s*'([^']*)'/g)) out[m[1] ?? m[2]] = m[3];
   return out;
 })();
 

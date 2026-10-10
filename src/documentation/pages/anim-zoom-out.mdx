@@ -27,14 +27,23 @@ Zoom Out is the shrink-in entrance of the motion vocabulary (`zoom-out` in `moti
   }
 </style>
 <div id="anim-zoom-out-target">zoom-out</div>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-top:1rem;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 1rem">
   <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-in">In</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-out">Out</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-pause">Pause</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-resume">Resume</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-finish">Finish</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-zoom-out-reset">Reset</button>
-  <input class="input" id="anim-zoom-out-duration" type="number" value="1500" min="1" step="50" style="width:6rem;" aria-label="Duration in ms" />
+  <input
+    class="input"
+    id="anim-zoom-out-duration"
+    type="number"
+    value="1500"
+    min="1"
+    step="50"
+    style="width: 6rem"
+    aria-label="Duration in ms"
+  />
   <select class="select" id="anim-zoom-out-easing" aria-label="Easing">
     <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default ease-out</option>
     <option value="linear">linear</option>
@@ -65,18 +74,10 @@ Zoom Out is the shrink-in entrance of the motion vocabulary (`zoom-out` in `moti
     lastChannel = 'zoomOut';
     df$.anim.zoomOut.play(target, config());
   });
-  document.getElementById('anim-zoom-out-pause').addEventListener('click', () =>
-    df$.anim[lastChannel].pause(target),
-  );
-  document.getElementById('anim-zoom-out-resume').addEventListener('click', () =>
-    df$.anim[lastChannel].resume(target),
-  );
-  document.getElementById('anim-zoom-out-finish').addEventListener('click', () =>
-    df$.anim[lastChannel].finish(target),
-  );
-  document.getElementById('anim-zoom-out-reset').addEventListener('click', () =>
-    df$.anim[lastChannel].reset(target),
-  );
+  document.getElementById('anim-zoom-out-pause').addEventListener('click', () => df$.anim[lastChannel].pause(target));
+  document.getElementById('anim-zoom-out-resume').addEventListener('click', () => df$.anim[lastChannel].resume(target));
+  document.getElementById('anim-zoom-out-finish').addEventListener('click', () => df$.anim[lastChannel].finish(target));
+  document.getElementById('anim-zoom-out-reset').addEventListener('click', () => df$.anim[lastChannel].reset(target));
 </script>
 ```
 
@@ -94,11 +95,23 @@ Zoom Out is the shrink-in entrance of the motion vocabulary (`zoom-out` in `moti
     font-weight: 600;
   }
 </style>
-<div id="anim-zoom-out-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
-  <div style="height: 600px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 1rem;">
-    <span style="font-size: 0.85rem; color: var(--muted-foreground);">scroll down</span>
+<div
+  id="anim-zoom-out-scroller"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div
+    style="
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+    "
+  >
+    <span style="font-size: 0.85rem; color: var(--muted-foreground)">scroll down</span>
     <div id="anim-zoom-out-scroll-target">driven by scroll</div>
-    <span style="font-size: 0.85rem; color: var(--muted-foreground);">fully zoomed in</span>
+    <span style="font-size: 0.85rem; color: var(--muted-foreground)">fully zoomed in</span>
   </div>
 </div>
 <script type="module">

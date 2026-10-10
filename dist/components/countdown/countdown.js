@@ -40,7 +40,9 @@ function writeValue(span, n) {
     span.textContent = String(v);
 }
 /** The value spans a root owns (a group: every descendant .countdown's). */
-const valuesOf = (el) => el.classList.contains('countdown') ? [...dfDollar(el).find(':scope > span').toArray()] : [...dfDollar(el).find('.countdown > span').toArray()];
+const valuesOf = (el) => el.classList.contains('countdown')
+    ? [...dfDollar(el).find(':scope > span').toArray()]
+    : [...dfDollar(el).find('.countdown > span').toArray()];
 /** Seconds left → the present units, largest first; the largest absorbs the rest. */
 function split(seconds, spans) {
     let rest = Math.max(0, Math.floor(seconds));
@@ -56,7 +58,8 @@ function split(seconds, spans) {
     return out;
 }
 const fmt = (() => {
-    const DF = Intl.DurationFormat;
+    const DF = Intl
+        .DurationFormat;
     return DF ? new DF(undefined, { style: 'long' }) : null;
 })();
 /** The timer's accessible label ("2 days, 4 hours, …") - unless the author named it. */
@@ -66,7 +69,11 @@ function label(el, parts) {
     const d = {};
     for (const [span, v] of parts)
         d[span.dataset.unit] = v;
-    const text = fmt ? fmt.format(d) : Object.entries(d).map(([u, v]) => `${v} ${u}`).join(', ');
+    const text = fmt
+        ? fmt.format(d)
+        : Object.entries(d)
+            .map(([u, v]) => `${v} ${u}`)
+            .join(', ');
     el.setAttribute('aria-label', text || '0');
 }
 function remaining(el) {
@@ -93,7 +100,7 @@ function schedule(el) {
     paintTimer(el);
     if (el.dataset.stateName !== 'running')
         return;
-    const ms = ((el._deadline - Date.now()) % 1000 + 1000) % 1000 || 1000;
+    const ms = (((el._deadline - Date.now()) % 1000) + 1000) % 1000 || 1000;
     el._tick = setTimeout(() => schedule(el), ms + 5);
 }
 function finish(el) {
@@ -203,9 +210,13 @@ export const countdownApi = componentState({
 df$.countdownApi = countdownApi;
 df$.countdownStates = countdownStates;
 function init() {
-    dfDollar('.countdown-group:not([data-init]), .countdown:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.countdown-group:not([data-init]), .countdown:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         // a .countdown inside a timer group belongs to the group
-        if (el.classList.contains('countdown') && !isTimer(el) && el.parentElement?.closest('.countdown-group[data-until], .countdown-group[data-duration]'))
+        if (el.classList.contains('countdown') &&
+            !isTimer(el) &&
+            el.parentElement?.closest('.countdown-group[data-until], .countdown-group[data-duration]'))
             return;
         if (el.classList.contains('countdown-group') && !isTimer(el))
             return;

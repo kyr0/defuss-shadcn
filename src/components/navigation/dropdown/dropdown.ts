@@ -7,7 +7,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -39,12 +45,14 @@ export interface DropdownStateConfigs {
 const ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 const isDisabled = (el) => el.disabled || el.getAttribute('aria-disabled') === 'true';
 /** The items that belong to THIS menu - not those of its nested submenus. */
-const itemsOf = (menu) => Array.from(dfDollar(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+const itemsOf = (menu) =>
+  Array.from(dfDollar(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
 const subOf = (trigger) => dfDollar(trigger).closest('.dropdown-sub').children('.dropdown-sub-content').get(0) ?? null;
 /** The outermost menu of a (sub)menu - the one its trigger opened. */
 const rootOf = (menu) => {
   let m = menu;
-  while (m?.parentElement?.closest('.dropdown-content[popover]')) m = m.parentElement.closest('.dropdown-content[popover]');
+  while (m?.parentElement?.closest('.dropdown-content[popover]'))
+    m = m.parentElement.closest('.dropdown-content[popover]');
   return m;
 };
 const HOVER_OPEN = 120;
@@ -65,7 +73,11 @@ function applyMarkup(_el, _stateName) {}
 function triggerStateChange(menu, stateName, _config) {
   switch (stateName) {
     case 'default':
-      try { menu.hidePopover(); } catch { /* already closed */ }
+      try {
+        menu.hidePopover();
+      } catch {
+        /* already closed */
+      }
       break;
     case 'open':
       // deferred show (safeShowPopover): showPopover() mid-exit (right after
@@ -89,7 +101,9 @@ df$.dropdownStates = dropdownStates;
 let anchorSeq = 0;
 
 function highlight(menu, item, focus = true) {
-  itemsOf(menu).forEach((i) => { if (i !== item) i.removeAttribute('data-highlighted'); });
+  itemsOf(menu).forEach((i) => {
+    if (i !== item) i.removeAttribute('data-highlighted');
+  });
   if (item) {
     item.setAttribute('data-highlighted', '');
     if (focus) item.focus({ preventScroll: true });
@@ -100,23 +114,50 @@ function highlight(menu, item, focus = true) {
 function activate(menu, item) {
   if (isDisabled(item)) return;
   const role = item.getAttribute('role');
-  if (item.classList.contains('dropdown-sub-trigger')) { openSub(item, true); return; }
+  if (item.classList.contains('dropdown-sub-trigger')) {
+    openSub(item, true);
+    return;
+  }
   if (role === 'menuitemcheckbox') {
     const checked = item.getAttribute('aria-checked') !== 'true';
     item.setAttribute('aria-checked', String(checked));
     // Fires when an item is chosen - the item, its value (data-value or its text) and, for a checkbox item, whether it is checked now.
-    item.dispatchEvent(new CustomEvent<DropdownSelectDetail>('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    item.dispatchEvent(
+      new CustomEvent<DropdownSelectDetail>('dropdown:select', {
+        bubbles: true,
+        detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked },
+      }),
+    );
     return; // stays open: toggling several options in one go
   }
   if (role === 'menuitemradio') {
     const group = item.closest('[role="group"]') ?? menu;
-    dfDollar(group).find('[role="menuitemradio"]').toArray().forEach((r) => { if (r.closest('[role="menu"]') === menu) r.setAttribute('aria-checked', String(r === item)); });
-    item.dispatchEvent(new CustomEvent<DropdownSelectDetail>('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    dfDollar(group)
+      .find('[role="menuitemradio"]')
+      .toArray()
+      .forEach((r) => {
+        if (r.closest('[role="menu"]') === menu) r.setAttribute('aria-checked', String(r === item));
+      });
+    item.dispatchEvent(
+      new CustomEvent<DropdownSelectDetail>('dropdown:select', {
+        bubbles: true,
+        detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true },
+      }),
+    );
     return;
   }
-  item.dispatchEvent(new CustomEvent<DropdownSelectDetail>('dropdown:select', { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  item.dispatchEvent(
+    new CustomEvent<DropdownSelectDetail>('dropdown:select', {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim() },
+    }),
+  );
   // a plain item acts and closes the whole menu tree
-  try { rootOf(menu).hidePopover(); } catch { /* closed */ }
+  try {
+    rootOf(menu).hidePopover();
+  } catch {
+    /* closed */
+  }
 }
 
 function openSub(trigger, focusFirst) {
@@ -124,11 +165,22 @@ function openSub(trigger, focusFirst) {
   if (!sub || isDisabled(trigger)) return;
   clearTimeout(sub._closeTimer);
   sub._focusFirst = focusFirst;
-  if (!sub.matches(':popover-open')) { try { sub.showPopover(); } catch { /* detached */ } }
-  else if (focusFirst) highlight(sub, itemsOf(sub)[0]);
+  if (!sub.matches(':popover-open')) {
+    try {
+      sub.showPopover();
+    } catch {
+      /* detached */
+    }
+  } else if (focusFirst) highlight(sub, itemsOf(sub)[0]);
 }
 function closeSub(sub) {
-  if (sub?.matches(':popover-open')) { try { sub.hidePopover(); } catch { /* closed */ } }
+  if (sub?.matches(':popover-open')) {
+    try {
+      sub.hidePopover();
+    } catch {
+      /* closed */
+    }
+  }
 }
 
 /** Behavior shared by a root menu and every submenu: pointer highlight,
@@ -137,7 +189,10 @@ function wireMenu(menu) {
   if (menu._wired) return;
   menu._wired = true;
   const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
-  const openSubs = () => Array.from(dfDollar(menu).find('.dropdown-sub-content').toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(':popover-open'));
+  const openSubs = () =>
+    Array.from(dfDollar(menu).find('.dropdown-sub-content').toArray()).filter(
+      (s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(':popover-open'),
+    );
 
   menu.addEventListener('mousemove', (e) => {
     if (!own(e)) return;
@@ -150,10 +205,15 @@ function wireMenu(menu) {
     menu._hoverItem = item;
     clearTimeout(menu._hoverTimer);
     const sub = item.classList.contains('dropdown-sub-trigger') ? subOf(item) : null;
-    menu._hoverTimer = setTimeout(() => {
-      openSubs().forEach((s) => { if (s !== sub) closeSub(s); });
-      if (sub) openSub(item, false);
-    }, sub ? HOVER_OPEN : HOVER_CLOSE);
+    menu._hoverTimer = setTimeout(
+      () => {
+        openSubs().forEach((s) => {
+          if (s !== sub) closeSub(s);
+        });
+        if (sub) openSub(item, false);
+      },
+      sub ? HOVER_OPEN : HOVER_CLOSE,
+    );
   });
   menu.addEventListener('mouseleave', (e) => {
     clearTimeout(menu._hoverTimer);
@@ -161,7 +221,10 @@ function wireMenu(menu) {
     // leaving toward an open submenu keeps its trigger highlighted
     const to = e.relatedTarget;
     if (to instanceof Element && to.closest('.dropdown-sub-content') && menu.contains(to)) return;
-    itemsOf(menu).forEach((i) => { if (!(i.classList.contains('dropdown-sub-trigger') && subOf(i)?.matches(':popover-open'))) i.removeAttribute('data-highlighted'); });
+    itemsOf(menu).forEach((i) => {
+      if (!(i.classList.contains('dropdown-sub-trigger') && subOf(i)?.matches(':popover-open')))
+        i.removeAttribute('data-highlighted');
+    });
   });
   // a press on a gap, a label or a disabled item keeps focus in the menu
   // (otherwise it falls to <body> and the arrow keys stop working)
@@ -186,29 +249,54 @@ function wireMenu(menu) {
     const inward = rtl ? 'ArrowLeft' : 'ArrowRight';
     const outward = rtl ? 'ArrowRight' : 'ArrowLeft';
     switch (e.key) {
-      case 'ArrowDown': e.preventDefault(); highlight(menu, items[(current + 1) % items.length]); break;
-      case 'ArrowUp': e.preventDefault(); highlight(menu, items[(current - 1 + items.length) % items.length]); break;
-      case 'Home': e.preventDefault(); highlight(menu, items[0]); break;
-      case 'End': e.preventDefault(); highlight(menu, items[items.length - 1]); break;
+      case 'ArrowDown':
+        e.preventDefault();
+        highlight(menu, items[(current + 1) % items.length]);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        highlight(menu, items[(current - 1 + items.length) % items.length]);
+        break;
+      case 'Home':
+        e.preventDefault();
+        highlight(menu, items[0]);
+        break;
+      case 'End':
+        e.preventDefault();
+        highlight(menu, items[items.length - 1]);
+        break;
       case inward:
-        if (document.activeElement?.classList.contains('dropdown-sub-trigger')) { e.preventDefault(); openSub(document.activeElement, true); }
+        if (document.activeElement?.classList.contains('dropdown-sub-trigger')) {
+          e.preventDefault();
+          openSub(document.activeElement, true);
+        }
         break;
       case outward:
-        if (isSub) { e.preventDefault(); closeSub(menu); }
+        if (isSub) {
+          e.preventDefault();
+          closeSub(menu);
+        }
         break;
       case 'Escape':
         e.preventDefault();
         e.stopPropagation();
-        if (isSub) closeSub(menu); else menu.hidePopover();
+        if (isSub) closeSub(menu);
+        else menu.hidePopover();
         break;
       case 'Tab':
-        try { rootOf(menu).hidePopover(); } catch { /* closed */ }
+        try {
+          rootOf(menu).hidePopover();
+        } catch {
+          /* closed */
+        }
         break;
-      case 'Enter': case ' ':
+      case 'Enter':
+      case ' ':
         e.preventDefault();
         // a real click, so the item's own click handlers run too (the menu's
         // click listener then activates it)
-        if (document.activeElement?.matches(ITEM) && !isDisabled(document.activeElement)) (document.activeElement as HTMLElement).click();
+        if (document.activeElement?.matches(ITEM) && !isDisabled(document.activeElement))
+          (document.activeElement as HTMLElement).click();
         break;
       default:
         if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -246,8 +334,11 @@ function wireSub(wrap) {
       trigger.setAttribute('data-highlighted', '');
       if (sub._focusFirst) highlight(sub, itemsOf(sub)[0]);
     } else {
-      itemsOf(sub).forEach((i) => { i.removeAttribute('data-highlighted'); });
-      if (sub.contains(document.activeElement) || document.activeElement === document.body) trigger.focus({ preventScroll: true });
+      itemsOf(sub).forEach((i) => {
+        i.removeAttribute('data-highlighted');
+      });
+      if (sub.contains(document.activeElement) || document.activeElement === document.body)
+        trigger.focus({ preventScroll: true });
     }
   });
   // back inside the submenu: keep it open
@@ -259,59 +350,71 @@ function wireSub(wrap) {
 }
 
 function init() {
-  dfDollar('[data-dropdown-trigger]:not([data-init])').toArray().forEach((trigger) => {
-    trigger.dataset.init = '';
-    const menu = dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
-    if (!menu) return;
+  dfDollar('[data-dropdown-trigger]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const menu = dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+      if (!menu) return;
 
-    // CSS anchor positioning - unique name per trigger-menu pair
-    const anchorId = `--dropdown-${menu.id}`;
-    trigger.style.anchorName = anchorId;
-    menu.style.positionAnchor = anchorId;
-    if (!trigger.hasAttribute('aria-haspopup')) trigger.setAttribute('aria-haspopup', 'menu');
-    if (!trigger.hasAttribute('aria-controls')) trigger.setAttribute('aria-controls', menu.id);
+      // CSS anchor positioning - unique name per trigger-menu pair
+      const anchorId = `--dropdown-${menu.id}`;
+      trigger.style.anchorName = anchorId;
+      menu.style.positionAnchor = anchorId;
+      if (!trigger.hasAttribute('aria-haspopup')) trigger.setAttribute('aria-haspopup', 'menu');
+      if (!trigger.hasAttribute('aria-controls')) trigger.setAttribute('aria-controls', menu.id);
 
-    // Native declarative toggle. A JS `togglePopover()` click handler is
-    // buggy for popover="auto": light dismiss closes the menu *before* the
-    // click handler runs, so togglePopover re-opens it and the menu can
-    // never be closed by clicking the trigger again. The popovertarget
-    // command is dismiss-aware - the trigger button must be a <button>
-    // (documented API) for the native command to apply.
-    if (!trigger.hasAttribute('popovertarget')) trigger.setAttribute('popovertarget', menu.id);
-    menu._trigger = trigger;
-    menu.addEventListener('toggle', (e) => {
-      if (e.target !== menu) return;
-      const open = e.newState === 'open';
-      trigger.setAttribute('aria-expanded', String(open));
-      if (open) {
-        const first = itemsOf(menu)[0];
-        if (first && !menu._noFocus) highlight(menu, first);
-        menu._noFocus = false;
-      } else {
-        itemsOf(menu).forEach((i) => { i.removeAttribute('data-highlighted'); });
-        // focus back to the trigger - unless it moved on to another trigger
-        // whose menu is open now (a menubar switching menus). The browser's
-        // own popover focus restore may have put it on the trigger that
-        // was focused when this menu opened; that one is taken back.
-        const active = document.activeElement;
-        const other = active instanceof Element && active !== trigger ? active.closest('[data-dropdown-trigger]') : null;
-        const otherOpen = other ? dfDollar('#' + CSS.escape(other.getAttribute('data-dropdown-trigger'))).get(0)?.matches(':popover-open') : false;
-        if (!otherOpen && (!active || active === document.body || menu.contains(active) || other)) trigger.focus({ preventScroll: true });
-      }
+      // Native declarative toggle. A JS `togglePopover()` click handler is
+      // buggy for popover="auto": light dismiss closes the menu *before* the
+      // click handler runs, so togglePopover re-opens it and the menu can
+      // never be closed by clicking the trigger again. The popovertarget
+      // command is dismiss-aware - the trigger button must be a <button>
+      // (documented API) for the native command to apply.
+      if (!trigger.hasAttribute('popovertarget')) trigger.setAttribute('popovertarget', menu.id);
+      menu._trigger = trigger;
+      menu.addEventListener('toggle', (e) => {
+        if (e.target !== menu) return;
+        const open = e.newState === 'open';
+        trigger.setAttribute('aria-expanded', String(open));
+        if (open) {
+          const first = itemsOf(menu)[0];
+          if (first && !menu._noFocus) highlight(menu, first);
+          menu._noFocus = false;
+        } else {
+          itemsOf(menu).forEach((i) => {
+            i.removeAttribute('data-highlighted');
+          });
+          // focus back to the trigger - unless it moved on to another trigger
+          // whose menu is open now (a menubar switching menus). The browser's
+          // own popover focus restore may have put it on the trigger that
+          // was focused when this menu opened; that one is taken back.
+          const active = document.activeElement;
+          const other =
+            active instanceof Element && active !== trigger ? active.closest('[data-dropdown-trigger]') : null;
+          const otherOpen = other
+            ? dfDollar('#' + CSS.escape(other.getAttribute('data-dropdown-trigger')))
+                .get(0)
+                ?.matches(':popover-open')
+            : false;
+          if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
+            trigger.focus({ preventScroll: true });
+        }
+      });
+      wireMenu(menu);
+      dfDollar(menu).find('.dropdown-sub').toArray().forEach(wireSub);
     });
-    wireMenu(menu);
-    dfDollar(menu).find('.dropdown-sub').toArray().forEach(wireSub);
-  });
 
   // submenus added later (dynamic menus)
   dfDollar('.dropdown-sub').toArray().forEach(wireSub);
 
   // bind-scope the api per menu instance: `$('#menu').api.setState('open')`
-  dfDollar('.dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])').toArray().forEach((menu) => {
-    menu.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(menu, dropdownApi);
-  });
+  dfDollar('.dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])')
+    .toArray()
+    .forEach((menu) => {
+      menu.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(menu, dropdownApi);
+    });
 }
 
 init();

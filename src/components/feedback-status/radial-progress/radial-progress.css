@@ -57,19 +57,14 @@
       inset: 0;
       border-radius: inherit;
       background:
-        radial-gradient(farthest-side, currentColor 98%, #0000)
-          top / var(--thickness) var(--thickness) no-repeat,
+        radial-gradient(farthest-side, currentColor 98%, #0000) top / var(--thickness) var(--thickness) no-repeat,
         conic-gradient(currentColor calc(var(--_rp-value) * 1%), var(--secondary) 0);
       -webkit-mask: radial-gradient(
         farthest-side,
         #0000 calc(99% - var(--thickness)),
         #000 calc(100% - var(--thickness))
       );
-      mask: radial-gradient(
-        farthest-side,
-        #0000 calc(99% - var(--thickness)),
-        #000 calc(100% - var(--thickness))
-      );
+      mask: radial-gradient(farthest-side, #0000 calc(99% - var(--thickness)), #000 calc(100% - var(--thickness)));
     }
 
     /* Round cap at the leading edge. Positioned with cos()/sin() rather than
@@ -84,12 +79,10 @@
       border-radius: 9999px;
       background-color: currentColor;
       inset-inline-start: calc(
-        50% + cos(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 -
-          var(--thickness) / 2
+        50% + cos(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 - var(--thickness) / 2
       );
       inset-block-start: calc(
-        50% + sin(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 -
-          var(--thickness) / 2
+        50% + sin(var(--_rp-angle)) * (var(--size) - var(--thickness)) / 2 - var(--thickness) / 2
       );
     }
 
@@ -115,19 +108,35 @@
     /* -- Tones (same vocabulary as progress): success / warning / info /
        destructive; auto follows the value - radial-progress.js sets
        data-level low (< 34%) / mid / high. Any color: --progress-color. */
-    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
-    &[data-tone="warning"] { --_c: oklch(0.72 0.16 70); }
-    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
-    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-tone="success"] {
+      --_c: oklch(0.6 0.15 150);
+    }
+    &[data-tone="warning"] {
+      --_c: oklch(0.72 0.16 70);
+    }
+    &[data-tone="info"] {
+      --_c: oklch(0.6 0.16 250);
+    }
+    &[data-tone="destructive"] {
+      --_c: var(--destructive);
+    }
     &[data-tone="auto"] {
-      &[data-level="low"] { --_c: var(--destructive); }
-      &[data-level="mid"] { --_c: oklch(0.72 0.16 70); }
-      &[data-level="high"] { --_c: oklch(0.6 0.15 150); }
+      &[data-level="low"] {
+        --_c: var(--destructive);
+      }
+      &[data-level="mid"] {
+        --_c: oklch(0.72 0.16 70);
+      }
+      &[data-level="high"] {
+        --_c: oklch(0.6 0.15 150);
+      }
     }
 
     /* -- Label parts: a .radial-progress-value (the number the script
        writes) over an optional .radial-progress-caption ------------- */
-    & .radial-progress-value { font-weight: 600; }
+    & .radial-progress-value {
+      font-weight: 600;
+    }
     & .radial-progress-caption {
       margin-block-start: 0.25em;
       font-size: 0.6875em;
@@ -137,15 +146,21 @@
 
     /* -- A glide driven by the script paints every frame itself: no CSS
        easing on top (it would lag the counting label) --------------- */
-    &[data-running] { transition: none; }
+    &[data-running] {
+      transition: none;
+    }
 
     /* -- Indeterminate: no aria-valuenow (an indeterminate progressbar has
        none) - a quarter arc spins, the cap hides --------------------- */
     &:not([aria-valuenow]) {
       --_rp-value: 25;
       transition: none;
-      &::before { animation: radial-progress-spin 1s linear infinite; }
-      &::after { display: none; }
+      &::before {
+        animation: radial-progress-spin 1s linear infinite;
+      }
+      &::after {
+        display: none;
+      }
     }
 
     /* -- Sizes ---------------------------------------------------- */
@@ -160,7 +175,11 @@
     }
   }
 
-  @keyframes radial-progress-spin { to { rotate: 1turn; } }
+  @keyframes radial-progress-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
 
   /* -- Accessibility -------------------------------------------- */
 
@@ -170,7 +189,10 @@
   @media (prefers-reduced-motion: reduce) {
     .radial-progress {
       transition-duration: 0.01ms !important;
-      &::before { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+      &::before {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
     }
   }
 
@@ -181,8 +203,7 @@
 
       &::before {
         background:
-          radial-gradient(farthest-side, currentColor 98%, #0000)
-            top / var(--thickness) var(--thickness) no-repeat,
+          radial-gradient(farthest-side, currentColor 98%, #0000) top / var(--thickness) var(--thickness) no-repeat,
           conic-gradient(currentColor calc(var(--_rp-value) * 1%), var(--border) 0);
       }
     }
@@ -197,8 +218,7 @@
 
       &::before {
         background:
-          radial-gradient(farthest-side, Highlight 98%, #0000)
-            top / var(--thickness) var(--thickness) no-repeat,
+          radial-gradient(farthest-side, Highlight 98%, #0000) top / var(--thickness) var(--thickness) no-repeat,
           conic-gradient(Highlight calc(var(--_rp-value) * 1%), GrayText 0);
       }
     }

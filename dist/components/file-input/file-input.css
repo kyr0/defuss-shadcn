@@ -18,7 +18,9 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
     padding: 0;
     cursor: pointer;
 
@@ -39,7 +41,9 @@
       cursor: pointer;
       transition: background 150ms;
 
-      &:hover { background: var(--accent); }
+      &:hover {
+        background: var(--accent);
+      }
     }
 
     &:focus {
@@ -59,7 +63,9 @@
         color: var(--muted-foreground);
         cursor: not-allowed;
 
-        &:hover { background: var(--muted); }
+        &:hover {
+          background: var(--muted);
+        }
       }
     }
 
@@ -67,11 +73,46 @@
        unsized default keeps the historical 2.5rem). The file-selector
        button fills the container (height:100%), so only the box and the
        font scale. */
-    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem;    &::file-selector-button { padding: 0 0.5rem; margin-right: 0.5rem; font-size: 0.75rem; } }
-    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem;  &::file-selector-button { padding: 0 0.625rem; margin-right: 0.625rem; font-size: 0.8125rem; } }
-    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
-    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      font-size: 0.75rem;
+      &::file-selector-button {
+        padding: 0 0.5rem;
+        margin-right: 0.5rem;
+        font-size: 0.75rem;
+      }
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      font-size: 0.8125rem;
+      &::file-selector-button {
+        padding: 0 0.625rem;
+        margin-right: 0.625rem;
+        font-size: 0.8125rem;
+      }
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      font-size: 1rem;
+      &::file-selector-button {
+        padding: 0 1rem;
+        margin-right: 1rem;
+        font-size: 1rem;
+      }
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      font-size: 1.125rem;
+      &::file-selector-button {
+        padding: 0 1.25rem;
+        margin-right: 1.25rem;
+        font-size: 1.125rem;
+      }
+    }
   }
 
   /* -- Drop zone ---------------------------------------------------------
@@ -100,11 +141,22 @@
     color: var(--card-foreground);
     text-align: center;
     cursor: pointer;
-    transition: border-color 150ms ease, background-color 150ms ease, scale 150ms ease;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      scale 150ms ease;
 
-    &:hover { border-color: color-mix(in oklch, var(--foreground) 40%, transparent); }
-    &:has(.file-drop-input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
-    &:has(.file-drop-input:disabled) { opacity: 0.55; cursor: not-allowed; }
+    &:hover {
+      border-color: color-mix(in oklch, var(--foreground) 40%, transparent);
+    }
+    &:has(.file-drop-input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+    &:has(.file-drop-input:disabled) {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
   }
   .file-drop-input {
     position: absolute;
@@ -126,16 +178,27 @@
     color: var(--muted-foreground);
     font-size: 1.5rem;
     line-height: 1;
-    transition: background-color 150ms ease, color 150ms ease, translate 150ms ease;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      translate 150ms ease;
 
-    & svg { width: 1.5rem; height: 1.5rem; }
+    & svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   }
   .file-drop-title {
     font-size: 0.9375rem;
     font-weight: 600;
     text-wrap: balance;
 
-    & u, & .file-drop-browse { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+    & u,
+    & .file-drop-browse {
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
   .file-drop-hint {
     font-size: 0.8125rem;
@@ -150,16 +213,24 @@
     background-color: color-mix(in oklch, var(--primary) 6%, var(--card));
     scale: 1.01;
 
-    & .file-drop-icon { background-color: var(--primary); color: var(--primary-foreground); translate: 0 -2px; }
+    & .file-drop-icon {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      translate: 0 -2px;
+    }
   }
   /* rejected files (wrong type, too big, too many) */
-  .file-drop[data-state-name="error"] .file-drop-zone { border-color: var(--destructive); }
+  .file-drop[data-state-name="error"] .file-drop-zone {
+    border-color: var(--destructive);
+  }
   .file-drop-error {
     margin: 0;
     font-size: 0.8125rem;
     color: var(--destructive);
 
-    &:empty { display: none; }
+    &:empty {
+      display: none;
+    }
   }
 
   /* compact: one row - icon, text, and the whole row is the target */
@@ -173,7 +244,17 @@
     text-align: start;
     border-radius: var(--radius-lg);
 
-    & .file-drop-icon { grid-row: span 2; width: 2.25rem; height: 2.25rem; margin: 0; font-size: 1.125rem; & svg { width: 1.125rem; height: 1.125rem; } }
+    & .file-drop-icon {
+      grid-row: span 2;
+      width: 2.25rem;
+      height: 2.25rem;
+      margin: 0;
+      font-size: 1.125rem;
+      & svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
   }
 
   /* -- The file list ---------------------------------------------------- */
@@ -184,7 +265,9 @@
     padding: 0;
     list-style: none;
 
-    &:empty { display: none; }
+    &:empty {
+      display: none;
+    }
   }
   .file-drop-item {
     display: grid;
@@ -210,7 +293,11 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
 
-    & img { width: 100%; height: 100%; object-fit: cover; }
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .file-drop-name {
     overflow: hidden;
@@ -236,14 +323,27 @@
     color: var(--muted-foreground);
     cursor: pointer;
 
-    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-    & svg { width: 1rem; height: 1rem; }
+    &:hover {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
   @media (forced-colors: active) {
-    .file-drop-zone { border-color: CanvasText; }
-    .file-drop[data-state-name="dragover"] .file-drop-zone { border-color: Highlight; }
+    .file-drop-zone {
+      border-color: CanvasText;
+    }
+    .file-drop[data-state-name="dragover"] .file-drop-zone {
+      border-color: Highlight;
+    }
   }
 }
 

@@ -103,9 +103,12 @@ function text(el) {
       .replaceAll('{percent}', pctFmt.format(v / max));
   }
   switch (el.dataset.format) {
-    case 'fraction': return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
-    case 'value': return numFmt.format(Math.round(v));
-    default: return pctFmt.format(v / max);
+    case 'fraction':
+      return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
+    case 'value':
+      return numFmt.format(Math.round(v));
+    default:
+      return pctFmt.format(v / max);
   }
 }
 
@@ -152,7 +155,12 @@ function commit(el, v) {
   const done = v >= maxOf(el);
   el.dataset.stateName = done ? 'complete' : 'default';
   // Fires when the value changes - value, max and the fraction done (0 to 1).
-  el.dispatchEvent(new CustomEvent<ProgressChangeDetail>('progress:change', { bubbles: true, detail: { value: v, max: maxOf(el), percent: v / maxOf(el) } }));
+  el.dispatchEvent(
+    new CustomEvent<ProgressChangeDetail>('progress:change', {
+      bubbles: true,
+      detail: { value: v, max: maxOf(el), percent: v / maxOf(el) },
+    }),
+  );
   // Fires once when the value reaches max.
   if (done && before !== 'complete') el.dispatchEvent(new CustomEvent('progress:completed', { bubbles: true }));
 }
@@ -194,7 +202,11 @@ function applyMarkup(el, stateName, config) {
   if (stateName === 'indeterminate') {
     dfDollar(el).attr('aria-valuenow', null);
     paint(el);
-  } else setValue(el, stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : authored ?? 0));
+  } else
+    setValue(
+      el,
+      stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : (authored ?? 0)),
+    );
 }
 
 function triggerStateChange(el, stateName, config) {
@@ -202,9 +214,12 @@ function triggerStateChange(el, stateName, config) {
     case 'default': {
       // only a max that differs is written: setState(getState()) changes nothing
       if (config.max != null && Number(config.max) !== maxOf(el)) el.setAttribute('aria-valuemax', String(config.max));
-      const to = clamp(el, config.value != null ? config.value : el._authored ?? 0);
+      const to = clamp(el, config.value != null ? config.value : (el._authored ?? 0));
       if (config.duration > 0) tween(el, to, config.duration);
-      else { stopTween(el); commit(el, to); }
+      else {
+        stopTween(el);
+        commit(el, to);
+      }
       break;
     }
     case 'indeterminate':
@@ -215,7 +230,10 @@ function triggerStateChange(el, stateName, config) {
       break;
     case 'complete':
       if (config.duration > 0) tween(el, maxOf(el), config.duration);
-      else { stopTween(el); commit(el, maxOf(el)); }
+      else {
+        stopTween(el);
+        commit(el, maxOf(el));
+      }
       break;
   }
 }
@@ -242,11 +260,21 @@ df$.radialProgressStates = radialProgressStates;
 function run(el, command) {
   const now = valueOf(el) ?? 0;
   switch (command) {
-    case 'reset': radialProgressApi.setState(el, 'default', { value: 0 }); break;
-    case 'increment': radialProgressApi.setState(el, 'default', { value: now + stepOf(el) }); break;
-    case 'decrement': radialProgressApi.setState(el, 'default', { value: now - stepOf(el) }); break;
-    case 'complete': radialProgressApi.setState(el, 'complete'); break;
-    case 'indeterminate': radialProgressApi.setState(el, 'indeterminate'); break;
+    case 'reset':
+      radialProgressApi.setState(el, 'default', { value: 0 });
+      break;
+    case 'increment':
+      radialProgressApi.setState(el, 'default', { value: now + stepOf(el) });
+      break;
+    case 'decrement':
+      radialProgressApi.setState(el, 'default', { value: now - stepOf(el) });
+      break;
+    case 'complete':
+      radialProgressApi.setState(el, 'complete');
+      break;
+    case 'indeterminate':
+      radialProgressApi.setState(el, 'indeterminate');
+      break;
     case 'play': {
       // a full ring starts over from 0
       if (now >= maxOf(el)) setValue(el, 0);
@@ -265,28 +293,34 @@ function run(el, command) {
 const COMMANDS = ['reset', 'increment', 'decrement', 'complete', 'indeterminate', 'play', 'pause'];
 
 function init() {
-  dfDollar(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
-    el.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(el, radialProgressApi);
-    el._authorValuetext = el.hasAttribute('aria-valuetext') && !el.dataset.format && !el.dataset.template;
-    // CSS-only markup may carry only --value: adopt it as the value
-    if (!el.hasAttribute('aria-valuenow') && el.style.getPropertyValue('--value') !== '' && el.getAttribute('role') === 'progressbar') {
-      el.setAttribute('aria-valuenow', String((parseFloat(el.style.getPropertyValue('--value')) / 100) * maxOf(el)));
-    }
-    if (!el.hasAttribute('role')) el.setAttribute('role', 'progressbar');
-    // a progressbar's minimum is 0: stated once, at init (setValue() keeps it)
-    if (!el.hasAttribute('aria-valuemin')) el.setAttribute('aria-valuemin', '0');
-    el._authored = valueOf(el);
-    const v = valueOf(el);
-    el.dataset.stateName = v == null ? 'indeterminate' : v >= maxOf(el) ? 'complete' : 'default';
-    el.addEventListener('command', (e) => {
-      const c = String((e as unknown as { command?: string }).command || '');
-      if (c.startsWith('--')) run(el, c.slice(2));
+  dfDollar(`${SELECTOR}:not([data-init])`)
+    .toArray()
+    .forEach((el) => {
+      el.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(el, radialProgressApi);
+      el._authorValuetext = el.hasAttribute('aria-valuetext') && !el.dataset.format && !el.dataset.template;
+      // CSS-only markup may carry only --value: adopt it as the value
+      if (
+        !el.hasAttribute('aria-valuenow') &&
+        el.style.getPropertyValue('--value') !== '' &&
+        el.getAttribute('role') === 'progressbar'
+      ) {
+        el.setAttribute('aria-valuenow', String((parseFloat(el.style.getPropertyValue('--value')) / 100) * maxOf(el)));
+      }
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'progressbar');
+      // a progressbar's minimum is 0: stated once, at init (setValue() keeps it)
+      if (!el.hasAttribute('aria-valuemin')) el.setAttribute('aria-valuemin', '0');
+      el._authored = valueOf(el);
+      const v = valueOf(el);
+      el.dataset.stateName = v == null ? 'indeterminate' : v >= maxOf(el) ? 'complete' : 'default';
+      el.addEventListener('command', (e) => {
+        const c = String((e as unknown as { command?: string }).command || '');
+        if (c.startsWith('--')) run(el, c.slice(2));
+      });
+      for (const c of COMMANDS) el.addEventListener(`progress:${c}`, () => run(el, c));
+      paint(el);
     });
-    for (const c of COMMANDS) el.addEventListener(`progress:${c}`, () => run(el, c));
-    paint(el);
-  });
 }
 
 // Browsers without the Invoker Commands API: the same buttons, by click.

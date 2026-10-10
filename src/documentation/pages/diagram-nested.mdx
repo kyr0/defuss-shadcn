@@ -62,7 +62,14 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Trust zones, step by step" component="diagram" hint="Outside in: each step adds one boundary and what lives in it."
-<figure class="diagram" id="dg-nested-steps" data-type="nested" data-steps data-autoplay aria-label="Trust zones from the internet to the database">
+<figure
+  class="diagram"
+  id="dg-nested-steps"
+  data-type="nested"
+  data-steps
+  data-autoplay
+  aria-label="Trust zones from the internet to the database"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Nested containment</span>
     <span class="diagram-title">Where a request is trusted</span>
@@ -112,12 +119,26 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Nested, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-nested-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-nested-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-nested-live" data-interactive data-type="nested" aria-label="Trust zones from the internet to the database">
+<figure
+  class="diagram"
+  id="dg-nested-live"
+  data-interactive
+  data-type="nested"
+  aria-label="Trust zones from the internet to the database"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Nested containment</span>
     <span class="diagram-title">Where a request is trusted</span>
@@ -167,16 +188,26 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Nested, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-nested-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-nested-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-nested-edit" data-interactive data-type="nested" aria-label="Trust zones from the internet to the database">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-nested-edit"
+      data-interactive
+      data-type="nested"
+      aria-label="Trust zones from the internet to the database"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Nested containment</span>
         <span class="diagram-title">Where a request is trusted</span>
-        <span class="diagram-dek">Outer is broader, inner is more specific: each boundary drops a class of caller.</span>
+        <span class="diagram-dek"
+          >Outer is broader, inner is more specific: each boundary drops a class of caller.</span
+        >
       </figcaption>
       <div class="diagram-canvas">
         <div class="diagram-group" data-node="internet">
@@ -220,11 +251,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-nested-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-nested-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-nested-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>

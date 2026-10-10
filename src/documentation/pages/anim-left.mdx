@@ -27,25 +27,35 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:1rem;">
-  <div style="min-height:200px; display:flex; align-items:center; justify-content:center; border:1px dashed var(--border); border-radius:var(--radius-lg); overflow:hidden;">
+<div style="display: flex; flex-direction: column; gap: 1rem">
+  <div
+    style="
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    "
+  >
     <div id="anim-left-target">Slide Left</div>
   </div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-out">Out</button>
-    <span aria-hidden="true" style="color:var(--border);">|</span>
+    <span aria-hidden="true" style="color: var(--border)">|</span>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-n" aria-pressed="false">N</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-s" aria-pressed="false">S</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-w" aria-pressed="false">W</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-dir-e" aria-pressed="true">E</button>
-    <span aria-hidden="true" style="color:var(--border);">|</span>
+    <span aria-hidden="true" style="color: var(--border)">|</span>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-pause">Pause</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-resume">Resume</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-left-reset">Reset</button>
     <label for="anim-left-duration" class="text-sm">Duration</label>
-    <input class="input" id="anim-left-duration" type="number" value="1500" min="50" step="50" style="width:6rem;" />
+    <input class="input" id="anim-left-duration" type="number" value="1500" min="50" step="50" style="width: 6rem" />
     <label for="anim-left-easing" class="text-sm">Easing</label>
     <select class="select" id="anim-left-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
@@ -68,7 +78,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     west: document.getElementById('anim-left-dir-w'),
     east: document.getElementById('anim-left-dir-e'),
   };
-  let direction = 'east';    // default: starts right, travels left
+  let direction = 'east'; // default: starts right, travels left
   let lastChannel = 'slideIn';
 
   const config = () => ({
@@ -114,8 +124,11 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 600;
   }
 </style>
-<div id="anim-left-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
-  <div style="height: 600px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:2rem;">
+<div
+  id="anim-left-scroller"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div style="height: 600px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2rem">
     <div id="anim-left-scroll-target">Scroll drives me</div>
   </div>
 </div>

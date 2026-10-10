@@ -71,7 +71,10 @@ function applyMarkup(el, stateName) {
     // in every state they do not change - only the invalid flags do
     const invalid = stateName === 'invalid';
     dfDollar(el).attr('data-invalid', invalid ? '' : null);
-    dfDollar(el).find('input').first().attr('aria-invalid', invalid ? 'true' : null);
+    dfDollar(el)
+        .find('input')
+        .first()
+        .attr('aria-invalid', invalid ? 'true' : null);
 }
 /**
  * UI side of setState. 'default' and 'filled' both accept `{ value }`; the
@@ -129,7 +132,9 @@ export const otpInputApi = componentState({
 df$.otpInputApi = otpInputApi;
 df$.otpInputStates = otpInputStates;
 function init() {
-    dfDollar('.otp-input:not([data-init])').toArray().forEach((otp) => {
+    dfDollar('.otp-input:not([data-init])')
+        .toArray()
+        .forEach((otp) => {
         otp.dataset.init = '';
         const field = dfDollar(otp).find('input').get(0);
         if (!field)

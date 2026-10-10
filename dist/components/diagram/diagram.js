@@ -38,7 +38,10 @@ const RUNTIME = '.diagram-delta, .diagram-controls, .diagram-wire-labels, .diagr
 const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 // -- reading the source ---------------------------------------------------------------------
 /** authored (not runtime-made) descendants of a scope matching a selector */
-const authored = (scope, selector) => dfDollar(scope).find(selector).toArray().filter((n) => !n.closest(RUNTIME));
+const authored = (scope, selector) => dfDollar(scope)
+    .find(selector)
+    .toArray()
+    .filter((n) => !n.closest(RUNTIME));
 /** "api", "api:left", "orders#customer_id", "orders#customer_id:right" */
 function parseEnd(value) {
     const [ref, side] = String(value || '').split(':');
@@ -56,7 +59,8 @@ function nameOf(el) {
         return '';
     if (el.dataset.changeLabel)
         return el.dataset.changeLabel;
-    const named = dfDollar(el).find('.diagram-node-name, .diagram-group-label').get(0) ?? (el.tagName === 'LI' && el.children.length ? el.firstElementChild : null);
+    const named = dfDollar(el).find('.diagram-node-name, .diagram-group-label').get(0) ??
+        (el.tagName === 'LI' && el.children.length ? el.firstElementChild : null);
     const text = (named ?? el).textContent.replace(/\s+/g, ' ').trim();
     return text.length > 48 ? `${text.slice(0, 47)}…` : text;
 }
@@ -114,7 +118,7 @@ function stepPlan(root) {
  */
 function applyMarkup(root, state) {
     const { stepOf, max } = stepPlan(root);
-    applyActivation(root, state.name === 'active' ? state.config?.ref ?? null : null);
+    applyActivation(root, state.name === 'active' ? (state.config?.ref ?? null) : null);
     if (state.name === 'default' || state.name === 'active') {
         dfDollar(root).attr('data-step-current', null);
         stepOf.forEach((_s, el) => {
@@ -239,9 +243,16 @@ function describe(root, ref) {
     if (el.tagName === 'TR') {
         // a matrix row: its header's own text, then every cell under its column's name
         const cells = dfDollar(el).children('th, td').toArray();
-        const own = (c) => [...c.childNodes].filter((n) => n.nodeType === 3 || !/^(SMALL)$/.test(n.nodeName)).map((n) => n.textContent).join('').trim();
+        const own = (c) => [...c.childNodes]
+            .filter((n) => n.nodeType === 3 || !/^(SMALL)$/.test(n.nodeName))
+            .map((n) => n.textContent)
+            .join('')
+            .trim();
         const heads = dfDollar(el.closest('table')).find('thead tr').first().children('th, td').toArray();
-        const detail = cells.slice(1).map((c, i) => `${heads[i + 1] ? own(heads[i + 1]) : ''} ${c.textContent.trim()}`.trim()).join(' · ');
+        const detail = cells
+            .slice(1)
+            .map((c, i) => `${heads[i + 1] ? own(heads[i + 1]) : ''} ${c.textContent.trim()}`.trim())
+            .join(' · ');
         return { ref: String(ref), kind, element: el, label: own(cells[0]), detail };
     }
     if (kind === 'node') {
@@ -253,7 +264,13 @@ function describe(root, ref) {
         return n ? nameOf(n) : parseEnd(end).id;
     };
     const text = el.textContent.trim();
-    return { ref: String(ref), kind, element: el, label: `${name(el.dataset.from)} → ${name(el.dataset.to)}${text ? ` · ${text}` : ''}`, detail: el.dataset.detail || '' };
+    return {
+        ref: String(ref),
+        kind,
+        element: el,
+        label: `${name(el.dataset.from)} → ${name(el.dataset.to)}${text ? ` · ${text}` : ''}`,
+        detail: el.dataset.detail || '',
+    };
 }
 /** the activation order: nodes in step order, then document order */
 function activationOrder(root) {
@@ -264,7 +281,10 @@ function activationOrder(root) {
                 return stepOf.get(x);
         return 0;
     };
-    return activatable(root).map((n, i) => ({ n, i, s: stepFor(n) })).sort((a, b) => a.s - b.s || a.i - b.i).map((x) => x.n.dataset.node);
+    return activatable(root)
+        .map((n, i) => ({ n, i, s: stepFor(n) }))
+        .sort((a, b) => a.s - b.s || a.i - b.i)
+        .map((x) => x.n.dataset.node);
 }
 /** move the activation by one node (wraps around); from nothing, the first or the last */
 function stepActivation(root, by) {
@@ -370,13 +390,18 @@ function bestSides(a, b, fixedA, fixedB, obstacles, texts = []) {
         const hi = Math.max(a.rect.x + a.rect.w, b.rect.x + b.rect.w) + 8;
         const top = Math.min(a.rect.y, b.rect.y) - 8;
         const bot = Math.max(a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 8;
-        const between = obstacles.filter((o) => o !== a && o !== b && (horizontal(sa) ? o.rect.y < bot && o.rect.y + o.rect.h > top : o.rect.x < hi && o.rect.x + o.rect.w > lo));
+        const between = obstacles.filter((o) => o !== a &&
+            o !== b &&
+            (horizontal(sa) ? o.rect.y < bot && o.rect.y + o.rect.h > top : o.rect.x < hi && o.rect.x + o.rect.w > lo));
         if (!between.length)
             return [null];
         if (sa === 'top')
             return [null, Math.min(...between.map((o) => o.rect.y), a.rect.y, b.rect.y) - 18];
         if (sa === 'bottom')
-            return [null, Math.max(...between.map((o) => o.rect.y + o.rect.h), a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 18];
+            return [
+                null,
+                Math.max(...between.map((o) => o.rect.y + o.rect.h), a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 18,
+            ];
         if (sa === 'left')
             return [null, Math.min(...between.map((o) => o.rect.x), a.rect.x, b.rect.x) - 18];
         return [null, Math.max(...between.map((o) => o.rect.x + o.rect.w), a.rect.x + a.rect.w, b.rect.x + b.rect.w) + 18];
@@ -530,7 +555,11 @@ function labelSpot(pts) {
         if (l > best) {
             best = l;
             at = { x: (pts[i].x + pts[i - 1].x) / 2, y: (pts[i].y + pts[i - 1].y) / 2 };
-            along = { x: Math.abs(pts[i].x - pts[i - 1].x) > 0.5 ? 1 : 0, y: Math.abs(pts[i].y - pts[i - 1].y) > 0.5 ? 1 : 0, len: l };
+            along = {
+                x: Math.abs(pts[i].x - pts[i - 1].x) > 0.5 ? 1 : 0,
+                y: Math.abs(pts[i].y - pts[i - 1].y) > 0.5 ? 1 : 0,
+                len: l,
+            };
         }
     }
     return { at, along };
@@ -555,7 +584,13 @@ const HEADS = {
     many: { parts: [CROW], inset: 0 },
     'one-many': { parts: [CROW, ['M-15 -6V6', 'stroke']], inset: 0 },
     'zero-many': { parts: [CROW, ['M-23 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0', 'hollow']], inset: 0 },
-    'zero-one': { parts: [['M-7 -6V6', 'stroke'], ['M-19 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0', 'hollow']], inset: 0 },
+    'zero-one': {
+        parts: [
+            ['M-7 -6V6', 'stroke'],
+            ['M-19 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0', 'hollow'],
+        ],
+        inset: 0,
+    },
     none: { parts: [], inset: 0 },
 };
 function svg(tag, attrs = {}) {
@@ -569,7 +604,12 @@ function drawHead(group, kind, tip, dir) {
     const head = HEADS[kind] ?? HEADS.arrow;
     const angle = r1((Math.atan2(dir.y, dir.x) * 180) / Math.PI);
     for (const [d, paint] of head.parts) {
-        group.append(svg('path', { class: 'diagram-wire-head', 'data-paint': paint, d, transform: `translate(${r1(tip.x)} ${r1(tip.y)}) rotate(${angle})` }));
+        group.append(svg('path', {
+            class: 'diagram-wire-head',
+            'data-paint': paint,
+            d,
+            transform: `translate(${r1(tip.x)} ${r1(tip.y)}) rotate(${angle})`,
+        }));
     }
 }
 /** pull a polyline's end back along its last segment (the line stops at a hollow head) */
@@ -691,7 +731,9 @@ function draw(root, canvas) {
     // keeps it still. VERIFIED: (diagram.e2e "a redraw within a step") a redraw mid-step leaves
     // the current wire's animation count at zero and the wire fully drawn.
     const entered = new Set();
-    for (const el of dfDollar(canvas).find(':scope > .diagram-wires > .diagram-wire[data-step-state="current"], :scope > .diagram-wire-labels > [data-step-state="current"]').toArray()) {
+    for (const el of dfDollar(canvas)
+        .find(':scope > .diagram-wires > .diagram-wire[data-step-state="current"], :scope > .diagram-wire-labels > [data-step-state="current"]')
+        .toArray()) {
         entered.add(`${el.tagName.toLowerCase()}|${el.dataset.edgeRef ?? ''}|${el.textContent ?? ''}`);
     }
     const wires = layer(canvas, 'diagram-wires', () => {
@@ -782,7 +824,12 @@ function draw(root, canvas) {
  */
 function reconcileWires(wires) {
     // identity = the group's attributes (minus the two runtime marks) + its markup, read through df$
-    const sig = (g) => [...g.attributes].filter((a) => a.name !== 'data-stale' && a.name !== 'data-step-entered').map((a) => `${a.name}=${a.value}`).join(' ') + '>' + dfDollar(g).html();
+    const sig = (g) => [...g.attributes]
+        .filter((a) => a.name !== 'data-stale' && a.name !== 'data-step-entered')
+        .map((a) => `${a.name}=${a.value}`)
+        .join(' ') +
+        '>' +
+        dfDollar(g).html();
     const stale = new Map();
     const kept = new Map(); // the dropped new group → the old one that stays
     for (const g of dfDollar(wires).children('[data-stale]').toArray())
@@ -830,7 +877,8 @@ function clear(root, canvas, rectOf) {
     const h = canvas.clientHeight;
     const gap = { top: Infinity, right: Infinity, bottom: Infinity, left: Infinity };
     for (const el of dfDollar(canvas).find('*').toArray()) {
-        if (el.matches('.diagram-wires, .diagram-wire-labels, .diagram-wire-hit, .diagram-token, g') || !el.getClientRects().length)
+        if (el.matches('.diagram-wires, .diagram-wire-labels, .diagram-wire-hit, .diagram-token, g') ||
+            !el.getClientRects().length)
             continue;
         const r = rectOf(el);
         if (!r.w && !r.h)
@@ -844,7 +892,10 @@ function clear(root, canvas, rectOf) {
     if (!grow.length)
         return false;
     // absolutely placed content ignores padding (its box is the padding box): grow the inset it is placed in
-    const absolute = dfDollar(canvas).children().toArray().some((c) => getComputedStyle(c).position === 'absolute' && !c.matches('.diagram-wires, .diagram-wire-labels'));
+    const absolute = dfDollar(canvas)
+        .children()
+        .toArray()
+        .some((c) => getComputedStyle(c).position === 'absolute' && !c.matches('.diagram-wires, .diagram-wire-labels'));
     for (const side of grow) {
         const more = Math.ceil(CLEARANCE - gap[side]);
         if (absolute)
@@ -869,7 +920,9 @@ function textRects(canvas, nodes, rectOf) {
             continue;
         if (ROUND.has(n.el.dataset.shape) || n.el.dataset.shape === 'event') {
             // a dot's label sits outside its box
-            for (const t of dfDollar(n.el).find('.diagram-node-name, .diagram-node-eyebrow, .diagram-node-meta, .diagram-node-body').toArray())
+            for (const t of dfDollar(n.el)
+                .find('.diagram-node-name, .diagram-node-eyebrow, .diagram-node-meta, .diagram-node-body')
+                .toArray())
                 if (t.getClientRects().length)
                     out.push(rectOf(t));
         }
@@ -908,7 +961,8 @@ function sideDotLabels(nodes, wires, rectOf) {
                 for (const o of others) {
                     if (o === dot)
                         continue;
-                    const ov = Math.max(0, Math.min(r.x + r.w, o.rect.x + o.rect.w) - Math.max(r.x, o.rect.x)) * Math.max(0, Math.min(r.y + r.h, o.rect.y + o.rect.h) - Math.max(r.y, o.rect.y));
+                    const ov = Math.max(0, Math.min(r.x + r.w, o.rect.x + o.rect.w) - Math.max(r.x, o.rect.x)) *
+                        Math.max(0, Math.min(r.y + r.h, o.rect.y + o.rect.h) - Math.max(r.y, o.rect.y));
                     if (ov > 0)
                         score += 20;
                 }
@@ -947,7 +1001,9 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
     if (!queue.length)
         return;
     const placed = [
-        ...[...nodes.values()].filter((n) => !n.el.classList.contains('diagram-group') && n.el.dataset.shape !== 'ghost').map((n) => n.rect),
+        ...[...nodes.values()]
+            .filter((n) => !n.el.classList.contains('diagram-group') && n.el.dataset.shape !== 'ghost')
+            .map((n) => n.rect),
         ...texts,
     ];
     const points = wirePoints(wires);
@@ -974,7 +1030,9 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
         const cover = (b) => {
             let sum = 0;
             for (const o of placed)
-                sum += Math.max(0, Math.min(b.x + b.w, o.x + o.w) - Math.max(b.x, o.x)) * Math.max(0, Math.min(b.y + b.h, o.y + o.h) - Math.max(b.y, o.y));
+                sum +=
+                    Math.max(0, Math.min(b.x + b.w, o.x + o.w) - Math.max(b.x, o.x)) *
+                        Math.max(0, Math.min(b.y + b.h, o.y + o.h) - Math.max(b.y, o.y));
             for (const [wg, pts] of points) {
                 if (wg === g)
                     continue;
@@ -991,7 +1049,21 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
         // slide only within the segment the label belongs to
         const room = Math.max(0, (dir.len ?? Infinity) / 2 - (dir.x ? w / 2 : h / 2));
         let least = Infinity;
-        for (const [k, j] of [[0, 0], [1, 0], [-1, 0], [2, 0], [-2, 0], [0, -1], [0, 1], [1, -1], [-1, -1], [1, 1], [-1, 1], [3, 0], [-3, 0]]) {
+        for (const [k, j] of [
+            [0, 0],
+            [1, 0],
+            [-1, 0],
+            [2, 0],
+            [-2, 0],
+            [0, -1],
+            [0, 1],
+            [1, -1],
+            [-1, -1],
+            [1, 1],
+            [-1, 1],
+            [3, 0],
+            [-3, 0],
+        ]) {
             if (Math.abs(k * step) > room)
                 continue;
             if (!along && (k || j))
@@ -1035,7 +1107,11 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
             plan.sa = from.side || 'right';
             plan.sb = to.side || plan.sa;
         }
-        else if (curve === 'elbow' && busRoute && !from.side && !to.side && Math.abs(center(a.rect).y - center(b.rect).y) > a.rect.h / 2) {
+        else if (curve === 'elbow' &&
+            busRoute &&
+            !from.side &&
+            !to.side &&
+            Math.abs(center(a.rect).y - center(b.rect).y) > a.rect.h / 2) {
             // a bus (organigram): parents drop from the bottom, children are entered from the top
             [plan.sa, plan.sb] = center(b.rect).y > center(a.rect).y ? ['bottom', 'top'] : ['top', 'bottom'];
         }
@@ -1051,7 +1127,10 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
     for (const plan of plans) {
         if (!plan.sa || bus)
             continue;
-        for (const [end, node, side, other] of [['a', plan.a, plan.sa, plan.b], ['b', plan.b, plan.sb, plan.a]]) {
+        for (const [end, node, side, other] of [
+            ['a', plan.a, plan.sa, plan.b],
+            ['b', plan.b, plan.sb, plan.a],
+        ]) {
             if ((end === 'a' ? plan.from : plan.to).field)
                 continue;
             const key = `${node.el.dataset.node}|${side}`;
@@ -1078,7 +1157,10 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
             return null;
         const rr = rectOf(row);
         const left = toward.x < node.rect.x + node.rect.w / 2;
-        return { point: { x: left ? node.rect.x : node.rect.x + node.rect.w, y: rr.y + rr.h / 2 }, side: left ? 'left' : 'right' };
+        return {
+            point: { x: left ? node.rect.x : node.rect.x + node.rect.w, y: rr.y + rr.h / 2 },
+            side: left ? 'left' : 'right',
+        };
     };
     const solid = [...nodes.values()].filter((n) => !n.el.classList.contains('diagram-group') && n.el.dataset.shape !== 'ghost');
     const outside = Math.max(0, ...solid.map((n) => n.rect.x + n.rect.w)) + 24;
@@ -1117,7 +1199,7 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
             else if (lone(b, sb) && within(b.rect, pa[axis]))
                 pb = { ...pb, [axis]: pa[axis] };
         }
-        plan.raw = elbow(pa, sa, pb, sb, 16, plan.curve === 'around' ? outside : (sa === plan.sa && sb === plan.sb ? plan.outer ?? null : null));
+        plan.raw = elbow(pa, sa, pb, sb, 16, plan.curve === 'around' ? outside : sa === plan.sa && sb === plan.sb ? (plan.outer ?? null) : null);
         // an 'around' route without fixed sides takes the outer side that crosses fewer nodes
         if (plan.curve === 'around' && !plan.from.side && !plan.to.side) {
             const hits = (pts) => solid.filter((o) => o !== a && o !== b && crosses(pts, o.rect)).length;
@@ -1200,7 +1282,9 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
             drawHead(g, tail, pts[0], dStart);
         g.dataset.path = path;
         copyFlow(edge, g, '2400');
-        label(panel === 'before' && edge.dataset.before != null ? edge.dataset.before : edge.dataset.label ?? edge.textContent.trim(), at, edge, plan.selfLabel ? 'diagram-wire-label diagram-wire-self' : undefined, plan.along ?? null, g);
+        label(panel === 'before' && edge.dataset.before != null
+            ? edge.dataset.before
+            : (edge.dataset.label ?? edge.textContent.trim()), at, edge, plan.selfLabel ? 'diagram-wire-label diagram-wire-self' : undefined, plan.along ?? null, g);
         const endLabel = (text, p, dir) => {
             if (!text)
                 return;
@@ -1247,7 +1331,12 @@ function drawSequence(canvas, nodes, list, panel, rectOf, wireGroup, line, label
         if (node.el.dataset.shape === 'ghost')
             continue;
         const c = center(node.rect);
-        const g = wireGroup(null, { 'data-lifeline': '', 'data-step-state': node.el.dataset.stepState, 'data-active-state': node.el.dataset.activeState, beatOf: node.el });
+        const g = wireGroup(null, {
+            'data-lifeline': '',
+            'data-step-state': node.el.dataset.stepState,
+            'data-active-state': node.el.dataset.activeState,
+            beatOf: node.el,
+        });
         line(g, `M${r1(c.x)} ${r1(node.rect.y + node.rect.h)} V${r1(bottom)}`, false);
     }
     for (const edge of edgesIn(list)) {
@@ -1298,7 +1387,13 @@ function drawBones(nodes, wireGroup, line) {
         const from = { x: bone.rect.x + bone.rect.w / 2, y: above ? bone.rect.y + bone.rect.h : bone.rect.y };
         const dy = Math.abs(y - from.y);
         const to = { x: from.x + dy * 0.577, y };
-        const g = wireGroup(null, { 'data-bone': '', 'data-tone': bone.el.dataset.tone, 'data-step-state': bone.el.dataset.stepState, 'data-active-state': bone.el.dataset.activeState, beatOf: bone.el });
+        const g = wireGroup(null, {
+            'data-bone': '',
+            'data-tone': bone.el.dataset.tone,
+            'data-step-state': bone.el.dataset.stepState,
+            'data-active-state': bone.el.dataset.activeState,
+            beatOf: bone.el,
+        });
         line(g, `M${r1(from.x)} ${r1(from.y)} L${r1(to.x)} ${r1(to.y)}`, true);
     }
 }
@@ -1306,7 +1401,9 @@ const BADGE = { added: '+', removed: '−', changed: 'Δ', moved: '→', rewired
 /** the change badges of the changes panel: one chip on each changed node or group */
 function badges(canvas, labels, rectOf) {
     for (const el of dfDollar(canvas).find('[data-change]').toArray()) {
-        if (el.closest('.diagram-edges, .diagram-wires, .diagram-wire-labels') || !el.getClientRects().length || !BADGE[el.dataset.change])
+        if (el.closest('.diagram-edges, .diagram-wires, .diagram-wire-labels') ||
+            !el.getClientRects().length ||
+            !BADGE[el.dataset.change])
             continue;
         const r = rectOf(el);
         const chip = document.createElement('span');
@@ -1351,7 +1448,12 @@ function flowTokens(labels, wires) {
             token.style.offsetPath = `path('${g.dataset.path}')`;
             dfDollar(labels).append(token);
             const once = g.dataset.stepState === 'current';
-            token.animate?.([{ offsetDistance: '0%', opacity: 0 }, { opacity: 1, offset: 0.08 }, { opacity: 1, offset: 0.92 }, { offsetDistance: '100%', opacity: 0 }], {
+            token.animate?.([
+                { offsetDistance: '0%', opacity: 0 },
+                { opacity: 1, offset: 0.08 },
+                { opacity: 1, offset: 0.92 },
+                { offsetDistance: '100%', opacity: 0 },
+            ], {
                 duration,
                 delay: once ? delay + (i * duration) / count : delay - (i * duration) / count,
                 iterations: once ? 1 : Infinity,
@@ -1397,7 +1499,10 @@ function ledger(root, canvas) {
     const names = new Map(authored(canvas, '[data-node]').map((n) => [n.dataset.node, nameOf(n)]));
     const endName = (v) => names.get(parseEnd(v).id) || parseEnd(v).id;
     const list = edgeListOf(root, canvas);
-    const items = [...authored(canvas, '[data-change]'), ...(list && !canvas.contains(list) ? edgesIn(list).filter((e) => e.dataset.change) : [])];
+    const items = [
+        ...authored(canvas, '[data-change]'),
+        ...(list && !canvas.contains(list) ? edgesIn(list).filter((e) => e.dataset.change) : []),
+    ];
     const entries = [];
     for (const el of items) {
         const change = el.dataset.change;
@@ -1409,7 +1514,10 @@ function ledger(root, canvas) {
             subject = `${endName(el.dataset.from)} → ${endName(el.dataset.to)}${el.textContent.trim() ? ` (${el.textContent.trim()})` : ''}`;
         let note = el.dataset.changeNote || '';
         if (!note && change === 'changed') {
-            note = [el, ...dfDollar(el).find('[data-before]').toArray()].filter((n) => n.dataset.before != null).map((n) => `${n.dataset.before} → ${n.textContent.trim()}`).join(' · ');
+            note = [el, ...dfDollar(el).find('[data-before]').toArray()]
+                .filter((n) => n.dataset.before != null)
+                .map((n) => `${n.dataset.before} → ${n.textContent.trim()}`)
+                .join(' · ');
         }
         if (!note && change === 'rewired' && isEdge)
             note = `was ${endName(el.dataset.beforeFrom || el.dataset.from)} → ${endName(el.dataset.beforeTo || el.dataset.to)}`;
@@ -1501,7 +1609,15 @@ function button(action, text, label) {
     b.dataset.action = action;
     if (label)
         b.setAttribute('aria-label', label);
-    const icon = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+    const icon = svg('svg', {
+        viewBox: '0 0 24 24',
+        'aria-hidden': 'true',
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': 2,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+    });
     for (const d of ICONS[action].match(/d="[^"]+"/g))
         icon.append(svg('path', { d: d.slice(3, -1) }));
     b.append(icon);
@@ -1529,7 +1645,15 @@ function makeControls(root) {
             control(root, action);
     });
     dfDollar(bar).on('keydown', (e) => {
-        const map = { ArrowLeft: 'prev', ArrowRight: 'next', Home: 'first', End: 'all', r: 'replay', R: 'replay', ' ': 'toggle' };
+        const map = {
+            ArrowLeft: 'prev',
+            ArrowRight: 'next',
+            Home: 'first',
+            End: 'all',
+            r: 'replay',
+            R: 'replay',
+            ' ': 'toggle',
+        };
         const action = map[e.key];
         if (!action || (e.key === ' ' && e.target.closest?.('button')))
             return;
@@ -1561,11 +1685,17 @@ function updateControls(root) {
             for (const d of ICONS[playing ? 'pause' : 'play'].match(/d="[^"]+"/g))
                 swap.append(svg('path', { d: d.slice(3, -1) }));
         }
-        dfDollar(play).find('span').text(playing ? 'Pause' : 'Play');
+        dfDollar(play)
+            .find('span')
+            .text(playing ? 'Pause' : 'Play');
         play.setAttribute('aria-pressed', String(playing));
     }
-    dfDollar(bar).find('[data-action="prev"]').prop('disabled', stepping(state) && step <= 1);
-    dfDollar(bar).find('[data-action="next"]').prop('disabled', !stepping(state) || step >= max);
+    dfDollar(bar)
+        .find('[data-action="prev"]')
+        .prop('disabled', stepping(state) && step <= 1);
+    dfDollar(bar)
+        .find('[data-action="next"]')
+        .prop('disabled', !stepping(state) || step >= max);
     const status = dfDollar(bar).find('.diagram-status');
     if (!stepping(state))
         status.text(`Complete · ${max} ${max === 1 ? 'step' : 'steps'}`);
@@ -1650,20 +1780,26 @@ function triggerStateChange(root, state) {
                 root.api.setState('playing', { step: step + 1 });
         }, holdOf(root, state));
     }
-    const wasActive = root._shown?.name === 'active' ? root._shown.config?.ref ?? null : null;
+    const wasActive = root._shown?.name === 'active' ? (root._shown.config?.ref ?? null) : null;
     root._shown = state;
     sync(root);
-    const ref = state.name === 'active' ? state.config?.ref ?? null : null;
+    const ref = state.name === 'active' ? (state.config?.ref ?? null) : null;
     const about = describe(root, ref);
     updateOutputs(root, about);
     queueMicrotask(() => {
         if (state.name === 'playing' || state.name === 'paused') {
             // Fires on every step change - the step, the number of steps and the step's label.
-            root.dispatchEvent(new CustomEvent('diagram-step', { bubbles: true, detail: { step, max, label: stepLabel(root, step), state: state.name } }));
+            root.dispatchEvent(new CustomEvent('diagram-step', {
+                bubbles: true,
+                detail: { step, max, label: stepLabel(root, step), state: state.name },
+            }));
         }
         if (String(ref ?? '') !== String(wasActive ?? '')) {
             // Fires when the activation moves (a click, the keyboard, an outside control, setState) - the reference, 'node' or 'edge', the element, its label and detail; null detail fields when it is cleared.
-            root.dispatchEvent(new CustomEvent('diagram-activate', { bubbles: true, detail: about ?? { ref: null, kind: null, element: null, label: '', detail: '' } }));
+            root.dispatchEvent(new CustomEvent('diagram-activate', {
+                bubbles: true,
+                detail: about ?? { ref: null, kind: null, element: null, label: '', detail: '' },
+            }));
         }
     });
 }
@@ -1690,9 +1826,17 @@ df$.diagramApi = diagramApi;
 df$.diagramStates = diagramStates;
 // -- the parametric path: a spec → the same markup ------------------------------------------
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const attr = (name, value) => (value == null || value === false ? '' : value === true ? ` ${name}` : ` ${name}="${esc(value)}"`);
+const attr = (name, value) => value == null || value === false ? '' : value === true ? ` ${name}` : ` ${name}="${esc(value)}"`;
 const place = (o) => {
-    const css = [['--col', o.col], ['--row', o.row], ['--span', o.span], ['--rspan', o.rspan], ['--x', o.x], ['--y', o.y], ['--i', o.i]]
+    const css = [
+        ['--col', o.col],
+        ['--row', o.row],
+        ['--span', o.span],
+        ['--rspan', o.rspan],
+        ['--x', o.x],
+        ['--y', o.y],
+        ['--i', o.i],
+    ]
         .filter(([, v]) => v != null)
         .map(([k, v]) => `${k}:${v}`);
     if (o.style)
@@ -1702,14 +1846,20 @@ const place = (o) => {
 function nodeMarkup(n, children = '') {
     const before = n.before ?? {};
     const fields = n.fields?.length
-        ? `<ul class="diagram-node-fields">${n.fields.map((f) => {
+        ? `<ul class="diagram-node-fields">${n.fields
+            .map((f) => {
             const field = typeof f === 'string' ? { name: f } : f;
             return `<li${attr('data-field', field.name)}${attr('data-key', field.key)}${attr('data-change', field.change)}><span>${esc(field.name)}</span>${field.type ? `<span>${esc(field.type)}</span>` : ''}</li>`;
-        }).join('')}</ul>`
+        })
+            .join('')}</ul>`
         : '';
-    const ops = n.ops?.length ? `<ul class="diagram-node-ops">${n.ops.map((o) => `<li>${esc(o)}</li>`).join('')}</ul>` : '';
-    const text = (cls, key) => (n[key] != null ? `<span class="${cls}"${attr('data-before', before[key])}>${esc(n[key])}</span>` : '');
-    const beforeStyle = ['col', 'row', 'span', 'rspan', 'x', 'y'].some((k) => before[k] != null) ? place({ ...n, ...before }) : null;
+    const ops = n.ops?.length
+        ? `<ul class="diagram-node-ops">${n.ops.map((o) => `<li>${esc(o)}</li>`).join('')}</ul>`
+        : '';
+    const text = (cls, key) => n[key] != null ? `<span class="${cls}"${attr('data-before', before[key])}>${esc(n[key])}</span>` : '';
+    const beforeStyle = ['col', 'row', 'span', 'rspan', 'x', 'y'].some((k) => before[k] != null)
+        ? place({ ...n, ...before })
+        : null;
     return `<div class="diagram-node"${attr('data-node', n.id)}${attr('data-shape', n.shape)}${attr('data-tone', n.tone)}${attr('data-status', n.status)}${attr('data-badge', n.badge)}${attr('data-step', n.step)}${attr('data-change', n.change)}${attr('data-change-note', n.note)}${attr('data-before-style', beforeStyle)}${attr('style', place(n) || null)}>${text('diagram-node-eyebrow', 'eyebrow')}${text('diagram-node-name', 'name')}${text('diagram-node-meta', 'meta')}${fields}${ops}${children}</div>`;
 }
 /**
@@ -1733,16 +1883,23 @@ function markupOf(spec) {
         ? `<figcaption class="diagram-caption">${spec.eyebrow ? `<span class="diagram-eyebrow">${esc(spec.eyebrow)}</span>` : ''}${spec.title ? `<span class="diagram-title">${esc(spec.title)}</span>` : ''}${spec.caption ? `<span class="diagram-dek">${esc(spec.caption)}</span>` : ''}</figcaption>`
         : '';
     const phases = spec.phases?.length
-        ? `<ol class="diagram-phases" style="--row:1;--col:1;--span:${spec.cols ?? spec.phases.length}">${spec.phases.map((p) => {
+        ? `<ol class="diagram-phases" style="--row:1;--col:1;--span:${spec.cols ?? spec.phases.length}">${spec.phases
+            .map((p) => {
             const phase = typeof p === 'string' ? { name: p } : p;
             return `<li${attr('style', phase.span ? `--span:${phase.span}` : null)}>${esc(phase.name)}</li>`;
-        }).join('')}</ol>`
+        })
+            .join('')}</ol>`
         : '';
-    const top = [...groups.filter((g) => !g.parent).map(groupMarkup), ...nodes.filter((n) => !n.parent).map((n) => nodeMarkup(n))].join('');
-    const edges = (spec.edges ?? []).map((e) => {
+    const top = [
+        ...groups.filter((g) => !g.parent).map(groupMarkup),
+        ...nodes.filter((n) => !n.parent).map((n) => nodeMarkup(n)),
+    ].join('');
+    const edges = (spec.edges ?? [])
+        .map((e) => {
         const before = e.before ?? {};
         return `<li class="diagram-edge"${attr('data-from', e.from)}${attr('data-to', e.to)}${attr('data-line', e.line)}${attr('data-tone', e.tone)}${attr('data-head', e.head)}${attr('data-tail', e.tail)}${attr('data-curve', e.curve)}${attr('data-step', e.step)}${attr('data-flow', e.flow === true ? '' : e.flow)}${attr('data-from-label', e.fromLabel)}${attr('data-to-label', e.toLabel)}${attr('data-change', e.change)}${attr('data-before', before.label)}${attr('data-before-from', before.from)}${attr('data-before-to', before.to)}>${esc(e.label)}</li>`;
-    }).join('');
+    })
+        .join('');
     return `${caption}<div class="diagram-canvas"${attr('style', [spec.cols ? `--cols:${spec.cols}` : '', spec.style ?? ''].filter(Boolean).join(';') || null)}>${phases}${top}</div>${edges ? `<ol class="diagram-edges">${edges}</ol>` : ''}`;
 }
 /**
@@ -1773,7 +1930,8 @@ function diffSpecs(before, after) {
     const PLACE = ['col', 'row', 'span', 'rspan', 'x', 'y'];
     const compareNode = (o, n) => {
         const text = TEXT.filter((k) => (o[k] ?? null) !== (n[k] ?? null));
-        const kind = ['shape', 'tone', 'badge'].some((k) => (o[k] ?? null) !== (n[k] ?? null)) || JSON.stringify(o.fields ?? []) !== JSON.stringify(n.fields ?? []);
+        const kind = ['shape', 'tone', 'badge'].some((k) => (o[k] ?? null) !== (n[k] ?? null)) ||
+            JSON.stringify(o.fields ?? []) !== JSON.stringify(n.fields ?? []);
         const moved = PLACE.filter((k) => (o[k] ?? null) !== (n[k] ?? null));
         if (!text.length && !kind && !moved.length)
             return n;
@@ -1790,7 +1948,7 @@ function diffSpecs(before, after) {
     return {
         ...before,
         ...after,
-        groups: merge(before.groups, after.groups, (g) => g.id, (o, n) => ((o.label !== n.label || PLACE.some((k) => o[k] !== n[k])) ? { ...n, change: 'changed' } : n)),
+        groups: merge(before.groups, after.groups, (g) => g.id, (o, n) => (o.label !== n.label || PLACE.some((k) => o[k] !== n[k]) ? { ...n, change: 'changed' } : n)),
         nodes: merge(before.nodes, after.nodes, (n) => n.id, compareNode),
         edges: merge(before.edges, after.edges, key, compareEdge),
     };
@@ -1807,11 +1965,19 @@ function specFlags(root, spec) {
 // -- properties: a node or an edge as plain JSON (an inspector, the Studio) ---------------------
 const TONES = ['none', 'accent', 'link', 'muted', 'external', 'warn', 'ok', 'danger'];
 const SHAPES = ['box', 'pill', 'diamond', 'store', 'circle', 'dot', 'bar', 'note', 'activity', 'class', 'start', 'end'];
-const NODE_TEXT = [['eyebrow', 'diagram-node-eyebrow'], ['name', 'diagram-node-name'], ['meta', 'diagram-node-meta']];
+const NODE_TEXT = [
+    ['eyebrow', 'diagram-node-eyebrow'],
+    ['name', 'diagram-node-name'],
+    ['meta', 'diagram-node-meta'],
+];
 /** a cell's own text (a matrix chip keeps its span) */
 const cellText = (c) => (dfDollar(c).children('span').get(0) ?? c).textContent.trim();
 /** a column's header text, without its small print */
-const headText = (c) => [...c.childNodes].filter((n) => n.nodeType === 3 || n.nodeName !== 'SMALL').map((n) => n.textContent).join('').trim();
+const headText = (c) => [...c.childNodes]
+    .filter((n) => n.nodeType === 3 || n.nodeName !== 'SMALL')
+    .map((n) => n.textContent)
+    .join('')
+    .trim();
 function propertiesOf(root, ref) {
     const target = refTarget(root, ref);
     if (!target)
@@ -1986,27 +2152,37 @@ df$.diagram = {
      * @param target - the .diagram figure or its selector
      * @param step - the step to start at, 1-based
      */
-    play: (target, step = 1) => { resolve(target)?.api.setState('playing', { step }); },
+    play: (target, step = 1) => {
+        resolve(target)?.api.setState('playing', { step });
+    },
     /**
      * Pause on the current step.
      * @param target - the .diagram figure or its selector
      */
-    pause: (target) => { control(resolve(target), 'pause'); },
+    pause: (target) => {
+        control(resolve(target), 'pause');
+    },
     /**
      * One step forward (pauses).
      * @param target - the .diagram figure or its selector
      */
-    next: (target) => { control(resolve(target), 'next'); },
+    next: (target) => {
+        control(resolve(target), 'next');
+    },
     /**
      * One step back (pauses).
      * @param target - the .diagram figure or its selector
      */
-    prev: (target) => { control(resolve(target), 'prev'); },
+    prev: (target) => {
+        control(resolve(target), 'prev');
+    },
     /**
      * The complete figure again (state 'default').
      * @param target - the .diagram figure or its selector
      */
-    reset: (target) => { resolve(target)?.api.setState('default'); },
+    reset: (target) => {
+        resolve(target)?.api.setState('default');
+    },
     /**
      * Activate a node (its data-node) or an edge (its data-edge, else "from->to"); null clears.
      * @param target - the .diagram figure or its selector
@@ -2025,12 +2201,16 @@ df$.diagram = {
      * Activate the next node in the activation order (step order, then markup order; wraps around).
      * @param target - the .diagram figure or its selector
      */
-    activateNext: (target) => { stepActivation(resolve(target), 1); },
+    activateNext: (target) => {
+        stepActivation(resolve(target), 1);
+    },
     /**
      * Activate the previous node in the activation order (wraps around).
      * @param target - the .diagram figure or its selector
      */
-    activatePrev: (target) => { stepActivation(resolve(target), -1); },
+    activatePrev: (target) => {
+        stepActivation(resolve(target), -1);
+    },
     /**
      * What is active: { ref, kind ('node' / 'edge'), element, label, detail } - or null.
      * @param target - the .diagram figure or its selector
@@ -2132,7 +2312,8 @@ function makeInteractive(root) {
     const toggle = (ref) => (current() === ref ? root.api.setState('default') : root.api.setState('active', { ref }));
     dfDollar(root).on('click', (e) => {
         const t = e.target;
-        if (!t?.closest || t.closest('.diagram-controls, .diagram-delta, .diagram-edges, .diagram-caption, .diagram-legend'))
+        if (!t?.closest ||
+            t.closest('.diagram-controls, .diagram-delta, .diagram-edges, .diagram-caption, .diagram-legend'))
             return;
         const wire = t.closest('[data-edge-ref]');
         if (wire)
@@ -2147,7 +2328,9 @@ function makeInteractive(root) {
         const node = e.target?.closest?.('[data-node]');
         if (!node || !activatable(root).includes(node))
             return;
-        const focusActive = () => activatable(root).find((n) => n.dataset.node === current())?.focus();
+        const focusActive = () => activatable(root)
+            .find((n) => n.dataset.node === current())
+            ?.focus();
         if (e.key === 'Enter' || e.key === ' ')
             toggle(node.dataset.node);
         else if (e.key === 'Escape')
@@ -2200,7 +2383,9 @@ function bindOutsideControls() {
 }
 function init() {
     bindOutsideControls();
-    dfDollar('.diagram:not([data-init])').toArray().forEach((root) => {
+    dfDollar('.diagram:not([data-init])')
+        .toArray()
+        .forEach((root) => {
         root.dataset.init = '';
         // a parametric diagram: <script type="application/json" class="diagram-spec">
         const spec = dfDollar(root).children('script.diagram-spec').get(0);

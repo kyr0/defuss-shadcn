@@ -58,14 +58,15 @@ const num = (v, fallback) => {
   const n = parseFloat(v);
   return Number.isFinite(n) ? n : fallback;
 };
-const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
+const resolve = (t) => (typeof t === 'string' ? (dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0)) : t);
 
 /** The region element (resizer wrapper or plain pane) for a side. */
 const regionOf = (layout, side) => dfDollar(layout).find(`:scope > .border-layout-${side}`).get(0);
 /** The pane that carries the size: the resizer's wrapped element. */
-const paneOf = (region) => (region.classList.contains('resizer')
-  ? Array.from(region.children as HTMLCollectionOf<HTMLElement>).find((c) => !c.classList.contains('resizer-handle'))
-  : region);
+const paneOf = (region) =>
+  region.classList.contains('resizer')
+    ? Array.from(region.children as HTMLCollectionOf<HTMLElement>).find((c) => !c.classList.contains('resizer-handle'))
+    : region;
 const sizeOf = (region, side) => {
   if (region.hasAttribute('data-collapsed')) return 0;
   const box = region.getBoundingClientRect();
@@ -123,12 +124,20 @@ function aria(layout) {
     const name = region.getAttribute('aria-label') || pane?.getAttribute('aria-label') || side;
     handle.setAttribute('aria-label', `Resize ${name}`);
     handle.setAttribute('aria-valuenow', String(sizeOf(region, side)));
-    handle.setAttribute('aria-valuemin', String(region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible') ? 0 : num(region.dataset.min, 48)));
+    handle.setAttribute(
+      'aria-valuemin',
+      String(
+        region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible')
+          ? 0
+          : num(region.dataset.min, 48),
+      ),
+    );
     handle.setAttribute('aria-valuemax', String(num(region.dataset[SIDES[side].axis === 'w' ? 'maxW' : 'maxH'], 2000)));
   }
 }
 
-const collapsible = (layout, region) => region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible');
+const collapsible = (layout, region) =>
+  region.hasAttribute('data-collapsible') || layout.hasAttribute('data-collapsible');
 
 /** Folds a region away (or back); its divider stays in place to bring it back. */
 function collapse(layout, side, collapsed) {
@@ -140,7 +149,12 @@ function collapse(layout, side, collapsed) {
   aria(layout);
   save(layout);
   // Fires when a region folds away or comes back - which region, and whether it is collapsed now.
-  layout.dispatchEvent(new CustomEvent<BorderLayoutCollapseDetail>('border-layout-collapse', { bubbles: true, detail: { region: side, collapsed } }));
+  layout.dispatchEvent(
+    new CustomEvent<BorderLayoutCollapseDetail>('border-layout-collapse', {
+      bubbles: true,
+      detail: { region: side, collapsed },
+    }),
+  );
   syncState(layout);
 }
 
@@ -162,9 +176,16 @@ const saved = new Map();
 const savedFor = (layout) => {
   const key = `defuss-shadcn:border-layout:${layout.dataset.save}`;
   if (!saved.has(key)) {
-    saved.set(key, persisted<Record<string, unknown>>(key, {}, {
-      validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v),
-    }));
+    saved.set(
+      key,
+      persisted<Record<string, unknown>>(
+        key,
+        {},
+        {
+          validate: (v): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v),
+        },
+      ),
+    );
   }
   return saved.get(key);
 };
@@ -257,79 +278,91 @@ df$.borderLayoutStates = borderLayoutStates;
 // -- init --------------------------------------------------------------------------
 
 function init() {
-  dfDollar('.border-layout:not([data-init])').toArray().forEach((layout) => {
-    layout.dataset.init = '';
+  dfDollar('.border-layout:not([data-init])')
+    .toArray()
+    .forEach((layout) => {
+      layout.dataset.init = '';
 
-    for (const side of REGIONS) {
-      const region = regionOf(layout, side);
-      if (!region?.classList.contains('resizer')) continue;
-      // the resizer defaults a border region needs - authored values win
-      const d = region.dataset;
-      d.handles ??= SIDES[side].handle;
-      d.axis ??= SIDES[side].axis;
-      d.keys ??= 'edge';
-      d.min ??= '48';
-      if (d.max) d.maxAuthored = d.max;
-      // a percentage start (width: 30%) is of the layout, not of the region's
-      // own content-sized column (circular - it would collapse): resolve it
-      const pane = paneOf(region);
-      const prop = SIDES[side].size;
-      const authored = pane?.style[prop] ?? '';
-      if (authored.endsWith('%')) {
-        const inner = prop === 'width' ? layout.clientWidth : layout.clientHeight;
-        pane.style[prop] = `${Math.round((parseFloat(authored) / 100) * inner)}px`;
+      for (const side of REGIONS) {
+        const region = regionOf(layout, side);
+        if (!region?.classList.contains('resizer')) continue;
+        // the resizer defaults a border region needs - authored values win
+        const d = region.dataset;
+        d.handles ??= SIDES[side].handle;
+        d.axis ??= SIDES[side].axis;
+        d.keys ??= 'edge';
+        d.min ??= '48';
+        if (d.max) d.maxAuthored = d.max;
+        // a percentage start (width: 30%) is of the layout, not of the region's
+        // own content-sized column (circular - it would collapse): resolve it
+        const pane = paneOf(region);
+        const prop = SIDES[side].size;
+        const authored = pane?.style[prop] ?? '';
+        if (authored.endsWith('%')) {
+          const inner = prop === 'width' ? layout.clientWidth : layout.clientHeight;
+          pane.style[prop] = `${Math.round((parseFloat(authored) / 100) * inner)}px`;
+        }
+        region._authored = sizeOf(region, side) || null;
       }
-      region._authored = sizeOf(region, side) || null;
-    }
-    restore(layout);
+      restore(layout);
 
-    // before any drag or key: recompute the room every side may take; a drag
-    // on a folded region unfolds it first
-    const before = (e) => {
-      const handle = (e.target as HTMLElement).closest?.<HTMLElement>('.resizer-handle');
-      if (!handle || handle.parentElement?.parentElement !== layout) return;
-      clamp(layout);
-      const side = REGIONS.find((s) => handle.parentElement.classList.contains(`border-layout-${s}`));
-      if (e.type === 'pointerdown' && side && handle.parentElement.hasAttribute('data-collapsed')) collapse(layout, side, false);
-    };
-    layout.addEventListener('pointerdown', before, true);
-    layout.addEventListener('keydown', before, true);
-    layout.addEventListener('focusin', (e) => { before(e); aria(layout); });
+      // before any drag or key: recompute the room every side may take; a drag
+      // on a folded region unfolds it first
+      const before = (e) => {
+        const handle = (e.target as HTMLElement).closest?.<HTMLElement>('.resizer-handle');
+        if (!handle || handle.parentElement?.parentElement !== layout) return;
+        clamp(layout);
+        const side = REGIONS.find((s) => handle.parentElement.classList.contains(`border-layout-${s}`));
+        if (e.type === 'pointerdown' && side && handle.parentElement.hasAttribute('data-collapsed'))
+          collapse(layout, side, false);
+      };
+      layout.addEventListener('pointerdown', before, true);
+      layout.addEventListener('keydown', before, true);
+      layout.addEventListener('focusin', (e) => {
+        before(e);
+        aria(layout);
+      });
 
-    // double-click or Enter on a divider folds a collapsible region
-    const toggle = (handle) => {
-      const region = handle.parentElement;
-      const side = REGIONS.find((s) => region.classList.contains(`border-layout-${s}`));
-      if (!side || !collapsible(layout, region)) return;
-      collapse(layout, side, !region.hasAttribute('data-collapsed'));
-    };
-    layout.addEventListener('dblclick', (e) => {
-      const handle = (e.target as HTMLElement).closest<HTMLElement>('.resizer-handle');
-      if (handle && handle.parentElement?.parentElement === layout) toggle(handle);
+      // double-click or Enter on a divider folds a collapsible region
+      const toggle = (handle) => {
+        const region = handle.parentElement;
+        const side = REGIONS.find((s) => region.classList.contains(`border-layout-${s}`));
+        if (!side || !collapsible(layout, region)) return;
+        collapse(layout, side, !region.hasAttribute('data-collapsed'));
+      };
+      layout.addEventListener('dblclick', (e) => {
+        const handle = (e.target as HTMLElement).closest<HTMLElement>('.resizer-handle');
+        if (handle && handle.parentElement?.parentElement === layout) toggle(handle);
+      });
+      layout.addEventListener('keydown', (e) => {
+        const handle = (e.target as HTMLElement).closest?.<HTMLElement>('.resizer-handle');
+        if (e.key === 'Enter' && handle && handle.parentElement?.parentElement === layout) {
+          e.preventDefault();
+          toggle(handle);
+        }
+      });
+
+      // every size change: splitter values, persistence
+      layout.addEventListener('resizer-resize', (e) => {
+        if ((e.target as HTMLElement).parentElement !== layout) return;
+        aria(layout);
+        save(layout);
+      });
+      new ResizeObserver(() => {
+        clamp(layout);
+        aria(layout);
+      }).observe(layout);
+
+      // el.store + el.api (AGENTS.md "State through stores")
+
+      bindComponent(layout, borderLayoutApi);
+      syncState(layout);
+      // the resizers may initialize after this module - label their handles then
+      queueMicrotask(() => {
+        clamp(layout);
+        aria(layout);
+      });
     });
-    layout.addEventListener('keydown', (e) => {
-      const handle = (e.target as HTMLElement).closest?.<HTMLElement>('.resizer-handle');
-      if (e.key === 'Enter' && handle && handle.parentElement?.parentElement === layout) {
-        e.preventDefault();
-        toggle(handle);
-      }
-    });
-
-    // every size change: splitter values, persistence
-    layout.addEventListener('resizer-resize', (e) => {
-      if ((e.target as HTMLElement).parentElement !== layout) return;
-      aria(layout);
-      save(layout);
-    });
-    new ResizeObserver(() => { clamp(layout); aria(layout); }).observe(layout);
-
-    // el.store + el.api (AGENTS.md "State through stores")
-
-    bindComponent(layout, borderLayoutApi);
-    syncState(layout);
-    // the resizers may initialize after this module - label their handles then
-    queueMicrotask(() => { clamp(layout); aria(layout); });
-  });
 }
 
 // -- df$.shadcn.borderLayout: the imperative surface ----------------------------------
@@ -340,13 +373,19 @@ df$.borderLayout = {
    * @param target - the .border-layout element, its id or a selector
    * @param side - the region
    */
-  collapse: (target: string | HTMLElement, side: BorderLayoutSide): void => { const l = resolve(target); if (l) collapse(l, side, true); },
+  collapse: (target: string | HTMLElement, side: BorderLayoutSide): void => {
+    const l = resolve(target);
+    if (l) collapse(l, side, true);
+  },
   /**
    * Brings a folded region back.
    * @param target - the .border-layout element, its id or a selector
    * @param side - the region
    */
-  expand: (target: string | HTMLElement, side: BorderLayoutSide): void => { const l = resolve(target); if (l) collapse(l, side, false); },
+  expand: (target: string | HTMLElement, side: BorderLayoutSide): void => {
+    const l = resolve(target);
+    if (l) collapse(l, side, false);
+  },
   /**
    * Folds or unfolds a region.
    * @param target - the .border-layout element, its id or a selector
@@ -366,7 +405,14 @@ df$.borderLayout = {
    * @param side - the region
    * @param px - the width (west / east) or height (north / south) in px
    */
-  resize: (target: string | HTMLElement, side: BorderLayoutSide, px: number): void => { const l = resolve(target); const r = l && regionOf(l, side); if (r) { clamp(l); setSize(r, side, px); } },
+  resize: (target: string | HTMLElement, side: BorderLayoutSide, px: number): void => {
+    const l = resolve(target);
+    const r = l && regionOf(l, side);
+    if (r) {
+      clamp(l);
+      setSize(r, side, px);
+    }
+  },
   /**
    * The current sizes: { west: 240, east: 0 (collapsed), ... }.
    * @param target - the .border-layout element, its id or a selector
@@ -375,7 +421,11 @@ df$.borderLayout = {
   sizes: (target: string | HTMLElement): Partial<Record<BorderLayoutSide, number>> => {
     const l = resolve(target);
     const out: Partial<Record<BorderLayoutSide, number>> = {};
-    if (l) for (const side of REGIONS) { const r = regionOf(l, side); if (r) out[side] = sizeOf(r, side); }
+    if (l)
+      for (const side of REGIONS) {
+        const r = regionOf(l, side);
+        if (r) out[side] = sizeOf(r, side);
+      }
     return out;
   },
 };

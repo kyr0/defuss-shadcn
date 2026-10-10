@@ -101,7 +101,9 @@ export const diffApi = componentState({
 df$.diffApi = diffApi;
 df$.diffStates = diffStates;
 function init() {
-    dfDollar('.diff:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.diff:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         const range = rangeOf(el);
         if (!range)
@@ -125,7 +127,9 @@ function init() {
             if (el.dataset.orientation === 'vertical' && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))
                 d = -d;
             // RTL: ArrowLeft moves the divider left = toward the range's max
-            if (el.dataset.orientation !== 'vertical' && getComputedStyle(el).direction === 'rtl' && e.key.startsWith('Arrow'))
+            if (el.dataset.orientation !== 'vertical' &&
+                getComputedStyle(el).direction === 'rtl' &&
+                e.key.startsWith('Arrow'))
                 d = -d;
             setPosition(el, pct + d);
         });

@@ -53,19 +53,35 @@
        attribute reshapes the whole avatar (the badge is never clipped).
        For silhouettes (heart, squircle, hexagon…) put a shape-* class from
        theme/utils/shapes.css on the .avatar-image instead. */
-    &[data-shape="rounded"] { border-radius: var(--radius-lg); }
-    &[data-shape="square"] { border-radius: var(--radius-sm); }
+    &[data-shape="rounded"] {
+      border-radius: var(--radius-lg);
+    }
+    &[data-shape="square"] {
+      border-radius: var(--radius-sm);
+    }
 
     /* a loaded photo covers the box: no muted plate behind a shaped image */
-    &:has(> .avatar-image:not([data-error])) { background-color: transparent; }
+    &:has(> .avatar-image:not([data-error])) {
+      background-color: transparent;
+    }
 
     /* -- Ring: a colored ring with a background-colored gap, following
        the avatar's shape */
     &[data-ring] {
-      box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+      box-shadow:
+        0 0 0 2px var(--background),
+        0 0 0 4px var(--primary);
     }
-    &[data-ring="secondary"] { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--muted-foreground); }
-    &[data-ring="destructive"] { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--destructive); }
+    &[data-ring="secondary"] {
+      box-shadow:
+        0 0 0 2px var(--background),
+        0 0 0 4px var(--muted-foreground);
+    }
+    &[data-ring="destructive"] {
+      box-shadow:
+        0 0 0 2px var(--background),
+        0 0 0 4px var(--destructive);
+    }
   }
 
   .avatar-image {
@@ -90,8 +106,14 @@
     border-radius: inherit; /* .avatar no longer clips - the fallback must round itself */
 
     /* placeholder colors (letters on a solid plate) */
-    &[data-variant="primary"] { background-color: var(--primary); color: var(--primary-foreground); }
-    &[data-variant="neutral"] { background-color: var(--foreground); color: var(--background); }
+    &[data-variant="primary"] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+    &[data-variant="neutral"] {
+      background-color: var(--foreground);
+      color: var(--background);
+    }
   }
 
   /* Hide fallback when image is loaded */
@@ -129,8 +151,12 @@
 
     /* data-position: any of the four corners (default bottom-end); start /
        end are logical - in RTL, start is the right */
-    &[data-position^="top"] { inset-block: calc(var(--_rim) * -0.5) auto; }
-    &[data-position$="start"] { inset-inline: calc(var(--_rim) * -0.5) auto; }
+    &[data-position^="top"] {
+      inset-block: calc(var(--_rim) * -0.5) auto;
+    }
+    &[data-position$="start"] {
+      inset-inline: calc(var(--_rim) * -0.5) auto;
+    }
 
     /* hollow ring: "not here" */
     &[data-variant="offline"] {
@@ -150,10 +176,14 @@
     &[data-variant="away"] {
       background-color: #f59e0b;
       background-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
-      background-size: max(2px, calc(var(--_badge, 1.25rem) * 0.12)) 34%, 30% max(2px, calc(var(--_badge, 1.25rem) * 0.12));
+      background-size:
+        max(2px, calc(var(--_badge, 1.25rem) * 0.12)) 34%,
+        30% max(2px, calc(var(--_badge, 1.25rem) * 0.12));
       /* hour hand: centred, from ~16% down to the centre; minute hand: from
          the centre to ~80% (percent positions: (box - layer) * p) */
-      background-position: 50% 24%, 71% 50%;
+      background-position:
+        50% 24%,
+        71% 50%;
     }
   }
 
@@ -170,8 +200,12 @@
         margin-left: 0;
       }
     }
-    &[data-overlap="sm"] :is(.avatar, .avatar-group-count):not(:first-child) { margin-left: -0.25rem; }
-    &[data-overlap="lg"] :is(.avatar, .avatar-group-count):not(:first-child) { margin-left: -1rem; }
+    &[data-overlap="sm"] :is(.avatar, .avatar-group-count):not(:first-child) {
+      margin-left: -0.25rem;
+    }
+    &[data-overlap="lg"] :is(.avatar, .avatar-group-count):not(:first-child) {
+      margin-left: -1rem;
+    }
   }
 
   .avatar-group-count {

@@ -19,20 +19,22 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Medallion</span>
     <span class="diagram-title">Bronze, silver, gold</span>
-    <span class="diagram-dek">The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span>
+    <span class="diagram-dek"
+      >The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 4">
       <li>Sources</li>
       <li>Land</li>
       <li>Clean</li>
       <li data-tone="accent">Serve</li>
     </ol>
-    <div class="diagram-node" data-node="capi" data-tone="external" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="capi" data-tone="external" style="--col: 1; --row: 2">
       <span class="diagram-node-name">Survey exports</span>
       <span class="diagram-node-meta">CAPI · weekly</span>
     </div>
-    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">raw-bucket</span>
       <span class="diagram-node-name">Bronze · raw</span>
       <ul class="diagram-node-fields">
@@ -41,7 +43,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col: 3; --row: 2">
       <span class="diagram-node-eyebrow">clean-bucket</span>
       <span class="diagram-node-name">Silver · cleaned</span>
       <ul class="diagram-node-fields">
@@ -50,7 +52,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col: 4; --row: 2">
       <span class="diagram-node-eyebrow">gold-bucket</span>
       <span class="diagram-node-name">Gold · indicators</span>
       <ul class="diagram-node-fields">
@@ -59,11 +61,11 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>scientist</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Archive</span>
       <span class="diagram-node-meta">Glacier · 7 years</span>
     </div>
-    <div class="diagram-node" data-node="bi" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="bi" style="--col: 4; --row: 3">
       <span class="diagram-node-name">Dashboards</span>
       <span class="diagram-node-meta">unemployment rate</span>
     </div>
@@ -81,24 +83,33 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Tiers, step by step" component="diagram" hint="Left to right: source, land, clean, serve - archive and consumers last."
-<figure class="diagram" id="dg-medallion-steps" data-type="medallion" data-steps data-autoplay aria-label="Medallion architecture for survey data">
+<figure
+  class="diagram"
+  id="dg-medallion-steps"
+  data-type="medallion"
+  data-steps
+  data-autoplay
+  aria-label="Medallion architecture for survey data"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Medallion</span>
     <span class="diagram-title">Bronze, silver, gold</span>
-    <span class="diagram-dek">The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span>
+    <span class="diagram-dek"
+      >The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 4">
       <li>Sources</li>
       <li>Land</li>
       <li>Clean</li>
       <li data-tone="accent">Serve</li>
     </ol>
-    <div class="diagram-node" data-node="capi" data-tone="external" data-step="1" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="capi" data-tone="external" data-step="1" style="--col: 1; --row: 2">
       <span class="diagram-node-name">Survey exports</span>
       <span class="diagram-node-meta">CAPI · weekly</span>
     </div>
-    <div class="diagram-node" data-node="bronze" data-tone="bronze" data-step="2" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="bronze" data-tone="bronze" data-step="2" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">raw-bucket</span>
       <span class="diagram-node-name">Bronze · raw</span>
       <ul class="diagram-node-fields">
@@ -107,7 +118,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="silver" data-tone="silver" data-step="3" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="silver" data-tone="silver" data-step="3" style="--col: 3; --row: 2">
       <span class="diagram-node-eyebrow">clean-bucket</span>
       <span class="diagram-node-name">Silver · cleaned</span>
       <ul class="diagram-node-fields">
@@ -116,7 +127,14 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" data-step="4" style="--col:4;--row:2">
+    <div
+      class="diagram-node"
+      data-node="gold"
+      data-tone="gold"
+      data-badge="focal"
+      data-step="4"
+      style="--col: 4; --row: 2"
+    >
       <span class="diagram-node-eyebrow">gold-bucket</span>
       <span class="diagram-node-name">Gold · indicators</span>
       <ul class="diagram-node-fields">
@@ -125,11 +143,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>scientist</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" data-step="5" style="--col:2;--row:3">
+    <div
+      class="diagram-node"
+      data-node="archive"
+      data-shape="store"
+      data-tone="muted"
+      data-step="5"
+      style="--col: 2; --row: 3"
+    >
       <span class="diagram-node-name">Archive</span>
       <span class="diagram-node-meta">Glacier · 7 years</span>
     </div>
-    <div class="diagram-node" data-node="bi" data-step="5" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="bi" data-step="5" style="--col: 4; --row: 3">
       <span class="diagram-node-name">Dashboards</span>
       <span class="diagram-node-meta">unemployment rate</span>
     </div>
@@ -150,29 +175,60 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Medallion, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-medallion-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-medallion-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-medallion-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-medallion-live">Click a box or an arrow - or press Next.</output>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="sm"
+    data-diagram-for="dg-medallion-live"
+    data-diagram-action="prev"
+    >Previous</button
+  >
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="sm"
+    data-diagram-for="dg-medallion-live"
+    data-diagram-action="next"
+    >Next</button
+  >
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="sm"
+    data-diagram-for="dg-medallion-live"
+    data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-medallion-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-medallion-live" data-interactive data-type="medallion" aria-label="Medallion architecture for survey data">
+<figure
+  class="diagram"
+  id="dg-medallion-live"
+  data-interactive
+  data-type="medallion"
+  aria-label="Medallion architecture for survey data"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Medallion</span>
     <span class="diagram-title">Bronze, silver, gold</span>
-    <span class="diagram-dek">The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span>
+    <span class="diagram-dek"
+      >The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 4">
       <li>Sources</li>
       <li>Land</li>
       <li>Clean</li>
       <li data-tone="accent">Serve</li>
     </ol>
-    <div class="diagram-node" data-node="capi" data-tone="external" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="capi" data-tone="external" style="--col: 1; --row: 2">
       <span class="diagram-node-name">Survey exports</span>
       <span class="diagram-node-meta">CAPI · weekly</span>
     </div>
-    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">raw-bucket</span>
       <span class="diagram-node-name">Bronze · raw</span>
       <ul class="diagram-node-fields">
@@ -181,7 +237,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col: 3; --row: 2">
       <span class="diagram-node-eyebrow">clean-bucket</span>
       <span class="diagram-node-name">Silver · cleaned</span>
       <ul class="diagram-node-fields">
@@ -190,7 +246,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col: 4; --row: 2">
       <span class="diagram-node-eyebrow">gold-bucket</span>
       <span class="diagram-node-name">Gold · indicators</span>
       <ul class="diagram-node-fields">
@@ -199,11 +255,11 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>scientist</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Archive</span>
       <span class="diagram-node-meta">Glacier · 7 years</span>
     </div>
-    <div class="diagram-node" data-node="bi" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="bi" style="--col: 4; --row: 3">
       <span class="diagram-node-name">Dashboards</span>
       <span class="diagram-node-meta">unemployment rate</span>
     </div>
@@ -224,29 +280,40 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Medallion, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-medallion-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-medallion-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-medallion-edit" data-interactive data-type="medallion" aria-label="Medallion architecture for survey data">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-medallion-edit"
+      data-interactive
+      data-type="medallion"
+      aria-label="Medallion architecture for survey data"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Medallion</span>
         <span class="diagram-title">Bronze, silver, gold</span>
-        <span class="diagram-dek">The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span>
+        <span class="diagram-dek"
+          >The same dataset at three quality levels - each tier says what it is, who writes it and in which
+          format.</span
+        >
       </figcaption>
-      <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-        <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+      <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+        <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 4">
           <li>Sources</li>
           <li>Land</li>
           <li>Clean</li>
           <li data-tone="accent">Serve</li>
         </ol>
-        <div class="diagram-node" data-node="capi" data-tone="external" style="--col:1;--row:2">
+        <div class="diagram-node" data-node="capi" data-tone="external" style="--col: 1; --row: 2">
           <span class="diagram-node-name">Survey exports</span>
           <span class="diagram-node-meta">CAPI · weekly</span>
         </div>
-        <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col:2;--row:2">
+        <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col: 2; --row: 2">
           <span class="diagram-node-eyebrow">raw-bucket</span>
           <span class="diagram-node-name">Bronze · raw</span>
           <ul class="diagram-node-fields">
@@ -255,7 +322,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li data-field="writer"><span>writer</span><span>engineer</span></li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="silver" data-tone="silver" style="--col:3;--row:2">
+        <div class="diagram-node" data-node="silver" data-tone="silver" style="--col: 3; --row: 2">
           <span class="diagram-node-eyebrow">clean-bucket</span>
           <span class="diagram-node-name">Silver · cleaned</span>
           <ul class="diagram-node-fields">
@@ -264,7 +331,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li data-field="writer"><span>writer</span><span>engineer</span></li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col:4;--row:2">
+        <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col: 4; --row: 2">
           <span class="diagram-node-eyebrow">gold-bucket</span>
           <span class="diagram-node-name">Gold · indicators</span>
           <ul class="diagram-node-fields">
@@ -273,11 +340,11 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li data-field="writer"><span>writer</span><span>scientist</span></li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col:2;--row:3">
+        <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col: 2; --row: 3">
           <span class="diagram-node-name">Archive</span>
           <span class="diagram-node-meta">Glacier · 7 years</span>
         </div>
-        <div class="diagram-node" data-node="bi" style="--col:4;--row:3">
+        <div class="diagram-node" data-node="bi" style="--col: 4; --row: 3">
           <span class="diagram-node-name">Dashboards</span>
           <span class="diagram-node-meta">unemployment rate</span>
         </div>
@@ -296,11 +363,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-medallion-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-medallion-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-medallion-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -331,24 +411,31 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
 
 ```html example label="Medallion, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
-<figure class="diagram" id="dg-medallion-flow" data-type="medallion" aria-label="Medallion architecture for survey data">
+<figure
+  class="diagram"
+  id="dg-medallion-flow"
+  data-type="medallion"
+  aria-label="Medallion architecture for survey data"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Medallion</span>
     <span class="diagram-title">Bronze, silver, gold</span>
-    <span class="diagram-dek">The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span>
+    <span class="diagram-dek"
+      >The same dataset at three quality levels - each tier says what it is, who writes it and in which format.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <ol class="diagram-phases" style="--row:1;--col:1;--span:4">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <ol class="diagram-phases" style="--row: 1; --col: 1; --span: 4">
       <li>Sources</li>
       <li>Land</li>
       <li>Clean</li>
       <li data-tone="accent">Serve</li>
     </ol>
-    <div class="diagram-node" data-node="capi" data-tone="external" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="capi" data-tone="external" style="--col: 1; --row: 2">
       <span class="diagram-node-name">Survey exports</span>
       <span class="diagram-node-meta">CAPI · weekly</span>
     </div>
-    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col: 2; --row: 2">
       <span class="diagram-node-eyebrow">raw-bucket</span>
       <span class="diagram-node-name">Bronze · raw</span>
       <ul class="diagram-node-fields">
@@ -357,7 +444,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col: 3; --row: 2">
       <span class="diagram-node-eyebrow">clean-bucket</span>
       <span class="diagram-node-name">Silver · cleaned</span>
       <ul class="diagram-node-fields">
@@ -366,7 +453,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>engineer</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="gold" data-tone="gold" data-badge="focal" style="--col: 4; --row: 2">
       <span class="diagram-node-eyebrow">gold-bucket</span>
       <span class="diagram-node-name">Gold · indicators</span>
       <ul class="diagram-node-fields">
@@ -375,21 +462,51 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="writer"><span>writer</span><span>scientist</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" style="--col: 2; --row: 3">
       <span class="diagram-node-name">Archive</span>
       <span class="diagram-node-meta">Glacier · 7 years</span>
     </div>
-    <div class="diagram-node" data-node="bi" style="--col:4;--row:3">
+    <div class="diagram-node" data-node="bi" style="--col: 4; --row: 3">
       <span class="diagram-node-name">Dashboards</span>
       <span class="diagram-node-meta">unemployment rate</span>
     </div>
   </div>
   <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="capi" data-to="bronze" data-flow="2600" data-flow-tokens="2" data-flow-delay="0">land</li>
-    <li class="diagram-edge" data-from="bronze" data-to="silver" data-flow="2600" data-flow-tokens="2" data-flow-delay="700">clean</li>
-    <li class="diagram-edge" data-from="silver" data-to="gold" data-tone="accent" data-flow="2600" data-flow-tokens="2" data-flow-delay="1400">sum</li>
-    <li class="diagram-edge" data-from="bronze" data-to="archive" data-line="dashed" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100">after 90 days</li>
-    <li class="diagram-edge" data-from="gold" data-to="bi" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800">SQL</li>
+    <li class="diagram-edge" data-from="capi" data-to="bronze" data-flow="2600" data-flow-tokens="2" data-flow-delay="0"
+      >land</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="bronze"
+      data-to="silver"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="700"
+      >clean</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="silver"
+      data-to="gold"
+      data-tone="accent"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="1400"
+      >sum</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="bronze"
+      data-to="archive"
+      data-line="dashed"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="2100"
+      >after 90 days</li
+    >
+    <li class="diagram-edge" data-from="gold" data-to="bi" data-flow="2600" data-flow-tokens="2" data-flow-delay="2800"
+      >SQL</li
+    >
   </ol>
 </figure>
 ```
@@ -402,15 +519,17 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-eyebrow">Privacy review</span>
     <span class="diagram-title">PII never reaches silver</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-node-w:9.5rem">
-    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-node-w: 9.5rem">
+    <div class="diagram-node" data-node="bronze" data-tone="bronze" style="--col: 1; --row: 1">
       <span class="diagram-node-eyebrow">raw-bucket</span>
       <span class="diagram-node-name">Bronze · raw</span>
       <ul class="diagram-node-fields">
-        <li data-field="access" data-change="changed"><span>access</span><span data-before="all analysts">engineers</span></li>
+        <li data-field="access" data-change="changed"
+          ><span>access</span><span data-before="all analysts">engineers</span></li
+        >
       </ul>
     </div>
-    <div class="diagram-node" data-node="anon" data-tone="muted" data-change="added" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="anon" data-tone="muted" data-change="added" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">anon-bucket</span>
       <span class="diagram-node-name">Anonymized</span>
       <ul class="diagram-node-fields">
@@ -418,28 +537,38 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li data-field="removes"><span>removes</span><span>name · address</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col:3;--row:1">
+    <div class="diagram-node" data-node="silver" data-tone="silver" style="--col: 3; --row: 1">
       <span class="diagram-node-eyebrow">clean-bucket</span>
       <span class="diagram-node-name">Silver · cleaned</span>
       <ul class="diagram-node-fields">
         <li data-field="tool"><span>tool</span><span>Spark</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="gold" data-tone="gold" style="--col:4;--row:1">
+    <div class="diagram-node" data-node="gold" data-tone="gold" style="--col: 4; --row: 1">
       <span class="diagram-node-eyebrow">gold-bucket</span>
       <span class="diagram-node-name">Gold · indicators</span>
       <ul class="diagram-node-fields">
         <li data-field="format" data-change="changed"><span>format</span><span data-before="Parquet">Iceberg</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="archive" data-shape="store" data-tone="muted" data-change="removed" style="--col:1;--row:2"><span class="diagram-node-name">Archive</span></div>
+    <div
+      class="diagram-node"
+      data-node="archive"
+      data-shape="store"
+      data-tone="muted"
+      data-change="removed"
+      style="--col: 1; --row: 2"
+      ><span class="diagram-node-name">Archive</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="bronze" data-to="anon" data-change="added">mask</li>
     <li class="diagram-edge" data-from="anon" data-to="silver" data-change="added">clean</li>
     <li class="diagram-edge" data-from="bronze" data-to="silver" data-change="removed">clean</li>
     <li class="diagram-edge" data-from="silver" data-to="gold">aggregate</li>
-    <li class="diagram-edge" data-from="bronze" data-to="archive" data-line="dashed" data-change="removed">after 90 days</li>
+    <li class="diagram-edge" data-from="bronze" data-to="archive" data-line="dashed" data-change="removed"
+      >after 90 days</li
+    >
   </ol>
 </figure>
 ```

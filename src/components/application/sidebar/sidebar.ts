@@ -6,7 +6,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { bindGlobalKeys, defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  bindGlobalKeys,
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -32,7 +38,10 @@ export interface SidebarStateConfigs {
 function applyMarkup(el, stateName) {
   // 'default' is the authored data-state (expanded when none was authored) -
   // on the authored copy that value is still in place
-  dfDollar(el).attr('data-state', stateName === 'collapsed' ? 'collapsed' : (el._authoredState ??= dfDollar(el).attr('data-state') || 'expanded'));
+  dfDollar(el).attr(
+    'data-state',
+    stateName === 'collapsed' ? 'collapsed' : (el._authoredState ??= dfDollar(el).attr('data-state') || 'expanded'),
+  );
 }
 
 /**
@@ -74,49 +83,60 @@ df$.sidebarApi = sidebarApi;
 df$.sidebarStates = sidebarStates;
 
 function init() {
-dfDollar('.app-sidebar:not([data-init])').toArray().forEach((sidebar) => {
-  sidebar.dataset.init = '';
-  // snapshot the authored state + bind per sidebar: `$('#my-sidebar').api.setState('collapsed')`
-  sidebar._defaultState = sidebar.dataset.state || 'expanded';
-  // a state named before init (a page restoring a remembered choice) pins it;
-  // after init data-state-name only MIRRORS the store, so the pin is _pinned
-  sidebar._pinned = !!sidebar.dataset.stateName;
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(sidebar, sidebarApi);
+  dfDollar('.app-sidebar:not([data-init])')
+    .toArray()
+    .forEach((sidebar) => {
+      sidebar.dataset.init = '';
+      // snapshot the authored state + bind per sidebar: `$('#my-sidebar').api.setState('collapsed')`
+      sidebar._defaultState = sidebar.dataset.state || 'expanded';
+      // a state named before init (a page restoring a remembered choice) pins it;
+      // after init data-state-name only MIRRORS the store, so the pin is _pinned
+      sidebar._pinned = !!sidebar.dataset.stateName;
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(sidebar, sidebarApi);
 
-  // -- Toggle button → collapse/expand -----------------------
-  const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : '.sidebar-trigger';
-  dfDollar(triggerId).toArray().forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
-      sidebar.dataset.state = state;
-      // a user decision: pins against the auto-collapse heuristic
-      sidebar._pinned = true;
+      // -- Toggle button → collapse/expand -----------------------
+      const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : '.sidebar-trigger';
+      dfDollar(triggerId)
+        .toArray()
+        .forEach((trigger) => {
+          trigger.addEventListener('click', () => {
+            const state = sidebar.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
+            sidebar.dataset.state = state;
+            // a user decision: pins against the auto-collapse heuristic
+            sidebar._pinned = true;
+          });
+        });
+
+      // -- Auto-collapse wiring: correct state at first paint + on row resize --
+      // observe the row (not the sidebar): the sidebar keeps its authored width
+      // (flex-shrink: 0), so only the row's width reports available space.
+      document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
+      autoCollapseSidebar(sidebar);
     });
-  });
 
-  // -- Auto-collapse wiring: correct state at first paint + on row resize --
-  // observe the row (not the sidebar): the sidebar keeps its authored width
-  // (flex-shrink: 0), so only the row's width reports available space.
-  document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
-  autoCollapseSidebar(sidebar);
-});
+  // -- Mobile dialog triggers ----------------------------------
+  dfDollar('[data-sidebar-mobile]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
+      if (!dialog) return;
 
-// -- Mobile dialog triggers ----------------------------------
-dfDollar('[data-sidebar-mobile]:not([data-init])').toArray().forEach((trigger) => {
-  trigger.dataset.init = '';
-  const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
-  if (!dialog) return;
+      trigger.addEventListener('click', () => {
+        dialog.showModal();
+      });
 
-  trigger.addEventListener('click', () => {
-    dialog.showModal();
-  });
-
-  // Close button inside the dialog
-  dfDollar(dialog).find('.sidebar-mobile-close').toArray().forEach((btn) => {
-    btn.addEventListener('click', () => { dialog.close(); });
-  });
-});
+      // Close button inside the dialog
+      dfDollar(dialog)
+        .find('.sidebar-mobile-close')
+        .toArray()
+        .forEach((btn) => {
+          btn.addEventListener('click', () => {
+            dialog.close();
+          });
+        });
+    });
 }
 
 // -- Auto-collapse: too little room → dock to the rail ----------

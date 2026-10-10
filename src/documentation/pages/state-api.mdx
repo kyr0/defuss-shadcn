@@ -53,7 +53,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="dialog-content">
     <div class="dialog-header">
       <h2 class="dialog-title" id="sa-title">Named state</h2>
-      <p class="dialog-description">Opened via api.setState('open') - close it and watch the badge flip back to default.</p>
+      <p class="dialog-description"
+        >Opened via api.setState('open') - close it and watch the badge flip back to default.</p
+      >
     </div>
     <div class="dialog-footer">
       <button class="btn" data-variant="outline" data-dialog-close>Close</button>
@@ -65,8 +67,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     // df$ selects; dialog.js has bound dialog.api on the element
     const dialog = df$('#sa-dialog').get(0);
     const show = () => df$('#sa-out').text(dialog.api.getState().name);
-    df$('#sa-open').on('click', () => { dialog.api.setState('open'); show(); });
-    df$('#sa-default').on('click', () => { dialog.api.setState('default'); show(); });
+    df$('#sa-open').on('click', () => {
+      dialog.api.setState('open');
+      show();
+    });
+    df$('#sa-default').on('click', () => {
+      dialog.api.setState('default');
+      show();
+    });
     // Escape / backdrop / close button: the state follows the dialog
     df$(dialog).on('close', () => queueMicrotask(show));
   });
@@ -78,12 +86,18 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <p class="text-sm text-muted-foreground mb-5"> Behind <code>el.api</code> every component keeps its state in a <a class="link" href="https://www.npmjs.com/package/defuss-store">defuss-store</a> store, exposed as <code>el.store</code> - a tiny synchronous observable holding <code>\{ name, config \}</code>. Subscribe to react to <em>any</em> change, including the ones a user makes without <code>setState</code> (a click, Escape, a native close); write it to drive the component exactly like <code>setState</code> does. The big-data components keep their whole query there - a <a class="link" href="data-grid.html">Data Grid</a>'s sort, filters, locked columns and selection are <code>el.store.value.config</code>. </p>
 
 ```html example label="Subscribe and write" schema="none" height="22" hint="The log subscribes to the toggle's store: press the toggle with the mouse or the keyboard - every change arrives, though nothing called setState. The second button writes the store directly; the toggle applies it like setState."
-<div class="flex flex-col gap-3" style="max-width:28rem;">
+<div class="flex flex-col gap-3" style="max-width: 28rem">
   <div class="flex flex-wrap items-center gap-2">
     <button class="toggle" type="button" aria-pressed="false" id="sa-toggle">Bold</button>
-    <button class="btn" data-variant="outline" data-size="sm" type="button" id="sa-write">el.store.set({ name: 'pressed' })</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="sa-write"
+      >el.store.set({ name: 'pressed' })</button
+    >
   </div>
-  <pre class="text-xs m-0" id="sa-log" style="padding:0.75rem;border-radius:var(--radius-md);background:var(--muted);min-height:4rem;"></pre>
+  <pre
+    class="text-xs m-0"
+    id="sa-log"
+    style="padding: 0.75rem; border-radius: var(--radius-md); background: var(--muted); min-height: 4rem"
+  ></pre>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {

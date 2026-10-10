@@ -3,7 +3,9 @@
 
 @layer components {
   /* every box in the block measures border-box - the same on any page */
-  :where(.mk-process-step, .mk-process-step *, .mk-process-step ::before, .mk-process-step ::after) { box-sizing: border-box; }
+  :where(.mk-process-step, .mk-process-step *, .mk-process-step ::before, .mk-process-step ::after) {
+    box-sizing: border-box;
+  }
 
   .mk-process-steps {
     container: mk-process-steps / inline-size;
@@ -33,7 +35,9 @@
       translate: -50% 0;
       background: var(--border);
     }
-    &:last-child { padding-block-end: 0; }
+    &:last-child {
+      padding-block-end: 0;
+    }
   }
   .mk-process-step-number {
     display: grid;
@@ -47,15 +51,38 @@
     font-size: 0.8125rem;
     font-weight: 600;
   }
-  .mk-process-step[aria-current] .mk-process-step-number { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
-  .mk-process-step-body { display: grid; gap: 0.25rem; padding-block-start: 0.375rem; }
-  .mk-process-step-title { margin: 0; font-size: 1.0625rem; font-weight: 600; }
-  .mk-process-step-desc { margin: 0; color: var(--muted-foreground); font-size: 0.9375rem; line-height: 1.6; text-wrap: pretty; }
+  .mk-process-step[aria-current] .mk-process-step-number {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .mk-process-step-body {
+    display: grid;
+    gap: 0.25rem;
+    padding-block-start: 0.375rem;
+  }
+  .mk-process-step-title {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  .mk-process-step-desc {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
 
   /* horizontal: a wrapping row - the list is the container, so only its
      steps change with its width (a container cannot query itself) */
-  .mk-process-steps[data-variant="horizontal"] { flex-direction: row; flex-wrap: wrap; }
-  .mk-process-steps[data-variant="horizontal"] > .mk-process-step { flex: 1 1 100%; }
+  .mk-process-steps[data-variant="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .mk-process-steps[data-variant="horizontal"] > .mk-process-step {
+    flex: 1 1 100%;
+  }
 
   @container mk-process-steps (min-width: 40rem) {
     .mk-process-steps[data-variant="horizontal"] > .mk-process-step {
@@ -64,13 +91,27 @@
       gap: 1rem;
       padding: 0 1.5rem 0 0;
 
-      &:not(:last-child)::before { inset-inline-start: 3.25rem; inset-inline-end: 0.5rem; top: 1.25rem; bottom: auto; width: auto; height: 2px; translate: 0 -50%; }
+      &:not(:last-child)::before {
+        inset-inline-start: 3.25rem;
+        inset-inline-end: 0.5rem;
+        top: 1.25rem;
+        bottom: auto;
+        width: auto;
+        height: 2px;
+        translate: 0 -50%;
+      }
     }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (forced-colors: active) {
-    .mk-process-step:not(:last-child)::before { background: CanvasText; }
-    .mk-process-step[aria-current] .mk-process-step-number { border-color: Highlight; background: Highlight; color: HighlightText; }
+    .mk-process-step:not(:last-child)::before {
+      background: CanvasText;
+    }
+    .mk-process-step[aria-current] .mk-process-step-number {
+      border-color: Highlight;
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }

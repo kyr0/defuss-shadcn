@@ -55,78 +55,123 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Pixel-perfect" hint="The default: one SE handle, sizes land as inline px on the wrapped element. Drag any handle, then open State to see data-width/data-height follow." component="resizer" height="14"
 <div class="resizer" data-handles="se" data-min="120">
-  <div class="card" style="width:20rem;height:10rem;padding:1rem;">
+  <div class="card" style="width: 20rem; height: 10rem; padding: 1rem">
     <h3 class="card-title">Panel</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Drag the corner. The runtime writes style.width / style.height - pixel-perfect, no quantization.</p>
+    <p class="card-description" style="margin-top: 0.5rem"
+      >Drag the corner. The runtime writes style.width / style.height - pixel-perfect, no quantization.</p
+    >
   </div>
 </div>
 ```
 
 ```html example label="All sides + corners" hint="data-handles='all' places all 8 handles - every side AND every corner drags independently." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-min="120">
-  <div class="card" style="width:18rem;height:12rem;padding:1rem;">
+  <div class="card" style="width: 18rem; height: 12rem; padding: 1rem">
     <h3 class="card-title">Canvas</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Edges resize one axis, corners both. Grab any of the 8 chips.</p>
+    <p class="card-description" style="margin-top: 0.5rem"
+      >Edges resize one axis, corners both. Grab any of the 8 chips.</p
+    >
   </div>
 </div>
 ```
 
 ```html example label="Width only" hint="data-axis='w' keeps the height owned by the content - the n/s handles are never placed, and corners drag width only." component="resizer" height="14"
 <div class="resizer" data-handles="w e" data-axis="w" data-min="140" data-max="520">
-  <div class="card" style="width:16rem;padding:1rem;">
+  <div class="card" style="width: 16rem; padding: 1rem">
     <h3 class="card-title">Report</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Height follows the text; only the horizontal edges respond.</p>
+    <p class="card-description" style="margin-top: 0.5rem"
+      >Height follows the text; only the horizontal edges respond.</p
+    >
   </div>
 </div>
 ```
 
 ```html example label="Keys move the edge" hint="data-keys='edge': the arrow keys move the focused edge the way they point - ArrowLeft on the w handle grows the box, ArrowRight shrinks it - the window-splitter pattern Border Layout builds on. Without it ArrowRight/Up always grow." component="resizer" height="14"
-<div class="resizer" data-handles="w" data-axis="w" data-keys="edge" data-min="140" data-max="520" style="margin-inline-start:auto;">
-  <div class="card" style="width:16rem;padding:1rem;">
+<div
+  class="resizer"
+  data-handles="w"
+  data-axis="w"
+  data-keys="edge"
+  data-min="140"
+  data-max="520"
+  style="margin-inline-start: auto"
+>
+  <div class="card" style="width: 16rem; padding: 1rem">
     <h3 class="card-title">Inspector</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Tab to the left edge, then press ← / →.</p>
+    <p class="card-description" style="margin-top: 0.5rem">Tab to the left edge, then press ← / →.</p>
   </div>
 </div>
 ```
 
 ```html example label="Split-pane divider" hint="data-variant='divider': the e handle becomes a full-height strip on the list's edge - a thin line shows on hover, focus and drag, there is no outline while it resizes, and a double-click puts the column back to its authored width. With data-keys='edge' the arrow keys move the edge." component="resizer" height="16"
-<div style="display:flex;height:14rem;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
-  <div class="resizer" data-variant="divider" data-handles="e" data-axis="w" data-keys="edge" data-min="140" data-max="360">
-    <nav style="width:12rem;height:100%;padding:0.75rem;border-inline-end:1px solid var(--border);background:var(--muted);box-sizing:border-box;">
-      <p style="margin:0 0 0.5rem;font-weight:600;">Inbox</p>
-      <p style="margin:0;color:var(--muted-foreground);font-size:0.875rem;">Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p>
+<div
+  style="
+    display: flex;
+    height: 14rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  "
+>
+  <div
+    class="resizer"
+    data-variant="divider"
+    data-handles="e"
+    data-axis="w"
+    data-keys="edge"
+    data-min="140"
+    data-max="360"
+  >
+    <nav
+      style="
+        width: 12rem;
+        height: 100%;
+        padding: 0.75rem;
+        border-inline-end: 1px solid var(--border);
+        background: var(--muted);
+        box-sizing: border-box;
+      "
+    >
+      <p style="margin: 0 0 0.5rem; font-weight: 600">Inbox</p>
+      <p style="margin: 0; color: var(--muted-foreground); font-size: 0.875rem"
+        >Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p
+      >
     </nav>
   </div>
-  <main style="flex:1;padding:0.75rem;">Message</main>
+  <main style="flex: 1; padding: 0.75rem">Message</main>
 </div>
 ```
 
 ```html example label="Class-based sizing" hint="data-resize-mode='classes' snaps to the sizing.css ladder: the element's class attribute IS the size (open State/Code while dragging to watch w-*/h-* swap)." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-resize-mode="classes">
-  <div class="card w-64 h-40" style="padding:1rem;">
+  <div class="card w-64 h-40" style="padding: 1rem">
     <h3 class="card-title">Card</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Authored w-64 h-40. Drags snap to the nearest w-N / h-N token (4 px steps) - no inline styles.</p>
+    <p class="card-description" style="margin-top: 0.5rem"
+      >Authored w-64 h-40. Drags snap to the nearest w-N / h-N token (4 px steps) - no inline styles.</p
+    >
   </div>
 </div>
 ```
 
 ```html example label="Controlled" hint="data-resize-mode='controlled' writes NOTHING - the component only measures and fires resizer-resize, so the consumer owns the size (this is how the CodeExample preview toolbar uses it)." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-resize-mode="controlled" data-min="120">
-  <div class="card" style="width:18rem;height:11rem;padding:1rem;">
+  <div class="card" style="width: 18rem; height: 11rem; padding: 1rem">
     <h3 class="card-title">Consumer owns the box</h3>
-    <p class="card-description" style="margin-top:0.5rem;">Live size below - updated from the <code>resizer-resize</code> event, not from any style the component writes.</p>
-    <output class="mono-meta" id="rs-controlled" style="display:block;margin-top:0.5rem;">288 × 176</output>
+    <p class="card-description" style="margin-top: 0.5rem"
+      >Live size below - updated from the <code>resizer-resize</code> event, not from any style the component writes.</p
+    >
+    <output class="mono-meta" id="rs-controlled" style="display: block; margin-top: 0.5rem">288 × 176</output>
   </div>
 </div>
 
 <script type="module">
-  const wrap = document.querySelector(".resizer");
-  const out = document.getElementById("rs-controlled");
+  const wrap = document.querySelector('.resizer');
+  const out = document.getElementById('rs-controlled');
   const box = wrap.firstElementChild;
-  wrap.addEventListener("resizer-resize", (e) => {
-    box.style.width = e.detail.width + "px";
-    box.style.height = e.detail.height + "px";
-    out.textContent = e.detail.width + " × " + e.detail.height;
+  wrap.addEventListener('resizer-resize', (e) => {
+    box.style.width = e.detail.width + 'px';
+    box.style.height = e.detail.height + 'px';
+    out.textContent = e.detail.width + ' × ' + e.detail.height;
   });
 </script>
 ```
@@ -137,10 +182,14 @@ The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> - fi
 
 ```html example component="resizer" label="Sidebar - pixels" hint="Every side + corner drags the panel; the size lands as inline px on the aside. data-state-name='default' declares the expanded state deliberately - that is the component's own opt-out from auto-collapse, so the rail shrinks continuously (labels clip first) instead of snapping to the icon dock. The width transition is suspended while dragging, so the box tracks the pointer exactly." height="24" mode="desktop" previewStyle="margin:1rem;"
 <div class="resizer" data-handles="all" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
-  <aside class="app-sidebar" data-state-name="default" style="width:24rem;height:18rem;border-radius:var(--radius-lg);">
+  <aside
+    class="app-sidebar"
+    data-state-name="default"
+    style="width: 24rem; height: 18rem; border-radius: var(--radius-lg)"
+  >
     <div class="sidebar-header">
       <a class="sidebar-logo" href="#">
-        <i data-lucide="command" style="width:1rem;height:1rem;"></i>
+        <i data-lucide="command" style="width: 1rem; height: 1rem"></i>
         <span class="sidebar-logo-text">MyApp</span>
       </a>
     </div>
@@ -156,11 +205,19 @@ The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> - fi
 ```
 
 ```html example component="resizer" label="Sidebar - classes" hint="data-resize-mode='classes': dragging swaps w-N/h-N utilities on the aside - inspect the Code tab while you drag and the class attribute is the only thing that changes. data-state-name keeps the rail expanded at every ladder step (no icon-dock snap) - down to w-16 it just clips." height="24" mode="desktop" previewStyle="margin:1rem;"
-<div class="resizer" data-handles="all" data-resize-mode="classes" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
-  <aside class="app-sidebar w-96 h-72" data-state-name="default" style="border-radius:var(--radius-lg);">
+<div
+  class="resizer"
+  data-handles="all"
+  data-resize-mode="classes"
+  data-min="220"
+  data-max="560"
+  data-min-h="160"
+  data-max-h="480"
+>
+  <aside class="app-sidebar w-96 h-72" data-state-name="default" style="border-radius: var(--radius-lg)">
     <div class="sidebar-header">
       <a class="sidebar-logo" href="#">
-        <i data-lucide="command" style="width:1rem;height:1rem;"></i>
+        <i data-lucide="command" style="width: 1rem; height: 1rem"></i>
         <span class="sidebar-logo-text">MyApp</span>
       </a>
     </div>

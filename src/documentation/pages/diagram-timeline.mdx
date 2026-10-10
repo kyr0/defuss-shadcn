@@ -22,45 +22,45 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-dek">Spacing is honest: months are equal, events sit on their dates.</span>
   </figcaption>
   <div class="diagram-canvas">
-    <div class="diagram-tick" style="--x:0">JAN</div>
-    <div class="diagram-tick" style="--x:16.7">MAR</div>
-    <div class="diagram-tick" style="--x:33.3">MAY</div>
-    <div class="diagram-tick" style="--x:50">JUL</div>
-    <div class="diagram-tick" style="--x:66.7">SEP</div>
-    <div class="diagram-tick" style="--x:83.3">NOV</div>
-    <div class="diagram-tick" style="--x:100">DEC 31</div>
-    <div class="diagram-span" style="--x:44;--w:14" title="Beta"></div>
-    <div class="diagram-node" data-node="v1" style="--x:3.5">
+    <div class="diagram-tick" style="--x: 0">JAN</div>
+    <div class="diagram-tick" style="--x: 16.7">MAR</div>
+    <div class="diagram-tick" style="--x: 33.3">MAY</div>
+    <div class="diagram-tick" style="--x: 50">JUL</div>
+    <div class="diagram-tick" style="--x: 66.7">SEP</div>
+    <div class="diagram-tick" style="--x: 83.3">NOV</div>
+    <div class="diagram-tick" style="--x: 100">DEC 31</div>
+    <div class="diagram-span" style="--x: 44; --w: 14" title="Beta"></div>
+    <div class="diagram-node" data-node="v1" style="--x: 3.5">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jan 12</span>
         <span class="diagram-node-name">v1.0 launch</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="teams" data-side="below" style="--x:26">
+    <div class="diagram-node" data-node="teams" data-side="below" style="--x: 26">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Apr 3</span>
         <span class="diagram-node-name">Teams & roles</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="beta" style="--x:44">
+    <div class="diagram-node" data-node="beta" style="--x: 44">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jun 20</span>
         <span class="diagram-node-name">v2 beta opens</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="v2" data-tone="accent" style="--x:60">
+    <div class="diagram-node" data-node="v2" data-tone="accent" style="--x: 60">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Aug 7</span>
         <span class="diagram-node-name">v2.0 · new engine</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="eu" data-side="below" style="--x:74">
+    <div class="diagram-node" data-node="eu" data-side="below" style="--x: 74">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Sep 25</span>
         <span class="diagram-node-name">EU region</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="sso" style="--x:94">
+    <div class="diagram-node" data-node="sso" style="--x: 94">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Dec 9</span>
         <span class="diagram-node-name">SSO + SCIM</span>
@@ -73,52 +73,59 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Release history, step by step" component="diagram" hint="Events enter in markup order - write them chronologically."
-<figure class="diagram" id="dg-time-steps" data-type="timeline" data-steps data-autoplay aria-label="Product release history 2025">
+<figure
+  class="diagram"
+  id="dg-time-steps"
+  data-type="timeline"
+  data-steps
+  data-autoplay
+  aria-label="Product release history 2025"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Timeline</span>
     <span class="diagram-title">Release history, 2025</span>
     <span class="diagram-dek">Spacing is honest: months are equal, events sit on their dates.</span>
   </figcaption>
   <div class="diagram-canvas">
-    <div class="diagram-tick" style="--x:0">JAN</div>
-    <div class="diagram-tick" style="--x:16.7">MAR</div>
-    <div class="diagram-tick" style="--x:33.3">MAY</div>
-    <div class="diagram-tick" style="--x:50">JUL</div>
-    <div class="diagram-tick" style="--x:66.7">SEP</div>
-    <div class="diagram-tick" style="--x:83.3">NOV</div>
-    <div class="diagram-tick" style="--x:100">DEC 31</div>
-    <div class="diagram-span" style="--x:44;--w:14" title="Beta"></div>
-    <div class="diagram-node" data-node="v1" style="--x:3.5">
+    <div class="diagram-tick" style="--x: 0">JAN</div>
+    <div class="diagram-tick" style="--x: 16.7">MAR</div>
+    <div class="diagram-tick" style="--x: 33.3">MAY</div>
+    <div class="diagram-tick" style="--x: 50">JUL</div>
+    <div class="diagram-tick" style="--x: 66.7">SEP</div>
+    <div class="diagram-tick" style="--x: 83.3">NOV</div>
+    <div class="diagram-tick" style="--x: 100">DEC 31</div>
+    <div class="diagram-span" style="--x: 44; --w: 14" title="Beta"></div>
+    <div class="diagram-node" data-node="v1" style="--x: 3.5">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jan 12</span>
         <span class="diagram-node-name">v1.0 launch</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="teams" data-side="below" style="--x:26">
+    <div class="diagram-node" data-node="teams" data-side="below" style="--x: 26">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Apr 3</span>
         <span class="diagram-node-name">Teams & roles</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="beta" style="--x:44">
+    <div class="diagram-node" data-node="beta" style="--x: 44">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jun 20</span>
         <span class="diagram-node-name">v2 beta opens</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="v2" data-tone="accent" style="--x:60">
+    <div class="diagram-node" data-node="v2" data-tone="accent" style="--x: 60">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Aug 7</span>
         <span class="diagram-node-name">v2.0 · new engine</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="eu" data-side="below" style="--x:74">
+    <div class="diagram-node" data-node="eu" data-side="below" style="--x: 74">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Sep 25</span>
         <span class="diagram-node-name">EU region</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="sso" style="--x:94">
+    <div class="diagram-node" data-node="sso" style="--x: 94">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Dec 9</span>
         <span class="diagram-node-name">SSO + SCIM</span>
@@ -134,57 +141,71 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Timeline, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-time-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-time-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-time-live" data-interactive data-type="timeline" aria-label="Product release history 2025">
+<figure
+  class="diagram"
+  id="dg-time-live"
+  data-interactive
+  data-type="timeline"
+  aria-label="Product release history 2025"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Timeline</span>
     <span class="diagram-title">Release history, 2025</span>
     <span class="diagram-dek">Spacing is honest: months are equal, events sit on their dates.</span>
   </figcaption>
   <div class="diagram-canvas">
-    <div class="diagram-tick" style="--x:0">JAN</div>
-    <div class="diagram-tick" style="--x:16.7">MAR</div>
-    <div class="diagram-tick" style="--x:33.3">MAY</div>
-    <div class="diagram-tick" style="--x:50">JUL</div>
-    <div class="diagram-tick" style="--x:66.7">SEP</div>
-    <div class="diagram-tick" style="--x:83.3">NOV</div>
-    <div class="diagram-tick" style="--x:100">DEC 31</div>
-    <div class="diagram-span" style="--x:44;--w:14" title="Beta"></div>
-    <div class="diagram-node" data-node="v1" style="--x:3.5">
+    <div class="diagram-tick" style="--x: 0">JAN</div>
+    <div class="diagram-tick" style="--x: 16.7">MAR</div>
+    <div class="diagram-tick" style="--x: 33.3">MAY</div>
+    <div class="diagram-tick" style="--x: 50">JUL</div>
+    <div class="diagram-tick" style="--x: 66.7">SEP</div>
+    <div class="diagram-tick" style="--x: 83.3">NOV</div>
+    <div class="diagram-tick" style="--x: 100">DEC 31</div>
+    <div class="diagram-span" style="--x: 44; --w: 14" title="Beta"></div>
+    <div class="diagram-node" data-node="v1" style="--x: 3.5">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jan 12</span>
         <span class="diagram-node-name">v1.0 launch</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="teams" data-side="below" style="--x:26">
+    <div class="diagram-node" data-node="teams" data-side="below" style="--x: 26">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Apr 3</span>
         <span class="diagram-node-name">Teams & roles</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="beta" style="--x:44">
+    <div class="diagram-node" data-node="beta" style="--x: 44">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jun 20</span>
         <span class="diagram-node-name">v2 beta opens</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="v2" data-tone="accent" style="--x:60">
+    <div class="diagram-node" data-node="v2" data-tone="accent" style="--x: 60">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Aug 7</span>
         <span class="diagram-node-name">v2.0 · new engine</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="eu" data-side="below" style="--x:74">
+    <div class="diagram-node" data-node="eu" data-side="below" style="--x: 74">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Sep 25</span>
         <span class="diagram-node-name">EU region</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="sso" style="--x:94">
+    <div class="diagram-node" data-node="sso" style="--x: 94">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Dec 9</span>
         <span class="diagram-node-name">SSO + SCIM</span>
@@ -200,57 +221,65 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Timeline, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-time-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-time-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-time-edit" data-interactive data-type="timeline" aria-label="Product release history 2025">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-time-edit"
+      data-interactive
+      data-type="timeline"
+      aria-label="Product release history 2025"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Timeline</span>
         <span class="diagram-title">Release history, 2025</span>
         <span class="diagram-dek">Spacing is honest: months are equal, events sit on their dates.</span>
       </figcaption>
       <div class="diagram-canvas">
-        <div class="diagram-tick" style="--x:0">JAN</div>
-        <div class="diagram-tick" style="--x:16.7">MAR</div>
-        <div class="diagram-tick" style="--x:33.3">MAY</div>
-        <div class="diagram-tick" style="--x:50">JUL</div>
-        <div class="diagram-tick" style="--x:66.7">SEP</div>
-        <div class="diagram-tick" style="--x:83.3">NOV</div>
-        <div class="diagram-tick" style="--x:100">DEC 31</div>
-        <div class="diagram-span" style="--x:44;--w:14" title="Beta"></div>
-        <div class="diagram-node" data-node="v1" style="--x:3.5">
+        <div class="diagram-tick" style="--x: 0">JAN</div>
+        <div class="diagram-tick" style="--x: 16.7">MAR</div>
+        <div class="diagram-tick" style="--x: 33.3">MAY</div>
+        <div class="diagram-tick" style="--x: 50">JUL</div>
+        <div class="diagram-tick" style="--x: 66.7">SEP</div>
+        <div class="diagram-tick" style="--x: 83.3">NOV</div>
+        <div class="diagram-tick" style="--x: 100">DEC 31</div>
+        <div class="diagram-span" style="--x: 44; --w: 14" title="Beta"></div>
+        <div class="diagram-node" data-node="v1" style="--x: 3.5">
           <div class="diagram-node-body">
             <span class="diagram-node-eyebrow">Jan 12</span>
             <span class="diagram-node-name">v1.0 launch</span>
           </div>
         </div>
-        <div class="diagram-node" data-node="teams" data-side="below" style="--x:26">
+        <div class="diagram-node" data-node="teams" data-side="below" style="--x: 26">
           <div class="diagram-node-body">
             <span class="diagram-node-eyebrow">Apr 3</span>
             <span class="diagram-node-name">Teams & roles</span>
           </div>
         </div>
-        <div class="diagram-node" data-node="beta" style="--x:44">
+        <div class="diagram-node" data-node="beta" style="--x: 44">
           <div class="diagram-node-body">
             <span class="diagram-node-eyebrow">Jun 20</span>
             <span class="diagram-node-name">v2 beta opens</span>
           </div>
         </div>
-        <div class="diagram-node" data-node="v2" data-tone="accent" style="--x:60">
+        <div class="diagram-node" data-node="v2" data-tone="accent" style="--x: 60">
           <div class="diagram-node-body">
             <span class="diagram-node-eyebrow">Aug 7</span>
             <span class="diagram-node-name">v2.0 · new engine</span>
           </div>
         </div>
-        <div class="diagram-node" data-node="eu" data-side="below" style="--x:74">
+        <div class="diagram-node" data-node="eu" data-side="below" style="--x: 74">
           <div class="diagram-node-body">
             <span class="diagram-node-eyebrow">Sep 25</span>
             <span class="diagram-node-name">EU region</span>
           </div>
         </div>
-        <div class="diagram-node" data-node="sso" style="--x:94">
+        <div class="diagram-node" data-node="sso" style="--x: 94">
           <div class="diagram-node-body">
             <span class="diagram-node-eyebrow">Dec 9</span>
             <span class="diagram-node-name">SSO + SCIM</span>
@@ -264,11 +293,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-time-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-time-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-time-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -304,30 +346,38 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-dek">Moves keep their identity: the before position is data-before-style.</span>
   </figcaption>
   <div class="diagram-canvas">
-    <div class="diagram-tick" style="--x:0">Q1</div>
-    <div class="diagram-tick" style="--x:25">Q2</div>
-    <div class="diagram-tick" style="--x:50">Q3</div>
-    <div class="diagram-tick" style="--x:75">Q4</div>
-    <div class="diagram-tick" style="--x:100">Q1</div>
-    <div class="diagram-node" data-node="api" style="--x:12">
+    <div class="diagram-tick" style="--x: 0">Q1</div>
+    <div class="diagram-tick" style="--x: 25">Q2</div>
+    <div class="diagram-tick" style="--x: 50">Q3</div>
+    <div class="diagram-tick" style="--x: 75">Q4</div>
+    <div class="diagram-tick" style="--x: 100">Q1</div>
+    <div class="diagram-node" data-node="api" style="--x: 12">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Feb</span>
         <span class="diagram-node-name">Public API</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="mobile" data-side="below" data-change="moved" data-change-note="May → Aug: waits for the new engine" data-before-style="--x:38" style="--x:62">
+    <div
+      class="diagram-node"
+      data-node="mobile"
+      data-side="below"
+      data-change="moved"
+      data-change-note="May → Aug: waits for the new engine"
+      data-before-style="--x:38"
+      style="--x: 62"
+    >
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Aug</span>
         <span class="diagram-node-name">Mobile app</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="ai" data-tone="accent" data-change="added" style="--x:80">
+    <div class="diagram-node" data-node="ai" data-tone="accent" data-change="added" style="--x: 80">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Oct</span>
         <span class="diagram-node-name">AI assist</span>
       </div>
     </div>
-    <div class="diagram-node" data-node="desktop" data-change="removed" style="--x:55">
+    <div class="diagram-node" data-node="desktop" data-change="removed" style="--x: 55">
       <div class="diagram-node-body">
         <span class="diagram-node-eyebrow">Jul</span>
         <span class="diagram-node-name">Desktop app</span>

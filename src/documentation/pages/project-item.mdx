@@ -44,59 +44,71 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </SkillPanel>
 
 ```html example label="Grid" hint="Default: the picture (it zooms a little on hover), then the title link - covering the card - category, year and up to three tags." previewStyle="align-items:stretch;"
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:2rem 1.25rem;width:100%">
+<div
+  style="display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 2rem 1.25rem; width: 100%"
+>
   <article class="mk-project-item">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-a/800/600" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-a/800/600" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Nordlicht Coffee</a></h3>
       <p class="mk-project-item-meta"><span>Brand identity</span><span>2026</span></p>
-      <ul class="mk-project-item-tags"><li>Branding</li><li>Packaging</li></ul>
+      <ul class="mk-project-item-tags"
+        ><li>Branding</li
+        ><li>Packaging</li></ul
+      >
     </div>
   </article>
   <article class="mk-project-item">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-b/800/600" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-b/800/600" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Atlas Transit app</a></h3>
       <p class="mk-project-item-meta"><span>Product design</span><span>2025</span></p>
-      <ul class="mk-project-item-tags"><li>iOS</li><li>Android</li></ul>
+      <ul class="mk-project-item-tags"
+        ><li>iOS</li
+        ><li>Android</li></ul
+      >
     </div>
   </article>
   <article class="mk-project-item">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-c/800/600" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-c/800/600" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Museo Digital</a></h3>
       <p class="mk-project-item-meta"><span>Website</span><span>2025</span></p>
-      <ul class="mk-project-item-tags"><li>Web</li><li>CMS</li><li>A11y</li></ul>
+      <ul class="mk-project-item-tags"
+        ><li>Web</li
+        ><li>CMS</li
+        ><li>A11y</li></ul
+      >
     </div>
   </article>
 </div>
 ```
 
 ```html example label="Overlay" hint="data-variant='overlay': the caption slides up over a 4:5 picture on hover - or when the link has keyboard focus (:focus-within); on touch screens it is always shown." previewStyle="align-items:stretch;"
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;width:100%">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 1rem; width: 100%">
   <article class="mk-project-item" data-variant="overlay">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o0/640/800" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o0/640/800" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Kite Festival</a></h3>
       <p class="mk-project-item-meta"><span>Campaign</span><span>2026</span></p>
     </div>
   </article>
   <article class="mk-project-item" data-variant="overlay">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o1/640/800" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o1/640/800" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Fieldnotes</a></h3>
       <p class="mk-project-item-meta"><span>Editorial</span><span>2026</span></p>
     </div>
   </article>
   <article class="mk-project-item" data-variant="overlay">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o2/640/800" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o2/640/800" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Harbor Hotel</a></h3>
       <p class="mk-project-item-meta"><span>Interior</span><span>2025</span></p>
     </div>
   </article>
   <article class="mk-project-item" data-variant="overlay">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o3/640/800" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o3/640/800" alt="" /></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Lumen Lamps</a></h3>
       <p class="mk-project-item-meta"><span>Industrial</span><span>2024</span></p>
@@ -107,7 +119,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 
 ```html example label="Wide" hint="data-variant='wide': a 21:9 picture with the title and its meta on one line - one featured project." previewStyle="align-items:stretch;"
 <article class="mk-project-item" data-variant="wide">
-  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-wide/1600/700" alt=""></figure>
+  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-wide/1600/700" alt="" /></figure>
   <div class="mk-project-item-body">
     <h3 class="mk-project-item-title"><a href="#">The Acme rebrand</a></h3>
     <p class="mk-project-item-meta"><span>Identity, web, motion</span><span>2026</span></p>

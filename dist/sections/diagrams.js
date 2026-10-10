@@ -184,7 +184,13 @@ function describe(root, ref) {
     return n ? nameOf(n) : parseEnd(end).id;
   };
   const text = el.textContent.trim();
-  return { ref: String(ref), kind, element: el, label: `${name(el.dataset.from)} → ${name(el.dataset.to)}${text ? ` · ${text}` : ""}`, detail: el.dataset.detail || "" };
+  return {
+    ref: String(ref),
+    kind,
+    element: el,
+    label: `${name(el.dataset.from)} → ${name(el.dataset.to)}${text ? ` · ${text}` : ""}`,
+    detail: el.dataset.detail || ""
+  };
 }
 function activationOrder(root) {
   const { stepOf } = stepPlan(root);
@@ -291,7 +297,10 @@ function bestSides(a, b, fixedA, fixedB, obstacles, texts = []) {
     if (sa === "top")
       return [null, Math.min(...between.map((o) => o.rect.y), a.rect.y, b.rect.y) - 18];
     if (sa === "bottom")
-      return [null, Math.max(...between.map((o) => o.rect.y + o.rect.h), a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 18];
+      return [
+        null,
+        Math.max(...between.map((o) => o.rect.y + o.rect.h), a.rect.y + a.rect.h, b.rect.y + b.rect.h) + 18
+      ];
     if (sa === "left")
       return [null, Math.min(...between.map((o) => o.rect.x), a.rect.x, b.rect.x) - 18];
     return [null, Math.max(...between.map((o) => o.rect.x + o.rect.w), a.rect.x + a.rect.w, b.rect.x + b.rect.w) + 18];
@@ -428,7 +437,11 @@ function labelSpot(pts) {
     if (l > best) {
       best = l;
       at = { x: (pts[i].x + pts[i - 1].x) / 2, y: (pts[i].y + pts[i - 1].y) / 2 };
-      along = { x: Math.abs(pts[i].x - pts[i - 1].x) > 0.5 ? 1 : 0, y: Math.abs(pts[i].y - pts[i - 1].y) > 0.5 ? 1 : 0, len: l };
+      along = {
+        x: Math.abs(pts[i].x - pts[i - 1].x) > 0.5 ? 1 : 0,
+        y: Math.abs(pts[i].y - pts[i - 1].y) > 0.5 ? 1 : 0,
+        len: l
+      };
     }
   }
   return { at, along };
@@ -451,7 +464,13 @@ var HEADS = {
   many: { parts: [CROW], inset: 0 },
   "one-many": { parts: [CROW, ["M-15 -6V6", "stroke"]], inset: 0 },
   "zero-many": { parts: [CROW, ["M-23 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "hollow"]], inset: 0 },
-  "zero-one": { parts: [["M-7 -6V6", "stroke"], ["M-19 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "hollow"]], inset: 0 },
+  "zero-one": {
+    parts: [
+      ["M-7 -6V6", "stroke"],
+      ["M-19 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "hollow"]
+    ],
+    inset: 0
+  },
   none: { parts: [], inset: 0 }
 };
 function svg(tag, attrs = {}) {
@@ -465,7 +484,12 @@ function drawHead(group, kind, tip, dir) {
   const head = HEADS[kind] ?? HEADS.arrow;
   const angle = r1(Math.atan2(dir.y, dir.x) * 180 / Math.PI);
   for (const [d, paint] of head.parts) {
-    group.append(svg("path", { class: "diagram-wire-head", "data-paint": paint, d, transform: `translate(${r1(tip.x)} ${r1(tip.y)}) rotate(${angle})` }));
+    group.append(svg("path", {
+      class: "diagram-wire-head",
+      "data-paint": paint,
+      d,
+      transform: `translate(${r1(tip.x)} ${r1(tip.y)}) rotate(${angle})`
+    }));
   }
 }
 function inset(pts, by, atStart) {
@@ -805,7 +829,21 @@ function placeLabels(queue, layerEl, wires, nodes, texts) {
     const across = dir.x ? { x: 0, y: h / 2 + 5 } : { x: w / 2 + 6, y: 0 };
     const room = Math.max(0, (dir.len ?? Infinity) / 2 - (dir.x ? w / 2 : h / 2));
     let least = Infinity;
-    for (const [k, j] of [[0, 0], [1, 0], [-1, 0], [2, 0], [-2, 0], [0, -1], [0, 1], [1, -1], [-1, -1], [1, 1], [-1, 1], [3, 0], [-3, 0]]) {
+    for (const [k, j] of [
+      [0, 0],
+      [1, 0],
+      [-1, 0],
+      [2, 0],
+      [-2, 0],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [-1, -1],
+      [1, 1],
+      [-1, 1],
+      [3, 0],
+      [-3, 0]
+    ]) {
       if (Math.abs(k * step) > room)
         continue;
       if (!along && (k || j))
@@ -858,7 +896,10 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
   for (const plan of plans) {
     if (!plan.sa || bus)
       continue;
-    for (const [end, node, side, other] of [["a", plan.a, plan.sa, plan.b], ["b", plan.b, plan.sb, plan.a]]) {
+    for (const [end, node, side, other] of [
+      ["a", plan.a, plan.sa, plan.b],
+      ["b", plan.b, plan.sb, plan.a]
+    ]) {
       if ((end === "a" ? plan.from : plan.to).field)
         continue;
       const key = `${node.el.dataset.node}|${side}`;
@@ -885,7 +926,10 @@ function drawEdges(canvas, nodes, list, panel, rectOf, wireGroup, line, label, d
       return null;
     const rr = rectOf(row);
     const left = toward.x < node.rect.x + node.rect.w / 2;
-    return { point: { x: left ? node.rect.x : node.rect.x + node.rect.w, y: rr.y + rr.h / 2 }, side: left ? "left" : "right" };
+    return {
+      point: { x: left ? node.rect.x : node.rect.x + node.rect.w, y: rr.y + rr.h / 2 },
+      side: left ? "left" : "right"
+    };
   };
   const solid = [...nodes.values()].filter((n) => !n.el.classList.contains("diagram-group") && n.el.dataset.shape !== "ghost");
   const outside = Math.max(0, ...solid.map((n) => n.rect.x + n.rect.w)) + 24;
@@ -1042,7 +1086,12 @@ function drawSequence(canvas, nodes, list, panel, rectOf, wireGroup, line, label
     if (node.el.dataset.shape === "ghost")
       continue;
     const c = center(node.rect);
-    const g = wireGroup(null, { "data-lifeline": "", "data-step-state": node.el.dataset.stepState, "data-active-state": node.el.dataset.activeState, beatOf: node.el });
+    const g = wireGroup(null, {
+      "data-lifeline": "",
+      "data-step-state": node.el.dataset.stepState,
+      "data-active-state": node.el.dataset.activeState,
+      beatOf: node.el
+    });
     line(g, `M${r1(c.x)} ${r1(node.rect.y + node.rect.h)} V${r1(bottom)}`, false);
   }
   for (const edge of edgesIn(list)) {
@@ -1090,7 +1139,13 @@ function drawBones(nodes, wireGroup, line) {
     const from = { x: bone.rect.x + bone.rect.w / 2, y: above ? bone.rect.y + bone.rect.h : bone.rect.y };
     const dy = Math.abs(y - from.y);
     const to = { x: from.x + dy * 0.577, y };
-    const g = wireGroup(null, { "data-bone": "", "data-tone": bone.el.dataset.tone, "data-step-state": bone.el.dataset.stepState, "data-active-state": bone.el.dataset.activeState, beatOf: bone.el });
+    const g = wireGroup(null, {
+      "data-bone": "",
+      "data-tone": bone.el.dataset.tone,
+      "data-step-state": bone.el.dataset.stepState,
+      "data-active-state": bone.el.dataset.activeState,
+      beatOf: bone.el
+    });
     line(g, `M${r1(from.x)} ${r1(from.y)} L${r1(to.x)} ${r1(to.y)}`, true);
   }
 }
@@ -1135,7 +1190,12 @@ function flowTokens(labels, wires) {
       token.style.offsetPath = `path('${g.dataset.path}')`;
       dfDollar(labels).append(token);
       const once = g.dataset.stepState === "current";
-      token.animate?.([{ offsetDistance: "0%", opacity: 0 }, { opacity: 1, offset: 0.08 }, { opacity: 1, offset: 0.92 }, { offsetDistance: "100%", opacity: 0 }], {
+      token.animate?.([
+        { offsetDistance: "0%", opacity: 0 },
+        { opacity: 1, offset: 0.08 },
+        { opacity: 1, offset: 0.92 },
+        { offsetDistance: "100%", opacity: 0 }
+      ], {
         duration,
         delay: once ? delay + i * duration / count : delay - i * duration / count,
         iterations: once ? 1 : Infinity,
@@ -1177,7 +1237,10 @@ function ledger(root, canvas) {
   const names = new Map(authored(canvas, "[data-node]").map((n) => [n.dataset.node, nameOf(n)]));
   const endName = (v) => names.get(parseEnd(v).id) || parseEnd(v).id;
   const list = edgeListOf(root, canvas);
-  const items = [...authored(canvas, "[data-change]"), ...list && !canvas.contains(list) ? edgesIn(list).filter((e) => e.dataset.change) : []];
+  const items = [
+    ...authored(canvas, "[data-change]"),
+    ...list && !canvas.contains(list) ? edgesIn(list).filter((e) => e.dataset.change) : []
+  ];
   const entries = [];
   for (const el of items) {
     const change = el.dataset.change;
@@ -1274,7 +1337,15 @@ function button(action, text, label) {
   b.dataset.action = action;
   if (label)
     b.setAttribute("aria-label", label);
-  const icon = svg("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round" });
+  const icon = svg("svg", {
+    viewBox: "0 0 24 24",
+    "aria-hidden": "true",
+    fill: "none",
+    stroke: "currentColor",
+    "stroke-width": 2,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round"
+  });
   for (const d of ICONS[action].match(/d="[^"]+"/g))
     icon.append(svg("path", { d: d.slice(3, -1) }));
   b.append(icon);
@@ -1301,7 +1372,15 @@ function makeControls(root) {
       control(root, action);
   });
   dfDollar(bar).on("keydown", (e) => {
-    const map = { ArrowLeft: "prev", ArrowRight: "next", Home: "first", End: "all", r: "replay", R: "replay", " ": "toggle" };
+    const map = {
+      ArrowLeft: "prev",
+      ArrowRight: "next",
+      Home: "first",
+      End: "all",
+      r: "replay",
+      R: "replay",
+      " ": "toggle"
+    };
     const action = map[e.key];
     if (!action || e.key === " " && e.target.closest?.("button"))
       return;
@@ -1423,10 +1502,16 @@ function triggerStateChange(root, state) {
   updateOutputs(root, about);
   queueMicrotask(() => {
     if (state.name === "playing" || state.name === "paused") {
-      root.dispatchEvent(new CustomEvent("diagram-step", { bubbles: true, detail: { step, max, label: stepLabel(root, step), state: state.name } }));
+      root.dispatchEvent(new CustomEvent("diagram-step", {
+        bubbles: true,
+        detail: { step, max, label: stepLabel(root, step), state: state.name }
+      }));
     }
     if (String(ref ?? "") !== String(wasActive ?? "")) {
-      root.dispatchEvent(new CustomEvent("diagram-activate", { bubbles: true, detail: about ?? { ref: null, kind: null, element: null, label: "", detail: "" } }));
+      root.dispatchEvent(new CustomEvent("diagram-activate", {
+        bubbles: true,
+        detail: about ?? { ref: null, kind: null, element: null, label: "", detail: "" }
+      }));
     }
   });
 }
@@ -1452,7 +1537,15 @@ df$.diagramStates = diagramStates;
 var esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 var attr = (name, value) => value == null || value === false ? "" : value === true ? ` ${name}` : ` ${name}="${esc(value)}"`;
 var place = (o) => {
-  const css = [["--col", o.col], ["--row", o.row], ["--span", o.span], ["--rspan", o.rspan], ["--x", o.x], ["--y", o.y], ["--i", o.i]].filter(([, v]) => v != null).map(([k, v]) => `${k}:${v}`);
+  const css = [
+    ["--col", o.col],
+    ["--row", o.row],
+    ["--span", o.span],
+    ["--rspan", o.rspan],
+    ["--x", o.x],
+    ["--y", o.y],
+    ["--i", o.i]
+  ].filter(([, v]) => v != null).map(([k, v]) => `${k}:${v}`);
   if (o.style)
     css.push(o.style);
   return css.join(";");
@@ -1483,7 +1576,10 @@ function markupOf(spec) {
     const phase = typeof p === "string" ? { name: p } : p;
     return `<li${attr("style", phase.span ? `--span:${phase.span}` : null)}>${esc(phase.name)}</li>`;
   }).join("")}</ol>` : "";
-  const top = [...groups.filter((g) => !g.parent).map(groupMarkup), ...nodes.filter((n) => !n.parent).map((n) => nodeMarkup(n))].join("");
+  const top = [
+    ...groups.filter((g) => !g.parent).map(groupMarkup),
+    ...nodes.filter((n) => !n.parent).map((n) => nodeMarkup(n))
+  ].join("");
   const edges = (spec.edges ?? []).map((e) => {
     const before = e.before ?? {};
     return `<li class="diagram-edge"${attr("data-from", e.from)}${attr("data-to", e.to)}${attr("data-line", e.line)}${attr("data-tone", e.tone)}${attr("data-head", e.head)}${attr("data-tail", e.tail)}${attr("data-curve", e.curve)}${attr("data-step", e.step)}${attr("data-flow", e.flow === true ? "" : e.flow)}${attr("data-from-label", e.fromLabel)}${attr("data-to-label", e.toLabel)}${attr("data-change", e.change)}${attr("data-before", before.label)}${attr("data-before-from", before.from)}${attr("data-before-to", before.to)}>${esc(e.label)}</li>`;
@@ -1542,7 +1638,11 @@ function specFlags(root, spec) {
 }
 var TONES = ["none", "accent", "link", "muted", "external", "warn", "ok", "danger"];
 var SHAPES = ["box", "pill", "diamond", "store", "circle", "dot", "bar", "note", "activity", "class", "start", "end"];
-var NODE_TEXT = [["eyebrow", "diagram-node-eyebrow"], ["name", "diagram-node-name"], ["meta", "diagram-node-meta"]];
+var NODE_TEXT = [
+  ["eyebrow", "diagram-node-eyebrow"],
+  ["name", "diagram-node-name"],
+  ["meta", "diagram-node-meta"]
+];
 var cellText = (c) => (dfDollar(c).children("span").get(0) ?? c).textContent.trim();
 var headText = (c) => [...c.childNodes].filter((n) => n.nodeType === 3 || n.nodeName !== "SMALL").map((n) => n.textContent).join("").trim();
 function propertiesOf(root, ref) {
@@ -2193,5 +2293,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=5232D1FDB805563464756E2164756E21
+//# debugId=D4A808BEFEDF226864756E2164756E21
 //# sourceMappingURL=diagrams.js.map

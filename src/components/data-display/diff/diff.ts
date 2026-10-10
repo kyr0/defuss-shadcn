@@ -118,53 +118,60 @@ df$.diffApi = diffApi;
 df$.diffStates = diffStates;
 
 function init() {
-  dfDollar('.diff:not([data-init])').toArray().forEach((el) => {
-    el.dataset.init = '';
-    const range = rangeOf(el);
-    if (!range) return;
-    paint(el);
-    el._defaultPosition = parseFloat(el.style.getPropertyValue('--diff-pos')) || 50;
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(el, diffApi);
-    range.addEventListener('input', () => paint(el));
-    // the range's fine step (0.1) keeps dragging smooth; the keyboard moves
-    // in whole percent (Shift / Page Up/Down: 10)
-    range.addEventListener('keydown', (e) => {
-      const big = e.shiftKey ? 10 : 1;
-      const deltas = { ArrowRight: big, ArrowUp: big, ArrowLeft: -big, ArrowDown: -big, PageUp: 10, PageDown: -10 };
-      let d = deltas[e.key];
-      if (d === undefined) return;
-      e.preventDefault();
-      const pct = parseFloat(el.style.getPropertyValue('--diff-pos')) || 0;
-      // vertical: the range runs top → bottom, so Down moves the divider down
-      if (el.dataset.orientation === 'vertical' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) d = -d;
-      // RTL: ArrowLeft moves the divider left = toward the range's max
-      if (el.dataset.orientation !== 'vertical' && getComputedStyle(el).direction === 'rtl' && e.key.startsWith('Arrow')) d = -d;
-      setPosition(el, pct + d);
-    });
+  dfDollar('.diff:not([data-init])')
+    .toArray()
+    .forEach((el) => {
+      el.dataset.init = '';
+      const range = rangeOf(el);
+      if (!range) return;
+      paint(el);
+      el._defaultPosition = parseFloat(el.style.getPropertyValue('--diff-pos')) || 50;
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(el, diffApi);
+      range.addEventListener('input', () => paint(el));
+      // the range's fine step (0.1) keeps dragging smooth; the keyboard moves
+      // in whole percent (Shift / Page Up/Down: 10)
+      range.addEventListener('keydown', (e) => {
+        const big = e.shiftKey ? 10 : 1;
+        const deltas = { ArrowRight: big, ArrowUp: big, ArrowLeft: -big, ArrowDown: -big, PageUp: 10, PageDown: -10 };
+        let d = deltas[e.key];
+        if (d === undefined) return;
+        e.preventDefault();
+        const pct = parseFloat(el.style.getPropertyValue('--diff-pos')) || 0;
+        // vertical: the range runs top → bottom, so Down moves the divider down
+        if (el.dataset.orientation === 'vertical' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) d = -d;
+        // RTL: ArrowLeft moves the divider left = toward the range's max
+        if (
+          el.dataset.orientation !== 'vertical' &&
+          getComputedStyle(el).direction === 'rtl' &&
+          e.key.startsWith('Arrow')
+        )
+          d = -d;
+        setPosition(el, pct + d);
+      });
 
-    // drag anywhere on the figure (the range itself handles its own knob)
-    el.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0 || e.target === range) return;
-      // no compat mousedown: it would move focus off the range again
-      e.preventDefault();
-      el.setPointerCapture(e.pointerId);
-      el.dataset.dragging = '';
-      setPosition(el, pointerPct(el, e));
-      range.focus({ preventScroll: true });
-    });
-    el.addEventListener('pointermove', (e) => {
-      if (el.hasPointerCapture(e.pointerId) || (el.dataset.follow === 'hover' && e.pointerType === 'mouse')) {
+      // drag anywhere on the figure (the range itself handles its own knob)
+      el.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0 || e.target === range) return;
+        // no compat mousedown: it would move focus off the range again
+        e.preventDefault();
+        el.setPointerCapture(e.pointerId);
+        el.dataset.dragging = '';
         setPosition(el, pointerPct(el, e));
-      }
+        range.focus({ preventScroll: true });
+      });
+      el.addEventListener('pointermove', (e) => {
+        if (el.hasPointerCapture(e.pointerId) || (el.dataset.follow === 'hover' && e.pointerType === 'mouse')) {
+          setPosition(el, pointerPct(el, e));
+        }
+      });
+      const end = (e) => {
+        if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+        delete el.dataset.dragging;
+      };
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
     });
-    const end = (e) => {
-      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
-      delete el.dataset.dragging;
-    };
-    el.addEventListener('pointerup', end);
-    el.addEventListener('pointercancel', end);
-  });
 }
 
 init();

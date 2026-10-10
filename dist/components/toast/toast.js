@@ -45,7 +45,10 @@ function applyMarkup(_el, _stateName) {
 function triggerStateChange(container, stateName, _config) {
     if (stateName !== 'default')
         return;
-    dfDollar(container).find('.toast').toArray().forEach((el) => toastDismiss(el));
+    dfDollar(container)
+        .find('.toast')
+        .toArray()
+        .forEach((el) => toastDismiss(el));
 }
 /** Registry-level API; pass the container explicitly. Unknown names throw. */
 export const toastApi = componentState({
@@ -117,7 +120,9 @@ const toastDismiss = (el, callback) => {
     if (out && anim[out]) {
         el.setAttribute('data-leaving', '');
         stackToasts(container);
-        anim[out].play(el, { duration: el._animation.duration ?? 350, direction: el._animation.direction }).finished.then(() => {
+        anim[out]
+            .play(el, { duration: el._animation.duration ?? 350, direction: el._animation.direction })
+            .finished.then(() => {
             try {
                 el.hidePopover();
             }
@@ -129,14 +134,19 @@ const toastDismiss = (el, callback) => {
         });
         return;
     }
-    el.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(0.5rem)' }], { duration: 200, easing: 'ease', fill: 'forwards' }
-    // dismissal through query's exact .remove() - AFTER the exit animation and
-    // popover teardown (§5.2: removal still disposes owned state first)
-    ).finished.then(() => { try {
-        el.hidePopover();
-    }
-    catch { } dfDollar(el).remove(); stackToasts(container); if (callback)
-        callback(); });
+    el.animate([
+        { opacity: 1, transform: 'translateY(0)' },
+        { opacity: 0, transform: 'translateY(0.5rem)' },
+    ], { duration: 200, easing: 'ease', fill: 'forwards' }).finished.then(() => {
+        try {
+            el.hidePopover();
+        }
+        catch { }
+        dfDollar(el).remove();
+        stackToasts(container);
+        if (callback)
+            callback();
+    });
 };
 /**
  * Show a toast - a title string or { title, description, variant, duration, action ... }.
@@ -165,7 +175,7 @@ const toastCreate = (options) => {
         success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
         warning: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
         info: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
-        destructive: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>'
+        destructive: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
     };
     // Build toast DOM (§5.1 boundary: static icon markup rides query .html(),
     // user-supplied title/description stay literal text via .text() - never an
@@ -241,7 +251,9 @@ const toastCreate = (options) => {
         anim[inName].play(el, { duration: el._animation.duration ?? 450, direction: el._animation.direction });
     toastCallbacks.set(el, { onDismiss, action });
     if (duration !== Infinity)
-        setTimeout(() => { toastDismiss(el, onDismiss); }, duration);
+        setTimeout(() => {
+            toastDismiss(el, onDismiss);
+        }, duration);
     const toasts = dfDollar(toastContainer).find('.toast').toArray();
     // a pile holds more (they are sheets, not screen space)
     if (toasts.length > (toastContainer.dataset.stack === 'pile' ? 6 : MAX_VISIBLE))
@@ -253,7 +265,9 @@ const toastCreate = (options) => {
 // with data-init and re-run by the MutationObserver, per the component
 // lifecycle contract (AGENTS.md) - survives SPA navigation replacing the body.
 function init() {
-    dfDollar('#toast-container:not([data-init])').toArray().forEach((container) => {
+    dfDollar('#toast-container:not([data-init])')
+        .toArray()
+        .forEach((container) => {
         container.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(container, toastApi);
@@ -269,16 +283,25 @@ function init() {
                 }
             }
             else {
-                container._collapse = setTimeout(() => { container.removeAttribute('data-expanded'); stackToasts(container); }, 250);
+                container._collapse = setTimeout(() => {
+                    container.removeAttribute('data-expanded');
+                    stackToasts(container);
+                }, 250);
             }
         };
-        container.addEventListener('pointerover', (e) => { if (e.target.closest('.toast'))
-            expand(true); });
-        container.addEventListener('pointerout', (e) => { if (!e.relatedTarget?.closest?.('.toast'))
-            expand(false); });
+        container.addEventListener('pointerover', (e) => {
+            if (e.target.closest('.toast'))
+                expand(true);
+        });
+        container.addEventListener('pointerout', (e) => {
+            if (!e.relatedTarget?.closest?.('.toast'))
+                expand(false);
+        });
         container.addEventListener('focusin', () => expand(true));
-        container.addEventListener('focusout', (e) => { if (!e.relatedTarget?.closest?.('.toast'))
-            expand(false); });
+        container.addEventListener('focusout', (e) => {
+            if (!e.relatedTarget?.closest?.('.toast'))
+                expand(false);
+        });
         container.addEventListener('click', (e) => {
             const btn = e.target.closest('[data-toast-close],[data-toast-action]');
             if (!btn)
@@ -313,7 +336,10 @@ const toastConfigure = (opts = {}) => {
     if (opts.position)
         toastContainer.setAttribute('data-position', opts.position);
     stackToasts(toastContainer);
-    return { stack: (toastContainer.dataset.stack || 'list'), position: toastContainer.dataset.position };
+    return {
+        stack: (toastContainer.dataset.stack || 'list'),
+        position: toastContainer.dataset.position,
+    };
 };
 /** df$.shadcn.toast - show and dismiss toasts in the page's region. */
 export const toastActions = {
@@ -344,7 +370,14 @@ export const toastActions = {
      */
     error: (options) => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'destructive' })),
     /** Dismiss every toast. */
-    dismiss: () => { dfDollar(toastContainer).find('.toast').toArray().forEach((el) => { toastDismiss(el); }); }
+    dismiss: () => {
+        dfDollar(toastContainer)
+            .find('.toast')
+            .toArray()
+            .forEach((el) => {
+            toastDismiss(el);
+        });
+    },
 };
 df$.toast = toastActions;
 //# sourceMappingURL=toast.js.map

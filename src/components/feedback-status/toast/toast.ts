@@ -82,7 +82,10 @@ function applyMarkup(_el, _stateName) {
  */
 function triggerStateChange(container, stateName, _config) {
   if (stateName !== 'default') return;
-  dfDollar(container).find('.toast').toArray().forEach((el) => toastDismiss(el));
+  dfDollar(container)
+    .find('.toast')
+    .toArray()
+    .forEach((el) => toastDismiss(el));
 }
 
 /** Registry-level API; pass the container explicitly. Unknown names throw. */
@@ -157,20 +160,34 @@ const toastDismiss = (el, callback?: () => void) => {
   if (out && anim[out]) {
     el.setAttribute('data-leaving', '');
     stackToasts(container);
-    anim[out].play(el, { duration: el._animation.duration ?? 350, direction: el._animation.direction }).finished.then(() => {
-      try { el.hidePopover(); } catch {}
-      dfDollar(el).remove();
-      stackToasts(container);
-      if (callback) callback();
-    });
+    anim[out]
+      .play(el, { duration: el._animation.duration ?? 350, direction: el._animation.direction })
+      .finished.then(() => {
+        try {
+          el.hidePopover();
+        } catch {}
+        dfDollar(el).remove();
+        stackToasts(container);
+        if (callback) callback();
+      });
     return;
   }
   el.animate(
-    [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(0.5rem)' }],
-    { duration: 200, easing: 'ease', fill: 'forwards' }
-  // dismissal through query's exact .remove() - AFTER the exit animation and
-  // popover teardown (§5.2: removal still disposes owned state first)
-  ).finished.then(() => { try { el.hidePopover(); } catch {} dfDollar(el).remove(); stackToasts(container); if (callback) callback(); });
+    [
+      { opacity: 1, transform: 'translateY(0)' },
+      { opacity: 0, transform: 'translateY(0.5rem)' },
+    ],
+    { duration: 200, easing: 'ease', fill: 'forwards' },
+    // dismissal through query's exact .remove() - AFTER the exit animation and
+    // popover teardown (§5.2: removal still disposes owned state first)
+  ).finished.then(() => {
+    try {
+      el.hidePopover();
+    } catch {}
+    dfDollar(el).remove();
+    stackToasts(container);
+    if (callback) callback();
+  });
 };
 
 /**
@@ -182,20 +199,25 @@ const toastCreate = (options: string | ToastOptions): HTMLElement => {
   const o = typeof options === 'string' ? { title: options } : options;
   const { title, description, variant, action, onDismiss, size, density, animation, aura } = o;
   const duration = o.duration != null ? o.duration : DURATION;
-  const el = document.createElement('div'); el.className = 'toast';
+  const el = document.createElement('div');
+  el.className = 'toast';
   el.setAttribute('role', variant === 'destructive' ? 'alert' : 'status');
   el.setAttribute('aria-live', variant === 'destructive' ? 'assertive' : 'polite');
-  el.setAttribute('aria-atomic', 'true'); el.setAttribute('popover', 'manual');
+  el.setAttribute('aria-atomic', 'true');
+  el.setAttribute('popover', 'manual');
   if (variant) el.setAttribute('data-variant', variant);
   // size/density are pure CSS axes (width envelope / whitespace policy) —
   // forward them as data attributes the component stylesheet understands
   if (size) el.setAttribute('data-size', size);
   if (density) el.setAttribute('data-density', density);
   const icons = {
-    success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
-    warning: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    success:
+      '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+    warning:
+      '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
     info: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
-    destructive: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>'
+    destructive:
+      '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
   };
   // Build toast DOM (§5.1 boundary: static icon markup rides query .html(),
   // user-supplied title/description stay literal text via .text() - never an
@@ -209,12 +231,26 @@ const toastCreate = (options: string | ToastOptions): HTMLElement => {
   }
   const textDiv = document.createElement('div');
   textDiv.className = 'toast-text';
-  if (title) { const p = document.createElement('p'); p.className = 'toast-title'; dfDollar(p).text(title); dfDollar(textDiv).append(p); }
-  if (description) { const p = document.createElement('p'); p.className = 'toast-description'; dfDollar(p).text(description); dfDollar(textDiv).append(p); }
+  if (title) {
+    const p = document.createElement('p');
+    p.className = 'toast-title';
+    dfDollar(p).text(title);
+    dfDollar(textDiv).append(p);
+  }
+  if (description) {
+    const p = document.createElement('p');
+    p.className = 'toast-description';
+    dfDollar(p).text(description);
+    dfDollar(textDiv).append(p);
+  }
   dfDollar(contentEl).append(textDiv);
   const closeBtn = document.createElement('button');
-  closeBtn.className = 'toast-close'; closeBtn.setAttribute('aria-label', 'Dismiss'); closeBtn.dataset.toastClose = '';
-  dfDollar(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  closeBtn.className = 'toast-close';
+  closeBtn.setAttribute('aria-label', 'Dismiss');
+  closeBtn.dataset.toastClose = '';
+  dfDollar(closeBtn).html(
+    '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  );
   dfDollar(contentEl).append(closeBtn);
   // aura: the toast becomes the ring of light (shapes.css .aura), its
   // content sits on an inner surface
@@ -230,11 +266,16 @@ const toastCreate = (options: string | ToastOptions): HTMLElement => {
   }
   dfDollar(host).append(contentEl);
   if (action) {
-    const actionsDiv = document.createElement('div'); actionsDiv.className = 'toast-actions';
-    const actionBtn = document.createElement('button'); actionBtn.className = 'btn';
-    actionBtn.setAttribute('data-variant', 'outline'); actionBtn.setAttribute('data-size', 'sm'); actionBtn.dataset.toastAction = '';
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'toast-actions';
+    const actionBtn = document.createElement('button');
+    actionBtn.className = 'btn';
+    actionBtn.setAttribute('data-variant', 'outline');
+    actionBtn.setAttribute('data-size', 'sm');
+    actionBtn.dataset.toastAction = '';
     dfDollar(actionBtn).text(action.label); // literal action label (§5.2)
-    dfDollar(actionsDiv).append(actionBtn); dfDollar(host).append(actionsDiv);
+    dfDollar(actionsDiv).append(actionBtn);
+    dfDollar(host).append(actionsDiv);
   }
   // mount through query's exact .append() - the node itself is inserted
   // (identity + delegated listeners kept, §3 toast row of the morph plan)
@@ -245,12 +286,17 @@ const toastCreate = (options: string | ToastOptions): HTMLElement => {
     el._animation = typeof animation === 'string' ? { in: animation } : animation;
     el.dataset.anim = '';
   }
-  dfDollar(toastContainer).append(el); el.showPopover();
+  dfDollar(toastContainer).append(el);
+  el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
-  if (inName && anim[inName]) anim[inName].play(el, { duration: el._animation.duration ?? 450, direction: el._animation.direction });
+  if (inName && anim[inName])
+    anim[inName].play(el, { duration: el._animation.duration ?? 450, direction: el._animation.direction });
   toastCallbacks.set(el, { onDismiss, action });
-  if (duration !== Infinity) setTimeout(() => { toastDismiss(el, onDismiss); }, duration);
+  if (duration !== Infinity)
+    setTimeout(() => {
+      toastDismiss(el, onDismiss);
+    }, duration);
   const toasts = dfDollar(toastContainer).find('.toast').toArray();
   // a pile holds more (they are sheets, not screen space)
   if (toasts.length > (toastContainer.dataset.stack === 'pile' ? 6 : MAX_VISIBLE)) toastDismiss(toasts[0]);
@@ -262,34 +308,50 @@ const toastCreate = (options: string | ToastOptions): HTMLElement => {
 // with data-init and re-run by the MutationObserver, per the component
 // lifecycle contract (AGENTS.md) - survives SPA navigation replacing the body.
 function init() {
-  dfDollar('#toast-container:not([data-init])').toArray().forEach((container) => {
-    container.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(container, toastApi);
-    // a pile fans out while the pointer or focus is inside it
-    const expand = (on) => {
-      if (container.dataset.stack !== 'pile') return;
-      clearTimeout(container._collapse);
-      if (on) {
-        if (!container.hasAttribute('data-expanded')) { container.setAttribute('data-expanded', ''); stackToasts(container); }
-      } else {
-        container._collapse = setTimeout(() => { container.removeAttribute('data-expanded'); stackToasts(container); }, 250);
-      }
-    };
-    container.addEventListener('pointerover', (e) => { if ((e.target as HTMLElement).closest('.toast')) expand(true); });
-    container.addEventListener('pointerout', (e) => { if (!(e.relatedTarget as HTMLElement | null)?.closest?.('.toast')) expand(false); });
-    container.addEventListener('focusin', () => expand(true));
-    container.addEventListener('focusout', (e) => { if (!(e.relatedTarget as HTMLElement | null)?.closest?.('.toast')) expand(false); });
-    container.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-toast-close],[data-toast-action]');
-      if (!btn) return;
-      const toast = btn.closest('.toast');
-      if (!toast) return;
-      const cb = toastCallbacks.get(toast) ?? {};
-      if (btn.hasAttribute('data-toast-action')) { if (cb.action) cb.action.onClick(); toastDismiss(toast); }
-      else toastDismiss(toast, cb.onDismiss);
+  dfDollar('#toast-container:not([data-init])')
+    .toArray()
+    .forEach((container) => {
+      container.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(container, toastApi);
+      // a pile fans out while the pointer or focus is inside it
+      const expand = (on) => {
+        if (container.dataset.stack !== 'pile') return;
+        clearTimeout(container._collapse);
+        if (on) {
+          if (!container.hasAttribute('data-expanded')) {
+            container.setAttribute('data-expanded', '');
+            stackToasts(container);
+          }
+        } else {
+          container._collapse = setTimeout(() => {
+            container.removeAttribute('data-expanded');
+            stackToasts(container);
+          }, 250);
+        }
+      };
+      container.addEventListener('pointerover', (e) => {
+        if ((e.target as HTMLElement).closest('.toast')) expand(true);
+      });
+      container.addEventListener('pointerout', (e) => {
+        if (!(e.relatedTarget as HTMLElement | null)?.closest?.('.toast')) expand(false);
+      });
+      container.addEventListener('focusin', () => expand(true));
+      container.addEventListener('focusout', (e) => {
+        if (!(e.relatedTarget as HTMLElement | null)?.closest?.('.toast')) expand(false);
+      });
+      container.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-toast-close],[data-toast-action]');
+        if (!btn) return;
+        const toast = btn.closest('.toast');
+        if (!toast) return;
+        const cb = toastCallbacks.get(toast) ?? {};
+        if (btn.hasAttribute('data-toast-action')) {
+          if (cb.action) cb.action.onClick();
+          toastDismiss(toast);
+        } else toastDismiss(toast, cb.onDismiss);
+      });
     });
-  });
 }
 
 init();
@@ -307,7 +369,10 @@ const toastConfigure = (opts: ToastRegionOptions = {}): ToastRegionOptions => {
   if (opts.stack) toastContainer.dataset.stack = opts.stack;
   if (opts.position) toastContainer.setAttribute('data-position', opts.position);
   stackToasts(toastContainer);
-  return { stack: (toastContainer.dataset.stack || 'list') as ToastRegionOptions['stack'], position: toastContainer.dataset.position as ToastRegionOptions['position'] };
+  return {
+    stack: (toastContainer.dataset.stack || 'list') as ToastRegionOptions['stack'],
+    position: toastContainer.dataset.position as ToastRegionOptions['position'],
+  };
 };
 
 /** df$.shadcn.toast - show and dismiss toasts in the page's region. */
@@ -319,26 +384,45 @@ export const toastActions = {
    * @param options - the title, or the toast options (the variant is set for you)
    * @returns the toast element
    */
-  success: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'success' as const })),
+  success: (options: string | ToastOptions): HTMLElement =>
+    toastCreate(
+      Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'success' as const }),
+    ),
   /**
    * show() as a warning toast.
    * @param options - the title, or the toast options (the variant is set for you)
    * @returns the toast element
    */
-  warning: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'warning' as const })),
+  warning: (options: string | ToastOptions): HTMLElement =>
+    toastCreate(
+      Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'warning' as const }),
+    ),
   /**
    * show() as an info toast.
    * @param options - the title, or the toast options (the variant is set for you)
    * @returns the toast element
    */
-  info: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'info' as const })),
+  info: (options: string | ToastOptions): HTMLElement =>
+    toastCreate(
+      Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'info' as const }),
+    ),
   /**
    * show() as an error (destructive) toast.
    * @param options - the title, or the toast options (the variant is set for you)
    * @returns the toast element
    */
-  error: (options: string | ToastOptions): HTMLElement => toastCreate(Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'destructive' as const })),
+  error: (options: string | ToastOptions): HTMLElement =>
+    toastCreate(
+      Object.assign(typeof options === 'string' ? { title: options } : options, { variant: 'destructive' as const }),
+    ),
   /** Dismiss every toast. */
-  dismiss: (): void => { dfDollar(toastContainer).find('.toast').toArray().forEach((el) => { toastDismiss(el); }); }
+  dismiss: (): void => {
+    dfDollar(toastContainer)
+      .find('.toast')
+      .toArray()
+      .forEach((el) => {
+        toastDismiss(el);
+      });
+  },
 };
 df$.toast = toastActions;

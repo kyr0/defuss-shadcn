@@ -81,8 +81,13 @@ const labelOf = (tab: HTMLElement) => {
 
 const setLabel = (tab: HTMLElement, text) => {
   const label = dfDollar(tab).find(':scope > .tab-label').get(0);
-  if (label) { label.textContent = text; return; }
-  Array.from(tab.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
+  if (label) {
+    label.textContent = text;
+    return;
+  }
+  Array.from(tab.childNodes).forEach((n) => {
+    if (n.nodeType === Node.TEXT_NODE) n.remove();
+  });
   tab.append(document.createTextNode(text));
 };
 
@@ -173,16 +178,25 @@ function triggerStateChange(el, stateName, config) {
           break;
         }
         case 'active':
-          triggers.forEach((t) => { if (t.disabled && !t._authored.disabled) t.disabled = false; });
+          triggers.forEach((t) => {
+            if (t.disabled && !t._authored.disabled) t.disabled = false;
+          });
           break;
         case 'disabled':
-          triggers.forEach((t) => { t.disabled = true; t.dataset.stateName = 'disabled'; });
+          triggers.forEach((t) => {
+            t.disabled = true;
+            t.dataset.stateName = 'disabled';
+          });
           break;
       }
     }
     // config.index (or config.id) picks the selected tab
-    const pick = typeof config.index === 'number' ? triggers[config.index]
-      : typeof config.id === 'string' ? triggers.find((t) => t.id === config.id) : null;
+    const pick =
+      typeof config.index === 'number'
+        ? triggers[config.index]
+        : typeof config.id === 'string'
+          ? triggers.find((t) => t.id === config.id)
+          : null;
     if (pick && !pick.disabled) activateTab(pick, triggers);
     return;
   }
@@ -241,8 +255,12 @@ function listMarkup(list, stateName, config) {
     const tab = triggers.find(selectedOf) || triggers.find((t) => !disabledOf(t));
     if (tab) selectMarkup(tab, triggers);
   } else if (stateName === 'disabled') triggers.forEach((t) => dfDollar(t).attr('disabled', ''));
-  const pick = typeof config?.index === 'number' ? triggers[config.index]
-    : typeof config?.id === 'string' ? triggers.find((t) => t.id === config.id) : null;
+  const pick =
+    typeof config?.index === 'number'
+      ? triggers[config.index]
+      : typeof config?.id === 'string'
+        ? triggers.find((t) => t.id === config.id)
+        : null;
   if (pick && !disabledOf(pick)) selectMarkup(pick, triggers);
 }
 
@@ -268,8 +286,11 @@ export const tabsApi = componentState({
       const triggers = triggersOf(el);
       const selected = triggers.findIndex((t) => t.getAttribute('aria-selected') === 'true');
       const authored = triggers.findIndex((t) => t._authored?.selected);
-      const name = triggers.every((t) => t.disabled) ? 'disabled'
-        : selected === authored || (authored < 0 && selected <= 0) ? 'default' : 'active';
+      const name = triggers.every((t) => t.disabled)
+        ? 'disabled'
+        : selected === authored || (authored < 0 && selected <= 0)
+          ? 'default'
+          : 'active';
       return { name, config: { ...state.config, index: selected, id: triggers[selected]?.id ?? '' } };
     }
     return {
@@ -285,78 +306,92 @@ df$.tabsApi = tabsApi;
 df$.tabsStates = tabsStates;
 
 function init() {
-// only tablists built from .tab-trigger are this component's - another
-// component's tablist stays unclaimed. VERIFIED: (section-bundles.e2e, Papers)
-// stamping every tablist marked BibTeX's format tabs data-init
-dfDollar('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
-    tablist.dataset.init = '';
-    const triggers = Array.from(dfDollar(tablist).find<HTMLButtonElement>('[role="tab"]').toArray());
-    // remember the authored tab so setState('default') restores it
-    triggers.forEach((t) => {
-      t._authored = {
-        selected: t.getAttribute('aria-selected') === 'true',
-        disabled: t.disabled,
-        label: labelOf(t),
-        icon: iconOf(t),
-      };
+  // only tablists built from .tab-trigger are this component's - another
+  // component's tablist stays unclaimed. VERIFIED: (section-bundles.e2e, Papers)
+  // stamping every tablist marked BibTeX's format tabs data-init
+  dfDollar('[role="tablist"]:not([data-init]):has(.tab-trigger)')
+    .toArray()
+    .forEach((tablist) => {
+      tablist.dataset.init = '';
+      const triggers = Array.from(dfDollar(tablist).find<HTMLButtonElement>('[role="tab"]').toArray());
+      // remember the authored tab so setState('default') restores it
+      triggers.forEach((t) => {
+        t._authored = {
+          selected: t.getAttribute('aria-selected') === 'true',
+          disabled: t.disabled,
+          label: labelOf(t),
+          icon: iconOf(t),
+        };
+        // el.store + el.api (AGENTS.md "State through stores")
+        bindComponent(t, tabsApi);
+      });
+      // …and per tablist: `$('#my-tabs').api.setState('active', { index: 2 })`
       // el.store + el.api (AGENTS.md "State through stores")
-      bindComponent(t, tabsApi);
-    });
-    // …and per tablist: `$('#my-tabs').api.setState('active', { index: 2 })`
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(tablist, tabsApi);
-    // tabs on the left / right side of the panel are a vertical tablist:
-    // the ARIA orientation (and with it Up/Down keys) follows data-side
-    const side = tablist.closest('.tabs')?.getAttribute('data-side');
-    if ((side === 'left' || side === 'right') && !tablist.hasAttribute('aria-orientation')) {
-      tablist.setAttribute('aria-orientation', 'vertical');
-    }
-    // read per key press: the side (and so the orientation) can change after init
-    const vertical = () => {
-      const now = tablist.closest('.tabs')?.getAttribute('data-side');
-      if (now === 'left' || now === 'right') return true;
-      if (now === 'top' || now === 'bottom') return false;
-      return tablist.getAttribute('aria-orientation') === 'vertical';
-    };
+      bindComponent(tablist, tabsApi);
+      // tabs on the left / right side of the panel are a vertical tablist:
+      // the ARIA orientation (and with it Up/Down keys) follows data-side
+      const side = tablist.closest('.tabs')?.getAttribute('data-side');
+      if ((side === 'left' || side === 'right') && !tablist.hasAttribute('aria-orientation')) {
+        tablist.setAttribute('aria-orientation', 'vertical');
+      }
+      // read per key press: the side (and so the orientation) can change after init
+      const vertical = () => {
+        const now = tablist.closest('.tabs')?.getAttribute('data-side');
+        if (now === 'left' || now === 'right') return true;
+        if (now === 'top' || now === 'bottom') return false;
+        return tablist.getAttribute('aria-orientation') === 'vertical';
+      };
 
-    triggers.forEach((trigger) => {
-      trigger.addEventListener('click', () => { activateTab(trigger, triggers); });
-      trigger.addEventListener('keydown', (e) => {
-        const current = triggers.indexOf(trigger);
-        let next;
-        const forward = vertical() ? 'ArrowDown' : 'ArrowRight';
-        const backward = vertical() ? 'ArrowUp' : 'ArrowLeft';
-        switch (e.key) {
-          case forward:
-            e.preventDefault();
-            for (let i = 1; i <= triggers.length; i++) {
-              const c = triggers[(current + i) % triggers.length];
-              if (!c.disabled) { next = c; break; }
-            }
-            break;
-          case backward:
-            e.preventDefault();
-            for (let i = 1; i <= triggers.length; i++) {
-              const c = triggers[(current - i + triggers.length) % triggers.length];
-              if (!c.disabled) { next = c; break; }
-            }
-            break;
-          case 'Home':
-            e.preventDefault();
-            next = triggers.find((t) => !t.disabled);
-            break;
-          case 'End':
-            e.preventDefault();
-            next = triggers.slice().reverse().find((t) => !t.disabled);
-            break;
-        }
-        if (next && !next.disabled) {
-          activateTab(next, triggers);
-          next.focus();
-        }
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          activateTab(trigger, triggers);
+        });
+        trigger.addEventListener('keydown', (e) => {
+          const current = triggers.indexOf(trigger);
+          let next;
+          const forward = vertical() ? 'ArrowDown' : 'ArrowRight';
+          const backward = vertical() ? 'ArrowUp' : 'ArrowLeft';
+          switch (e.key) {
+            case forward:
+              e.preventDefault();
+              for (let i = 1; i <= triggers.length; i++) {
+                const c = triggers[(current + i) % triggers.length];
+                if (!c.disabled) {
+                  next = c;
+                  break;
+                }
+              }
+              break;
+            case backward:
+              e.preventDefault();
+              for (let i = 1; i <= triggers.length; i++) {
+                const c = triggers[(current - i + triggers.length) % triggers.length];
+                if (!c.disabled) {
+                  next = c;
+                  break;
+                }
+              }
+              break;
+            case 'Home':
+              e.preventDefault();
+              next = triggers.find((t) => !t.disabled);
+              break;
+            case 'End':
+              e.preventDefault();
+              next = triggers
+                .slice()
+                .reverse()
+                .find((t) => !t.disabled);
+              break;
+          }
+          if (next && !next.disabled) {
+            activateTab(next, triggers);
+            next.focus();
+          }
+        });
       });
     });
-});}
+}
 
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });

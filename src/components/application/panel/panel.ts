@@ -49,8 +49,9 @@ export interface PanelStateConfigs {
 
 const SIDES = ['north', 'south', 'west', 'east', 'center'] as const;
 
-const resolve = (t) => (typeof t === 'string' ? dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0) : t);
-const toolInput = (panel, tool) => dfDollar(panel).find<HTMLInputElement>(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
+const resolve = (t) => (typeof t === 'string' ? (dfDollar('#' + CSS.escape(t)).get(0) ?? dfDollar(t).get(0)) : t);
+const toolInput = (panel, tool) =>
+  dfDollar(panel).find<HTMLInputElement>(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
 
 /**
  * The border-layout region a panel sits in: the panel itself (a fixed region),
@@ -62,10 +63,12 @@ function regionOf(panel) {
   if (!parent) return null;
   if (parent.classList.contains('border-layout')) return panel;
   if (parent.classList.contains('resizer') && parent.parentElement?.classList.contains('border-layout')) return parent;
-  if (parent.classList.contains('border-layout-center') && parent.parentElement?.classList.contains('border-layout')) return parent;
+  if (parent.classList.contains('border-layout-center') && parent.parentElement?.classList.contains('border-layout'))
+    return parent;
   return null;
 }
-const sideOf = (region) => (region ? SIDES.find((s) => region.classList.contains(`border-layout-${s}`)) ?? null : null);
+const sideOf = (region) =>
+  region ? (SIDES.find((s) => region.classList.contains(`border-layout-${s}`)) ?? null) : null;
 
 /** The element a maximized panel fills: its border layout or a [data-panel-host]. */
 const hostOf = (panel) => panel.parentElement?.closest('.border-layout, [data-panel-host]') ?? null;
@@ -79,11 +82,15 @@ const hostOf = (panel) => panel.parentElement?.closest('.border-layout, [data-pa
  * the e2e render round trip proves they agree.
  */
 function applyMarkup(el, stateName) {
-  dfDollar(el).attr('data-minimized', stateName === 'minimized' ? '' : null).attr('data-maximized', stateName === 'maximized' ? '' : null);
+  dfDollar(el)
+    .attr('data-minimized', stateName === 'minimized' ? '' : null)
+    .attr('data-maximized', stateName === 'maximized' ? '' : null);
   dfDollar(el).attr('hidden', stateName === 'closed' ? '' : null);
   // the body leaves the a11y tree with the card (the swaps' checked flags are
   // properties, not markup; the region / host flags live outside the panel)
-  dfDollar(el).children('.panel-body').attr('inert', stateName === 'minimized' ? '' : null);
+  dfDollar(el)
+    .children('.panel-body')
+    .attr('inert', stateName === 'minimized' ? '' : null);
 }
 
 /** The only function that touches the DOM for a state change. */
@@ -121,7 +128,8 @@ function triggerStateChange(panel, stateName) {
     panel._host = host;
     host.setAttribute('data-panel-maximized', '');
   } else if (panel._host) {
-    if (!dfDollar(panel._host).find('.panel[data-maximized]').get(0)) panel._host.removeAttribute('data-panel-maximized');
+    if (!dfDollar(panel._host).find('.panel[data-maximized]').get(0))
+      panel._host.removeAttribute('data-panel-maximized');
     panel._host = null;
   }
 }
@@ -135,7 +143,16 @@ export const panelApi = componentState({
     queueMicrotask(() => syncToggles(panel));
     if (from !== state.name) {
       // Fires when the panel changes state - the new state, the previous one and the border-layout region it sits in.
-      panel.dispatchEvent(new CustomEvent<PanelChangeDetail>('panel-change', { bubbles: true, detail: { state: state.name as PanelChangeDetail['state'], previous: from as PanelChangeDetail['state'], region: sideOf(regionOf(panel)) } }));
+      panel.dispatchEvent(
+        new CustomEvent<PanelChangeDetail>('panel-change', {
+          bubbles: true,
+          detail: {
+            state: state.name as PanelChangeDetail['state'],
+            previous: from as PanelChangeDetail['state'],
+            region: sideOf(regionOf(panel)),
+          },
+        }),
+      );
     }
   },
   markup: (el, state) => applyMarkup(el, state.name),
@@ -147,67 +164,81 @@ df$.panelStates = panelStates;
 // -- init --------------------------------------------------------------------------
 
 function init() {
-  dfDollar('.panel:not([data-init])').toArray().forEach((panel) => {
-    panel.dataset.init = '';
+  dfDollar('.panel:not([data-init])')
+    .toArray()
+    .forEach((panel) => {
+      panel.dataset.init = '';
 
-    // where it sits: data-region drives the vertical title bar and the
-    // direction the minimize chevron points
-    const side = sideOf(regionOf(panel));
-    if (side) panel.dataset.region = side;
+      // where it sits: data-region drives the vertical title bar and the
+      // direction the minimize chevron points
+      const side = sideOf(regionOf(panel));
+      if (side) panel.dataset.region = side;
 
-    const header = dfDollar(panel).find(':scope > .panel-header').get(0);
-    const body = dfDollar(panel).find(':scope > .panel-body').get(0);
-    if (body) {
-      if (!body.id) body.id = `panel-${Math.random().toString(36).slice(2, 8)}-body`;
-      toolInput(panel, 'minimize')?.setAttribute('aria-controls', body.id);
-    }
+      const header = dfDollar(panel).find(':scope > .panel-header').get(0);
+      const body = dfDollar(panel).find(':scope > .panel-body').get(0);
+      if (body) {
+        if (!body.id) body.id = `panel-${Math.random().toString(36).slice(2, 8)}-body`;
+        toolInput(panel, 'minimize')?.setAttribute('aria-controls', body.id);
+      }
 
-    // the swaps: a checked minimize is 'minimized', a checked maximize 'maximized'
-    panel.addEventListener('change', (e) => {
-      const input = e.target;
-      if (!(input instanceof HTMLInputElement) || input.closest('.panel') !== panel) return;
-      if (input === toolInput(panel, 'minimize')) panelApi.setState(panel, input.checked ? 'minimized' : 'default');
-      else if (input === toolInput(panel, 'maximize')) panelApi.setState(panel, input.checked ? 'maximized' : 'default');
+      // the swaps: a checked minimize is 'minimized', a checked maximize 'maximized'
+      panel.addEventListener('change', (e) => {
+        const input = e.target;
+        if (!(input instanceof HTMLInputElement) || input.closest('.panel') !== panel) return;
+        if (input === toolInput(panel, 'minimize')) panelApi.setState(panel, input.checked ? 'minimized' : 'default');
+        else if (input === toolInput(panel, 'maximize'))
+          panelApi.setState(panel, input.checked ? 'maximized' : 'default');
+      });
+
+      // a double-click on the title bar (not on a tool) minimizes / restores -
+      // data-title-collapse="false" switches it off
+      header?.addEventListener('dblclick', (e) => {
+        if (
+          panel.dataset.titleCollapse === 'false' ||
+          (e.target as HTMLElement).closest('.panel-tools') ||
+          !toolInput(panel, 'minimize')
+        )
+          return;
+        document.getSelection()?.removeAllRanges();
+        panelApi.setState(panel, panel.hasAttribute('data-minimized') ? 'default' : 'minimized');
+      });
+
+      // the close tool (a plain button - closing is not a toggle): the panel goes,
+      // focus goes back to whatever opens it again
+      dfDollar(panel).on('click', (e) => {
+        const close = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('.panel-close');
+        if (!close || close.closest('.panel') !== panel) return;
+        panelApi.setState(panel, 'closed');
+        if (panel.id)
+          dfDollar(`[data-panel-open="${CSS.escape(panel.id)}"], [data-panel-toggle="${CSS.escape(panel.id)}"]`)
+            .get(0)
+            ?.focus();
+      });
+
+      // Escape leaves maximized
+      panel.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !panel.hasAttribute('data-maximized')) return;
+        e.stopPropagation();
+        panelApi.setState(panel, 'default');
+        toolInput(panel, 'maximize')?.focus();
+      });
+
+      // el.store + el.api (AGENTS.md "State through stores")
+
+      bindComponent(panel, panelApi);
+
+      // markup may start minimized / maximized (attribute or a checked swap)
+      const start = panel.hasAttribute('hidden')
+        ? 'closed'
+        : panel.hasAttribute('data-maximized') || toolInput(panel, 'maximize')?.checked
+          ? 'maximized'
+          : panel.hasAttribute('data-minimized') || toolInput(panel, 'minimize')?.checked
+            ? 'minimized'
+            : 'default';
+      triggerStateChange(panel, start);
+      panel.dataset.stateName = start;
+      syncToggles(panel);
     });
-
-    // a double-click on the title bar (not on a tool) minimizes / restores -
-    // data-title-collapse="false" switches it off
-    header?.addEventListener('dblclick', (e) => {
-      if (panel.dataset.titleCollapse === 'false' || (e.target as HTMLElement).closest('.panel-tools') || !toolInput(panel, 'minimize')) return;
-      document.getSelection()?.removeAllRanges();
-      panelApi.setState(panel, panel.hasAttribute('data-minimized') ? 'default' : 'minimized');
-    });
-
-    // the close tool (a plain button - closing is not a toggle): the panel goes,
-    // focus goes back to whatever opens it again
-    dfDollar(panel).on('click', (e) => {
-      const close = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('.panel-close');
-      if (!close || close.closest('.panel') !== panel) return;
-      panelApi.setState(panel, 'closed');
-      if (panel.id) dfDollar(`[data-panel-open="${CSS.escape(panel.id)}"], [data-panel-toggle="${CSS.escape(panel.id)}"]`).get(0)?.focus();
-    });
-
-    // Escape leaves maximized
-    panel.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape' || !panel.hasAttribute('data-maximized')) return;
-      e.stopPropagation();
-      panelApi.setState(panel, 'default');
-      toolInput(panel, 'maximize')?.focus();
-    });
-
-    // el.store + el.api (AGENTS.md "State through stores")
-
-    bindComponent(panel, panelApi);
-
-    // markup may start minimized / maximized (attribute or a checked swap)
-    const start = panel.hasAttribute('hidden') ? 'closed'
-      : panel.hasAttribute('data-maximized') || toolInput(panel, 'maximize')?.checked ? 'maximized'
-        : panel.hasAttribute('data-minimized') || toolInput(panel, 'minimize')?.checked ? 'minimized'
-          : 'default';
-    triggerStateChange(panel, start);
-    panel.dataset.stateName = start;
-    syncToggles(panel);
-  });
 }
 
 // -- df$.shadcn.panel: the imperative surface ------------------------------------------

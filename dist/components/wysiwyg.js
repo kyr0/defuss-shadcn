@@ -19,7 +19,10 @@ var VP_DEVICES = { phone: [390, 844], tablet: [834, 1112] };
 var VP_MODES = ["phone", "tablet", "desktop", "full"];
 var SANDBOXES = {
   default: { sandbox: "allow-scripts allow-forms", allow: "clipboard-write" },
-  embed: { sandbox: "allow-scripts allow-forms allow-same-origin allow-presentation allow-popups", allow: "clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture" },
+  embed: {
+    sandbox: "allow-scripts allow-forms allow-same-origin allow-presentation allow-popups",
+    allow: "clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture"
+  },
   links: { sandbox: "allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox", allow: "clipboard-write" }
 };
 var ICONS = {
@@ -285,10 +288,15 @@ function sandboxBridge(ch, schema) {
       post("error", { message: "Example script failed to load or compile" });
       return;
     }
-    post("error", { message: String(e.message || "Unknown error"), stack: e.error && e.error.stack ? String(e.error.stack) : undefined });
+    post("error", {
+      message: String(e.message || "Unknown error"),
+      stack: e.error && e.error.stack ? String(e.error.stack) : undefined
+    });
   }, true);
   addEventListener("unhandledrejection", (e) => {
-    post("error", { message: `Unhandled rejection: ${e.reason && e.reason.message ? e.reason.message : String(e.reason)}` });
+    post("error", {
+      message: `Unhandled rejection: ${e.reason && e.reason.message ? e.reason.message : String(e.reason)}`
+    });
   });
   addEventListener("message", (e) => {
     const d = e.data;
@@ -352,7 +360,12 @@ function sandboxBridge(ch, schema) {
     sync();
   }, true));
   document.addEventListener("click", sync, true);
-  new MutationObserver(sync).observe(document.body, { childList: true, attributes: true, subtree: true, characterData: true });
+  new MutationObserver(sync).observe(document.body, {
+    childList: true,
+    attributes: true,
+    subtree: true,
+    characterData: true
+  });
   let lastHeight = -1;
   let heightQueued = false;
   function syncHeight() {
@@ -490,7 +503,12 @@ function loadShiki(shikiUrl) {
 function highlight(code, language) {
   if (typeof config.highlight === "function")
     return Promise.resolve().then(() => config.highlight(code, language));
-  return loadShiki(config.shiki).then((m) => m.codeToHtml(code, { lang: language, themes: config.themes, defaultColor: false, cssVariablePrefix: "--code-example-" })).then((html) => {
+  return loadShiki(config.shiki).then((m) => m.codeToHtml(code, {
+    lang: language,
+    themes: config.themes,
+    defaultColor: false,
+    cssVariablePrefix: "--code-example-"
+  })).then((html) => {
     const inner = /<code[^>]*>([\s\S]*)<\/code>/.exec(String(html ?? ""));
     return inner ? inner[1] : null;
   });
@@ -604,7 +622,10 @@ ${indent}`);
 function editorFor(spec) {
   const byType = spec.type === "boolean" ? "checkbox" : spec.type === "number" ? "number" : spec.type === "enum" ? "radio" : "text";
   const hint = spec.editor && spec.editor.component;
-  return { kind: ["text", "number", "checkbox", "radio", "select"].includes(hint) ? hint : byType, props: spec.editor && spec.editor.props || {} };
+  return {
+    kind: ["text", "number", "checkbox", "radio", "select"].includes(hint) ? hint : byType,
+    props: spec.editor && spec.editor.props || {}
+  };
 }
 function buildControls(root) {
   const c = root._ce;
@@ -1036,7 +1057,10 @@ function triggerStateChange(root, state, incoming) {
   setTimeout(() => refit(root), 50);
 }
 function emitChange(root, origin) {
-  root.dispatchEvent(new CustomEvent("code-example-change", { bubbles: true, detail: { source: root._ce.src.value, origin } }));
+  root.dispatchEvent(new CustomEvent("code-example-change", {
+    bubbles: true,
+    detail: { source: root._ce.src.value, origin }
+  }));
 }
 var codeExampleApi = componentState({
   component: "code-example",
@@ -1106,7 +1130,9 @@ df$.codeExample = {
     if (root?._ce)
       send(root, "set-state", { state: name, value });
   },
-  previewState: (target) => ({ ...resolveCard(target)?._ce?.observed }),
+  previewState: (target) => ({
+    ...resolveCard(target)?._ce?.observed
+  }),
   refreshTheme() {
     resolveTheme().then((css) => {
       for (const root of registry.values())
@@ -1310,7 +1336,11 @@ function loadModule(vendorUrl) {
   return pending;
 }
 async function loadVendor(toolNames) {
-  const [EditorJS, marked, ...tools] = await Promise.all([loadModule(EDITORJS_URL), loadModule(MARKED_URL), ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))]);
+  const [EditorJS, marked, ...tools] = await Promise.all([
+    loadModule(EDITORJS_URL),
+    loadModule(MARKED_URL),
+    ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))
+  ]);
   return { EditorJS, marked, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
 function markdownToBlocks(md, marked) {
@@ -1318,23 +1348,40 @@ function markdownToBlocks(md, marked) {
   const items = (list) => (list.items ?? []).map((it) => {
     const own = (it.tokens ?? []).filter((t) => t.type !== "list");
     const sub = (it.tokens ?? []).find((t) => t.type === "list");
-    return { content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()), meta: it.task ? { checked: !!it.checked } : {}, items: sub ? items(sub) : [] };
+    return {
+      content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()),
+      meta: it.task ? { checked: !!it.checked } : {},
+      items: sub ? items(sub) : []
+    };
   });
   const blocks = [];
   for (const t of marked.lexer(md)) {
     switch (t.type) {
       case "heading":
-        blocks.push({ type: "header", data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) } });
+        blocks.push({
+          type: "header",
+          data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) }
+        });
         break;
       case "paragraph":
         blocks.push({ type: "paragraph", data: { text: inline(t.text ?? "") } });
         break;
       case "list":
-        blocks.push({ type: "list", data: { style: t.items?.some((i) => i.task) ? "checklist" : t.ordered ? "ordered" : "unordered", meta: {}, items: items(t) } });
+        blocks.push({
+          type: "list",
+          data: {
+            style: t.items?.some((i) => i.task) ? "checklist" : t.ordered ? "ordered" : "unordered",
+            meta: {},
+            items: items(t)
+          }
+        });
         break;
       case "blockquote":
-        blocks.push({ type: "quote", data: { text: inline((t.tokens ?? []).map((x) => x.text ?? "").join(`
-`)), caption: "", alignment: "left" } });
+        blocks.push({
+          type: "quote",
+          data: { text: inline((t.tokens ?? []).map((x) => x.text ?? "").join(`
+`)), caption: "", alignment: "left" }
+        });
         break;
       case "code":
         blocks.push({ type: "code", data: { code: t.text ?? "" } });
@@ -1343,7 +1390,16 @@ function markdownToBlocks(md, marked) {
         blocks.push({ type: "delimiter", data: {} });
         break;
       case "table":
-        blocks.push({ type: "table", data: { withHeadings: true, content: [(t.header ?? []).map((c) => inline(c.text)), ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))] } });
+        blocks.push({
+          type: "table",
+          data: {
+            withHeadings: true,
+            content: [
+              (t.header ?? []).map((c) => inline(c.text)),
+              ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))
+            ]
+          }
+        });
         break;
       case "html":
         blocks.push({ type: "paragraph", data: { text: t.raw ?? "" } });
@@ -1483,7 +1539,13 @@ async function runCommand(el, name) {
   const current = currentBlock(el, editor);
   if (kind === "delimiter" || kind === "table") {
     const index = current ? editor.blocks.getBlockIndex(current.id) : editor.blocks.getBlocksCount() - 1;
-    editor.blocks.insert(kind, kind === "table" ? { withHeadings: true, content: [["", ""], ["", ""]] } : {}, {}, index + 1, true);
+    editor.blocks.insert(kind, kind === "table" ? {
+      withHeadings: true,
+      content: [
+        ["", ""],
+        ["", ""]
+      ]
+    } : {}, {}, index + 1, true);
     return true;
   }
   if (!current)
@@ -1577,7 +1639,10 @@ async function mount(el) {
     placeholder: dfDollar2(el).attr("data-placeholder") ?? "Write...",
     minHeight: 0,
     onChange: async () => {
-      el.dispatchEvent(new CustomEvent("editorjs-change", { bubbles: true, detail: { blocks: editor.blocks.getBlocksCount() } }));
+      el.dispatchEvent(new CustomEvent("editorjs-change", {
+        bubbles: true,
+        detail: { blocks: editor.blocks.getBlocksCount() }
+      }));
     }
   });
   el._editorjs = editor;
@@ -1666,5 +1731,5 @@ df$2.editorjs = {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=852E339D0FD5127664756E2164756E21
+//# debugId=36E5023240AB90FB64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

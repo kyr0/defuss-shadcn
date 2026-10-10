@@ -9,7 +9,13 @@
 // marker ride query scalar writes; membership stays authored (flag-based
 // filtering, no renderer - §3 command row: keyed morph only once a data
 // source drives the result set, which the docs palette may adopt later).
-import { defussGlobals, defussQuery, componentState, bindComponent, bindGlobalKeys } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+  bindGlobalKeys,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -75,19 +81,22 @@ df$.commandStates = commandStates;
 /* Cmd/Ctrl+K toggles the palette - through the shared global-key listener
    (src/shared/keys.ts), opted in for editable targets: ⌘K must work while
    typing in a field (the palette's own input included, where it closes it). */
-bindGlobalKeys((e) => {
-  if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== 'k') return;
-  const dialog = dfDollar<HTMLDialogElement>('dialog.command').get(0);
-  if (!dialog) return;
-  e.preventDefault();
-  if (dialog.open) dialog.close();
-  else {
-    dialog.showModal();
-    const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
-    if (input) input.focus();
-  }
-  return true;
-}, { editable: true });
+bindGlobalKeys(
+  (e) => {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== 'k') return;
+    const dialog = dfDollar<HTMLDialogElement>('dialog.command').get(0);
+    if (!dialog) return;
+    e.preventDefault();
+    if (dialog.open) dialog.close();
+    else {
+      dialog.showModal();
+      const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
+      if (input) input.focus();
+    }
+    return true;
+  },
+  { editable: true },
+);
 
 function getVisibleItems(list) {
   return Array.from(dfDollar(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
@@ -104,85 +113,97 @@ function highlightItem(list, index) {
 }
 
 function init() {
-dfDollar<HTMLDialogElement>('dialog.command:not([data-init])').toArray().forEach((dialog) => {
-    dialog.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(dialog, commandApi, { name: shown(dialog), config: {} });
-    const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
-    const list = dfDollar(dialog).find('.command-list').get(0);
-    const empty = dfDollar(dialog).find('.command-empty').get(0);
-    if (!input || !list) return;
-    let highlightIndex = -1;
+  dfDollar<HTMLDialogElement>('dialog.command:not([data-init])')
+    .toArray()
+    .forEach((dialog) => {
+      dialog.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(dialog, commandApi, { name: shown(dialog), config: {} });
+      const input = dfDollar(dialog).find<HTMLInputElement>('.command-input').get(0);
+      const list = dfDollar(dialog).find('.command-list').get(0);
+      const empty = dfDollar(dialog).find('.command-empty').get(0);
+      if (!input || !list) return;
+      let highlightIndex = -1;
 
-    // query the LIVE list on every filter (KISS): item nodes may be replaced
-    // after init (e.g. the docs palette feeds itself from a generated index),
-    // a cached snapshot would silently keep filtering detached nodes
-    const filter = (q) => {
-      const query = q.toLowerCase(); let hasVisible = false;
-      const $items = dfDollar(list).find('.command-item');
-      // flag-based filtering through query scalars: nodes keep identity (§3)
-      $items.each(function (this: HTMLElement) {
-        const match = !query || this.textContent.toLowerCase().includes(query);
-        dfDollar(this).prop('hidden', !match); if (match) hasVisible = true;
-      });
-      dfDollar(list).find('.command-group').each(function (this: HTMLElement) {
-        dfDollar(this).prop('hidden', dfDollar(this).find('.command-item:not([hidden])').length === 0);
-      });
-      dfDollar(list).find('.command-separator').prop('hidden', !!query);
-      if (empty) dfDollar(empty).prop('hidden', hasVisible);
-      highlightIndex = highlightItem(list, 0);
-    };
-
-    input.addEventListener('input', () => { filter(input.value); });
-
-    input.addEventListener('keydown', (e) => {
-      const visible = getVisibleItems(list);
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        highlightIndex = highlightItem(list, highlightIndex + 1);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        highlightIndex = highlightItem(list, highlightIndex - 1);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (visible[highlightIndex]) { visible[highlightIndex].click(); }
-      } else if (e.key === 'Home') {
-        e.preventDefault();
+      // query the LIVE list on every filter (KISS): item nodes may be replaced
+      // after init (e.g. the docs palette feeds itself from a generated index),
+      // a cached snapshot would silently keep filtering detached nodes
+      const filter = (q) => {
+        const query = q.toLowerCase();
+        let hasVisible = false;
+        const $items = dfDollar(list).find('.command-item');
+        // flag-based filtering through query scalars: nodes keep identity (§3)
+        $items.each(function (this: HTMLElement) {
+          const match = !query || this.textContent.toLowerCase().includes(query);
+          dfDollar(this).prop('hidden', !match);
+          if (match) hasVisible = true;
+        });
+        dfDollar(list)
+          .find('.command-group')
+          .each(function (this: HTMLElement) {
+            dfDollar(this).prop('hidden', dfDollar(this).find('.command-item:not([hidden])').length === 0);
+          });
+        dfDollar(list).find('.command-separator').prop('hidden', !!query);
+        if (empty) dfDollar(empty).prop('hidden', hasVisible);
         highlightIndex = highlightItem(list, 0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        highlightIndex = highlightItem(list, visible.length - 1);
-      }
+      };
+
+      input.addEventListener('input', () => {
+        filter(input.value);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        const visible = getVisibleItems(list);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          highlightIndex = highlightItem(list, highlightIndex + 1);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          highlightIndex = highlightItem(list, highlightIndex - 1);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (visible[highlightIndex]) {
+            visible[highlightIndex].click();
+          }
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          highlightIndex = highlightItem(list, 0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          highlightIndex = highlightItem(list, visible.length - 1);
+        }
+      });
+
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+        if ((e.target as HTMLElement).closest('.command-item')) dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        // `close` fires AFTER the exit transition (display allow-discrete), so a
+        // fast re-open (setState/⌘K within 150ms) can beat the queued event - a
+        // stale one must not clear an open palette. (Skipping the reset on
+        // re-open keeps the last query, like macOS Spotlight.) The state itself
+        // follows `open` through read().
+        if (dialog.open) return;
+        dfDollar(input).val('');
+        filter('');
+        dfDollar(list).find('.command-item[data-highlighted]').data('highlighted', null);
+        highlightIndex = -1;
+      });
     });
 
-    dialog.addEventListener('click', (e) => {
-      if (e.target === dialog) dialog.close();
-      if ((e.target as HTMLElement).closest('.command-item')) dialog.close();
+  dfDollar('[data-command-trigger]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.commandTrigger)).get(0);
+      if (!dialog) return;
+      trigger.addEventListener('click', () => {
+        dialog.showModal();
+        const input = dfDollar(dialog).find<HTMLInputElement>('.command-input')[0];
+        if (input) (input as HTMLElement).focus(); // native focus protocol stays native
+      });
     });
-    dialog.addEventListener('close', () => {
-      // `close` fires AFTER the exit transition (display allow-discrete), so a
-      // fast re-open (setState/⌘K within 150ms) can beat the queued event - a
-      // stale one must not clear an open palette. (Skipping the reset on
-      // re-open keeps the last query, like macOS Spotlight.) The state itself
-      // follows `open` through read().
-      if (dialog.open) return;
-      dfDollar(input).val('');
-      filter('');
-      dfDollar(list).find('.command-item[data-highlighted]').data('highlighted', null);
-      highlightIndex = -1;
-    });
-  });
-
-dfDollar('[data-command-trigger]:not([data-init])').toArray().forEach((trigger) => {
-  trigger.dataset.init = '';
-  const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.commandTrigger)).get(0);
-  if (!dialog) return;
-  trigger.addEventListener('click', () => {
-    dialog.showModal();
-    const input = dfDollar(dialog).find<HTMLInputElement>('.command-input')[0];
-    if (input) (input as HTMLElement).focus(); // native focus protocol stays native
-  });
-});
 }
 
 init();

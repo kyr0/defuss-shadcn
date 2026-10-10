@@ -2119,15 +2119,9 @@ function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
     case "wipeOut":
       return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
     case "irisIn":
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case "irisOut":
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
   }
@@ -3160,7 +3154,10 @@ function attachPersistence(store, options) {
 var areas = {};
 var inMemory = new Set;
 function storageOf(area) {
-  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+  return areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area)
+  });
 }
 function sameShape(initial) {
   const check = (model, value) => {
@@ -3876,7 +3873,12 @@ function dataSource(rows, options = {}) {
         } : undefined
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows
+      };
       cacheKey = key;
       return cache;
     },
@@ -3913,7 +3915,14 @@ function parseFilter(field, text, kind = "text") {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m)
       return null;
-    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    const ops = {
+      ">=": "gte",
+      "<=": "lte",
+      "!=": "neq",
+      ">": "gt",
+      "<": "lt",
+      "=": "eq"
+    };
     return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
   }
   return { field, op: "contains", value: raw };
@@ -4455,7 +4464,10 @@ function renderRange(owner) {
 }
 function syncRange(owner) {
   const r = rangeState(owner);
-  for (const [key, value] of [["rangeStart", r.start], ["rangeEnd", r.end]]) {
+  for (const [key, value] of [
+    ["rangeStart", r.start],
+    ["rangeEnd", r.end]
+  ]) {
     if (value)
       owner.dataset[key] = value;
     else
@@ -4515,7 +4527,12 @@ function dayData(days, iso, full) {
   if (d.label)
     attrs += ` title="${esc(d.label)}"`;
   const aria = ` aria-label="${esc([full.format(isoToDate(iso)), d.label, note].filter(Boolean).join(", "))}"`;
-  return { attrs, note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "", aria, blocked: d.disabled === true };
+  return {
+    attrs,
+    note: note ? `<span class="calendar-day-note">${esc(note)}</span>` : "",
+    aria,
+    blocked: d.disabled === true
+  };
 }
 var YEARS_PER_PAGE = 12;
 var pageStart = (year) => year - (year % YEARS_PER_PAGE + YEARS_PER_PAGE) % YEARS_PER_PAGE;
@@ -4642,7 +4659,10 @@ function setView(el, view) {
     const pick = dfDollar3(panel).find(".calendar-pick[aria-current]:not([disabled])").get(0) ?? dfDollar3(panel).find(".calendar-pick:not([disabled])").get(0);
     pick?.focus();
   }
-  el.dispatchEvent(new CustomEvent("calendar:view", { bubbles: true, detail: { view, year: st.year, month: st.month } }));
+  el.dispatchEvent(new CustomEvent("calendar:view", {
+    bubbles: true,
+    detail: { view, year: st.year, month: st.month }
+  }));
 }
 var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null)) => {
   const full = locale.full;
@@ -5258,7 +5278,10 @@ function activate(menu, item) {
   if (role === "menuitemcheckbox") {
     const checked = item.getAttribute("aria-checked") !== "true";
     item.setAttribute("aria-checked", String(checked));
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked }
+    }));
     return;
   }
   if (role === "menuitemradio") {
@@ -5267,10 +5290,16 @@ function activate(menu, item) {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
-    item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true } }));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true }
+    }));
     return;
   }
-  item.dispatchEvent(new CustomEvent("dropdown:select", { bubbles: true, detail: { item, value: item.dataset.value ?? item.textContent.trim() } }));
+  item.dispatchEvent(new CustomEvent("dropdown:select", {
+    bubbles: true,
+    detail: { item, value: item.dataset.value ?? item.textContent.trim() }
+  }));
   try {
     rootOf2(menu).hidePopover();
   } catch {}
@@ -6343,7 +6372,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -6503,7 +6535,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -6534,7 +6569,10 @@ var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
   apply: (toggle, state) => triggerStateChange14(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar14(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  read: (toggle, state) => ({
+    name: dfDollar14(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
     applyMarkup13(toggle, state.name, authored ? authored[1] : "false");
@@ -6814,7 +6852,11 @@ function create(options = {}) {
   const controls = document.createElement("form");
   controls.method = "dialog";
   controls.className = "window-controls";
-  for (const [cls, label, type] of [["window-minimize", "Minimize", "button"], ["window-maximize", "Maximize", "button"], ["window-close", "Close", "submit"]]) {
+  for (const [cls, label, type] of [
+    ["window-minimize", "Minimize", "button"],
+    ["window-maximize", "Maximize", "button"],
+    ["window-close", "Close", "submit"]
+  ]) {
     const b = document.createElement("button");
     b.type = type;
     b.className = cls;
@@ -6942,6 +6984,6 @@ df$15.win = windowActions;
 init15();
 new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
-//# debugId=D579E2180CF3290F64756E2164756E21
+//# debugId=73F5AD741D9F65E264756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

@@ -45,53 +45,123 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </SkillPanel>
 
 ```html example label="Border layout" hint="Five regions on a grid: north and south span the width (the default, data-dominant='ns'), west and east sit between them around the center. Every side is a .resizer wrapping its pane - drag a line, or Tab to it and use the arrow keys (they move the line the way they point; Home / End jump to the limits). The center never drops below 120px."
-<div class="border-layout" style="height:22rem;">
-  <div class="resizer border-layout-north"><header class="border-layout-pane" style="height:3.25rem" aria-label="North"><span class="text-sm font-medium">North</span><span class="text-xs text-muted-foreground block">drag the line below</span></header></div>
-  <div class="resizer border-layout-west"><nav class="border-layout-pane" style="width:11rem" aria-label="West"><span class="text-sm font-medium">West</span><span class="text-xs text-muted-foreground block">drag the line →</span></nav></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span><span class="text-xs text-muted-foreground block">takes what the sides leave</span></main>
-  <div class="resizer border-layout-east"><aside class="border-layout-pane" style="width:10rem" aria-label="East"><span class="text-sm font-medium">East</span><span class="text-xs text-muted-foreground block">← drag the line</span></aside></div>
-  <div class="resizer border-layout-south"><footer class="border-layout-pane" style="height:4.5rem" aria-label="South"><span class="text-sm font-medium">South</span><span class="text-xs text-muted-foreground block">drag the line above</span></footer></div>
+<div class="border-layout" style="height: 22rem">
+  <div class="resizer border-layout-north"
+    ><header class="border-layout-pane" style="height: 3.25rem" aria-label="North"
+      ><span class="text-sm font-medium">North</span
+      ><span class="text-xs text-muted-foreground block">drag the line below</span></header
+    ></div
+  >
+  <div class="resizer border-layout-west"
+    ><nav class="border-layout-pane" style="width: 11rem" aria-label="West"
+      ><span class="text-sm font-medium">West</span
+      ><span class="text-xs text-muted-foreground block">drag the line →</span></nav
+    ></div
+  >
+  <main class="border-layout-center border-layout-pane"
+    ><span class="text-sm font-medium">Center</span
+    ><span class="text-xs text-muted-foreground block">takes what the sides leave</span></main
+  >
+  <div class="resizer border-layout-east"
+    ><aside class="border-layout-pane" style="width: 10rem" aria-label="East"
+      ><span class="text-sm font-medium">East</span
+      ><span class="text-xs text-muted-foreground block">← drag the line</span></aside
+    ></div
+  >
+  <div class="resizer border-layout-south"
+    ><footer class="border-layout-pane" style="height: 4.5rem" aria-label="South"
+      ><span class="text-sm font-medium">South</span
+      ><span class="text-xs text-muted-foreground block">drag the line above</span></footer
+    ></div
+  >
 </div>
 ```
 
 ```html example label="West and east dominate" schema="none" hint="data-dominant='we': west and east run the full height, north and south sit between them above and below the center - the frame of an IDE with full-height sidebars."
-<div class="border-layout" data-dominant="we" style="height:22rem;">
-  <div class="resizer border-layout-north"><header class="border-layout-pane" style="height:3.25rem" aria-label="North"><span class="text-sm font-medium">North</span><span class="text-xs text-muted-foreground block">drag the line below</span></header></div>
-  <div class="resizer border-layout-west"><nav class="border-layout-pane" style="width:11rem" aria-label="West"><span class="text-sm font-medium">West</span><span class="text-xs text-muted-foreground block">drag the line →</span></nav></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span><span class="text-xs text-muted-foreground block">takes what the sides leave</span></main>
-  <div class="resizer border-layout-east"><aside class="border-layout-pane" style="width:10rem" aria-label="East"><span class="text-sm font-medium">East</span><span class="text-xs text-muted-foreground block">← drag the line</span></aside></div>
-  <div class="resizer border-layout-south"><footer class="border-layout-pane" style="height:4.5rem" aria-label="South"><span class="text-sm font-medium">South</span><span class="text-xs text-muted-foreground block">drag the line above</span></footer></div>
+<div class="border-layout" data-dominant="we" style="height: 22rem">
+  <div class="resizer border-layout-north"
+    ><header class="border-layout-pane" style="height: 3.25rem" aria-label="North"
+      ><span class="text-sm font-medium">North</span
+      ><span class="text-xs text-muted-foreground block">drag the line below</span></header
+    ></div
+  >
+  <div class="resizer border-layout-west"
+    ><nav class="border-layout-pane" style="width: 11rem" aria-label="West"
+      ><span class="text-sm font-medium">West</span
+      ><span class="text-xs text-muted-foreground block">drag the line →</span></nav
+    ></div
+  >
+  <main class="border-layout-center border-layout-pane"
+    ><span class="text-sm font-medium">Center</span
+    ><span class="text-xs text-muted-foreground block">takes what the sides leave</span></main
+  >
+  <div class="resizer border-layout-east"
+    ><aside class="border-layout-pane" style="width: 10rem" aria-label="East"
+      ><span class="text-sm font-medium">East</span
+      ><span class="text-xs text-muted-foreground block">← drag the line</span></aside
+    ></div
+  >
+  <div class="resizer border-layout-south"
+    ><footer class="border-layout-pane" style="height: 4.5rem" aria-label="South"
+      ><span class="text-sm font-medium">South</span
+      ><span class="text-xs text-muted-foreground block">drag the line above</span></footer
+    ></div
+  >
 </div>
 ```
 
 ```html example label="Horizontal split" schema="none" hint="Just west and a center: two panes side by side, the regions left out take no room. The west pane starts at 50%; a drag writes px."
-<div class="border-layout" style="height:12rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:50%" aria-label="One"><span class="text-sm font-medium">One</span></div></div>
+<div class="border-layout" style="height: 12rem">
+  <div class="resizer border-layout-west"
+    ><div class="border-layout-pane" style="width: 50%" aria-label="One"
+      ><span class="text-sm font-medium">One</span></div
+    ></div
+  >
   <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Two</span></main>
 </div>
 ```
 
 ```html example label="Vertical split" schema="none" hint="Just north and a center: two panes stacked."
-<div class="border-layout" style="height:16rem;">
-  <div class="resizer border-layout-north"><div class="border-layout-pane" style="height:50%" aria-label="One"><span class="text-sm font-medium">One</span></div></div>
+<div class="border-layout" style="height: 16rem">
+  <div class="resizer border-layout-north"
+    ><div class="border-layout-pane" style="height: 50%" aria-label="One"
+      ><span class="text-sm font-medium">One</span></div
+    ></div
+  >
   <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Two</span></main>
 </div>
 ```
 
 ```html example label="Three columns" schema="none" hint="West, center, east - a mail client: folders, the list, the reading pane."
-<div class="border-layout" style="height:14rem;">
-  <div class="resizer border-layout-west"><nav class="border-layout-pane" style="width:9rem" aria-label="Folders"><span class="text-sm font-medium">Folders</span></nav></div>
+<div class="border-layout" style="height: 14rem">
+  <div class="resizer border-layout-west"
+    ><nav class="border-layout-pane" style="width: 9rem" aria-label="Folders"
+      ><span class="text-sm font-medium">Folders</span></nav
+    ></div
+  >
   <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Messages</span></main>
-  <div class="resizer border-layout-east"><aside class="border-layout-pane" style="width:40%" aria-label="Reading pane"><span class="text-sm font-medium">Reading pane</span></aside></div>
+  <div class="resizer border-layout-east"
+    ><aside class="border-layout-pane" style="width: 40%" aria-label="Reading pane"
+      ><span class="text-sm font-medium">Reading pane</span></aside
+    ></div
+  >
 </div>
 ```
 
 ```html example label="Nested splits" schema="none" hint="A border layout in the center of another, with data-frame='none': a horizontal split whose right side is split vertically. Each divider belongs to its own layout."
-<div class="border-layout" style="height:18rem;">
-  <div class="resizer border-layout-west"><nav class="border-layout-pane" style="width:12rem" aria-label="Sidebar"><span class="text-sm font-medium">Sidebar</span></nav></div>
+<div class="border-layout" style="height: 18rem">
+  <div class="resizer border-layout-west"
+    ><nav class="border-layout-pane" style="width: 12rem" aria-label="Sidebar"
+      ><span class="text-sm font-medium">Sidebar</span></nav
+    ></div
+  >
   <div class="border-layout-center">
-    <div class="border-layout" data-frame="none" style="height:100%;">
-      <div class="resizer border-layout-north"><div class="border-layout-pane" style="height:55%" aria-label="Editor"><span class="text-sm font-medium">Editor</span></div></div>
+    <div class="border-layout" data-frame="none" style="height: 100%">
+      <div class="resizer border-layout-north"
+        ><div class="border-layout-pane" style="height: 55%" aria-label="Editor"
+          ><span class="text-sm font-medium">Editor</span></div
+        ></div
+      >
       <div class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Terminal</span></div>
     </div>
   </div>
@@ -100,60 +170,117 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 
 ```html example label="Grips" schema="none" hint="data-grip on the layout draws a handle on every divider: dots (a small dotted card) or bar (a pill); on one region's resizer it overrides the layout - data-grip='none' switches it off there."
 <div class="flex flex-col gap-4">
-  <div class="border-layout" data-grip="dots" style="height:9rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:40%" aria-label="dots"><span class="text-sm font-medium">dots</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="border-layout" data-grip="dots" style="height: 9rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 40%" aria-label="dots"
+        ><span class="text-sm font-medium">dots</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-  <div class="border-layout" data-grip="bar" style="height:9rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:40%" aria-label="bar"><span class="text-sm font-medium">bar</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
-  <div class="resizer border-layout-east" data-grip="none"><div class="border-layout-pane" style="width:25%" aria-label="no grip"><span class="text-sm font-medium">no grip</span></div></div>
+  <div class="border-layout" data-grip="bar" style="height: 9rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 40%" aria-label="bar"
+        ><span class="text-sm font-medium">bar</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+    <div class="resizer border-layout-east" data-grip="none"
+      ><div class="border-layout-pane" style="width: 25%" aria-label="no grip"
+        ><span class="text-sm font-medium">no grip</span></div
+      ></div
+    >
   </div>
 </div>
 ```
 
 ```html example label="Divider styles" schema="none" hint="data-divider: solid (the default), dashed, dotted, double, thick, none - invisible but still draggable - and gap, where the regions float as cards in a gutter and the divider lives in the gap. Set it on one region's resizer to style just that divider."
-<div class="grid gap-3" style="grid-template-columns:repeat(auto-fit, minmax(14rem, 1fr));">
-  <div class="border-layout" data-divider="dashed" style="height:8rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:45%" aria-label="dashed"><span class="text-sm font-medium">dashed</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <div class="border-layout" data-divider="dashed" style="height: 8rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 45%" aria-label="dashed"
+        ><span class="text-sm font-medium">dashed</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-  <div class="border-layout" data-divider="dotted" style="height:8rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:45%" aria-label="dotted"><span class="text-sm font-medium">dotted</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="border-layout" data-divider="dotted" style="height: 8rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 45%" aria-label="dotted"
+        ><span class="text-sm font-medium">dotted</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-  <div class="border-layout" data-divider="double" style="height:8rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:45%" aria-label="double"><span class="text-sm font-medium">double</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="border-layout" data-divider="double" style="height: 8rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 45%" aria-label="double"
+        ><span class="text-sm font-medium">double</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-  <div class="border-layout" data-divider="thick" style="height:8rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:45%" aria-label="thick"><span class="text-sm font-medium">thick</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="border-layout" data-divider="thick" style="height: 8rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 45%" aria-label="thick"
+        ><span class="text-sm font-medium">thick</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-  <div class="border-layout" data-divider="none" data-grip="bar" style="height:8rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:45%" aria-label="none"><span class="text-sm font-medium">none</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="border-layout" data-divider="none" data-grip="bar" style="height: 8rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 45%" aria-label="none"
+        ><span class="text-sm font-medium">none</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-  <div class="border-layout" data-divider="gap" data-grip="bar" style="height:8rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:45%" aria-label="gap"><span class="text-sm font-medium">gap</span></div></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="border-layout" data-divider="gap" data-grip="bar" style="height: 8rem">
+    <div class="resizer border-layout-west"
+      ><div class="border-layout-pane" style="width: 45%" aria-label="gap"
+        ><span class="text-sm font-medium">gap</span></div
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
 </div>
 ```
 
 ```html example label="Custom handle" schema="none" hint="The divider is a .resizer-handle: --border-layout-divider-color / -width / --border-layout-accent retheme it, and plain CSS on its ::before (the line) and ::after (the grip) makes any handle - here a bold primary rail with a round knob."
 <style>
-  .rail-layout { --border-layout-divider-color: color-mix(in oklch, var(--primary) 35%, transparent); --border-layout-divider-width: 3px; --border-layout-accent: var(--primary); }
+  .rail-layout {
+    --border-layout-divider-color: color-mix(in oklch, var(--primary) 35%, transparent);
+    --border-layout-divider-width: 3px;
+    --border-layout-accent: var(--primary);
+  }
   .rail-layout > .resizer > .resizer-handle::after {
-    content: ""; position: absolute; top: 50%; left: 50%; translate: -50% -50%;
-    width: 1rem; height: 1rem; border-radius: 999px;
-    background: var(--primary); box-shadow: 0 0 0 3px var(--background), var(--shadow-sm);
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    background: var(--primary);
+    box-shadow:
+      0 0 0 3px var(--background),
+      var(--shadow-sm);
   }
 </style>
-<div class="border-layout rail-layout" style="height:12rem;">
-  <div class="resizer border-layout-west"><div class="border-layout-pane" style="width:40%" aria-label="Custom"><span class="text-sm font-medium">Custom</span></div></div>
+<div class="border-layout rail-layout" style="height: 12rem">
+  <div class="resizer border-layout-west"
+    ><div class="border-layout-pane" style="width: 40%" aria-label="Custom"
+      ><span class="text-sm font-medium">Custom</span></div
+    ></div
+  >
   <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
-  <div class="resizer border-layout-south"><div class="border-layout-pane" style="height:3.5rem" aria-label="South"><span class="text-sm font-medium">South</span></div></div>
+  <div class="resizer border-layout-south"
+    ><div class="border-layout-pane" style="height: 3.5rem" aria-label="South"
+      ><span class="text-sm font-medium">South</span></div
+    ></div
+  >
 </div>
 ```
 
@@ -165,17 +292,41 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
     <button class="btn" data-variant="ghost" data-size="sm" type="button" id="bl-reset">Reset</button>
     <output class="text-sm text-muted-foreground" id="bl-sizes"></output>
   </div>
-  <div class="border-layout" id="bl-saved" data-collapsible data-save="docs-demo" data-grip="dots" style="height:16rem;">
-  <div class="resizer border-layout-west"><nav class="border-layout-pane" style="width:12rem" aria-label="Files"><span class="text-sm font-medium">Files</span><span class="text-xs text-muted-foreground block">double-click the divider</span></nav></div>
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Editor</span></main>
-  <div class="resizer border-layout-south"><footer class="border-layout-pane" style="height:5rem" aria-label="Terminal"><span class="text-sm font-medium">Terminal</span><span class="text-xs text-muted-foreground block">Enter on the divider folds it</span></footer></div>
+  <div
+    class="border-layout"
+    id="bl-saved"
+    data-collapsible
+    data-save="docs-demo"
+    data-grip="dots"
+    style="height: 16rem"
+  >
+    <div class="resizer border-layout-west"
+      ><nav class="border-layout-pane" style="width: 12rem" aria-label="Files"
+        ><span class="text-sm font-medium">Files</span
+        ><span class="text-xs text-muted-foreground block">double-click the divider</span></nav
+      ></div
+    >
+    <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Editor</span></main>
+    <div class="resizer border-layout-south"
+      ><footer class="border-layout-pane" style="height: 5rem" aria-label="Terminal"
+        ><span class="text-sm font-medium">Terminal</span
+        ><span class="text-xs text-muted-foreground block">Enter on the divider folds it</span></footer
+      ></div
+    >
   </div>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const layout = df$('#bl-saved').get(0);
-    const show = () => df$('#bl-sizes').text(Object.entries(df$.shadcn.borderLayout.sizes(layout)).map(([k, v]) => `${k} ${v}px`).join(' · '));
-    df$('[data-toggle]').on('click', function () { df$.shadcn.borderLayout.toggle(layout, this.dataset.toggle); });
+    const show = () =>
+      df$('#bl-sizes').text(
+        Object.entries(df$.shadcn.borderLayout.sizes(layout))
+          .map(([k, v]) => `${k} ${v}px`)
+          .join(' · '),
+      );
+    df$('[data-toggle]').on('click', function () {
+      df$.shadcn.borderLayout.toggle(layout, this.dataset.toggle);
+    });
     df$('#bl-reset').on('click', () => layout.api.setState('default'));
     df$(layout).on('resizer-resize', show);
     df$(layout).on('border-layout-collapse', show);
@@ -185,8 +336,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 ```
 
 ```html example label="An application window" schema="none" height="36" hint="The frame of an app, in a Window: a menubar in the north, a file tree in the west, the editor in the center, an outline in the east and a terminal (a code mockup) in the south - west and east dominate. Every divider drags; View folds and unfolds the panels through df$.shadcn.borderLayout."
-<div class="window-desktop" style="height:30rem;">
-  <dialog class="window" open data-resizable style="--window-x:0.75rem; --window-y:0.75rem; --window-w:calc(100% - 1.5rem); --window-h:calc(100% - 1.5rem);">
+<div class="window-desktop" style="height: 30rem">
+  <dialog
+    class="window"
+    open
+    data-resizable
+    style="--window-x: 0.75rem; --window-y: 0.75rem; --window-w: calc(100% - 1.5rem); --window-h: calc(100% - 1.5rem)"
+  >
     <header class="window-titlebar">
       <i data-lucide="app-window" class="window-icon"></i>
       <h2 class="window-title">Studio - border-layout.css</h2>
@@ -197,15 +353,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
       </form>
     </header>
     <div class="window-body" data-flush>
-      <div class="border-layout" id="ide" data-dominant="we" data-frame="none" data-collapsible style="height:100%;">
-        <div class="resizer border-layout-west"><nav class="border-layout-pane" style="width:11rem" aria-label="Files">
-          <p class="text-xs text-muted-foreground m-0 mb-2">EXPLORER</p>
-          <ul class="text-sm m-0 ps-4 flex flex-col gap-1"><li>components/</li><li>border-layout.css</li><li>border-layout.ts</li><li>resizer.ts</li></ul>
-        </nav></div>
-        <div class="border-layout-north" style="height:2.5rem; display:flex; align-items:center; padding-inline:0.25rem;">
+      <div class="border-layout" id="ide" data-dominant="we" data-frame="none" data-collapsible style="height: 100%">
+        <div class="resizer border-layout-west"
+          ><nav class="border-layout-pane" style="width: 11rem" aria-label="Files">
+            <p class="text-xs text-muted-foreground m-0 mb-2">EXPLORER</p>
+            <ul class="text-sm m-0 ps-4 flex flex-col gap-1"
+              ><li>components/</li
+              ><li>border-layout.css</li
+              ><li>border-layout.ts</li
+              ><li>resizer.ts</li></ul
+            >
+          </nav></div
+        >
+        <div
+          class="border-layout-north"
+          style="height: 2.5rem; display: flex; align-items: center; padding-inline: 0.25rem"
+        >
           <div class="menubar" data-variant="ghost" role="menubar" aria-label="Studio" id="ide-menu">
             <button class="menubar-trigger" data-dropdown-trigger="ide-view">View</button>
-            <div id="ide-view" role="menu" popover class="dropdown-content" aria-label="View" style="min-width:12rem;">
+            <div id="ide-view" role="menu" popover class="dropdown-content" aria-label="View" style="min-width: 12rem">
               <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="west">Toggle files</button>
               <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="east">Toggle outline</button>
               <button role="menuitem" class="dropdown-item" tabindex="-1" data-value="south">Toggle terminal</button>
@@ -214,23 +380,36 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
             </div>
           </div>
         </div>
-        <main class="border-layout-center" style="background:#24292e; color:#e1e4e8; font:13px/1.6 var(--font-mono); padding:0.75rem 1rem; white-space:pre;">.border-layout {
-  display: grid;
-  grid-template-areas:
-    "west north  east"
-    "west center east"
-    "west south  east";
-}</main>
-        <div class="resizer border-layout-east"><aside class="border-layout-pane" style="width:9rem" aria-label="Outline">
-          <p class="text-xs text-muted-foreground m-0 mb-2">OUTLINE</p>
-          <ul class="text-sm m-0 ps-4"><li>.border-layout</li><li>regions</li><li>dividers</li></ul>
-        </aside></div>
-        <div class="resizer border-layout-south"><div style="height:6rem;" aria-label="Terminal">
-          <div class="mockup-code" data-chrome="none" data-size="sm" style="height:100%; border-radius:0;">
-            <pre data-prefix="$"><code>bun run e2e</code></pre>
-            <pre data-prefix=">" data-tone="success"><code>border-layout.e2e: all checks passed</code></pre>
-          </div>
-        </div></div>
+        <main
+          class="border-layout-center"
+          style="
+            background: #24292e;
+            color: #e1e4e8;
+            font: 13px/1.6 var(--font-mono);
+            padding: 0.75rem 1rem;
+            white-space: pre;
+          "
+          >.border-layout { display: grid; grid-template-areas: "west north east" "west center east" "west south east";
+          }</main
+        >
+        <div class="resizer border-layout-east"
+          ><aside class="border-layout-pane" style="width: 9rem" aria-label="Outline">
+            <p class="text-xs text-muted-foreground m-0 mb-2">OUTLINE</p>
+            <ul class="text-sm m-0 ps-4"
+              ><li>.border-layout</li
+              ><li>regions</li
+              ><li>dividers</li></ul
+            >
+          </aside></div
+        >
+        <div class="resizer border-layout-south"
+          ><div style="height: 6rem" aria-label="Terminal">
+            <div class="mockup-code" data-chrome="none" data-size="sm" style="height: 100%; border-radius: 0">
+              <pre data-prefix="$"><code>bun run e2e</code></pre>
+              <pre data-prefix=">" data-tone="success"><code>border-layout.e2e: all checks passed</code></pre>
+            </div>
+          </div></div
+        >
       </div>
     </div>
   </dialog>

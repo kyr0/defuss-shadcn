@@ -44,20 +44,20 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Search box" hint="Type and the × appears; click it or press Escape and the field empties, keeps the focus and fires input - the same event as typing. The browser's own clear button is replaced by one that looks the same everywhere."
-<search style="max-width:22rem;">
+<search style="max-width: 22rem">
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="search" name="q" placeholder="Search…" aria-label="Search">
+    <input type="search" name="q" placeholder="Search…" aria-label="Search" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
 </search>
 ```
 
 ```html example label="Live results" schema="none" hint="One input listener filters the list - typing and clearing alike - and an <output> announces the count."
-<div class="flex flex-col gap-3" style="max-width:22rem;">
+<div class="flex flex-col gap-3" style="max-width: 22rem">
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="search" id="people-q" placeholder="Filter people" aria-label="Filter people" aria-controls="people">
+    <input type="search" id="people-q" placeholder="Filter people" aria-label="Filter people" aria-controls="people" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <output for="people-q" class="text-sm text-muted-foreground" id="people-count">6 people</output>
@@ -85,10 +85,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Searching" schema="none" hint="The searching state: a spinner stands in for the icon and the field is aria-busy while the lookup runs; the page ends it with filled. Here every keystroke waits 600 ms for the (pretend) server."
-<div class="flex flex-col gap-3" style="max-width:22rem;">
+<div class="flex flex-col gap-3" style="max-width: 22rem">
   <div class="search-box" id="remote-search">
     <i data-lucide="search"></i>
-    <input type="search" placeholder="Search the archive" aria-label="Search the archive">
+    <input type="search" placeholder="Search the archive" aria-label="Search the archive" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <output class="text-sm text-muted-foreground" id="remote-result">Type to search 2,400 reports.</output>
@@ -101,12 +101,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     box.querySelector('input').addEventListener('input', (e) => {
       clearTimeout(timer);
       const q = e.target.value.trim();
-      if (!q) { out.value = 'Type to search 2,400 reports.'; return; }
+      if (!q) {
+        out.value = 'Type to search 2,400 reports.';
+        return;
+      }
       box.api.setState('searching');
       out.value = 'Searching…';
       timer = setTimeout(() => {
         box.api.setState('filled');
-        out.value = `${(q.length * 37) % 211 + 3} reports match "${q}".`;
+        out.value = `${((q.length * 37) % 211) + 3} reports match "${q}".`;
       }, 600);
     });
   });
@@ -114,16 +117,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Shortcut hint, pill and muted" schema="none" hint="A trailing <kbd> (or .search-box-hint) shows while the box is empty and gives way to the × once there is text. data-shape='pill' rounds the frame; data-variant='muted' drops border and shadow for a quieter surface."
-<div class="flex flex-col gap-4" style="max-width:22rem;">
+<div class="flex flex-col gap-4" style="max-width: 22rem">
   <div class="search-box" data-shape="pill">
     <i data-lucide="search"></i>
-    <input type="search" placeholder="Search docs" aria-label="Search docs">
+    <input type="search" placeholder="Search docs" aria-label="Search docs" />
     <kbd class="kbd" data-size="sm">⌘K</kbd>
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <div class="search-box" data-variant="muted">
     <i data-lucide="search"></i>
-    <input type="search" placeholder="Search messages" aria-label="Search messages">
+    <input type="search" placeholder="Search messages" aria-label="Search messages" />
     <span class="search-box-hint">in #general</span>
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
@@ -131,35 +134,35 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Search box sizes" schema="none" hint="data-size sm · (default) · lg - the same heights as input, so a search box lines up with the fields and buttons beside it."
-<div class="flex flex-col gap-3" style="max-width:22rem;">
+<div class="flex flex-col gap-3" style="max-width: 22rem">
   <div class="search-box" data-size="sm">
     <i data-lucide="search"></i>
-    <input type="search" value="small" aria-label="Small search">
+    <input type="search" value="small" aria-label="Small search" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="search" value="default" aria-label="Default search">
+    <input type="search" value="default" aria-label="Default search" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <div class="search-box" data-size="lg">
     <i data-lucide="search"></i>
-    <input type="search" value="large" aria-label="Large search">
+    <input type="search" value="large" aria-label="Large search" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
 </div>
 ```
 
 ```html example label="Disabled and invalid" schema="none" hint="disabled on the input dims the whole box; aria-invalid='true' turns the frame destructive."
-<div class="flex flex-col gap-3" style="max-width:22rem;">
+<div class="flex flex-col gap-3" style="max-width: 22rem">
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="search" placeholder="Search is offline" aria-label="Search" disabled>
+    <input type="search" placeholder="Search is offline" aria-label="Search" disabled />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="search" value="a" aria-label="Search" aria-invalid="true" aria-describedby="short-q">
+    <input type="search" value="a" aria-label="Search" aria-invalid="true" aria-describedby="short-q" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <p class="field-error" id="short-q">Type at least 2 characters.</p>
@@ -168,56 +171,58 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Filter" schema="none" hint="Radios in a <form>: choose one and the others glide aside while the × grows in after it - nothing jumps under the pointer. The × is a native <input type='reset'>: it clears the form and the chips glide back. No script."
 <form class="filter" aria-label="Framework">
-  <input type="radio" name="framework" value="svelte" aria-label="Svelte">
-  <input type="radio" name="framework" value="vue" aria-label="Vue">
-  <input type="radio" name="framework" value="react" aria-label="React">
-  <input type="reset" value="×" aria-label="Clear filter">
+  <input type="radio" name="framework" value="svelte" aria-label="Svelte" />
+  <input type="radio" name="framework" value="vue" aria-label="Vue" />
+  <input type="radio" name="framework" value="react" aria-label="React" />
+  <input type="reset" value="×" aria-label="Clear filter" />
 </form>
 ```
 
 ```html example label="Without a form" schema="none" hint="Outside a form, one radio of the group carries .filter-reset (authored last, like every reset): checking it means 'all', so it folds away and brings the others back."
 <div class="filter" role="radiogroup" aria-label="Meta framework">
-  <input type="radio" name="meta" value="sveltekit" aria-label="SvelteKit">
-  <input type="radio" name="meta" value="nuxt" aria-label="Nuxt">
-  <input type="radio" name="meta" value="next" aria-label="Next.js">
-  <input type="radio" name="meta" class="filter-reset" aria-label="All">
+  <input type="radio" name="meta" value="sveltekit" aria-label="SvelteKit" />
+  <input type="radio" name="meta" value="nuxt" aria-label="Nuxt" />
+  <input type="radio" name="meta" value="next" aria-label="Next.js" />
+  <input type="radio" name="meta" class="filter-reset" aria-label="All" />
 </div>
 ```
 
 ```html example label="Checkboxes" schema="none" hint="Checkbox chips draw their box - empty, then ticked. Without data-multiple they behave like the radios (the first tick folds the rest away) until the reset clears them."
 <form class="filter" aria-label="Frameworks">
-  <input type="checkbox" name="frameworks" value="svelte" aria-label="Svelte">
-  <input type="checkbox" name="frameworks" value="vue" aria-label="Vue">
-  <input type="checkbox" name="frameworks" value="react" aria-label="React">
-  <input type="reset" value="×" aria-label="Clear filters">
+  <input type="checkbox" name="frameworks" value="svelte" aria-label="Svelte" />
+  <input type="checkbox" name="frameworks" value="vue" aria-label="Vue" />
+  <input type="checkbox" name="frameworks" value="react" aria-label="React" />
+  <input type="reset" value="×" aria-label="Clear filters" />
 </form>
 ```
 
 ```html example label="Several at once" schema="none" hint="data-multiple keeps every chip in place: tick any number of categories; the reset grows in at the end as soon as one is ticked."
 <form class="filter" data-multiple data-shape="pill" aria-label="Categories">
-  <input type="checkbox" name="cat" value="design" aria-label="Design">
-  <input type="checkbox" name="cat" value="code" aria-label="Code">
-  <input type="checkbox" name="cat" value="writing" aria-label="Writing">
-  <input type="checkbox" name="cat" value="video" aria-label="Video">
-  <input type="checkbox" name="cat" value="audio" aria-label="Audio">
-  <input type="reset" value="×" aria-label="Clear filters">
+  <input type="checkbox" name="cat" value="design" aria-label="Design" />
+  <input type="checkbox" name="cat" value="code" aria-label="Code" />
+  <input type="checkbox" name="cat" value="writing" aria-label="Writing" />
+  <input type="checkbox" name="cat" value="video" aria-label="Video" />
+  <input type="checkbox" name="cat" value="audio" aria-label="Audio" />
+  <input type="reset" value="×" aria-label="Clear filters" />
 </form>
 ```
 
 ```html example label="Filtering content with :has()" schema="none" hint="No script: the list's container asks :has() which chip is checked and hides the cards that don't match. The reset radio shows everything again."
 <style>
-  .catalog:has([value="design"]:checked) .catalog-item:not([data-cat="design"]),
-  .catalog:has([value="code"]:checked) .catalog-item:not([data-cat="code"]),
-  .catalog:has([value="writing"]:checked) .catalog-item:not([data-cat="writing"]) { display: none; }
+  .catalog:has([value='design']:checked) .catalog-item:not([data-cat='design']),
+  .catalog:has([value='code']:checked) .catalog-item:not([data-cat='code']),
+  .catalog:has([value='writing']:checked) .catalog-item:not([data-cat='writing']) {
+    display: none;
+  }
 </style>
 <div class="catalog flex flex-col gap-3">
   <div class="filter" role="radiogroup" aria-label="Category" data-size="sm">
-    <input type="radio" name="catalog" value="design" aria-label="Design">
-    <input type="radio" name="catalog" value="code" aria-label="Code">
-    <input type="radio" name="catalog" value="writing" aria-label="Writing">
-    <input type="radio" name="catalog" class="filter-reset" aria-label="All">
+    <input type="radio" name="catalog" value="design" aria-label="Design" />
+    <input type="radio" name="catalog" value="code" aria-label="Code" />
+    <input type="radio" name="catalog" value="writing" aria-label="Writing" />
+    <input type="radio" name="catalog" class="filter-reset" aria-label="All" />
   </div>
-  <ul class="m-0 p-0 flex flex-wrap gap-2" style="list-style:none;">
+  <ul class="m-0 p-0 flex flex-wrap gap-2" style="list-style: none">
     <li class="catalog-item badge" data-variant="outline" data-cat="design">Color systems</li>
     <li class="catalog-item badge" data-variant="outline" data-cat="code">CSS nesting</li>
     <li class="catalog-item badge" data-variant="outline" data-cat="writing">Microcopy</li>
@@ -229,17 +234,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Search and filter together" schema="none" hint="Both narrow the same list: the chips pick a category, the box matches text. One function re-runs on the box's input event and the form's change and reset events."
-<div class="flex flex-col gap-3" style="max-width:26rem;">
+<div class="flex flex-col gap-3" style="max-width: 26rem">
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="search" id="lib-q" placeholder="Search articles" aria-label="Search articles" aria-controls="lib">
+    <input type="search" id="lib-q" placeholder="Search articles" aria-label="Search articles" aria-controls="lib" />
     <button type="button" class="search-box-clear" aria-label="Clear search"></button>
   </div>
   <form class="filter" id="lib-filter" data-size="sm" aria-label="Category">
-    <input type="radio" name="cat" value="guide" aria-label="Guides">
-    <input type="radio" name="cat" value="api" aria-label="API">
-    <input type="radio" name="cat" value="news" aria-label="News">
-    <input type="reset" value="×" aria-label="Clear filter">
+    <input type="radio" name="cat" value="guide" aria-label="Guides" />
+    <input type="radio" name="cat" value="api" aria-label="API" />
+    <input type="radio" name="cat" value="news" aria-label="News" />
+    <input type="reset" value="×" aria-label="Clear filter" />
   </form>
   <output class="text-sm text-muted-foreground" id="lib-count">6 articles</output>
   <ul id="lib" class="text-sm m-0 ps-5 flex flex-col gap-1">
@@ -274,22 +279,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Filter variants and sizes" schema="none" hint="data-variant secondary and outline change the chosen chip; data-shape='pill' rounds; data-size sm · (default) · lg. disabled on a chip keeps it out of reach."
 <div class="flex flex-col gap-3">
   <div class="filter" data-variant="secondary" role="radiogroup" aria-label="Plan">
-    <input type="radio" name="plan" aria-label="Free" checked>
-    <input type="radio" name="plan" aria-label="Pro">
-    <input type="radio" name="plan" class="filter-reset" aria-label="All plans">
+    <input type="radio" name="plan" aria-label="Free" checked />
+    <input type="radio" name="plan" aria-label="Pro" />
+    <input type="radio" name="plan" class="filter-reset" aria-label="All plans" />
   </div>
   <div class="filter" data-variant="outline" data-shape="pill" data-multiple role="group" aria-label="Status">
-    <input type="checkbox" aria-label="Open" checked>
-    <input type="checkbox" aria-label="In review">
-    <input type="checkbox" aria-label="Closed" disabled>
+    <input type="checkbox" aria-label="Open" checked />
+    <input type="checkbox" aria-label="In review" />
+    <input type="checkbox" aria-label="Closed" disabled />
   </div>
   <div class="filter" data-size="sm" data-multiple role="group" aria-label="Small">
-    <input type="checkbox" aria-label="Small">
-    <input type="checkbox" aria-label="Chips">
+    <input type="checkbox" aria-label="Small" />
+    <input type="checkbox" aria-label="Chips" />
   </div>
   <div class="filter" data-size="lg" data-multiple role="group" aria-label="Large">
-    <input type="checkbox" aria-label="Large">
-    <input type="checkbox" aria-label="Chips">
+    <input type="checkbox" aria-label="Large" />
+    <input type="checkbox" aria-label="Chips" />
   </div>
 </div>
 ```

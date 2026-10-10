@@ -40,23 +40,40 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Date" hint="Native date picker."
-<input class="date-input" type="date" id="birthday">
+<input class="date-input" type="date" id="birthday" />
 ```
 
 ```html example label="Date and time"
-<input class="date-input" type="datetime-local" id="meeting">
+<input class="date-input" type="datetime-local" id="meeting" />
 ```
 
 ```html example label="With constraints" hint="min / max hold for the calendar AND for typing: type 15 May 2030 into either field and leave it - the browser marks it out of range (:user-invalid), the border turns destructive and the .date-input-hint below states the allowed range with a warning sign. The hint is always there (aria-describedby), so the range is known before anyone types. The second field shows the invalid look directly (aria-invalid, as an app would flag a server-side error)."
-<div class="grid grid-cols-auto gap-4" style="--layout-min:14rem;">
+<div class="grid grid-cols-auto gap-4" style="--layout-min: 14rem">
   <div>
     <label class="label" for="d-out">Outbound</label>
-    <input class="date-input" type="date" id="d-out" value="2026-03-10" min="2024-01-01" max="2026-12-31" aria-describedby="d-out-hint">
+    <input
+      class="date-input"
+      type="date"
+      id="d-out"
+      value="2026-03-10"
+      min="2024-01-01"
+      max="2026-12-31"
+      aria-describedby="d-out-hint"
+    />
     <p class="date-input-hint" id="d-out-hint">Between 1 Jan 2024 and 31 Dec 2026.</p>
   </div>
   <div>
     <label class="label" for="d-back">Return</label>
-    <input class="date-input" type="date" id="d-back" value="2030-05-15" min="2024-01-01" max="2026-12-31" aria-invalid="true" aria-describedby="d-back-hint">
+    <input
+      class="date-input"
+      type="date"
+      id="d-back"
+      value="2030-05-15"
+      min="2024-01-01"
+      max="2026-12-31"
+      aria-invalid="true"
+      aria-describedby="d-back-hint"
+    />
     <p class="date-input-hint" id="d-back-hint">Between 1 Jan 2024 and 31 Dec 2026.</p>
   </div>
 </div>
@@ -65,23 +82,58 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Sizes" hint="Same ladder as .input via data-size - md is 2.25rem, so date fields row-align with text inputs."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
-  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xs" aria-label="Date xs" style="max-width:12rem;" ></input>
+  <input
+    class="date-input flex-1"
+    type="date"
+    value="2026-09-12"
+    data-size="xs"
+    aria-label="Date xs"
+    style="max-width: 12rem"
+  />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Small</span>
-  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="sm" aria-label="Date sm" style="max-width:12rem;" ></input>
+  <input
+    class="date-input flex-1"
+    type="date"
+    value="2026-09-12"
+    data-size="sm"
+    aria-label="Date sm"
+    style="max-width: 12rem"
+  />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Medium</span>
-  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="md" aria-label="Date md" style="max-width:12rem;" ></input>
+  <input
+    class="date-input flex-1"
+    type="date"
+    value="2026-09-12"
+    data-size="md"
+    aria-label="Date md"
+    style="max-width: 12rem"
+  />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Large</span>
-  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="lg" aria-label="Date lg" style="max-width:12rem;" ></input>
+  <input
+    class="date-input flex-1"
+    type="date"
+    value="2026-09-12"
+    data-size="lg"
+    aria-label="Date lg"
+    style="max-width: 12rem"
+  />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra large</span>
-  <input class="date-input flex-1" type="date" value="2026-09-12" data-size="xl" aria-label="Date xl" style="max-width:12rem;" ></input>
+  <input
+    class="date-input flex-1"
+    type="date"
+    value="2026-09-12"
+    data-size="xl"
+    aria-label="Date xl"
+    style="max-width: 12rem"
+  />
 </div>
 ```
 

@@ -5,7 +5,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -32,13 +38,22 @@ export interface ContextMenuStateConfigs {
  * after the (usually synchronous) show - else once the deferred show lands. */
 function keepInView(menu, x, y) {
   const fit = () => {
-    const w = menu.offsetWidth, h = menu.offsetHeight;
-    const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+    const w = menu.offsetWidth,
+      h = menu.offsetHeight;
+    const vw = document.documentElement.clientWidth,
+      vh = document.documentElement.clientHeight;
     if (x + w > vw - 4) menu.style.left = `${Math.max(4, Math.min(x - w, vw - w - 4))}px`;
     if (y + h > vh - 4) menu.style.top = `${Math.max(4, Math.min(y - h, vh - h - 4))}px`;
   };
   if (menu.matches(':popover-open')) fit();
-  else menu.addEventListener('toggle', (e) => { if (e.newState === 'open') fit(); }, { once: true });
+  else
+    menu.addEventListener(
+      'toggle',
+      (e) => {
+        if (e.newState === 'open') fit();
+      },
+      { once: true },
+    );
 }
 
 /**
@@ -115,7 +130,9 @@ if (!document.__ctxMenuReleaseInit) {
     pendingOpen = null;
     openMenuAt(menu, x, y);
   });
-  document.addEventListener('pointercancel', () => { pendingOpen = null; });
+  document.addEventListener('pointercancel', () => {
+    pendingOpen = null;
+  });
 }
 
 /** Show a context menu fixed at the pointer coords. */
@@ -129,41 +146,43 @@ function openMenuAt(menu, x, y) {
 }
 
 function init() {
-  dfDollar('[data-context-menu]:not([data-init])').toArray().forEach((trigger) => {
-  trigger.dataset.init = '';
-  const menu = dfDollar('#' + CSS.escape(trigger.dataset.contextMenu)).get(0);
-  if (!menu) return;
-  // bind-scope the api per menu popover: `$('#my-ctx').api.setState('open', { x: 40, y: 40 })`
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(menu, contextMenuApi);
-  trigger.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    // no pointer press (keyboard-synthesized, e.g. a11y tooling) → open next frame
-    if (e.pointerId === undefined || e.pointerId < 0) {
-      requestAnimationFrame(() => openMenuAt(menu, e.clientX, e.clientY));
-      return;
-    }
-    // right-button already released (gesture order: pointerup → contextmenu)
-    // → opening now can't be light-dismissed. lastRightUp===0 (page never saw a
-    // right release) must NOT qualify - otherwise early page loads take this
-    // branch for a still-held button (0 - now is meaningless).
-    if (lastRightUp > 0 && performance.now() - lastRightUp < 100) {
-      openMenuAt(menu, e.clientX, e.clientY);
-      return;
-    }
-    pendingOpen = { menu, x: e.clientX, y: e.clientY };
-  });
-  menu.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement).closest('.context-menu-item')) {
-      menu.hidePopover();
-      menu.dataset.stateName = 'default';
-    }
-  });
-  // right out of the top layer via Escape: keep the named state honest
-  menu.addEventListener('toggle', (e) => {
-    if (e.newState === 'closed') menu.dataset.stateName = 'default';
-  });
-});
+  dfDollar('[data-context-menu]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const menu = dfDollar('#' + CSS.escape(trigger.dataset.contextMenu)).get(0);
+      if (!menu) return;
+      // bind-scope the api per menu popover: `$('#my-ctx').api.setState('open', { x: 40, y: 40 })`
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(menu, contextMenuApi);
+      trigger.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        // no pointer press (keyboard-synthesized, e.g. a11y tooling) → open next frame
+        if (e.pointerId === undefined || e.pointerId < 0) {
+          requestAnimationFrame(() => openMenuAt(menu, e.clientX, e.clientY));
+          return;
+        }
+        // right-button already released (gesture order: pointerup → contextmenu)
+        // → opening now can't be light-dismissed. lastRightUp===0 (page never saw a
+        // right release) must NOT qualify - otherwise early page loads take this
+        // branch for a still-held button (0 - now is meaningless).
+        if (lastRightUp > 0 && performance.now() - lastRightUp < 100) {
+          openMenuAt(menu, e.clientX, e.clientY);
+          return;
+        }
+        pendingOpen = { menu, x: e.clientX, y: e.clientY };
+      });
+      menu.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.context-menu-item')) {
+          menu.hidePopover();
+          menu.dataset.stateName = 'default';
+        }
+      });
+      // right out of the top layer via Escape: keep the named state honest
+      menu.addEventListener('toggle', (e) => {
+        if (e.newState === 'closed') menu.dataset.stateName = 'default';
+      });
+    });
 }
 
 init();

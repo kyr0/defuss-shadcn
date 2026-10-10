@@ -55,33 +55,61 @@ function loadModule(vendorUrl) {
 }
 /** every vendor module: the editor, the tools an element uses, the Markdown parser */
 async function loadVendor(toolNames) {
-    const [EditorJS, marked, ...tools] = await Promise.all([loadModule(EDITORJS_URL), loadModule(MARKED_URL), ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))]);
+    const [EditorJS, marked, ...tools] = await Promise.all([
+        loadModule(EDITORJS_URL),
+        loadModule(MARKED_URL),
+        ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n])),
+    ]);
     return { EditorJS, marked: marked, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
 /** Markdown → Editor.js blocks (marked's tokens, inline Markdown as the tools' HTML). Block ids are
  * deterministic (b1, b2, ... in document order), so comments and links can address a Markdown document. */
 function markdownToBlocks(md, marked) {
     // the tools' sanitizer keeps <b> / <i> (the inline tools' tags), not <strong> / <em>
-    const inline = (t) => marked.parseInline(t).replace(/<code>/g, '<code class="inline-code">').replace(/<(\/?)strong>/g, '<$1b>').replace(/<(\/?)em>/g, '<$1i>');
+    const inline = (t) => marked
+        .parseInline(t)
+        .replace(/<code>/g, '<code class="inline-code">')
+        .replace(/<(\/?)strong>/g, '<$1b>')
+        .replace(/<(\/?)em>/g, '<$1i>');
     const items = (list) => (list.items ?? []).map((it) => {
         const own = (it.tokens ?? []).filter((t) => t.type !== 'list');
         const sub = (it.tokens ?? []).find((t) => t.type === 'list');
-        return { content: inline(own.map((t) => t.text ?? t.raw ?? '').join(' ').trim()), meta: it.task ? { checked: !!it.checked } : {}, items: sub ? items(sub) : [] };
+        return {
+            content: inline(own
+                .map((t) => t.text ?? t.raw ?? '')
+                .join(' ')
+                .trim()),
+            meta: it.task ? { checked: !!it.checked } : {},
+            items: sub ? items(sub) : [],
+        };
     });
     const blocks = [];
     for (const t of marked.lexer(md)) {
         switch (t.type) {
             case 'heading':
-                blocks.push({ type: 'header', data: { text: inline(t.text ?? ''), level: Math.min(6, Math.max(1, t.depth ?? 2)) } });
+                blocks.push({
+                    type: 'header',
+                    data: { text: inline(t.text ?? ''), level: Math.min(6, Math.max(1, t.depth ?? 2)) },
+                });
                 break;
             case 'paragraph':
                 blocks.push({ type: 'paragraph', data: { text: inline(t.text ?? '') } });
                 break;
             case 'list':
-                blocks.push({ type: 'list', data: { style: t.items?.some((i) => i.task) ? 'checklist' : t.ordered ? 'ordered' : 'unordered', meta: {}, items: items(t) } });
+                blocks.push({
+                    type: 'list',
+                    data: {
+                        style: t.items?.some((i) => i.task) ? 'checklist' : t.ordered ? 'ordered' : 'unordered',
+                        meta: {},
+                        items: items(t),
+                    },
+                });
                 break;
             case 'blockquote':
-                blocks.push({ type: 'quote', data: { text: inline((t.tokens ?? []).map((x) => x.text ?? '').join('\n')), caption: '', alignment: 'left' } });
+                blocks.push({
+                    type: 'quote',
+                    data: { text: inline((t.tokens ?? []).map((x) => x.text ?? '').join('\n')), caption: '', alignment: 'left' },
+                });
                 break;
             case 'code':
                 blocks.push({ type: 'code', data: { code: t.text ?? '' } });
@@ -90,15 +118,27 @@ function markdownToBlocks(md, marked) {
                 blocks.push({ type: 'delimiter', data: {} });
                 break;
             case 'table':
-                blocks.push({ type: 'table', data: { withHeadings: true, content: [(t.header ?? []).map((c) => inline(c.text)), ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))] } });
+                blocks.push({
+                    type: 'table',
+                    data: {
+                        withHeadings: true,
+                        content: [
+                            (t.header ?? []).map((c) => inline(c.text)),
+                            ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text))),
+                        ],
+                    },
+                });
                 break;
             case 'html':
                 blocks.push({ type: 'paragraph', data: { text: t.raw ?? '' } });
                 break;
-            default: break; // space
+            default:
+                break; // space
         }
     }
-    blocks.forEach((b, i) => { b.id = `b${i + 1}`; });
+    blocks.forEach((b, i) => {
+        b.id = `b${i + 1}`;
+    });
     return blocks;
 }
 /** the tools' inline HTML back to Markdown (marks for comments drop to their text) */
@@ -112,36 +152,57 @@ function inlineToMarkdown(html) {
         .replace(/<mark[^>]*>([\s\S]*?)<\/mark>/gi, '$1')
         .replace(/<a [^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)')
         .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
         .trim();
 }
 /** Editor.js blocks → Markdown. */
 function blocksToMarkdown(blocks) {
-    const list = (items, style, depth) => items.map((it, i) => {
+    const list = (items, style, depth) => items
+        .map((it, i) => {
         const bullet = style === 'ordered' ? `${i + 1}.` : style === 'checklist' ? `- [${it.meta?.checked ? 'x' : ' '}]` : '-';
         const sub = it.items?.length ? '\n' + list(it.items, style, depth + 1) : '';
         return `${'  '.repeat(depth)}${bullet} ${inlineToMarkdown(it.content)}${sub}`;
-    }).join('\n');
-    return blocks.map((b) => {
+    })
+        .join('\n');
+    return (blocks
+        .map((b) => {
         const d = b.data;
         switch (b.type) {
-            case 'header': return `${'#'.repeat(Number(d.level) || 2)} ${inlineToMarkdown(String(d.text ?? ''))}`;
-            case 'paragraph': return inlineToMarkdown(String(d.text ?? ''));
-            case 'list': return list(d.items ?? [], String(d.style ?? 'unordered'), 0);
-            case 'quote': return inlineToMarkdown(String(d.text ?? '')).split('\n').map((l) => `> ${l}`).join('\n') + (d.caption ? `\n> - ${inlineToMarkdown(String(d.caption))}` : '');
-            case 'code': return '```\n' + String(d.code ?? '') + '\n```';
-            case 'delimiter': return '---';
+            case 'header':
+                return `${'#'.repeat(Number(d.level) || 2)} ${inlineToMarkdown(String(d.text ?? ''))}`;
+            case 'paragraph':
+                return inlineToMarkdown(String(d.text ?? ''));
+            case 'list':
+                return list(d.items ?? [], String(d.style ?? 'unordered'), 0);
+            case 'quote':
+                return (inlineToMarkdown(String(d.text ?? ''))
+                    .split('\n')
+                    .map((l) => `> ${l}`)
+                    .join('\n') + (d.caption ? `\n> - ${inlineToMarkdown(String(d.caption))}` : ''));
+            case 'code':
+                return '```\n' + String(d.code ?? '') + '\n```';
+            case 'delimiter':
+                return '---';
             case 'table': {
                 const rows = (d.content ?? []);
                 if (!rows.length)
                     return '';
                 const line = (r) => `| ${r.map(inlineToMarkdown).join(' | ')} |`;
                 const [head, ...body] = rows;
-                return d.withHeadings === false ? rows.map(line).join('\n') : [line(head), `| ${head.map(() => '---').join(' | ')} |`, ...body.map(line)].join('\n');
+                return d.withHeadings === false
+                    ? rows.map(line).join('\n')
+                    : [line(head), `| ${head.map(() => '---').join(' | ')} |`, ...body.map(line)].join('\n');
             }
-            default: return '';
+            default:
+                return '';
         }
-    }).filter(Boolean).join('\n\n') + '\n';
+    })
+        .filter(Boolean)
+        .join('\n\n') + '\n');
 }
 /** The markup of a state: readonly marks the element; the editor itself follows in apply. */
 function applyMarkup(el, stateName) {
@@ -229,7 +290,15 @@ async function runCommand(el, name) {
     const current = currentBlock(el, editor);
     if (kind === 'delimiter' || kind === 'table') {
         const index = current ? editor.blocks.getBlockIndex(current.id) : editor.blocks.getBlocksCount() - 1;
-        editor.blocks.insert(kind, kind === 'table' ? { withHeadings: true, content: [['', ''], ['', '']] } : {}, {}, index + 1, true);
+        editor.blocks.insert(kind, kind === 'table'
+            ? {
+                withHeadings: true,
+                content: [
+                    ['', ''],
+                    ['', ''],
+                ],
+            }
+            : {}, {}, index + 1, true);
         return true;
     }
     if (!current)
@@ -274,8 +343,17 @@ function syncToolbar(el) {
     const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? anchor : anchor.parentElement);
     const holder = node && el.contains(node) ? node.closest('.ce-block') : null;
     const level = holder ? (dfDollar(holder).find('.ce-header').get(0)?.tagName.replace(/^H/i, '') ?? '') : '';
-    const listStyle = holder && dfDollar(holder).find('.cdx-list').length ? (dfDollar(holder).find('.cdx-list--checklist').length ? 'checklist' : dfDollar(holder).find('.cdx-list--ordered').length ? 'ordered' : 'unordered') : '';
-    dfDollar(bar).find('[data-editor-command]').toArray().forEach((b) => {
+    const listStyle = holder && dfDollar(holder).find('.cdx-list').length
+        ? dfDollar(holder).find('.cdx-list--checklist').length
+            ? 'checklist'
+            : dfDollar(holder).find('.cdx-list--ordered').length
+                ? 'ordered'
+                : 'unordered'
+        : '';
+    dfDollar(bar)
+        .find('[data-editor-command]')
+        .toArray()
+        .forEach((b) => {
         const name = b.dataset.editorCommand ?? '';
         const [kind, arg] = name.split(':');
         let on = null;
@@ -315,7 +393,14 @@ async function mount(el) {
     const config = {};
     for (const name of tools) {
         const cls = loaded[name];
-        config[name] = name === 'list' ? { class: cls, inlineToolbar: true, config: { defaultStyle: 'unordered' } } : name === 'header' ? { class: cls, inlineToolbar: true, config: { levels: [1, 2, 3, 4], defaultLevel: 2 } } : name === 'quote' || name === 'table' ? { class: cls, inlineToolbar: true } : cls;
+        config[name] =
+            name === 'list'
+                ? { class: cls, inlineToolbar: true, config: { defaultStyle: 'unordered' } }
+                : name === 'header'
+                    ? { class: cls, inlineToolbar: true, config: { levels: [1, 2, 3, 4], defaultLevel: 2 } }
+                    : name === 'quote' || name === 'table'
+                        ? { class: cls, inlineToolbar: true }
+                        : cls;
     }
     const Ctor = EditorJS;
     const editor = new Ctor({
@@ -327,7 +412,10 @@ async function mount(el) {
         minHeight: 0,
         onChange: async () => {
             // Fires after the document changed (typing, a block added or converted, a toolbar command) - how many blocks it has now.
-            el.dispatchEvent(new CustomEvent('editorjs-change', { bubbles: true, detail: { blocks: editor.blocks.getBlocksCount() } }));
+            el.dispatchEvent(new CustomEvent('editorjs-change', {
+                bubbles: true,
+                detail: { blocks: editor.blocks.getBlocksCount() },
+            }));
         },
     });
     el._editorjs = editor;
@@ -339,7 +427,9 @@ async function mount(el) {
     el.dispatchEvent(new CustomEvent('editorjs-ready', { bubbles: true, detail: { blocks: data.blocks.length } }));
 }
 function init() {
-    dfDollar('.editorjs:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.editorjs:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(el, editorjsApi);
@@ -348,8 +438,10 @@ function init() {
         if (bar) {
             el._toolbar = bar;
             // a toolbar button must not take the selection from the editor
-            dfDollar(bar).on('mousedown', (e) => { if (e.target.closest('[data-editor-command]'))
-                e.preventDefault(); });
+            dfDollar(bar).on('mousedown', (e) => {
+                if (e.target.closest('[data-editor-command]'))
+                    e.preventDefault();
+            });
             dfDollar(bar).on('click', (e) => {
                 const button = e.target.closest('[data-editor-command]');
                 if (!button)
@@ -357,7 +449,9 @@ function init() {
                 runCommand(el, button.dataset.editorCommand ?? '').then(() => syncToolbar(el));
             });
         }
-        mount(el).catch(() => { dfDollar(el).attr('data-error', ''); });
+        mount(el).catch(() => {
+            dfDollar(el).attr('data-error', '');
+        });
     });
 }
 if (!document.__editorjsInit) {
@@ -367,7 +461,7 @@ if (!document.__editorjsInit) {
             syncToolbar(el);
     });
 }
-const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
+const resolve = (target) => typeof target === 'string' ? dfDollar(target).get(0) : target;
 const editorOf = (target) => resolve(target)?._editorjs;
 df$.editorjs = {
     /**

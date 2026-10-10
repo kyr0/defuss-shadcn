@@ -76,7 +76,9 @@ function paint(tw, index, count) {
 }
 
 /** Sets the phase CSS keys on (the cursor is solid while typing, blinks idle). */
-const phase = (tw, name) => { tw.dataset.phase = name; };
+const phase = (tw, name) => {
+  tw.dataset.phase = name;
+};
 
 function stop(tw) {
   clearTimeout(tw._timer);
@@ -98,7 +100,9 @@ function step(tw) {
   const src = tw._sources[tw._index];
   const last = tw._index === tw._sources.length - 1;
   const loop = tw.hasAttribute('data-loop');
-  const next = (fn, ms) => { tw._timer = setTimeout(() => fn(tw), ms); };
+  const next = (fn, ms) => {
+    tw._timer = setTimeout(() => fn(tw), ms);
+  };
 
   if (tw._deleting) {
     if (tw._count > 0) {
@@ -118,7 +122,12 @@ function step(tw) {
   }
 
   // the string is complete
-  tw.dispatchEvent(new CustomEvent<TypewriterTypedDetail>('typewriter-typed', { bubbles: true, detail: { index: tw._index, text: src.text } }));
+  tw.dispatchEvent(
+    new CustomEvent<TypewriterTypedDetail>('typewriter-typed', {
+      bubbles: true,
+      detail: { index: tw._index, text: src.text },
+    }),
+  );
   if (last && !loop) return finish(tw);
   phase(tw, 'holding');
   tw._deleting = true;
@@ -129,7 +138,9 @@ function step(tw) {
 function finish(tw) {
   typewriterApi.setState(tw, 'done', { index: tw._index });
   // Fires when a run ends on its last string - that string's index.
-  tw.dispatchEvent(new CustomEvent<TypewriterDoneDetail>('typewriter-done', { bubbles: true, detail: { index: tw._index } }));
+  tw.dispatchEvent(
+    new CustomEvent<TypewriterDoneDetail>('typewriter-done', { bubbles: true, detail: { index: tw._index } }),
+  );
 }
 
 /** Reduced motion: whole strings swap in place on the pause rhythm - no typing. */
@@ -139,10 +150,13 @@ function stepInstant(tw) {
   paint(tw, tw._index, tw._sources[tw._index].chars.length);
   phase(tw, 'idle');
   if (last && !tw.hasAttribute('data-loop')) return finish(tw);
-  tw._timer = setTimeout(() => {
-    paint(tw, (tw._index + 1) % tw._sources.length, 0);
-    stepInstant(tw);
-  }, num(tw, 'pause', 1500) + 1000);
+  tw._timer = setTimeout(
+    () => {
+      paint(tw, (tw._index + 1) % tw._sources.length, 0);
+      stepInstant(tw);
+    },
+    num(tw, 'pause', 1500) + 1000,
+  );
 }
 
 function run(tw, delay = 0) {
@@ -216,67 +230,69 @@ df$.typewriterApi = typewriterApi;
 df$.typewriterStates = typewriterStates;
 
 function init() {
-  dfDollar('.typewriter:not([data-init])').toArray().forEach((tw) => {
-    tw.dataset.init = '';
+  dfDollar('.typewriter:not([data-init])')
+    .toArray()
+    .forEach((tw) => {
+      tw.dataset.init = '';
 
-    const children = Array.from(tw.children);
-    if (!children.length) return; // no strings authored - nothing to type
-    tw._sources = children.map((c) => ({
-      text: c.textContent ?? '',
-      chars: graphemes(c.textContent ?? ''),
-      className: c.getAttribute('class') ?? '',
-      style: c.getAttribute('style') ?? '',
-    }));
-    // the authored strings stay in the DOM for assistive tech (visually
-    // hidden by CSS); the typed copy and the cursor are presentation only
-    children.forEach((c) => c.classList.add('typewriter-source'));
+      const children = Array.from(tw.children);
+      if (!children.length) return; // no strings authored - nothing to type
+      tw._sources = children.map((c) => ({
+        text: c.textContent ?? '',
+        chars: graphemes(c.textContent ?? ''),
+        className: c.getAttribute('class') ?? '',
+        style: c.getAttribute('style') ?? '',
+      }));
+      // the authored strings stay in the DOM for assistive tech (visually
+      // hidden by CSS); the typed copy and the cursor are presentation only
+      children.forEach((c) => c.classList.add('typewriter-source'));
 
-    // the visible line: the typed text + the cursor, one unit
-    const line = document.createElement('span');
-    line.className = 'typewriter-line';
-    line.setAttribute('aria-hidden', 'true');
-    tw._text = document.createElement('span');
-    tw._text.className = 'typewriter-text';
-    const cursor = document.createElement('span');
-    cursor.className = 'typewriter-cursor';
-    line.append(tw._text, cursor);
-    tw.append(line);
+      // the visible line: the typed text + the cursor, one unit
+      const line = document.createElement('span');
+      line.className = 'typewriter-line';
+      line.setAttribute('aria-hidden', 'true');
+      tw._text = document.createElement('span');
+      tw._text.className = 'typewriter-text';
+      const cursor = document.createElement('span');
+      cursor.className = 'typewriter-cursor';
+      line.append(tw._text, cursor);
+      tw.append(line);
 
-    // data-reserve: the box is as wide as the longest string from the
-    // start, so the sentence around it never shifts
-    if (tw.hasAttribute('data-reserve')) {
-      const ghost = document.createElement('span');
-      ghost.className = 'typewriter-ghost';
-      ghost.setAttribute('aria-hidden', 'true');
-      tw._sources.forEach((s) => {
-        const g = document.createElement('span');
-        g.textContent = s.text;
-        dfDollar(ghost).append(g);
-      });
-      tw.append(ghost);
-    }
+      // data-reserve: the box is as wide as the longest string from the
+      // start, so the sentence around it never shifts
+      if (tw.hasAttribute('data-reserve')) {
+        const ghost = document.createElement('span');
+        ghost.className = 'typewriter-ghost';
+        ghost.setAttribute('aria-hidden', 'true');
+        tw._sources.forEach((s) => {
+          const g = document.createElement('span');
+          g.textContent = s.text;
+          dfDollar(ghost).append(g);
+        });
+        tw.append(ghost);
+      }
 
-    // el.store + el.api (AGENTS.md "State through stores")
+      // el.store + el.api (AGENTS.md "State through stores")
 
-    bindComponent(tw, typewriterApi);
+      bindComponent(tw, typewriterApi);
 
-    paint(tw, 0, 0);
-    phase(tw, 'idle');
-    tw.dataset.stateName = 'default';
+      paint(tw, 0, 0);
+      phase(tw, 'idle');
+      tw.dataset.stateName = 'default';
 
-    // data-trigger="visible": start the first time it scrolls into view
-    if (tw.dataset.trigger === 'visible' && globalThis.IntersectionObserver) {
-      const io = new IntersectionObserver((entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          io.disconnect();
-          typewriterApi.setState(tw, 'default', {});
-        }
-      });
-      io.observe(tw);
-    } else {
-      typewriterApi.setState(tw, 'default', {});
-    }
-  });
+      // data-trigger="visible": start the first time it scrolls into view
+      if (tw.dataset.trigger === 'visible' && globalThis.IntersectionObserver) {
+        const io = new IntersectionObserver((entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io.disconnect();
+            typewriterApi.setState(tw, 'default', {});
+          }
+        });
+        io.observe(tw);
+      } else {
+        typewriterApi.setState(tw, 'default', {});
+      }
+    });
 }
 
 init();

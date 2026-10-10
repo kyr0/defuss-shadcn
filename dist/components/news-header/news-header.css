@@ -39,7 +39,9 @@
     text-transform: uppercase;
   }
 
-  .mk-news-header-date { color: var(--muted-foreground); }
+  .mk-news-header-date {
+    color: var(--muted-foreground);
+  }
 
   .mk-news-header-title {
     margin: 0;
@@ -79,11 +81,22 @@
       font-weight: 500;
       text-decoration: none;
       white-space: nowrap;
-      transition: color 120ms, border-color 120ms;
+      transition:
+        color 120ms,
+        border-color 120ms;
 
-      &:hover { color: var(--foreground); }
-      &[aria-current] { color: var(--foreground); border-block-end-color: var(--primary); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: var(--radius-sm); }
+      &:hover {
+        color: var(--foreground);
+      }
+      &[aria-current] {
+        color: var(--foreground);
+        border-block-end-color: var(--primary);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -2px;
+        border-radius: var(--radius-sm);
+      }
     }
   }
 
@@ -119,16 +132,24 @@
     }
   }
   @keyframes mk-news-header-more {
-    from { --mk-news-header-more: 1; }
-    to { --mk-news-header-more: 0; }
+    from {
+      --mk-news-header-more: 1;
+    }
+    to {
+      --mk-news-header-more: 0;
+    }
   }
   /* the timeline in its own rule: a minifier must not fold it into the
      `animation` shorthand (reset-only there - the declaration would be
      dropped). Unsupported: the animation runs once (0s) and ends at 0 - no
      hint, no harm */
   @supports (animation-timeline: scroll()) {
-    .mk-news-header-topics { animation-timeline: scroll(self inline); }
-    .mk-news-header-topics[data-wrap] { animation: none; }
+    .mk-news-header-topics {
+      animation-timeline: scroll(self inline);
+    }
+    .mk-news-header-topics[data-wrap] {
+      animation: none;
+    }
   }
 
   /* data-wrap: break the topics onto more lines instead of scrolling */
@@ -138,7 +159,9 @@
     overflow: visible;
     animation: none;
 
-    &::after { content: none; }
+    &::after {
+      content: none;
+    }
   }
 
   /* masthead: a newspaper front - serif, centered, between double rules */
@@ -161,8 +184,16 @@
       justify-content: safe center;
       width: 100%;
       border-block: 3px double var(--foreground);
-      & a { padding-block: 0.5rem; border-block-end: 0; margin: 0; }
-      & a[aria-current] { text-decoration: underline; text-underline-offset: 0.3em; text-decoration-color: var(--primary); }
+      & a {
+        padding-block: 0.5rem;
+        border-block-end: 0;
+        margin: 0;
+      }
+      & a[aria-current] {
+        text-decoration: underline;
+        text-underline-offset: 0.3em;
+        text-decoration-color: var(--primary);
+      }
     }
   }
 
@@ -174,7 +205,12 @@
     color: var(--muted-foreground);
     font-size: 0.8125rem;
 
-    & strong { color: oklch(0.58 0.22 27); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    & strong {
+      color: oklch(0.58 0.22 27);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
   }
 
   /* tools on the right of the top line: search, view switch, subscribe */
@@ -194,29 +230,53 @@
     padding-block: 0.75rem;
     border-block: 1px solid var(--border);
 
-    & .mk-news-header-title { font-size: 1.375rem; letter-spacing: -0.02em; }
-    & .mk-news-header-topics { flex: 1 1 8rem; min-width: 0; margin: 0; border: 0; }
-    & .mk-news-header-topics a { padding-block: 0.25rem; }
-    & .mk-news-header-tools { margin-inline-start: auto; }
+    & .mk-news-header-title {
+      font-size: 1.375rem;
+      letter-spacing: -0.02em;
+    }
+    & .mk-news-header-topics {
+      flex: 1 1 8rem;
+      min-width: 0;
+      margin: 0;
+      border: 0;
+    }
+    & .mk-news-header-topics a {
+      padding-block: 0.25rem;
+    }
+    & .mk-news-header-tools {
+      margin-inline-start: auto;
+    }
   }
 
   @container mk-news-header (min-width: 48rem) {
-    .mk-news-header[data-variant="bar"] .mk-news-header-title { font-size: 1.5rem; }
-    .mk-news-header-title { font-size: 3rem; }
-    .mk-news-header[data-variant="masthead"] .mk-news-header-title { font-size: 4.5rem; }
+    .mk-news-header[data-variant="bar"] .mk-news-header-title {
+      font-size: 1.5rem;
+    }
+    .mk-news-header-title {
+      font-size: 3rem;
+    }
+    .mk-news-header[data-variant="masthead"] .mk-news-header-title {
+      font-size: 4.5rem;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .mk-news-header-topics a { transition: none; }
+    .mk-news-header-topics a {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
     .mk-news-header-desc,
-    .mk-news-header-topics a { color: var(--foreground); }
+    .mk-news-header-topics a {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-news-header-topics a[aria-current] { border-block-end-color: Highlight; }
+    .mk-news-header-topics a[aria-current] {
+      border-block-end-color: Highlight;
+    }
   }
 }

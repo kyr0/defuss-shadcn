@@ -22,23 +22,49 @@
     }
 
     /* -- Fit variants ---------------------------------------- */
-    &[data-fit="contain"] > img { object-fit: contain; }
-    &[data-fit="fill"]    > img { object-fit: fill; }
-    &[data-fit="none"]    > img { object-fit: none; }
+    &[data-fit="contain"] > img {
+      object-fit: contain;
+    }
+    &[data-fit="fill"] > img {
+      object-fit: fill;
+    }
+    &[data-fit="none"] > img {
+      object-fit: none;
+    }
 
     /* -- Aspect ratio ---------------------------------------- */
-    &[data-ratio="1/1"]  { aspect-ratio: 1 / 1; }
-    &[data-ratio="4/3"]  { aspect-ratio: 4 / 3; }
-    &[data-ratio="3/2"]  { aspect-ratio: 3 / 2; }
-    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
-    &[data-ratio="21/9"] { aspect-ratio: 21 / 9; }
-    &[data-ratio="3/4"]  { aspect-ratio: 3 / 4; }
+    &[data-ratio="1/1"] {
+      aspect-ratio: 1 / 1;
+    }
+    &[data-ratio="4/3"] {
+      aspect-ratio: 4 / 3;
+    }
+    &[data-ratio="3/2"] {
+      aspect-ratio: 3 / 2;
+    }
+    &[data-ratio="16/9"] {
+      aspect-ratio: 16 / 9;
+    }
+    &[data-ratio="21/9"] {
+      aspect-ratio: 21 / 9;
+    }
+    &[data-ratio="3/4"] {
+      aspect-ratio: 3 / 4;
+    }
 
     /* -- Radius variants ------------------------------------- */
-    &[data-radius="none"] { border-radius: 0; }
-    &[data-radius="sm"]   { border-radius: var(--radius-sm); }
-    &[data-radius="md"]   { border-radius: var(--radius-md); }
-    &[data-radius="full"] { border-radius: 9999px; }
+    &[data-radius="none"] {
+      border-radius: 0;
+    }
+    &[data-radius="sm"] {
+      border-radius: var(--radius-sm);
+    }
+    &[data-radius="md"] {
+      border-radius: var(--radius-md);
+    }
+    &[data-radius="full"] {
+      border-radius: 9999px;
+    }
 
     /* -- Preview cursor -------------------------------------- */
     &[data-preview] {
@@ -91,7 +117,9 @@
     height: 100vh;
     overflow: hidden;
     opacity: 0;
-    transition: opacity 200ms ease, display 200ms allow-discrete;
+    transition:
+      opacity 200ms ease,
+      display 200ms allow-discrete;
 
     &[open] {
       opacity: 1;
@@ -99,7 +127,9 @@
 
     &::backdrop {
       background: oklch(0 0 0 / 0);
-      transition: all 200ms ease, display 200ms allow-discrete;
+      transition:
+        all 200ms ease,
+        display 200ms allow-discrete;
     }
 
     &[open]::backdrop {
@@ -210,9 +240,15 @@
     background-color: var(--muted);
     isolation: isolate;
 
-    &[data-ratio="1/1"] { aspect-ratio: 1; }
-    &[data-ratio="3/4"] { aspect-ratio: 3 / 4; }
-    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+    &[data-ratio="1/1"] {
+      aspect-ratio: 1;
+    }
+    &[data-ratio="3/4"] {
+      aspect-ratio: 3 / 4;
+    }
+    &[data-ratio="16/9"] {
+      aspect-ratio: 16 / 9;
+    }
 
     & > :is(img, picture, video) {
       grid-area: 1 / 1;
@@ -238,52 +274,112 @@
     }
     /* with image.js: no switching until every image is decoded (data-ready) -
        the first one stays instead of a half-loaded frame */
-    &[data-init]:not([data-ready]) > :not(:first-child) { visibility: hidden; }
+    &[data-init]:not([data-ready]) > :not(:first-child) {
+      visibility: hidden;
+    }
     &[data-direction="vertical"] > :not(:first-child) {
       clip-path: inset(calc((var(--_k) - 1) * 100% / var(--_n)) 0 calc(100% - var(--_k) * 100% / var(--_n)) 0);
     }
-    &[data-direction="vertical"] > :not(:first-child):hover { clip-path: none; }
+    &[data-direction="vertical"] > :not(:first-child):hover {
+      clip-path: none;
+    }
     /* strip 1 needs a hit area too: moving back from image k must leave it */
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       z-index: 1;
       inset: 0 calc(100% - 100% / var(--_n)) 0 0;
     }
-    &[data-direction="vertical"]::before { inset: 0 0 calc(100% - 100% / var(--_n)) 0; }
+    &[data-direction="vertical"]::before {
+      inset: 0 0 calc(100% - 100% / var(--_n)) 0;
+    }
 
     /* k per image, n from the count, the shown one for the indicator */
-    & > :nth-child(2) { --_k: 2; }
-    & > :nth-child(3) { --_k: 3; }
-    & > :nth-child(4) { --_k: 4; }
-    & > :nth-child(5) { --_k: 5; }
-    & > :nth-child(6) { --_k: 6; }
-    & > :nth-child(7) { --_k: 7; }
-    & > :nth-child(8) { --_k: 8; }
-    & > :nth-child(9) { --_k: 9; }
-    & > :nth-child(10) { --_k: 10; }
-    &:has(> :nth-child(2)) { --_n: 2; }
-    &:has(> :nth-child(3)) { --_n: 3; }
-    &:has(> :nth-child(4)) { --_n: 4; }
-    &:has(> :nth-child(5)) { --_n: 5; }
-    &:has(> :nth-child(6)) { --_n: 6; }
-    &:has(> :nth-child(7)) { --_n: 7; }
-    &:has(> :nth-child(8)) { --_n: 8; }
-    &:has(> :nth-child(9)) { --_n: 9; }
-    &:has(> :nth-child(10)) { --_n: 10; }
-    &:has(> :nth-child(2):hover) { --_cur: 2; }
-    &:has(> :nth-child(3):hover) { --_cur: 3; }
-    &:has(> :nth-child(4):hover) { --_cur: 4; }
-    &:has(> :nth-child(5):hover) { --_cur: 5; }
-    &:has(> :nth-child(6):hover) { --_cur: 6; }
-    &:has(> :nth-child(7):hover) { --_cur: 7; }
-    &:has(> :nth-child(8):hover) { --_cur: 8; }
-    &:has(> :nth-child(9):hover) { --_cur: 9; }
-    &:has(> :nth-child(10):hover) { --_cur: 10; }
+    & > :nth-child(2) {
+      --_k: 2;
+    }
+    & > :nth-child(3) {
+      --_k: 3;
+    }
+    & > :nth-child(4) {
+      --_k: 4;
+    }
+    & > :nth-child(5) {
+      --_k: 5;
+    }
+    & > :nth-child(6) {
+      --_k: 6;
+    }
+    & > :nth-child(7) {
+      --_k: 7;
+    }
+    & > :nth-child(8) {
+      --_k: 8;
+    }
+    & > :nth-child(9) {
+      --_k: 9;
+    }
+    & > :nth-child(10) {
+      --_k: 10;
+    }
+    &:has(> :nth-child(2)) {
+      --_n: 2;
+    }
+    &:has(> :nth-child(3)) {
+      --_n: 3;
+    }
+    &:has(> :nth-child(4)) {
+      --_n: 4;
+    }
+    &:has(> :nth-child(5)) {
+      --_n: 5;
+    }
+    &:has(> :nth-child(6)) {
+      --_n: 6;
+    }
+    &:has(> :nth-child(7)) {
+      --_n: 7;
+    }
+    &:has(> :nth-child(8)) {
+      --_n: 8;
+    }
+    &:has(> :nth-child(9)) {
+      --_n: 9;
+    }
+    &:has(> :nth-child(10)) {
+      --_n: 10;
+    }
+    &:has(> :nth-child(2):hover) {
+      --_cur: 2;
+    }
+    &:has(> :nth-child(3):hover) {
+      --_cur: 3;
+    }
+    &:has(> :nth-child(4):hover) {
+      --_cur: 4;
+    }
+    &:has(> :nth-child(5):hover) {
+      --_cur: 5;
+    }
+    &:has(> :nth-child(6):hover) {
+      --_cur: 6;
+    }
+    &:has(> :nth-child(7):hover) {
+      --_cur: 7;
+    }
+    &:has(> :nth-child(8):hover) {
+      --_cur: 8;
+    }
+    &:has(> :nth-child(9):hover) {
+      --_cur: 9;
+    }
+    &:has(> :nth-child(10):hover) {
+      --_cur: 10;
+    }
 
     /* position bar: n segments, the shown one bright */
     &[data-indicator]::after {
-      content: '';
+      content: "";
       position: absolute;
       z-index: 2;
       inset: auto 0.75rem 0.625rem;
@@ -292,7 +388,12 @@
       --_seg: calc((100% + 4px) / var(--_n));
       /* stops along the full width: the shown segment bright, all segments dim */
       background:
-        linear-gradient(90deg, transparent calc((var(--_cur) - 1) * var(--_seg)), oklch(1 0 0) 0 calc(var(--_cur) * var(--_seg) - 4px), transparent 0),
+        linear-gradient(
+          90deg,
+          transparent calc((var(--_cur) - 1) * var(--_seg)),
+          oklch(1 0 0) 0 calc(var(--_cur) * var(--_seg) - 4px),
+          transparent 0
+        ),
         repeating-linear-gradient(90deg, oklch(1 0 0 / 0.45) 0 calc(var(--_seg) - 4px), transparent 0 var(--_seg));
       border-radius: 9999px;
       filter: drop-shadow(0 1px 1px oklch(0 0 0 / 0.35));
@@ -300,12 +401,18 @@
       transition: opacity 150ms ease;
     }
     &[data-indicator]:hover::after,
-    &[data-indicator="always"]::after { opacity: 1; }
+    &[data-indicator="always"]::after {
+      opacity: 1;
+    }
 
     /* zoom: the shown image eases in from a slight scale */
-    &[data-effect="zoom"] > :is(img, picture, video) { transition: scale 400ms ease; }
+    &[data-effect="zoom"] > :is(img, picture, video) {
+      transition: scale 400ms ease;
+    }
     &[data-effect="zoom"]:hover > :first-child:not(:has(~ :hover)),
-    &[data-effect="zoom"] > :not(:first-child):hover { scale: 1.04; }
+    &[data-effect="zoom"] > :not(:first-child):hover {
+      scale: 1.04;
+    }
   }
   /* no hover (touch): a swipeable strip, one image per view */
   @media (hover: none) {
@@ -323,11 +430,17 @@
         clip-path: none;
         scroll-snap-align: start;
       }
-      &[data-indicator]::after { display: none; }
+      &[data-indicator]::after {
+        display: none;
+      }
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hover-gallery > * { transition: none; }
-    .hover-gallery[data-effect="zoom"] > * { scale: none !important; }
+    .hover-gallery > * {
+      transition: none;
+    }
+    .hover-gallery[data-effect="zoom"] > * {
+      scale: none !important;
+    }
   }
 }

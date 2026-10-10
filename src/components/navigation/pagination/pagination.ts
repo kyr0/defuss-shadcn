@@ -94,7 +94,8 @@ function renderWindow(nav: HTMLElement): void {
   while (n && n !== nextLi) {
     const node = n as HTMLElement;
     n = n.nextSibling as ChildNode | null;
-    const page = node.nodeType === Node.ELEMENT_NODE ? dfDollar(node).find('.pagination-link[data-page]').attr('data-page') : null;
+    const page =
+      node.nodeType === Node.ELEMENT_NODE ? dfDollar(node).find('.pagination-link[data-page]').attr('data-page') : null;
     const p = page ? parseInt(page, 10) : NaN;
     if (Number.isFinite(p) && p >= start && p <= end) {
       node.remove(); // detach, then re-insert in order below
@@ -171,7 +172,9 @@ function setPage(nav: HTMLElement, page: number): void {
   if (next === numAttr(nav, 'activePage', min)) return;
   nav.dataset.activePage = String(next); // the attribute MO re-renders
   // Fires when the user changes the page (a link, the arrows) - the new page.
-  nav.dispatchEvent(new CustomEvent<PaginationChangeDetail>('pagination-change', { bubbles: true, detail: { page: next } }));
+  nav.dispatchEvent(
+    new CustomEvent<PaginationChangeDetail>('pagination-change', { bubbles: true, detail: { page: next } }),
+  );
 }
 
 /**
@@ -187,9 +190,12 @@ function setPage(nav: HTMLElement, page: number): void {
 function applyConfig(nav: HTMLElement, config: Record<string, unknown>): void {
   const a = config.activePage ?? config.page;
   if (a !== undefined && numAttr(nav, 'activePage', 1) !== Number(a)) nav.dataset.activePage = String(a);
-  if (config.minPage !== undefined && numAttr(nav, 'minPage', 1) !== Number(config.minPage)) nav.dataset.minPage = String(config.minPage);
-  if (config.maxPage !== undefined && numAttr(nav, 'maxPage', 1) !== Number(config.maxPage)) nav.dataset.maxPage = String(config.maxPage);
-  if (config.pageDisplayCount !== undefined && numAttr(nav, 'pageDisplayCount', 5) !== Number(config.pageDisplayCount)) nav.dataset.pageDisplayCount = String(config.pageDisplayCount);
+  if (config.minPage !== undefined && numAttr(nav, 'minPage', 1) !== Number(config.minPage))
+    nav.dataset.minPage = String(config.minPage);
+  if (config.maxPage !== undefined && numAttr(nav, 'maxPage', 1) !== Number(config.maxPage))
+    nav.dataset.maxPage = String(config.maxPage);
+  if (config.pageDisplayCount !== undefined && numAttr(nav, 'pageDisplayCount', 5) !== Number(config.pageDisplayCount))
+    nav.dataset.pageDisplayCount = String(config.pageDisplayCount);
 }
 
 /** The markup of a state, for render(): the same config + window render the
@@ -253,7 +259,9 @@ function init(): void {
     // one delegated click path: page links jump, prev/next step (href="#"
     // would jump to the top - the component owns the interaction)
     nav.addEventListener('click', (e) => {
-      const link = (e.target as HTMLElement).closest<HTMLElement>('.pagination-link[data-page], .pagination-prev, .pagination-next');
+      const link = (e.target as HTMLElement).closest<HTMLElement>(
+        '.pagination-link[data-page], .pagination-prev, .pagination-next',
+      );
       if (!link) return;
       e.preventDefault();
       if (link.classList.contains('pagination-link')) {

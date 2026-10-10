@@ -21,14 +21,18 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &:focus {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
-    &::placeholder { color: var(--muted-foreground); }
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
 
     /* -- Readonly state -------------------------------------- */
     /* :not(:disabled) is load-bearing: a disabled input ALSO matches
@@ -92,7 +96,9 @@
         cursor: pointer;
         transition: background 150ms;
 
-        &:hover { background: var(--accent); }
+        &:hover {
+          background: var(--accent);
+        }
       }
     }
 
@@ -107,11 +113,31 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
-    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding: 0 0.625rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding: 0 0.75rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding: 0 1rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      padding: 0 1.25rem;
+      font-size: 1.125rem;
+    }
   }
 
   /* -- Input group: icons, text and buttons inside the field ---
@@ -133,7 +159,9 @@
     box-shadow: var(--shadow-xs);
     color: var(--muted-foreground);
     font-size: 0.875rem;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     & > .input {
       flex: 1;
@@ -145,9 +173,15 @@
       box-shadow: none;
       font-size: inherit;
 
-      &:focus { box-shadow: none; }
-      &:not(:first-child) { padding-inline-start: 0.5rem; }
-      &:not(:last-child) { padding-inline-end: 0.5rem; }
+      &:focus {
+        box-shadow: none;
+      }
+      &:not(:first-child) {
+        padding-inline-start: 0.5rem;
+      }
+      &:not(:last-child) {
+        padding-inline-end: 0.5rem;
+      }
     }
 
     &:has(> .input:focus) {
@@ -155,7 +189,12 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
-    &:has(> .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *))) {
+    &:has(
+      > .input:is(
+        [aria-invalid="true"],
+        :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)
+      )
+    ) {
       border-color: var(--destructive);
 
       &:has(> .input:focus) {
@@ -168,7 +207,9 @@
     &:has(> .input:read-only:not(:disabled)) {
       background: var(--muted);
 
-      & > .input { background: transparent; }
+      & > .input {
+        background: transparent;
+      }
       &:has(> .input:focus) {
         border-color: var(--input);
         box-shadow: var(--shadow-xs);
@@ -180,7 +221,9 @@
       box-shadow: none;
       cursor: not-allowed;
 
-      & > .input { background: transparent; }
+      & > .input {
+        background: transparent;
+      }
     }
 
     /* decorative icon (inline <svg> or lucide <i>) */
@@ -191,8 +234,12 @@
       color: var(--muted-foreground);
       pointer-events: none;
 
-      &:first-child { margin-inline-start: 0.75rem; }
-      &:last-child { margin-inline-end: 0.75rem; }
+      &:first-child {
+        margin-inline-start: 0.75rem;
+      }
+      &:last-child {
+        margin-inline-end: 0.75rem;
+      }
     }
 
     /* static text: a unit, a protocol, a domain */
@@ -202,8 +249,12 @@
       color: var(--muted-foreground);
       user-select: none;
 
-      &:first-child { margin-inline-start: 0.75rem; }
-      &:last-child { margin-inline-end: 0.75rem; }
+      &:first-child {
+        margin-inline-start: 0.75rem;
+      }
+      &:last-child {
+        margin-inline-end: 0.75rem;
+      }
     }
 
     /* an in-field action: copy, show/hide, clear, open a picker */
@@ -220,26 +271,64 @@
       background: transparent;
       color: var(--muted-foreground);
       cursor: pointer;
-      transition: background-color 150ms, color 150ms;
+      transition:
+        background-color 150ms,
+        color 150ms;
 
-      & svg { width: 1rem; height: 1rem; }
+      & svg {
+        width: 1rem;
+        height: 1rem;
+      }
       /* icon swaps (copy -> check, eye -> eye-off): the UA's [hidden] rule
          only covers HTML elements, so a hidden <svg> needs its own */
-      & svg[hidden] { display: none; }
-      &:hover { background: var(--accent); color: var(--accent-foreground); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-      &:disabled { cursor: not-allowed; background: transparent; color: var(--muted-foreground); }
-      &:first-child { margin-inline-start: 0.25rem; }
-      &:last-child { margin-inline-end: 0.25rem; }
-      & + .input-group-button { margin-inline-start: 0.125rem; }
+      & svg[hidden] {
+        display: none;
+      }
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 1px;
+      }
+      &:disabled {
+        cursor: not-allowed;
+        background: transparent;
+        color: var(--muted-foreground);
+      }
+      &:first-child {
+        margin-inline-start: 0.25rem;
+      }
+      &:last-child {
+        margin-inline-end: 0.25rem;
+      }
+      & + .input-group-button {
+        margin-inline-start: 0.125rem;
+      }
     }
 
     /* -- Sizes: the same ladder as .input, set on the group ------ */
-    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      font-size: 1.125rem;
+    }
   }
 
   /* -- Auto-growing textarea --------------------------------- */
@@ -303,7 +392,10 @@
       border-color: GrayText;
     }
 
-    .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+    .input:is(
+      [aria-invalid="true"],
+      :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)
+    ) {
       border-color: LinkText;
     }
 
@@ -315,10 +407,19 @@
       border-color: ButtonBorder;
       background: Field;
 
-      & > .input:focus { outline: none; }
-      &:has(> .input:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
-      &:has(> .input:disabled) { border-color: GrayText; }
-      & > .input-group-button { color: ButtonText; }
+      & > .input:focus {
+        outline: none;
+      }
+      &:has(> .input:focus) {
+        outline: 2px solid Highlight;
+        outline-offset: 1px;
+      }
+      &:has(> .input:disabled) {
+        border-color: GrayText;
+      }
+      & > .input-group-button {
+        color: ButtonText;
+      }
     }
   }
 }

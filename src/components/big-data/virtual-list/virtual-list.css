@@ -158,14 +158,13 @@
     position: absolute;
     inset: 0;
     /* placeholder rows, drawn rather than built from elements */
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        var(--muted) 0,
-        var(--muted) calc(var(--virtual-list-row-height) - 1px),
-        transparent calc(var(--virtual-list-row-height) - 1px),
-        transparent var(--virtual-list-row-height)
-      );
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--muted) 0,
+      var(--muted) calc(var(--virtual-list-row-height) - 1px),
+      transparent calc(var(--virtual-list-row-height) - 1px),
+      transparent var(--virtual-list-row-height)
+    );
     opacity: 0.6;
     animation: virtual-list-pulse 1.6s ease-in-out infinite;
   }
@@ -181,8 +180,13 @@
   }
 
   @keyframes virtual-list-pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 0.3; }
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
 }
 

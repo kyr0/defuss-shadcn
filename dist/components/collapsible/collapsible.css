@@ -15,7 +15,9 @@
       block-size: 0;
       overflow-y: clip;
       interpolate-size: allow-keywords;
-      transition: block-size 200ms ease, content-visibility 200ms allow-discrete;
+      transition:
+        block-size 200ms ease,
+        content-visibility 200ms allow-discrete;
     }
 
     &[open]::details-content {
@@ -34,16 +36,28 @@
      and the outer border (trigger + content), ratio 0.75 / 1 / 1.25;
      comfortable matches the unsized default. */
   .collapsible:where([data-density="compact"]) {
-    & .collapsible-trigger { padding: 0.5rem 0.75rem; }
-    & .collapsible-content  { padding: 0 0.75rem 0.5rem; }
+    & .collapsible-trigger {
+      padding: 0.5rem 0.75rem;
+    }
+    & .collapsible-content {
+      padding: 0 0.75rem 0.5rem;
+    }
   }
   .collapsible:where([data-density="comfortable"]) {
-    & .collapsible-trigger { padding: 0.75rem 1rem; }
-    & .collapsible-content  { padding: 0 1rem 0.75rem; }
+    & .collapsible-trigger {
+      padding: 0.75rem 1rem;
+    }
+    & .collapsible-content {
+      padding: 0 1rem 0.75rem;
+    }
   }
   .collapsible:where([data-density="spacious"]) {
-    & .collapsible-trigger { padding: 1rem 1.25rem; }
-    & .collapsible-content  { padding: 0 1.25rem 1rem; }
+    & .collapsible-trigger {
+      padding: 1rem 1.25rem;
+    }
+    & .collapsible-content {
+      padding: 0 1.25rem 1rem;
+    }
   }
 
   .collapsible-trigger {
@@ -105,19 +119,38 @@
     font-style: normal;
     line-height: 1;
 
-    & svg { width: 1em; height: 1em; }
+    & svg {
+      width: 1em;
+      height: 1em;
+    }
   }
 
   /* -- Sizes: the heading's scale and weight (md == default) ------- */
   .collapsible {
-    &[data-size="sm"] .collapsible-trigger { font-size: 0.8125rem; }
-    &[data-size="md"] .collapsible-trigger { font-size: 0.875rem; }
-    &[data-size="lg"] .collapsible-trigger { font-size: 1rem; font-weight: 600; }
-    &[data-size="xl"] .collapsible-trigger { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; }
+    &[data-size="sm"] .collapsible-trigger {
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] .collapsible-trigger {
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] .collapsible-trigger {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    &[data-size="xl"] .collapsible-trigger {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
 
     /* -- Variants: the surface (content follows its text color) ---- */
-    &[data-variant="ghost"] { border-color: transparent; }
-    &[data-variant="muted"] { background-color: var(--muted); border-color: transparent; }
+    &[data-variant="ghost"] {
+      border-color: transparent;
+    }
+    &[data-variant="muted"] {
+      background-color: var(--muted);
+      border-color: transparent;
+    }
     &[data-variant="primary"] {
       background-color: var(--primary);
       color: var(--primary-foreground);
@@ -130,7 +163,10 @@
     }
     /* highlight: plain while closed, the primary surface once open */
     &[data-variant="highlight"] {
-      transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+      transition:
+        background-color 200ms ease,
+        color 200ms ease,
+        border-color 200ms ease;
 
       &[open] {
         background-color: var(--primary);
@@ -147,11 +183,14 @@
      data-turn="quarter") or swap two elements with .collapsible-when-open /
      .collapsible-when-closed. */
   .collapsible:is([data-marker="arrow"], [data-marker="plus"]) > .collapsible-trigger::after {
-    content: '';
+    content: "";
     flex-shrink: 0;
     margin-inline-start: auto;
     color: color-mix(in oklch, currentColor 65%, transparent);
-    transition: rotate 200ms ease, translate 200ms ease, background-size 200ms ease;
+    transition:
+      rotate 200ms ease,
+      translate 200ms ease,
+      background-size 200ms ease;
   }
   .collapsible[data-marker="arrow"] > .collapsible-trigger::after {
     width: 0.45em;
@@ -175,7 +214,9 @@
       linear-gradient(currentColor 0 0) center / 2px 100% no-repeat;
   }
   .collapsible[data-marker="plus"][open] > .collapsible-trigger::after {
-    background-size: 100% 2px, 2px 0;
+    background-size:
+      100% 2px,
+      2px 0;
     rotate: 180deg;
   }
   .collapsible[data-marker-position="start"] > .collapsible-trigger::after {
@@ -185,10 +226,16 @@
   }
 
   .collapsible-chevron[data-turn="quarter"] {
-    details[open] > summary > & { transform: rotate(90deg); }
+    details[open] > summary > & {
+      transform: rotate(90deg);
+    }
     /* RTL: a quarter-turned chevron-right points the other way */
-    &:dir(rtl) { scale: -1 1; }
-    details[open] > summary > &:dir(rtl) { transform: rotate(-90deg); }
+    &:dir(rtl) {
+      scale: -1 1;
+    }
+    details[open] > summary > &:dir(rtl) {
+      transform: rotate(-90deg);
+    }
   }
 
   /* swap two glyphs (📁 / 📂, "Show" / "Hide") instead of turning one */
@@ -199,7 +246,6 @@
   .collapsible-trigger > :is(.collapsible-when-open, .collapsible-when-closed) {
     margin-inline-start: auto;
   }
-
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all

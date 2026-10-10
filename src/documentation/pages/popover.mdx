@@ -57,7 +57,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <p class="popover-description">Set the dimensions for the layer.</p>
   </div>
   <div class="popover-content">
-    <p style="margin:0;font-size:0.8125rem;color:var(--muted-foreground);">Width: 100% • Height: auto</p>
+    <p style="margin: 0; font-size: 0.8125rem; color: var(--muted-foreground)">Width: 100% • Height: auto</p>
   </div>
 </div>
 ```
@@ -68,28 +68,28 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example height="22"
 <button class="btn" data-variant="outline" popovertarget="demo-popover-form">Open Popover</button>
-<div class="popover" id="demo-popover-form" popover style="width:20rem;">
+<div class="popover" id="demo-popover-form" popover style="width: 20rem">
   <div class="popover-header">
     <p class="popover-title">Dimensions</p>
     <p class="popover-description">Set the dimensions for the layer.</p>
   </div>
   <div class="popover-content">
-    <div style="display:grid;gap:0.5rem;">
-      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-        <label class="label" for="pop-width" style="text-align:right;">Width</label>
-        <input class="input" id="pop-width" type="text" value="100%" style="height:2rem;font-size:0.8125rem;"></input>
+    <div style="display: grid; gap: 0.5rem">
+      <div style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; gap: 1rem">
+        <label class="label" for="pop-width" style="text-align: right">Width</label>
+        <input class="input" id="pop-width" type="text" value="100%" style="height: 2rem; font-size: 0.8125rem" />
       </div>
-      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-        <label class="label" for="pop-max-width" style="text-align:right;">Max. width</label>
-        <input class="input" id="pop-max-width" type="text" value="300px" style="height:2rem;font-size:0.8125rem;"></input>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; gap: 1rem">
+        <label class="label" for="pop-max-width" style="text-align: right">Max. width</label>
+        <input class="input" id="pop-max-width" type="text" value="300px" style="height: 2rem; font-size: 0.8125rem" />
       </div>
-      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-        <label class="label" for="pop-height" style="text-align:right;">Height</label>
-        <input class="input" id="pop-height" type="text" value="25px" style="height:2rem;font-size:0.8125rem;"></input>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; gap: 1rem">
+        <label class="label" for="pop-height" style="text-align: right">Height</label>
+        <input class="input" id="pop-height" type="text" value="25px" style="height: 2rem; font-size: 0.8125rem" />
       </div>
-      <div style="display:grid;grid-template-columns:1fr 2fr;align-items:center;gap:1rem;">
-        <label class="label" for="pop-max-height" style="text-align:right;">Max. height</label>
-        <input class="input" id="pop-max-height" type="text" value="none" style="height:2rem;font-size:0.8125rem;"></input>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; align-items: center; gap: 1rem">
+        <label class="label" for="pop-max-height" style="text-align: right">Max. height</label>
+        <input class="input" id="pop-max-height" type="text" value="none" style="height: 2rem; font-size: 0.8125rem" />
       </div>
     </div>
   </div>
@@ -163,15 +163,22 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-wrap gap-2">
   <button class="btn" data-variant="outline" popovertarget="density-popover-compact">Compact</button>
   <div class="popover" id="density-popover-compact" popover data-density="compact">
-    <div class="popover-header"><p class="popover-title">Compact density</p><p class="popover-description">Content padding 0.75rem.</p></div>
+    <div class="popover-header"
+      ><p class="popover-title">Compact density</p><p class="popover-description">Content padding 0.75rem.</p></div
+    >
   </div>
   <button class="btn" data-variant="outline" popovertarget="density-popover-comfortable">Comfortable</button>
   <div class="popover" id="density-popover-comfortable" popover data-density="comfortable">
-    <div class="popover-header"><p class="popover-title">Comfortable density</p><p class="popover-description">Identical to the unsized default - 1rem.</p></div>
+    <div class="popover-header"
+      ><p class="popover-title">Comfortable density</p
+      ><p class="popover-description">Identical to the unsized default - 1rem.</p></div
+    >
   </div>
   <button class="btn" data-variant="outline" popovertarget="density-popover-spacious">Spacious</button>
   <div class="popover" id="density-popover-spacious" popover data-density="spacious">
-    <div class="popover-header"><p class="popover-title">Spacious density</p><p class="popover-description">Content padding 1.25rem.</p></div>
+    <div class="popover-header"
+      ><p class="popover-title">Spacious density</p><p class="popover-description">Content padding 1.25rem.</p></div
+    >
   </div>
 </div>
 ```

@@ -29,7 +29,9 @@ const accordionStates = ['default', 'all-open', 'all-closed'];
  * (`defaults` null).
  */
 function applyMarkup(accordion, stateName, defaults) {
-    dfDollar(accordion).find('.accordion-item').each((i, item) => {
+    dfDollar(accordion)
+        .find('.accordion-item')
+        .each((i, item) => {
         const open = stateName === 'all-open' ? true : stateName === 'all-closed' ? false : defaults ? defaults[i] : null;
         if (open !== null && open !== undefined)
             dfDollar(item).attr('open', open ? '' : null);
@@ -72,7 +74,10 @@ function init() {
     dfDollar('.accordion:not([data-api])').each((_i, accordion) => {
         dfDollar(accordion).data('api', '');
         // snapshot the authored open set - that is the 'default' state to return to
-        accordion._defaultOpen = dfDollar(accordion).find('.accordion-item').toArray().map((item) => item.open);
+        accordion._defaultOpen = dfDollar(accordion)
+            .find('.accordion-item')
+            .toArray()
+            .map((item) => item.open);
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(accordion, accordionApi);
     });

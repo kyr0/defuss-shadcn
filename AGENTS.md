@@ -142,6 +142,7 @@ defuss-shadcn/
 │   ├── lib/apps.ts                    ← which components an app's markup needs (pure: class ownership by name prefix / top-level rule, JS init hooks, styled attributes, df$.shadcn namespaces, page-level base rules; tests/apps.test.ts)
 │   ├── lib/apps-files.ts              ← the fs half: component sources + each STANDALONE_APPS fence → appPlans() (bundle.ts, stats-files.ts)
 │   ├── stat-figures.ts                ← writes every data-stat figure in pages/*.mdx from dist/stats.json + data/verify-timing.json (`bun run figures`; verify's `stat figures` gate checks them - lib/stat-figures.ts, pure)
+│   ├── format-pages.ts                ← `--write` | `--check`: the ```html example fence bodies of pages/*.mdx through Prettier's HTML printer (lib/format-pages.ts, the pure splitter); `make format` / `make format-check` run it after oxfmt (see "Formatting")
 │   ├── time-verify.ts                 ← `make bench` only: times one green `bun scripts/verify.ts` run and records gates, machine, chip, OS, Bun and the driving agent (`--agent "…"`) as src/documentation/data/verify-timing.json - the flagship deck's verifier slide cites it
 │   ├── verify.ts                      ← static consistency gate (runs at end of build; `bun run verify`)
 │   ├── sync-docs.ts                   ← the docs/ RELEASE snapshot: dist/documentation → docs/ with assets pinned to jsDelivr @vX.Y.Z; republishes only when the version changed (deploy.sh) or `--force`, stamps docs/release.json
@@ -1414,9 +1415,55 @@ Translate React/Radix patterns into semantic HTML + vanilla JS.
 
 ## Linting
 
-`make lint` (oxlint over `src/`, `tests/`, `scripts/`) reports warnings but must stay
-**non-blocking** - do not configure it to fail on warnings (`--deny-warnings` is banned);
-only real errors should gate CI.
+`make lint` (oxlint over `src/`, `tests/`, `scripts/`, then `make format-check`) reports
+warnings but must stay **non-blocking** - do not configure it to fail on warnings
+(`--deny-warnings` is banned); only real errors should gate CI. An unformatted file IS
+an error: the format check fails the lint.
+
+### Formatting
+
+`make format` formats, `make format-check` (part of `make lint`) fails on any file it
+would change. Two formatters, one width (120); single quotes in TypeScript, double
+quotes in CSS (the sheets describe markup written with double quotes, and the
+`[data-variant="…"]` selectors read like the HTML they match):
+
+- **oxfmt** (`.oxfmtrc.json`: `singleQuote` for TS, an override keeps `*.css` on double
+  quotes) over the component `.ts` + `.css`, `src/shared/*.ts` and `src/theme/utils/*.css`
+  (never `src/theme/{preset}.css`: build.ts generates those from themes.ts, the `theme
+  files fresh` gate keeps them equal to the generator) - the globs live in package.json's
+  `format` / `format:check` scripts. `.oxfmtrc.json` ignores
+  `qr-code/qr-code.ts`: its `// BEGIN VENDORED qrcodegen.ts` region is byte-pinned (length +
+  SHA-256) by tests/e2e/qr-code-encoder.e2e.ts - a vendored file is never formatted. Formatting is
+  whitespace-only for the shipped bytes: every `.min.css` /
+  `.min.js` stayed byte-identical when it was introduced, except the spaces oxfmt puts
+  inside a legacy `clip: rect(0, 0, 0, 0)` (lightningcss passes that value through).
+  Lines a formatter cannot break (long selectors, strings) stay long - "formatted" is
+  the checked property, not a maximum line length (oxlint has no `max-len`).
+- **`bun scripts/format-pages.ts`** over the doc pages: ONLY the bodies of the
+  ` ```html ` example fences, through Prettier's HTML printer with `singleQuote` (an
+  example's `<script>` writes `df$('…')` like the sources and skills do; Prettier applies
+  it to an example's inline `<style>` too, which is cosmetic) (`scripts/lib/format-pages.ts`
+  is the pure splitter, `tests/format-pages.test.ts` proves a formatted fence renders the
+  same DOM - elements, attributes, text, embedded CSS via the CSSOM - with the browser's
+  parser). The JSX prose around the fences is never hard-wrapped by a tool: MDX parses JSX
+  children as Markdown (a wrapped line starting with `- ` becomes a list), and Prettier's
+  `mdx` parser is MDX v1 (it rewrote a JSX comment and broke the docs build). For the
+  prose, `.vscode/settings.json` turns word wrap on. A fence whose formatted body holds a
+  ``` line gets a longer fence; every fence reader accepts that (docs-ssg.ts
+  `exampleFence`, schema.ts' fence map, remark).
+- The check is also a **markup parser over every example**: Prettier refuses what a
+  browser repairs silently (an end tag on a void element, a double `</svg>`, JSX braces
+  in an html fence). Repair the fence; never exclude it.
+- **A formatter changes line layout, and the repo reads sources as text** (the
+  parser rule above): oxfmt's wrap of one long `dfDollar<T>(` call hid dialog's init
+  selector from `scripts/lib/apps.ts` and dropped dialog.js from the Notes app bundle
+  until the scanner accepted the newline; its unquoting of the code-example icon table's
+  keys (`'smartphone':` → `smartphone:`) blinded the docs' icon reader
+  (lib/components/code-example.tsx) and 369 rendered pages carried defuss's
+  `FATAL ERROR: [JsxError]` text in their example toolbars - verify's `rendered pages are
+  error-free` gate now reads the output for it. After a formatter change, compare
+  `dist/stats.json`'s per-app component sets, `cmp` the minified files against HEAD and
+  grep the rendered pages.
 
 Keep the log clean: fix every warning an edit introduces. For a variable that is
 **known to be intentionally unused**, prefix it with `_` (e.g. `var _copyBtn = …`);

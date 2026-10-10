@@ -13,7 +13,15 @@
 // query scalar writes; the theme-sheet link is mounted via query .append(),
 // swatch dots render as markup in one morph pass instead of a
 // createElement+appendChild chain (§3 theme-switcher row).
-import { defussGlobals, defussQuery, loadTheme, safeShowPopover, componentState, bindComponent, persisted } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  defussQuery,
+  loadTheme,
+  safeShowPopover,
+  componentState,
+  bindComponent,
+  persisted,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -54,8 +62,7 @@ const remembered = () => (chosen ??= persisted(STORAGE_KEY, 'default'));
  */
 function themeHref(root: HTMLElement, id: string): string {
   if (root.dataset.themeBase) return `${root.dataset.themeBase}/${id}.css`;
-  const tokens = dfDollar('#tokens-css').get(0) ||
-    dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
+  const tokens = dfDollar('#tokens-css').get(0) || dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
   // link.href (the property) is absolute → URL resolution is exact, incl.
   // the jsDelivr CDN URLs the docs mirror rewrites to
   if (tokens) return new URL(`../${id}.css`, (tokens as HTMLLinkElement).href).href;
@@ -85,8 +92,7 @@ function applyThemeId(root: HTMLElement, id: string) {
   link.rel = 'stylesheet';
   link.dataset.themeId = id;
   link.href = themeHref(root, id);
-  const tokens = dfDollar('#tokens-css').get(0) ||
-    dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
+  const tokens = dfDollar('#tokens-css').get(0) || dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
   // insert right after the token sheet (later source order ⇒ the theme
   // overrides it); without a token sheet, append at the end of <head>
   // (§5.1: both branches ride query's exact insertion ops)
@@ -133,7 +139,11 @@ function applyMarkup(_el, _stateName) {}
 function triggerStateChange(menu: HTMLElement, stateName: string, _config?: Record<string, unknown>) {
   switch (stateName) {
     case 'default':
-      try { menu.hidePopover(); } catch { /* already closed */ }
+      try {
+        menu.hidePopover();
+      } catch {
+        /* already closed */
+      }
       break;
     case 'open':
       // deferred show (safeShowPopover): showPopover() mid-exit crashes the
@@ -144,23 +154,26 @@ function triggerStateChange(menu: HTMLElement, stateName: string, _config?: Reco
 }
 
 /** Registry-level API; pass the menu element explicitly. Unknown names throw. */
-export const themeSwitcherApi = Object.assign(componentState({
-  component: 'theme-switcher',
-  states: themeSwitcherStates,
-  apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup(el, state.name),
-}), {
-  /**
-   * Apply a theme on the switcher owning `menu` (link swap, see above).
-   * @param menu - the switcher's menu (any element inside its .theme-switcher root)
-   * @param id - the theme id, one of the switcher's options
-   */
-  select(menu: HTMLElement, id: string): void {
-    const root = menu.closest('.theme-switcher') as HTMLElement | null;
-    if (!root) throw new Error('theme-switcher: menu is not inside a .theme-switcher root');
-    applyThemeId(root, id);
+export const themeSwitcherApi = Object.assign(
+  componentState({
+    component: 'theme-switcher',
+    states: themeSwitcherStates,
+    apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
+    markup: (el, state) => applyMarkup(el, state.name),
+  }),
+  {
+    /**
+     * Apply a theme on the switcher owning `menu` (link swap, see above).
+     * @param menu - the switcher's menu (any element inside its .theme-switcher root)
+     * @param id - the theme id, one of the switcher's options
+     */
+    select(menu: HTMLElement, id: string): void {
+      const root = menu.closest('.theme-switcher') as HTMLElement | null;
+      if (!root) throw new Error('theme-switcher: menu is not inside a .theme-switcher root');
+      applyThemeId(root, id);
+    },
   },
-});
+);
 
 df$.themeSwitcherApi = themeSwitcherApi;
 df$.themeSwitcherStates = themeSwitcherStates;
@@ -172,7 +185,7 @@ function init() {
     // trigger = inside the root, or the declarative popovertarget owner
     const trigger = ((root ? dfDollar(root).find('.theme-switcher-trigger').get(0) : undefined) ??
       (menu.id && dfDollar(`[popovertarget="${menu.id}"]`).get(0))) as HTMLElement | null;
-    const getItems = () => Array.from((dfDollar(menu).find('.theme-switcher-item').toArray() as HTMLElement[]));
+    const getItems = () => Array.from(dfDollar(menu).find('.theme-switcher-item').toArray() as HTMLElement[]);
 
     // CSS anchor positioning - trigger names itself, menu follows
     if (trigger) {
@@ -244,8 +257,7 @@ function init() {
 
     // reflect the theme already active on the page (preloaded link or storage)
     if (root) {
-      const initial =
-        dfDollar('#' + CSS.escape(LINK_ID)).get(0)?.dataset.themeId || remembered().value || 'default';
+      const initial = dfDollar('#' + CSS.escape(LINK_ID)).get(0)?.dataset.themeId || remembered().value || 'default';
       if (initial !== 'default' || dfDollar('#' + CSS.escape(LINK_ID)).get(0)) syncTrigger(root, initial);
     }
   });

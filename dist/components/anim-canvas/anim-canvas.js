@@ -37,7 +37,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const animCanvasStates = ['default', 'overview'];
@@ -96,8 +96,7 @@ function animOptsFor(slide, travel) {
     return opts;
 }
 const transformFor = (v) => `translate(${v.tx}px, ${v.ty}px) scale(${v.s})`;
-const reducedMotion = () => typeof globalThis.matchMedia === 'function' &&
-    globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reducedMotion = () => typeof globalThis.matchMedia === 'function' && globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** Root-level pan duration (data-pan-duration, ms); 1500 default, 1 when reduced. */
 function panDuration(root) {
     if (reducedMotion())
@@ -188,7 +187,10 @@ function applySlideState(root, ctx) {
             s.setAttribute('aria-hidden', 'true');
     }
     // authored directional controls follow the active slide's relation map
-    dfDollar(root).find('[data-anim-canvas-go]').toArray().forEach((el) => {
+    dfDollar(root)
+        .find('[data-anim-canvas-go]')
+        .toArray()
+        .forEach((el) => {
         const dir = el.getAttribute('data-anim-canvas-go');
         if (dir === 'overview' || !(el instanceof HTMLButtonElement))
             return;
@@ -239,7 +241,10 @@ function replayContent(slide, offset) {
     dfDollar(slide).find('[data-df-entrance]').toArray().forEach((el) => {
         entrance(el, undefined, { delay: withOffset(el) });
     });
-    dfDollar(slide).find('[data-df-draw]').toArray().forEach((el) => {
+    dfDollar(slide)
+        .find('[data-df-draw]')
+        .toArray()
+        .forEach((el) => {
         draw(el, { delay: withOffset(el) });
     });
     dfDollar(slide).find('[data-count]').toArray().forEach((el) => {
@@ -373,12 +378,19 @@ function applyMarkup(root, stateName, config = {}) {
         return;
     const overview = stateName === 'overview' && config.value !== false;
     const active = slides.find((sl) => sl.id === config.slide) ?? slides.find((sl) => sl.hasAttribute('data-active')) ?? slides[0];
-    dfDollar(root).attr('data-overview', overview ? '' : null).attr('data-current-slide', active.id);
+    dfDollar(root)
+        .attr('data-overview', overview ? '' : null)
+        .attr('data-current-slide', active.id);
     for (const sl of slides) {
         const on = overview || sl === active;
-        dfDollar(sl).attr('data-active', sl === active ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', on ? null : 'true');
+        dfDollar(sl)
+            .attr('data-active', sl === active ? '' : null)
+            .attr('inert', on ? null : '')
+            .attr('aria-hidden', on ? null : 'true');
     }
-    dfDollar(root).find('[data-anim-canvas-go]').each((_i, el) => {
+    dfDollar(root)
+        .find('[data-anim-canvas-go]')
+        .each((_i, el) => {
         const dir = el.getAttribute('data-anim-canvas-go');
         if (dir === 'overview' || !(el instanceof HTMLButtonElement))
             return;
@@ -453,7 +465,15 @@ function bindKeys() {
     keysBound = true;
     bindGlobalKeys((e) => {
         const key = e.key;
-        const dir = key === 'ArrowRight' ? 'east' : key === 'ArrowLeft' ? 'west' : key === 'ArrowDown' ? 'south' : key === 'ArrowUp' ? 'north' : null;
+        const dir = key === 'ArrowRight'
+            ? 'east'
+            : key === 'ArrowLeft'
+                ? 'west'
+                : key === 'ArrowDown'
+                    ? 'south'
+                    : key === 'ArrowUp'
+                        ? 'north'
+                        : null;
         const toggle = key === 'o' || key === 'O' || key === 'Escape';
         if (!dir && !toggle)
             return;

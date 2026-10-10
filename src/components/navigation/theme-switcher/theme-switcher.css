@@ -50,7 +50,9 @@
     max-height: 18rem;
     overflow-y: auto;
     overscroll-behavior: contain;
-    box-shadow: 0 4px 16px oklch(0 0 0 / 0.12), 0 0 0 1px var(--border);
+    box-shadow:
+      0 4px 16px oklch(0 0 0 / 0.12),
+      0 0 0 1px var(--border);
 
     /* Anchor positioning - the trigger names itself, the menu follows */
     position: fixed;
@@ -64,8 +66,10 @@
     /* Enter/exit animation on the discrete display switch */
     opacity: 0;
     transform: scale(0.96) translateY(-0.25rem);
-    transition: opacity 150ms ease, transform 150ms ease,
-                display 150ms allow-discrete;
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease,
+      display 150ms allow-discrete;
 
     &:popover-open {
       opacity: 1;
@@ -102,7 +106,7 @@
       outline: none;
     }
 
-    &[aria-checked='true'] {
+    &[aria-checked="true"] {
       font-weight: 500;
 
       & .theme-switcher-check {

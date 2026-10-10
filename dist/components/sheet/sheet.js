@@ -60,7 +60,9 @@ export const sheetApi = componentState({
 df$.sheetApi = sheetApi;
 df$.sheetStates = sheetStates;
 function init() {
-    dfDollar('[data-sheet-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-sheet-trigger]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const sheet = dfDollar('#' + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
         if (!sheet)
@@ -70,7 +72,9 @@ function init() {
             sheet.showModal();
         });
     });
-    dfDollar('dialog.sheet:not([data-init])').toArray().forEach((sheet) => {
+    dfDollar('dialog.sheet:not([data-init])')
+        .toArray()
+        .forEach((sheet) => {
         sheet.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(sheet, sheetApi, { name: shown(sheet), config: {} });
@@ -78,8 +82,13 @@ function init() {
             if (e.target === sheet)
                 sheet.close();
         });
-        dfDollar(sheet).find('[data-sheet-close]').toArray().forEach((btn) => {
-            btn.addEventListener('click', () => { sheet.close(); });
+        dfDollar(sheet)
+            .find('[data-sheet-close]')
+            .toArray()
+            .forEach((btn) => {
+            btn.addEventListener('click', () => {
+                sheet.close();
+            });
         });
         sheet.addEventListener('close', () => {
             // `close` fires AFTER the exit transition (display allow-discrete), so a

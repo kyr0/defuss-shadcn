@@ -16,15 +16,15 @@
  * through df$.shadcn.shared). A query is plain JSON - it is what the
  * components keep in their store (el.store.value.config).
  */
-import {
-  addRows,
-  createDataview,
-  evaluateDataview,
-  removeRows,
-  setParent,
-  updateRows,
+import { addRows, createDataview, evaluateDataview, removeRows, setParent, updateRows } from 'defuss-dataview';
+import type {
+  DataviewEntry,
+  DataviewFilter,
+  DataviewFilterOperator,
+  DataviewJsonValue,
+  DataviewRow,
+  DataviewSorter,
 } from 'defuss-dataview';
-import type { DataviewEntry, DataviewFilter, DataviewFilterOperator, DataviewJsonValue, DataviewRow, DataviewSorter } from 'defuss-dataview';
 
 export { addRows, createDataview, evaluateDataview, removeRows, setParent, updateRows };
 export type { DataviewEntry, DataviewFilter, DataviewFilterOperator, DataviewJsonValue, DataviewRow, DataviewSorter };
@@ -74,7 +74,9 @@ const lower = (v: unknown): string => (v == null ? '' : String(v)).toLowerCase()
 function predicate(filter: DataviewFilter): (row: DataviewRow) => boolean {
   const { field, op, value } = filter;
   if (op === 'in') {
-    const set = new Set((Array.isArray(value) ? value : [value]).map((v) => (typeof v === 'string' ? v.toLowerCase() : v)));
+    const set = new Set(
+      (Array.isArray(value) ? value : [value]).map((v) => (typeof v === 'string' ? v.toLowerCase() : v)),
+    );
     return (row) => {
       const v = row[field];
       return set.has(typeof v === 'string' ? v.toLowerCase() : (v as DataviewJsonValue));
@@ -83,28 +85,42 @@ function predicate(filter: DataviewFilter): (row: DataviewRow) => boolean {
   if (typeof value === 'string' && op !== 'gt' && op !== 'gte' && op !== 'lt' && op !== 'lte') {
     const needle = value.toLowerCase();
     switch (op) {
-      case 'contains': return (row) => lower(row[field]).includes(needle);
-      case 'startsWith': return (row) => lower(row[field]).startsWith(needle);
-      case 'endsWith': return (row) => lower(row[field]).endsWith(needle);
-      case 'neq': return (row) => lower(row[field]) !== needle;
-      default: return (row) => lower(row[field]) === needle;
+      case 'contains':
+        return (row) => lower(row[field]).includes(needle);
+      case 'startsWith':
+        return (row) => lower(row[field]).startsWith(needle);
+      case 'endsWith':
+        return (row) => lower(row[field]).endsWith(needle);
+      case 'neq':
+        return (row) => lower(row[field]) !== needle;
+      default:
+        return (row) => lower(row[field]) === needle;
     }
   }
   return (row) => {
     const v = row[field] as number | null;
     switch (op) {
-      case 'gt': return v != null && v > (value as number);
-      case 'gte': return v != null && v >= (value as number);
-      case 'lt': return v != null && v < (value as number);
-      case 'lte': return v != null && v <= (value as number);
-      case 'neq': return v !== value;
-      default: return v === value;
+      case 'gt':
+        return v != null && v > (value as number);
+      case 'gte':
+        return v != null && v >= (value as number);
+      case 'lt':
+        return v != null && v < (value as number);
+      case 'lte':
+        return v != null && v <= (value as number);
+      case 'neq':
+        return v !== value;
+      default:
+        return v === value;
     }
   };
 }
 
 /** Wrap rows (flat, or a tree by `tree` fields) as a cached query source. */
-export function dataSource<T extends DataviewRow>(rows: readonly T[], options: { idField?: string; tree?: TreeFields } = {}): DataSource<T> {
+export function dataSource<T extends DataviewRow>(
+  rows: readonly T[],
+  options: { idField?: string; tree?: TreeFields } = {},
+): DataSource<T> {
   const idField = options.tree?.idField ?? options.idField ?? 'id';
   let current = rows;
   let cacheKey = '';
@@ -126,7 +142,9 @@ export function dataSource<T extends DataviewRow>(rows: readonly T[], options: {
   };
 
   return {
-    get rows() { return current; },
+    get rows() {
+      return current;
+    },
     idField,
     tree: options.tree,
     query(q = {}) {
@@ -140,15 +158,20 @@ export function dataSource<T extends DataviewRow>(rows: readonly T[], options: {
         filters: filtering ? [{ field: idField, op: 'in', value: matching(filters) }] : [],
         tree: options.tree
           ? {
-            ...options.tree,
-            includeAncestors: true,
-            // filtering opens the way to every match; otherwise what the user opened
-            ...(filtering ? { expandAll: true, collapsedIds: q.collapsed ?? [] } : { expandedIds: q.expanded ?? [] }),
-          }
+              ...options.tree,
+              includeAncestors: true,
+              // filtering opens the way to every match; otherwise what the user opened
+              ...(filtering ? { expandAll: true, collapsedIds: q.collapsed ?? [] } : { expandedIds: q.expanded ?? [] }),
+            }
           : undefined,
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows,
+      };
       cacheKey = key;
       return cache;
     },
@@ -178,14 +201,25 @@ export function dataSource<T extends DataviewRow>(rows: readonly T[], options: {
  * optional operator (`>10`, `<=3`, `!=0`, `=7`), text matches anywhere
  * (`contains`), a choice matches exactly. Empty text = no filter (null).
  */
-export function parseFilter(field: string, text: string, kind: 'text' | 'number' | 'select' = 'text'): DataviewFilter | null {
+export function parseFilter(
+  field: string,
+  text: string,
+  kind: 'text' | 'number' | 'select' = 'text',
+): DataviewFilter | null {
   const raw = text.trim();
   if (!raw) return null;
   if (kind === 'select') return { field, op: 'eq', value: raw };
   if (kind === 'number') {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m) return null;
-    const ops: Record<string, DataviewFilterOperator> = { '>=': 'gte', '<=': 'lte', '!=': 'neq', '>': 'gt', '<': 'lt', '=': 'eq' };
+    const ops: Record<string, DataviewFilterOperator> = {
+      '>=': 'gte',
+      '<=': 'lte',
+      '!=': 'neq',
+      '>': 'gt',
+      '<': 'lt',
+      '=': 'eq',
+    };
     return { field, op: ops[m[1] ?? '='] ?? 'eq', value: Number(m[2]) };
   }
   return { field, op: 'contains', value: raw };

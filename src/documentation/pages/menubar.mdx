@@ -48,9 +48,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Menubar" height="30" hint="shadcn's demo: File, Edit, View, Profiles. Click a trigger (or Tab to the bar, then ↓ / Enter); ← / → move between the menus, and while one is open, hovering another trigger switches to it. Shortcuts, a disabled item, checkbox and radio items, inset items - and submenus."
 <div class="menubar" role="menubar" aria-label="Application">
   <button class="menubar-trigger" data-dropdown-trigger="mb-file">File</button>
-  <div id="mb-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New Tab<span class="dropdown-shortcut">⌘T</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New Window<span class="dropdown-shortcut">⌘N</span></button>
+  <div id="mb-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      >New Tab<span class="dropdown-shortcut">⌘T</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      >New Window<span class="dropdown-shortcut">⌘N</span></button
+    >
     <button role="menuitem" class="dropdown-item" tabindex="-1" disabled>New Incognito Window</button>
     <div class="dropdown-separator" role="separator"></div>
     <div class="dropdown-sub">
@@ -81,7 +85,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <button role="menuitem" class="dropdown-item" tabindex="-1">Print…<span class="dropdown-shortcut">⌘P</span></button>
   </div>
   <button class="menubar-trigger" data-dropdown-trigger="mb-edit">Edit</button>
-  <div id="mb-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:14rem;">
+  <div id="mb-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width: 14rem">
     <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
     <button role="menuitem" class="dropdown-item" tabindex="-1">Redo<span class="dropdown-shortcut">⇧⌘Z</span></button>
     <div class="dropdown-separator" role="separator"></div>
@@ -101,7 +105,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
             <button role="menuitem" class="dropdown-item" tabindex="-1">Replace All</button>
             <div class="dropdown-sub">
               <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">In scope</button>
-              <div id="mb-scope" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="In scope">
+              <div
+                id="mb-scope"
+                role="menu"
+                popover
+                class="dropdown-content dropdown-sub-content"
+                aria-label="In scope"
+              >
                 <button role="menuitem" class="dropdown-item" tabindex="-1">This file</button>
                 <button role="menuitem" class="dropdown-item" tabindex="-1">Open files</button>
                 <button role="menuitem" class="dropdown-item" tabindex="-1">Whole project</button>
@@ -117,22 +127,32 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <button role="menuitem" class="dropdown-item" tabindex="-1">Paste</button>
   </div>
   <button class="menubar-trigger" data-dropdown-trigger="mb-view">View</button>
-  <div id="mb-view" role="menu" popover class="dropdown-content" aria-label="View" style="min-width:14rem;">
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Always Show Bookmarks Bar</button>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Always Show Full URLs</button>
+  <div id="mb-view" role="menu" popover class="dropdown-content" aria-label="View" style="min-width: 14rem">
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1"
+      >Always Show Bookmarks Bar</button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+      >Always Show Full URLs</button
+    >
     <div class="dropdown-separator" role="separator"></div>
-    <button role="menuitem" class="dropdown-item" tabindex="-1" data-inset>Reload<span class="dropdown-shortcut">⌘R</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1" data-inset disabled>Force Reload<span class="dropdown-shortcut">⇧⌘R</span></button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1" data-inset
+      >Reload<span class="dropdown-shortcut">⌘R</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1" data-inset disabled
+      >Force Reload<span class="dropdown-shortcut">⇧⌘R</span></button
+    >
     <div class="dropdown-separator" role="separator"></div>
     <button role="menuitem" class="dropdown-item" tabindex="-1" data-inset>Toggle Fullscreen</button>
     <div class="dropdown-separator" role="separator"></div>
     <button role="menuitem" class="dropdown-item" tabindex="-1" data-inset>Hide Sidebar</button>
   </div>
   <button class="menubar-trigger" data-dropdown-trigger="mb-profiles">Profiles</button>
-  <div id="mb-profiles" role="menu" popover class="dropdown-content" aria-label="Profiles" style="min-width:14rem;">
+  <div id="mb-profiles" role="menu" popover class="dropdown-content" aria-label="Profiles" style="min-width: 14rem">
     <div role="group" aria-label="Profile">
       <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Andy</button>
-      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1">Benoit</button>
+      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1"
+        >Benoit</button
+      >
       <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Luis</button>
     </div>
     <div class="dropdown-separator" role="separator"></div>
@@ -146,9 +166,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Submenus - three levels deep" schema="none" height="34" hint="File → Share → More → Social and Edit → Find → Replace → In scope: every submenu is a .dropdown-sub inside the menu above it. Hover or → opens, ← / Esc closes one level; near the viewport edge a submenu opens to the other side."
 <div class="menubar" role="menubar" aria-label="Application">
   <button class="menubar-trigger" data-dropdown-trigger="mbs-file">File</button>
-  <div id="mbs-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New Tab<span class="dropdown-shortcut">⌘T</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New Window<span class="dropdown-shortcut">⌘N</span></button>
+  <div id="mbs-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      >New Tab<span class="dropdown-shortcut">⌘T</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      >New Window<span class="dropdown-shortcut">⌘N</span></button
+    >
     <button role="menuitem" class="dropdown-item" tabindex="-1" disabled>New Incognito Window</button>
     <div class="dropdown-separator" role="separator"></div>
     <div class="dropdown-sub">
@@ -165,7 +189,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
             <button role="menuitem" class="dropdown-item" tabindex="-1">Copy link</button>
             <div class="dropdown-sub">
               <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">Social</button>
-              <div id="mbs-social" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Social">
+              <div
+                id="mbs-social"
+                role="menu"
+                popover
+                class="dropdown-content dropdown-sub-content"
+                aria-label="Social"
+              >
                 <button role="menuitem" class="dropdown-item" tabindex="-1">Mastodon</button>
                 <button role="menuitem" class="dropdown-item" tabindex="-1">Bluesky</button>
                 <button role="menuitem" class="dropdown-item" tabindex="-1">LinkedIn</button>
@@ -179,7 +209,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <button role="menuitem" class="dropdown-item" tabindex="-1">Print…<span class="dropdown-shortcut">⌘P</span></button>
   </div>
   <button class="menubar-trigger" data-dropdown-trigger="mbs-edit">Edit</button>
-  <div id="mbs-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:14rem;">
+  <div id="mbs-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width: 14rem">
     <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
     <button role="menuitem" class="dropdown-item" tabindex="-1">Redo<span class="dropdown-shortcut">⇧⌘Z</span></button>
     <div class="dropdown-separator" role="separator"></div>
@@ -199,7 +229,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
             <button role="menuitem" class="dropdown-item" tabindex="-1">Replace All</button>
             <div class="dropdown-sub">
               <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">In scope</button>
-              <div id="mbs-scope" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="In scope">
+              <div
+                id="mbs-scope"
+                role="menu"
+                popover
+                class="dropdown-content dropdown-sub-content"
+                aria-label="In scope"
+              >
                 <button role="menuitem" class="dropdown-item" tabindex="-1">This file</button>
                 <button role="menuitem" class="dropdown-item" tabindex="-1">Open files</button>
                 <button role="menuitem" class="dropdown-item" tabindex="-1">Whole project</button>
@@ -220,11 +256,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Checkbox and radio items" schema="none" height="32" hint="Click (or Enter / Space) toggles a checkbox and switches a radio - the menu stays open. Each change fires dropdown:select; the line under the bar reads the live state."
 <div class="menubar" role="menubar" aria-label="Application">
   <button class="menubar-trigger" data-dropdown-trigger="mbc-view">View</button>
-  <div id="mbc-view" role="menu" popover class="dropdown-content" aria-label="View" style="min-width:14rem;">
+  <div id="mbc-view" role="menu" popover class="dropdown-content" aria-label="View" style="min-width: 14rem">
     <div class="dropdown-label">Layout</div>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Show Sidebar<span class="dropdown-shortcut">⌘B</span></button>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Show Status Bar</button>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Show Minimap</button>
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+      >Show Sidebar<span class="dropdown-shortcut">⌘B</span></button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+      >Show Status Bar</button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1"
+      >Show Minimap</button
+    >
     <div class="dropdown-separator" role="separator"></div>
     <div class="dropdown-label">Zoom</div>
     <div role="group" aria-label="Zoom">
@@ -234,18 +276,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </div>
   </div>
   <button class="menubar-trigger" data-dropdown-trigger="mbc-format">Format</button>
-  <div id="mbc-format" role="menu" popover class="dropdown-content" aria-label="Format" style="min-width:14rem;">
+  <div id="mbc-format" role="menu" popover class="dropdown-content" aria-label="Format" style="min-width: 14rem">
     <div class="dropdown-label">Text</div>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Bold<span class="dropdown-shortcut">⌘B</span></button>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">Italic<span class="dropdown-shortcut">⌘I</span></button>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">Underline<span class="dropdown-shortcut">⌘U</span></button>
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1"
+      >Bold<span class="dropdown-shortcut">⌘B</span></button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+      >Italic<span class="dropdown-shortcut">⌘I</span></button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1"
+      >Underline<span class="dropdown-shortcut">⌘U</span></button
+    >
     <div class="dropdown-separator" role="separator"></div>
     <div class="dropdown-label">Alignment</div>
     <div role="group" aria-label="Alignment">
       <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1">Left</button>
-      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Center</button>
-      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Right</button>
-      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1">Justify</button>
+      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1"
+        >Center</button
+      >
+      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1"
+        >Right</button
+      >
+      <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1"
+        >Justify</button
+      >
     </div>
   </div>
 </div>
@@ -253,9 +307,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <script>
   const mbc = document.querySelector('.menubar');
   const showMbc = () => {
-    const on = [...mbc.querySelectorAll('[role="menuitemcheckbox"][aria-checked="true"]')].map((i) => i.firstChild.textContent.trim());
-    const picked = [...mbc.querySelectorAll('[role="menuitemradio"][aria-checked="true"]')].map((i) => i.textContent.trim());
-    document.getElementById('mbc-state').textContent = 'On: ' + (on.join(', ') || 'nothing') + ' · Zoom ' + picked[0] + ' · Align ' + picked[1];
+    const on = [...mbc.querySelectorAll('[role="menuitemcheckbox"][aria-checked="true"]')].map((i) =>
+      i.firstChild.textContent.trim(),
+    );
+    const picked = [...mbc.querySelectorAll('[role="menuitemradio"][aria-checked="true"]')].map((i) =>
+      i.textContent.trim(),
+    );
+    document.getElementById('mbc-state').textContent =
+      'On: ' + (on.join(', ') || 'nothing') + ' · Zoom ' + picked[0] + ' · Align ' + picked[1];
   };
   mbc.addEventListener('dropdown:select', showMbc);
   showMbc();
@@ -265,35 +324,55 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Icons" schema="none" height="30" hint="An svg first in an item is its icon; submenu triggers take one too."
 <div class="menubar" role="menubar" aria-label="Application">
   <button class="menubar-trigger" data-dropdown-trigger="mbi-file">File</button>
-  <div id="mbi-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-plus"></i>New File<span class="dropdown-shortcut">⌘N</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="folder-plus"></i>New Folder<span class="dropdown-shortcut">⇧⌘N</span></button>
+  <div id="mbi-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><i data-lucide="file-plus"></i>New File<span class="dropdown-shortcut">⌘N</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><i data-lucide="folder-plus"></i>New Folder<span class="dropdown-shortcut">⇧⌘N</span></button
+    >
     <div class="dropdown-separator" role="separator"></div>
     <div class="dropdown-sub">
-      <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"><i data-lucide="history"></i>Open Recent</button>
+      <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"
+        ><i data-lucide="history"></i>Open Recent</button
+      >
       <div id="mbi-recent" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Open Recent">
-        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-code"></i>dashboard.tsx</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"
+          ><i data-lucide="file-code"></i>dashboard.tsx</button
+        >
         <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-text"></i>notes.md</button>
         <div class="dropdown-sub">
-          <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"><i data-lucide="folders"></i>Workspaces</button>
+          <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"
+            ><i data-lucide="folders"></i>Workspaces</button
+          >
           <div id="mbi-ws" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Workspaces">
-            <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="folder"></i>defuss-shadcn</button>
+            <button role="menuitem" class="dropdown-item" tabindex="-1"
+              ><i data-lucide="folder"></i>defuss-shadcn</button
+            >
             <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="folder"></i>defuss-ssg</button>
           </div>
         </div>
       </div>
     </div>
     <div class="dropdown-separator" role="separator"></div>
-    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="save"></i>Save<span class="dropdown-shortcut">⌘S</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="download"></i>Export<span class="dropdown-shortcut">⇧⌘E</span></button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><i data-lucide="save"></i>Save<span class="dropdown-shortcut">⌘S</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><i data-lucide="download"></i>Export<span class="dropdown-shortcut">⇧⌘E</span></button
+    >
   </div>
   <button class="menubar-trigger" data-dropdown-trigger="mbi-account">Account</button>
-  <div id="mbi-account" role="menu" popover class="dropdown-content" aria-label="Account" style="min-width:14rem;">
+  <div id="mbi-account" role="menu" popover class="dropdown-content" aria-label="Account" style="min-width: 14rem">
     <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="user"></i>Profile</button>
     <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="credit-card"></i>Billing</button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="settings"></i>Settings<span class="dropdown-shortcut">⌘,</span></button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><i data-lucide="settings"></i>Settings<span class="dropdown-shortcut">⌘,</span></button
+    >
     <div class="dropdown-separator" role="separator"></div>
-    <button role="menuitem" class="dropdown-item" tabindex="-1" data-variant="destructive"><i data-lucide="log-out"></i>Log out</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1" data-variant="destructive"
+      ><i data-lucide="log-out"></i>Log out</button
+    >
   </div>
 </div>
 ```
@@ -301,9 +380,11 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Disabled" schema="none" height="26" hint="A disabled trigger is skipped by ← / →; disabled items (disabled or aria-disabled) are skipped inside menus, and a disabled submenu trigger never opens."
 <div class="menubar" role="menubar" aria-label="Application">
   <button class="menubar-trigger" data-dropdown-trigger="mbd-file">File</button>
-  <div id="mbd-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
+  <div id="mbd-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
     <button role="menuitem" class="dropdown-item" tabindex="-1">Save<span class="dropdown-shortcut">⌘S</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1" aria-disabled="true">Save As…<span class="dropdown-shortcut">⇧⌘S</span></button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1" aria-disabled="true"
+      >Save As…<span class="dropdown-shortcut">⇧⌘S</span></button
+    >
     <div class="dropdown-sub">
       <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" disabled>Export</button>
       <div id="mbd-export" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Export">
@@ -314,7 +395,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </div>
   <button class="menubar-trigger" disabled>Git</button>
   <button class="menubar-trigger" data-dropdown-trigger="mbd-help">Help</button>
-  <div id="mbd-help" role="menu" popover class="dropdown-content" aria-label="Help" style="min-width:14rem;">
+  <div id="mbd-help" role="menu" popover class="dropdown-content" aria-label="Help" style="min-width: 14rem">
     <button role="menuitem" class="dropdown-item" tabindex="-1">Documentation</button>
     <button role="menuitem" class="dropdown-item" tabindex="-1">Release notes</button>
     <button role="menuitem" class="dropdown-item" tabindex="-1" disabled>Check for updates…</button>
@@ -324,77 +405,97 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Variants and sizes" schema="none" height="26" hint="data-variant='muted' or 'ghost' on the bar; data-size='sm' / 'lg' scales the triggers (the menus keep their own data-size)."
 <div class="flex flex-col gap-4 items-start">
-<div class="menubar" data-variant="muted" data-size="sm" role="menubar" aria-label="Muted, small">
-  <button class="menubar-trigger" data-dropdown-trigger="mbv1-file">File</button>
-  <div id="mbv1-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New<span class="dropdown-shortcut">⌘N</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">Open…<span class="dropdown-shortcut">⌘O</span></button>
+  <div class="menubar" data-variant="muted" data-size="sm" role="menubar" aria-label="Muted, small">
+    <button class="menubar-trigger" data-dropdown-trigger="mbv1-file">File</button>
+    <div id="mbv1-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">New<span class="dropdown-shortcut">⌘N</span></button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >Open…<span class="dropdown-shortcut">⌘O</span></button
+      >
+    </div>
+    <button class="menubar-trigger" data-dropdown-trigger="mbv1-edit">Edit</button>
+    <div id="mbv1-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
+    </div>
   </div>
-  <button class="menubar-trigger" data-dropdown-trigger="mbv1-edit">Edit</button>
-  <div id="mbv1-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
+  <div class="menubar" data-variant="ghost" role="menubar" aria-label="Ghost">
+    <button class="menubar-trigger" data-dropdown-trigger="mbv2-file">File</button>
+    <div id="mbv2-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">New<span class="dropdown-shortcut">⌘N</span></button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >Open…<span class="dropdown-shortcut">⌘O</span></button
+      >
+    </div>
+    <button class="menubar-trigger" data-dropdown-trigger="mbv2-edit">Edit</button>
+    <div id="mbv2-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
+    </div>
   </div>
-</div>
-<div class="menubar" data-variant="ghost" role="menubar" aria-label="Ghost">
-  <button class="menubar-trigger" data-dropdown-trigger="mbv2-file">File</button>
-  <div id="mbv2-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New<span class="dropdown-shortcut">⌘N</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">Open…<span class="dropdown-shortcut">⌘O</span></button>
+  <div class="menubar" data-size="lg" role="menubar" aria-label="Large">
+    <button class="menubar-trigger" data-dropdown-trigger="mbv3-file">File</button>
+    <div id="mbv3-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">New<span class="dropdown-shortcut">⌘N</span></button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >Open…<span class="dropdown-shortcut">⌘O</span></button
+      >
+    </div>
+    <button class="menubar-trigger" data-dropdown-trigger="mbv3-edit">Edit</button>
+    <div id="mbv3-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
+    </div>
   </div>
-  <button class="menubar-trigger" data-dropdown-trigger="mbv2-edit">Edit</button>
-  <div id="mbv2-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
-  </div>
-</div>
-<div class="menubar" data-size="lg" role="menubar" aria-label="Large">
-  <button class="menubar-trigger" data-dropdown-trigger="mbv3-file">File</button>
-  <div id="mbv3-file" role="menu" popover class="dropdown-content" aria-label="File" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">New<span class="dropdown-shortcut">⌘N</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">Open…<span class="dropdown-shortcut">⌘O</span></button>
-  </div>
-  <button class="menubar-trigger" data-dropdown-trigger="mbv3-edit">Edit</button>
-  <div id="mbv3-edit" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">Undo<span class="dropdown-shortcut">⌘Z</span></button>
-  </div>
-</div>
 </div>
 ```
 
 ```html example label="Right to left" schema="none" height="30" hint="In dir='rtl' the bar runs right to left, menus align to their trigger's right edge, submenus open to the left, and ← / → swap."
 <div dir="rtl" lang="ar">
-<div class="menubar" role="menubar" aria-label="التطبيق">
-  <button class="menubar-trigger" data-dropdown-trigger="mbr-">ملف</button>
-  <div id="mbr-" role="menu" popover class="dropdown-content" aria-label="ملف" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">علامة تبويب جديدة<span class="dropdown-shortcut">⌘T</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">نافذة جديدة<span class="dropdown-shortcut">⌘N</span></button>
-    <div class="dropdown-separator" role="separator"></div>
-    <div class="dropdown-sub">
-      <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">مشاركة</button>
-      <div id="mbr-share" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="مشاركة">
-        <button role="menuitem" class="dropdown-item" tabindex="-1">رابط البريد</button>
-        <button role="menuitem" class="dropdown-item" tabindex="-1">الرسائل</button>
-        <div class="dropdown-sub">
-          <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">المزيد</button>
-          <div id="mbr-more" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="المزيد">
-            <button role="menuitem" class="dropdown-item" tabindex="-1">نسخ الرابط</button>
+  <div class="menubar" role="menubar" aria-label="التطبيق">
+    <button class="menubar-trigger" data-dropdown-trigger="mbr-">ملف</button>
+    <div id="mbr-" role="menu" popover class="dropdown-content" aria-label="ملف" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >علامة تبويب جديدة<span class="dropdown-shortcut">⌘T</span></button
+      >
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >نافذة جديدة<span class="dropdown-shortcut">⌘N</span></button
+      >
+      <div class="dropdown-separator" role="separator"></div>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">مشاركة</button>
+        <div id="mbr-share" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="مشاركة">
+          <button role="menuitem" class="dropdown-item" tabindex="-1">رابط البريد</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">الرسائل</button>
+          <div class="dropdown-sub">
+            <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">المزيد</button>
+            <div id="mbr-more" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="المزيد">
+              <button role="menuitem" class="dropdown-item" tabindex="-1">نسخ الرابط</button>
+            </div>
           </div>
         </div>
       </div>
+      <div class="dropdown-separator" role="separator"></div>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >طباعة…<span class="dropdown-shortcut">⌘P</span></button
+      >
     </div>
-    <div class="dropdown-separator" role="separator"></div>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">طباعة…<span class="dropdown-shortcut">⌘P</span></button>
+    <button class="menubar-trigger" data-dropdown-trigger="mbr-">تعديل</button>
+    <div id="mbr-" role="menu" popover class="dropdown-content" aria-label="تعديل" style="min-width: 14rem">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >تراجع<span class="dropdown-shortcut">⌘Z</span></button
+      >
+      <button role="menuitem" class="dropdown-item" tabindex="-1"
+        >إعادة<span class="dropdown-shortcut">⇧⌘Z</span></button
+      >
+    </div>
+    <button class="menubar-trigger" data-dropdown-trigger="mbr-">عرض</button>
+    <div id="mbr-" role="menu" popover class="dropdown-content" aria-label="عرض" style="min-width: 14rem">
+      <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+        >إظهار شريط الإشارات</button
+      >
+      <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1"
+        >إظهار العناوين الكاملة</button
+      >
+    </div>
   </div>
-  <button class="menubar-trigger" data-dropdown-trigger="mbr-">تعديل</button>
-  <div id="mbr-" role="menu" popover class="dropdown-content" aria-label="تعديل" style="min-width:14rem;">
-    <button role="menuitem" class="dropdown-item" tabindex="-1">تراجع<span class="dropdown-shortcut">⌘Z</span></button>
-    <button role="menuitem" class="dropdown-item" tabindex="-1">إعادة<span class="dropdown-shortcut">⇧⌘Z</span></button>
-  </div>
-  <button class="menubar-trigger" data-dropdown-trigger="mbr-">عرض</button>
-  <div id="mbr-" role="menu" popover class="dropdown-content" aria-label="عرض" style="min-width:14rem;">
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1">إظهار شريط الإشارات</button>
-    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1">إظهار العناوين الكاملة</button>
-  </div>
-</div>
 </div>
 ```
 

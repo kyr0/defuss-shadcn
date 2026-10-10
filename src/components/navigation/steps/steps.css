@@ -1,56 +1,158 @@
 @layer components {
   /* --_accent / --_accent-fg: the color of done (complete) and current steps -
      --primary unless data-variant (on the list, or on one step) picks another */
-  .steps { --_accent: var(--primary); --_accent-fg: var(--primary-foreground); display: flex; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+  .steps {
+    --_accent: var(--primary);
+    --_accent-fg: var(--primary-foreground);
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
   .step {
-    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; text-align: center;
-    &:not(:last-child)::after { content: ''; position: absolute; top: 1rem; left: calc(50% + 1.25rem); right: calc(-50% + 1.25rem); height: 2px; background-color: var(--border); }
-    &[data-status='complete']::after { background-color: var(--_accent); }
-    &[data-status='error']::after { background-color: var(--destructive); }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    text-align: center;
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 1rem;
+      left: calc(50% + 1.25rem);
+      right: calc(-50% + 1.25rem);
+      height: 2px;
+      background-color: var(--border);
+    }
+    &[data-status="complete"]::after {
+      background-color: var(--_accent);
+    }
+    &[data-status="error"]::after {
+      background-color: var(--destructive);
+    }
   }
   .step-indicator {
-    display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
-    border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
-    border: 2px solid var(--border); color: var(--muted-foreground); background-color: var(--background); position: relative; z-index: 1;
-    .step[data-status='current'] & { border-color: var(--_accent); color: var(--_accent); }
-    .step[data-status='complete'] & { border-color: var(--_accent); background-color: var(--_accent); color: var(--_accent-fg); }
-    .step[data-status='error'] & { border-color: var(--destructive); background-color: var(--destructive); color: var(--destructive-foreground); }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 2px solid var(--border);
+    color: var(--muted-foreground);
+    background-color: var(--background);
+    position: relative;
+    z-index: 1;
+    .step[data-status="current"] & {
+      border-color: var(--_accent);
+      color: var(--_accent);
+    }
+    .step[data-status="complete"] & {
+      border-color: var(--_accent);
+      background-color: var(--_accent);
+      color: var(--_accent-fg);
+    }
+    .step[data-status="error"] & {
+      border-color: var(--destructive);
+      background-color: var(--destructive);
+      color: var(--destructive-foreground);
+    }
 
-    & svg { width: 0.875rem; height: 0.875rem; pointer-events: none; }
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      pointer-events: none;
+    }
     /* a glyph of your own - emoji, symbol, icon - a size up from the number */
-    & .step-icon { font-size: 1.5em; line-height: 1; display: grid; place-items: center; }
-    & .step-icon svg { width: 1.2em; height: 1.2em; }
+    & .step-icon {
+      font-size: 1.5em;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+    }
+    & .step-icon svg {
+      width: 1.2em;
+      height: 1.2em;
+    }
   }
   /* data-variant="plain" on the indicator: no circle - just the glyph
      (an emoji step); the status still tints a symbol or icon */
-  .steps .step .step-indicator[data-variant='plain'] {
+  .steps .step .step-indicator[data-variant="plain"] {
     border-color: transparent;
     background-color: transparent;
     font-size: 1.25rem;
   }
-  .steps .step:is([data-status='complete'], [data-status='current']) .step-indicator[data-variant='plain'] { color: var(--_accent); }
-  .steps .step[data-status='error'] .step-indicator[data-variant='plain'] { color: var(--destructive); }
+  .steps .step:is([data-status="complete"], [data-status="current"]) .step-indicator[data-variant="plain"] {
+    color: var(--_accent);
+  }
+  .steps .step[data-status="error"] .step-indicator[data-variant="plain"] {
+    color: var(--destructive);
+  }
 
   /* -- Colors: data-variant on .steps (every step) or on one .step -------
      secondary / accent use --chart-2 / --chart-4 (the tokens' --secondary /
      --accent are pale surfaces); success / warning / info are literals - the
      token set has no such pairs. */
-  :is(.steps, .step)[data-variant='neutral'] { --_accent: var(--foreground); --_accent-fg: var(--background); }
-  :is(.steps, .step)[data-variant='primary'] { --_accent: var(--primary); --_accent-fg: var(--primary-foreground); }
-  :is(.steps, .step)[data-variant='secondary'] { --_accent: var(--chart-2); --_accent-fg: #fff; }
-  :is(.steps, .step)[data-variant='accent'] { --_accent: var(--chart-4); --_accent-fg: #fff; }
-  :is(.steps, .step)[data-variant='info'] { --_accent: #0ea5e9; --_accent-fg: #fff; }
-  :is(.steps, .step)[data-variant='success'] { --_accent: #16a34a; --_accent-fg: #fff; }
-  :is(.steps, .step)[data-variant='warning'] { --_accent: #f59e0b; --_accent-fg: #1c1917; }
-  :is(.steps, .step):is([data-variant='destructive'], [data-variant='error']) { --_accent: var(--destructive); --_accent-fg: var(--destructive-foreground); }
-  .step-content { display: flex; flex-direction: column; gap: 0.125rem; }
-  .step-title { margin: 0; font-size: 0.8125rem; font-weight: 500; color: var(--foreground); }
-  .step-description { margin: 0; font-size: 0.75rem; color: var(--muted-foreground); }
+  :is(.steps, .step)[data-variant="neutral"] {
+    --_accent: var(--foreground);
+    --_accent-fg: var(--background);
+  }
+  :is(.steps, .step)[data-variant="primary"] {
+    --_accent: var(--primary);
+    --_accent-fg: var(--primary-foreground);
+  }
+  :is(.steps, .step)[data-variant="secondary"] {
+    --_accent: var(--chart-2);
+    --_accent-fg: #fff;
+  }
+  :is(.steps, .step)[data-variant="accent"] {
+    --_accent: var(--chart-4);
+    --_accent-fg: #fff;
+  }
+  :is(.steps, .step)[data-variant="info"] {
+    --_accent: #0ea5e9;
+    --_accent-fg: #fff;
+  }
+  :is(.steps, .step)[data-variant="success"] {
+    --_accent: #16a34a;
+    --_accent-fg: #fff;
+  }
+  :is(.steps, .step)[data-variant="warning"] {
+    --_accent: #f59e0b;
+    --_accent-fg: #1c1917;
+  }
+  :is(.steps, .step):is([data-variant="destructive"], [data-variant="error"]) {
+    --_accent: var(--destructive);
+    --_accent-fg: var(--destructive-foreground);
+  }
+  .step-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .step-title {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  .step-description {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
 
   /* -- Clickable steps ---------------------------------------- */
   .step[data-clickable] .step-indicator {
     cursor: pointer;
-    &:hover { opacity: 0.85; }
+    &:hover {
+      opacity: 0.85;
+    }
   }
 
   /* -- Size variants ------------------------------------------
@@ -59,49 +161,144 @@
      offsets follow the existing pattern per indicator size I: horizontal
      top = I/2, left inset = I/2 + 0.25rem; vertical top = I + 0.25rem,
      left = I/2 - 1px (centers the 2px bar under the indicator). */
-  .steps[data-size='xs'] {
-    & .step:not(:last-child)::after { top: 0.625rem; left: calc(50% + 0.875rem); right: calc(-50% + 0.875rem); }
-    & .step-indicator { width: 1.25rem; height: 1.25rem; font-size: 0.625rem; }
-    & .step-indicator svg { width: 0.625rem; height: 0.625rem; }
-    & .step-title { font-size: 0.6875rem; }
-    & .step-description { font-size: 0.625rem; }
-    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 1.5rem; left: 0.5625rem; height: calc(100% - 1.5rem); }
+  .steps[data-size="xs"] {
+    & .step:not(:last-child)::after {
+      top: 0.625rem;
+      left: calc(50% + 0.875rem);
+      right: calc(-50% + 0.875rem);
+    }
+    & .step-indicator {
+      width: 1.25rem;
+      height: 1.25rem;
+      font-size: 0.625rem;
+    }
+    & .step-indicator svg {
+      width: 0.625rem;
+      height: 0.625rem;
+    }
+    & .step-title {
+      font-size: 0.6875rem;
+    }
+    & .step-description {
+      font-size: 0.625rem;
+    }
+    &[data-orientation="vertical"] .step:not(:last-child)::after {
+      top: 1.5rem;
+      left: 0.5625rem;
+      height: calc(100% - 1.5rem);
+    }
   }
 
-  .steps[data-size='sm'] {
-    & .step:not(:last-child)::after { top: 0.75rem; left: calc(50% + 1rem); right: calc(-50% + 1rem); }
-    & .step-indicator { width: 1.5rem; height: 1.5rem; font-size: 0.6875rem; }
-    & .step-indicator svg { width: 0.75rem; height: 0.75rem; }
-    & .step-title { font-size: 0.75rem; }
-    & .step-description { font-size: 0.6875rem; }
-    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 1.75rem; left: 0.6875rem; height: calc(100% - 1.75rem); }
+  .steps[data-size="sm"] {
+    & .step:not(:last-child)::after {
+      top: 0.75rem;
+      left: calc(50% + 1rem);
+      right: calc(-50% + 1rem);
+    }
+    & .step-indicator {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 0.6875rem;
+    }
+    & .step-indicator svg {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+    & .step-title {
+      font-size: 0.75rem;
+    }
+    & .step-description {
+      font-size: 0.6875rem;
+    }
+    &[data-orientation="vertical"] .step:not(:last-child)::after {
+      top: 1.75rem;
+      left: 0.6875rem;
+      height: calc(100% - 1.75rem);
+    }
   }
 
-  .steps[data-size='md'] {
-    & .step:not(:last-child)::after { top: 1rem; left: calc(50% + 1.25rem); right: calc(-50% + 1.25rem); }
-    & .step-indicator { width: 2rem; height: 2rem; font-size: 0.75rem; }
-    & .step-indicator svg { width: 0.875rem; height: 0.875rem; }
-    & .step-title { font-size: 0.8125rem; }
-    & .step-description { font-size: 0.75rem; }
-    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; height: calc(100% - 2.25rem); }
+  .steps[data-size="md"] {
+    & .step:not(:last-child)::after {
+      top: 1rem;
+      left: calc(50% + 1.25rem);
+      right: calc(-50% + 1.25rem);
+    }
+    & .step-indicator {
+      width: 2rem;
+      height: 2rem;
+      font-size: 0.75rem;
+    }
+    & .step-indicator svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+    & .step-title {
+      font-size: 0.8125rem;
+    }
+    & .step-description {
+      font-size: 0.75rem;
+    }
+    &[data-orientation="vertical"] .step:not(:last-child)::after {
+      top: 2.25rem;
+      left: 0.9375rem;
+      height: calc(100% - 2.25rem);
+    }
   }
 
-  .steps[data-size='lg'] {
-    & .step:not(:last-child)::after { top: 1.25rem; left: calc(50% + 1.5rem); right: calc(-50% + 1.5rem); }
-    & .step-indicator { width: 2.5rem; height: 2.5rem; font-size: 0.875rem; }
-    & .step-indicator svg { width: 1rem; height: 1rem; }
-    & .step-title { font-size: 0.9375rem; }
-    & .step-description { font-size: 0.8125rem; }
-    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 2.75rem; left: 1.1875rem; height: calc(100% - 2.75rem); }
+  .steps[data-size="lg"] {
+    & .step:not(:last-child)::after {
+      top: 1.25rem;
+      left: calc(50% + 1.5rem);
+      right: calc(-50% + 1.5rem);
+    }
+    & .step-indicator {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 0.875rem;
+    }
+    & .step-indicator svg {
+      width: 1rem;
+      height: 1rem;
+    }
+    & .step-title {
+      font-size: 0.9375rem;
+    }
+    & .step-description {
+      font-size: 0.8125rem;
+    }
+    &[data-orientation="vertical"] .step:not(:last-child)::after {
+      top: 2.75rem;
+      left: 1.1875rem;
+      height: calc(100% - 2.75rem);
+    }
   }
 
-  .steps[data-size='xl'] {
-    & .step:not(:last-child)::after { top: 1.5rem; left: calc(50% + 1.75rem); right: calc(-50% + 1.75rem); }
-    & .step-indicator { width: 3rem; height: 3rem; font-size: 1rem; }
-    & .step-indicator svg { width: 1.125rem; height: 1.125rem; }
-    & .step-title { font-size: 1.0625rem; }
-    & .step-description { font-size: 0.875rem; }
-    &[data-orientation='vertical'] .step:not(:last-child)::after { top: 3.25rem; left: 1.4375rem; height: calc(100% - 3.25rem); }
+  .steps[data-size="xl"] {
+    & .step:not(:last-child)::after {
+      top: 1.5rem;
+      left: calc(50% + 1.75rem);
+      right: calc(-50% + 1.75rem);
+    }
+    & .step-indicator {
+      width: 3rem;
+      height: 3rem;
+      font-size: 1rem;
+    }
+    & .step-indicator svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+    & .step-title {
+      font-size: 1.0625rem;
+    }
+    & .step-description {
+      font-size: 0.875rem;
+    }
+    &[data-orientation="vertical"] .step:not(:last-child)::after {
+      top: 3.25rem;
+      left: 1.4375rem;
+      height: calc(100% - 3.25rem);
+    }
   }
 
   /* -- Vertical orientation ---------------------------------- */
@@ -124,7 +321,9 @@
       }
     }
 
-    & .step-content { padding-top: 0.25rem; }
+    & .step-content {
+      padding-top: 0.25rem;
+    }
   }
 
   /* -- Responsive: data-orientation="responsive" stacks vertically below
@@ -141,15 +340,43 @@
         text-align: left;
         padding-bottom: 1.5rem;
 
-        &:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; right: auto; width: 2px; height: calc(100% - 2.25rem); }
+        &:not(:last-child)::after {
+          top: 2.25rem;
+          left: 0.9375rem;
+          right: auto;
+          width: 2px;
+          height: calc(100% - 2.25rem);
+        }
       }
 
-      & .step-content { padding-top: 0.25rem; }
-      &[data-size='xs'] .step:not(:last-child)::after { top: 1.5rem; left: 0.5625rem; height: calc(100% - 1.5rem); }
-      &[data-size='sm'] .step:not(:last-child)::after { top: 1.75rem; left: 0.6875rem; height: calc(100% - 1.75rem); }
-      &[data-size='md'] .step:not(:last-child)::after { top: 2.25rem; left: 0.9375rem; height: calc(100% - 2.25rem); }
-      &[data-size='lg'] .step:not(:last-child)::after { top: 2.75rem; left: 1.1875rem; height: calc(100% - 2.75rem); }
-      &[data-size='xl'] .step:not(:last-child)::after { top: 3.25rem; left: 1.4375rem; height: calc(100% - 3.25rem); }
+      & .step-content {
+        padding-top: 0.25rem;
+      }
+      &[data-size="xs"] .step:not(:last-child)::after {
+        top: 1.5rem;
+        left: 0.5625rem;
+        height: calc(100% - 1.5rem);
+      }
+      &[data-size="sm"] .step:not(:last-child)::after {
+        top: 1.75rem;
+        left: 0.6875rem;
+        height: calc(100% - 1.75rem);
+      }
+      &[data-size="md"] .step:not(:last-child)::after {
+        top: 2.25rem;
+        left: 0.9375rem;
+        height: calc(100% - 2.25rem);
+      }
+      &[data-size="lg"] .step:not(:last-child)::after {
+        top: 2.75rem;
+        left: 1.1875rem;
+        height: calc(100% - 2.75rem);
+      }
+      &[data-size="xl"] .step:not(:last-child)::after {
+        top: 3.25rem;
+        left: 1.4375rem;
+        height: calc(100% - 3.25rem);
+      }
     }
   }
 
@@ -157,25 +384,51 @@
 
   @media (prefers-reduced-motion: reduce) {
     .step-indicator,
-    .step:not(:last-child)::after { transition: none; }
+    .step:not(:last-child)::after {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .step-indicator { border-width: 3px; }
-    .step:not(:last-child)::after { height: 3px; }
-    .steps[data-orientation="vertical"] .step:not(:last-child)::after { width: 3px; height: calc(100% - 2.25rem); }
+    .step-indicator {
+      border-width: 3px;
+    }
+    .step:not(:last-child)::after {
+      height: 3px;
+    }
+    .steps[data-orientation="vertical"] .step:not(:last-child)::after {
+      width: 3px;
+      height: calc(100% - 2.25rem);
+    }
   }
 
   @media (forced-colors: active) {
     .step-indicator {
       border-color: ButtonText;
-      .step[data-status='current'] & { border-color: Highlight; color: Highlight; }
-      .step[data-status='complete'] & { border-color: Highlight; background: Highlight; color: HighlightText; }
-      .step[data-status='error'] & { border-color: Mark; background: Mark; color: MarkText; }
+      .step[data-status="current"] & {
+        border-color: Highlight;
+        color: Highlight;
+      }
+      .step[data-status="complete"] & {
+        border-color: Highlight;
+        background: Highlight;
+        color: HighlightText;
+      }
+      .step[data-status="error"] & {
+        border-color: Mark;
+        background: Mark;
+        color: MarkText;
+      }
     }
-    .step:not(:last-child)::after { background: ButtonText; }
-    .step[data-status='complete']:not(:last-child)::after { background: Highlight; }
-    .step[data-status='error']:not(:last-child)::after { background: Mark; }
+    .step:not(:last-child)::after {
+      background: ButtonText;
+    }
+    .step[data-status="complete"]:not(:last-child)::after {
+      background: Highlight;
+    }
+    .step[data-status="error"]:not(:last-child)::after {
+      background: Mark;
+    }
   }
   /* -- Density ----------------------------------------------------
      data-density on the .steps root scales the flex gaps only - the size
@@ -183,18 +436,29 @@
      comfortable == the unsized default (.5rem / .125rem). */
   .steps:where([data-density="compact"]) {
     gap: 0.375rem;
-    & .step { gap: 0.375rem; }
-    & .step-content { gap: 0.0625rem; }
+    & .step {
+      gap: 0.375rem;
+    }
+    & .step-content {
+      gap: 0.0625rem;
+    }
   }
   .steps:where([data-density="comfortable"]) {
     gap: 0.5rem;
-    & .step { gap: 0.5rem; }
-    & .step-content { gap: 0.125rem; }
+    & .step {
+      gap: 0.5rem;
+    }
+    & .step-content {
+      gap: 0.125rem;
+    }
   }
   .steps:where([data-density="spacious"]) {
     gap: 0.75rem;
-    & .step { gap: 0.75rem; }
-    & .step-content { gap: 0.25rem; }
+    & .step {
+      gap: 0.75rem;
+    }
+    & .step-content {
+      gap: 0.25rem;
+    }
   }
-
 }

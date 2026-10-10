@@ -80,7 +80,10 @@ const isDisabled = (item) => item?.getAttribute('aria-disabled') === 'true';
 function selectItem(tree, item) {
     if (!item || isDisabled(item) || item.getAttribute('aria-selected') === 'true')
         return;
-    dfDollar(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute('aria-selected', 'false'));
+    dfDollar(tree)
+        .find('[role="treeitem"][aria-selected="true"]')
+        .toArray()
+        .forEach((other) => other.setAttribute('aria-selected', 'false'));
     item.setAttribute('aria-selected', 'true');
     // Fires when an item is selected - the item.
     tree.dispatchEvent(new CustomEvent('tree-select', { bubbles: true, detail: { item } }));
@@ -91,7 +94,11 @@ function selectItem(tree, item) {
    checked / unchecked / indeterminate from its children. data-checkable=
    "independent" turns the cascade off. The inputs stay real form controls
    (name / value submit natively). */
-const checkOf = (item) => (item ? dfDollar(item).find(':scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check').get(0) : undefined);
+const checkOf = (item) => item
+    ? dfDollar(item)
+        .find(':scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check')
+        .get(0)
+    : undefined;
 const childItems = (item) => [...(dfDollar(item).find(':scope > details > .tree-group').get(0)?.children ?? [])].filter((li) => li.matches('[role="treeitem"]'));
 const cascades = (tree) => tree.dataset.checkable !== 'independent';
 /** Down: a folder's state to every descendant box. */
@@ -121,7 +128,10 @@ function rollUp(tree, item) {
     }
 }
 function syncAria(tree) {
-    dfDollar(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+    dfDollar(tree)
+        .find('[role="treeitem"]')
+        .toArray()
+        .forEach((item) => {
         const box = checkOf(item);
         if (box)
             item.setAttribute('aria-checked', box.indeterminate ? 'mixed' : String(box.checked));
@@ -130,7 +140,12 @@ function syncAria(tree) {
 function checkedValues(tree) {
     return [...dfDollar(tree).find('.tree-check').toArray()]
         .filter((b) => b.checked && !b.indeterminate)
-        .map((b) => b.value !== 'on' ? b.value : dfDollar(b).closest('[role="treeitem"]').find(':scope > * > span:last-child, :scope > details > summary > span:last-child').get(0)?.textContent ?? '');
+        .map((b) => b.value !== 'on'
+        ? b.value
+        : (dfDollar(b)
+            .closest('[role="treeitem"]')
+            .find(':scope > * > span:last-child, :scope > details > summary > span:last-child')
+            .get(0)?.textContent ?? ''));
 }
 function onCheck(tree, item) {
     const box = checkOf(item);
@@ -143,11 +158,17 @@ function onCheck(tree, item) {
     }
     syncAria(tree);
     // Fires when a checkbox is toggled - the item, whether it is checked, and every checked value.
-    tree.dispatchEvent(new CustomEvent('tree-check', { bubbles: true, detail: { item, checked: box.checked, values: checkedValues(tree) } }));
+    tree.dispatchEvent(new CustomEvent('tree-check', {
+        bubbles: true,
+        detail: { item, checked: box.checked, values: checkedValues(tree) },
+    }));
 }
 function initChecks(tree) {
     let n = 0;
-    dfDollar(tree).find('.tree-check').toArray().forEach((box) => {
+    dfDollar(tree)
+        .find('.tree-check')
+        .toArray()
+        .forEach((box) => {
         // the row's label names the checkbox
         if (!box.hasAttribute('aria-label') && !box.hasAttribute('aria-labelledby')) {
             const label = dfDollar(box.parentElement).find(':scope > span:last-child').get(0);
@@ -159,8 +180,14 @@ function initChecks(tree) {
     });
     if (cascades(tree)) {
         // authored checked folders cascade down, then every folder rolls up
-        dfDollar(tree).find('[role="treeitem"]').toArray().forEach((item) => { const b = checkOf(item); if (b?.checked)
-            checkDown(item, true); });
+        dfDollar(tree)
+            .find('[role="treeitem"]')
+            .toArray()
+            .forEach((item) => {
+            const b = checkOf(item);
+            if (b?.checked)
+                checkDown(item, true);
+        });
         const leaves = [...dfDollar(tree).find('[role="treeitem"]').toArray()].filter((i) => !childItems(i).length);
         leaves.forEach((leaf) => rollUp(tree, leaf));
     }
@@ -178,19 +205,27 @@ function initChecks(tree) {
    move into itself. Alt+ArrowUp / Alt+ArrowDown moves the focused item
    among its siblings. Every move fires a bubbling tree-reorder event. */
 function clearDrop(tree) {
-    dfDollar(tree).find('[data-drop]').toArray().forEach((r) => r.removeAttribute('data-drop'));
+    dfDollar(tree)
+        .find('[data-drop]')
+        .toArray()
+        .forEach((r) => r.removeAttribute('data-drop'));
 }
 function announceMove(tree, item) {
     const parentItem = item.parentElement.closest('[role="treeitem"]');
     const index = [...item.parentElement.children].indexOf(item);
     // Fires after an item is moved - the item, its new parent and its index there.
-    tree.dispatchEvent(new CustomEvent('tree-reorder', { bubbles: true, detail: { item, parent: parentItem ?? tree, index } }));
+    tree.dispatchEvent(new CustomEvent('tree-reorder', {
+        bubbles: true,
+        detail: { item, parent: parentItem ?? tree, index },
+    }));
 }
 function initSortable(tree) {
     let dragged = null;
     const rows = () => dfDollar(tree).find('.tree-branch-trigger, .tree-leaf').toArray();
-    rows().forEach((row) => { if (!isDisabled(itemOf(row)))
-        row.draggable = true; });
+    rows().forEach((row) => {
+        if (!isDisabled(itemOf(row)))
+            row.draggable = true;
+    });
     tree.addEventListener('dragstart', (e) => {
         const row = e.target.closest?.('.tree-branch-trigger, .tree-leaf');
         if (!row)
@@ -244,8 +279,13 @@ function initSortable(tree) {
         clearDrop(tree);
         announceMove(tree, dragged);
         if (tree.hasAttribute('data-checkable') && cascades(tree)) {
-            dfDollar(tree).find('[role="treeitem"]').toArray().forEach((i) => { if (!childItems(i).length)
-                rollUp(tree, i); });
+            dfDollar(tree)
+                .find('[role="treeitem"]')
+                .toArray()
+                .forEach((i) => {
+                if (!childItems(i).length)
+                    rollUp(tree, i);
+            });
             syncAria(tree);
         }
     });
@@ -271,13 +311,18 @@ function moveByKey(tree, row, dir) {
     announceMove(tree, item);
 }
 function init() {
-    dfDollar('.tree[role="tree"]:not([data-init])').toArray().forEach((tree) => {
+    dfDollar('.tree[role="tree"]:not([data-init])')
+        .toArray()
+        .forEach((tree) => {
         tree.dataset.init = '';
         const selectable = tree.hasAttribute('data-selectable');
         if (selectable) {
             // every operable item states its selection explicitly (authored
             // aria-selected="true" wins); disabled items carry none
-            dfDollar(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+            dfDollar(tree)
+                .find('[role="treeitem"]')
+                .toArray()
+                .forEach((item) => {
                 if (!isDisabled(item) && !item.hasAttribute('aria-selected'))
                     item.setAttribute('aria-selected', 'false');
             });
@@ -288,8 +333,8 @@ function init() {
             initSortable(tree);
         const checkable = tree.hasAttribute('data-checkable');
         /* Clicks: disabled rows neither toggle nor navigate; selectable trees
-           select the clicked row (a branch toggles AND selects, like a file
-           explorer). */
+         select the clicked row (a branch toggles AND selects, like a file
+         explorer). */
         tree.addEventListener('click', (e) => {
             const row = e.target.closest('.tree-branch-trigger, .tree-leaf');
             if (!row || !tree.contains(row))
@@ -309,7 +354,10 @@ function init() {
             }
         });
         /* Keep aria-expanded in sync with <details> open state */
-        dfDollar(tree).find('.tree-branch').toArray().forEach((details) => {
+        dfDollar(tree)
+            .find('.tree-branch')
+            .toArray()
+            .forEach((details) => {
             const treeitem = details.closest('[role="treeitem"]');
             if (!treeitem)
                 return;

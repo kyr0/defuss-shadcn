@@ -27,15 +27,20 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 500;
   }
   /* .btn carries no aria-pressed styling of its own - mark the active edge */
-  .btn[aria-pressed="true"] {
+  .btn[aria-pressed='true'] {
     background: var(--accent);
     color: var(--accent-foreground);
   }
 </style>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem">
   <button class="btn" data-variant="outline" data-size="sm" id="anim-right-in">In</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-right-out">Out</button>
-  <span id="anim-right-dirs" role="group" aria-label="Direction" style="display:inline-flex; gap:0.25rem; margin-inline:0.5rem;">
+  <span
+    id="anim-right-dirs"
+    role="group"
+    aria-label="Direction"
+    style="display: inline-flex; gap: 0.25rem; margin-inline: 0.5rem"
+  >
     <button class="btn" data-variant="outline" data-size="sm" data-direction="north" aria-pressed="false">N</button>
     <button class="btn" data-variant="outline" data-size="sm" data-direction="south" aria-pressed="false">S</button>
     <button class="btn" data-variant="outline" data-size="sm" data-direction="west" aria-pressed="true">W</button>
@@ -45,9 +50,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   <button class="btn" data-variant="outline" data-size="sm" id="anim-right-resume">Resume</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-right-finish">Finish</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-right-reset">Reset</button>
-  <label style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.8rem; margin-inline-start:0.5rem;">
+  <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; margin-inline-start: 0.5rem">
     ms
-    <input class="input" type="number" id="anim-right-duration" value="1500" min="50" step="50" style="width:6rem;" />
+    <input class="input" type="number" id="anim-right-duration" value="1500" min="50" step="50" style="width: 6rem" />
   </label>
   <select class="select" id="anim-right-easing" aria-label="Easing">
     <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out (default)</option>
@@ -112,8 +117,27 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     font-weight: 500;
   }
 </style>
-<div id="anim-right-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
-  <div style="height: 600px; display:flex; align-items:flex-start; justify-content:center; font-size:0.8rem; color:var(--muted-foreground);">Scroll down - the slide-in scrubs with the scroll position ↓</div>
+<div
+  id="anim-right-scroller"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div
+    style="
+      height: 600px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--muted-foreground);
+    "
+    >Scroll down - the slide-in scrubs with the scroll position ↓</div
+  >
   <div id="anim-right-scroll-target">Slide Right</div>
 </div>
 <script type="module">

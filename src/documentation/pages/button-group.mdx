@@ -80,7 +80,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Sizes" hint="Button size is controlled with data-size on the individual .btn children - group them at any step of the full scale."
-<div style="display:flex;flex-direction:column;gap:1.0rem;align-items:center;">
+<div style="display: flex; flex-direction: column; gap: 1rem; align-items: center">
   <div class="btn-group" role="group" aria-label="Extra small actions">
     <button class="btn" data-variant="outline" data-size="xs">Save</button>
     <button class="btn" data-variant="outline" data-size="xs">Edit</button>
@@ -116,12 +116,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Split button" hint="The main action plus a menu of related ones. The separator is the single 1px line between them - the two halves stay one control. The chevron is a Dropdown trigger (data-dropdown-trigger + aria-haspopup=&quot;menu&quot;); the menu sits after the group and lines up with the chevron's end (data-align=&quot;end&quot;). Arrow keys move through the menu, Escape closes it and returns focus to the chevron." height="18"
 <div class="btn-group" role="group" aria-label="Split action">
   <button class="btn" data-variant="outline" id="split-save">Save</button>
-  <hr role="separator">
-  <button class="btn" data-variant="outline" data-size="icon"
-          aria-label="More save options"
-          aria-haspopup="menu" aria-expanded="false" aria-controls="split-menu"
-          data-dropdown-trigger="split-menu">
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  <hr role="separator" />
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="icon"
+    aria-label="More save options"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="split-menu"
+    data-dropdown-trigger="split-menu"
+  >
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   </button>
 </div>
 <div id="split-menu" role="menu" popover class="dropdown-content" data-align="end" aria-label="Save options">
@@ -131,10 +149,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <div class="dropdown-separator" role="separator"></div>
   <button role="menuitem" class="dropdown-item" tabindex="-1">Schedule…</button>
 </div>
-<p class="text-sm text-muted-foreground" style="margin:0.75rem 0 0;">Last action: <output id="split-out">none</output></p>
+<p class="text-sm text-muted-foreground" style="margin: 0.75rem 0 0"
+  >Last action: <output id="split-out">none</output></p
+>
 <script>
   const out = document.getElementById('split-out');
-  document.getElementById('split-save').addEventListener('click', () => { out.textContent = 'Save'; });
+  document.getElementById('split-save').addEventListener('click', () => {
+    out.textContent = 'Save';
+  });
   document.getElementById('split-menu').addEventListener('click', (e) => {
     const item = e.target.closest('[role="menuitem"]');
     if (item) out.textContent = item.textContent.trim();

@@ -93,7 +93,9 @@
     border-radius: var(--radius-md);
     background: var(--background);
     cursor: pointer;
-    transition: border-color 120ms ease, background-color 120ms ease;
+    transition:
+      border-color 120ms ease,
+      background-color 120ms ease;
 
     /* the native control stays (keyboard, form data), the card shows the state */
     & > input[type="radio"],
@@ -439,7 +441,16 @@
 
   /* the controller hides with [hidden]: it must win over every display above
      (and over a .btn's own display) */
-  .questionnaire :is(.questionnaire-block, .questionnaire-step, .questionnaire-actions, .questionnaire-complete, .questionnaire-notice, .questionnaire-error, [data-questionnaire])[hidden] {
+  .questionnaire
+    :is(
+      .questionnaire-block,
+      .questionnaire-step,
+      .questionnaire-actions,
+      .questionnaire-complete,
+      .questionnaire-notice,
+      .questionnaire-error,
+      [data-questionnaire]
+    )[hidden] {
     display: none;
   }
 

@@ -10,7 +10,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent, persisted, reload, forget, persistOk } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent, persisted, reload, forget, persistOk, } = __df$shared;
 const df$ = defussGlobals();
 const q = defussQuery();
 // VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
@@ -24,11 +24,22 @@ export const translations = {
     en: {
         title: 'Your privacy choices',
         text: 'Essential services are always enabled. Choose whether to allow optional services. You can change or withdraw your choices at any time in Privacy settings.',
-        settings: 'Privacy settings', close: 'Close without saving', language: 'Language',
-        preferences: 'Privacy preferences', preferencesText: 'Choose categories or individual services. Changes apply when you save.',
-        categories: 'Categories', services: 'Services', acceptAll: 'Accept all', denyAll: 'Reject optional',
-        save: 'Save preferences', required: 'Required', privacyPolicy: 'Privacy policy', legalNotice: 'Legal notice',
-        moreInformation: 'More information', blocked: 'is blocked until you allow this service.', activate: 'Allow this service',
+        settings: 'Privacy settings',
+        close: 'Close without saving',
+        language: 'Language',
+        preferences: 'Privacy preferences',
+        preferencesText: 'Choose categories or individual services. Changes apply when you save.',
+        categories: 'Categories',
+        services: 'Services',
+        acceptAll: 'Accept all',
+        denyAll: 'Reject optional',
+        save: 'Save preferences',
+        required: 'Required',
+        privacyPolicy: 'Privacy policy',
+        legalNotice: 'Legal notice',
+        moreInformation: 'More information',
+        blocked: 'is blocked until you allow this service.',
+        activate: 'Allow this service',
         thirdParty: 'Third-party cookies cannot be removed by this site. Use your browser settings to remove them.',
         storageError: 'Your choice applies to this page, but could not be saved for your next visit.',
         categoryNames: { essential: 'Essential', functional: 'Functional', marketing: 'Marketing', other: 'Other' },
@@ -42,11 +53,22 @@ export const translations = {
     de: {
         title: 'Ihre Datenschutz-Auswahl',
         text: 'Notwendige Dienste sind immer aktiv. Entscheiden Sie, welche optionalen Dienste Sie erlauben. Ihre Auswahl können Sie jederzeit in den Datenschutz-Einstellungen ändern oder widerrufen.',
-        settings: 'Datenschutz-Einstellungen', close: 'Ohne Speichern schließen', language: 'Sprache',
-        preferences: 'Datenschutz-Einstellungen', preferencesText: 'Wählen Sie Kategorien oder einzelne Dienste. Änderungen gelten erst nach dem Speichern.',
-        categories: 'Kategorien', services: 'Dienste', acceptAll: 'Alle akzeptieren', denyAll: 'Optionale ablehnen',
-        save: 'Auswahl speichern', required: 'Notwendig', privacyPolicy: 'Datenschutzerklärung', legalNotice: 'Impressum',
-        moreInformation: 'Mehr Informationen', blocked: 'ist gesperrt, bis Sie diesen Dienst erlauben.', activate: 'Diesen Dienst erlauben',
+        settings: 'Datenschutz-Einstellungen',
+        close: 'Ohne Speichern schließen',
+        language: 'Sprache',
+        preferences: 'Datenschutz-Einstellungen',
+        preferencesText: 'Wählen Sie Kategorien oder einzelne Dienste. Änderungen gelten erst nach dem Speichern.',
+        categories: 'Kategorien',
+        services: 'Dienste',
+        acceptAll: 'Alle akzeptieren',
+        denyAll: 'Optionale ablehnen',
+        save: 'Auswahl speichern',
+        required: 'Notwendig',
+        privacyPolicy: 'Datenschutzerklärung',
+        legalNotice: 'Impressum',
+        moreInformation: 'Mehr Informationen',
+        blocked: 'ist gesperrt, bis Sie diesen Dienst erlauben.',
+        activate: 'Diesen Dienst erlauben',
         thirdParty: 'Cookies von Drittanbietern kann diese Website nicht löschen. Entfernen Sie diese in Ihren Browser-Einstellungen.',
         storageError: 'Ihre Auswahl gilt für diese Seite, konnte aber nicht für Ihren nächsten Besuch gespeichert werden.',
         categoryNames: { essential: 'Notwendig', functional: 'Funktional', marketing: 'Marketing', other: 'Sonstige' },
@@ -84,7 +106,7 @@ function languageName(code) {
     }
 }
 function escape(value) {
-    return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    return value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
 function safeUrl(value, doc) {
     if (!value)
@@ -104,12 +126,14 @@ function validateConfig(config) {
     for (const origin of config.cookieOrigins) {
         if (!origin || !/^[a-zA-Z][\w-]*$/.test(origin.id) || ids.has(origin.id))
             throw new TypeError('cookie-consent: service IDs must be unique and match [a-zA-Z][\\w-]*');
-        if (typeof origin.name !== 'string' || !origin.name.trim() || !categories.includes(origin.category)
-            || !(typeof origin.description === 'string' || (origin.description && typeof origin.description === 'object'))) {
+        if (typeof origin.name !== 'string' ||
+            !origin.name.trim() ||
+            !categories.includes(origin.category) ||
+            !(typeof origin.description === 'string' || (origin.description && typeof origin.description === 'object'))) {
             throw new TypeError(`cookie-consent: invalid service ${origin.id}`);
         }
-        if (origin.cookies?.some(cookie => !/^[!#$%&'*+.^_`|~0-9a-zA-Z-]+$/.test(typeof cookie === 'string' ? cookie : cookie.name)
-            || (typeof cookie !== 'string' && /[;\r\n]/.test(`${cookie.path ?? ''}${cookie.domain ?? ''}`)))) {
+        if (origin.cookies?.some((cookie) => !/^[!#$%&'*+.^_`|~0-9a-zA-Z-]+$/.test(typeof cookie === 'string' ? cookie : cookie.name) ||
+            (typeof cookie !== 'string' && /[;\r\n]/.test(`${cookie.path ?? ''}${cookie.domain ?? ''}`)))) {
             throw new TypeError(`cookie-consent: invalid cookie descriptor for ${origin.id}`);
         }
         ids.add(origin.id);
@@ -153,7 +177,7 @@ class Controller {
     constructor(root, config) {
         validateConfig(config);
         this.root = root;
-        this.config = { ...config, cookieOrigins: config.cookieOrigins.map(origin => ({ ...origin })) };
+        this.config = { ...config, cookieOrigins: config.cookieOrigins.map((origin) => ({ ...origin })) };
         this.doc = root.ownerDocument;
         this.scope = config.resourceRoot ?? this.doc;
         this.id = root.id || `cookie-consent-${++uid}`;
@@ -177,7 +201,9 @@ class Controller {
             ? persisted(this.key, null, {
                 storage,
                 validate: (v) => v === null || (typeof v === 'object' && !Array.isArray(v)),
-                onError: () => { this.storageFailed = true; },
+                onError: () => {
+                    this.storageFailed = true;
+                },
             })
             : null;
         this.state = this.readStored();
@@ -198,14 +224,14 @@ class Controller {
         this.bound = bindComponent(root, cookieConsentApi);
         root.api = this;
         this.repaint();
-        this.listen(root, 'click', event => this.onClick(event));
-        this.listen(root, 'change', event => this.onChange(event));
+        this.listen(root, 'click', (event) => this.onClick(event));
+        this.listen(root, 'change', (event) => this.onChange(event));
         this.listen(this.dialog, 'cancel', () => this.close());
         this.listen(this.dialog, 'close', () => {
             if (!this.dialog.open)
                 this.finishClose();
         });
-        this.listen(this.doc, 'click', event => {
+        this.listen(this.doc, 'click', (event) => {
             const target = event.target instanceof Element ? q(event.target).closest('[data-cookie-consent-open]')[0] : undefined;
             if (target && q(target).attr('data-cookie-consent-open') === this.id) {
                 this.trigger = target;
@@ -213,7 +239,7 @@ class Controller {
             }
         });
         if (this.doc.defaultView)
-            this.listen(this.doc.defaultView, 'storage', event => {
+            this.listen(this.doc.defaultView, 'storage', (event) => {
                 const e = event;
                 if ((e.key === this.key || e.key === null) && e.storageArea === this.storage) {
                     const previous = this.state;
@@ -249,27 +275,34 @@ class Controller {
             throw new Error('cookie-consent: instance was destroyed');
     }
     origin(id) {
-        const origin = this.config.cookieOrigins.find(service => service.id === id);
+        const origin = this.config.cookieOrigins.find((service) => service.id === id);
         if (!origin)
             throw new Error(`cookie-consent: unknown service ${id}`);
         return origin;
     }
     normalize(ids) {
         const selected = new Set(ids);
-        return this.config.cookieOrigins.filter(service => service.category === 'essential'
-            || (!service.disabled && selected.has(service.id))).map(service => service.id).sort();
+        return this.config.cookieOrigins
+            .filter((service) => service.category === 'essential' || (!service.disabled && selected.has(service.id)))
+            .map((service) => service.id)
+            .sort();
     }
     makeState(ids, decisionMade = false, updatedAt = null, language = this.config.defaultLanguage ?? 'en') {
         const acceptedServices = this.normalize(ids);
-        const optional = this.config.cookieOrigins.filter(s => s.category !== 'essential' && !s.disabled);
+        const optional = this.config.cookieOrigins.filter((s) => s.category !== 'essential' && !s.disabled);
         return {
-            revision: this.revision, decisionMade, language, acceptedServices, updatedAt,
-            acceptedCategories: categories.filter(category => category === 'essential' || (() => {
-                const services = this.config.cookieOrigins.filter(s => s.category === category && !s.disabled);
-                return services.length > 0 && services.every(s => acceptedServices.includes(s.id));
-            })()),
-            acceptAll: decisionMade && optional.length > 0 && optional.every(s => acceptedServices.includes(s.id)),
-            denyAll: decisionMade && optional.every(s => !acceptedServices.includes(s.id)),
+            revision: this.revision,
+            decisionMade,
+            language,
+            acceptedServices,
+            updatedAt,
+            acceptedCategories: categories.filter((category) => category === 'essential' ||
+                (() => {
+                    const services = this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled);
+                    return services.length > 0 && services.every((s) => acceptedServices.includes(s.id));
+                })()),
+            acceptAll: decisionMade && optional.length > 0 && optional.every((s) => acceptedServices.includes(s.id)),
+            denyAll: decisionMade && optional.every((s) => !acceptedServices.includes(s.id)),
         };
     }
     readStored() {
@@ -278,10 +311,16 @@ class Controller {
         if (!s)
             return fallback;
         const age = Date.now() - (s.updatedAt ?? 0);
-        if (s.schemaVersion !== 1 || s.revision !== this.revision || s.decisionMade !== true
-            || !languagesOf(this.config).includes(s.language ?? '') || !Array.isArray(s.acceptedServices)
-            || !s.acceptedServices.every(id => typeof id === 'string') || typeof s.updatedAt !== 'number'
-            || !Number.isFinite(s.updatedAt) || age < 0 || age > (this.config.maxAgeDays ?? 180) * 86400000)
+        if (s.schemaVersion !== 1 ||
+            s.revision !== this.revision ||
+            s.decisionMade !== true ||
+            !languagesOf(this.config).includes(s.language ?? '') ||
+            !Array.isArray(s.acceptedServices) ||
+            !s.acceptedServices.every((id) => typeof id === 'string') ||
+            typeof s.updatedAt !== 'number' ||
+            !Number.isFinite(s.updatedAt) ||
+            age < 0 ||
+            age > (this.config.maxAgeDays ?? 180) * 86400000)
             return fallback;
         return this.makeState(s.acceptedServices, true, s.updatedAt, s.language);
     }
@@ -292,13 +331,26 @@ class Controller {
         }
         const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
         this.storageFailed = false;
-        this.saved.set({ schemaVersion: 1, revision, decisionMade, language, acceptedServices: [...acceptedServices], updatedAt });
+        this.saved.set({
+            schemaVersion: 1,
+            revision,
+            decisionMade,
+            language,
+            acceptedServices: [...acceptedServices],
+            updatedAt,
+        });
         this.storageFailed ||= !persistOk(this.saved);
     }
     getConsent() {
-        return { ...this.state, acceptedServices: [...this.state.acceptedServices], acceptedCategories: [...this.state.acceptedCategories] };
+        return {
+            ...this.state,
+            acceptedServices: [...this.state.acceptedServices],
+            acceptedCategories: [...this.state.acceptedCategories],
+        };
     }
-    getDraft() { return [...this.draft].sort(); }
+    getDraft() {
+        return [...this.draft].sort();
+    }
     isServiceAccepted(id) {
         this.origin(id);
         return this.state.acceptedServices.includes(id);
@@ -355,8 +407,12 @@ class Controller {
         }
     }
     /** data-variant="banner": the first view is a bottom bar, not a modal. */
-    isBanner() { return q(this.root).attr('data-variant') === 'banner'; }
-    open() { this.setState('preferences'); }
+    isBanner() {
+        return q(this.root).attr('data-variant') === 'banner';
+    }
+    open() {
+        this.setState('preferences');
+    }
     close() {
         this.assertAlive();
         if (this.dialog.open)
@@ -394,9 +450,15 @@ class Controller {
             this.close();
         this.emit(reason);
     }
-    acceptAll() { this.commit(this.config.cookieOrigins.filter(s => !s.disabled).map(s => s.id), 'accept'); }
-    denyAll() { this.commit([], 'deny'); }
-    save() { this.commit(this.draft, 'save'); }
+    acceptAll() {
+        this.commit(this.config.cookieOrigins.filter((s) => !s.disabled).map((s) => s.id), 'accept');
+    }
+    denyAll() {
+        this.commit([], 'deny');
+    }
+    save() {
+        this.commit(this.draft, 'save');
+    }
     acceptService(id) {
         const origin = this.origin(id);
         if (origin.disabled && origin.category !== 'essential')
@@ -406,7 +468,7 @@ class Controller {
     revokeService(id) {
         if (this.origin(id).category === 'essential')
             throw new Error('cookie-consent: essential services cannot be revoked');
-        this.commit(this.state.acceptedServices.filter(s => s !== id), 'service', false);
+        this.commit(this.state.acceptedServices.filter((s) => s !== id), 'service', false);
     }
     reset() {
         this.assertAlive();
@@ -429,7 +491,10 @@ class Controller {
     }
     emit(reason) {
         // Fires on every decision - the consent state and why (accept, deny, save, service, reset, storage).
-        this.root.dispatchEvent(new CustomEvent('cookie-consent:change', { bubbles: true, detail: { state: this.getConsent(), reason } }));
+        this.root.dispatchEvent(new CustomEvent('cookie-consent:change', {
+            bubbles: true,
+            detail: { state: this.getConsent(), reason },
+        }));
         try {
             this.config.onChange?.(this.getConsent(), reason);
         }
@@ -466,14 +531,24 @@ class Controller {
         // a translated-only language starts from English: every key it leaves out
         const base = translations[this.state.language] ?? translations.en;
         const overrides = this.config.translations?.[this.state.language];
-        return { ...base, ...overrides, categoryNames: { ...base.categoryNames, ...overrides?.categoryNames }, categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions } };
+        return {
+            ...base,
+            ...overrides,
+            categoryNames: { ...base.categoryNames, ...overrides?.categoryNames },
+            categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions },
+        };
     }
     links() {
         const tr = this.messages();
-        return [[this.config.privacyPolicyUrl, tr.privacyPolicy], [this.config.legalNoticeUrl, tr.legalNotice]].map(([value, label]) => {
+        return [
+            [this.config.privacyPolicyUrl, tr.privacyPolicy],
+            [this.config.legalNoticeUrl, tr.legalNotice],
+        ]
+            .map(([value, label]) => {
             const url = safeUrl(localize(value, this.state.language), this.doc);
             return url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>` : '';
-        }).join('');
+        })
+            .join('');
     }
     /** Repaint the dialog from the consent state (internal; render() is the State API name) */
     repaint() {
@@ -486,26 +561,32 @@ class Controller {
         // Accept all and Reject optional share one variant: equal weight, by design
         const button = (action, text, variant = '') => `<button type="button" class="btn"${variant ? ` data-variant="${variant}"` : ''} data-cookie-action="${action}">${escape(text)}</button>`;
         q(this.dialog).attr('lang', this.state.language);
-        q(this.root).attr('data-state-name', this.view).attr('data-consent-status', this.state.decisionMade ? 'decided' : 'pending');
+        q(this.root)
+            .attr('data-state-name', this.view)
+            .attr('data-consent-status', this.state.decisionMade ? 'decided' : 'pending');
         // Composed from the library: Dialog sections, Select, Button, Tabs (the
         // tablist carries data-init - this component owns the switching, tabs.js
         // only lends its styles), Checkbox rows, Badge.
         q('.cookie-consent-content', this.dialog).html(`<header class="dialog-header cookie-consent-header">
       <div><p class="cookie-consent-eyebrow">${escape(tr.settings)}</p><h2 id="${this.id}-title" class="dialog-title cookie-consent-title" tabindex="-1">${escape(title)}</h2></div>
-      <div class="cookie-consent-tools"><select class="select" data-size="sm" data-cookie-language aria-label="${escape(tr.language)}">${languagesOf(this.config).map((code) => `<option value="${escape(code)}" lang="${escape(code)}">${escape(languageName(code))}</option>`).join('')}</select>
+      <div class="cookie-consent-tools"><select class="select" data-size="sm" data-cookie-language aria-label="${escape(tr.language)}">${languagesOf(this.config)
+            .map((code) => `<option value="${escape(code)}" lang="${escape(code)}">${escape(languageName(code))}</option>`)
+            .join('')}</select>
       <button type="button" class="btn" data-variant="ghost" data-size="icon-sm" data-cookie-action="close" aria-label="${escape(tr.close)}">×</button></div>
       </header><div class="cookie-consent-body"><p id="${this.id}-description" class="dialog-description cookie-consent-description">${escape(description)}</p>
-      ${preferenceView ? `<div class="tabs cookie-consent-tabs"><div class="tab-list" role="tablist" data-init aria-label="${escape(tr.preferences)}">
+      ${preferenceView
+            ? `<div class="tabs cookie-consent-tabs"><div class="tab-list" role="tablist" data-init aria-label="${escape(tr.preferences)}">
         <button type="button" class="tab-trigger" role="tab" id="${this.id}-categories-tab" data-cookie-action="preferences" aria-controls="${this.id}-categories" aria-selected="${this.view === 'preferences'}" tabindex="${this.view === 'preferences' ? 0 : -1}">${escape(tr.categories)}</button>
         <button type="button" class="tab-trigger" role="tab" id="${this.id}-services-tab" data-cookie-action="services" aria-controls="${this.id}-services" aria-selected="${this.view === 'services'}" tabindex="${this.view === 'services' ? 0 : -1}">${escape(tr.services)}</button></div>
         <section class="tab-content" role="tabpanel" id="${this.id}-categories" aria-labelledby="${this.id}-categories-tab" ${this.view === 'services' ? 'hidden' : ''}>${this.categoryMarkup()}</section>
-        <section class="tab-content" role="tabpanel" id="${this.id}-services" aria-labelledby="${this.id}-services-tab" ${this.view !== 'services' ? 'hidden' : ''}>${this.serviceMarkup()}</section></div>` : ''}
+        <section class="tab-content" role="tabpanel" id="${this.id}-services" aria-labelledby="${this.id}-services-tab" ${this.view !== 'services' ? 'hidden' : ''}>${this.serviceMarkup()}</section></div>`
+            : ''}
       <nav class="cookie-consent-links" aria-label="${escape(tr.moreInformation)}">${this.links()}</nav>
       </div><footer class="dialog-footer cookie-consent-footer">${!preferenceView ? button('preferences', tr.settings, 'outline') : button('save', tr.save, 'outline')}${button('deny', tr.denyAll)}${button('accept', tr.acceptAll)}</footer>`);
         q('[data-cookie-language]', this.dialog).val(this.state.language);
         for (const category of categories) {
-            const services = this.config.cookieOrigins.filter(s => s.category === category && !s.disabled);
-            const selected = services.filter(s => this.draft.has(s.id)).length;
+            const services = this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled);
+            const selected = services.filter((s) => this.draft.has(s.id)).length;
             q(`[data-cookie-category="${category}"]`, this.dialog)
                 .prop('checked', category === 'essential' || (services.length > 0 && selected === services.length))
                 .prop('indeterminate', selected > 0 && selected < services.length);
@@ -523,38 +604,51 @@ class Controller {
     }
     categoryMarkup() {
         const tr = this.messages();
-        return categories.map(category => {
-            const ids = this.config.cookieOrigins.filter(s => s.category === category && !s.disabled).map(s => s.id);
+        return categories
+            .map((category) => {
+            const ids = this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled).map((s) => s.id);
             const required = category === 'essential';
             const box = `${this.id}-category-${category}`;
-            return `<div class="cookie-consent-row checkbox-item-block"><input class="checkbox" type="checkbox" id="${box}" data-cookie-category="${category}" ${required || (ids.length > 0 && ids.every(id => this.draft.has(id))) ? 'checked' : ''} ${required || ids.length === 0 ? 'disabled' : ''} aria-describedby="${box}-description"><div><label for="${box}" class="cookie-consent-label">${escape(tr.categoryNames[category])}${required ? ` <span class="badge" data-variant="secondary">${escape(tr.required)}</span>` : ''}</label><p class="field-description" id="${box}-description">${escape(tr.categoryDescriptions[category])}</p></div></div>`;
-        }).join('');
+            return `<div class="cookie-consent-row checkbox-item-block"><input class="checkbox" type="checkbox" id="${box}" data-cookie-category="${category}" ${required || (ids.length > 0 && ids.every((id) => this.draft.has(id))) ? 'checked' : ''} ${required || ids.length === 0 ? 'disabled' : ''} aria-describedby="${box}-description"><div><label for="${box}" class="cookie-consent-label">${escape(tr.categoryNames[category])}${required ? ` <span class="badge" data-variant="secondary">${escape(tr.required)}</span>` : ''}</label><p class="field-description" id="${box}-description">${escape(tr.categoryDescriptions[category])}</p></div></div>`;
+        })
+            .join('');
     }
     serviceMarkup() {
         const tr = this.messages();
-        return this.config.cookieOrigins.map(origin => {
+        return this.config.cookieOrigins
+            .map((origin) => {
             const url = safeUrl(localize(origin.url, this.state.language), this.doc);
-            const data = origin.dataCollected?.[this.state.language] ?? origin.dataCollected?.en ?? Object.values(origin.dataCollected ?? {})[0] ?? [];
+            const data = origin.dataCollected?.[this.state.language] ??
+                origin.dataCollected?.en ??
+                Object.values(origin.dataCollected ?? {})[0] ??
+                [];
             const box = `${this.id}-service-${origin.id}`;
             return `<div class="cookie-consent-row checkbox-item-block"><input class="checkbox" type="checkbox" id="${box}" data-cookie-service="${origin.id}" ${this.draft.has(origin.id) ? 'checked' : ''} ${origin.category === 'essential' || origin.disabled ? 'disabled' : ''} aria-describedby="${box}-description"><div><label for="${box}" class="cookie-consent-label">${escape(origin.name)} <span class="badge" data-variant="outline">${escape(tr.categoryNames[origin.category])}</span></label>
         <p class="field-description" id="${box}-description">${escape(localize(origin.description, this.state.language))}</p>
         ${url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(tr.moreInformation)}</a>` : ''}
         ${origin.domain ? `<p class="field-description cookie-consent-note">${escape(origin.domain)} · ${escape(tr.thirdParty)}</p>` : ''}
-        ${data.length ? `<ul class="cookie-consent-data">${data.map(value => `<li class="badge" data-variant="secondary">${escape(value)}</li>`).join('')}</ul>` : ''}</div></div>`;
-        }).join('');
+        ${data.length ? `<ul class="cookie-consent-data">${data.map((value) => `<li class="badge" data-variant="secondary">${escape(value)}</li>`).join('')}</ul>` : ''}</div></div>`;
+        })
+            .join('');
     }
     bindTabKeys() {
         // A single delegated listener on root; no handlers attached to rendered rows.
         if (q(this.root).attr('data-cookie-keys') !== null)
             return;
         q(this.root).attr('data-cookie-keys', '');
-        this.listen(this.root, 'keydown', event => {
+        this.listen(this.root, 'keydown', (event) => {
             const e = event;
             const target = e.target instanceof Element ? q(e.target).closest('[role="tab"]')[0] : undefined;
             if (!target || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key))
                 return;
             e.preventDefault();
-            const name = e.key === 'Home' ? 'preferences' : e.key === 'End' ? 'services' : this.view === 'services' ? 'preferences' : 'services';
+            const name = e.key === 'Home'
+                ? 'preferences'
+                : e.key === 'End'
+                    ? 'services'
+                    : this.view === 'services'
+                        ? 'preferences'
+                        : 'services';
             this.setState(name);
             q(`[data-cookie-action="${name}"]`, this.dialog)[0]?.focus();
         });
@@ -611,7 +705,7 @@ class Controller {
             }
         }
         else if (category && categories.includes(category) && category !== 'essential') {
-            for (const origin of this.config.cookieOrigins.filter(s => s.category === category && !s.disabled)) {
+            for (const origin of this.config.cookieOrigins.filter((s) => s.category === category && !s.disabled)) {
                 if (checked)
                     this.draft.add(origin.id);
                 else
@@ -631,7 +725,7 @@ class Controller {
             if (!element.isConnected || !this.scope.contains(element)) {
                 if (record.active)
                     q(record.active).remove();
-                record.handlers?.forEach(off => off());
+                record.handlers?.forEach((off) => off());
                 if (record.wrapper && !element.isConnected)
                     q(record.wrapper).remove();
                 this.gates.delete(element);
@@ -640,7 +734,7 @@ class Controller {
         }
         for (const element of q('[data-cookie-consent]:not([data-cookie-consent-active])', this.scope)) {
             const id = q(element).attr('data-cookie-consent');
-            const origin = this.config.cookieOrigins.find(s => s.id === id);
+            const origin = this.config.cookieOrigins.find((s) => s.id === id);
             // Unknown services remain inert, never implicitly accepted.
             if (!origin || !['SCRIPT', 'IFRAME'].includes(element.tagName))
                 continue;
@@ -748,7 +842,7 @@ class Controller {
         if (!record.overlay)
             return;
         const tr = this.messages();
-        record.handlers?.forEach(off => off());
+        record.handlers?.forEach((off) => off());
         q(record.overlay).html(`<p><strong>${escape(origin.name)}</strong> ${escape(tr.blocked)}</p><div class="cookie-consent-embed-actions"><button type="button" class="btn" data-size="sm" data-cookie-allow>${escape(tr.activate)}</button><button type="button" class="btn" data-variant="outline" data-size="sm" data-cookie-settings>${escape(tr.settings)}</button></div>`);
         const allow = q('[data-cookie-allow]', record.overlay);
         const settings = q('[data-cookie-settings]', record.overlay);
@@ -767,7 +861,7 @@ class Controller {
             return;
         this.close();
         this.observer.disconnect();
-        this.off.forEach(off => off());
+        this.off.forEach((off) => off());
         this.saved?.destroy();
         // Destroy revokes active optional integrations; inert placeholders stay.
         const previous = this.state;
@@ -776,7 +870,7 @@ class Controller {
         for (const [element, record] of this.gates) {
             if (record.active)
                 q(record.active).remove();
-            record.handlers?.forEach(off => off());
+            record.handlers?.forEach((off) => off());
             if (element.tagName === 'IFRAME') {
                 q(element).attr('src', 'about:blank').attr('src', null).prop('hidden', false);
                 if (record.wrapper) {
@@ -837,7 +931,9 @@ export const cookieConsent = {
      * @param root - the .cookie-consent element
      * @returns its instance, undefined before create()
      */
-    get(root) { return controllers.get(root); },
+    get(root) {
+        return controllers.get(root);
+    },
     init,
 };
 df$.cookieConsentApi = cookieConsentApi;
@@ -858,7 +954,10 @@ function init() {
         }
         catch (error) {
             q(root).attr('data-init', '').attr('data-cookie-consent-error', '');
-            root.dispatchEvent(new CustomEvent('cookie-consent:error', { bubbles: true, detail: { kind: 'config', error } }));
+            root.dispatchEvent(new CustomEvent('cookie-consent:error', {
+                bubbles: true,
+                detail: { kind: 'config', error },
+            }));
             console.error(error);
         }
     }

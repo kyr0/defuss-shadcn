@@ -66,43 +66,50 @@ df$.alertDialogApi = alertDialogApi;
 df$.alertDialogStates = alertDialogStates;
 
 function init() {
-/* Wire triggers */
-dfDollar('[data-alert-dialog-trigger]:not([data-init])').toArray().forEach((trigger) => {
-  trigger.dataset.init = '';
-  const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.alertDialogTrigger)).get(0);
-  if (!dialog) return;
-  trigger.addEventListener('click', () => {
-    dialog._trigger = trigger;
-    dialog.showModal();
-  });
-});
-
-/* Wire close buttons and block Escape */
-dfDollar<HTMLDialogElement>('dialog.alert-dialog:not([data-init])').toArray().forEach((dialog) => {
-  dialog.dataset.init = '';
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(dialog, alertDialogApi, { name: shown(dialog), config: {} });
-  /* Block Escape key */
-  dialog.addEventListener('cancel', (e) => {
-    e.preventDefault();
-  });
-
-  /* Wire close buttons */
-  dfDollar(dialog).find('[data-alert-dialog-close]').toArray().forEach((btn) => {
-    btn.addEventListener('click', () => {
-      dialog.close();
+  /* Wire triggers */
+  dfDollar('[data-alert-dialog-trigger]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const dialog = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.alertDialogTrigger)).get(0);
+      if (!dialog) return;
+      trigger.addEventListener('click', () => {
+        dialog._trigger = trigger;
+        dialog.showModal();
+      });
     });
-  });
 
-  /* Return focus to trigger */
-  dialog.addEventListener('close', () => {
-    // `close` fires AFTER the exit transition (display allow-discrete), so a
-    // fast re-open can beat it - a stale event must not yank focus out of an
-    // open dialog. The state itself follows `open` through read().
-    if (dialog.open) return;
-    if (dialog._trigger) dialog._trigger.focus();
-  });
-});
+  /* Wire close buttons and block Escape */
+  dfDollar<HTMLDialogElement>('dialog.alert-dialog:not([data-init])')
+    .toArray()
+    .forEach((dialog) => {
+      dialog.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(dialog, alertDialogApi, { name: shown(dialog), config: {} });
+      /* Block Escape key */
+      dialog.addEventListener('cancel', (e) => {
+        e.preventDefault();
+      });
+
+      /* Wire close buttons */
+      dfDollar(dialog)
+        .find('[data-alert-dialog-close]')
+        .toArray()
+        .forEach((btn) => {
+          btn.addEventListener('click', () => {
+            dialog.close();
+          });
+        });
+
+      /* Return focus to trigger */
+      dialog.addEventListener('close', () => {
+        // `close` fires AFTER the exit transition (display allow-discrete), so a
+        // fast re-open can beat it - a stale event must not yank focus out of an
+        // open dialog. The state itself follows `open` through read().
+        if (dialog.open) return;
+        if (dialog._trigger) dialog._trigger.focus();
+      });
+    });
 }
 
 init();

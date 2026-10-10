@@ -28,7 +28,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   }
 </style>
 <div id="anim-blur-target">Blur me</div>
-<div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem">
   <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-in">In</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-out">Out</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-pause">Pause</button>
@@ -36,9 +36,11 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-finish">Finish</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-blur-reset">Reset</button>
 </div>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem; margin-top:0.75rem; font-size:0.875rem;">
+<div
+  style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.75rem; font-size: 0.875rem"
+>
   <label for="anim-blur-duration">Duration (ms)</label>
-  <input class="input" style="width:6rem;" type="number" id="anim-blur-duration" min="0" step="50" value="1500" />
+  <input class="input" style="width: 6rem" type="number" id="anim-blur-duration" min="0" step="50" value="1500" />
   <label for="anim-blur-easing">Easing</label>
   <select class="select" id="anim-blur-easing">
     <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default</option>
@@ -73,9 +75,27 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```
 
 ```html example label="Scroll binding" schema="none" hint="opts.scroll ties the animation's progress to a scroll position instead of time - scroll the stage and the card sharpens. Built on the platform's ScrollTimeline with a scrubbing fallback."
-<div id="anim-blur-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)">
-  <div style="height: 600px; display: grid; place-items: center;">
-    <div id="anim-blur-scroll-target" style="display: grid; place-items: center; width: 160px; height: 100px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-size: 0.875rem; font-weight: 500;">Scroll-driven</div>
+<div
+  id="anim-blur-scroller"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div style="height: 600px; display: grid; place-items: center">
+    <div
+      id="anim-blur-scroll-target"
+      style="
+        display: grid;
+        place-items: center;
+        width: 160px;
+        height: 100px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        font-weight: 500;
+      "
+      >Scroll-driven</div
+    >
   </div>
 </div>
 <script type="module">

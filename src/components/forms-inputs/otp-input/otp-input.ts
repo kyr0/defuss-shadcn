@@ -99,7 +99,10 @@ function applyMarkup(el, stateName) {
   // in every state they do not change - only the invalid flags do
   const invalid = stateName === 'invalid';
   dfDollar(el).attr('data-invalid', invalid ? '' : null);
-  dfDollar(el).find('input').first().attr('aria-invalid', invalid ? 'true' : null);
+  dfDollar(el)
+    .find('input')
+    .first()
+    .attr('aria-invalid', invalid ? 'true' : null);
 }
 
 /**
@@ -158,72 +161,74 @@ df$.otpInputApi = otpInputApi;
 df$.otpInputStates = otpInputStates;
 
 function init() {
-  dfDollar('.otp-input:not([data-init])').toArray().forEach((otp) => {
-    otp.dataset.init = '';
+  dfDollar('.otp-input:not([data-init])')
+    .toArray()
+    .forEach((otp) => {
+      otp.dataset.init = '';
 
-    const field = dfDollar(otp).find('input').get(0);
-    if (!field) return; // the input is authored, not generated — nothing to drive
-    otp._field = field;
+      const field = dfDollar(otp).find('input').get(0);
+      if (!field) return; // the input is authored, not generated — nothing to drive
+      otp._field = field;
 
-    const length = lengthOf(otp);
-    field.maxLength = length;
-    if (!field.getAttribute('inputmode')) {
-      field.setAttribute('inputmode', otp.dataset.pattern === 'alphanumeric' ? 'text' : 'numeric');
-    }
-    if (!field.getAttribute('autocomplete')) field.setAttribute('autocomplete', 'one-time-code');
-
-    // slots mirror the value; aria-hidden so the field is announced once
-    const groupSize = parseInt(otp.dataset.groupSize || '0', 10) || 0;
-    otp._slots = [];
-    const shell = document.createElement('div');
-    shell.className = 'otp-input-slots';
-    shell.setAttribute('aria-hidden', 'true');
-    for (let i = 0; i < length; i++) {
-      if (groupSize && i > 0 && i % groupSize === 0) {
-        const sep = document.createElement('div');
-        sep.className = 'otp-input-separator';
-        dfDollar(shell).append(sep);
+      const length = lengthOf(otp);
+      field.maxLength = length;
+      if (!field.getAttribute('inputmode')) {
+        field.setAttribute('inputmode', otp.dataset.pattern === 'alphanumeric' ? 'text' : 'numeric');
       }
-      const slot = document.createElement('div');
-      slot.className = 'otp-input-slot';
-      dfDollar(shell).append(slot);
-      otp._slots.push(slot);
-    }
-    dfDollar(otp).append(shell);
+      if (!field.getAttribute('autocomplete')) field.setAttribute('autocomplete', 'one-time-code');
 
-    const sync = () => {
-      const cleaned = clean(otp, field.value);
-      if (cleaned !== field.value) {
-        const at = field.selectionStart;
-        field.value = cleaned;
-        // keep the caret where the typing left it, not at the end
-        if (at !== null) field.setSelectionRange(Math.min(at, cleaned.length), Math.min(at, cleaned.length));
+      // slots mirror the value; aria-hidden so the field is announced once
+      const groupSize = parseInt(otp.dataset.groupSize || '0', 10) || 0;
+      otp._slots = [];
+      const shell = document.createElement('div');
+      shell.className = 'otp-input-slots';
+      shell.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < length; i++) {
+        if (groupSize && i > 0 && i % groupSize === 0) {
+          const sep = document.createElement('div');
+          sep.className = 'otp-input-separator';
+          dfDollar(shell).append(sep);
+        }
+        const slot = document.createElement('div');
+        slot.className = 'otp-input-slot';
+        dfDollar(shell).append(slot);
+        otp._slots.push(slot);
       }
-      paint(otp);
-      if (field.value.length === length) {
-        // carry the value through, so the state change reports what the user
-        // actually entered rather than re-deriving it
-        otpInputApi.setState(otp, otp.hasAttribute('data-invalid') ? 'invalid' : 'filled', {
-          value: field.value,
-        });
-        announceComplete(otp);
-      }
-    };
+      dfDollar(otp).append(shell);
 
-    field.addEventListener('input', sync);
-    field.addEventListener('focus', () => paint(otp));
-    field.addEventListener('blur', () => paint(otp));
-    // arrows/clicks move the caret without firing input
-    field.addEventListener('keyup', () => paint(otp));
-    field.addEventListener('click', () => paint(otp));
-    field.addEventListener('select', () => paint(otp));
+      const sync = () => {
+        const cleaned = clean(otp, field.value);
+        if (cleaned !== field.value) {
+          const at = field.selectionStart;
+          field.value = cleaned;
+          // keep the caret where the typing left it, not at the end
+          if (at !== null) field.setSelectionRange(Math.min(at, cleaned.length), Math.min(at, cleaned.length));
+        }
+        paint(otp);
+        if (field.value.length === length) {
+          // carry the value through, so the state change reports what the user
+          // actually entered rather than re-deriving it
+          otpInputApi.setState(otp, otp.hasAttribute('data-invalid') ? 'invalid' : 'filled', {
+            value: field.value,
+          });
+          announceComplete(otp);
+        }
+      };
 
-    // el.store + el.api (AGENTS.md "State through stores")
+      field.addEventListener('input', sync);
+      field.addEventListener('focus', () => paint(otp));
+      field.addEventListener('blur', () => paint(otp));
+      // arrows/clicks move the caret without firing input
+      field.addEventListener('keyup', () => paint(otp));
+      field.addEventListener('click', () => paint(otp));
+      field.addEventListener('select', () => paint(otp));
 
-    bindComponent(otp, otpInputApi);
+      // el.store + el.api (AGENTS.md "State through stores")
 
-    otpInputApi.setState(otp, field.value.length === length ? 'filled' : 'default', {});
-  });
+      bindComponent(otp, otpInputApi);
+
+      otpInputApi.setState(otp, field.value.length === length ? 'filled' : 'default', {});
+    });
 }
 
 init();

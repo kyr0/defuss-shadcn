@@ -240,7 +240,10 @@ function track(s) {
   s._currentId = currentId;
   s._visibleIds = ids.join();
   items.forEach((it) => it.toggleAttribute("data-current", it === current));
-  s.dispatchEvent(new CustomEvent("session-visibility", { bubbles: true, detail: { currentAnchorId: currentId, visibleMessageIds: ids } }));
+  s.dispatchEvent(new CustomEvent("session-visibility", {
+    bubbles: true,
+    detail: { currentAnchorId: currentId, visibleMessageIds: ids }
+  }));
 }
 function bindDrop(s) {
   const hasFiles = (e) => [...e.dataTransfer?.types ?? []].includes("Files");
@@ -386,5 +389,5 @@ df$.session = {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=8553D5AD7374CA0F64756E2164756E21
+//# debugId=8D22FF1439C50CEC64756E2164756E21
 //# sourceMappingURL=chat.js.map

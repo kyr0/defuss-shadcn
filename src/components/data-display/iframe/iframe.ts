@@ -84,7 +84,8 @@ export const iframeApi = componentState({
 df$.iframeApi = iframeApi;
 df$.iframeStates = iframeStates;
 
-const frameOf = (el: HTMLElement): HTMLIFrameElement | undefined => dfDollar(el).children<HTMLIFrameElement>('iframe.iframe-frame').get(0);
+const frameOf = (el: HTMLElement): HTMLIFrameElement | undefined =>
+  dfDollar(el).children<HTMLIFrameElement>('iframe.iframe-frame').get(0);
 
 /** The origins a figure accepts messages from: its own page's, plus data-origins. */
 function accepts(el: HTMLElement, origin: string): boolean {
@@ -148,20 +149,23 @@ function onLoad(el: HTMLElement, frame: HTMLIFrameElement): void {
 }
 
 function init() {
-  dfDollar('.iframe:not([data-init])').toArray().forEach((el: HTMLElement) => {
-    el.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(el, iframeApi);
-    const frame = frameOf(el);
-    if (!frame) return;
-    dfDollar(frame).on('load', () => onLoad(el, frame));
-    follow(el, frame);
-    // a page that finished before this script ran fired its load event unheard; the
-    // document's own load event waits for every frame in it, so a frame present while
-    // the document still loads is loaded when that event fires (a frame added later
-    // fires its own load event, heard above)
-    if (document.readyState !== 'complete') globalThis.addEventListener('load', () => onLoad(el, frame), { once: true });
-  });
+  dfDollar('.iframe:not([data-init])')
+    .toArray()
+    .forEach((el: HTMLElement) => {
+      el.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(el, iframeApi);
+      const frame = frameOf(el);
+      if (!frame) return;
+      dfDollar(frame).on('load', () => onLoad(el, frame));
+      follow(el, frame);
+      // a page that finished before this script ran fired its load event unheard; the
+      // document's own load event waits for every frame in it, so a frame present while
+      // the document still loads is loaded when that event fires (a frame added later
+      // fires its own load event, heard above)
+      if (document.readyState !== 'complete')
+        globalThis.addEventListener('load', () => onLoad(el, frame), { once: true });
+    });
 }
 
 // one listener for every framed page's messages: from a frame we host, from an allowed origin
@@ -176,20 +180,37 @@ if (!document.__iframeInit) {
       if (parentOrigin && parentOrigin !== e.origin) return;
       // the host asks for the height (it may have missed the first report)
       if (data.kind === 'hello') {
-        if (document.documentElement.hasAttribute('data-iframe-child')) sendToParent({ type: PROTOCOL, kind: 'size', height: Math.ceil(document.documentElement.getBoundingClientRect().height) });
+        if (document.documentElement.hasAttribute('data-iframe-child'))
+          sendToParent({
+            type: PROTOCOL,
+            kind: 'size',
+            height: Math.ceil(document.documentElement.getBoundingClientRect().height),
+          });
         return;
       }
       if (data.kind !== 'message') return;
       // Fires on the framed page's document when its host page posts a message (df$.shadcn.iframe.post) - the name, the payload and the host's origin.
-      document.dispatchEvent(new CustomEvent<IframeMessageDetail>('iframe-message', { detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin } }));
+      document.dispatchEvent(
+        new CustomEvent<IframeMessageDetail>('iframe-message', {
+          detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin },
+        }),
+      );
       return;
     }
-    const el = dfDollar('.iframe[data-init]').toArray().find((f: HTMLElement) => frameOf(f)?.contentWindow === e.source) as HTMLElement | undefined;
+    const el = dfDollar('.iframe[data-init]')
+      .toArray()
+      .find((f: HTMLElement) => frameOf(f)?.contentWindow === e.source) as HTMLElement | undefined;
     if (!el || !accepts(el, e.origin)) return;
-    if (data.kind === 'size' && dfDollar(el).attr('data-fit') === 'content' && typeof data.height === 'number') setHeight(el, data.height);
+    if (data.kind === 'size' && dfDollar(el).attr('data-fit') === 'content' && typeof data.height === 'number')
+      setHeight(el, data.height);
     if (data.kind === 'message') {
       // Fires on the .iframe element when its framed page posts a message (df$.shadcn.iframe.send) - the name, the payload and the origin it came from.
-      el.dispatchEvent(new CustomEvent<IframeMessageDetail>('iframe-message', { bubbles: true, detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin } }));
+      el.dispatchEvent(
+        new CustomEvent<IframeMessageDetail>('iframe-message', {
+          bubbles: true,
+          detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin },
+        }),
+      );
     }
   });
 }
@@ -215,7 +236,8 @@ if (framed() && document.documentElement.hasAttribute('data-iframe-child') && !d
   }).observe(document.documentElement);
 }
 
-const resolve = (target: string | HTMLElement): HTMLElement | undefined => (typeof target === 'string' ? dfDollar(target).get(0) : target);
+const resolve = (target: string | HTMLElement): HTMLElement | undefined =>
+  typeof target === 'string' ? dfDollar(target).get(0) : target;
 
 df$.iframe = {
   /**
@@ -229,7 +251,10 @@ df$.iframe = {
     const el = resolve(target);
     const frame = el && frameOf(el);
     if (!el || !frame?.contentWindow) return false;
-    frame.contentWindow.postMessage({ type: PROTOCOL, kind: 'message', name, detail } satisfies IframeWire, targetOrigin(el, frame));
+    frame.contentWindow.postMessage(
+      { type: PROTOCOL, kind: 'message', name, detail } satisfies IframeWire,
+      targetOrigin(el, frame),
+    );
     return true;
   },
   /**

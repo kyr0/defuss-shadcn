@@ -27,24 +27,30 @@ The iris is a `clip-path: circle()` reveal - the visible region grows from a poi
     font-weight: 600;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:0.85rem;">
+<div style="display: flex; flex-direction: column; gap: 0.85rem">
   <div id="anim-iris-target">Iris me</div>
-  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem;">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-iris-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-iris-out">Out</button>
-    <span style="width:1px; height:1.25rem; background:var(--border);"></span>
-    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="50% 50%" aria-pressed="true">Center</button>
-    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="0% 0%" aria-pressed="false">Top-left</button>
-    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="100% 100%" aria-pressed="false">Bottom-right</button>
-    <span style="width:1px; height:1.25rem; background:var(--border);"></span>
+    <span style="width: 1px; height: 1.25rem; background: var(--border)"></span>
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="50% 50%" aria-pressed="true"
+      >Center</button
+    >
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="0% 0%" aria-pressed="false"
+      >Top-left</button
+    >
+    <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-origin="100% 100%" aria-pressed="false"
+      >Bottom-right</button
+    >
+    <span style="width: 1px; height: 1.25rem; background: var(--border)"></span>
     <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="pause">Pause</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="resume">Resume</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim-iris-lifecycle="reset">Reset</button>
   </div>
-  <div style="display:flex; align-items:center; gap:0.75rem;">
+  <div style="display: flex; align-items: center; gap: 0.75rem">
     <label for="anim-iris-duration" class="text-sm">Duration</label>
-    <input class="input" id="anim-iris-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <input class="input" id="anim-iris-duration" type="number" min="50" step="50" value="1500" style="width: 6rem" />
     <label for="anim-iris-easing" class="text-sm">Easing</label>
     <select class="select" id="anim-iris-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>ease-out</option>
@@ -78,9 +84,9 @@ The iris is a `clip-path: circle()` reveal - the visible region grows from a poi
   document.querySelectorAll('[data-anim-iris-origin]').forEach((btn) => {
     btn.addEventListener('click', () => {
       currentOrigin = btn.dataset.animIrisOrigin;
-      document.querySelectorAll('[data-anim-iris-origin]').forEach((b) =>
-        b.setAttribute('aria-pressed', String(b === btn)),
-      );
+      document
+        .querySelectorAll('[data-anim-iris-origin]')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
     });
   });
 
@@ -93,14 +99,33 @@ The iris is a `clip-path: circle()` reveal - the visible region grows from a poi
 ```
 
 ```html example label="Scroll-bound iris" schema="none" hint="The same channel, bound to scroll instead of time: scrolling the stage scrubs the iris open - the parallax use. Reset re-binds it."
-<div id="anim-iris-scroll-stage" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
-  <div style="height: 600px; display: grid; place-items: center;">
-    <div id="anim-iris-scroll-target" style="width: 160px; height: 100px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-size: 0.85rem; font-weight: 600;">
+<div
+  id="anim-iris-scroll-stage"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div style="height: 600px; display: grid; place-items: center">
+    <div
+      id="anim-iris-scroll-target"
+      style="
+        width: 160px;
+        height: 100px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+        font-size: 0.85rem;
+        font-weight: 600;
+      "
+    >
       Scroll me open
     </div>
   </div>
 </div>
-<button class="btn" data-variant="outline" data-size="sm" id="anim-iris-scroll-bind" style="margin-top:0.75rem;">Bind to scroll</button>
+<button class="btn" data-variant="outline" data-size="sm" id="anim-iris-scroll-bind" style="margin-top: 0.75rem"
+  >Bind to scroll</button
+>
 <script type="module">
   document.getElementById('anim-iris-scroll-bind').addEventListener('click', () => {
     const scroller = document.getElementById('anim-iris-scroll-stage');

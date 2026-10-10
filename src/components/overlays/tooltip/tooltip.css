@@ -19,7 +19,10 @@
     max-width: 16rem;
     width: max-content;
     opacity: 0;
-    transition: opacity 150ms ease, translate 150ms ease, display 150ms allow-discrete;
+    transition:
+      opacity 150ms ease,
+      translate 150ms ease,
+      display 150ms allow-discrete;
 
     /* -- Default: top center -- */
     position-area: top;
@@ -27,7 +30,10 @@
     translate: 0 2px;
     position-try-fallbacks: flip-block, flip-inline;
 
-    &:popover-open { opacity: 1; translate: 0 0; }
+    &:popover-open {
+      opacity: 1;
+      translate: 0 0;
+    }
 
     /* ----- Side variants ----- */
     &[data-side="bottom"] {
@@ -35,7 +41,9 @@
       margin-bottom: 0;
       margin-top: 6px;
       translate: 0 -2px;
-      &:popover-open { translate: 0 0; }
+      &:popover-open {
+        translate: 0 0;
+      }
     }
 
     &[data-side="left"] {
@@ -43,7 +51,9 @@
       margin-bottom: 0;
       margin-right: 6px;
       translate: 2px 0;
-      &:popover-open { translate: 0 0; }
+      &:popover-open {
+        translate: 0 0;
+      }
     }
 
     &[data-side="right"] {
@@ -51,7 +61,9 @@
       margin-bottom: 0;
       margin-left: 6px;
       translate: -2px 0;
-      &:popover-open { translate: 0 0; }
+      &:popover-open {
+        translate: 0 0;
+      }
     }
 
     /* ----- Align variants (combined with side) -----
@@ -59,17 +71,33 @@
        (The corner areas - "top left" - put it entirely beside the trigger,
        pointing at nothing.) start = shares the trigger's start edge. */
     &[data-align="start"] {
-      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-right; }
-      &[data-side="bottom"] { position-area: bottom span-right; }
-      &[data-side="left"] { position-area: left span-bottom; }
-      &[data-side="right"] { position-area: right span-bottom; }
+      &:not([data-side="left"]):not([data-side="right"]) {
+        position-area: top span-right;
+      }
+      &[data-side="bottom"] {
+        position-area: bottom span-right;
+      }
+      &[data-side="left"] {
+        position-area: left span-bottom;
+      }
+      &[data-side="right"] {
+        position-area: right span-bottom;
+      }
     }
 
     &[data-align="end"] {
-      &:not([data-side="left"]):not([data-side="right"]) { position-area: top span-left; }
-      &[data-side="bottom"] { position-area: bottom span-left; }
-      &[data-side="left"] { position-area: left span-top; }
-      &[data-side="right"] { position-area: right span-top; }
+      &:not([data-side="left"]):not([data-side="right"]) {
+        position-area: top span-left;
+      }
+      &[data-side="bottom"] {
+        position-area: bottom span-left;
+      }
+      &[data-side="left"] {
+        position-area: left span-top;
+      }
+      &[data-side="right"] {
+        position-area: right span-top;
+      }
     }
 
     /* ----- Arrow ----- */
@@ -83,32 +111,77 @@
     }
 
     /* Arrow placement - default (top side): arrow at bottom center */
-    &:not([data-side]), &[data-side="top"] {
-      & [data-arrow] { bottom: -4px; left: 50%; margin-left: -4px; }
+    &:not([data-side]),
+    &[data-side="top"] {
+      & [data-arrow] {
+        bottom: -4px;
+        left: 50%;
+        margin-left: -4px;
+      }
     }
     &[data-side="bottom"] {
-      & [data-arrow] { top: -4px; left: 50%; margin-left: -4px; }
+      & [data-arrow] {
+        top: -4px;
+        left: 50%;
+        margin-left: -4px;
+      }
     }
     &[data-side="left"] {
-      & [data-arrow] { right: -4px; top: 50%; margin-top: -4px; }
+      & [data-arrow] {
+        right: -4px;
+        top: 50%;
+        margin-top: -4px;
+      }
     }
     &[data-side="right"] {
-      & [data-arrow] { left: -4px; top: 50%; margin-top: -4px; }
+      & [data-arrow] {
+        left: -4px;
+        top: 50%;
+        margin-top: -4px;
+      }
     }
 
     /* Aligned tooltips: the arrow sits near the shared edge, so it points
        into the trigger (a centred arrow would point past a narrow trigger) */
-    &[data-align="start"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: 1rem; margin-left: -4px; }
-    &[data-align="end"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] { left: auto; right: 1rem; margin-left: 0; margin-right: -4px; }
-    &[data-align="start"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: 0.75rem; margin-top: -4px; }
-    &[data-align="end"]:is([data-side="left"], [data-side="right"]) [data-arrow] { top: auto; bottom: 0.75rem; margin-top: 0; margin-bottom: -4px; }
+    &[data-align="start"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] {
+      left: 1rem;
+      margin-left: -4px;
+    }
+    &[data-align="end"]:not([data-side="left"]):not([data-side="right"]) [data-arrow] {
+      left: auto;
+      right: 1rem;
+      margin-left: 0;
+      margin-right: -4px;
+    }
+    &[data-align="start"]:is([data-side="left"], [data-side="right"]) [data-arrow] {
+      top: 0.75rem;
+      margin-top: -4px;
+    }
+    &[data-align="end"]:is([data-side="left"], [data-side="right"]) [data-arrow] {
+      top: auto;
+      bottom: 0.75rem;
+      margin-top: 0;
+      margin-bottom: -4px;
+    }
   }
 
   @starting-style {
-    .tooltip:popover-open { opacity: 0; translate: 0 2px; }
-    .tooltip[data-side="bottom"]:popover-open { opacity: 0; translate: 0 -2px; }
-    .tooltip[data-side="left"]:popover-open { opacity: 0; translate: 2px 0; }
-    .tooltip[data-side="right"]:popover-open { opacity: 0; translate: -2px 0; }
+    .tooltip:popover-open {
+      opacity: 0;
+      translate: 0 2px;
+    }
+    .tooltip[data-side="bottom"]:popover-open {
+      opacity: 0;
+      translate: 0 -2px;
+    }
+    .tooltip[data-side="left"]:popover-open {
+      opacity: 0;
+      translate: 2px 0;
+    }
+    .tooltip[data-side="right"]:popover-open {
+      opacity: 0;
+      translate: -2px 0;
+    }
   }
 }
 

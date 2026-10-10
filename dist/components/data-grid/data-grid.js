@@ -47,7 +47,11 @@ function format(value, spec, el) {
     const key = `${locale}|${spec}`;
     if (!numberFormat.has(key)) {
         const [style, currency] = spec.split(':');
-        numberFormat.set(key, new Intl.NumberFormat(locale, style === 'currency' ? { style, currency: currency || 'USD' } : style === 'percent' ? { style, maximumFractionDigits: 1 } : {}));
+        numberFormat.set(key, new Intl.NumberFormat(locale, style === 'currency'
+            ? { style, currency: currency || 'USD' }
+            : style === 'percent'
+                ? { style, maximumFractionDigits: 1 }
+                : {}));
     }
     return typeof value === 'number' ? numberFormat.get(key).format(value) : String(value);
 }
@@ -56,7 +60,7 @@ const headerRowOf = (root) => dfDollar(root).find('.data-grid-head > .data-grid-
 /** the authored column headers of a grid (or of a detached copy), in DOM order */
 const headersOf = (root) => {
     const row = headerRowOf(root);
-    return row ? (dfDollar(row).children('.data-grid-header').toArray()) : [];
+    return row ? dfDollar(row).children('.data-grid-header').toArray() : [];
 };
 /** The columns, read once from the authored headers (authored order). */
 function readColumns(grid) {
@@ -84,7 +88,10 @@ function attachPersistence(grid, config) {
     grid._saved?.destroy();
     const where = viewPersistence(grid, 'data-grid', String(dfDollar('.data-grid').toArray().indexOf(grid)), config || {});
     grid._saved = where
-        ? persisted(where.key, {}, { area: where.area, validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v) })
+        ? persisted(where.key, {}, {
+            area: where.area,
+            validate: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+        })
         : null;
     const kept = {};
     for (const k of SAVED_KEYS)
@@ -93,7 +100,9 @@ function attachPersistence(grid, config) {
     return kept;
 }
 /** the authored sort: data-sort="asc|desc" on headers, in column order */
-const authoredSort = (grid) => grid._columns.filter((c) => c.el.dataset.sort === 'asc' || c.el.dataset.sort === 'desc').map((c) => ({ field: c.sortField, direction: c.el.dataset.sort }));
+const authoredSort = (grid) => grid._columns
+    .filter((c) => c.el.dataset.sort === 'asc' || c.el.dataset.sort === 'desc')
+    .map((c) => ({ field: c.sortField, direction: c.el.dataset.sort }));
 /** locked fields first (in authored order), then the rest */
 function ordered(items, locked, fieldOf) {
     const set = new Set(locked || []);
@@ -117,7 +126,7 @@ function applyMarkup(root, state) {
     }
     for (const el of headers) {
         const at = sorters.findIndex((s) => s.field === (el.dataset.sortField || el.dataset.field));
-        const dir = at < 0 ? null : (sorters[at].direction || sorters[at].dir || 'asc');
+        const dir = at < 0 ? null : sorters[at].direction || sorters[at].dir || 'asc';
         dfDollar(el)
             .attr('data-locked', locked.has(el.dataset.field) ? '' : null)
             .attr('aria-sort', dir ? (dir === 'asc' ? 'ascending' : 'descending') : null)
@@ -390,7 +399,9 @@ function renderFooter(grid, config) {
     let text;
     if (isTree(grid)) {
         text = `${count(visible)} rows shown`;
-        text += filtered ? ` · ${count(result.matchedRows)} of ${count(result.totalRows)} match` : ` of ${count(result.totalRows)}`;
+        text += filtered
+            ? ` · ${count(result.matchedRows)} of ${count(result.totalRows)} match`
+            : ` of ${count(result.totalRows)}`;
     }
     else {
         text = filtered ? `${count(visible)} of ${count(result.totalRows)} rows match` : `${count(visible)} rows`;
@@ -416,7 +427,13 @@ function renderFooter(grid, config) {
     if (!grid._parts.pager) {
         const pager = document.createElement('div');
         pager.className = 'data-grid-pager';
-        for (const [act, name] of [['first', 'First page'], ['prev', 'Previous page'], ['label'], ['next', 'Next page'], ['last', 'Last page']]) {
+        for (const [act, name] of [
+            ['first', 'First page'],
+            ['prev', 'Previous page'],
+            ['label'],
+            ['next', 'Next page'],
+            ['last', 'Last page'],
+        ]) {
             if (act === 'label') {
                 const label = document.createElement('span');
                 label.className = 'data-grid-page-label';
@@ -435,7 +452,9 @@ function renderFooter(grid, config) {
     }
     const page = Math.max(0, config.page || 0);
     const pages = pageCount(grid);
-    dfDollar(grid._parts.pager).find('.data-grid-page-label').get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
+    dfDollar(grid._parts.pager)
+        .find('.data-grid-page-label')
+        .get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
     for (const button of dfDollar(grid._parts.pager).find('[data-page]').toArray()) {
         const back = button.dataset.page === 'first' || button.dataset.page === 'prev';
         button.disabled = back ? page <= 0 : page >= pages - 1;
@@ -514,7 +533,9 @@ function toggleRow(grid, index, mode) {
     else if (mode === 'range' && grid._anchor != null) {
         const from = Math.min(grid._anchor, index);
         const to = Math.max(grid._anchor, index);
-        next = [...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])];
+        next = [
+            ...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])]),
+        ];
     }
     else {
         next = grid._selected.has(id) ? [...grid._selected].filter((x) => x !== id) : [...grid._selected, id];
@@ -571,7 +592,10 @@ function focusCell(grid, row, col) {
         header.el.tabIndex = row === -1 && c === col ? 0 : -1;
     const target = row === -1
         ? grid._order[col].el
-        : dfDollar(grid._parts.pool).children('.data-grid-row').toArray().find((r) => r._index === row)?.children[col];
+        : dfDollar(grid._parts.pool)
+            .children('.data-grid-row')
+            .toArray()
+            .find((r) => r._index === row)?.children[col];
     target?.focus({ preventScroll: row === -1 });
 }
 function onKeydown(grid, e) {
@@ -648,7 +672,10 @@ function onKeydown(grid, e) {
             }
             else if (entry) {
                 // Fires on Enter on a row - its record and its position in the query.
-                grid.dispatchEvent(new CustomEvent('data-grid-activate', { bubbles: true, detail: { record: entry.row, index: row } }));
+                grid.dispatchEvent(new CustomEvent('data-grid-activate', {
+                    bubbles: true,
+                    detail: { record: entry.row, index: row },
+                }));
             }
             break;
         default:
@@ -704,7 +731,9 @@ function onFilterInput(grid, e) {
         return;
     clearTimeout(grid._filterTimer);
     grid._filterTimer = setTimeout(() => {
-        const filters = dfDollar(grid._parts.filters).find('.data-grid-filter').toArray()
+        const filters = dfDollar(grid._parts.filters)
+            .find('.data-grid-filter')
+            .toArray()
             .map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind))
             .filter(Boolean);
         query(grid, { filters, page: 0, collapsed: [] });
@@ -788,7 +817,9 @@ df$.dataGrid = {
      * @param target - the .data-grid element or its selector
      * @param patch - the query keys to change
      */
-    query: (target, patch) => { query(resolve(target), patch); },
+    query: (target, patch) => {
+        query(resolve(target), patch);
+    },
     /**
      * The records the query shows.
      * @param target - the .data-grid element or its selector
@@ -814,7 +845,9 @@ df$.dataGrid = {
      * Select nothing.
      * @param target - the .data-grid element or its selector
      */
-    clearSelection: (target) => { query(resolve(target), { selected: [] }); },
+    clearSelection: (target) => {
+        query(resolve(target), { selected: [] });
+    },
     /**
      * Tree grid: open every branch.
      * @param target - the .data-grid element or its selector
@@ -835,7 +868,9 @@ df$.dataGrid = {
 };
 // -- init --------------------------------------------------------------------------
 function init() {
-    dfDollar('.data-grid:not([data-init])').toArray().forEach((grid) => {
+    dfDollar('.data-grid:not([data-init])')
+        .toArray()
+        .forEach((grid) => {
         grid.dataset.init = '';
         const viewport = dfDollar(grid).children('.data-grid-viewport').get(0);
         const head = viewport && dfDollar(viewport).children('.data-grid-head').get(0);
@@ -873,8 +908,13 @@ function init() {
         // starting query (records may arrive first), then the kept view
         const early = grid._sourceOptions || {};
         const config = {
-            filters: [], sorters: authoredSort(grid), locked: grid._columns.filter((c) => c.el.hasAttribute('data-locked')).map((c) => c.field),
-            page: 0, expanded: [], collapsed: [], selected: [],
+            filters: [],
+            sorters: authoredSort(grid),
+            locked: grid._columns.filter((c) => c.el.hasAttribute('data-locked')).map((c) => c.field),
+            page: 0,
+            expanded: [],
+            collapsed: [],
+            selected: [],
             ...early.query,
             ...attachPersistence(grid, early.persist),
         };

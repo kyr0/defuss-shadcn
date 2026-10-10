@@ -254,7 +254,30 @@
      VERIFIED: (full-paper viewport probe 2026-10-07) no horizontal overflow
      at 1280 and 390 px with every section typeset; paper.e2e pins the
      variants and the two-column composition. */
-  .paper-section > :is(figure, table, blockquote, pre, hr, .separator, .paper-table, .paper-figure, .paper-numbers, .paper-quote, .paper-code, .paper-findings, .typeset-group, .chart, .diagram, .mockup-code, .iframe, .data-grid, .data-tree, .session, .table-container) {
+  .paper-section
+    > :is(
+      figure,
+      table,
+      blockquote,
+      pre,
+      hr,
+      .separator,
+      .paper-table,
+      .paper-figure,
+      .paper-numbers,
+      .paper-quote,
+      .paper-code,
+      .paper-findings,
+      .typeset-group,
+      .chart,
+      .diagram,
+      .mockup-code,
+      .iframe,
+      .data-grid,
+      .data-tree,
+      .session,
+      .table-container
+    ) {
     margin-block: 0.75rem;
   }
 
@@ -266,11 +289,44 @@
 
     display: block;
 
-    & > h2 { margin-block: 0 1rem; }
-    & > h3 { margin-block: var(--typeset-gap, 1.5em) 0.5em; }
-    & > p { margin-block: 0 1em; }
-    &[data-indent] > p { margin-block: 0; }
-    & > :is(figure, table, blockquote, pre, hr, .separator, .paper-table, .paper-figure, .paper-numbers, .paper-quote, .paper-code, .paper-findings, .typeset-group, .chart, .diagram, .mockup-code, .iframe, .data-grid, .data-tree, .session, .table-container, ul, ol) {
+    & > h2 {
+      margin-block: 0 1rem;
+    }
+    & > h3 {
+      margin-block: var(--typeset-gap, 1.5em) 0.5em;
+    }
+    & > p {
+      margin-block: 0 1em;
+    }
+    &[data-indent] > p {
+      margin-block: 0;
+    }
+    &
+      > :is(
+        figure,
+        table,
+        blockquote,
+        pre,
+        hr,
+        .separator,
+        .paper-table,
+        .paper-figure,
+        .paper-numbers,
+        .paper-quote,
+        .paper-code,
+        .paper-findings,
+        .typeset-group,
+        .chart,
+        .diagram,
+        .mockup-code,
+        .iframe,
+        .data-grid,
+        .data-tree,
+        .session,
+        .table-container,
+        ul,
+        ol
+      ) {
       margin-block: var(--typeset-gap, 1.5em); /* Typography's knob, with its default */
     }
   }
@@ -410,9 +466,16 @@
     white-space: nowrap;
     text-indent: 0; /* an inline-block inherits a paragraph's text-indent and indents its own first line */
 
-    &[data-tag="verified"] { --paper-tag: var(--chart-2); color: #fff; }
-    &[data-tag="hypothesis"] { --paper-tag: var(--chart-1); }
-    &[data-tag="unknown"] { --paper-tag: var(--chart-5); }
+    &[data-tag="verified"] {
+      --paper-tag: var(--chart-2);
+      color: #fff;
+    }
+    &[data-tag="hypothesis"] {
+      --paper-tag: var(--chart-1);
+    }
+    &[data-tag="unknown"] {
+      --paper-tag: var(--chart-5);
+    }
   }
   @supports (color: oklch(from red l c h)) {
     .paper-tag {

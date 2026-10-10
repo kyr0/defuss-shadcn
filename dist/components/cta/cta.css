@@ -3,9 +3,14 @@
 
 @layer components {
   /* every box in the block measures border-box - the same on any page */
-  :where(.mk-cta, .mk-cta *, .mk-cta ::before, .mk-cta ::after) { box-sizing: border-box; }
+  :where(.mk-cta, .mk-cta *, .mk-cta ::before, .mk-cta ::after) {
+    box-sizing: border-box;
+  }
 
-  .mk-cta { container: mk-cta / inline-size; width: 100%; }
+  .mk-cta {
+    container: mk-cta / inline-size;
+    width: 100%;
+  }
   .mk-cta-inner {
     position: relative;
     isolation: isolate;
@@ -19,13 +24,46 @@
     background: var(--muted);
     text-align: center;
   }
-  .mk-cta-copy { display: grid; gap: 0.75rem; justify-items: inherit; max-width: 40rem; }
-  .mk-cta-title { margin: 0; font-size: clamp(1.75rem, 4.5cqi, 2.75rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; text-wrap: balance; }
-  .mk-cta-desc { margin: 0; color: var(--muted-foreground); font-size: 1.0625rem; text-wrap: pretty; }
-  .mk-cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
-  .mk-cta-note { margin: 0; color: var(--muted-foreground); font-size: 0.8125rem; }
-  .mk-cta-form { display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; max-width: 26rem;
-    & .input { flex: 1 1 12rem; }
+  .mk-cta-copy {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: inherit;
+    max-width: 40rem;
+  }
+  .mk-cta-title {
+    margin: 0;
+    font-size: clamp(1.75rem, 4.5cqi, 2.75rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .mk-cta-desc {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    text-wrap: pretty;
+  }
+  .mk-cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .mk-cta-note {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  .mk-cta-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 26rem;
+    & .input {
+      flex: 1 1 12rem;
+    }
   }
 
   .mk-cta[data-variant="dark"] .mk-cta-inner {
@@ -35,7 +73,9 @@
       var(--foreground);
     color: var(--background);
 
-    & :is(.mk-cta-desc, .mk-cta-note) { color: color-mix(in oklch, var(--background) 72%, transparent); }
+    & :is(.mk-cta-desc, .mk-cta-note) {
+      color: color-mix(in oklch, var(--background) 72%, transparent);
+    }
   }
 
   .mk-cta[data-variant="image"] .mk-cta-inner {
@@ -43,20 +83,51 @@
     background: transparent;
     color: #fff;
 
-    &::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(oklch(0.15 0.02 260 / 0.55), oklch(0.15 0.02 260 / 0.75)); }
-    & .mk-cta-desc { color: oklch(1 0 0 / 0.82); }
-    & .btn[data-variant="outline"] { border-color: oklch(1 0 0 / 0.45); background: transparent; color: inherit; }
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(oklch(0.15 0.02 260 / 0.55), oklch(0.15 0.02 260 / 0.75));
+    }
+    & .mk-cta-desc {
+      color: oklch(1 0 0 / 0.82);
+    }
+    & .btn[data-variant="outline"] {
+      border-color: oklch(1 0 0 / 0.45);
+      background: transparent;
+      color: inherit;
+    }
   }
-  .mk-cta-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+  .mk-cta-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   @container mk-cta (min-width: 44rem) {
-    .mk-cta[data-variant="split"] .mk-cta-inner { flex-direction: row; justify-content: space-between; gap: 2rem; padding: 2.5rem 3rem; text-align: start; }
-    .mk-cta[data-variant="split"] .mk-cta-copy { justify-items: start; }
-    .mk-cta[data-variant="split"] .mk-cta-actions { flex: none; }
+    .mk-cta[data-variant="split"] .mk-cta-inner {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 2.5rem 3rem;
+      text-align: start;
+    }
+    .mk-cta[data-variant="split"] .mk-cta-copy {
+      justify-items: start;
+    }
+    .mk-cta[data-variant="split"] .mk-cta-actions {
+      flex: none;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (forced-colors: active) {
-    .mk-cta-inner { border: 1px solid CanvasText; }
+    .mk-cta-inner {
+      border: 1px solid CanvasText;
+    }
   }
 }

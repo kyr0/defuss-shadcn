@@ -27,9 +27,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     color: var(--card-foreground);
   }
 </style>
-<div style="display:flex; flex-direction:column; align-items:flex-start; gap:0.75rem;">
+<div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem">
   <div id="anim-spin-target">Spin me</div>
-  <div id="anim-spin-controls" style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+  <div id="anim-spin-controls" style="display: flex; flex-wrap: wrap; gap: 0.4rem">
     <button class="btn" data-variant="outline" data-size="sm" data-anim="in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim="out">Out</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim="pause">Pause</button>
@@ -37,9 +37,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
     <button class="btn" data-variant="outline" data-size="sm" data-anim="finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" data-anim="reset">Reset</button>
   </div>
-  <div style="display:flex; align-items:center; gap:0.5rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem">
     <label class="label" for="anim-spin-duration">Duration</label>
-    <input class="input" id="anim-spin-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+    <input class="input" id="anim-spin-duration" type="number" min="50" step="50" value="1500" style="width: 6rem" />
     <label class="label" for="anim-spin-easing">Easing</label>
     <select class="select" id="anim-spin-easing">
       <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default (out-expo)</option>
@@ -79,9 +79,26 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```
 
 ```html example label="Scroll-bound spin" schema="none" hint="opts.scroll ties the animation's progress to a scroll position instead of time - here the spinIn of the box is scrubbed by the stage's own scroll offset. Scroll the stage."
-<div id="anim-spin-scroller" style="height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-lg);">
-  <div style="height:600px; display:flex; align-items:center; justify-content:center;">
-    <div id="anim-spin-scroll-target" style="width:160px; height:100px; display:flex; align-items:center; justify-content:center; font-weight:600; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground);">
+<div
+  id="anim-spin-scroller"
+  style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+  <div style="height: 600px; display: flex; align-items: center; justify-content: center">
+    <div
+      id="anim-spin-scroll-target"
+      style="
+        width: 160px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+      "
+    >
       Scroll to spin
     </div>
   </div>

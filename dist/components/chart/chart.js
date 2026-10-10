@@ -339,8 +339,10 @@ export function mount(el, option = {}) {
     let frame = 0;
     const ro = new ResizeObserver(() => {
         cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(() => { if (!instance.isDisposed?.())
-            instance.resize(); });
+        frame = requestAnimationFrame(() => {
+            if (!instance.isDisposed?.())
+                instance.resize();
+        });
     });
     ro.observe(el);
     observers.set(el, ro);
@@ -500,7 +502,7 @@ function morphable(option) {
     const list = (Array.isArray(series) ? series : [series]);
     return {
         ...option,
-        series: list.map((s) => (s.universalTransition === undefined && s.type !== 'custom' ? { ...s, universalTransition: { enabled: true } } : s)),
+        series: list.map((s) => s.universalTransition === undefined && s.type !== 'custom' ? { ...s, universalTransition: { enabled: true } } : s),
     };
 }
 /**
@@ -532,7 +534,12 @@ export function chartStory(el, states, { loop = false } = {}) {
 }
 /** Deck tempo: entrances and morphs take the slides' 1.5s - slow and legible
  * at presentation distance (a base or state may still override it). */
-const DECK_TEMPO = { animationDuration: 1500, animationEasing: 'cubicOut', animationDurationUpdate: 1500, animationEasingUpdate: 'cubicInOut' };
+const DECK_TEMPO = {
+    animationDuration: 1500,
+    animationEasing: 'cubicOut',
+    animationDurationUpdate: 1500,
+    animationEasingUpdate: 'cubicInOut',
+};
 /**
  * Why: the deck stage - ONE chart instance for a whole presentation, so
  * every chart slide MORPHS into the next (bars → dots → donut ...) instead of

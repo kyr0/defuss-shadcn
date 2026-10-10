@@ -102,7 +102,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 ## Minimal
 
 ```html example label="Minimal - one format, a floating copy button" sandbox="links" hint="data-variant=&quot;minimal&quot;: no bar; the copy button floats in the corner while the block is hovered or focused (always on touch screens)." previewStyle="align-items:stretch;"
-<figure class="bibtex" id="cite-minimal" data-variant="minimal" data-formats="apa" aria-label="Literate Programming, APA">
+<figure
+  class="bibtex"
+  id="cite-minimal"
+  data-variant="minimal"
+  data-formats="apa"
+  aria-label="Literate Programming, APA"
+>
   <pre><code class="bibtex-source">@article{knuth1984literate,
   author = {Knuth, Donald E.},
   title = {Literate Programming},
@@ -119,13 +125,31 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 ## Inline
 
 ```html example label="Inline - a reference inside running text" sandbox="links" hint="data-variant=&quot;inline&quot; on a <span>: the formatted reference flows with the sentence, a small copy icon follows it." previewStyle="align-items:stretch;"
-<p style="max-width:40rem;margin:0;line-height:1.7">The idea of writing programs as literature goes back to <span class="bibtex" id="cite-inline" data-variant="inline" data-formats="mla"><code class="bibtex-source">@article{knuth1984literate, author = {Knuth, Donald E.}, title = {Literate Programming}, journal = {The Computer Journal}, volume = {27}, number = {2}, pages = {97--111}, year = {1984}, doi = {10.1093/comjnl/27.2.97} }</code></span> - and it shaped how documentation tools work today.</p>
+<p style="max-width: 40rem; margin: 0; line-height: 1.7"
+  >The idea of writing programs as literature goes back to
+  <span class="bibtex" id="cite-inline" data-variant="inline" data-formats="mla"
+    ><code class="bibtex-source"
+      >@article{knuth1984literate, author = {Knuth, Donald E.}, title = {Literate Programming}, journal = {The Computer
+      Journal}, volume = {27}, number = {2}, pages = {97--111}, year = {1984}, doi = {10.1093/comjnl/27.2.97} }</code
+    ></span
+  >
+  - and it shaped how documentation tools work today.</p
+>
 ```
 
 ## Rendering options
 
 ```html example label="Small, plain BibTeX, no copy button" sandbox="links" hint="data-size=&quot;sm&quot; for dense pages, data-align=&quot;none&quot; keeps the fields unaligned, data-highlight=&quot;none&quot; drops the colors, data-copy=&quot;none&quot; removes the copy button." previewStyle="align-items:stretch;"
-<figure class="bibtex" id="cite-plain" data-size="sm" data-formats="bibtex harvard" data-align="none" data-highlight="none" data-copy="none" aria-label="The TeXbook">
+<figure
+  class="bibtex"
+  id="cite-plain"
+  data-size="sm"
+  data-formats="bibtex harvard"
+  data-align="none"
+  data-highlight="none"
+  data-copy="none"
+  aria-label="The TeXbook"
+>
   <pre><code class="bibtex-source">@book{knuth1984texbook,
   author = {Donald E. Knuth},
   title = {The {\TeX}book},
@@ -139,7 +163,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 ## From script
 
 ```html example label="Driven from outside" sandbox="links" hint="df$.shadcn.bibtex.show(el, format) switches the format, .copy(el) copies, .format(text, style) formats without an element; bibtex-format and bibtex-copy report every change." previewStyle="align-items:stretch;"
-<div class="grid gap-3" style="max-width:44rem">
+<div class="grid gap-3" style="max-width: 44rem">
   <div class="flex flex-wrap gap-2">
     <button class="btn" data-size="sm" data-variant="outline" id="cite-js-apa">Show APA</button>
     <button class="btn" data-size="sm" data-variant="outline" id="cite-js-ieee">Show IEEE</button>
@@ -166,8 +190,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
     document.getElementById('cite-js-apa').addEventListener('click', () => lib.show(el, 'apa'));
     document.getElementById('cite-js-ieee').addEventListener('click', () => lib.show(el, 'ieee'));
     document.getElementById('cite-js-copy').addEventListener('click', () => lib.copy(el));
-    el.addEventListener('bibtex-format', (e) => { log.textContent = 'bibtex-format: ' + e.detail.format; });
-    el.addEventListener('bibtex-copy', (e) => { log.textContent = 'bibtex-copy: ' + e.detail.format + (e.detail.ok ? ' - ' + e.detail.text.length + ' characters' : ' - selected for a manual copy'); });
+    el.addEventListener('bibtex-format', (e) => {
+      log.textContent = 'bibtex-format: ' + e.detail.format;
+    });
+    el.addEventListener('bibtex-copy', (e) => {
+      log.textContent =
+        'bibtex-copy: ' +
+        e.detail.format +
+        (e.detail.ok ? ' - ' + e.detail.text.length + ' characters' : ' - selected for a manual copy');
+    });
   });
 </script>
 ```

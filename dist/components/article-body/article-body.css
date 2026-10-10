@@ -21,8 +21,12 @@
     hanging-punctuation: first last;
     overflow-wrap: break-word;
 
-    & > * { margin-block: 0; }
-    & > * + * { margin-block-start: 1.25em; }
+    & > * {
+      margin-block: 0;
+    }
+    & > * + * {
+      margin-block-start: 1.25em;
+    }
 
     & :is(h2, h3, h4) {
       line-height: 1.25;
@@ -30,12 +34,28 @@
       text-wrap: balance;
       scroll-margin-block-start: 5rem;
     }
-    & > h2 { margin-block-start: 2em; font-size: 1.625em; font-weight: 700; }
-    & > h3 { margin-block-start: 1.75em; font-size: 1.25em; font-weight: 600; }
-    & > h4 { margin-block-start: 1.5em; font-size: 1em; font-weight: 600; }
-    & > :is(h2, h3, h4) + * { margin-block-start: 0.75em; }
+    & > h2 {
+      margin-block-start: 2em;
+      font-size: 1.625em;
+      font-weight: 700;
+    }
+    & > h3 {
+      margin-block-start: 1.75em;
+      font-size: 1.25em;
+      font-weight: 600;
+    }
+    & > h4 {
+      margin-block-start: 1.5em;
+      font-size: 1em;
+      font-weight: 600;
+    }
+    & > :is(h2, h3, h4) + * {
+      margin-block-start: 0.75em;
+    }
 
-    & p { text-wrap: pretty; }
+    & p {
+      text-wrap: pretty;
+    }
 
     /* prose links - links with a class are components (heading anchors, buttons…) */
     & a:not([class]) {
@@ -44,23 +64,42 @@
       text-decoration-thickness: 1px;
       text-underline-offset: 0.2em;
 
-      &:hover { text-decoration-thickness: 2px; }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 2px; }
+      &:hover {
+        text-decoration-thickness: 2px;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
     }
 
-    & :is(strong, b) { font-weight: 650; }
+    & :is(strong, b) {
+      font-weight: 650;
+    }
 
-    & > :is(ul, ol) { padding-inline-start: 1.5em; }
-    & > :is(ul, ol) li + li { margin-block-start: 0.4em; }
-    & > :is(ul, ol) li::marker { color: var(--muted-foreground); }
+    & > :is(ul, ol) {
+      padding-inline-start: 1.5em;
+    }
+    & > :is(ul, ol) li + li {
+      margin-block-start: 0.4em;
+    }
+    & > :is(ul, ol) li::marker {
+      color: var(--muted-foreground);
+    }
 
     & > dl {
       display: grid;
       grid-template-columns: max-content 1fr;
       gap: 0.5em 1.25em;
 
-      & dt { font-weight: 600; }
-      & dd { margin: 0; color: var(--muted-foreground); }
+      & dt {
+        font-weight: 600;
+      }
+      & dd {
+        margin: 0;
+        color: var(--muted-foreground);
+      }
     }
 
     & > blockquote:not([class]) {
@@ -70,7 +109,9 @@
       font-size: 1.125em;
       font-style: italic;
 
-      & p { margin: 0; }
+      & p {
+        margin: 0;
+      }
       & cite {
         display: block;
         margin-block-start: 0.5em;
@@ -78,7 +119,9 @@
         font-size: 0.8em;
         font-style: normal;
 
-        &::before { content: "- "; }
+        &::before {
+          content: "- ";
+        }
       }
     }
 
@@ -113,10 +156,25 @@
     & figure:not([class]) {
       margin-inline: 0;
 
-      & :is(img, video) { display: block; width: 100%; height: auto; border-radius: var(--radius-lg); }
-      & figcaption { margin-block-start: 0.625em; color: var(--muted-foreground); font-size: 0.8125em; text-align: center; }
+      & :is(img, video) {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: var(--radius-lg);
+      }
+      & figcaption {
+        margin-block-start: 0.625em;
+        color: var(--muted-foreground);
+        font-size: 0.8125em;
+        text-align: center;
+      }
     }
-    & > :is(img, video) { display: block; width: 100%; height: auto; border-radius: var(--radius-lg); }
+    & > :is(img, video) {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-lg);
+    }
 
     /* embeds (YouTube, maps…): 16:9 unless the iframe says otherwise */
     & iframe {
@@ -138,8 +196,15 @@
       font-size: 0.875em;
       line-height: 1.5;
 
-      & :is(th, td) { padding: 0.5em 0.75em; border-block-end: 1px solid var(--border); text-align: start; }
-      & th { color: var(--muted-foreground); font-weight: 600; }
+      & :is(th, td) {
+        padding: 0.5em 0.75em;
+        border-block-end: 1px solid var(--border);
+        text-align: start;
+      }
+      & th {
+        color: var(--muted-foreground);
+        font-weight: 600;
+      }
     }
 
     & kbd:not([class]) {
@@ -151,15 +216,35 @@
       font-size: 0.8em;
     }
 
-    & mark { padding-inline: 0.125em; border-radius: 2px; background: color-mix(in oklch, var(--primary) 22%, transparent); color: inherit; }
-    & abbr[title] { text-decoration: underline dotted; text-underline-offset: 0.2em; cursor: help; }
-    & :is(del, s) { color: var(--muted-foreground); }
-    & ins { text-decoration: none; background: color-mix(in oklch, oklch(0.72 0.17 150) 22%, transparent); }
+    & mark {
+      padding-inline: 0.125em;
+      border-radius: 2px;
+      background: color-mix(in oklch, var(--primary) 22%, transparent);
+      color: inherit;
+    }
+    & abbr[title] {
+      text-decoration: underline dotted;
+      text-underline-offset: 0.2em;
+      cursor: help;
+    }
+    & :is(del, s) {
+      color: var(--muted-foreground);
+    }
+    & ins {
+      text-decoration: none;
+      background: color-mix(in oklch, oklch(0.72 0.17 150) 22%, transparent);
+    }
 
     /* the library components inside the text */
-    & > :is(.mockup-code, .table-container, .alert, .image, .mk-article-body-pullquote) { margin-block-start: 1.75em; }
-    & > :is(.mockup-code, .table-container, .alert, .image) + * { margin-block-start: 1.75em; }
-    & .heading-anchor { margin-inline-end: 0.25em; }
+    & > :is(.mockup-code, .table-container, .alert, .image, .mk-article-body-pullquote) {
+      margin-block-start: 1.75em;
+    }
+    & > :is(.mockup-code, .table-container, .alert, .image) + * {
+      margin-block-start: 1.75em;
+    }
+    & .heading-anchor {
+      margin-inline-end: 0.25em;
+    }
   }
 
   /* the opening paragraph, larger */
@@ -178,8 +263,12 @@
     background: color-mix(in oklch, var(--muted) 60%, transparent);
     font-size: 0.9375em;
 
-    & > :first-child { margin-block-start: 0; }
-    & > :last-child { margin-block-end: 0; }
+    & > :first-child {
+      margin-block-start: 0;
+    }
+    & > :last-child {
+      margin-block-end: 0;
+    }
   }
 
   /* a pull quote - set large between rules, the line repeated from the text */
@@ -194,7 +283,13 @@
     text-align: center;
     text-wrap: balance;
 
-    &::before { content: "“"; display: block; color: var(--primary); font-size: 2em; line-height: 0.5; }
+    &::before {
+      content: "“";
+      display: block;
+      color: var(--primary);
+      font-size: 2em;
+      line-height: 0.5;
+    }
   }
 
   /* footnotes: numbered refs jump to the notes, the notes jump back */
@@ -203,8 +298,17 @@
     line-height: 0;
     vertical-align: super;
 
-    & a { padding-inline: 0.125em; color: var(--primary); font-weight: 600; text-decoration: none; }
-    & a:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; border-radius: 2px; }
+    & a {
+      padding-inline: 0.125em;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    & a:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+      border-radius: 2px;
+    }
   }
   .mk-article-body-footnotes {
     padding-block-start: 1em;
@@ -212,10 +316,24 @@
     color: var(--muted-foreground);
     font-size: 0.875em;
 
-    & ol { margin: 0; padding-inline-start: 1.25em; }
-    & li { padding: 0.25em 0.5em; margin-inline-start: -0.5em; border-radius: var(--radius-sm); scroll-margin-block-start: 5rem; }
-    & li:target { background: color-mix(in oklch, var(--primary) 12%, transparent); color: var(--foreground); }
-    & a[href^="#"] { color: var(--primary); text-decoration: none; }
+    & ol {
+      margin: 0;
+      padding-inline-start: 1.25em;
+    }
+    & li {
+      padding: 0.25em 0.5em;
+      margin-inline-start: -0.5em;
+      border-radius: var(--radius-sm);
+      scroll-margin-block-start: 5rem;
+    }
+    & li:target {
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: var(--foreground);
+    }
+    & a[href^="#"] {
+      color: var(--primary);
+      text-decoration: none;
+    }
   }
 
   /* a wider figure than the measure (it stays inside the viewport) */
@@ -234,14 +352,23 @@
     max-width: 64rem;
     margin-inline: auto;
 
-    & > .toc { display: none; }
-    & > .mk-article-body { margin-inline: 0; }
+    & > .toc {
+      display: none;
+    }
+    & > .mk-article-body {
+      margin-inline: 0;
+    }
   }
   @media (min-width: 56rem) {
     .mk-article-body-layout {
       grid-template-columns: 12rem minmax(0, 1fr);
 
-      & > .toc { display: flex; position: sticky; inset-block-start: 1rem; align-self: start; }
+      & > .toc {
+        display: flex;
+        position: sticky;
+        inset-block-start: 1rem;
+        align-self: start;
+      }
     }
   }
 
@@ -261,10 +388,14 @@
      `animation` shorthand (where it is reset-only - the declaration would be
      dropped); unsupported, the bar hides */
   @supports (animation-timeline: scroll()) {
-    .mk-article-body-progress { animation-timeline: scroll(nearest block); }
+    .mk-article-body-progress {
+      animation-timeline: scroll(nearest block);
+    }
   }
   @supports not (animation-timeline: scroll()) {
-    .mk-article-body-progress { display: none; }
+    .mk-article-body-progress {
+      display: none;
+    }
   }
 
   /* serif: an editorial voice for the running text */
@@ -272,12 +403,20 @@
     font-family: var(--font-serif);
     font-size: 1.1875rem;
 
-    & :is(h2, h3, h4) { font-family: var(--font-sans); }
+    & :is(h2, h3, h4) {
+      font-family: var(--font-sans);
+    }
   }
 
   /* sizes */
-  .mk-article-body[data-size="sm"] { font-size: 0.9375rem; line-height: 1.7; }
-  .mk-article-body[data-size="lg"] { font-size: 1.1875rem; --_measure: 46rem; }
+  .mk-article-body[data-size="sm"] {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  .mk-article-body[data-size="lg"] {
+    font-size: 1.1875rem;
+    --_measure: 46rem;
+  }
 
   /* a drop cap opens the first paragraph */
   .mk-article-body[data-dropcap] > p:first-of-type::first-letter {
@@ -291,26 +430,43 @@
   }
 
   @keyframes mk-article-body-read {
-    to { scale: 1 1; }
+    to {
+      scale: 1 1;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .mk-article-body-progress { animation: none; display: none; }
+    .mk-article-body-progress {
+      animation: none;
+      display: none;
+    }
   }
 
   @media (prefers-contrast: more) {
     .mk-article-body :is(blockquote cite, figcaption),
     .mk-article-body-lead,
-    .mk-article-body-footnotes { color: var(--foreground); }
-    .mk-article-body li::marker { color: var(--foreground); }
-    .mk-article-body a:not([class]) { text-decoration-thickness: 2px; }
+    .mk-article-body-footnotes {
+      color: var(--foreground);
+    }
+    .mk-article-body li::marker {
+      color: var(--foreground);
+    }
+    .mk-article-body a:not([class]) {
+      text-decoration-thickness: 2px;
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-article-body a:not([class]) { color: LinkText; }
+    .mk-article-body a:not([class]) {
+      color: LinkText;
+    }
     .mk-article-body :not(pre) > code:not([class]),
-    .mk-article-body > pre { border: 1px solid CanvasText; }
-    .mk-article-body-progress { background: Highlight; }
+    .mk-article-body > pre {
+      border: 1px solid CanvasText;
+    }
+    .mk-article-body-progress {
+      background: Highlight;
+    }
   }
 }

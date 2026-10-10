@@ -2119,15 +2119,9 @@ function animKeyframes(name, opts = {}, ctx = { baseOpacity: 1 }) {
     case "wipeOut":
       return [{ clipPath: "inset(0px 0px 0px 0px)" }, { clipPath: insetFor(direction) }];
     case "irisIn":
-      return [
-        { clipPath: `circle(0% at ${origin})` },
-        { clipPath: `circle(150% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(0% at ${origin})` }, { clipPath: `circle(150% at ${origin})` }];
     case "irisOut":
-      return [
-        { clipPath: `circle(150% at ${origin})` },
-        { clipPath: `circle(0% at ${origin})` }
-      ];
+      return [{ clipPath: `circle(150% at ${origin})` }, { clipPath: `circle(0% at ${origin})` }];
     default:
       throw new Error(`anim: "${name}" is composite - it has no element keyframes`);
   }
@@ -3160,7 +3154,10 @@ function attachPersistence(store, options) {
 var areas = {};
 var inMemory = new Set;
 function storageOf(area) {
-  return areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) });
+  return areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area)
+  });
 }
 function sameShape(initial) {
   const check = (model, value) => {
@@ -3876,7 +3873,12 @@ function dataSource(rows, options = {}) {
         } : undefined
       });
       const result = evaluateDataview(current, view);
-      cache = { entries: result.entries, totalRows: result.totalRows, matchedRows: result.matchedRows, visibleRows: result.visibleRows };
+      cache = {
+        entries: result.entries,
+        totalRows: result.totalRows,
+        matchedRows: result.matchedRows,
+        visibleRows: result.visibleRows
+      };
       cacheKey = key;
       return cache;
     },
@@ -3913,7 +3915,14 @@ function parseFilter(field, text, kind = "text") {
     const m = /^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/.exec(raw);
     if (!m)
       return null;
-    const ops = { ">=": "gte", "<=": "lte", "!=": "neq", ">": "gt", "<": "lt", "=": "eq" };
+    const ops = {
+      ">=": "gte",
+      "<=": "lte",
+      "!=": "neq",
+      ">": "gt",
+      "<": "lt",
+      "=": "eq"
+    };
     return { field, op: ops[m[1] ?? "="] ?? "eq", value: Number(m[2]) };
   }
   return { field, op: "contains", value: raw };
@@ -4547,7 +4556,12 @@ function chartStory(el, states, { loop = false } = {}) {
   };
   return { next: () => go(i + 1), prev: () => go(i - 1), go, index: () => i };
 }
-var DECK_TEMPO = { animationDuration: 1500, animationEasing: "cubicOut", animationDurationUpdate: 1500, animationEasingUpdate: "cubicInOut" };
+var DECK_TEMPO = {
+  animationDuration: 1500,
+  animationEasing: "cubicOut",
+  animationDurationUpdate: 1500,
+  animationEasingUpdate: "cubicInOut"
+};
 function chartDeck(deck, { base = {}, states }) {
   const stage = dfDollar(deck).find(":scope > .presentation-stage").get(0) ?? null;
   if (!stage)
@@ -4975,7 +4989,10 @@ function syncSelection(table, announce = true) {
   }
   if (announce) {
     const selected = rows.filter((r) => r.getAttribute("aria-selected") === "true");
-    table.dispatchEvent(new CustomEvent("table-select", { bubbles: true, detail: { rows: selected, count: selected.length } }));
+    table.dispatchEvent(new CustomEvent("table-select", {
+      bubbles: true,
+      detail: { rows: selected, count: selected.length }
+    }));
   }
 }
 function selectRows(table, which) {
@@ -4991,7 +5008,10 @@ function selectRows(table, which) {
   syncSelection(table);
 }
 function announceMove(table, row) {
-  table.dispatchEvent(new CustomEvent("table-reorder", { bubbles: true, detail: { row, index: bodyRows(table).indexOf(row) } }));
+  table.dispatchEvent(new CustomEvent("table-reorder", {
+    bubbles: true,
+    detail: { row, index: bodyRows(table).indexOf(row) }
+  }));
 }
 function moved(table, row) {
   dfDollar4(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
@@ -5109,7 +5129,10 @@ var tableApi = componentState({
   apply: (table, state) => triggerStateChange4(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
-    return { name: table.dataset.stateName || "default", config: { ...state.config, sort: table._sort ?? null, selected } };
+    return {
+      name: table.dataset.stateName || "default",
+      config: { ...state.config, sort: table._sort ?? null, selected }
+    };
   },
   markup: (el, state) => {
     enhanceHead(el);
@@ -5137,7 +5160,10 @@ function init4() {
         else
           sortBy(table, col, next);
         table.dataset.stateName = next === "none" ? "default" : "sorted";
-        table.dispatchEvent(new CustomEvent("table-sort", { bubbles: true, detail: { column: col, direction: next } }));
+        table.dispatchEvent(new CustomEvent("table-sort", {
+          bubbles: true,
+          detail: { column: col, direction: next }
+        }));
       });
     });
     const pre = dfDollar4(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
@@ -5550,7 +5576,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -5710,7 +5739,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -5741,7 +5773,10 @@ var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
   apply: (toggle, state) => triggerStateChange7(toggle, state.name, state.config),
-  read: (toggle, state) => ({ name: dfDollar7(toggle).attr("aria-pressed") === "true" ? "pressed" : "default", config: state.config }),
+  read: (toggle, state) => ({
+    name: dfDollar7(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
     applyMarkup5(toggle, state.name, authored ? authored[1] : "false");
@@ -5861,6 +5896,6 @@ function init8() {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=10C4220697241AF064756E2164756E21
+//# debugId=D8A8B76201851EA264756E2164756E21
 /* defuss-shadcn v0.9.8 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=status-page.js.map

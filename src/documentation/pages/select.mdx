@@ -56,27 +56,27 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Default" hint="Native select with a clearable placeholder - re-choose 'Select a fruit' to empty it again." previewStyle="margin:1.25rem;"
 <div class="max-w-80">
-<select class="select">
-  <option value="" selected>Select a fruit</option>
-  <option value="apple">Apple</option>
-  ...
-</select>
+  <select class="select">
+    <option value="" selected>Select a fruit</option>
+    <option value="apple">Apple</option>
+    ...
+  </select>
 </div>
 ```
 
 ```html example label="With groups" previewStyle="margin:1.25rem;"
 <div class="max-w-80">
-<select class="select">
-  <optgroup label="Americas">
-    <option>New York</option>
-    ...
-  </optgroup>
-</select>
+  <select class="select">
+    <optgroup label="Americas">
+      <option>New York</option>
+      ...
+    </optgroup>
+  </select>
 </div>
 ```
 
 ```html example label="Multiple" hint="The native multi-select: add multiple (and size='N' for the visible rows) and the browser shows a list box - Ctrl/⌘-click adds or removes an option, Shift-click or Shift+arrows pick a run, and the form submits every chosen value under the same name. Best for a short, fixed list on desktop; for tags, people or a long searchable list use the Combobox multi-select, for a handful of options checkboxes."
-<div style="max-width:16rem;">
+<div style="max-width: 16rem">
   <label class="label" for="ship-to">Ship to</label>
   <select class="select" id="ship-to" name="ship-to" multiple size="6" aria-describedby="ship-to-hint">
     <option value="at" selected>Austria</option>
@@ -86,7 +86,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <option value="nl">Netherlands</option>
     <option value="ch">Switzerland</option>
   </select>
-  <p class="text-sm text-muted-foreground" id="ship-to-hint" style="margin:0.375rem 0 0;">Hold Ctrl (⌘ on Mac) to pick several.</p>
+  <p class="text-sm text-muted-foreground" id="ship-to-hint" style="margin: 0.375rem 0 0"
+    >Hold Ctrl (⌘ on Mac) to pick several.</p
+  >
 </div>
 ```
 
@@ -104,7 +106,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 
 ```html example label="Unavailable options" hint="disabled on an <option> greys out ONE choice in an otherwise usable list - a size that's out of stock, a plan you're not eligible for. It can't be chosen by click or keyboard, and the browser skips it. Say why in the option text ('out of stock'), so the state isn't carried by grey alone. <optgroup disabled> switches off a whole group. (The empty 'Select …' placeholder is different: it stays enabled so it can clear the choice.)" previewStyle="margin:1.25rem;"
-<div class="grid grid-cols-auto gap-4" style="--layout-min:14rem;">
+<div class="grid grid-cols-auto gap-4" style="--layout-min: 14rem">
   <div>
     <label class="label" for="shirt-size">Size</label>
     <select class="select" id="shirt-size" name="size">
@@ -144,25 +146,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Sizes" hint="The full five-step scale via data-size - the unlabeled default IS md (2.25rem)." previewStyle="margin:1.25rem;"
 <div class="stack gap-3 max-w-80">
-<select class="select" data-size="xs">
-  <option>Extra small</option>
-</select>
+  <select class="select" data-size="xs">
+    <option>Extra small</option>
+  </select>
 
-<select class="select" data-size="sm">
-  <option>Small</option>
-</select>
+  <select class="select" data-size="sm">
+    <option>Small</option>
+  </select>
 
-<select class="select" data-size="md">
-  <option>Medium</option>
-</select>
+  <select class="select" data-size="md">
+    <option>Medium</option>
+  </select>
 
-<select class="select" data-size="lg">
-  <option>Large</option>
-</select>
+  <select class="select" data-size="lg">
+    <option>Large</option>
+  </select>
 
-<select class="select" data-size="xl">
-  <option>Extra large</option>
-</select>
+  <select class="select" data-size="xl">
+    <option>Extra large</option>
+  </select>
 </div>
 ```
 

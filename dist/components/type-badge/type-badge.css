@@ -13,28 +13,71 @@
     flex-shrink: 0;
     line-height: 1.4;
 
-    &[data-size="xs"] { font-size: 0.5625rem; }
-    &[data-size="sm"] { font-size: 0.6875rem; }
-    &[data-size="md"] { font-size: 0.8125rem; }
-    &[data-size="lg"] { font-size: 0.9375rem; }
-    &[data-size="xl"] { font-size: 1.0625rem; }
+    &[data-size="xs"] {
+      font-size: 0.5625rem;
+    }
+    &[data-size="sm"] {
+      font-size: 0.6875rem;
+    }
+    &[data-size="md"] {
+      font-size: 0.8125rem;
+    }
+    &[data-size="lg"] {
+      font-size: 0.9375rem;
+    }
+    &[data-size="xl"] {
+      font-size: 1.0625rem;
+    }
 
-    &[data-type="ATM"] { color: #06B6D4; border-color: color-mix(in oklch, #06B6D4 40%, transparent); }
-    &[data-type="MOL"] { color: #3B82F6; border-color: color-mix(in oklch, #3B82F6 40%, transparent); }
-    &[data-type="ORG"] { color: #8B5CF6; border-color: color-mix(in oklch, #8B5CF6 40%, transparent); }
-    &[data-type="BLK"] { color: #F59E0B; border-color: color-mix(in oklch, #F59E0B 40%, transparent); }
-    &[data-type="TPL"] { color: #64748B; border-color: color-mix(in oklch, #64748B 40%, transparent); }
+    &[data-type="ATM"] {
+      color: #06b6d4;
+      border-color: color-mix(in oklch, #06b6d4 40%, transparent);
+    }
+    &[data-type="MOL"] {
+      color: #3b82f6;
+      border-color: color-mix(in oklch, #3b82f6 40%, transparent);
+    }
+    &[data-type="ORG"] {
+      color: #8b5cf6;
+      border-color: color-mix(in oklch, #8b5cf6 40%, transparent);
+    }
+    &[data-type="BLK"] {
+      color: #f59e0b;
+      border-color: color-mix(in oklch, #f59e0b 40%, transparent);
+    }
+    &[data-type="TPL"] {
+      color: #64748b;
+      border-color: color-mix(in oklch, #64748b 40%, transparent);
+    }
   }
 
   .dark .type-badge {
-    &[data-type="ATM"] { color: #22D3EE; border-color: color-mix(in oklch, #22D3EE 40%, transparent); }
-    &[data-type="MOL"] { color: #60A5FA; border-color: color-mix(in oklch, #60A5FA 40%, transparent); }
-    &[data-type="ORG"] { color: #A78BFA; border-color: color-mix(in oklch, #A78BFA 40%, transparent); }
-    &[data-type="BLK"] { color: #FBBF24; border-color: color-mix(in oklch, #FBBF24 40%, transparent); }
-    &[data-type="TPL"] { color: #94A3B8; border-color: color-mix(in oklch, #94A3B8 40%, transparent); }
+    &[data-type="ATM"] {
+      color: #22d3ee;
+      border-color: color-mix(in oklch, #22d3ee 40%, transparent);
+    }
+    &[data-type="MOL"] {
+      color: #60a5fa;
+      border-color: color-mix(in oklch, #60a5fa 40%, transparent);
+    }
+    &[data-type="ORG"] {
+      color: #a78bfa;
+      border-color: color-mix(in oklch, #a78bfa 40%, transparent);
+    }
+    &[data-type="BLK"] {
+      color: #fbbf24;
+      border-color: color-mix(in oklch, #fbbf24 40%, transparent);
+    }
+    &[data-type="TPL"] {
+      color: #94a3b8;
+      border-color: color-mix(in oklch, #94a3b8 40%, transparent);
+    }
   }
 
   @media (forced-colors: active) {
-    .type-badge { color: CanvasText; border-color: CanvasText; }
+    .type-badge {
+      color: CanvasText;
+      border-color: CanvasText;
+    }
   }
 }

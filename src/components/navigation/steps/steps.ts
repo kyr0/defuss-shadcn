@@ -53,7 +53,7 @@ const numAttr = (el: HTMLElement, key: string, fallback: number): number => {
  * function of the attributes - idempotent, safe to run after every change.
  */
 function renderSteps(ol: HTMLElement): void {
-  const items = Array.from((dfDollar(ol).find('.step').toArray() as HTMLElement[]));
+  const items = Array.from(dfDollar(ol).find('.step').toArray() as HTMLElement[]);
   if (items.length === 0) return;
   const total = items.length;
   const active = Math.min(total, Math.max(1, numAttr(ol, 'activeStep', 1)));
@@ -88,7 +88,8 @@ function renderSteps(ol: HTMLElement): void {
  * setState. Applied to a detached copy of the authored markup.
  */
 function applyMarkup(ol: HTMLElement, config: Record<string, unknown> = {}): void {
-  if (config.activeStep !== undefined && numAttr(ol, 'activeStep', 1) !== Number(config.activeStep)) ol.dataset.activeStep = String(config.activeStep);
+  if (config.activeStep !== undefined && numAttr(ol, 'activeStep', 1) !== Number(config.activeStep))
+    ol.dataset.activeStep = String(config.activeStep);
   if (config.errorStep !== undefined && numAttr(ol, 'errorStep', 0) !== Number(config.errorStep)) {
     if (Number(config.errorStep)) ol.dataset.errorStep = String(config.errorStep);
     else delete ol.dataset.errorStep;
@@ -128,7 +129,8 @@ export const stepsApi = componentState({
       config: {
         ...state.config,
         activeStep: numAttr(ol, 'activeStep', 1),
-        activeStepError: numAttr(ol, 'errorStep', 0) === numAttr(ol, 'activeStep', 1) && numAttr(ol, 'errorStep', 0) !== 0,
+        activeStepError:
+          numAttr(ol, 'errorStep', 0) === numAttr(ol, 'activeStep', 1) && numAttr(ol, 'errorStep', 0) !== 0,
         errorStep: numAttr(ol, 'errorStep', 0),
         size: ol.dataset.size ?? 'md',
       },

@@ -42,7 +42,9 @@
     font-size: 0.8125rem;
     white-space: nowrap;
 
-    & .select { width: auto; }
+    & .select {
+      width: auto;
+    }
   }
 
   /* sort links: a small segmented row */
@@ -60,11 +62,22 @@
       font-size: 0.8125rem;
       font-weight: 500;
       text-decoration: none;
-      transition: color 120ms, background-color 120ms;
+      transition:
+        color 120ms,
+        background-color 120ms;
 
-      &:hover { color: var(--foreground); }
-      &[aria-current] { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-xs); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      &:hover {
+        color: var(--foreground);
+      }
+      &[aria-current] {
+        background: var(--background);
+        color: var(--foreground);
+        box-shadow: var(--shadow-xs);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 1px;
+      }
     }
   }
 
@@ -77,24 +90,40 @@
     color: var(--muted-foreground);
     font-size: 0.8125rem;
 
-    & strong { color: var(--foreground); font-weight: 600; }
+    & strong {
+      color: var(--foreground);
+      font-weight: 600;
+    }
   }
 
   /* plain: no rule under the header */
-  .mk-comment-header[data-variant="plain"] { padding-block-end: 0; border-block-end: 0; }
+  .mk-comment-header[data-variant="plain"] {
+    padding-block-end: 0;
+    border-block-end: 0;
+  }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .mk-comment-header-tabs a { transition: none; }
+    .mk-comment-header-tabs a {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
     .mk-comment-header-sort,
-    .mk-comment-header-tabs a { color: var(--foreground); }
+    .mk-comment-header-tabs a {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-comment-header-tabs { border: 1px solid CanvasText; }
-    .mk-comment-header-tabs a[aria-current] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+    .mk-comment-header-tabs {
+      border: 1px solid CanvasText;
+    }
+    .mk-comment-header-tabs a[aria-current] {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }

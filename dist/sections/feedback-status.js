@@ -85,7 +85,10 @@ function commit(el, v, emit = true) {
   const done = v >= maxOf(el);
   el.dataset.stateName = done ? "complete" : "default";
   if (emit)
-    el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+    el.dispatchEvent(new CustomEvent("progress:change", {
+      bubbles: true,
+      detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) }
+    }));
   if (done && before !== "complete")
     el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
 }
@@ -170,7 +173,12 @@ var progressApi = componentState({
     const indeterminate = el.position < 0;
     return {
       name: el.dataset.stateName || "default",
-      config: { ...state.config, value: indeterminate ? null : el.value, max: el.max, percent: indeterminate ? null : el.value / maxOf(el) }
+      config: {
+        ...state.config,
+        value: indeterminate ? null : el.value,
+        max: el.max,
+        percent: indeterminate ? null : el.value / maxOf(el)
+      }
     };
   },
   markup: (el, state) => applyMarkup(el, state.name, state.config)
@@ -337,7 +345,10 @@ function commit2(el, v) {
   setValue(el, v);
   const done = v >= maxOf2(el);
   el.dataset.stateName = done ? "complete" : "default";
-  el.dispatchEvent(new CustomEvent("progress:change", { bubbles: true, detail: { value: v, max: maxOf2(el), percent: v / maxOf2(el) } }));
+  el.dispatchEvent(new CustomEvent("progress:change", {
+    bubbles: true,
+    detail: { value: v, max: maxOf2(el), percent: v / maxOf2(el) }
+  }));
   if (done && before !== "complete")
     el.dispatchEvent(new CustomEvent("progress:completed", { bubbles: true }));
 }
@@ -653,7 +664,10 @@ var toastDismiss = (el, callback) => {
     });
     return;
   }
-  el.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(0.5rem)" }], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
+  el.animate([
+    { opacity: 1, transform: "translateY(0)" },
+    { opacity: 0, transform: "translateY(0.5rem)" }
+  ], { duration: 200, easing: "ease", fill: "forwards" }).finished.then(() => {
     try {
       el.hidePopover();
     } catch {}
@@ -813,7 +827,10 @@ var toastConfigure = (opts = {}) => {
   if (opts.position)
     toastContainer.setAttribute("data-position", opts.position);
   stackToasts(toastContainer);
-  return { stack: toastContainer.dataset.stack || "list", position: toastContainer.dataset.position };
+  return {
+    stack: toastContainer.dataset.stack || "list",
+    position: toastContainer.dataset.position
+  };
 };
 var toastActions = {
   configure: toastConfigure,
@@ -830,5 +847,5 @@ var toastActions = {
 };
 df$4.toast = toastActions;
 
-//# debugId=F5861D8F5E24A57364756E2164756E21
+//# debugId=F45713DA349D8F2C64756E2164756E21
 //# sourceMappingURL=feedback-status.js.map

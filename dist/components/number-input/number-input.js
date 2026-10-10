@@ -70,7 +70,12 @@ function parseMoney(text, cfg) {
     if (cfg.fraction === 0)
         dec = -1;
     const int = (dec < 0 ? text : text.slice(0, dec)).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
-    const frac = dec < 0 ? null : text.slice(dec + 1).replace(/\D/g, '').slice(0, cfg.fraction);
+    const frac = dec < 0
+        ? null
+        : text
+            .slice(dec + 1)
+            .replace(/\D/g, '')
+            .slice(0, cfg.fraction);
     return { int, frac };
 }
 /** Locale text for integer + fraction digits (grouped; BigInt: no float loss). */
@@ -123,7 +128,10 @@ function commitMoney(wrapper, input, cfg, number = null, remember = true) {
 /** Mirror the machine value into input[data-number-output] (+ change) and the wrapper. */
 function writeMoneyOutput(wrapper, value) {
     wrapper.dataset.value = value;
-    dfDollar(wrapper).find('input[data-number-output]').toArray().forEach((out) => {
+    dfDollar(wrapper)
+        .find('input[data-number-output]')
+        .toArray()
+        .forEach((out) => {
         if (out.value === value)
             return;
         out.value = value;
@@ -232,7 +240,9 @@ export const numberInputApi = componentState({
             config: {
                 ...state.config,
                 value: input ? input.value : '',
-                ...(wrapper._money ? { number: wrapper.dataset.value ?? '', currency: wrapper._money.currency, locale: wrapper._money.locale } : {}),
+                ...(wrapper._money
+                    ? { number: wrapper.dataset.value ?? '', currency: wrapper._money.currency, locale: wrapper._money.locale }
+                    : {}),
             },
         };
     },
@@ -241,7 +251,9 @@ export const numberInputApi = componentState({
 df$.numberInputApi = numberInputApi;
 df$.numberInputStates = numberInputStates;
 function init() {
-    dfDollar('.number-input:not([data-init])').toArray().forEach((wrapper) => {
+    dfDollar('.number-input:not([data-init])')
+        .toArray()
+        .forEach((wrapper) => {
         wrapper.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(wrapper, numberInputApi);
@@ -257,7 +269,9 @@ function init() {
                     return;
                 maskMoney(wrapper, input, wrapper._money);
             });
-            input.addEventListener('blur', () => { commitMoney(wrapper, input, wrapper._money); });
+            input.addEventListener('blur', () => {
+                commitMoney(wrapper, input, wrapper._money);
+            });
             // steppers + ArrowUp/Down nudge by data-step (default 1), clamped to data-min / data-max
             const nudge = (direction) => {
                 const step = Number(input.dataset.step || 1);
@@ -276,16 +290,27 @@ function init() {
                 }
             });
             if (decBtn)
-                decBtn.addEventListener('click', () => { nudge(-1); });
+                decBtn.addEventListener('click', () => {
+                    nudge(-1);
+                });
             if (incBtn)
-                incBtn.addEventListener('click', () => { nudge(1); });
+                incBtn.addEventListener('click', () => {
+                    nudge(1);
+                });
             // switching locale / currency / display at runtime re-renders the same amount
-            new MutationObserver(() => { setupCurrency(wrapper, input); }).observe(wrapper, { attributes: true, attributeFilter: ['data-locale', 'data-currency', 'data-currency-display'] });
+            new MutationObserver(() => {
+                setupCurrency(wrapper, input);
+            }).observe(wrapper, {
+                attributes: true,
+                attributeFilter: ['data-locale', 'data-currency', 'data-currency-display'],
+            });
             return;
         }
         formatDecimals(wrapper, input);
         // commit (blur / Enter) re-applies the fixed decimals to typed values
-        input.addEventListener('change', () => { formatDecimals(wrapper, input); });
+        input.addEventListener('change', () => {
+            formatDecimals(wrapper, input);
+        });
         const update = (direction) => {
             try {
                 if (direction > 0)
@@ -296,12 +321,18 @@ function init() {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
                 input.dispatchEvent(new Event('change', { bubbles: true }));
             }
-            catch { /* min/max boundary */ }
+            catch {
+                /* min/max boundary */
+            }
         };
         if (decBtn)
-            decBtn.addEventListener('click', () => { update(-1); });
+            decBtn.addEventListener('click', () => {
+                update(-1);
+            });
         if (incBtn)
-            incBtn.addEventListener('click', () => { update(1); });
+            incBtn.addEventListener('click', () => {
+                update(1);
+            });
     });
 }
 init();

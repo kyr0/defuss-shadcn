@@ -49,25 +49,53 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Product feedback" hint="Answer with the mouse or the keyboard - A, B, C pick a choice, 1 to 5 the stars (the Rating component), Enter continues. 'Rarely' takes another branch (data-goto); the features step allows at most two (data-max); the comment is optional (Skip). The progress estimates the questions left along the shortest way to the end; the review lists every answer with Edit."
-<form class="questionnaire" id="q-feedback" aria-label="Product feedback" style="max-width:34rem;">
+<form class="questionnaire" id="q-feedback" aria-label="Product feedback" style="max-width: 34rem">
   <div class="questionnaire-progress"></div>
   <section class="questionnaire-block" data-block="usage" data-title="Your usage">
     <fieldset class="questionnaire-step" data-step="often">
       <legend class="questionnaire-title">How often do you use the app?</legend>
       <div class="questionnaire-choices">
-        <label class="questionnaire-choice"><input type="radio" name="often" value="daily" required><span class="questionnaire-choice-label">Every day</span></label>
-        <label class="questionnaire-choice"><input type="radio" name="often" value="weekly"><span class="questionnaire-choice-label">Every week</span></label>
-        <label class="questionnaire-choice"><input type="radio" name="often" value="rarely" data-goto="why"><span class="questionnaire-choice-label">Rarely</span></label>
+        <label class="questionnaire-choice"
+          ><input type="radio" name="often" value="daily" required /><span class="questionnaire-choice-label"
+            >Every day</span
+          ></label
+        >
+        <label class="questionnaire-choice"
+          ><input type="radio" name="often" value="weekly" /><span class="questionnaire-choice-label"
+            >Every week</span
+          ></label
+        >
+        <label class="questionnaire-choice"
+          ><input type="radio" name="often" value="rarely" data-goto="why" /><span class="questionnaire-choice-label"
+            >Rarely</span
+          ></label
+        >
       </div>
     </fieldset>
     <fieldset class="questionnaire-step" data-step="features" data-min="1" data-max="2" data-next="score">
       <legend class="questionnaire-title">Which features do you rely on?</legend>
       <p class="questionnaire-description">Pick up to two.</p>
       <div class="questionnaire-choices">
-        <label class="questionnaire-choice"><input type="checkbox" name="features" value="search"><span class="questionnaire-choice-label">Search</span></label>
-        <label class="questionnaire-choice"><input type="checkbox" name="features" value="sync"><span class="questionnaire-choice-label">Sync across devices</span></label>
-        <label class="questionnaire-choice"><input type="checkbox" name="features" value="share"><span class="questionnaire-choice-label">Sharing</span></label>
-        <label class="questionnaire-choice"><input type="checkbox" name="features" value="offline"><span class="questionnaire-choice-label">Offline mode</span></label>
+        <label class="questionnaire-choice"
+          ><input type="checkbox" name="features" value="search" /><span class="questionnaire-choice-label"
+            >Search</span
+          ></label
+        >
+        <label class="questionnaire-choice"
+          ><input type="checkbox" name="features" value="sync" /><span class="questionnaire-choice-label"
+            >Sync across devices</span
+          ></label
+        >
+        <label class="questionnaire-choice"
+          ><input type="checkbox" name="features" value="share" /><span class="questionnaire-choice-label"
+            >Sharing</span
+          ></label
+        >
+        <label class="questionnaire-choice"
+          ><input type="checkbox" name="features" value="offline" /><span class="questionnaire-choice-label"
+            >Offline mode</span
+          ></label
+        >
       </div>
     </fieldset>
     <fieldset class="questionnaire-step" data-step="why" data-next="score">
@@ -83,11 +111,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       <legend class="questionnaire-title">How would you rate the app?</legend>
       <p class="questionnaire-description">Click a star - or press 1 to 5.</p>
       <div class="rating" data-size="lg" role="radiogroup" aria-label="Your rating">
-        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="1" aria-label="1 star" required></label>
-        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="2" aria-label="2 stars"></label>
-        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="3" aria-label="3 stars"></label>
-        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="4" aria-label="4 stars"></label>
-        <label class="rating-item"><input class="rating-input" type="radio" name="score" value="5" aria-label="5 stars"></label>
+        <label class="rating-item"
+          ><input class="rating-input" type="radio" name="score" value="1" aria-label="1 star" required
+        /></label>
+        <label class="rating-item"
+          ><input class="rating-input" type="radio" name="score" value="2" aria-label="2 stars"
+        /></label>
+        <label class="rating-item"
+          ><input class="rating-input" type="radio" name="score" value="3" aria-label="3 stars"
+        /></label>
+        <label class="rating-item"
+          ><input class="rating-input" type="radio" name="score" value="4" aria-label="4 stars"
+        /></label>
+        <label class="rating-item"
+          ><input class="rating-input" type="radio" name="score" value="5" aria-label="5 stars"
+        /></label>
       </div>
     </fieldset>
     <fieldset class="questionnaire-step" data-step="comment" data-optional>
@@ -110,27 +148,52 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </div>
   <div class="questionnaire-complete">
     <p class="questionnaire-title">Thank you!</p>
-    <p class="questionnaire-description">Your feedback goes straight to the team. <button class="questionnaire-edit" type="button" data-questionnaire="restart">Answer again</button></p>
+    <p class="questionnaire-description"
+      >Your feedback goes straight to the team.
+      <button class="questionnaire-edit" type="button" data-questionnaire="restart">Answer again</button></p
+    >
   </div>
 </form>
 ```
 
 ```html example label="Keyboard first" schema="none" hint="data-shortcuts='digits' puts 1, 2, 3 on the choices; data-auto-advance moves on as soon as a single choice is picked - click anywhere in the example, press a digit and the next question is there (the keys work wherever the focus is, as long as you are not typing). data-persist='none': a quick poll keeps no draft."
-<form class="questionnaire" id="q-poll" aria-label="Team poll" data-shortcuts="digits" data-auto-advance data-persist="none" style="max-width:30rem;">
+<form
+  class="questionnaire"
+  id="q-poll"
+  aria-label="Team poll"
+  data-shortcuts="digits"
+  data-auto-advance
+  data-persist="none"
+  style="max-width: 30rem"
+>
   <div class="questionnaire-progress"></div>
   <fieldset class="questionnaire-step" data-step="lunch">
     <legend class="questionnaire-title">Team lunch on…</legend>
     <div class="questionnaire-choices">
-      <label class="questionnaire-choice"><input type="radio" name="lunch" value="thu" required><span class="questionnaire-choice-label">Thursday</span></label>
-      <label class="questionnaire-choice"><input type="radio" name="lunch" value="fri"><span class="questionnaire-choice-label">Friday</span></label>
+      <label class="questionnaire-choice"
+        ><input type="radio" name="lunch" value="thu" required /><span class="questionnaire-choice-label"
+          >Thursday</span
+        ></label
+      >
+      <label class="questionnaire-choice"
+        ><input type="radio" name="lunch" value="fri" /><span class="questionnaire-choice-label">Friday</span></label
+      >
     </div>
   </fieldset>
   <fieldset class="questionnaire-step" data-step="food">
     <legend class="questionnaire-title">…eating?</legend>
     <div class="questionnaire-choices">
-      <label class="questionnaire-choice"><input type="radio" name="food" value="pizza" required><span class="questionnaire-choice-label">Pizza</span></label>
-      <label class="questionnaire-choice"><input type="radio" name="food" value="ramen"><span class="questionnaire-choice-label">Ramen</span></label>
-      <label class="questionnaire-choice"><input type="radio" name="food" value="salad"><span class="questionnaire-choice-label">Salad</span></label>
+      <label class="questionnaire-choice"
+        ><input type="radio" name="food" value="pizza" required /><span class="questionnaire-choice-label"
+          >Pizza</span
+        ></label
+      >
+      <label class="questionnaire-choice"
+        ><input type="radio" name="food" value="ramen" /><span class="questionnaire-choice-label">Ramen</span></label
+      >
+      <label class="questionnaire-choice"
+        ><input type="radio" name="food" value="salad" /><span class="questionnaire-choice-label">Salad</span></label
+      >
     </div>
   </fieldset>
   <fieldset class="questionnaire-step" data-step="done" data-end>
@@ -147,7 +210,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="In a card, sending somewhere" schema="none" hint="The form composes freely - here inside a card. onSubmit(answers) may return a promise: the actions wait (data-busy), a rejection keeps the review and says why. This one fails the first time and succeeds on retry."
-<div class="card" style="max-width:30rem;">
+<div class="card" style="max-width: 30rem">
   <div class="card-header">
     <h3 class="card-title">Book a demo</h3>
     <p class="card-description">Two questions, then we call you.</p>
@@ -156,11 +219,19 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <form class="questionnaire" id="q-demo" aria-label="Book a demo" data-persist="none">
       <fieldset class="questionnaire-step" data-step="name">
         <legend class="questionnaire-title">Your name?</legend>
-        <input class="input" name="name" required aria-label="Your name" autocomplete="name">
+        <input class="input" name="name" required aria-label="Your name" autocomplete="name" />
       </fieldset>
       <fieldset class="questionnaire-step" data-step="phone">
         <legend class="questionnaire-title">Your phone number?</legend>
-        <input class="input" name="phone" type="tel" required pattern="[+0-9 ()-]{6,}" aria-label="Phone number" autocomplete="tel">
+        <input
+          class="input"
+          name="phone"
+          type="tel"
+          required
+          pattern="[+0-9 ()-]{6,}"
+          aria-label="Phone number"
+          autocomplete="tel"
+        />
       </fieldset>
       <fieldset class="questionnaire-step" data-step="confirm" data-end>
         <legend class="questionnaire-title">Shall we call?</legend>
@@ -179,7 +250,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   document.addEventListener('DOMContentLoaded', () => {
     let tries = 0;
     df$.shadcn.questionnaire.configure(document.getElementById('q-demo'), {
-      onSubmit: () => new Promise((resolve, reject) => setTimeout(() => (++tries === 1 ? reject(new Error('the line was busy - try again')) : resolve()), 600)),
+      onSubmit: () =>
+        new Promise((resolve, reject) =>
+          setTimeout(() => (++tries === 1 ? reject(new Error('the line was busy - try again')) : resolve()), 600),
+        ),
     });
   });
 </script>
@@ -197,8 +271,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       <fieldset class="questionnaire-step" data-step="area">
         <legend class="questionnaire-title">Where did it happen?</legend>
         <div class="questionnaire-choices">
-          <label class="questionnaire-choice"><input type="radio" name="area" value="web" required><span class="questionnaire-choice-label">The website</span></label>
-          <label class="questionnaire-choice"><input type="radio" name="area" value="app"><span class="questionnaire-choice-label">The mobile app</span></label>
+          <label class="questionnaire-choice"
+            ><input type="radio" name="area" value="web" required /><span class="questionnaire-choice-label"
+              >The website</span
+            ></label
+          >
+          <label class="questionnaire-choice"
+            ><input type="radio" name="area" value="app" /><span class="questionnaire-choice-label"
+              >The mobile app</span
+            ></label
+          >
         </div>
       </fieldset>
       <fieldset class="questionnaire-step" data-step="what">

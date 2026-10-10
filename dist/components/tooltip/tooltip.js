@@ -16,7 +16,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const tooltipStates = ['default', 'visible'];
@@ -36,7 +36,9 @@ function triggerStateChange(tip, stateName, _config) {
             try {
                 tip.hidePopover();
             }
-            catch { /* already closed */ }
+            catch {
+                /* already closed */
+            }
             break;
         case 'visible':
             // deferred show (safeShowPopover): showPopover() mid-exit (after
@@ -66,10 +68,14 @@ function markGroupOpen() {
 }
 function scheduleGroupReset() {
     clearTimeout(groupTimer);
-    groupTimer = setTimeout(() => { groupOpen = false; }, GROUP_TIMEOUT);
+    groupTimer = setTimeout(() => {
+        groupOpen = false;
+    }, GROUP_TIMEOUT);
 }
 function init() {
-    dfDollar('[data-tooltip-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-tooltip-trigger]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const tip = dfDollar('#' + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
         if (!tip)
@@ -92,7 +98,9 @@ function init() {
                 try {
                     tip.showPopover();
                 }
-                catch { /* already open */ }
+                catch {
+                    /* already open */
+                }
                 markGroupOpen();
             }, wait);
         }
@@ -103,7 +111,9 @@ function init() {
                 try {
                     tip.hidePopover();
                 }
-                catch { /* already closed */ }
+                catch {
+                    /* already closed */
+                }
                 scheduleGroupReset();
             }, closeDelay);
         }
@@ -113,7 +123,9 @@ function init() {
         trigger.addEventListener('blur', hide);
     });
     // bind-scope the api per tooltip instance: `$('#tip').api.setState('visible')`
-    dfDollar('.tooltip[popover]:not([data-init])').toArray().forEach((tip) => {
+    dfDollar('.tooltip[popover]:not([data-init])')
+        .toArray()
+        .forEach((tip) => {
         tip.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(tip, tooltipApi);
@@ -126,7 +138,9 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 if (!document.__tooltipScrollInit) {
     document.__tooltipScrollInit = true;
     document.addEventListener('scroll', () => {
-        dfDollar('.tooltip:popover-open').toArray().forEach((tip) => {
+        dfDollar('.tooltip:popover-open')
+            .toArray()
+            .forEach((tip) => {
             try {
                 tip.hidePopover();
             }

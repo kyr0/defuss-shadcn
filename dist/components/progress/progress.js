@@ -59,17 +59,26 @@ function text(out, el) {
             .replaceAll('{percent}', pctFmt.format(pct));
     }
     switch (out.dataset.format) {
-        case 'fraction': return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
-        case 'value': return numFmt.format(Math.round(v));
-        default: return pctFmt.format(pct);
+        case 'fraction':
+            return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
+        case 'value':
+            return numFmt.format(Math.round(v));
+        default:
+            return pctFmt.format(pct);
     }
 }
 /** Outputs bound to a bar: output[for~=id] anywhere, plus .progress-value in its field. */
 function outputsOf(el) {
     const outs = new Set();
     if (el.id)
-        dfDollar(`output.progress-value[for~="${CSS.escape(el.id)}"]`).toArray().forEach((o) => outs.add(o));
-    dfDollar(el).closest('.progress-field').find('.progress-value').toArray().forEach((o) => {
+        dfDollar(`output.progress-value[for~="${CSS.escape(el.id)}"]`)
+            .toArray()
+            .forEach((o) => outs.add(o));
+    dfDollar(el)
+        .closest('.progress-field')
+        .find('.progress-value')
+        .toArray()
+        .forEach((o) => {
         if (!o.htmlFor?.value || (el.id && o.htmlFor.contains(el.id)))
             outs.add(o);
     });
@@ -110,7 +119,10 @@ function commit(el, v, emit = true) {
     el.dataset.stateName = done ? 'complete' : 'default';
     // Fires when the value changes - value, max and the fraction done (0 to 1).
     if (emit)
-        el.dispatchEvent(new CustomEvent('progress:change', { bubbles: true, detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) } }));
+        el.dispatchEvent(new CustomEvent('progress:change', {
+            bubbles: true,
+            detail: { value: el.value, max: el.max, percent: el.value / maxOf(el) },
+        }));
     // Fires once when the value reaches max.
     if (done && before !== 'complete')
         el.dispatchEvent(new CustomEvent('progress:completed', { bubbles: true }));
@@ -156,13 +168,15 @@ function applyMarkup(el, stateName, config) {
     if (stateName === 'indeterminate')
         dfDollar(el).attr('value', null);
     else
-        el.value = stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : authored ?? 0);
+        el.value = stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : (authored ?? 0));
     const indeterminate = el.position < 0;
     const pct = indeterminate ? 0 : el.value / maxOf(el);
     dfDollar(el).attr('data-level', pct < 0.34 ? 'low' : pct < 0.67 ? 'mid' : 'high');
     dfDollar(el).attr('data-complete', !indeterminate && el.value >= maxOf(el) ? '' : null);
     const live = el.id ? dfDollar('#' + CSS.escape(el.id)).get(0) : null;
-    const spoken = (live ? outputsOf(live) : []).filter((out) => out.dataset.format === 'fraction' || out.dataset.template).map((out) => text(out, el))[0];
+    const spoken = (live ? outputsOf(live) : [])
+        .filter((out) => out.dataset.format === 'fraction' || out.dataset.template)
+        .map((out) => text(out, el))[0];
     dfDollar(el).attr('aria-valuetext', spoken || null);
 }
 function triggerStateChange(el, stateName, config) {
@@ -208,7 +222,12 @@ export const progressApi = componentState({
         const indeterminate = el.position < 0;
         return {
             name: el.dataset.stateName || 'default',
-            config: { ...state.config, value: indeterminate ? null : el.value, max: el.max, percent: indeterminate ? null : el.value / maxOf(el) },
+            config: {
+                ...state.config,
+                value: indeterminate ? null : el.value,
+                max: el.max,
+                percent: indeterminate ? null : el.value / maxOf(el),
+            },
         };
     },
     markup: (el, state) => applyMarkup(el, state.name, state.config),
@@ -249,13 +268,16 @@ function run(el, command) {
             el.removeAttribute('data-running');
             commit(el, el.value);
             break;
-        default: return false;
+        default:
+            return false;
     }
     return true;
 }
 const COMMANDS = ['reset', 'increment', 'decrement', 'complete', 'indeterminate', 'play', 'pause'];
 function init() {
-    dfDollar(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
+    dfDollar(`${SELECTOR}:not([data-init])`)
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(el, progressApi);

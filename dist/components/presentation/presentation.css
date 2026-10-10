@@ -191,7 +191,7 @@
 
       /* the accent tick gives the line a deliberate start, not a stray rule */
       &::before {
-        content: '';
+        content: "";
         inline-size: 2.75rem;
         block-size: 0.3rem;
         align-self: center;
@@ -276,9 +276,15 @@
       accent-color: var(--presentation-accent);
       z-index: 3;
 
-      &::-webkit-progress-bar { background: color-mix(in oklch, var(--presentation-ink-foreground) 18%, transparent); }
-      &::-webkit-progress-value { background: var(--presentation-accent); }
-      &::-moz-progress-bar { background: var(--presentation-accent); }
+      &::-webkit-progress-bar {
+        background: color-mix(in oklch, var(--presentation-ink-foreground) 18%, transparent);
+      }
+      &::-webkit-progress-value {
+        background: var(--presentation-accent);
+      }
+      &::-moz-progress-bar {
+        background: var(--presentation-accent);
+      }
     }
 
     /* presenter notes - hidden until the deck toggles [data-notes] */

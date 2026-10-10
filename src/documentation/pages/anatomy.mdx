@@ -62,7 +62,7 @@ import { CodeWindow, DocPage, PageHeader, DocText, DocLink, H2 } from "../lib/co
 
 ```html example label="One component, three token scopes" schema="none" hint="The wrappers set --accent and --accent-foreground inline (the right one carries the .dark palette). The toggles are identical: one class, aria-pressed, the shipped toggle.css and toggle.js. Click to press; the colour comes from the tokens in scope." previewStyle="justify-content:flex-start;"
 <div class="flex flex-wrap gap-4 items-start">
-  <div class="stack gap-2 p-4" style="border: 1px solid var(--border); border-radius: var(--radius-lg);">
+  <div class="stack gap-2 p-4" style="border: 1px solid var(--border); border-radius: var(--radius-lg)">
     <p class="text-sm text-muted-foreground m-0">page theme</p>
     <div class="flex gap-1">
       <button class="toggle" aria-pressed="true" aria-label="Bold"><i data-lucide="bold"></i></button>
@@ -70,7 +70,15 @@ import { CodeWindow, DocPage, PageHeader, DocText, DocLink, H2 } from "../lib/co
       <button class="toggle" data-variant="outline" aria-pressed="false">Outline</button>
     </div>
   </div>
-  <div class="stack gap-2 p-4" style="border: 1px solid var(--border); border-radius: var(--radius-lg); --accent: oklch(0.85 0.16 70); --accent-foreground: oklch(0.25 0.08 60);">
+  <div
+    class="stack gap-2 p-4"
+    style="
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      --accent: oklch(0.85 0.16 70);
+      --accent-foreground: oklch(0.25 0.08 60);
+    "
+  >
     <p class="text-sm text-muted-foreground m-0">--accent set inline</p>
     <div class="flex gap-1">
       <button class="toggle" aria-pressed="true" aria-label="Bold"><i data-lucide="bold"></i></button>
@@ -78,7 +86,15 @@ import { CodeWindow, DocPage, PageHeader, DocText, DocLink, H2 } from "../lib/co
       <button class="toggle" data-variant="outline" aria-pressed="false">Outline</button>
     </div>
   </div>
-  <div class="dark stack gap-2 p-4" style="border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--background); color: var(--foreground);">
+  <div
+    class="dark stack gap-2 p-4"
+    style="
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--background);
+      color: var(--foreground);
+    "
+  >
     <p class="text-sm text-muted-foreground m-0">.dark palette</p>
     <div class="flex gap-1">
       <button class="toggle" aria-pressed="true" aria-label="Bold"><i data-lucide="bold"></i></button>

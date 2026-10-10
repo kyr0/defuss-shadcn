@@ -17,7 +17,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
 <DocText>The Blog blocks composed into one page - the source is the page.</DocText>
 
 ```html example label="A blog front" schema="none" hint="Blog Header, a featured Blog Item, a grid of cards and the Archive Index in a sidebar - only Blog blocks and layout utilities." previewStyle="align-items:stretch;"
-<div style="display:flex;flex-direction:column;gap:2.5rem;width:100%">
+<div style="display: flex; flex-direction: column; gap: 2.5rem; width: 100%">
   <header class="mk-blog-header">
     <div class="mk-blog-header-copy">
       <span class="mk-blog-header-eyebrow">The Acme Blog</span>
@@ -31,43 +31,59 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
       <a href="#">Company</a>
     </nav>
   </header>
-  <div style="display:flex;flex-wrap:wrap;gap:2.5rem;align-items:flex-start">
-    <div style="flex:999 1 30rem;display:flex;flex-direction:column;gap:2rem;min-width:0">
+  <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: flex-start">
+    <div style="flex: 999 1 30rem; display: flex; flex-direction: column; gap: 2rem; min-width: 0">
       <article class="mk-blog-item" data-variant="featured">
-        <figure class="mk-blog-item-media"><img src="images/mk-wide3.png" alt="The Acme team at their offsite"></figure>
+        <figure class="mk-blog-item-media"
+          ><img src="images/mk-wide3.png" alt="The Acme team at their offsite"
+        /></figure>
         <div class="mk-blog-item-body">
-          <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Company</span><span>12 min read</span></div>
+          <div class="mk-blog-item-meta"
+            ><span class="badge" data-variant="secondary">Company</span><span>12 min read</span></div
+          >
           <h3 class="mk-blog-item-title"><a href="#">Ten years of Acme: what we got right</a></h3>
           <p class="mk-blog-item-excerpt">A long look back at a decade of building calm software.</p>
           <div class="mk-blog-item-byline">
-            <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+            <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
             <span class="mk-blog-item-author">Aron Homberg</span>
             <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
           </div>
         </div>
       </article>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:2rem">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 2rem">
         <article class="mk-blog-item">
-          <figure class="mk-blog-item-media"><img src="images/mk-wide.png" alt="A whiteboard full of sketches"></figure>
+          <figure class="mk-blog-item-media"
+            ><img src="images/mk-wide.png" alt="A whiteboard full of sketches"
+          /></figure>
           <div class="mk-blog-item-body">
-            <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Engineering</span><span>8 min read</span></div>
+            <div class="mk-blog-item-meta"
+              ><span class="badge" data-variant="secondary">Engineering</span><span>8 min read</span></div
+            >
             <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
             <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience.</p>
             <div class="mk-blog-item-byline">
-              <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt=""></span>
+              <span class="avatar" data-size="sm"
+                ><img class="avatar-image" src="images/mk-portrait.png" alt=""
+              /></span>
               <span class="mk-blog-item-author">Sophie Tan</span>
               <time class="mk-blog-item-date" datetime="2026-10-01">1 Oct 2026</time>
             </div>
           </div>
         </article>
         <article class="mk-blog-item">
-          <figure class="mk-blog-item-media"><img src="images/mk-wide2.png" alt="Two designers reviewing a layout"></figure>
+          <figure class="mk-blog-item-media"
+            ><img src="images/mk-wide2.png" alt="Two designers reviewing a layout"
+          /></figure>
           <div class="mk-blog-item-body">
-            <div class="mk-blog-item-meta"><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div>
+            <div class="mk-blog-item-meta"
+              ><span class="badge" data-variant="secondary">Design</span><span>5 min read</span></div
+            >
             <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
             <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen.</p>
             <div class="mk-blog-item-byline">
-              <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>
+              <span class="avatar" data-size="sm"
+                ><img class="avatar-image" src="images/mk-portrait2.png" alt=""
+              /></span>
               <span class="mk-blog-item-author">Hannah Lee</span>
               <time class="mk-blog-item-date" datetime="2026-09-24">24 Sep 2026</time>
             </div>
@@ -75,7 +91,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
         </article>
       </div>
     </div>
-    <nav class="mk-archive-index" aria-labelledby="blog-archive-title" style="flex:1 1 13rem">
+    <nav class="mk-archive-index" aria-labelledby="blog-archive-title" style="flex: 1 1 13rem">
       <h2 class="mk-archive-index-title" id="blog-archive-title">Archive</h2>
       <details class="mk-archive-index-year" name="archive" open>
         <summary>2026 <span class="mk-archive-index-count">31</span></summary>

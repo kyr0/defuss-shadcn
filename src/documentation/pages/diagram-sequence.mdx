@@ -21,7 +21,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-title">Sign-in: authorization code + PKCE</span>
     <span class="diagram-dek">Time runs down. Calls are solid, returns dashed; the token response is the accent.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
+  <div class="diagram-canvas" style="--cols: 4">
     <div class="diagram-node" data-node="user">
       <span class="diagram-node-eyebrow">Actor</span>
       <span class="diagram-node-name">User</span>
@@ -45,7 +45,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <li class="diagram-edge" data-from="auth" data-to="user" data-line="dashed">login + consent</li>
       <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed">302 ?code=…</li>
       <li class="diagram-edge" data-from="app" data-to="auth">POST /token code + verifier</li>
-      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600">access + refresh token</li>
+      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600"
+        >access + refresh token</li
+      >
       <li class="diagram-edge" data-from="app" data-to="api">GET /orders · Bearer</li>
       <li class="diagram-edge" data-from="api" data-to="app" data-line="dashed">200 orders</li>
     </ol>
@@ -56,13 +58,20 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Message by message" component="diagram" hint="A sequence plays its messages in order - no data-step needed."
-<figure class="diagram" id="dg-seq-steps" data-type="sequence" data-steps data-autoplay aria-label="OAuth 2.0 authorization code flow with PKCE">
+<figure
+  class="diagram"
+  id="dg-seq-steps"
+  data-type="sequence"
+  data-steps
+  data-autoplay
+  aria-label="OAuth 2.0 authorization code flow with PKCE"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Sequence</span>
     <span class="diagram-title">Sign-in: authorization code + PKCE</span>
     <span class="diagram-dek">Time runs down. Calls are solid, returns dashed; the token response is the accent.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
+  <div class="diagram-canvas" style="--cols: 4">
     <div class="diagram-node" data-node="user">
       <span class="diagram-node-eyebrow">Actor</span>
       <span class="diagram-node-name">User</span>
@@ -86,7 +95,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <li class="diagram-edge" data-from="auth" data-to="user" data-line="dashed">login + consent</li>
       <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed">302 ?code=…</li>
       <li class="diagram-edge" data-from="app" data-to="auth">POST /token code + verifier</li>
-      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600">access + refresh token</li>
+      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600"
+        >access + refresh token</li
+      >
       <li class="diagram-edge" data-from="app" data-to="api">GET /orders · Bearer</li>
       <li class="diagram-edge" data-from="api" data-to="app" data-line="dashed">200 orders</li>
     </ol>
@@ -100,18 +111,32 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Sequence, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-seq-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-seq-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-seq-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-seq-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-seq-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-seq-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-seq-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-seq-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-seq-live" data-interactive data-type="sequence" aria-label="OAuth 2.0 authorization code flow with PKCE">
+<figure
+  class="diagram"
+  id="dg-seq-live"
+  data-interactive
+  data-type="sequence"
+  aria-label="OAuth 2.0 authorization code flow with PKCE"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Sequence</span>
     <span class="diagram-title">Sign-in: authorization code + PKCE</span>
     <span class="diagram-dek">Time runs down. Calls are solid, returns dashed; the token response is the accent.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
+  <div class="diagram-canvas" style="--cols: 4">
     <div class="diagram-node" data-node="user">
       <span class="diagram-node-eyebrow">Actor</span>
       <span class="diagram-node-name">User</span>
@@ -135,7 +160,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <li class="diagram-edge" data-from="auth" data-to="user" data-line="dashed">login + consent</li>
       <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed">302 ?code=…</li>
       <li class="diagram-edge" data-from="app" data-to="auth">POST /token code + verifier</li>
-      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600">access + refresh token</li>
+      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600"
+        >access + refresh token</li
+      >
       <li class="diagram-edge" data-from="app" data-to="api">GET /orders · Bearer</li>
       <li class="diagram-edge" data-from="api" data-to="app" data-line="dashed">200 orders</li>
     </ol>
@@ -149,18 +176,28 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Sequence, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-seq-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-seq-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-seq-edit" data-interactive data-type="sequence" aria-label="OAuth 2.0 authorization code flow with PKCE">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-seq-edit"
+      data-interactive
+      data-type="sequence"
+      aria-label="OAuth 2.0 authorization code flow with PKCE"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Sequence</span>
         <span class="diagram-title">Sign-in: authorization code + PKCE</span>
-        <span class="diagram-dek">Time runs down. Calls are solid, returns dashed; the token response is the accent.</span>
+        <span class="diagram-dek"
+          >Time runs down. Calls are solid, returns dashed; the token response is the accent.</span
+        >
       </figcaption>
-      <div class="diagram-canvas" style="--cols:4">
+      <div class="diagram-canvas" style="--cols: 4">
         <div class="diagram-node" data-node="user">
           <span class="diagram-node-eyebrow">Actor</span>
           <span class="diagram-node-name">User</span>
@@ -184,7 +221,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
           <li class="diagram-edge" data-from="auth" data-to="user" data-line="dashed">login + consent</li>
           <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed">302 ?code=…</li>
           <li class="diagram-edge" data-from="app" data-to="auth">POST /token code + verifier</li>
-          <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600">access + refresh token</li>
+          <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-flow="1600"
+            >access + refresh token</li
+          >
           <li class="diagram-edge" data-from="app" data-to="api">GET /orders · Bearer</li>
           <li class="diagram-edge" data-from="api" data-to="app" data-line="dashed">200 orders</li>
         </ol>
@@ -196,11 +235,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-seq-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-seq-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-seq-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -229,12 +281,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="delta">Delta</H2>
 
 ```html example label="Implicit flow → PKCE" component="diagram" hint="A changed message keeps its old text in data-before; added and removed messages keep their row in Changes."
-<figure class="diagram" id="dg-seq-delta" data-type="sequence" data-delta aria-label="Implicit flow to code flow with PKCE">
+<figure
+  class="diagram"
+  id="dg-seq-delta"
+  data-type="sequence"
+  data-delta
+  aria-label="Implicit flow to code flow with PKCE"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Protocol change</span>
     <span class="diagram-title">From the implicit flow to PKCE</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3">
+  <div class="diagram-canvas" style="--cols: 3">
     <div class="diagram-node" data-node="app">
       <span class="diagram-node-eyebrow">SPA</span>
       <span class="diagram-node-name">Browser app</span>
@@ -249,11 +307,22 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     </div>
     <ol class="diagram-edges">
       <li class="diagram-edge" data-from="app" data-to="app" data-change="added">make verifier + challenge</li>
-      <li class="diagram-edge" data-from="app" data-to="auth" data-change="changed" data-before="GET /authorize ?response_type=token">GET /authorize ?code_challenge</li>
-      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-change="removed">#access_token=… in the URL</li>
+      <li
+        class="diagram-edge"
+        data-from="app"
+        data-to="auth"
+        data-change="changed"
+        data-before="GET /authorize ?response_type=token"
+        >GET /authorize ?code_challenge</li
+      >
+      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-change="removed"
+        >#access_token=… in the URL</li
+      >
       <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-change="added">302 ?code=…</li>
       <li class="diagram-edge" data-from="app" data-to="auth" data-change="added">POST /token code + verifier</li>
-      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-change="added">access + refresh token</li>
+      <li class="diagram-edge" data-from="auth" data-to="app" data-line="dashed" data-tone="accent" data-change="added"
+        >access + refresh token</li
+      >
       <li class="diagram-edge" data-from="app" data-to="api">GET /orders · Bearer</li>
     </ol>
   </div>

@@ -38,7 +38,7 @@
     transition: background-color 150ms ease;
 
     &::after {
-      content: '';
+      content: "";
       width: 0.375rem;
       height: 0.375rem;
       margin-top: -0.1875rem;
@@ -48,9 +48,17 @@
       transition: rotate 150ms ease;
     }
 
-    &[aria-expanded="true"]::after { rotate: -135deg; margin-top: 0.1875rem; }
-    &:hover { background-color: var(--accent); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &[aria-expanded="true"]::after {
+      rotate: -135deg;
+      margin-top: 0.1875rem;
+    }
+    &:hover {
+      background-color: var(--accent);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
   }
 
   /* data-caption="dropdown": native month + year selects between the arrows
@@ -71,17 +79,26 @@
     font-weight: 500;
     cursor: pointer;
 
-    &:hover { background-color: var(--accent); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:hover {
+      background-color: var(--accent);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
   }
 
   /* -- Month / year picker (data-view="months" | "years") -------
      Swaps in for the day grid at the same size: 12 months or 12 years in a
      4-column grid. The current one is filled, this month / year is tinted. */
-  .calendar-picker { display: none; }
+  .calendar-picker {
+    display: none;
+  }
 
   .calendar[data-view] {
-    & .calendar-grid { display: none; }
+    & .calendar-grid {
+      display: none;
+    }
 
     & .calendar-picker {
       display: grid;
@@ -103,11 +120,21 @@
     font: inherit;
     font-size: 0.8125rem;
     cursor: pointer;
-    transition: background-color 150ms ease, color 150ms ease;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
 
-    &:hover { background-color: var(--accent); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-    &[data-today] { background-color: var(--accent); font-weight: 600; }
+    &:hover {
+      background-color: var(--accent);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+    &[data-today] {
+      background-color: var(--accent);
+      font-weight: 600;
+    }
 
     &[aria-current="true"] {
       background-color: var(--primary);
@@ -175,8 +202,14 @@
   .calendar:where([data-density="compact"]) {
     padding: 0.5rem;
     & .calendar-day-label,
-    & .calendar-day { width: 1.75rem; height: 1.75rem; }
-    & .calendar-day button { width: 1.5rem; height: 1.5rem; }
+    & .calendar-day {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+    & .calendar-day button {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   }
   .calendar:where([data-density="comfortable"]) {
     padding: 0.75rem;
@@ -184,8 +217,14 @@
   .calendar:where([data-density="spacious"]) {
     padding: 1rem;
     & .calendar-day-label,
-    & .calendar-day { width: 2.75rem; height: 2.75rem; }
-    & .calendar-day button { width: 2.5rem; height: 2.5rem; }
+    & .calendar-day {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+    & .calendar-day button {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
   }
 
   .calendar-day {
@@ -207,7 +246,9 @@
       background-color: transparent;
       color: var(--foreground);
       cursor: pointer;
-      transition: background-color 150ms ease, color 150ms ease;
+      transition:
+        background-color 150ms ease,
+        color 150ms ease;
 
       &:hover {
         background-color: var(--accent);
@@ -252,10 +293,12 @@
      dot - style it with .calendar-day[data-mark="name"]. A note is a second
      line under the number (a price, a count); a calendar with notes gets
      taller cells (data-notes, set by the JS). */
-  .calendar-day button { position: relative; }
+  .calendar-day button {
+    position: relative;
+  }
 
   .calendar-day[data-mark] button::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0.1875rem;
     inset-inline-end: 0.1875rem;
@@ -269,28 +312,42 @@
     color: var(--destructive);
     font-weight: 600;
 
-    &::after { background-color: var(--destructive); }
+    &::after {
+      background-color: var(--destructive);
+    }
   }
 
-  .calendar-day[data-mark="event"] button::after { background-color: var(--primary); }
+  .calendar-day[data-mark="event"] button::after {
+    background-color: var(--primary);
+  }
 
   .calendar-day[data-mark="booked"] button {
     color: var(--muted-foreground);
     text-decoration: line-through;
-    background-image: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in oklch, var(--muted-foreground) 18%, transparent) 4px 5px);
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 4px,
+      color-mix(in oklch, var(--muted-foreground) 18%, transparent) 4px 5px
+    );
 
-    &::after { display: none; }
+    &::after {
+      display: none;
+    }
   }
 
   /* a marked day that is also blocked (booked, a blackout date) keeps its
      look at full strength - the mark IS the information, the 0.35 fade of
      a plain disabled day would erase it */
-  .calendar-day[data-mark][data-disabled]:not([data-outside]) button { opacity: 1; }
+  .calendar-day[data-mark][data-disabled]:not([data-outside]) button {
+    opacity: 1;
+  }
 
   /* on a filled (selected / endpoint) day the marks follow its foreground */
   .calendar-day:is([data-selected], [data-range-start], [data-range-end])[data-mark] button {
     color: var(--primary-foreground);
-    &::after { background-color: currentColor; }
+    &::after {
+      background-color: currentColor;
+    }
   }
 
   .calendar-day-note {
@@ -308,7 +365,9 @@
   }
 
   .calendar[data-notes] {
-    & .calendar-day-label { width: 2.75rem; }
+    & .calendar-day-label {
+      width: 2.75rem;
+    }
 
     & .calendar-day {
       width: 2.75rem;
@@ -505,6 +564,8 @@
     }
 
     .calendar-pick:disabled,
-    .calendar-day[data-mark="booked"] button { color: GrayText; }
+    .calendar-day[data-mark="booked"] button {
+      color: GrayText;
+    }
   }
 }

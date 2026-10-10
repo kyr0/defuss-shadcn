@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": ["*.css"],
+      "options": { "singleQuote": false }
+    }
+  ],
+  "ignorePatterns": [
+    "src/components/data-display/qr-code/qr-code.ts"
+  ]
+}

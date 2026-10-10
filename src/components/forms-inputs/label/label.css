@@ -16,7 +16,7 @@
        the native attribute already conveys the requirement to AT. */
     &:has(+ input[required])::after,
     &:has(+ textarea[required])::after {
-      content: ' \00a0*';
+      content: " \00a0*";
       color: var(--destructive);
       font-weight: 600;
     }

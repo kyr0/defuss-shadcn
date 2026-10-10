@@ -25,15 +25,29 @@
     cursor: pointer;
 
     /* the size of what it stands for: the swap does not move the page */
-    &[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
-    &[data-ratio="4/3"] { aspect-ratio: 4 / 3; }
-    &[data-ratio="1/1"] { aspect-ratio: 1 / 1; }
-    &[data-ratio="21/9"] { aspect-ratio: 21 / 9; }
+    &[data-ratio="16/9"] {
+      aspect-ratio: 16 / 9;
+    }
+    &[data-ratio="4/3"] {
+      aspect-ratio: 4 / 3;
+    }
+    &[data-ratio="1/1"] {
+      aspect-ratio: 1 / 1;
+    }
+    &[data-ratio="21/9"] {
+      aspect-ratio: 21 / 9;
+    }
 
-    & > .play-button { margin-block-end: 0.5rem; }
-    &:hover:not([data-played]) > .play-button:not(:disabled) { scale: 1.06; }
+    & > .play-button {
+      margin-block-end: 0.5rem;
+    }
+    &:hover:not([data-played]) > .play-button:not(:disabled) {
+      scale: 1.06;
+    }
     /* the card shows where the keyboard is */
-    &:has(> .play-button:focus-visible) { box-shadow: 0 0 0 2px var(--ring); }
+    &:has(> .play-button:focus-visible) {
+      box-shadow: 0 0 0 2px var(--ring);
+    }
 
     /* -- Played: the content takes the whole card ------------------- */
     &[data-played] {
@@ -53,7 +67,9 @@
       & > * {
         transition: opacity 400ms ease;
 
-        @starting-style { opacity: 0; }
+        @starting-style {
+          opacity: 0;
+        }
       }
     }
   }
@@ -99,14 +115,20 @@
       position: relative;
       z-index: 1;
     }
-    & .teaser-text { color: oklch(1 0 0 / 0.85); }
+    & .teaser-text {
+      color: oklch(1 0 0 / 0.85);
+    }
   }
 
   /* -- Accessibility ------------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .teaser {
-      &:hover:not([data-played]) > .play-button:not(:disabled) { scale: none; }
-      &[data-played] > * { transition: none; }
+      &:hover:not([data-played]) > .play-button:not(:disabled) {
+        scale: none;
+      }
+      &[data-played] > * {
+        transition: none;
+      }
     }
   }
 
@@ -114,13 +136,17 @@
     .teaser:not([data-played]) {
       border-color: var(--foreground);
     }
-    .teaser-text { color: var(--foreground); }
+    .teaser-text {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
     .teaser:not([data-played]) {
       border-color: CanvasText;
     }
-    .teaser:has(> .play-button:focus-visible) { outline: 2px solid Highlight; }
+    .teaser:has(> .play-button:focus-visible) {
+      outline: 2px solid Highlight;
+    }
   }
 }

@@ -31,8 +31,12 @@
        not border + rule + border with rounded inner corners (which read as
        two buttons with a gap). */
     &:where(:not([data-orientation="vertical"])) {
-      & > .btn:has(+ [role="separator"]) { border-inline-end-width: 0; }
-      & > [role="separator"] + .btn { border-inline-start-width: 0; }
+      & > .btn:has(+ [role="separator"]) {
+        border-inline-end-width: 0;
+      }
+      & > [role="separator"] + .btn {
+        border-inline-start-width: 0;
+      }
     }
 
     /* Ensure hovered/focused button stacks above its neighbors */
@@ -85,8 +89,12 @@
         height: 1px;
       }
 
-      & > .btn:has(+ [role="separator"]) { border-block-end-width: 0; }
-      & > [role="separator"] + .btn { border-block-start-width: 0; }
+      & > .btn:has(+ [role="separator"]) {
+        border-block-end-width: 0;
+      }
+      & > [role="separator"] + .btn {
+        border-block-start-width: 0;
+      }
     }
   }
 

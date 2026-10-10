@@ -15,36 +15,47 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```html example label="In / out, directions and lifecycle" schema="none" hint="wipeIn starts clipped to the named edge and opens; wipeOut closes toward it. Direction buttons pick the edge, Pause/Resume/Finish/Reset act on whichever channel ran last."
 <style>
   #anim-wipe-up-target {
-    width: 160px; height: 100px;
-    display: grid; place-items: center;
+    width: 160px;
+    height: 100px;
+    display: grid;
+    place-items: center;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: var(--card); color: var(--card-foreground);
+    background: var(--card);
+    color: var(--card-foreground);
     font-size: 0.85rem;
   }
 </style>
-<div style="display:flex; flex-direction:column; gap:0.75rem;">
+<div style="display: flex; flex-direction: column; gap: 0.75rem">
   <div id="anim-wipe-up-target">wipe up</div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center">
     <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-in">In</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-out">Out</button>
-    <span style="width:1px; height:1.4rem; background:var(--border);"></span>
+    <span style="width: 1px; height: 1.4rem; background: var(--border)"></span>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="north">N</button>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="south" aria-pressed="true">S</button>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="west">W</button>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="east">E</button>
-    <span style="width:1px; height:1.4rem; background:var(--border);"></span>
+    <span style="width: 1px; height: 1.4rem; background: var(--border)"></span>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-pause">Pause</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-resume">Resume</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-finish">Finish</button>
     <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-up-reset">Reset</button>
   </div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; font-size:0.85rem;">
-    <label style="display:flex; align-items:center; gap:0.4rem;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; font-size: 0.85rem">
+    <label style="display: flex; align-items: center; gap: 0.4rem">
       Duration
-      <input class="input" id="anim-wipe-up-duration" type="number" min="50" step="50" value="1500" style="width:6rem;" />
+      <input
+        class="input"
+        id="anim-wipe-up-duration"
+        type="number"
+        min="50"
+        step="50"
+        value="1500"
+        style="width: 6rem"
+      />
     </label>
-    <label style="display:flex; align-items:center; gap:0.4rem;">
+    <label style="display: flex; align-items: center; gap: 0.4rem">
       Easing
       <select class="select" id="anim-wipe-up-easing">
         <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default (ease-out-expo)</option>
@@ -61,8 +72,8 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   const target = document.getElementById('anim-wipe-up-target');
   const durationInput = document.getElementById('anim-wipe-up-duration');
   const easingSelect = document.getElementById('anim-wipe-up-easing');
-  let direction = 'south';        // wipe up from the bottom edge
-  let lastChannel = 'wipeIn';     // Pause/Resume/Finish/Reset act on this one
+  let direction = 'south'; // wipe up from the bottom edge
+  let lastChannel = 'wipeIn'; // Pause/Resume/Finish/Reset act on this one
 
   const config = () => ({
     direction,
@@ -97,9 +108,32 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ```
 
 ```html example label="Scroll binding" schema="none" hint="opts.scroll ties progress to a scroll position instead of time - here the scroller's own y offset scrubs the reveal. Scroll the stage."
-<div id="anim-wipe-up-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
-  <div style="height: 600px; display:flex; flex-direction:column; justify-content:flex-end; align-items:center;">
-    <div id="anim-wipe-up-scroll-target" style="width: 160px; height: 100px; display:grid; place-items:center; border:1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--card-foreground); font-size:0.85rem;">scroll me</div>
+<div
+  id="anim-wipe-up-scroller"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div style="height: 600px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center">
+    <div
+      id="anim-wipe-up-scroll-target"
+      style="
+        width: 160px;
+        height: 100px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: var(--card-foreground);
+        font-size: 0.85rem;
+      "
+      >scroll me</div
+    >
   </div>
 </div>
 <script type="module">

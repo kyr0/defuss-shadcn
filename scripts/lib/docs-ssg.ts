@@ -81,9 +81,13 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
 }
 
 /** The first ```html example fence of a page - the markup a standalone deck /
- *  full-screen scaffold page is generated from (null when the page has none). */
+ *  full-screen scaffold page is generated from (null when the page has none).
+ *  A fence may open with more than three backticks when its body holds a
+ *  ``` line (CommonMark; scripts/lib/format-pages.ts grows it); its closing
+ *  fence is the same length. VERIFIED: (tests/format-pages.test.ts) a grown
+ *  fence reads through here as its body. */
 export function exampleFence(mdx: string): string | null {
-  return mdx.match(/^```html example[^\n]*\n([\s\S]*?)^```$/m)?.[1] ?? null;
+  return mdx.match(/^(`{3,})html example[^\n]*\n([\s\S]*?)^\1$/m)?.[2] ?? null;
 }
 
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) -

@@ -4,248 +4,946 @@
   /* the scaffold's own glue - layout only; every control is a shipped component */
   /* a fixed app height: 50rem in the docs preview, the whole viewport in the
      full-screen page (it sets --scaffold-height: 100dvh) */
-  .dash { container: dash / inline-size; display: flex; width: 100%; height: var(--scaffold-height, 50rem); min-height: 0; overflow: hidden; background: var(--background); color: var(--foreground); }
-  .dash .app-sidebar { position: relative; height: 100%; flex: none; }
-  .dash-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
-  .dash-workspace, .dash-user { display: flex; align-items: center; gap: 0.625rem; width: 100%; padding: 0.375rem; border: 0; border-radius: var(--radius-md); background: none; color: inherit; font: inherit; text-align: start; cursor: pointer;
-    &amp;:hover { background: var(--sidebar-accent); }
-    &amp;:focus-visible { outline: 2px solid var(--sidebar-ring); outline-offset: -2px; }
-    &amp; &gt; svg:last-child { width: 1rem; height: 1rem; margin-inline-start: auto; color: var(--muted-foreground); }
+  .dash {
+    container: dash / inline-size;
+    display: flex;
+    width: 100%;
+    height: var(--scaffold-height, 50rem);
+    min-height: 0;
+    overflow: hidden;
+    background: var(--background);
+    color: var(--foreground);
   }
-  .dash-workspace-text { display: grid; min-width: 0; line-height: 1.25;
-    &amp; strong { overflow: hidden; font-size: 0.875rem; text-overflow: ellipsis; white-space: nowrap; }
-    &amp; small { overflow: hidden; color: var(--muted-foreground); font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+  .dash .app-sidebar {
+    position: relative;
+    height: 100%;
+    flex: none;
   }
-  .dash-logo { display: grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: var(--radius-md); background: var(--sidebar-primary); color: var(--sidebar-primary-foreground); font-size: 0.75rem; font-weight: 800;
-    &amp;[data-size="sm"] { width: 1.25rem; height: 1.25rem; border-radius: 0.3rem; &amp; svg { width: 0.75rem; height: 0.75rem; } }
-    &amp;[data-tone="2"] { background: var(--chart-2); color: #fff; }
+  .dash-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
   }
-  .app-sidebar[data-state="collapsed"] :is(.dash-workspace-text, .dash-workspace &gt; svg:last-child, .dash-user &gt; svg:last-child, .dash-usage) { display: none; }
-  .dash-usage { display: grid; gap: 0.5rem; margin-block-end: 0.5rem; padding: 0.75rem; border: 1px solid var(--sidebar-border); border-radius: var(--radius-lg); font-size: 0.75rem;
-    &amp; &gt; div { display: flex; justify-content: space-between; gap: 0.5rem; }
-    &amp; span { color: var(--muted-foreground); }
-    &amp; progress { width: 100%; height: 0.375rem; }
-    &amp; .btn { width: 100%; }
+  .dash-workspace,
+  .dash-user {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.375rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    &amp;:hover {
+      background: var(--sidebar-accent);
+    }
+    &amp;:focus-visible {
+      outline: 2px solid var(--sidebar-ring);
+      outline-offset: -2px;
+    }
+    &amp; &gt; svg:last-child {
+      width: 1rem;
+      height: 1rem;
+      margin-inline-start: auto;
+      color: var(--muted-foreground);
+    }
   }
-  .dash-topbar { display: flex; flex: none; align-items: center; gap: 0.5rem; height: 3.5rem; padding-inline: 0.75rem 1rem; border-block-end: 1px solid var(--border); background: color-mix(in oklch, var(--background) 88%, transparent); backdrop-filter: blur(10px);
-    &amp; .breadcrumb { margin-inline: 0.25rem auto; }
+  .dash-workspace-text {
+    display: grid;
+    min-width: 0;
+    line-height: 1.25;
+    &amp; strong {
+      overflow: hidden;
+      font-size: 0.875rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &amp; small {
+      overflow: hidden;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
-  .dash-mobile-trigger { display: none; }
-  .dash-search { display: inline-flex; align-items: center; gap: 0.5rem; width: min(18rem, 34cqi); height: 2.25rem; padding-inline: 0.75rem 0.375rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: color-mix(in oklch, var(--muted) 60%, transparent); color: var(--muted-foreground); font: inherit; font-size: 0.8125rem; cursor: pointer;
-    &amp; svg { width: 1rem; height: 1rem; flex: none; }
-    &amp; span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    &amp; .kbd { margin-inline-start: auto; }
-    &amp;:hover { border-color: color-mix(in oklch, var(--foreground) 25%, var(--border)); color: var(--foreground); }
-    &amp;:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  .dash-logo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-md);
+    background: var(--sidebar-primary);
+    color: var(--sidebar-primary-foreground);
+    font-size: 0.75rem;
+    font-weight: 800;
+    &amp;[data-size='sm'] {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.3rem;
+      &amp; svg {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+    &amp;[data-tone='2'] {
+      background: var(--chart-2);
+      color: #fff;
+    }
   }
-  .dash-bell { position: relative; }
-  .dash-bell-dot { position: absolute; top: 0.5rem; right: 0.5rem; width: 0.5rem; height: 0.5rem; border: 2px solid var(--background); border-radius: 50%; background: var(--destructive); box-sizing: content-box; }
-  .dash-notes { width: 22rem; padding: 0; }
-  .dash-notes-head { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-block-end: 1px solid var(--border); }
-  .dash-notes-list { display: grid; margin: 0; padding: 0.375rem; list-style: none;
-    &amp; li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.75rem; padding: 0.625rem; border-radius: var(--radius-md); font-size: 0.8125rem; }
-    &amp; li:hover { background: var(--accent); }
-    &amp; li[data-unread] { background: color-mix(in oklch, var(--primary) 5%, transparent); }
-    &amp; li[data-unread] p::after { content: ""; position: absolute; top: 0.25rem; right: 0; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: var(--chart-1); }
-    &amp; p { position: relative; margin: 0; padding-inline-end: 1rem; line-height: 1.45; }
-    &amp; time { display: block; color: var(--muted-foreground); font-size: 0.75rem; }
-    &amp; a { color: var(--primary); font-weight: 600; }
+  .app-sidebar[data-state='collapsed']
+    :is(.dash-workspace-text, .dash-workspace &gt; svg:last-child, .dash-user &gt; svg:last-child, .dash-usage) {
+    display: none;
+  }
+  .dash-usage {
+    display: grid;
+    gap: 0.5rem;
+    margin-block-end: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--sidebar-border);
+    border-radius: var(--radius-lg);
+    font-size: 0.75rem;
+    &amp; &gt; div {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    &amp; span {
+      color: var(--muted-foreground);
+    }
+    &amp; progress {
+      width: 100%;
+      height: 0.375rem;
+    }
+    &amp; .btn {
+      width: 100%;
+    }
+  }
+  .dash-topbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3.5rem;
+    padding-inline: 0.75rem 1rem;
+    border-block-end: 1px solid var(--border);
+    background: color-mix(in oklch, var(--background) 88%, transparent);
+    backdrop-filter: blur(10px);
+    &amp; .breadcrumb {
+      margin-inline: 0.25rem auto;
+    }
+  }
+  .dash-mobile-trigger {
+    display: none;
+  }
+  .dash-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: min(18rem, 34cqi);
+    height: 2.25rem;
+    padding-inline: 0.75rem 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--muted) 60%, transparent);
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    &amp; svg {
+      width: 1rem;
+      height: 1rem;
+      flex: none;
+    }
+    &amp; span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &amp; .kbd {
+      margin-inline-start: auto;
+    }
+    &amp;:hover {
+      border-color: color-mix(in oklch, var(--foreground) 25%, var(--border));
+      color: var(--foreground);
+    }
+    &amp;:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+  .dash-bell {
+    position: relative;
+  }
+  .dash-bell-dot {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 2px solid var(--background);
+    border-radius: 50%;
+    background: var(--destructive);
+    box-sizing: content-box;
+  }
+  .dash-notes {
+    width: 22rem;
+    padding: 0;
+  }
+  .dash-notes-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-block-end: 1px solid var(--border);
+  }
+  .dash-notes-list {
+    display: grid;
+    margin: 0;
+    padding: 0.375rem;
+    list-style: none;
+    &amp; li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 0.625rem;
+      border-radius: var(--radius-md);
+      font-size: 0.8125rem;
+    }
+    &amp; li:hover {
+      background: var(--accent);
+    }
+    &amp; li[data-unread] {
+      background: color-mix(in oklch, var(--primary) 5%, transparent);
+    }
+    &amp; li[data-unread] p::after {
+      content: '';
+      position: absolute;
+      top: 0.25rem;
+      right: 0;
+      width: 0.4375rem;
+      height: 0.4375rem;
+      border-radius: 50%;
+      background: var(--chart-1);
+    }
+    &amp; p {
+      position: relative;
+      margin: 0;
+      padding-inline-end: 1rem;
+      line-height: 1.45;
+    }
+    &amp; time {
+      display: block;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+    &amp; a {
+      color: var(--primary);
+      font-weight: 600;
+    }
   }
 
-  .dash-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
-  .dash-view { display: none; align-content: start; gap: 1.25rem; max-width: 84rem; margin-inline: auto; padding: 1.5rem; scroll-margin-top: 0; }
-  .dash-view:target, .dash-views:not(:has(.dash-view:target)) &gt; .dash-view[data-default] { display: grid; animation: dash-in 260ms ease both; }
-  @keyframes dash-in { from { opacity: 0; translate: 0 0.5rem; } }
-  .dash-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem;
-    &amp; h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
-    &amp; p { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.875rem; }
+  .dash-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
-  .dash-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-  .dash-card { display: grid; align-content: start; gap: 1rem; min-width: 0; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); color: var(--card-foreground); box-shadow: var(--shadow-xs); }
-  .dash-card-head { display: flex; align-items: start; justify-content: space-between; gap: 1rem;
-    &amp; h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
-    &amp; p { margin: 0.125rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  .dash-view {
+    display: none;
+    align-content: start;
+    gap: 1.25rem;
+    max-width: 84rem;
+    margin-inline: auto;
+    padding: 1.5rem;
+    scroll-margin-top: 0;
   }
-  .dash-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-  .dash-kpi { gap: 0.25rem; padding-block-end: 0; overflow: hidden; }
-  .dash-kpi-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted-foreground); font-size: 0.8125rem; font-weight: 500;
-    &amp; p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    &amp; svg { flex: none; width: 1rem; height: 1rem; }
+  .dash-view:target,
+  .dash-views:not(:has(.dash-view:target)) &gt; .dash-view[data-default] {
+    display: grid;
+    animation: dash-in 260ms ease both;
   }
-  .dash-kpi-value { margin: 0.25rem 0 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-  .dash-kpi-trend { display: flex; align-items: center; gap: 0.375rem; margin: 0; overflow: hidden; color: var(--muted-foreground); font-size: 0.75rem; white-space: nowrap; }
-  .dash-spark { display: block; width: calc(100% + 2.5rem); height: 2.75rem; margin: 0.5rem -1.25rem 0; }
-  .dash-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-  .dash-stack { display: grid; align-content: start; gap: 1rem; }
-  .dash-chart { width: 100%; height: 18rem; }
-  .dash-who { display: flex; align-items: center; gap: 0.625rem; min-width: 0;
-    &amp; div { display: grid; min-width: 0; line-height: 1.3; }
-    &amp; strong { font-weight: 500; white-space: nowrap; }
-    &amp; span { overflow: hidden; color: var(--muted-foreground); font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+  @keyframes dash-in {
+    from {
+      opacity: 0;
+      translate: 0 0.5rem;
+    }
   }
-  .dash-dot { display: inline-block; width: 0.4375rem; height: 0.4375rem; margin-inline-end: 0.375rem; border-radius: 50%; background: var(--muted-foreground);
-    &amp;[data-status="paid"] { background: #16a34a; }
-    &amp;[data-status="pending"] { background: #d97706; }
-    &amp;[data-status="shipped"] { background: #2563eb; }
-    &amp;[data-status="refunded"] { background: var(--destructive); }
+  .dash-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    &amp; h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+    &amp; p {
+      margin: 0.25rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
   }
-  .dash-num { text-align: end; font-variant-numeric: tabular-nums; }
-  .dash-muted { color: var(--muted-foreground); }
-  .dash-mono { font-family: var(--font-mono); font-size: 0.8125rem; }
-  .dash-row-actions { width: 2.5rem; text-align: end; }
-  .dash-check { width: 2.5rem; }
-  .dash-bars { display: grid; gap: 0.875rem; margin: 0; padding: 0; list-style: none;
-    &amp; li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.375rem 1rem; font-size: 0.875rem; }
-    &amp; b { font-weight: 600; font-variant-numeric: tabular-nums; }
-    &amp; progress { grid-column: 1 / -1; width: 100%; height: 0.375rem; }
+  .dash-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .dash-feed { display: grid; gap: 0.875rem; margin: 0; padding: 0; list-style: none;
-    &amp; li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.75rem; align-items: start; font-size: 0.875rem; }
-    &amp; p { margin: 0; line-height: 1.4; }
-    &amp; time { display: block; color: var(--muted-foreground); font-size: 0.75rem; }
+  .dash-card {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-xs);
   }
-  .dash-feed-icon { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--chart-1) 14%, transparent); color: var(--chart-1);
-    &amp;[data-tone="2"] { background: color-mix(in oklch, var(--chart-2) 14%, transparent); color: var(--chart-2); }
-    &amp;[data-tone="3"] { background: color-mix(in oklch, var(--chart-3) 14%, transparent); color: var(--chart-3); }
-    &amp; svg { width: 1rem; height: 1rem; }
+  .dash-card-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    &amp; h2 {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+    &amp; p {
+      margin: 0.125rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+    }
+  }
+  .dash-kpis {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .dash-kpi {
+    gap: 0.25rem;
+    padding-block-end: 0;
+    overflow: hidden;
+  }
+  .dash-kpi-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    &amp; p {
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &amp; svg {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+  .dash-kpi-value {
+    margin: 0.25rem 0 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .dash-kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+    overflow: hidden;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .dash-spark {
+    display: block;
+    width: calc(100% + 2.5rem);
+    height: 2.75rem;
+    margin: 0.5rem -1.25rem 0;
+  }
+  .dash-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .dash-stack {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+  .dash-chart {
+    width: 100%;
+    height: 18rem;
+  }
+  .dash-who {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+    &amp; div {
+      display: grid;
+      min-width: 0;
+      line-height: 1.3;
+    }
+    &amp; strong {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    &amp; span {
+      overflow: hidden;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  .dash-dot {
+    display: inline-block;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    margin-inline-end: 0.375rem;
+    border-radius: 50%;
+    background: var(--muted-foreground);
+    &amp;[data-status='paid'] {
+      background: #16a34a;
+    }
+    &amp;[data-status='pending'] {
+      background: #d97706;
+    }
+    &amp;[data-status='shipped'] {
+      background: #2563eb;
+    }
+    &amp;[data-status='refunded'] {
+      background: var(--destructive);
+    }
+  }
+  .dash-num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+  .dash-muted {
+    color: var(--muted-foreground);
+  }
+  .dash-mono {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+  .dash-row-actions {
+    width: 2.5rem;
+    text-align: end;
+  }
+  .dash-check {
+    width: 2.5rem;
+  }
+  .dash-bars {
+    display: grid;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    &amp; li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.375rem 1rem;
+      font-size: 0.875rem;
+    }
+    &amp; b {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    &amp; progress {
+      grid-column: 1 / -1;
+      width: 100%;
+      height: 0.375rem;
+    }
+  }
+  .dash-feed {
+    display: grid;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    &amp; li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: start;
+      font-size: 0.875rem;
+    }
+    &amp; p {
+      margin: 0;
+      line-height: 1.4;
+    }
+    &amp; time {
+      display: block;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+  }
+  .dash-feed-icon {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--chart-1) 14%, transparent);
+    color: var(--chart-1);
+    &amp;[data-tone='2'] {
+      background: color-mix(in oklch, var(--chart-2) 14%, transparent);
+      color: var(--chart-2);
+    }
+    &amp;[data-tone='3'] {
+      background: color-mix(in oklch, var(--chart-3) 14%, transparent);
+      color: var(--chart-3);
+    }
+    &amp; svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
-  .dash-table-card { padding: 0; gap: 0; overflow: clip;
-    &amp; .table-container { border: 0; border-radius: 0; }
+  .dash-table-card {
+    padding: 0;
+    gap: 0;
+    overflow: clip;
+    &amp; .table-container {
+      border: 0;
+      border-radius: 0;
+    }
   }
-  .dash-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.875rem 1rem; border-block-end: 1px solid var(--border);
-    &amp; .select { width: auto; }
+  .dash-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-block-end: 1px solid var(--border);
+    &amp; .select {
+      width: auto;
+    }
   }
-  .dash-filter { position: relative; flex: 1 1 14rem; max-width: 20rem;
-    &amp; svg { position: absolute; inset-inline-start: 0.75rem; top: 50%; translate: 0 -50%; width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
-    &amp; .input { padding-inline-start: 2.25rem; }
+  .dash-filter {
+    position: relative;
+    flex: 1 1 14rem;
+    max-width: 20rem;
+    &amp; svg {
+      position: absolute;
+      inset-inline-start: 0.75rem;
+      top: 50%;
+      translate: 0 -50%;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+      pointer-events: none;
+    }
+    &amp; .input {
+      padding-inline-start: 2.25rem;
+    }
   }
   /* the bulk bar floats over the bottom of the scroll area while rows are
      checked (:has - no script); the wiring only writes the count */
-  .dash-bulk { position: sticky; bottom: 1rem; z-index: 4; display: none; align-items: center; gap: 0.5rem; width: fit-content; margin: 0.75rem auto; padding: 0.375rem 0.375rem 0.375rem 0.875rem; border-radius: 999px; background: var(--foreground); color: var(--background); box-shadow: var(--shadow-xl); font-size: 0.8125rem; font-weight: 600; animation: dash-in 200ms ease both;
-    &amp; .btn { border-radius: 999px; }
-    &amp; &gt; svg { width: 1rem; height: 1rem; }
-    &amp; .btn { color: inherit; }
-    &amp; .btn[data-variant="outline"] { border-color: color-mix(in oklch, var(--background) 30%, transparent); background: transparent; }
+  .dash-bulk {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 4;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    margin: 0.75rem auto;
+    padding: 0.375rem 0.375rem 0.375rem 0.875rem;
+    border-radius: 999px;
+    background: var(--foreground);
+    color: var(--background);
+    box-shadow: var(--shadow-xl);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    animation: dash-in 200ms ease both;
+    &amp; .btn {
+      border-radius: 999px;
+    }
+    &amp; &gt; svg {
+      width: 1rem;
+      height: 1rem;
+    }
+    &amp; .btn {
+      color: inherit;
+    }
+    &amp; .btn[data-variant='outline'] {
+      border-color: color-mix(in oklch, var(--background) 30%, transparent);
+      background: transparent;
+    }
   }
   /* shown while orders are selected (the wiring follows the grid's store) */
-  .dash-bulk:not([hidden]) { display: flex; }
+  .dash-bulk:not([hidden]) {
+    display: flex;
+  }
   /* the orders grid sits flush in its card; rows are tall enough for an avatar */
-  .dash-grid { --data-grid-row-height: 48px; height: 46rem; border: 0; border-radius: 0; background: transparent; }
-  .dash-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.75rem 1rem; border-block-start: 1px solid var(--border); font-size: 0.8125rem; }
-  .dash-empty { justify-items: center; padding-block: 3rem; text-align: center;
-    &amp; &gt; span { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--muted); }
-    &amp; h2 { margin: 0; font-size: 1.0625rem; }
-    &amp; p { margin: 0; color: var(--muted-foreground); }
+  .dash-grid {
+    --data-grid-row-height: 48px;
+    height: 46rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
-  .dash-people { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+  .dash-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-block-start: 1px solid var(--border);
+    font-size: 0.8125rem;
+  }
+  .dash-empty {
+    justify-items: center;
+    padding-block: 3rem;
+    text-align: center;
+    &amp; &gt; span {
+      display: grid;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    &amp; h2 {
+      margin: 0;
+      font-size: 1.0625rem;
+    }
+    &amp; p {
+      margin: 0;
+      color: var(--muted-foreground);
+    }
+  }
+  .dash-people {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+  }
   .dash-person {
-    &amp; h2 { margin: 0; font-size: 1rem; font-weight: 600; }
-    &amp; p { display: flex; align-items: center; gap: 0.25rem; margin: 0.125rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
-    &amp; p svg { width: 0.875rem; height: 0.875rem; }
+    &amp; h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    &amp; p {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin: 0.125rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+    }
+    &amp; p svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
   }
-  .dash-person-top { display: flex; align-items: start; justify-content: space-between; }
-  .dash-person-stats { display: grid; grid-template-columns: 1fr 1fr; margin: 0; padding-block: 0.75rem; border-block: 1px solid var(--border);
-    &amp; div { display: grid; }
-    &amp; dt { color: var(--muted-foreground); font-size: 0.75rem; }
-    &amp; dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dash-person-top {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
   }
-  .dash-person-actions { display: flex; gap: 0.5rem; }
-  .dash-form { padding: 0; gap: 0; }
-  .dash-form-row { display: grid; gap: 1rem 2rem; padding: 1.25rem; border-block-end: 1px solid var(--border);
-    &amp; h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
-    &amp; p { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  .dash-person-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    padding-block: 0.75rem;
+    border-block: 1px solid var(--border);
+    &amp; div {
+      display: grid;
+    }
+    &amp; dt {
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+    &amp; dd {
+      margin: 0;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
   }
-  .dash-form-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 1rem; max-width: 40rem; }
-  .dash-switches { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
-  .dash-field { display: grid; gap: 0.375rem; align-content: start; margin: 0; padding: 0; border: 0; min-width: 0; }
-  .dash-key { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
-    &amp; code { padding: 0.375rem 0.625rem; border-radius: var(--radius-md); background: var(--muted); font-family: var(--font-mono); font-size: 0.8125rem; }
+  .dash-person-actions {
+    display: flex;
+    gap: 0.5rem;
   }
-  .dash-form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.25rem; }
-  .dash-danger { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; border-color: color-mix(in oklab, var(--destructive) 40%, var(--border));
-    &amp; h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
-    &amp; p { margin: 0.25rem 0 0; color: var(--muted-foreground); font-size: 0.8125rem; }
+  .dash-form {
+    padding: 0;
+    gap: 0;
   }
-  .dash-sheet-body { display: grid; gap: 1rem; }
-  .dash-ship { gap: 0.5rem;
-    &amp; label { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-lg); cursor: pointer; }
-    &amp; label:has(:checked) { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
-    &amp; span { display: grid; }
-    &amp; small { color: var(--muted-foreground); }
+  .dash-form-row {
+    display: grid;
+    gap: 1rem 2rem;
+    padding: 1.25rem;
+    border-block-end: 1px solid var(--border);
+    &amp; h2 {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+    &amp; p {
+      margin: 0.25rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+    }
+  }
+  .dash-form-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 1rem;
+    max-width: 40rem;
+  }
+  .dash-switches {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  .dash-field {
+    display: grid;
+    gap: 0.375rem;
+    align-content: start;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .dash-key {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    &amp; code {
+      padding: 0.375rem 0.625rem;
+      border-radius: var(--radius-md);
+      background: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+    }
+  }
+  .dash-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+  }
+  .dash-danger {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    border-color: color-mix(in oklab, var(--destructive) 40%, var(--border));
+    &amp; h2 {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+    &amp; p {
+      margin: 0.25rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+    }
+  }
+  .dash-sheet-body {
+    display: grid;
+    gap: 1rem;
+  }
+  .dash-ship {
+    gap: 0.5rem;
+    &amp; label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+    }
+    &amp; label:has(:checked) {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+    &amp; span {
+      display: grid;
+    }
+    &amp; small {
+      color: var(--muted-foreground);
+    }
   }
 
   @container dash (min-width: 60rem) {
-    .dash-split { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); }
-    .dash-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .dash-form-row { grid-template-columns: 14rem minmax(0, 1fr); }
+    .dash-split {
+      grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+    }
+    .dash-kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .dash-form-row {
+      grid-template-columns: 14rem minmax(0, 1fr);
+    }
   }
   @container dash (max-width: 44rem) {
-    .dash .app-sidebar { display: none; }
-    .dash-mobile-trigger { display: inline-flex; }
-    .dash-topbar .sidebar-trigger:not(.dash-mobile-trigger) { display: none; }
-    .dash-search span, .dash-search .kbd { display: none; }
-    .dash-search { width: 2.25rem; padding: 0; justify-content: center; }
-    .dash-view { padding: 1rem; }
+    .dash .app-sidebar {
+      display: none;
+    }
+    .dash-mobile-trigger {
+      display: inline-flex;
+    }
+    .dash-topbar .sidebar-trigger:not(.dash-mobile-trigger) {
+      display: none;
+    }
+    .dash-search span,
+    .dash-search .kbd {
+      display: none;
+    }
+    .dash-search {
+      width: 2.25rem;
+      padding: 0;
+      justify-content: center;
+    }
+    .dash-view {
+      padding: 1rem;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .dash-view:target, .dash-views:not(:has(.dash-view:target)) &gt; .dash-view[data-default], .dash-bulk { animation: none; }
+    .dash-view:target,
+    .dash-views:not(:has(.dash-view:target)) &gt; .dash-view[data-default],
+    .dash-bulk {
+      animation: none;
+    }
   }
 &lt;/style&gt;
 &lt;div class="dash" data-dash&gt;
   &lt;aside class="app-sidebar" id="dash-sidebar" data-state="expanded" aria-label="Main navigation"&gt;
     &lt;div class="sidebar-header"&gt;
-      &lt;button class="dash-workspace" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-ws" data-dropdown-trigger="dash-ws"&gt;
-        &lt;span class="dash-logo"&gt;&lt;svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/&gt;&lt;/svg&gt;&lt;/span&gt;
+      &lt;button
+        class="dash-workspace"
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls="dash-ws"
+        data-dropdown-trigger="dash-ws"
+      &gt;
+        &lt;span class="dash-logo"
+          &gt;&lt;svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.25"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          &gt;
+            &lt;polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /&gt;&lt;/svg
+        &gt;&lt;/span&gt;
         &lt;span class="dash-workspace-text"&gt;&lt;strong&gt;Acme Inc.&lt;/strong&gt;&lt;small&gt;Enterprise&lt;/small&gt;&lt;/span&gt;
         &lt;i data-lucide="chevrons-up-down"&gt;&lt;/i&gt;
       &lt;/button&gt;
       &lt;div id="dash-ws" role="menu" popover class="dropdown-content" aria-label="Workspaces"&gt;
-        &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;span class="dash-logo" data-size="sm"&gt;&lt;svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/&gt;&lt;/svg&gt;&lt;/span&gt; Acme Inc. &lt;span class="dropdown-shortcut"&gt;⌘1&lt;/span&gt;&lt;/button&gt;
-        &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;span class="dash-logo" data-size="sm" data-tone="2"&gt;G&lt;/span&gt; Globex &lt;span class="dropdown-shortcut"&gt;⌘2&lt;/span&gt;&lt;/button&gt;
+        &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+          &gt;&lt;span class="dash-logo" data-size="sm"
+            &gt;&lt;svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            &gt;
+              &lt;polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /&gt;&lt;/svg
+          &gt;&lt;/span&gt;
+          Acme Inc. &lt;span class="dropdown-shortcut"&gt;⌘1&lt;/span&gt;&lt;/button
+        &gt;
+        &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+          &gt;&lt;span class="dash-logo" data-size="sm" data-tone="2"&gt;G&lt;/span&gt; Globex
+          &lt;span class="dropdown-shortcut"&gt;⌘2&lt;/span&gt;&lt;/button
+        &gt;
         &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
         &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; Add workspace&lt;/button&gt;
       &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class="sidebar-content"&gt;
       &lt;details class="sidebar-group" open&gt;
-          &lt;summary&gt;&lt;span&gt;Platform&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
-          &lt;nav class="sidebar-nav" aria-label="Platform"&gt;
-            &lt;a class="sidebar-link" href="#overview" aria-current="page"&gt;&lt;i data-lucide="layout-dashboard"&gt;&lt;/i&gt;&lt;span&gt;Overview&lt;/span&gt;&lt;/a&gt;
-            &lt;a class="sidebar-link" href="#orders"&gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt;&lt;span&gt;Orders&lt;/span&gt;&lt;span class="sidebar-badge"&gt;12&lt;/span&gt;&lt;/a&gt;
-            &lt;a class="sidebar-link" href="#customers"&gt;&lt;i data-lucide="users"&gt;&lt;/i&gt;&lt;span&gt;Customers&lt;/span&gt;&lt;/a&gt;
-            &lt;details class="sidebar-submenu"&gt;
-              &lt;summary&gt;&lt;i data-lucide="chart-column"&gt;&lt;/i&gt;&lt;span&gt;Analytics&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
-              &lt;nav class="sidebar-nav" aria-label="Analytics"&gt;
-                &lt;a class="sidebar-link" href="#overview" data-alias="d"&gt;&lt;span&gt;Traffic&lt;/span&gt;&lt;/a&gt;
-                &lt;a class="sidebar-link" href="#overview" data-alias="d"&gt;&lt;span&gt;Conversion&lt;/span&gt;&lt;/a&gt;
-              &lt;/nav&gt;
-            &lt;/details&gt;
-          &lt;/nav&gt;
-        &lt;/details&gt;
-        &lt;details class="sidebar-group" open&gt;
-          &lt;summary&gt;&lt;span&gt;Workspace&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
-          &lt;nav class="sidebar-nav" aria-label="Workspace"&gt;
-            &lt;a class="sidebar-link" href="#settings"&gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt;&lt;span&gt;Settings&lt;/span&gt;&lt;/a&gt;
-            &lt;a class="sidebar-link" href="#settings" data-alias="d"&gt;&lt;i data-lucide="credit-card"&gt;&lt;/i&gt;&lt;span&gt;Billing&lt;/span&gt;&lt;/a&gt;
-          &lt;/nav&gt;
-        &lt;/details&gt;
+        &lt;summary&gt;&lt;span&gt;Platform&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
+        &lt;nav class="sidebar-nav" aria-label="Platform"&gt;
+          &lt;a class="sidebar-link" href="#overview" aria-current="page"
+            &gt;&lt;i data-lucide="layout-dashboard"&gt;&lt;/i&gt;&lt;span&gt;Overview&lt;/span&gt;&lt;/a
+          &gt;
+          &lt;a class="sidebar-link" href="#orders"
+            &gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt;&lt;span&gt;Orders&lt;/span&gt;&lt;span class="sidebar-badge"&gt;12&lt;/span&gt;&lt;/a
+          &gt;
+          &lt;a class="sidebar-link" href="#customers"&gt;&lt;i data-lucide="users"&gt;&lt;/i&gt;&lt;span&gt;Customers&lt;/span&gt;&lt;/a&gt;
+          &lt;details class="sidebar-submenu"&gt;
+            &lt;summary
+              &gt;&lt;i data-lucide="chart-column"&gt;&lt;/i&gt;&lt;span&gt;Analytics&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i
+            &gt;&lt;/summary&gt;
+            &lt;nav class="sidebar-nav" aria-label="Analytics"&gt;
+              &lt;a class="sidebar-link" href="#overview" data-alias="d"&gt;&lt;span&gt;Traffic&lt;/span&gt;&lt;/a&gt;
+              &lt;a class="sidebar-link" href="#overview" data-alias="d"&gt;&lt;span&gt;Conversion&lt;/span&gt;&lt;/a&gt;
+            &lt;/nav&gt;
+          &lt;/details&gt;
+        &lt;/nav&gt;
+      &lt;/details&gt;
+      &lt;details class="sidebar-group" open&gt;
+        &lt;summary&gt;&lt;span&gt;Workspace&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
+        &lt;nav class="sidebar-nav" aria-label="Workspace"&gt;
+          &lt;a class="sidebar-link" href="#settings"&gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt;&lt;span&gt;Settings&lt;/span&gt;&lt;/a&gt;
+          &lt;a class="sidebar-link" href="#settings" data-alias="d"
+            &gt;&lt;i data-lucide="credit-card"&gt;&lt;/i&gt;&lt;span&gt;Billing&lt;/span&gt;&lt;/a
+          &gt;
+        &lt;/nav&gt;
+      &lt;/details&gt;
     &lt;/div&gt;
     &lt;div class="sidebar-footer"&gt;
       &lt;div class="dash-usage"&gt;
         &lt;div&gt;&lt;strong&gt;Storage&lt;/strong&gt;&lt;span&gt;7.2 of 10 GB&lt;/span&gt;&lt;/div&gt;
         &lt;progress class="progress" value="72" max="100" aria-label="Storage used: 72%"&gt;72%&lt;/progress&gt;
-        &lt;a class="btn" data-variant="outline" data-size="sm" href="#settings"&gt;&lt;i data-lucide="sparkles"&gt;&lt;/i&gt; Upgrade plan&lt;/a&gt;
+        &lt;a class="btn" data-variant="outline" data-size="sm" href="#settings"
+          &gt;&lt;i data-lucide="sparkles"&gt;&lt;/i&gt; Upgrade plan&lt;/a
+        &gt;
       &lt;/div&gt;
-      &lt;button class="dash-user" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-user-menu" data-dropdown-trigger="dash-user-menu"&gt;
-        &lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt=""&gt;&lt;/span&gt;
+      &lt;button
+        class="dash-user"
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls="dash-user-menu"
+        data-dropdown-trigger="dash-user-menu"
+      &gt;
+        &lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt="" /&gt;&lt;/span&gt;
         &lt;span class="dash-workspace-text"&gt;&lt;strong&gt;Aron Homberg&lt;/strong&gt;&lt;small&gt;aron@acme.com&lt;/small&gt;&lt;/span&gt;
         &lt;i data-lucide="chevrons-up-down"&gt;&lt;/i&gt;
       &lt;/button&gt;
       &lt;div id="dash-user-menu" role="menu" popover class="dropdown-content" aria-label="Account"&gt;
         &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="user"&gt;&lt;/i&gt; Profile&lt;/button&gt;
         &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="credit-card"&gt;&lt;/i&gt; Billing&lt;/button&gt;
-        &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-go="settings"&gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt; Settings &lt;span class="dropdown-shortcut"&gt;⌘,&lt;/span&gt;&lt;/button&gt;
+        &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-go="settings"
+          &gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt; Settings &lt;span class="dropdown-shortcut"&gt;⌘,&lt;/span&gt;&lt;/button
+        &gt;
         &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
         &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="log-out"&gt;&lt;/i&gt; Log out&lt;/button&gt;
       &lt;/div&gt;
@@ -256,155 +954,665 @@
     &lt;button class="sidebar-mobile-close" aria-label="Close navigation"&gt;&lt;i data-lucide="x"&gt;&lt;/i&gt;&lt;/button&gt;
     &lt;div class="sidebar-content"&gt;
       &lt;details class="sidebar-group" open&gt;
-          &lt;summary&gt;&lt;span&gt;Platform&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
-          &lt;nav class="sidebar-nav" aria-label="Platform"&gt;
-            &lt;a class="sidebar-link" href="#overview" aria-current="page"&gt;&lt;i data-lucide="layout-dashboard"&gt;&lt;/i&gt;&lt;span&gt;Overview&lt;/span&gt;&lt;/a&gt;
-            &lt;a class="sidebar-link" href="#orders"&gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt;&lt;span&gt;Orders&lt;/span&gt;&lt;span class="sidebar-badge"&gt;12&lt;/span&gt;&lt;/a&gt;
-            &lt;a class="sidebar-link" href="#customers"&gt;&lt;i data-lucide="users"&gt;&lt;/i&gt;&lt;span&gt;Customers&lt;/span&gt;&lt;/a&gt;
-            &lt;details class="sidebar-submenu"&gt;
-              &lt;summary&gt;&lt;i data-lucide="chart-column"&gt;&lt;/i&gt;&lt;span&gt;Analytics&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
-              &lt;nav class="sidebar-nav" aria-label="Analytics"&gt;
-                &lt;a class="sidebar-link" href="#overview" data-alias="m"&gt;&lt;span&gt;Traffic&lt;/span&gt;&lt;/a&gt;
-                &lt;a class="sidebar-link" href="#overview" data-alias="m"&gt;&lt;span&gt;Conversion&lt;/span&gt;&lt;/a&gt;
-              &lt;/nav&gt;
-            &lt;/details&gt;
-          &lt;/nav&gt;
-        &lt;/details&gt;
-        &lt;details class="sidebar-group" open&gt;
-          &lt;summary&gt;&lt;span&gt;Workspace&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
-          &lt;nav class="sidebar-nav" aria-label="Workspace"&gt;
-            &lt;a class="sidebar-link" href="#settings"&gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt;&lt;span&gt;Settings&lt;/span&gt;&lt;/a&gt;
-            &lt;a class="sidebar-link" href="#settings" data-alias="m"&gt;&lt;i data-lucide="credit-card"&gt;&lt;/i&gt;&lt;span&gt;Billing&lt;/span&gt;&lt;/a&gt;
-          &lt;/nav&gt;
-        &lt;/details&gt;
+        &lt;summary&gt;&lt;span&gt;Platform&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
+        &lt;nav class="sidebar-nav" aria-label="Platform"&gt;
+          &lt;a class="sidebar-link" href="#overview" aria-current="page"
+            &gt;&lt;i data-lucide="layout-dashboard"&gt;&lt;/i&gt;&lt;span&gt;Overview&lt;/span&gt;&lt;/a
+          &gt;
+          &lt;a class="sidebar-link" href="#orders"
+            &gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt;&lt;span&gt;Orders&lt;/span&gt;&lt;span class="sidebar-badge"&gt;12&lt;/span&gt;&lt;/a
+          &gt;
+          &lt;a class="sidebar-link" href="#customers"&gt;&lt;i data-lucide="users"&gt;&lt;/i&gt;&lt;span&gt;Customers&lt;/span&gt;&lt;/a&gt;
+          &lt;details class="sidebar-submenu"&gt;
+            &lt;summary
+              &gt;&lt;i data-lucide="chart-column"&gt;&lt;/i&gt;&lt;span&gt;Analytics&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i
+            &gt;&lt;/summary&gt;
+            &lt;nav class="sidebar-nav" aria-label="Analytics"&gt;
+              &lt;a class="sidebar-link" href="#overview" data-alias="m"&gt;&lt;span&gt;Traffic&lt;/span&gt;&lt;/a&gt;
+              &lt;a class="sidebar-link" href="#overview" data-alias="m"&gt;&lt;span&gt;Conversion&lt;/span&gt;&lt;/a&gt;
+            &lt;/nav&gt;
+          &lt;/details&gt;
+        &lt;/nav&gt;
+      &lt;/details&gt;
+      &lt;details class="sidebar-group" open&gt;
+        &lt;summary&gt;&lt;span&gt;Workspace&lt;/span&gt;&lt;i data-lucide="chevron-right"&gt;&lt;/i&gt;&lt;/summary&gt;
+        &lt;nav class="sidebar-nav" aria-label="Workspace"&gt;
+          &lt;a class="sidebar-link" href="#settings"&gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt;&lt;span&gt;Settings&lt;/span&gt;&lt;/a&gt;
+          &lt;a class="sidebar-link" href="#settings" data-alias="m"
+            &gt;&lt;i data-lucide="credit-card"&gt;&lt;/i&gt;&lt;span&gt;Billing&lt;/span&gt;&lt;/a
+          &gt;
+        &lt;/nav&gt;
+      &lt;/details&gt;
     &lt;/div&gt;
   &lt;/dialog&gt;
 
   &lt;div class="dash-main"&gt;
     &lt;header class="dash-topbar"&gt;
-      &lt;button class="sidebar-trigger" data-sidebar-trigger="dash-sidebar" aria-label="Toggle sidebar"&gt;&lt;i data-lucide="panel-left"&gt;&lt;/i&gt;&lt;/button&gt;
-      &lt;button class="sidebar-trigger dash-mobile-trigger" data-sidebar-mobile="dash-mobile-nav" aria-label="Open navigation"&gt;&lt;i data-lucide="menu"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;button class="sidebar-trigger" data-sidebar-trigger="dash-sidebar" aria-label="Toggle sidebar"
+        &gt;&lt;i data-lucide="panel-left"&gt;&lt;/i
+      &gt;&lt;/button&gt;
+      &lt;button
+        class="sidebar-trigger dash-mobile-trigger"
+        data-sidebar-mobile="dash-mobile-nav"
+        aria-label="Open navigation"
+        &gt;&lt;i data-lucide="menu"&gt;&lt;/i
+      &gt;&lt;/button&gt;
       &lt;nav class="breadcrumb" aria-label="Breadcrumb"&gt;
         &lt;ol class="breadcrumb-list"&gt;
           &lt;li class="breadcrumb-item"&gt;&lt;a class="breadcrumb-link" href="#overview"&gt;Acme&lt;/a&gt;&lt;/li&gt;
           &lt;li class="breadcrumb-separator" aria-hidden="true"&gt;/&lt;/li&gt;
-          &lt;li class="breadcrumb-item"&gt;&lt;span class="breadcrumb-page" aria-current="page" data-dash-crumb&gt;Overview&lt;/span&gt;&lt;/li&gt;
+          &lt;li class="breadcrumb-item"
+            &gt;&lt;span class="breadcrumb-page" aria-current="page" data-dash-crumb&gt;Overview&lt;/span&gt;&lt;/li
+          &gt;
         &lt;/ol&gt;
       &lt;/nav&gt;
-      &lt;button class="dash-search" type="button" data-command-trigger="dash-cmd"&gt;&lt;i data-lucide="search"&gt;&lt;/i&gt;&lt;span&gt;Search or jump to…&lt;/span&gt;&lt;kbd class="kbd"&gt;⌘K&lt;/kbd&gt;&lt;/button&gt;
-      &lt;button class="btn dash-bell" data-variant="ghost" data-size="icon" type="button" popovertarget="dash-notes" aria-label="Notifications, 3 unread"&gt;&lt;i data-lucide="bell"&gt;&lt;/i&gt;&lt;span class="dash-bell-dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;/button&gt;
+      &lt;button class="dash-search" type="button" data-command-trigger="dash-cmd"
+        &gt;&lt;i data-lucide="search"&gt;&lt;/i&gt;&lt;span&gt;Search or jump to…&lt;/span&gt;&lt;kbd class="kbd"&gt;⌘K&lt;/kbd&gt;&lt;/button
+      &gt;
+      &lt;button
+        class="btn dash-bell"
+        data-variant="ghost"
+        data-size="icon"
+        type="button"
+        popovertarget="dash-notes"
+        aria-label="Notifications, 3 unread"
+        &gt;&lt;i data-lucide="bell"&gt;&lt;/i&gt;&lt;span class="dash-bell-dot" aria-hidden="true"&gt;&lt;/span
+      &gt;&lt;/button&gt;
       &lt;div class="popover dash-notes" id="dash-notes" popover&gt;
-        &lt;div class="popover-header dash-notes-head"&gt;&lt;p class="popover-title"&gt;Notifications&lt;/p&gt;&lt;button class="btn" data-variant="ghost" data-size="xs" type="button" data-toast="All notifications marked as read"&gt;Mark all read&lt;/button&gt;&lt;/div&gt;
+        &lt;div class="popover-header dash-notes-head"
+          &gt;&lt;p class="popover-title"&gt;Notifications&lt;/p
+          &gt;&lt;button
+            class="btn"
+            data-variant="ghost"
+            data-size="xs"
+            type="button"
+            data-toast="All notifications marked as read"
+            &gt;Mark all read&lt;/button
+          &gt;&lt;/div
+        &gt;
         &lt;ul class="dash-notes-list"&gt;
-          &lt;li data-unread&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""&gt;&lt;/span&gt;&lt;p&gt;&lt;strong&gt;Marco Rossi&lt;/strong&gt; placed order &lt;a href="#orders"&gt;#A-20480&lt;/a&gt;&lt;time datetime="2026-10-02T11:05"&gt;2h ago&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
-          &lt;li data-unread&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;AI&lt;/span&gt;&lt;/span&gt;&lt;p&gt;Weekly report is ready - revenue &lt;strong&gt;+12.4%&lt;/strong&gt;&lt;time datetime="2026-10-02T08:00"&gt;5h ago&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
-          &lt;li data-unread&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""&gt;&lt;/span&gt;&lt;p&gt;&lt;strong&gt;Hannah Lee&lt;/strong&gt; requested a refund&lt;time datetime="2026-10-01T16:20"&gt;Yesterday&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt=""&gt;&lt;/span&gt;&lt;p&gt;&lt;strong&gt;Sophie Tan&lt;/strong&gt; joined the workspace&lt;time datetime="2026-09-30"&gt;2d ago&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
+          &lt;li data-unread
+            &gt;&lt;span class="avatar" data-size="sm"
+              &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt="" /&gt;&lt;/span
+            &gt;&lt;p
+              &gt;&lt;strong&gt;Marco Rossi&lt;/strong&gt; placed order &lt;a href="#orders"&gt;#A-20480&lt;/a
+              &gt;&lt;time datetime="2026-10-02T11:05"&gt;2h ago&lt;/time&gt;&lt;/p
+            &gt;&lt;/li
+          &gt;
+          &lt;li data-unread
+            &gt;&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;AI&lt;/span&gt;&lt;/span
+            &gt;&lt;p
+              &gt;Weekly report is ready - revenue &lt;strong&gt;+12.4%&lt;/strong
+              &gt;&lt;time datetime="2026-10-02T08:00"&gt;5h ago&lt;/time&gt;&lt;/p
+            &gt;&lt;/li
+          &gt;
+          &lt;li data-unread
+            &gt;&lt;span class="avatar" data-size="sm"
+              &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /&gt;&lt;/span
+            &gt;&lt;p&gt;&lt;strong&gt;Hannah Lee&lt;/strong&gt; requested a refund&lt;time datetime="2026-10-01T16:20"&gt;Yesterday&lt;/time&gt;&lt;/p&gt;&lt;/li
+          &gt;
+          &lt;li
+            &gt;&lt;span class="avatar" data-size="sm"
+              &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt="" /&gt;&lt;/span
+            &gt;&lt;p&gt;&lt;strong&gt;Sophie Tan&lt;/strong&gt; joined the workspace&lt;time datetime="2026-09-30"&gt;2d ago&lt;/time&gt;&lt;/p&gt;&lt;/li
+          &gt;
         &lt;/ul&gt;
       &lt;/div&gt;
-      &lt;button class="btn" data-variant="ghost" data-size="icon" type="button" data-dash-theme aria-label="Toggle dark mode"&gt;&lt;i data-lucide="moon"&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon"
+        type="button"
+        data-dash-theme
+        aria-label="Toggle dark mode"
+        &gt;&lt;i data-lucide="moon"&gt;&lt;/i
+      &gt;&lt;/button&gt;
     &lt;/header&gt;
 
     &lt;main class="dash-scroll"&gt;
       &lt;div class="dash-views"&gt;
-
         &lt;!-- Overview --&gt;
         &lt;section class="dash-view" id="overview" data-default aria-labelledby="dash-h-overview"&gt;
           &lt;div class="dash-head"&gt;
-            &lt;div&gt;&lt;h1 id="dash-h-overview"&gt;Good afternoon, Anna&lt;/h1&gt;&lt;p&gt;Here's what happened in your store this month.&lt;/p&gt;&lt;/div&gt;
+            &lt;div
+              &gt;&lt;h1 id="dash-h-overview"&gt;Good afternoon, Anna&lt;/h1
+              &gt;&lt;p&gt;Here's what happened in your store this month.&lt;/p&gt;&lt;/div
+            &gt;
             &lt;div class="dash-actions"&gt;
               &lt;div class="toggle-group" role="group" aria-label="Period" data-type="single" data-dash-period&gt;
                 &lt;button class="toggle" aria-pressed="false" value="7d"&gt;7d&lt;/button&gt;
                 &lt;button class="toggle" aria-pressed="true" value="30d"&gt;30d&lt;/button&gt;
                 &lt;button class="toggle" aria-pressed="false" value="12m"&gt;12m&lt;/button&gt;
               &lt;/div&gt;
-              &lt;button class="btn" data-variant="outline" type="button" data-toast="Report exported" data-toast-desc="acme-september.csv is in your downloads"&gt;&lt;i data-lucide="download"&gt;&lt;/i&gt; Export&lt;/button&gt;
-              &lt;button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"&gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; New order&lt;/button&gt;
+              &lt;button
+                class="btn"
+                data-variant="outline"
+                type="button"
+                data-toast="Report exported"
+                data-toast-desc="acme-september.csv is in your downloads"
+                &gt;&lt;i data-lucide="download"&gt;&lt;/i&gt; Export&lt;/button
+              &gt;
+              &lt;button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"
+                &gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; New order&lt;/button
+              &gt;
             &lt;/div&gt;
           &lt;/div&gt;
 
           &lt;div class="dash-kpis"&gt;
-            &lt;article class="dash-card dash-kpi"&gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;Revenue&lt;/p&gt;&lt;i data-lucide="euro"&gt;&lt;/i&gt;&lt;/div&gt;&lt;p class="dash-kpi-value"&gt;€48,290&lt;/p&gt;&lt;p class="dash-kpi-trend"&gt;&lt;span class="statistic-trend" data-trend="up"&gt;&lt;svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;path d="m5 12 7-7 7 7"/&gt;&lt;path d="M12 19V5"/&gt;&lt;/svg&gt;12.4%&lt;/span&gt;vs. Sep&lt;/p&gt;&lt;svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-1)"&gt;&lt;defs&gt;&lt;linearGradient id="g18" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0" stop-color="currentColor" stop-opacity=".28"/&gt;&lt;stop offset="1" stop-color="currentColor" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;path d="M0 32 L0 24 L13.333333333333334 22 L26.666666666666668 23 L40 18 L53.333333333333336 19 L66.66666666666667 15 L80 13 L93.33333333333333 14 L106.66666666666667 9 L120 6 L120 32 Z" fill="url(#g18)"/&gt;&lt;polyline points="0,24 13.333333333333334,22 26.666666666666668,23 40,18 53.333333333333336,19 66.66666666666667,15 80,13 93.33333333333333,14 106.66666666666667,9 120,6" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/&gt;&lt;/svg&gt;&lt;/article&gt;
-            &lt;article class="dash-card dash-kpi"&gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;Orders&lt;/p&gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt;&lt;/div&gt;&lt;p class="dash-kpi-value"&gt;1,284&lt;/p&gt;&lt;p class="dash-kpi-trend"&gt;&lt;span class="statistic-trend" data-trend="up"&gt;&lt;svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;path d="m5 12 7-7 7 7"/&gt;&lt;path d="M12 19V5"/&gt;&lt;/svg&gt;4.1%&lt;/span&gt;vs. Sep&lt;/p&gt;&lt;svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-2)"&gt;&lt;defs&gt;&lt;linearGradient id="g212" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0" stop-color="currentColor" stop-opacity=".28"/&gt;&lt;stop offset="1" stop-color="currentColor" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;path d="M0 32 L0 20 L13.333333333333334 21 L26.666666666666668 18 L40 19 L53.333333333333336 17 L66.66666666666667 18 L80 15 L93.33333333333333 16 L106.66666666666667 14 L120 13 L120 32 Z" fill="url(#g212)"/&gt;&lt;polyline points="0,20 13.333333333333334,21 26.666666666666668,18 40,19 53.333333333333336,17 66.66666666666667,18 80,15 93.33333333333333,16 106.66666666666667,14 120,13" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/&gt;&lt;/svg&gt;&lt;/article&gt;
-            &lt;article class="dash-card dash-kpi"&gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;New customers&lt;/p&gt;&lt;i data-lucide="user-plus"&gt;&lt;/i&gt;&lt;/div&gt;&lt;p class="dash-kpi-value"&gt;312&lt;/p&gt;&lt;p class="dash-kpi-trend"&gt;&lt;span class="statistic-trend" data-trend="up"&gt;&lt;svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;path d="m5 12 7-7 7 7"/&gt;&lt;path d="M12 19V5"/&gt;&lt;/svg&gt;2.3%&lt;/span&gt;vs. Sep&lt;/p&gt;&lt;svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-3)"&gt;&lt;defs&gt;&lt;linearGradient id="g36" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0" stop-color="currentColor" stop-opacity=".28"/&gt;&lt;stop offset="1" stop-color="currentColor" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;path d="M0 32 L0 26 L13.333333333333334 23 L26.666666666666668 24 L40 22 L53.333333333333336 20 L66.66666666666667 21 L80 19 L93.33333333333333 20 L106.66666666666667 17 L120 16 L120 32 Z" fill="url(#g36)"/&gt;&lt;polyline points="0,26 13.333333333333334,23 26.666666666666668,24 40,22 53.333333333333336,20 66.66666666666667,21 80,19 93.33333333333333,20 106.66666666666667,17 120,16" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/&gt;&lt;/svg&gt;&lt;/article&gt;
-            &lt;article class="dash-card dash-kpi"&gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;Conversion&lt;/p&gt;&lt;i data-lucide="activity"&gt;&lt;/i&gt;&lt;/div&gt;&lt;p class="dash-kpi-value"&gt;3.2%&lt;/p&gt;&lt;p class="dash-kpi-trend"&gt;&lt;span class="statistic-trend" data-trend="down"&gt;&lt;svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"&gt;&lt;path d="M12 5v14"/&gt;&lt;path d="m19 12-7 7-7-7"/&gt;&lt;/svg&gt;0.4%&lt;/span&gt;vs. Sep&lt;/p&gt;&lt;svg class="dash-spark" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true" style="color:var(--chart-4)"&gt;&lt;defs&gt;&lt;linearGradient id="g420" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0" stop-color="currentColor" stop-opacity=".28"/&gt;&lt;stop offset="1" stop-color="currentColor" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;path d="M0 32 L0 12 L13.333333333333334 13 L26.666666666666668 11 L40 14 L53.333333333333336 15 L66.66666666666667 14 L80 16 L93.33333333333333 15 L106.66666666666667 17 L120 16 L120 32 Z" fill="url(#g420)"/&gt;&lt;polyline points="0,12 13.333333333333334,13 26.666666666666668,11 40,14 53.333333333333336,15 66.66666666666667,14 80,16 93.33333333333333,15 106.66666666666667,17 120,16" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/&gt;&lt;/svg&gt;&lt;/article&gt;
+            &lt;article class="dash-card dash-kpi"
+              &gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;Revenue&lt;/p&gt;&lt;i data-lucide="euro"&gt;&lt;/i&gt;&lt;/div
+              &gt;&lt;p class="dash-kpi-value"&gt;€48,290&lt;/p
+              &gt;&lt;p class="dash-kpi-trend"
+                &gt;&lt;span class="statistic-trend" data-trend="up"
+                  &gt;&lt;svg
+                    viewBox="0 0 24 24"
+                    width="12"
+                    height="12"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  &gt;
+                    &lt;path d="m5 12 7-7 7 7" /&gt;
+                    &lt;path d="M12 19V5" /&gt;&lt;/svg
+                  &gt;12.4%&lt;/span
+                &gt;vs. Sep&lt;/p
+              &gt;&lt;svg
+                class="dash-spark"
+                viewBox="0 0 120 32"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                style="color: var(--chart-1)"
+              &gt;
+                &lt;defs&gt;
+                  &lt;linearGradient id="g18" x1="0" x2="0" y1="0" y2="1"&gt;
+                    &lt;stop offset="0" stop-color="currentColor" stop-opacity=".28" /&gt;
+                    &lt;stop offset="1" stop-color="currentColor" stop-opacity="0" /&gt;
+                  &lt;/linearGradient&gt;
+                &lt;/defs&gt;
+                &lt;path
+                  d="M0 32 L0 24 L13.333333333333334 22 L26.666666666666668 23 L40 18 L53.333333333333336 19 L66.66666666666667 15 L80 13 L93.33333333333333 14 L106.66666666666667 9 L120 6 L120 32 Z"
+                  fill="url(#g18)"
+                /&gt;
+                &lt;polyline
+                  points="0,24 13.333333333333334,22 26.666666666666668,23 40,18 53.333333333333336,19 66.66666666666667,15 80,13 93.33333333333333,14 106.66666666666667,9 120,6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  vector-effect="non-scaling-stroke"
+                  stroke-linejoin="round"
+                /&gt;&lt;/svg
+            &gt;&lt;/article&gt;
+            &lt;article class="dash-card dash-kpi"
+              &gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;Orders&lt;/p&gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt;&lt;/div
+              &gt;&lt;p class="dash-kpi-value"&gt;1,284&lt;/p
+              &gt;&lt;p class="dash-kpi-trend"
+                &gt;&lt;span class="statistic-trend" data-trend="up"
+                  &gt;&lt;svg
+                    viewBox="0 0 24 24"
+                    width="12"
+                    height="12"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  &gt;
+                    &lt;path d="m5 12 7-7 7 7" /&gt;
+                    &lt;path d="M12 19V5" /&gt;&lt;/svg
+                  &gt;4.1%&lt;/span
+                &gt;vs. Sep&lt;/p
+              &gt;&lt;svg
+                class="dash-spark"
+                viewBox="0 0 120 32"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                style="color: var(--chart-2)"
+              &gt;
+                &lt;defs&gt;
+                  &lt;linearGradient id="g212" x1="0" x2="0" y1="0" y2="1"&gt;
+                    &lt;stop offset="0" stop-color="currentColor" stop-opacity=".28" /&gt;
+                    &lt;stop offset="1" stop-color="currentColor" stop-opacity="0" /&gt;
+                  &lt;/linearGradient&gt;
+                &lt;/defs&gt;
+                &lt;path
+                  d="M0 32 L0 20 L13.333333333333334 21 L26.666666666666668 18 L40 19 L53.333333333333336 17 L66.66666666666667 18 L80 15 L93.33333333333333 16 L106.66666666666667 14 L120 13 L120 32 Z"
+                  fill="url(#g212)"
+                /&gt;
+                &lt;polyline
+                  points="0,20 13.333333333333334,21 26.666666666666668,18 40,19 53.333333333333336,17 66.66666666666667,18 80,15 93.33333333333333,16 106.66666666666667,14 120,13"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  vector-effect="non-scaling-stroke"
+                  stroke-linejoin="round"
+                /&gt;&lt;/svg
+            &gt;&lt;/article&gt;
+            &lt;article class="dash-card dash-kpi"
+              &gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;New customers&lt;/p&gt;&lt;i data-lucide="user-plus"&gt;&lt;/i&gt;&lt;/div
+              &gt;&lt;p class="dash-kpi-value"&gt;312&lt;/p
+              &gt;&lt;p class="dash-kpi-trend"
+                &gt;&lt;span class="statistic-trend" data-trend="up"
+                  &gt;&lt;svg
+                    viewBox="0 0 24 24"
+                    width="12"
+                    height="12"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  &gt;
+                    &lt;path d="m5 12 7-7 7 7" /&gt;
+                    &lt;path d="M12 19V5" /&gt;&lt;/svg
+                  &gt;2.3%&lt;/span
+                &gt;vs. Sep&lt;/p
+              &gt;&lt;svg
+                class="dash-spark"
+                viewBox="0 0 120 32"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                style="color: var(--chart-3)"
+              &gt;
+                &lt;defs&gt;
+                  &lt;linearGradient id="g36" x1="0" x2="0" y1="0" y2="1"&gt;
+                    &lt;stop offset="0" stop-color="currentColor" stop-opacity=".28" /&gt;
+                    &lt;stop offset="1" stop-color="currentColor" stop-opacity="0" /&gt;
+                  &lt;/linearGradient&gt;
+                &lt;/defs&gt;
+                &lt;path
+                  d="M0 32 L0 26 L13.333333333333334 23 L26.666666666666668 24 L40 22 L53.333333333333336 20 L66.66666666666667 21 L80 19 L93.33333333333333 20 L106.66666666666667 17 L120 16 L120 32 Z"
+                  fill="url(#g36)"
+                /&gt;
+                &lt;polyline
+                  points="0,26 13.333333333333334,23 26.666666666666668,24 40,22 53.333333333333336,20 66.66666666666667,21 80,19 93.33333333333333,20 106.66666666666667,17 120,16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  vector-effect="non-scaling-stroke"
+                  stroke-linejoin="round"
+                /&gt;&lt;/svg
+            &gt;&lt;/article&gt;
+            &lt;article class="dash-card dash-kpi"
+              &gt;&lt;div class="dash-kpi-top"&gt;&lt;p&gt;Conversion&lt;/p&gt;&lt;i data-lucide="activity"&gt;&lt;/i&gt;&lt;/div
+              &gt;&lt;p class="dash-kpi-value"&gt;3.2%&lt;/p
+              &gt;&lt;p class="dash-kpi-trend"
+                &gt;&lt;span class="statistic-trend" data-trend="down"
+                  &gt;&lt;svg
+                    viewBox="0 0 24 24"
+                    width="12"
+                    height="12"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  &gt;
+                    &lt;path d="M12 5v14" /&gt;
+                    &lt;path d="m19 12-7 7-7-7" /&gt;&lt;/svg
+                  &gt;0.4%&lt;/span
+                &gt;vs. Sep&lt;/p
+              &gt;&lt;svg
+                class="dash-spark"
+                viewBox="0 0 120 32"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                style="color: var(--chart-4)"
+              &gt;
+                &lt;defs&gt;
+                  &lt;linearGradient id="g420" x1="0" x2="0" y1="0" y2="1"&gt;
+                    &lt;stop offset="0" stop-color="currentColor" stop-opacity=".28" /&gt;
+                    &lt;stop offset="1" stop-color="currentColor" stop-opacity="0" /&gt;
+                  &lt;/linearGradient&gt;
+                &lt;/defs&gt;
+                &lt;path
+                  d="M0 32 L0 12 L13.333333333333334 13 L26.666666666666668 11 L40 14 L53.333333333333336 15 L66.66666666666667 14 L80 16 L93.33333333333333 15 L106.66666666666667 17 L120 16 L120 32 Z"
+                  fill="url(#g420)"
+                /&gt;
+                &lt;polyline
+                  points="0,12 13.333333333333334,13 26.666666666666668,11 40,14 53.333333333333336,15 66.66666666666667,14 80,16 93.33333333333333,15 106.66666666666667,17 120,16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  vector-effect="non-scaling-stroke"
+                  stroke-linejoin="round"
+                /&gt;&lt;/svg
+            &gt;&lt;/article&gt;
           &lt;/div&gt;
 
           &lt;div class="dash-split"&gt;
             &lt;article class="dash-card"&gt;
-              &lt;div class="dash-card-head"&gt;&lt;div&gt;&lt;h2&gt;Revenue&lt;/h2&gt;&lt;p&gt;This period vs. the one before&lt;/p&gt;&lt;/div&gt;&lt;span class="badge" data-variant="secondary"&gt;+12.4%&lt;/span&gt;&lt;/div&gt;
-              &lt;div class="chart dash-chart" id="dash-revenue" role="img" aria-label="Revenue per day for the last 30 days, compared with the previous period"
-                   data-chart='{"tooltip":{"trigger":"axis"},"legend":{"top":0,"right":0,"icon":"roundRect"},"grid":{"left":48,"right":12,"top":36,"bottom":28},"xAxis":{"type":"category","boundaryGap":false,"data":["1","3","5","7","9","11","13","15","17","19","21","23","25","27","29"]},"yAxis":{"type":"value","axisLabel":{"formatter":"€{value}"}},"series":[{"id":"now","name":"This period","type":"line","smooth":true,"symbol":"none","areaStyle":{"opacity":0.18},"data":[1180,1320,1240,1510,1460,1680,1720,1590,1850,1930,1870,2110,2240,2190,2420]},{"id":"prev","name":"Previous period","type":"line","smooth":true,"symbol":"none","lineStyle":{"type":"dashed","width":1.5},"data":[1050,1110,1090,1240,1210,1330,1360,1300,1420,1480,1450,1560,1620,1590,1700]}]}'&gt;&lt;/div&gt;
+              &lt;div class="dash-card-head"
+                &gt;&lt;div&gt;&lt;h2&gt;Revenue&lt;/h2&gt;&lt;p&gt;This period vs. the one before&lt;/p&gt;&lt;/div
+                &gt;&lt;span class="badge" data-variant="secondary"&gt;+12.4%&lt;/span&gt;&lt;/div
+              &gt;
+              &lt;div
+                class="chart dash-chart"
+                id="dash-revenue"
+                role="img"
+                aria-label="Revenue per day for the last 30 days, compared with the previous period"
+                data-chart='{"tooltip":{"trigger":"axis"},"legend":{"top":0,"right":0,"icon":"roundRect"},"grid":{"left":48,"right":12,"top":36,"bottom":28},"xAxis":{"type":"category","boundaryGap":false,"data":["1","3","5","7","9","11","13","15","17","19","21","23","25","27","29"]},"yAxis":{"type":"value","axisLabel":{"formatter":"€{value}"}},"series":[{"id":"now","name":"This period","type":"line","smooth":true,"symbol":"none","areaStyle":{"opacity":0.18},"data":[1180,1320,1240,1510,1460,1680,1720,1590,1850,1930,1870,2110,2240,2190,2420]},{"id":"prev","name":"Previous period","type":"line","smooth":true,"symbol":"none","lineStyle":{"type":"dashed","width":1.5},"data":[1050,1110,1090,1240,1210,1330,1360,1300,1420,1480,1450,1560,1620,1590,1700]}]}'
+              &gt;&lt;/div&gt;
             &lt;/article&gt;
             &lt;article class="dash-card"&gt;
-              &lt;div class="dash-card-head"&gt;&lt;div&gt;&lt;h2&gt;Sales by channel&lt;/h2&gt;&lt;p&gt;Share of revenue&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
-              &lt;div class="chart dash-chart" role="img" aria-label="Donut chart: online store 54%, marketplace 26%, retail 14%, wholesale 6%"
-                   data-chart='{"tooltip":{"trigger":"item","valueFormatter":"{value}%"},"legend":{"bottom":0,"icon":"circle","itemGap":14},"series":[{"type":"pie","radius":["50%","70%"],"center":["50%","40%"],"avoidLabelOverlap":true,"label":{"show":false},"itemStyle":{"borderWidth":3,"borderColor":"var(--card)","borderRadius":6},"data":[{"name":"Online store","value":54},{"name":"Marketplace","value":26},{"name":"Retail","value":14},{"name":"Wholesale","value":6}]}]}'&gt;&lt;/div&gt;
+              &lt;div class="dash-card-head"
+                &gt;&lt;div&gt;&lt;h2&gt;Sales by channel&lt;/h2&gt;&lt;p&gt;Share of revenue&lt;/p&gt;&lt;/div&gt;&lt;/div
+              &gt;
+              &lt;div
+                class="chart dash-chart"
+                role="img"
+                aria-label="Donut chart: online store 54%, marketplace 26%, retail 14%, wholesale 6%"
+                data-chart='{"tooltip":{"trigger":"item","valueFormatter":"{value}%"},"legend":{"bottom":0,"icon":"circle","itemGap":14},"series":[{"type":"pie","radius":["50%","70%"],"center":["50%","40%"],"avoidLabelOverlap":true,"label":{"show":false},"itemStyle":{"borderWidth":3,"borderColor":"var(--card)","borderRadius":6},"data":[{"name":"Online store","value":54},{"name":"Marketplace","value":26},{"name":"Retail","value":14},{"name":"Wholesale","value":6}]}]}'
+              &gt;&lt;/div&gt;
             &lt;/article&gt;
           &lt;/div&gt;
 
           &lt;div class="dash-split"&gt;
             &lt;article class="dash-card"&gt;
-              &lt;div class="dash-card-head"&gt;&lt;div&gt;&lt;h2&gt;Recent orders&lt;/h2&gt;&lt;p&gt;The last five orders across all channels&lt;/p&gt;&lt;/div&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;View all &lt;i data-lucide="arrow-right"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/div&gt;
+              &lt;div class="dash-card-head"
+                &gt;&lt;div&gt;&lt;h2&gt;Recent orders&lt;/h2&gt;&lt;p&gt;The last five orders across all channels&lt;/p&gt;&lt;/div
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"
+                  &gt;View all &lt;i data-lucide="arrow-right"&gt;&lt;/i&gt;&lt;/a
+              &gt;&lt;/div&gt;
               &lt;div class="table-container"&gt;
                 &lt;table class="table"&gt;
-                  &lt;thead&gt;&lt;tr class="table-row"&gt;&lt;th class="table-head" scope="col"&gt;Customer&lt;/th&gt;&lt;th class="table-head" scope="col"&gt;Status&lt;/th&gt;&lt;th class="table-head" scope="col"&gt;Date&lt;/th&gt;&lt;th class="table-head dash-num" scope="col"&gt;Total&lt;/th&gt;&lt;th class="table-head" scope="col"&gt;&lt;span class="sr-only"&gt;Actions&lt;/span&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+                  &lt;thead
+                    &gt;&lt;tr class="table-row"
+                      &gt;&lt;th class="table-head" scope="col"&gt;Customer&lt;/th&gt;&lt;th class="table-head" scope="col"&gt;Status&lt;/th
+                      &gt;&lt;th class="table-head" scope="col"&gt;Date&lt;/th&gt;&lt;th class="table-head dash-num" scope="col"&gt;Total&lt;/th
+                      &gt;&lt;th class="table-head" scope="col"&gt;&lt;span class="sr-only"&gt;Actions&lt;/span&gt;&lt;/th&gt;&lt;/tr
+                    &gt;&lt;/thead
+                  &gt;
                   &lt;tbody&gt;
-                    &lt;tr class="table-row"&gt;&lt;td class="table-cell"&gt;&lt;div class="dash-who"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""&gt;&lt;/span&gt;&lt;div&gt;&lt;strong&gt;Anna Silva&lt;/strong&gt;&lt;span&gt;anna@silva.pt&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="table-cell"&gt;&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="paid"&gt;&lt;/span&gt;Paid&lt;/span&gt;&lt;/td&gt;&lt;td class="table-cell dash-muted"&gt;Today, 14:32&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€128.00&lt;/td&gt;&lt;td class="table-cell dash-row-actions"&gt;&lt;button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20481" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o0" data-dropdown-trigger="dash-m-o0"&gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i&gt;&lt;/button&gt;
-            &lt;div id="dash-m-o0" role="menu" popover class="dropdown-content" aria-label="Order #A-20481"&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20481 marked as shipped"&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button&gt;
-              &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
-              &lt;button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20481"&gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button&gt;
-            &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
-                    &lt;tr class="table-row"&gt;&lt;td class="table-cell"&gt;&lt;div class="dash-who"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""&gt;&lt;/span&gt;&lt;div&gt;&lt;strong&gt;Marco Rossi&lt;/strong&gt;&lt;span&gt;marco@globex.io&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="table-cell"&gt;&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="pending"&gt;&lt;/span&gt;Pending&lt;/span&gt;&lt;/td&gt;&lt;td class="table-cell dash-muted"&gt;Today, 11:05&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€120.00&lt;/td&gt;&lt;td class="table-cell dash-row-actions"&gt;&lt;button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20480" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o1" data-dropdown-trigger="dash-m-o1"&gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i&gt;&lt;/button&gt;
-            &lt;div id="dash-m-o1" role="menu" popover class="dropdown-content" aria-label="Order #A-20480"&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20480 marked as shipped"&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button&gt;
-              &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
-              &lt;button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20480"&gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button&gt;
-            &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
-                    &lt;tr class="table-row"&gt;&lt;td class="table-cell"&gt;&lt;div class="dash-who"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt=""&gt;&lt;/span&gt;&lt;div&gt;&lt;strong&gt;Priya Natarajan&lt;/strong&gt;&lt;span&gt;priya@orbit.dev&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="table-cell"&gt;&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="shipped"&gt;&lt;/span&gt;Shipped&lt;/span&gt;&lt;/td&gt;&lt;td class="table-cell dash-muted"&gt;Yesterday&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€88.00&lt;/td&gt;&lt;td class="table-cell dash-row-actions"&gt;&lt;button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20479" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o2" data-dropdown-trigger="dash-m-o2"&gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i&gt;&lt;/button&gt;
-            &lt;div id="dash-m-o2" role="menu" popover class="dropdown-content" aria-label="Order #A-20479"&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20479 marked as shipped"&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button&gt;
-              &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
-              &lt;button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20479"&gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button&gt;
-            &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
-                    &lt;tr class="table-row"&gt;&lt;td class="table-cell"&gt;&lt;div class="dash-who"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;JW&lt;/span&gt;&lt;/span&gt;&lt;div&gt;&lt;strong&gt;Jonas Weber&lt;/strong&gt;&lt;span&gt;jonas@weber.de&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="table-cell"&gt;&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="shipped"&gt;&lt;/span&gt;Shipped&lt;/span&gt;&lt;/td&gt;&lt;td class="table-cell dash-muted"&gt;Yesterday&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€36.00&lt;/td&gt;&lt;td class="table-cell dash-row-actions"&gt;&lt;button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20478" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o3" data-dropdown-trigger="dash-m-o3"&gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i&gt;&lt;/button&gt;
-            &lt;div id="dash-m-o3" role="menu" popover class="dropdown-content" aria-label="Order #A-20478"&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20478 marked as shipped"&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button&gt;
-              &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
-              &lt;button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20478"&gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button&gt;
-            &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
-                    &lt;tr class="table-row"&gt;&lt;td class="table-cell"&gt;&lt;div class="dash-who"&gt;&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""&gt;&lt;/span&gt;&lt;div&gt;&lt;strong&gt;Hannah Lee&lt;/strong&gt;&lt;span&gt;hannah@northwind.com&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="table-cell"&gt;&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="refunded"&gt;&lt;/span&gt;Refunded&lt;/span&gt;&lt;/td&gt;&lt;td class="table-cell dash-muted"&gt;29 Sep&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€89.00&lt;/td&gt;&lt;td class="table-cell dash-row-actions"&gt;&lt;button class="btn" data-variant="ghost" data-size="icon-sm" aria-label="Actions for order #A-20477" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-m-o4" data-dropdown-trigger="dash-m-o4"&gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i&gt;&lt;/button&gt;
-            &lt;div id="dash-m-o4" role="menu" popover class="dropdown-content" aria-label="Order #A-20477"&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1"&gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button&gt;
-              &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Order #A-20477 marked as shipped"&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button&gt;
-              &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
-              &lt;button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1" data-toast="Refund started for #A-20477"&gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button&gt;
-            &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr class="table-row"
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;div class="dash-who"
+                          &gt;&lt;span class="avatar" data-size="sm"
+                            &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /&gt;&lt;/span
+                          &gt;&lt;div&gt;&lt;strong&gt;Anna Silva&lt;/strong&gt;&lt;span&gt;anna@silva.pt&lt;/span&gt;&lt;/div&gt;&lt;/div
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;span class="badge" data-variant="outline"
+                          &gt;&lt;span class="dash-dot" data-status="paid"&gt;&lt;/span&gt;Paid&lt;/span
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell dash-muted"&gt;Today, 14:32&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€128.00&lt;/td
+                      &gt;&lt;td class="table-cell dash-row-actions"
+                        &gt;&lt;button
+                          class="btn"
+                          data-variant="ghost"
+                          data-size="icon-sm"
+                          aria-label="Actions for order #A-20481"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-controls="dash-m-o0"
+                          data-dropdown-trigger="dash-m-o0"
+                          &gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i
+                        &gt;&lt;/button&gt;
+                        &lt;div id="dash-m-o0" role="menu" popover class="dropdown-content" aria-label="Order #A-20481"&gt;
+                          &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+                            &gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button
+                          &gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            tabindex="-1"
+                            data-toast="Order #A-20481 marked as shipped"
+                            &gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button
+                          &gt;
+                          &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            data-variant="destructive"
+                            tabindex="-1"
+                            data-toast="Refund started for #A-20481"
+                            &gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button
+                          &gt;
+                        &lt;/div&gt;&lt;/td
+                      &gt;&lt;/tr
+                    &gt;
+                    &lt;tr class="table-row"
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;div class="dash-who"
+                          &gt;&lt;span class="avatar" data-size="sm"
+                            &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt="" /&gt;&lt;/span
+                          &gt;&lt;div&gt;&lt;strong&gt;Marco Rossi&lt;/strong&gt;&lt;span&gt;marco@globex.io&lt;/span&gt;&lt;/div&gt;&lt;/div
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;span class="badge" data-variant="outline"
+                          &gt;&lt;span class="dash-dot" data-status="pending"&gt;&lt;/span&gt;Pending&lt;/span
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell dash-muted"&gt;Today, 11:05&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€120.00&lt;/td
+                      &gt;&lt;td class="table-cell dash-row-actions"
+                        &gt;&lt;button
+                          class="btn"
+                          data-variant="ghost"
+                          data-size="icon-sm"
+                          aria-label="Actions for order #A-20480"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-controls="dash-m-o1"
+                          data-dropdown-trigger="dash-m-o1"
+                          &gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i
+                        &gt;&lt;/button&gt;
+                        &lt;div id="dash-m-o1" role="menu" popover class="dropdown-content" aria-label="Order #A-20480"&gt;
+                          &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+                            &gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button
+                          &gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            tabindex="-1"
+                            data-toast="Order #A-20480 marked as shipped"
+                            &gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button
+                          &gt;
+                          &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            data-variant="destructive"
+                            tabindex="-1"
+                            data-toast="Refund started for #A-20480"
+                            &gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button
+                          &gt;
+                        &lt;/div&gt;&lt;/td
+                      &gt;&lt;/tr
+                    &gt;
+                    &lt;tr class="table-row"
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;div class="dash-who"
+                          &gt;&lt;span class="avatar" data-size="sm"
+                            &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt="" /&gt;&lt;/span
+                          &gt;&lt;div&gt;&lt;strong&gt;Priya Natarajan&lt;/strong&gt;&lt;span&gt;priya@orbit.dev&lt;/span&gt;&lt;/div&gt;&lt;/div
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;span class="badge" data-variant="outline"
+                          &gt;&lt;span class="dash-dot" data-status="shipped"&gt;&lt;/span&gt;Shipped&lt;/span
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell dash-muted"&gt;Yesterday&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€88.00&lt;/td
+                      &gt;&lt;td class="table-cell dash-row-actions"
+                        &gt;&lt;button
+                          class="btn"
+                          data-variant="ghost"
+                          data-size="icon-sm"
+                          aria-label="Actions for order #A-20479"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-controls="dash-m-o2"
+                          data-dropdown-trigger="dash-m-o2"
+                          &gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i
+                        &gt;&lt;/button&gt;
+                        &lt;div id="dash-m-o2" role="menu" popover class="dropdown-content" aria-label="Order #A-20479"&gt;
+                          &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+                            &gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button
+                          &gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            tabindex="-1"
+                            data-toast="Order #A-20479 marked as shipped"
+                            &gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button
+                          &gt;
+                          &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            data-variant="destructive"
+                            tabindex="-1"
+                            data-toast="Refund started for #A-20479"
+                            &gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button
+                          &gt;
+                        &lt;/div&gt;&lt;/td
+                      &gt;&lt;/tr
+                    &gt;
+                    &lt;tr class="table-row"
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;div class="dash-who"
+                          &gt;&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;JW&lt;/span&gt;&lt;/span
+                          &gt;&lt;div&gt;&lt;strong&gt;Jonas Weber&lt;/strong&gt;&lt;span&gt;jonas@weber.de&lt;/span&gt;&lt;/div&gt;&lt;/div
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;span class="badge" data-variant="outline"
+                          &gt;&lt;span class="dash-dot" data-status="shipped"&gt;&lt;/span&gt;Shipped&lt;/span
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell dash-muted"&gt;Yesterday&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€36.00&lt;/td
+                      &gt;&lt;td class="table-cell dash-row-actions"
+                        &gt;&lt;button
+                          class="btn"
+                          data-variant="ghost"
+                          data-size="icon-sm"
+                          aria-label="Actions for order #A-20478"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-controls="dash-m-o3"
+                          data-dropdown-trigger="dash-m-o3"
+                          &gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i
+                        &gt;&lt;/button&gt;
+                        &lt;div id="dash-m-o3" role="menu" popover class="dropdown-content" aria-label="Order #A-20478"&gt;
+                          &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+                            &gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button
+                          &gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            tabindex="-1"
+                            data-toast="Order #A-20478 marked as shipped"
+                            &gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button
+                          &gt;
+                          &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            data-variant="destructive"
+                            tabindex="-1"
+                            data-toast="Refund started for #A-20478"
+                            &gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button
+                          &gt;
+                        &lt;/div&gt;&lt;/td
+                      &gt;&lt;/tr
+                    &gt;
+                    &lt;tr class="table-row"
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;div class="dash-who"
+                          &gt;&lt;span class="avatar" data-size="sm"
+                            &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /&gt;&lt;/span
+                          &gt;&lt;div&gt;&lt;strong&gt;Hannah Lee&lt;/strong&gt;&lt;span&gt;hannah@northwind.com&lt;/span&gt;&lt;/div&gt;&lt;/div
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell"
+                        &gt;&lt;span class="badge" data-variant="outline"
+                          &gt;&lt;span class="dash-dot" data-status="refunded"&gt;&lt;/span&gt;Refunded&lt;/span
+                        &gt;&lt;/td
+                      &gt;&lt;td class="table-cell dash-muted"&gt;29 Sep&lt;/td&gt;&lt;td class="table-cell dash-num"&gt;€89.00&lt;/td
+                      &gt;&lt;td class="table-cell dash-row-actions"
+                        &gt;&lt;button
+                          class="btn"
+                          data-variant="ghost"
+                          data-size="icon-sm"
+                          aria-label="Actions for order #A-20477"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-controls="dash-m-o4"
+                          data-dropdown-trigger="dash-m-o4"
+                          &gt;&lt;i data-lucide="ellipsis"&gt;&lt;/i
+                        &gt;&lt;/button&gt;
+                        &lt;div id="dash-m-o4" role="menu" popover class="dropdown-content" aria-label="Order #A-20477"&gt;
+                          &lt;button role="menuitem" class="dropdown-item" tabindex="-1"
+                            &gt;&lt;i data-lucide="eye"&gt;&lt;/i&gt; View order&lt;/button
+                          &gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            tabindex="-1"
+                            data-toast="Order #A-20477 marked as shipped"
+                            &gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark as shipped&lt;/button
+                          &gt;
+                          &lt;div class="dropdown-separator" role="separator"&gt;&lt;/div&gt;
+                          &lt;button
+                            role="menuitem"
+                            class="dropdown-item"
+                            data-variant="destructive"
+                            tabindex="-1"
+                            data-toast="Refund started for #A-20477"
+                            &gt;&lt;i data-lucide="undo-2"&gt;&lt;/i&gt; Refund&lt;/button
+                          &gt;
+                        &lt;/div&gt;&lt;/td
+                      &gt;&lt;/tr
+                    &gt;
                   &lt;/tbody&gt;
                 &lt;/table&gt;
               &lt;/div&gt;
             &lt;/article&gt;
             &lt;div class="dash-stack"&gt;
               &lt;article class="dash-card"&gt;
-                &lt;div class="dash-card-head"&gt;&lt;div&gt;&lt;h2&gt;Top products&lt;/h2&gt;&lt;p&gt;By revenue this month&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div class="dash-card-head"
+                  &gt;&lt;div&gt;&lt;h2&gt;Top products&lt;/h2&gt;&lt;p&gt;By revenue this month&lt;/p&gt;&lt;/div&gt;&lt;/div
+                &gt;
                 &lt;ul class="dash-bars"&gt;
-                  &lt;li&gt;&lt;span&gt;Linen shirt&lt;/span&gt;&lt;b&gt;€9,840&lt;/b&gt;&lt;progress class="progress" value="92" max="100" aria-label="Linen shirt: 92% of the top seller"&gt;&lt;/progress&gt;&lt;/li&gt;
-                  &lt;li&gt;&lt;span&gt;Wool throw&lt;/span&gt;&lt;b&gt;€7,320&lt;/b&gt;&lt;progress class="progress" value="68" max="100" aria-label="Wool throw: 68%"&gt;&lt;/progress&gt;&lt;/li&gt;
-                  &lt;li&gt;&lt;span&gt;Stoneware mug&lt;/span&gt;&lt;b&gt;€5,110&lt;/b&gt;&lt;progress class="progress" value="48" max="100" aria-label="Stoneware mug: 48%"&gt;&lt;/progress&gt;&lt;/li&gt;
-                  &lt;li&gt;&lt;span&gt;Paper lamp&lt;/span&gt;&lt;b&gt;€3,560&lt;/b&gt;&lt;progress class="progress" value="33" max="100" aria-label="Paper lamp: 33%"&gt;&lt;/progress&gt;&lt;/li&gt;
+                  &lt;li
+                    &gt;&lt;span&gt;Linen shirt&lt;/span&gt;&lt;b&gt;€9,840&lt;/b
+                    &gt;&lt;progress
+                      class="progress"
+                      value="92"
+                      max="100"
+                      aria-label="Linen shirt: 92% of the top seller"
+                    &gt;&lt;/progress
+                  &gt;&lt;/li&gt;
+                  &lt;li
+                    &gt;&lt;span&gt;Wool throw&lt;/span&gt;&lt;b&gt;€7,320&lt;/b
+                    &gt;&lt;progress class="progress" value="68" max="100" aria-label="Wool throw: 68%"&gt;&lt;/progress
+                  &gt;&lt;/li&gt;
+                  &lt;li
+                    &gt;&lt;span&gt;Stoneware mug&lt;/span&gt;&lt;b&gt;€5,110&lt;/b
+                    &gt;&lt;progress class="progress" value="48" max="100" aria-label="Stoneware mug: 48%"&gt;&lt;/progress
+                  &gt;&lt;/li&gt;
+                  &lt;li
+                    &gt;&lt;span&gt;Paper lamp&lt;/span&gt;&lt;b&gt;€3,560&lt;/b
+                    &gt;&lt;progress class="progress" value="33" max="100" aria-label="Paper lamp: 33%"&gt;&lt;/progress
+                  &gt;&lt;/li&gt;
                 &lt;/ul&gt;
               &lt;/article&gt;
               &lt;article class="dash-card"&gt;
-                &lt;div class="dash-card-head"&gt;&lt;div&gt;&lt;h2&gt;Activity&lt;/h2&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div class="dash-card-head"
+                  &gt;&lt;div&gt;&lt;h2&gt;Activity&lt;/h2&gt;&lt;/div&gt;&lt;/div
+                &gt;
                 &lt;ol class="dash-feed"&gt;
-                  &lt;li&gt;&lt;span class="dash-feed-icon" data-tone="1"&gt;&lt;i data-lucide="package-check"&gt;&lt;/i&gt;&lt;/span&gt;&lt;p&gt;12 orders shipped&lt;time&gt;1h ago&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
-                  &lt;li&gt;&lt;span class="dash-feed-icon" data-tone="2"&gt;&lt;i data-lucide="message-square"&gt;&lt;/i&gt;&lt;/span&gt;&lt;p&gt;New review on Wool throw ★★★★★&lt;time&gt;3h ago&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
-                  &lt;li&gt;&lt;span class="dash-feed-icon" data-tone="3"&gt;&lt;i data-lucide="tag"&gt;&lt;/i&gt;&lt;/span&gt;&lt;p&gt;AUTUMN30 used 48 times&lt;time&gt;Yesterday&lt;/time&gt;&lt;/p&gt;&lt;/li&gt;
+                  &lt;li
+                    &gt;&lt;span class="dash-feed-icon" data-tone="1"&gt;&lt;i data-lucide="package-check"&gt;&lt;/i&gt;&lt;/span
+                    &gt;&lt;p&gt;12 orders shipped&lt;time&gt;1h ago&lt;/time&gt;&lt;/p&gt;&lt;/li
+                  &gt;
+                  &lt;li
+                    &gt;&lt;span class="dash-feed-icon" data-tone="2"&gt;&lt;i data-lucide="message-square"&gt;&lt;/i&gt;&lt;/span
+                    &gt;&lt;p&gt;New review on Wool throw ★★★★★&lt;time&gt;3h ago&lt;/time&gt;&lt;/p&gt;&lt;/li
+                  &gt;
+                  &lt;li
+                    &gt;&lt;span class="dash-feed-icon" data-tone="3"&gt;&lt;i data-lucide="tag"&gt;&lt;/i&gt;&lt;/span
+                    &gt;&lt;p&gt;AUTUMN30 used 48 times&lt;time&gt;Yesterday&lt;/time&gt;&lt;/p&gt;&lt;/li
+                  &gt;
                 &lt;/ol&gt;
               &lt;/article&gt;
             &lt;/div&gt;
@@ -416,46 +1624,165 @@
           &lt;div class="dash-head"&gt;
             &lt;div&gt;&lt;h1 id="dash-h-orders"&gt;Orders&lt;/h1&gt;&lt;p&gt;1,284 orders this month · 12 need attention&lt;/p&gt;&lt;/div&gt;
             &lt;div class="dash-actions"&gt;
-              &lt;button class="btn" data-variant="outline" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="dash-export" data-dropdown-trigger="dash-export"&gt;&lt;i data-lucide="download"&gt;&lt;/i&gt; Export &lt;i data-lucide="chevron-down"&gt;&lt;/i&gt;&lt;/button&gt;
+              &lt;button
+                class="btn"
+                data-variant="outline"
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="dash-export"
+                data-dropdown-trigger="dash-export"
+                &gt;&lt;i data-lucide="download"&gt;&lt;/i&gt; Export &lt;i data-lucide="chevron-down"&gt;&lt;/i
+              &gt;&lt;/button&gt;
               &lt;div id="dash-export" role="menu" popover class="dropdown-content" aria-label="Export"&gt;
                 &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as CSV"&gt;CSV&lt;/button&gt;
-                &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as Excel"&gt;Excel&lt;/button&gt;
+                &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as Excel"
+                  &gt;Excel&lt;/button
+                &gt;
                 &lt;button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as PDF"&gt;PDF&lt;/button&gt;
               &lt;/div&gt;
-              &lt;button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"&gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; New order&lt;/button&gt;
+              &lt;button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"
+                &gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; New order&lt;/button
+              &gt;
             &lt;/div&gt;
           &lt;/div&gt;
           &lt;div class="tabs"&gt;
             &lt;div class="tab-list" role="tablist" aria-label="Order status"&gt;
-              &lt;button class="tab-trigger" role="tab" aria-selected="true" aria-controls="dash-t-all" id="dash-tab-all"&gt;All &lt;span class="badge" data-variant="secondary" data-size="sm"&gt;1,284&lt;/span&gt;&lt;/button&gt;
-              &lt;button class="tab-trigger" role="tab" aria-selected="false" aria-controls="dash-t-pending" id="dash-tab-pending" tabindex="-1"&gt;Pending &lt;span class="badge" data-variant="secondary" data-size="sm"&gt;12&lt;/span&gt;&lt;/button&gt;
-              &lt;button class="tab-trigger" role="tab" aria-selected="false" aria-controls="dash-t-shipped" id="dash-tab-shipped" tabindex="-1"&gt;Shipped&lt;/button&gt;
+              &lt;button class="tab-trigger" role="tab" aria-selected="true" aria-controls="dash-t-all" id="dash-tab-all"
+                &gt;All &lt;span class="badge" data-variant="secondary" data-size="sm"&gt;1,284&lt;/span&gt;&lt;/button
+              &gt;
+              &lt;button
+                class="tab-trigger"
+                role="tab"
+                aria-selected="false"
+                aria-controls="dash-t-pending"
+                id="dash-tab-pending"
+                tabindex="-1"
+                &gt;Pending &lt;span class="badge" data-variant="secondary" data-size="sm"&gt;12&lt;/span&gt;&lt;/button
+              &gt;
+              &lt;button
+                class="tab-trigger"
+                role="tab"
+                aria-selected="false"
+                aria-controls="dash-t-shipped"
+                id="dash-tab-shipped"
+                tabindex="-1"
+                &gt;Shipped&lt;/button
+              &gt;
             &lt;/div&gt;
             &lt;div class="tab-content" role="tabpanel" id="dash-t-all" aria-labelledby="dash-tab-all" tabindex="0"&gt;
               &lt;article class="dash-card dash-table-card"&gt;
-                &lt;div class="data-grid dash-grid" id="dash-orders-grid" aria-label="Orders" data-select="multiple" data-paging="pages" data-page-size="12" data-persist="local" data-persist-prefix="acme-admin" data-empty-text="No orders match these filters."&gt;
+                &lt;div
+                  class="data-grid dash-grid"
+                  id="dash-orders-grid"
+                  aria-label="Orders"
+                  data-select="multiple"
+                  data-paging="pages"
+                  data-page-size="12"
+                  data-persist="local"
+                  data-persist-prefix="acme-admin"
+                  data-empty-text="No orders match these filters."
+                &gt;
                   &lt;div class="data-grid-viewport"&gt;
                     &lt;div class="data-grid-head"&gt;
                       &lt;div class="data-grid-row"&gt;
-                        &lt;div class="data-grid-header" data-field="order" data-width="7.5rem" data-filter="text" data-locked&gt;Order&lt;/div&gt;
-                        &lt;div class="data-grid-header" data-field="customer" data-width="minmax(13rem, 1.4fr)" data-filter="text"&gt;Customer&lt;/div&gt;
-                        &lt;div class="data-grid-header" data-field="product" data-width="minmax(10rem, 1fr)" data-filter="text"&gt;Product&lt;/div&gt;
-                        &lt;div class="data-grid-header" data-field="status" data-width="8.5rem" data-filter="select" data-options="Paid,Pending,Shipped,Refunded"&gt;Status&lt;/div&gt;
-                        &lt;div class="data-grid-header" data-field="date" data-format="date" data-width="8rem" data-sort="desc"&gt;Date&lt;/div&gt;
-                        &lt;div class="data-grid-header" data-field="total" data-type="number" data-format="currency:EUR" data-width="7.5rem" data-filter="number"&gt;Total&lt;/div&gt;
+                        &lt;div
+                          class="data-grid-header"
+                          data-field="order"
+                          data-width="7.5rem"
+                          data-filter="text"
+                          data-locked
+                          &gt;Order&lt;/div
+                        &gt;
+                        &lt;div
+                          class="data-grid-header"
+                          data-field="customer"
+                          data-width="minmax(13rem, 1.4fr)"
+                          data-filter="text"
+                          &gt;Customer&lt;/div
+                        &gt;
+                        &lt;div
+                          class="data-grid-header"
+                          data-field="product"
+                          data-width="minmax(10rem, 1fr)"
+                          data-filter="text"
+                          &gt;Product&lt;/div
+                        &gt;
+                        &lt;div
+                          class="data-grid-header"
+                          data-field="status"
+                          data-width="8.5rem"
+                          data-filter="select"
+                          data-options="Paid,Pending,Shipped,Refunded"
+                          &gt;Status&lt;/div
+                        &gt;
+                        &lt;div
+                          class="data-grid-header"
+                          data-field="date"
+                          data-format="date"
+                          data-width="8rem"
+                          data-sort="desc"
+                          &gt;Date&lt;/div
+                        &gt;
+                        &lt;div
+                          class="data-grid-header"
+                          data-field="total"
+                          data-type="number"
+                          data-format="currency:EUR"
+                          data-width="7.5rem"
+                          data-filter="number"
+                          &gt;Total&lt;/div
+                        &gt;
                       &lt;/div&gt;
                     &lt;/div&gt;
                     &lt;div class="data-grid-body"&gt;&lt;/div&gt;
                   &lt;/div&gt;
                 &lt;/div&gt;
-                &lt;div class="dash-bulk" role="status" hidden&gt;&lt;i data-lucide="check-check"&gt;&lt;/i&gt;&lt;span class="dash-bulk-count"&gt;Orders selected&lt;/span&gt;&lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-dash-bulk="all"&gt;Select all&lt;/button&gt;&lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-dash-bulk="ship"&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark shipped&lt;/button&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-dash-bulk="clear" aria-label="Clear the selection"&gt;&lt;i data-lucide="x"&gt;&lt;/i&gt;&lt;/button&gt;&lt;/div&gt;
+                &lt;div class="dash-bulk" role="status" hidden
+                  &gt;&lt;i data-lucide="check-check"&gt;&lt;/i&gt;&lt;span class="dash-bulk-count"&gt;Orders selected&lt;/span
+                  &gt;&lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-dash-bulk="all"
+                    &gt;Select all&lt;/button
+                  &gt;&lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-dash-bulk="ship"
+                    &gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt; Mark shipped&lt;/button
+                  &gt;&lt;button
+                    class="btn"
+                    data-variant="ghost"
+                    data-size="sm"
+                    type="button"
+                    data-dash-bulk="clear"
+                    aria-label="Clear the selection"
+                    &gt;&lt;i data-lucide="x"&gt;&lt;/i&gt;&lt;/button
+                &gt;&lt;/div&gt;
               &lt;/article&gt;
             &lt;/div&gt;
-            &lt;div class="tab-content" role="tabpanel" id="dash-t-pending" aria-labelledby="dash-tab-pending" tabindex="0" hidden&gt;
-              &lt;article class="dash-card dash-empty"&gt;&lt;span&gt;&lt;i data-lucide="inbox"&gt;&lt;/i&gt;&lt;/span&gt;&lt;h2&gt;12 orders wait for payment&lt;/h2&gt;&lt;p&gt;Send a friendly reminder to every customer at once.&lt;/p&gt;&lt;button class="btn" type="button" data-toast="Reminders sent to 12 customers"&gt;&lt;i data-lucide="send"&gt;&lt;/i&gt; Send reminders&lt;/button&gt;&lt;/article&gt;
+            &lt;div
+              class="tab-content"
+              role="tabpanel"
+              id="dash-t-pending"
+              aria-labelledby="dash-tab-pending"
+              tabindex="0"
+              hidden
+            &gt;
+              &lt;article class="dash-card dash-empty"
+                &gt;&lt;span&gt;&lt;i data-lucide="inbox"&gt;&lt;/i&gt;&lt;/span&gt;&lt;h2&gt;12 orders wait for payment&lt;/h2
+                &gt;&lt;p&gt;Send a friendly reminder to every customer at once.&lt;/p
+                &gt;&lt;button class="btn" type="button" data-toast="Reminders sent to 12 customers"
+                  &gt;&lt;i data-lucide="send"&gt;&lt;/i&gt; Send reminders&lt;/button
+                &gt;&lt;/article
+              &gt;
             &lt;/div&gt;
-            &lt;div class="tab-content" role="tabpanel" id="dash-t-shipped" aria-labelledby="dash-tab-shipped" tabindex="0" hidden&gt;
-              &lt;article class="dash-card dash-empty"&gt;&lt;span&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt;&lt;/span&gt;&lt;h2&gt;Everything shipped on time&lt;/h2&gt;&lt;p&gt;412 orders left the warehouse this month - none late.&lt;/p&gt;&lt;/article&gt;
+            &lt;div
+              class="tab-content"
+              role="tabpanel"
+              id="dash-t-shipped"
+              aria-labelledby="dash-tab-shipped"
+              tabindex="0"
+              hidden
+            &gt;
+              &lt;article class="dash-card dash-empty"
+                &gt;&lt;span&gt;&lt;i data-lucide="truck"&gt;&lt;/i&gt;&lt;/span&gt;&lt;h2&gt;Everything shipped on time&lt;/h2
+                &gt;&lt;p&gt;412 orders left the warehouse this month - none late.&lt;/p&gt;&lt;/article
+              &gt;
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/section&gt;
@@ -464,77 +1791,244 @@
         &lt;section class="dash-view" id="customers" aria-labelledby="dash-h-customers"&gt;
           &lt;div class="dash-head"&gt;
             &lt;div&gt;&lt;h1 id="dash-h-customers"&gt;Customers&lt;/h1&gt;&lt;p&gt;9,842 customers · 312 new this month&lt;/p&gt;&lt;/div&gt;
-            &lt;div class="dash-actions"&gt;&lt;button class="btn" type="button" data-dialog-trigger="dash-invite" aria-haspopup="dialog"&gt;&lt;i data-lucide="user-plus"&gt;&lt;/i&gt; Invite customer&lt;/button&gt;&lt;/div&gt;
+            &lt;div class="dash-actions"
+              &gt;&lt;button class="btn" type="button" data-dialog-trigger="dash-invite" aria-haspopup="dialog"
+                &gt;&lt;i data-lucide="user-plus"&gt;&lt;/i&gt; Invite customer&lt;/button
+              &gt;&lt;/div
+            &gt;
           &lt;/div&gt;
           &lt;div class="dash-people"&gt;
             &lt;article class="dash-card dash-person"&gt;
-              &lt;div class="dash-person-top"&gt;&lt;span class="avatar" data-size="lg"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""&gt;&lt;/span&gt;&lt;span class="badge" data-variant="default" data-size="sm"&gt;VIP&lt;/span&gt;&lt;/div&gt;
-              &lt;div&gt;&lt;h2&gt;Anna Silva&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Lisbon, PT&lt;/p&gt;&lt;/div&gt;
-              &lt;dl class="dash-person-stats"&gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€1,284&lt;/dd&gt;&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;18&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
-              &lt;div class="dash-person-actions"&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Anna Silva"&gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button&gt;&lt;/div&gt;
+              &lt;div class="dash-person-top"
+                &gt;&lt;span class="avatar" data-size="lg"
+                  &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /&gt;&lt;/span
+                &gt;&lt;span class="badge" data-variant="default" data-size="sm"&gt;VIP&lt;/span&gt;&lt;/div
+              &gt;
+              &lt;div
+                &gt;&lt;h2&gt;Anna Silva&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Lisbon, PT&lt;/p&gt;&lt;/div
+              &gt;
+              &lt;dl class="dash-person-stats"
+                &gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€1,284&lt;/dd&gt;&lt;/div
+                &gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;18&lt;/dd&gt;&lt;/div&gt;&lt;/dl
+              &gt;
+              &lt;div class="dash-person-actions"
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a
+                &gt;&lt;button
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="sm"
+                  type="button"
+                  data-toast="Message sent to Anna Silva"
+                  &gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button
+                &gt;&lt;/div
+              &gt;
             &lt;/article&gt;
             &lt;article class="dash-card dash-person"&gt;
-              &lt;div class="dash-person-top"&gt;&lt;span class="avatar" data-size="lg"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt=""&gt;&lt;/span&gt;&lt;/div&gt;
-              &lt;div&gt;&lt;h2&gt;Marco Rossi&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Milan, IT&lt;/p&gt;&lt;/div&gt;
-              &lt;dl class="dash-person-stats"&gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€892&lt;/dd&gt;&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;11&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
-              &lt;div class="dash-person-actions"&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Marco Rossi"&gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button&gt;&lt;/div&gt;
+              &lt;div class="dash-person-top"
+                &gt;&lt;span class="avatar" data-size="lg"
+                  &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt="" /&gt;&lt;/span
+              &gt;&lt;/div&gt;
+              &lt;div
+                &gt;&lt;h2&gt;Marco Rossi&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Milan, IT&lt;/p&gt;&lt;/div
+              &gt;
+              &lt;dl class="dash-person-stats"
+                &gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€892&lt;/dd&gt;&lt;/div
+                &gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;11&lt;/dd&gt;&lt;/div&gt;&lt;/dl
+              &gt;
+              &lt;div class="dash-person-actions"
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a
+                &gt;&lt;button
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="sm"
+                  type="button"
+                  data-toast="Message sent to Marco Rossi"
+                  &gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button
+                &gt;&lt;/div
+              &gt;
             &lt;/article&gt;
             &lt;article class="dash-card dash-person"&gt;
-              &lt;div class="dash-person-top"&gt;&lt;span class="avatar" data-size="lg"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt=""&gt;&lt;/span&gt;&lt;span class="badge" data-variant="default" data-size="sm"&gt;VIP&lt;/span&gt;&lt;/div&gt;
-              &lt;div&gt;&lt;h2&gt;Priya Natarajan&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Bangalore, IN&lt;/p&gt;&lt;/div&gt;
-              &lt;dl class="dash-person-stats"&gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€2,410&lt;/dd&gt;&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;27&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
-              &lt;div class="dash-person-actions"&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Priya Natarajan"&gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button&gt;&lt;/div&gt;
+              &lt;div class="dash-person-top"
+                &gt;&lt;span class="avatar" data-size="lg"
+                  &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt="" /&gt;&lt;/span
+                &gt;&lt;span class="badge" data-variant="default" data-size="sm"&gt;VIP&lt;/span&gt;&lt;/div
+              &gt;
+              &lt;div
+                &gt;&lt;h2&gt;Priya Natarajan&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Bangalore, IN&lt;/p&gt;&lt;/div
+              &gt;
+              &lt;dl class="dash-person-stats"
+                &gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€2,410&lt;/dd&gt;&lt;/div
+                &gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;27&lt;/dd&gt;&lt;/div&gt;&lt;/dl
+              &gt;
+              &lt;div class="dash-person-actions"
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a
+                &gt;&lt;button
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="sm"
+                  type="button"
+                  data-toast="Message sent to Priya Natarajan"
+                  &gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button
+                &gt;&lt;/div
+              &gt;
             &lt;/article&gt;
             &lt;article class="dash-card dash-person"&gt;
-              &lt;div class="dash-person-top"&gt;&lt;span class="avatar" data-size="lg"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""&gt;&lt;/span&gt;&lt;span class="badge" data-variant="secondary" data-size="sm"&gt;New&lt;/span&gt;&lt;/div&gt;
-              &lt;div&gt;&lt;h2&gt;Hannah Lee&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Berlin, DE&lt;/p&gt;&lt;/div&gt;
-              &lt;dl class="dash-person-stats"&gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€318&lt;/dd&gt;&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;4&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
-              &lt;div class="dash-person-actions"&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Hannah Lee"&gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button&gt;&lt;/div&gt;
+              &lt;div class="dash-person-top"
+                &gt;&lt;span class="avatar" data-size="lg"
+                  &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /&gt;&lt;/span
+                &gt;&lt;span class="badge" data-variant="secondary" data-size="sm"&gt;New&lt;/span&gt;&lt;/div
+              &gt;
+              &lt;div
+                &gt;&lt;h2&gt;Hannah Lee&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Berlin, DE&lt;/p&gt;&lt;/div
+              &gt;
+              &lt;dl class="dash-person-stats"
+                &gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€318&lt;/dd&gt;&lt;/div
+                &gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;4&lt;/dd&gt;&lt;/div&gt;&lt;/dl
+              &gt;
+              &lt;div class="dash-person-actions"
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a
+                &gt;&lt;button
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="sm"
+                  type="button"
+                  data-toast="Message sent to Hannah Lee"
+                  &gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button
+                &gt;&lt;/div
+              &gt;
             &lt;/article&gt;
             &lt;article class="dash-card dash-person"&gt;
-              &lt;div class="dash-person-top"&gt;&lt;span class="avatar" data-size="lg"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt=""&gt;&lt;/span&gt;&lt;/div&gt;
-              &lt;div&gt;&lt;h2&gt;Sophie Tan&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Singapore&lt;/p&gt;&lt;/div&gt;
-              &lt;dl class="dash-person-stats"&gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€1,056&lt;/dd&gt;&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;15&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
-              &lt;div class="dash-person-actions"&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Sophie Tan"&gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button&gt;&lt;/div&gt;
+              &lt;div class="dash-person-top"
+                &gt;&lt;span class="avatar" data-size="lg"
+                  &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=25" alt="" /&gt;&lt;/span
+              &gt;&lt;/div&gt;
+              &lt;div
+                &gt;&lt;h2&gt;Sophie Tan&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Singapore&lt;/p&gt;&lt;/div
+              &gt;
+              &lt;dl class="dash-person-stats"
+                &gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€1,056&lt;/dd&gt;&lt;/div
+                &gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;15&lt;/dd&gt;&lt;/div&gt;&lt;/dl
+              &gt;
+              &lt;div class="dash-person-actions"
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a
+                &gt;&lt;button
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="sm"
+                  type="button"
+                  data-toast="Message sent to Sophie Tan"
+                  &gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button
+                &gt;&lt;/div
+              &gt;
             &lt;/article&gt;
             &lt;article class="dash-card dash-person"&gt;
-              &lt;div class="dash-person-top"&gt;&lt;span class="avatar" data-size="lg"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=5" alt=""&gt;&lt;/span&gt;&lt;span class="badge" data-variant="secondary" data-size="sm"&gt;New&lt;/span&gt;&lt;/div&gt;
-              &lt;div&gt;&lt;h2&gt;Emily Carter&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Austin, US&lt;/p&gt;&lt;/div&gt;
-              &lt;dl class="dash-person-stats"&gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€640&lt;/dd&gt;&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;9&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
-              &lt;div class="dash-person-actions"&gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="Message sent to Emily Carter"&gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button&gt;&lt;/div&gt;
+              &lt;div class="dash-person-top"
+                &gt;&lt;span class="avatar" data-size="lg"
+                  &gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=5" alt="" /&gt;&lt;/span
+                &gt;&lt;span class="badge" data-variant="secondary" data-size="sm"&gt;New&lt;/span&gt;&lt;/div
+              &gt;
+              &lt;div
+                &gt;&lt;h2&gt;Emily Carter&lt;/h2&gt;&lt;p&gt;&lt;i data-lucide="map-pin"&gt;&lt;/i&gt;Austin, US&lt;/p&gt;&lt;/div
+              &gt;
+              &lt;dl class="dash-person-stats"
+                &gt;&lt;div&gt;&lt;dt&gt;Spent&lt;/dt&gt;&lt;dd&gt;€640&lt;/dd&gt;&lt;/div
+                &gt;&lt;div&gt;&lt;dt&gt;Orders&lt;/dt&gt;&lt;dd&gt;9&lt;/dd&gt;&lt;/div&gt;&lt;/dl
+              &gt;
+              &lt;div class="dash-person-actions"
+                &gt;&lt;a class="btn" data-variant="outline" data-size="sm" href="#orders"&gt;Orders&lt;/a
+                &gt;&lt;button
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="sm"
+                  type="button"
+                  data-toast="Message sent to Emily Carter"
+                  &gt;&lt;i data-lucide="mail"&gt;&lt;/i&gt; Message&lt;/button
+                &gt;&lt;/div
+              &gt;
             &lt;/article&gt;
           &lt;/div&gt;
         &lt;/section&gt;
 
         &lt;!-- Settings --&gt;
         &lt;section class="dash-view" id="settings" aria-labelledby="dash-h-settings"&gt;
-          &lt;div class="dash-head"&gt;&lt;div&gt;&lt;h1 id="dash-h-settings"&gt;Settings&lt;/h1&gt;&lt;p&gt;Manage the workspace, notifications and API access.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;div class="dash-head"
+            &gt;&lt;div
+              &gt;&lt;h1 id="dash-h-settings"&gt;Settings&lt;/h1&gt;&lt;p&gt;Manage the workspace, notifications and API access.&lt;/p&gt;&lt;/div
+            &gt;&lt;/div
+          &gt;
           &lt;form class="dash-card dash-form" action="#" method="post" data-dash-save&gt;
-            &lt;div class="dash-form-row"&gt;&lt;div&gt;&lt;h2&gt;Workspace&lt;/h2&gt;&lt;p&gt;Shown on invoices and emails.&lt;/p&gt;&lt;/div&gt;
+            &lt;div class="dash-form-row"
+              &gt;&lt;div&gt;&lt;h2&gt;Workspace&lt;/h2&gt;&lt;p&gt;Shown on invoices and emails.&lt;/p&gt;&lt;/div&gt;
               &lt;div class="dash-form-fields"&gt;
-                &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-ws-name"&gt;Name&lt;/label&gt;&lt;input class="input" id="dash-ws-name" value="Acme Inc." required&gt;&lt;/div&gt;
-                &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-ws-mail"&gt;Support email&lt;/label&gt;&lt;input class="input" id="dash-ws-mail" type="email" value="hello@acme.com" required&gt;&lt;/div&gt;
-                &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-ws-cur"&gt;Currency&lt;/label&gt;&lt;select class="select" id="dash-ws-cur"&gt;&lt;option&gt;EUR - Euro&lt;/option&gt;&lt;option&gt;USD - US Dollar&lt;/option&gt;&lt;option&gt;GBP - Pound&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+                &lt;div class="dash-field"
+                  &gt;&lt;label class="label" for="dash-ws-name"&gt;Name&lt;/label
+                  &gt;&lt;input class="input" id="dash-ws-name" value="Acme Inc." required
+                /&gt;&lt;/div&gt;
+                &lt;div class="dash-field"
+                  &gt;&lt;label class="label" for="dash-ws-mail"&gt;Support email&lt;/label
+                  &gt;&lt;input class="input" id="dash-ws-mail" type="email" value="hello@acme.com" required
+                /&gt;&lt;/div&gt;
+                &lt;div class="dash-field"
+                  &gt;&lt;label class="label" for="dash-ws-cur"&gt;Currency&lt;/label
+                  &gt;&lt;select class="select" id="dash-ws-cur"
+                    &gt;&lt;option&gt;EUR - Euro&lt;/option
+                    &gt;&lt;option&gt;USD - US Dollar&lt;/option
+                    &gt;&lt;option&gt;GBP - Pound&lt;/option&gt;&lt;/select
+                  &gt;&lt;/div
+                &gt;
               &lt;/div&gt;
             &lt;/div&gt;
-            &lt;div class="dash-form-row"&gt;&lt;div&gt;&lt;h2&gt;Notifications&lt;/h2&gt;&lt;p&gt;What lands in your inbox.&lt;/p&gt;&lt;/div&gt;
+            &lt;div class="dash-form-row"
+              &gt;&lt;div&gt;&lt;h2&gt;Notifications&lt;/h2&gt;&lt;p&gt;What lands in your inbox.&lt;/p&gt;&lt;/div&gt;
               &lt;div class="dash-form-fields dash-switches"&gt;
-                &lt;div class="switch-item"&gt;&lt;input class="switch" type="checkbox" role="switch" id="dash-n1" checked&gt;&lt;label for="dash-n1"&gt;New orders&lt;/label&gt;&lt;/div&gt;
-                &lt;div class="switch-item"&gt;&lt;input class="switch" type="checkbox" role="switch" id="dash-n2" checked&gt;&lt;label for="dash-n2"&gt;Refund requests&lt;/label&gt;&lt;/div&gt;
-                &lt;div class="switch-item"&gt;&lt;input class="switch" type="checkbox" role="switch" id="dash-n3"&gt;&lt;label for="dash-n3"&gt;Weekly report&lt;/label&gt;&lt;/div&gt;
+                &lt;div class="switch-item"
+                  &gt;&lt;input class="switch" type="checkbox" role="switch" id="dash-n1" checked /&gt;&lt;label for="dash-n1"
+                    &gt;New orders&lt;/label
+                  &gt;&lt;/div
+                &gt;
+                &lt;div class="switch-item"
+                  &gt;&lt;input class="switch" type="checkbox" role="switch" id="dash-n2" checked /&gt;&lt;label for="dash-n2"
+                    &gt;Refund requests&lt;/label
+                  &gt;&lt;/div
+                &gt;
+                &lt;div class="switch-item"
+                  &gt;&lt;input class="switch" type="checkbox" role="switch" id="dash-n3" /&gt;&lt;label for="dash-n3"
+                    &gt;Weekly report&lt;/label
+                  &gt;&lt;/div
+                &gt;
               &lt;/div&gt;
             &lt;/div&gt;
-            &lt;div class="dash-form-row"&gt;&lt;div&gt;&lt;h2&gt;API key&lt;/h2&gt;&lt;p&gt;Use it to connect your shop.&lt;/p&gt;&lt;/div&gt;
-              &lt;div class="dash-form-fields"&gt;&lt;div class="dash-key"&gt;&lt;code&gt;sk_live_••••••••••••4f2a&lt;/code&gt;&lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-toast="API key copied"&gt;&lt;i data-lucide="copy"&gt;&lt;/i&gt; Copy&lt;/button&gt;&lt;button class="btn" data-variant="ghost" data-size="sm" type="button" data-toast="A new key was created" data-toast-desc="The old one stops working in 24 hours."&gt;&lt;i data-lucide="refresh-cw"&gt;&lt;/i&gt; Roll key&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div class="dash-form-row"
+              &gt;&lt;div&gt;&lt;h2&gt;API key&lt;/h2&gt;&lt;p&gt;Use it to connect your shop.&lt;/p&gt;&lt;/div&gt;
+              &lt;div class="dash-form-fields"
+                &gt;&lt;div class="dash-key"
+                  &gt;&lt;code&gt;sk_live_••••••••••••4f2a&lt;/code
+                  &gt;&lt;button class="btn" data-variant="outline" data-size="sm" type="button" data-toast="API key copied"
+                    &gt;&lt;i data-lucide="copy"&gt;&lt;/i&gt; Copy&lt;/button
+                  &gt;&lt;button
+                    class="btn"
+                    data-variant="ghost"
+                    data-size="sm"
+                    type="button"
+                    data-toast="A new key was created"
+                    data-toast-desc="The old one stops working in 24 hours."
+                    &gt;&lt;i data-lucide="refresh-cw"&gt;&lt;/i&gt; Roll key&lt;/button
+                  &gt;&lt;/div
+                &gt;&lt;/div
+              &gt;
             &lt;/div&gt;
-            &lt;div class="dash-form-actions"&gt;&lt;button class="btn" data-variant="ghost" type="reset"&gt;Discard&lt;/button&gt;&lt;button class="btn" type="submit"&gt;Save changes&lt;/button&gt;&lt;/div&gt;
+            &lt;div class="dash-form-actions"
+              &gt;&lt;button class="btn" data-variant="ghost" type="reset"&gt;Discard&lt;/button
+              &gt;&lt;button class="btn" type="submit"&gt;Save changes&lt;/button&gt;&lt;/div
+            &gt;
           &lt;/form&gt;
           &lt;article class="dash-card dash-danger"&gt;
             &lt;div&gt;&lt;h2&gt;Delete workspace&lt;/h2&gt;&lt;p&gt;Removes all orders, customers and files. This cannot be undone.&lt;/p&gt;&lt;/div&gt;
-            &lt;button class="btn" data-variant="destructive" type="button" data-alert-dialog-trigger="dash-delete"&gt;Delete workspace&lt;/button&gt;
+            &lt;button class="btn" data-variant="destructive" type="button" data-alert-dialog-trigger="dash-delete"
+              &gt;Delete workspace&lt;/button
+            &gt;
           &lt;/article&gt;
         &lt;/section&gt;
-
       &lt;/div&gt;
     &lt;/main&gt;
   &lt;/div&gt;
@@ -542,20 +2036,34 @@
   &lt;!-- overlays: command palette, new-order sheet, invite dialog, delete confirmation --&gt;
   &lt;dialog id="dash-cmd" class="command" role="dialog" aria-modal="true" aria-label="Command menu"&gt;
     &lt;div class="command-content"&gt;
-      &lt;div class="command-input-wrapper"&gt;&lt;i data-lucide="search"&gt;&lt;/i&gt;&lt;input class="command-input" type="text" placeholder="Type a command or search…" autocomplete="off" spellcheck="false"&gt;&lt;/div&gt;
+      &lt;div class="command-input-wrapper"
+        &gt;&lt;i data-lucide="search"&gt;&lt;/i
+        &gt;&lt;input
+          class="command-input"
+          type="text"
+          placeholder="Type a command or search…"
+          autocomplete="off"
+          spellcheck="false"
+      /&gt;&lt;/div&gt;
       &lt;div class="command-list"&gt;
         &lt;div class="command-group"&gt;
           &lt;p class="command-group-heading"&gt;Go to&lt;/p&gt;
           &lt;button class="command-item" data-go="overview"&gt;&lt;i data-lucide="layout-dashboard"&gt;&lt;/i&gt; Overview&lt;/button&gt;
           &lt;button class="command-item" data-go="orders"&gt;&lt;i data-lucide="shopping-bag"&gt;&lt;/i&gt; Orders&lt;/button&gt;
           &lt;button class="command-item" data-go="customers"&gt;&lt;i data-lucide="users"&gt;&lt;/i&gt; Customers&lt;/button&gt;
-          &lt;button class="command-item" data-go="settings"&gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt; Settings &lt;span class="command-shortcut"&gt;⌘,&lt;/span&gt;&lt;/button&gt;
+          &lt;button class="command-item" data-go="settings"
+            &gt;&lt;i data-lucide="settings"&gt;&lt;/i&gt; Settings &lt;span class="command-shortcut"&gt;⌘,&lt;/span&gt;&lt;/button
+          &gt;
         &lt;/div&gt;
         &lt;div class="command-separator"&gt;&lt;/div&gt;
         &lt;div class="command-group"&gt;
           &lt;p class="command-group-heading"&gt;Actions&lt;/p&gt;
-          &lt;button class="command-item" data-open-sheet="dash-new-order"&gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; New order &lt;span class="command-shortcut"&gt;N&lt;/span&gt;&lt;/button&gt;
-          &lt;button class="command-item" data-open-dialog="dash-invite"&gt;&lt;i data-lucide="user-plus"&gt;&lt;/i&gt; Invite customer&lt;/button&gt;
+          &lt;button class="command-item" data-open-sheet="dash-new-order"
+            &gt;&lt;i data-lucide="plus"&gt;&lt;/i&gt; New order &lt;span class="command-shortcut"&gt;N&lt;/span&gt;&lt;/button
+          &gt;
+          &lt;button class="command-item" data-open-dialog="dash-invite"
+            &gt;&lt;i data-lucide="user-plus"&gt;&lt;/i&gt; Invite customer&lt;/button
+          &gt;
           &lt;button class="command-item" data-dash-theme&gt;&lt;i data-lucide="moon"&gt;&lt;/i&gt; Toggle dark mode&lt;/button&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -563,21 +2071,63 @@
     &lt;/div&gt;
   &lt;/dialog&gt;
 
-  &lt;dialog id="dash-new-order" class="sheet" data-side="right" role="dialog" aria-modal="true" aria-labelledby="dash-no-title"&gt;
+  &lt;dialog
+    id="dash-new-order"
+    class="sheet"
+    data-side="right"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dash-no-title"
+  &gt;
     &lt;form class="sheet-content" method="dialog" data-dash-order&gt;
       &lt;div class="sheet-header"&gt;
         &lt;h2 class="sheet-title" id="dash-no-title"&gt;New order&lt;/h2&gt;
         &lt;p class="sheet-description"&gt;Create a manual order - the customer gets a payment link.&lt;/p&gt;
       &lt;/div&gt;
       &lt;div class="sheet-body dash-sheet-body"&gt;
-        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-no-cust"&gt;Customer&lt;/label&gt;&lt;select class="select" id="dash-no-cust" required&gt;&lt;option value=""&gt;Choose a customer&lt;/option&gt;&lt;option&gt;Anna Silva&lt;/option&gt;&lt;option&gt;Marco Rossi&lt;/option&gt;&lt;option&gt;Priya Natarajan&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
-        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-no-prod"&gt;Product&lt;/label&gt;&lt;select class="select" id="dash-no-prod"&gt;&lt;option&gt;Linen shirt - €64&lt;/option&gt;&lt;option&gt;Wool throw - €120&lt;/option&gt;&lt;option&gt;Stoneware mug - €22&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
-        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-no-qty"&gt;Quantity&lt;/label&gt;&lt;div class="number-input"&gt;&lt;button type="button" data-action="decrement" aria-label="Decrease"&gt;−&lt;/button&gt;&lt;input type="number" id="dash-no-qty" min="1" max="99" value="1"&gt;&lt;button type="button" data-action="increment" aria-label="Increase"&gt;+&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-        &lt;fieldset class="dash-field dash-ship"&gt;&lt;legend class="label"&gt;Shipping&lt;/legend&gt;
-          &lt;label&gt;&lt;input class="radio" type="radio" name="ship" checked&gt;&lt;span&gt;&lt;strong&gt;Standard&lt;/strong&gt;&lt;small&gt;3–5 days · free&lt;/small&gt;&lt;/span&gt;&lt;/label&gt;
-          &lt;label&gt;&lt;input class="radio" type="radio" name="ship"&gt;&lt;span&gt;&lt;strong&gt;Express&lt;/strong&gt;&lt;small&gt;Next day · €9.90&lt;/small&gt;&lt;/span&gt;&lt;/label&gt;
+        &lt;div class="dash-field"
+          &gt;&lt;label class="label" for="dash-no-cust"&gt;Customer&lt;/label
+          &gt;&lt;select class="select" id="dash-no-cust" required
+            &gt;&lt;option value=""&gt;Choose a customer&lt;/option
+            &gt;&lt;option&gt;Anna Silva&lt;/option
+            &gt;&lt;option&gt;Marco Rossi&lt;/option
+            &gt;&lt;option&gt;Priya Natarajan&lt;/option&gt;&lt;/select
+          &gt;&lt;/div
+        &gt;
+        &lt;div class="dash-field"
+          &gt;&lt;label class="label" for="dash-no-prod"&gt;Product&lt;/label
+          &gt;&lt;select class="select" id="dash-no-prod"
+            &gt;&lt;option&gt;Linen shirt - €64&lt;/option
+            &gt;&lt;option&gt;Wool throw - €120&lt;/option
+            &gt;&lt;option&gt;Stoneware mug - €22&lt;/option&gt;&lt;/select
+          &gt;&lt;/div
+        &gt;
+        &lt;div class="dash-field"
+          &gt;&lt;label class="label" for="dash-no-qty"&gt;Quantity&lt;/label
+          &gt;&lt;div class="number-input"
+            &gt;&lt;button type="button" data-action="decrement" aria-label="Decrease"&gt;−&lt;/button
+            &gt;&lt;input type="number" id="dash-no-qty" min="1" max="99" value="1" /&gt;&lt;button
+              type="button"
+              data-action="increment"
+              aria-label="Increase"
+              &gt;+&lt;/button
+            &gt;&lt;/div
+          &gt;&lt;/div
+        &gt;
+        &lt;fieldset class="dash-field dash-ship"
+          &gt;&lt;legend class="label"&gt;Shipping&lt;/legend&gt;
+          &lt;label
+            &gt;&lt;input class="radio" type="radio" name="ship" checked /&gt;&lt;span
+              &gt;&lt;strong&gt;Standard&lt;/strong&gt;&lt;small&gt;3–5 days · free&lt;/small&gt;&lt;/span
+            &gt;&lt;/label
+          &gt;
+          &lt;label
+            &gt;&lt;input class="radio" type="radio" name="ship" /&gt;&lt;span
+              &gt;&lt;strong&gt;Express&lt;/strong&gt;&lt;small&gt;Next day · €9.90&lt;/small&gt;&lt;/span
+            &gt;&lt;/label
+          &gt;
         &lt;/fieldset&gt;
-        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-no-note"&gt;Note&lt;/label&gt;&lt;textarea class="textarea" id="dash-no-note" rows="3" placeholder="Visible to the customer"&gt;&lt;/textarea&gt;&lt;/div&gt;
+        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-no-note"&gt;Note&lt;/label&gt;&lt;textarea class="textarea" id="dash-no-note" rows="3" placeholder="Visible to the customer"&gt;&lt;/textarea&gt; &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class="sheet-footer"&gt;
         &lt;button class="btn" data-variant="outline" type="button" data-sheet-close&gt;Cancel&lt;/button&gt;
@@ -589,19 +2139,58 @@
 
   &lt;dialog id="dash-invite" class="dialog" role="dialog" aria-modal="true" aria-labelledby="dash-inv-title"&gt;
     &lt;div class="dialog-content"&gt;
-      &lt;div class="dialog-header"&gt;&lt;h2 class="dialog-title" id="dash-inv-title"&gt;Invite a customer&lt;/h2&gt;&lt;p class="dialog-description"&gt;They get an email with a link to their account.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class="dialog-header"
+        &gt;&lt;h2 class="dialog-title" id="dash-inv-title"&gt;Invite a customer&lt;/h2
+        &gt;&lt;p class="dialog-description"&gt;They get an email with a link to their account.&lt;/p&gt;&lt;/div
+      &gt;
       &lt;div class="dialog-body dash-sheet-body"&gt;
-        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-inv-mail"&gt;Email&lt;/label&gt;&lt;input class="input" id="dash-inv-mail" type="email" placeholder="name@company.com"&gt;&lt;/div&gt;
-        &lt;div class="dash-field"&gt;&lt;label class="label" for="dash-inv-seg"&gt;Segment&lt;/label&gt;&lt;select class="select" id="dash-inv-seg"&gt;&lt;option&gt;Retail&lt;/option&gt;&lt;option&gt;Wholesale&lt;/option&gt;&lt;option&gt;VIP&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+        &lt;div class="dash-field"
+          &gt;&lt;label class="label" for="dash-inv-mail"&gt;Email&lt;/label
+          &gt;&lt;input class="input" id="dash-inv-mail" type="email" placeholder="name@company.com"
+        /&gt;&lt;/div&gt;
+        &lt;div class="dash-field"
+          &gt;&lt;label class="label" for="dash-inv-seg"&gt;Segment&lt;/label
+          &gt;&lt;select class="select" id="dash-inv-seg"
+            &gt;&lt;option&gt;Retail&lt;/option
+            &gt;&lt;option&gt;Wholesale&lt;/option
+            &gt;&lt;option&gt;VIP&lt;/option&gt;&lt;/select
+          &gt;&lt;/div
+        &gt;
       &lt;/div&gt;
-      &lt;div class="dialog-footer"&gt;&lt;button class="btn" data-variant="outline" data-dialog-close&gt;Cancel&lt;/button&gt;&lt;button class="btn" data-dialog-close data-toast="Invitation sent"&gt;Send invite&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="dialog-footer"
+        &gt;&lt;button class="btn" data-variant="outline" data-dialog-close&gt;Cancel&lt;/button
+        &gt;&lt;button class="btn" data-dialog-close data-toast="Invitation sent"&gt;Send invite&lt;/button&gt;&lt;/div
+      &gt;
     &lt;/div&gt;
   &lt;/dialog&gt;
 
-  &lt;dialog id="dash-delete" class="alert-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dash-del-title" aria-describedby="dash-del-desc"&gt;
+  &lt;dialog
+    id="dash-delete"
+    class="alert-dialog"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="dash-del-title"
+    aria-describedby="dash-del-desc"
+  &gt;
     &lt;div class="alert-dialog-content"&gt;
-      &lt;div class="alert-dialog-header"&gt;&lt;h2 class="alert-dialog-title" id="dash-del-title"&gt;Delete Acme Inc.?&lt;/h2&gt;&lt;p class="alert-dialog-description" id="dash-del-desc"&gt;All orders, customers and files are removed for good. Type nothing - this is a demo, nothing will be deleted.&lt;/p&gt;&lt;/div&gt;
-      &lt;div class="alert-dialog-footer"&gt;&lt;button class="btn" data-variant="outline" data-alert-dialog-close&gt;Cancel&lt;/button&gt;&lt;button class="btn" data-variant="destructive" data-alert-dialog-close data-toast="Nothing was deleted" data-toast-desc="This is a clickdummy."&gt;Delete workspace&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="alert-dialog-header"
+        &gt;&lt;h2 class="alert-dialog-title" id="dash-del-title"&gt;Delete Acme Inc.?&lt;/h2
+        &gt;&lt;p class="alert-dialog-description" id="dash-del-desc"
+          &gt;All orders, customers and files are removed for good. Type nothing - this is a demo, nothing will be
+          deleted.&lt;/p
+        &gt;&lt;/div
+      &gt;
+      &lt;div class="alert-dialog-footer"
+        &gt;&lt;button class="btn" data-variant="outline" data-alert-dialog-close&gt;Cancel&lt;/button
+        &gt;&lt;button
+          class="btn"
+          data-variant="destructive"
+          data-alert-dialog-close
+          data-toast="Nothing was deleted"
+          data-toast-desc="This is a clickdummy."
+          &gt;Delete workspace&lt;/button
+        &gt;&lt;/div
+      &gt;
     &lt;/div&gt;
   &lt;/dialog&gt;
 &lt;/div&gt;
@@ -640,11 +2229,26 @@
     // (defuss-dataview); its view is kept in local storage under the app's own
     // prefix (data-persist / data-persist-prefix). df$ is up after all.js ran.
     const PEOPLE = [
-      ['Anna Silva', 'anna@silva.pt', 47], ['Marco Rossi', 'marco@globex.io', 68], ['Priya Natarajan', 'priya@orbit.dev', 16],
-      ['Jonas Weber', 'jonas@weber.de', 0], ['Hannah Lee', 'hannah@northwind.com', 32], ['Sophie Tan', 'sophie@acme.com', 25],
-      ['Emily Carter', 'emily@initech.co', 5], ['Luis Ortega', 'luis@ortega.mx', 0], ['Aron Homberg', 'aron@defuss.dev', -1],
+      ['Anna Silva', 'anna@silva.pt', 47],
+      ['Marco Rossi', 'marco@globex.io', 68],
+      ['Priya Natarajan', 'priya@orbit.dev', 16],
+      ['Jonas Weber', 'jonas@weber.de', 0],
+      ['Hannah Lee', 'hannah@northwind.com', 32],
+      ['Sophie Tan', 'sophie@acme.com', 25],
+      ['Emily Carter', 'emily@initech.co', 5],
+      ['Luis Ortega', 'luis@ortega.mx', 0],
+      ['Aron Homberg', 'aron@defuss.dev', -1],
     ];
-    const PRODUCTS = [['Linen shirt', 64], ['Wool throw', 120], ['Stoneware mug', 22], ['Oak tray', 36], ['Paper lamp', 89], ['Canvas tote', 38], ['Ceramic vase', 48], ['Linen napkins', 14]];
+    const PRODUCTS = [
+      ['Linen shirt', 64],
+      ['Wool throw', 120],
+      ['Stoneware mug', 22],
+      ['Oak tray', 36],
+      ['Paper lamp', 89],
+      ['Canvas tote', 38],
+      ['Ceramic vase', 48],
+      ['Linen napkins', 14],
+    ];
     const STATUS = ['Paid', 'Paid', 'Shipped', 'Shipped', 'Pending', 'Paid', 'Shipped', 'Refunded'];
     const NOW = Date.UTC(2026, 9, 4, 14, 32);
     // 1,284 orders, newest first - deterministic: order i always reads the same
@@ -652,21 +2256,47 @@
       const [name, email, face] = PEOPLE[(i * 7) % PEOPLE.length];
       const [product, price] = PRODUCTS[(i * 5) % PRODUCTS.length];
       const qty = 1 + ((i * 3) % 4);
-      return { id: 20481 - i, order: '#A-' + (20481 - i), customer: name, email, face, product: qty &gt; 1 ? product + ' · ' + qty : product, status: STATUS[(i * 3) % STATUS.length], date: NOW - i * 5.3 * 3600000, total: price * qty };
+      return {
+        id: 20481 - i,
+        order: '#A-' + (20481 - i),
+        customer: name,
+        email,
+        face,
+        product: qty &gt; 1 ? product + ' · ' + qty : product,
+        status: STATUS[(i * 3) % STATUS.length],
+        date: NOW - i * 5.3 * 3600000,
+        total: price * qty,
+      };
     });
-    const avatar = (o) =&gt; o.face &gt; 0
-      ? '&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=' + o.face + '" alt=""&gt;&lt;/span&gt;'
-      : o.face &lt; 0 ? '&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt=""&gt;&lt;/span&gt;'
-        : '&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;' + o.customer.split(' ').map((w) =&gt; w[0]).join('') + '&lt;/span&gt;&lt;/span&gt;';
+    const avatar = (o) =&gt;
+      o.face &gt; 0
+        ? '&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://i.pravatar.cc/96?img=' +
+          o.face +
+          '" alt=""&gt;&lt;/span&gt;'
+        : o.face &lt; 0
+          ? '&lt;span class="avatar" data-size="sm"&gt;&lt;img class="avatar-image" src="https://github.com/kyr0.png" alt=""&gt;&lt;/span&gt;'
+          : '&lt;span class="avatar" data-size="sm"&gt;&lt;span class="avatar-fallback"&gt;' +
+            o.customer
+              .split(' ')
+              .map((w) =&gt; w[0])
+              .join('') +
+            '&lt;/span&gt;&lt;/span&gt;';
     const cells = {
-      order: (el, o) =&gt; { el.classList.add('dash-mono'); el.textContent = o.order; },
+      order: (el, o) =&gt; {
+        el.classList.add('dash-mono');
+        el.textContent = o.order;
+      },
       customer: (el, o) =&gt; {
         df$(el).html('&lt;div class="dash-who"&gt;' + avatar(o) + '&lt;div&gt;&lt;strong&gt;&lt;/strong&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;');
         df$(el).find('strong').text(o.customer);
         df$(el).find('.dash-who &gt; div &gt; span').text(o.email);
       },
       status: (el, o) =&gt; {
-        df$(el).html('&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="' + o.status.toLowerCase() + '"&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;');
+        df$(el).html(
+          '&lt;span class="badge" data-variant="outline"&gt;&lt;span class="dash-dot" data-status="' +
+            o.status.toLowerCase() +
+            '"&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;',
+        );
         df$(el).find('.badge &gt; span:last-child').text(o.status);
       },
     };
@@ -675,11 +2305,15 @@
       const { dataGrid } = df$.shadcn;
       dataGrid.setSource(grid, orders, { cells });
       const bulk = app.querySelector('.dash-bulk');
-      grid.store.subscribe(({ config }) =&gt; {
-        const n = config.selected.length;
-        bulk.hidden = n === 0;
-        app.querySelector('.dash-bulk-count').textContent = n.toLocaleString('en') + (n === 1 ? ' order' : ' orders') + ' selected';
-      }, { immediate: true });
+      grid.store.subscribe(
+        ({ config }) =&gt; {
+          const n = config.selected.length;
+          bulk.hidden = n === 0;
+          app.querySelector('.dash-bulk-count').textContent =
+            n.toLocaleString('en') + (n === 1 ? ' order' : ' orders') + ' selected';
+        },
+        { immediate: true },
+      );
       bulk.addEventListener('click', (e) =&gt; {
         const act = e.target.closest('[data-dash-bulk]')?.dataset.dashBulk;
         if (act === 'all') dataGrid.selectAll(grid);
@@ -687,32 +2321,60 @@
         if (act === 'ship') {
           const ids = grid.store.value.config.selected;
           // an edit is a new rows array (dataview's updateRows) - the grid re-queries it
-          orders = df$.dataview.updateRows(orders, ids, ids.map(() =&gt; ({ status: 'Shipped' })));
+          orders = df$.dataview.updateRows(
+            orders,
+            ids,
+            ids.map(() =&gt; ({ status: 'Shipped' })),
+          );
           dataGrid.setSource(grid, orders, { cells });
           dataGrid.clearSelection(grid);
           toast(ids.length.toLocaleString('en') + (ids.length === 1 ? ' order' : ' orders') + ' marked as shipped');
         }
       });
-      grid.addEventListener('data-grid-activate', (e) =&gt; toast('Order ' + e.detail.record.order, e.detail.record.customer + ' · ' + e.detail.record.product));
+      grid.addEventListener('data-grid-activate', (e) =&gt;
+        toast('Order ' + e.detail.record.order, e.detail.record.customer + ' · ' + e.detail.record.product),
+      );
     };
-    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', wireOrders); else setTimeout(wireOrders);
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', wireOrders);
+    else setTimeout(wireOrders);
     app.querySelector('[data-dash-order]').addEventListener('submit', () =&gt; {
       const who = document.getElementById('dash-no-cust').value;
       toast('Order created', who + ' gets a payment link by email.');
     });
-    app.querySelector('[data-dash-save]').addEventListener('submit', (e) =&gt; { e.preventDefault(); toast('Settings saved'); });
+    app.querySelector('[data-dash-save]').addEventListener('submit', (e) =&gt; {
+      e.preventDefault();
+      toast('Settings saved');
+    });
     // the period switch swaps the revenue series - same chart, morphed
     const SERIES = {
-      '7d': { x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], now: [1640, 1720, 1810, 1760, 2050, 2380, 2190], prev: [1500, 1580, 1610, 1640, 1820, 2010, 1930] },
-      '30d': { x: ['1', '3', '5', '7', '9', '11', '13', '15', '17', '19', '21', '23', '25', '27', '29'], now: [1180, 1320, 1240, 1510, 1460, 1680, 1720, 1590, 1850, 1930, 1870, 2110, 2240, 2190, 2420], prev: [1050, 1110, 1090, 1240, 1210, 1330, 1360, 1300, 1420, 1480, 1450, 1560, 1620, 1590, 1700] },
-      '12m': { x: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], now: [31, 38, 29, 30, 34, 36, 39, 41, 40, 44, 47, 48].map((v) =&gt; v * 1000), prev: [26, 33, 25, 26, 29, 31, 32, 35, 34, 37, 40, 41].map((v) =&gt; v * 1000) },
+      '7d': {
+        x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        now: [1640, 1720, 1810, 1760, 2050, 2380, 2190],
+        prev: [1500, 1580, 1610, 1640, 1820, 2010, 1930],
+      },
+      '30d': {
+        x: ['1', '3', '5', '7', '9', '11', '13', '15', '17', '19', '21', '23', '25', '27', '29'],
+        now: [1180, 1320, 1240, 1510, 1460, 1680, 1720, 1590, 1850, 1930, 1870, 2110, 2240, 2190, 2420],
+        prev: [1050, 1110, 1090, 1240, 1210, 1330, 1360, 1300, 1420, 1480, 1450, 1560, 1620, 1590, 1700],
+      },
+      '12m': {
+        x: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        now: [31, 38, 29, 30, 34, 36, 39, 41, 40, 44, 47, 48].map((v) =&gt; v * 1000),
+        prev: [26, 33, 25, 26, 29, 31, 32, 35, 34, 37, 40, 41].map((v) =&gt; v * 1000),
+      },
     };
     app.querySelector('[data-dash-period]').addEventListener('click', (e) =&gt; {
       const b = e.target.closest('button[value]');
       const chart = df$.shadcn.chart &amp;&amp; df$.shadcn.chart.instance(document.getElementById('dash-revenue'));
       if (!b || !chart) return;
       const s = SERIES[b.value];
-      chart.setOption({ xAxis: { data: s.x }, series: [{ id: 'now', data: s.now }, { id: 'prev', data: s.prev }] });
+      chart.setOption({
+        xAxis: { data: s.x },
+        series: [
+          { id: 'now', data: s.now },
+          { id: 'prev', data: s.prev },
+        ],
+      });
     });
   })();
 &lt;/script&gt;

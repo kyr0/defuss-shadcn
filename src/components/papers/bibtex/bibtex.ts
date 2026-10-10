@@ -93,7 +93,10 @@ function skipGroup(s, i) {
   if (open === '"') {
     let depth = 0;
     for (let j = i + 1; j < s.length; j++) {
-      if (s[j] === '\\') { j++; continue; }
+      if (s[j] === '\\') {
+        j++;
+        continue;
+      }
       if (s[j] === '{') depth++;
       else if (s[j] === '}') depth--;
       else if (s[j] === '"' && depth === 0) return j + 1;
@@ -102,7 +105,10 @@ function skipGroup(s, i) {
   }
   let depth = 0;
   for (let j = i; j < s.length; j++) {
-    if (s[j] === '\\') { j++; continue; }
+    if (s[j] === '\\') {
+      j++;
+      continue;
+    }
     if (s[j] === '{' || s[j] === '(') depth++;
     else if (s[j] === '}' || s[j] === ')') {
       depth--;
@@ -123,11 +129,17 @@ function parse(text: string): BibtexEntry[] {
   let i = 0;
   while ((i = s.indexOf('@', i)) !== -1) {
     const head = /^@\s*([a-zA-Z]+)\s*([{(])/.exec(s.slice(i));
-    if (!head) { i++; continue; }
+    if (!head) {
+      i++;
+      continue;
+    }
     const type = head[1].toLowerCase();
     const start = i + head[0].length - 1;
     const end = skipGroup(s, start);
-    if (type === 'comment' || type === 'preamble' || type === 'string') { i = end; continue; }
+    if (type === 'comment' || type === 'preamble' || type === 'string') {
+      i = end;
+      continue;
+    }
     const body = s.slice(start + 1, end - 1);
     const comma = body.indexOf(',');
     const key = (comma < 0 ? body : body.slice(0, comma)).trim();
@@ -152,7 +164,10 @@ function parse(text: string): BibtexEntry[] {
           bareOnly = false;
         } else {
           const bare = /^[^,#}\s]+/.exec(body.slice(p));
-          if (bare) { value += bare[0]; p += bare[0].length; }
+          if (bare) {
+            value += bare[0];
+            p += bare[0].length;
+          }
         }
         const more = /^\s*#\s*/.exec(body.slice(p));
         if (!more) break;
@@ -160,7 +175,8 @@ function parse(text: string): BibtexEntry[] {
       }
       const name = m[1].toLowerCase();
       if (!(name in fields)) order.push(name);
-      fields[name] = name === 'month' && bareOnly ? (MONTHS[value.trim().toLowerCase().slice(0, 3)] ?? value.trim()) : value.trim();
+      fields[name] =
+        name === 'month' && bareOnly ? (MONTHS[value.trim().toLowerCase().slice(0, 3)] ?? value.trim()) : value.trim();
       if (bareOnly && pieces === 1) bare[name] = value.trim();
       else delete bare[name];
     }
@@ -171,12 +187,51 @@ function parse(text: string): BibtexEntry[] {
 }
 
 /** the month macros of BibTeX (jan ... dec) */
-const MONTHS = { jan: 'January', feb: 'February', mar: 'March', apr: 'April', may: 'May', jun: 'June', jul: 'July', aug: 'August', sep: 'September', oct: 'October', nov: 'November', dec: 'December' };
+const MONTHS = {
+  jan: 'January',
+  feb: 'February',
+  mar: 'March',
+  apr: 'April',
+  may: 'May',
+  jun: 'June',
+  jul: 'July',
+  aug: 'August',
+  sep: 'September',
+  oct: 'October',
+  nov: 'November',
+  dec: 'December',
+};
 /** IEEE's month abbreviations */
-const IEEE_MONTH = { January: 'Jan.', February: 'Feb.', March: 'Mar.', April: 'Apr.', May: 'May', June: 'Jun.', July: 'Jul.', August: 'Aug.', September: 'Sep.', October: 'Oct.', November: 'Nov.', December: 'Dec.' };
+const IEEE_MONTH = {
+  January: 'Jan.',
+  February: 'Feb.',
+  March: 'Mar.',
+  April: 'Apr.',
+  May: 'May',
+  June: 'Jun.',
+  July: 'Jul.',
+  August: 'Aug.',
+  September: 'Sep.',
+  October: 'Oct.',
+  November: 'Nov.',
+  December: 'Dec.',
+};
 
 const ACCENTS = { '"': '̈', "'": '́', '`': '̀', '^': '̂', '~': '̃', '=': '̄', '.': '̇', c: '̧', v: '̌', u: '̆', H: '̋', k: '̨' };
-const SYMBOLS = { ss: 'ß', o: 'ø', O: 'Ø', aa: 'å', AA: 'Å', ae: 'æ', AE: 'Æ', l: 'ł', L: 'Ł', i: 'ı', oe: 'œ', OE: 'Œ' };
+const SYMBOLS = {
+  ss: 'ß',
+  o: 'ø',
+  O: 'Ø',
+  aa: 'å',
+  AA: 'Å',
+  ae: 'æ',
+  AE: 'Æ',
+  l: 'ł',
+  L: 'Ł',
+  i: 'ı',
+  oe: 'œ',
+  OE: 'Œ',
+};
 
 /** a LaTeX-ish value as plain text: accents, dashes, ties, escapes; braces and commands dropped */
 function clean(value) {
@@ -237,7 +292,16 @@ const names = (value) => (value ? splitTop(value, /^\s+and\s+/i).map(parseName) 
 
 /** "Jean-Paul Marie" → "J.-P. M." */
 const initials = (first) =>
-  first.split(/\s+/).filter(Boolean).map((w) => w.split('-').map((p) => (p ? `${p[0].toUpperCase()}.` : '')).join('-')).join(' ');
+  first
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) =>
+      w
+        .split('-')
+        .map((p) => (p ? `${p[0].toUpperCase()}.` : ''))
+        .join('-'),
+    )
+    .join(' ');
 
 // -- formatting ----------------------------------------------------------------------------------
 
@@ -245,7 +309,8 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const it = (s) => `<i>${esc(s)}</i>`;
 /** text with a closing mark unless it already ends in one */
 const end = (s, mark = '.') => (/[.?!]$/.test(s) ? s : s + mark);
-const list = (items, sep, last) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(sep)}${last}${items[items.length - 1]}`);
+const list = (items, sep, last) =>
+  items.length < 2 ? items.join('') : `${items.slice(0, -1).join(sep)}${last}${items[items.length - 1]}`;
 const pages = (p) => clean(p).replace(/\s*[-–]+\s*/g, '–');
 
 /** the fields every style reads, cleaned */
@@ -279,7 +344,9 @@ const isPart = (t) => t === 'inproceedings' || t === 'incollection' || t === 'in
  * targets become links; anything else stays text.
  */
 const anchor = (href, text = href) =>
-  /^https?:\/\//i.test(href) ? `<a class="bibtex-link" href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+  /^https?:\/\//i.test(href)
+    ? `<a class="bibtex-link" href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`
+    : esc(text);
 const doiUrl = (doi) => `https://doi.org/${doi}`;
 const link = (x) => (x.doi ? ` ${anchor(doiUrl(x.doi))}` : x.url ? ` ${anchor(x.url)}` : '');
 
@@ -288,7 +355,8 @@ const STYLES = {
     const who = x.authors.length ? x.authors : x.editors;
     const one = (n) => (n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(initials(n.first))}`);
     let out = who.length ? end(who.length > 1 ? list(who.map(one), ', ', ', &amp; ') : one(who[0])) : '';
-    if (!x.authors.length && x.editors.length) out = out.replace(/\.$/, '') + ` (Ed${x.editors.length > 1 ? 's' : ''}.).`;
+    if (!x.authors.length && x.editors.length)
+      out = out.replace(/\.$/, '') + ` (Ed${x.editors.length > 1 ? 's' : ''}.).`;
     out += ` (${esc(x.year || 'n.d.')}). `;
     if (isArticle(x.type)) {
       out += `${esc(end(x.title))} ${x.container ? it(x.container) : ''}${x.volume ? `, ${it(x.volume)}` : ''}${x.number ? `(${esc(x.number)})` : ''}${x.pages ? `, ${esc(x.pages)}` : ''}.`;
@@ -303,7 +371,14 @@ const STYLES = {
     const a = x.authors;
     const full = (n) => (n.corporate || !n.first ? esc(n.last) : `${esc(n.first)} ${esc(n.last)}`);
     const inv = (n) => (n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(n.first)}`);
-    let out = a.length === 0 ? '' : a.length === 1 ? inv(a[0]) : a.length === 2 ? `${inv(a[0])}, and ${full(a[1])}` : `${inv(a[0])}, et al`;
+    let out =
+      a.length === 0
+        ? ''
+        : a.length === 1
+          ? inv(a[0])
+          : a.length === 2
+            ? `${inv(a[0])}, and ${full(a[1])}`
+            : `${inv(a[0])}, et al`;
     if (out) out = `${end(out)} `;
     const bits = [];
     if (isArticle(x.type) || isPart(x.type)) {
@@ -340,7 +415,8 @@ const STYLES = {
   },
   harvard(x) {
     const a = x.authors;
-    const one = (n) => (n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(initials(n.first).replace(/ /g, ''))}`);
+    const one = (n) =>
+      n.corporate || !n.first ? esc(n.last) : `${esc(n.last)}, ${esc(initials(n.first).replace(/ /g, ''))}`;
     let out = a.length ? `${list(a.map(one), ', ', ' and ')} ` : '';
     out += `(${esc(x.year || 'n.d.')}) `;
     if (isArticle(x.type)) {
@@ -390,10 +466,19 @@ function bibtexOut(entries, { align = true, highlight = true } = {}) {
       const pad = ' '.repeat(Math.max(0, width - k.length));
       const raw = e.bare?.[k];
       const value = raw ?? e.fields[k];
-      const href = k === 'doi' ? doiUrl(value.replace(/^https?:\/\/(dx\.)?doi\.org\//, '')) : /^https?:\/\/\S+$/.test(value) ? value : null;
-      const shown = href && highlight ? `<span class="bibtex-value">${anchor(href, value)}</span>` : span('value', value);
+      const href =
+        k === 'doi'
+          ? doiUrl(value.replace(/^https?:\/\/(dx\.)?doi\.org\//, ''))
+          : /^https?:\/\/\S+$/.test(value)
+            ? value
+            : null;
+      const shown =
+        href && highlight ? `<span class="bibtex-value">${anchor(href, value)}</span>` : span('value', value);
       const [open, close] = raw === undefined ? ['{', '}'] : ['', ''];
-      return { html: `  ${span('field', k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`, text: `  ${k}${pad} = ${open}${value}${close},` };
+      return {
+        html: `  ${span('field', k)}${pad} = ${open}${href && !highlight ? anchor(href, value) : shown}${close},`,
+        text: `  ${k}${pad} = ${open}${value}${close},`,
+      };
     });
     html.push([`@${span('type', e.type)}{${span('key', e.key)},`, ...lines.map((l) => l.html), '}'].join('\n'));
     text.push([`@${e.type}{${e.key},`, ...lines.map((l) => l.text), '}'].join('\n'));
@@ -403,7 +488,12 @@ function bibtexOut(entries, { align = true, highlight = true } = {}) {
 
 /** HTML → its text (the copy of a formatted reference) */
 const plain = (html) =>
-  html.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
 
 /**
  * Format entries in one style. A single entry is one reference; several are a
@@ -426,7 +516,9 @@ const isStyle = (f: string): f is BibtexStyle => (FORMATS as readonly string[]).
 
 /** the formats an element offers (data-formats, else every one) */
 function formatsOf(el): BibtexStyle[] {
-  const own = String(dfDollar(el).attr('data-formats') ?? '').split(/[\s,]+/).filter(isStyle);
+  const own = String(dfDollar(el).attr('data-formats') ?? '')
+    .split(/[\s,]+/)
+    .filter(isStyle);
   return own.length ? own : FORMATS;
 }
 /** the format a state shows: its config, else the authored data-format, else the first offered */
@@ -447,8 +539,10 @@ function applyMarkup(el, state, authored) {
   dfDollar(el).attr('data-copied', state.name === 'copied' ? '' : null);
 }
 
-const COPY_ICON = '<svg class="bibtex-icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-const DONE_ICON = '<svg class="bibtex-icon-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+const COPY_ICON =
+  '<svg class="bibtex-icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+const DONE_ICON =
+  '<svg class="bibtex-icon-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 
 /** build the bar (format tabs + copy) and the view once - runtime-owned parts */
 function build(root) {
@@ -456,14 +550,19 @@ function build(root) {
   const tag = inline ? 'span' : 'div';
   const variant = dfDollar(root).attr('data-variant');
   const offered = formatsOf(root);
-  const tabs = offered.length > 1 && variant !== 'minimal' && variant !== 'inline'
-    ? `<${tag} class="bibtex-tabs" role="tablist" aria-label="Citation format">${offered
-        .map((f) => `<button type="button" class="bibtex-tab" role="tab" data-format="${f}" aria-selected="false" tabindex="-1">${LABELS[f]}</button>`)
-        .join('')}</${tag}>`
-    : '';
-  const copy = dfDollar(root).attr('data-copy') === 'none'
-    ? ''
-    : `<button type="button" class="bibtex-copy">${COPY_ICON}${DONE_ICON}<span class="bibtex-copy-label">Copy</span></button>`;
+  const tabs =
+    offered.length > 1 && variant !== 'minimal' && variant !== 'inline'
+      ? `<${tag} class="bibtex-tabs" role="tablist" aria-label="Citation format">${offered
+          .map(
+            (f) =>
+              `<button type="button" class="bibtex-tab" role="tab" data-format="${f}" aria-selected="false" tabindex="-1">${LABELS[f]}</button>`,
+          )
+          .join('')}</${tag}>`
+      : '';
+  const copy =
+    dfDollar(root).attr('data-copy') === 'none'
+      ? ''
+      : `<button type="button" class="bibtex-copy">${COPY_ICON}${DONE_ICON}<span class="bibtex-copy-label">Copy</span></button>`;
   const bar = `<${tag} class="bibtex-bar">${tabs}${copy}<${tag} class="bibtex-status" role="status"></${tag}></${tag}>`;
   const view = `<${tag} class="bibtex-view"${tabs ? ' role="tabpanel"' : ''}></${tag}>`;
   const caption = dfDollar(root).children('figcaption').get(0);
@@ -480,7 +579,10 @@ function build(root) {
   root._view = dfDollar(root).children('.bibtex-view').get(0);
   const tablist = dfDollar(root._bar).find('[role="tablist"]').get(0);
   if (tablist) {
-    dfDollar(root._view).attr('id', root._view.id || `${root.id || 'bibtex'}-view-${Math.random().toString(36).slice(2, 7)}`);
+    dfDollar(root._view).attr(
+      'id',
+      root._view.id || `${root.id || 'bibtex'}-view-${Math.random().toString(36).slice(2, 7)}`,
+    );
     dfDollar(tablist).find('[role="tab"]').attr('aria-controls', root._view.id);
   }
 }
@@ -494,32 +596,53 @@ function show(root, fmt) {
   root._text = out.text;
   const inline = root.tagName === 'SPAN';
   let markup;
-  if (fmt === 'bibtex') markup = inline ? `<code class="bibtex-code">${out.html}</code>` : `<pre class="bibtex-code"><code>${out.html}</code></pre>`;
-  else if (out.list && !inline) markup = `<ol class="bibtex-list">${out.html.map((r) => `<li class="bibtex-ref">${r}</li>`).join('')}</ol>`;
-  else markup = inline ? `<span class="bibtex-ref">${out.html.join(' ')}</span>` : `<p class="bibtex-ref">${out.html.join(' ')}</p>`;
+  if (fmt === 'bibtex')
+    markup = inline
+      ? `<code class="bibtex-code">${out.html}</code>`
+      : `<pre class="bibtex-code"><code>${out.html}</code></pre>`;
+  else if (out.list && !inline)
+    markup = `<ol class="bibtex-list">${out.html.map((r) => `<li class="bibtex-ref">${r}</li>`).join('')}</ol>`;
+  else
+    markup = inline
+      ? `<span class="bibtex-ref">${out.html.join(' ')}</span>`
+      : `<p class="bibtex-ref">${out.html.join(' ')}</p>`;
   dfDollar(root._view).html(markup);
-  dfDollar(root._bar).find('.bibtex-tab').each((_i, tab) => {
-    const on = dfDollar(tab).attr('data-format') === fmt;
-    dfDollar(tab).attr('aria-selected', String(on)).attr('tabindex', on ? '0' : '-1');
-  });
+  dfDollar(root._bar)
+    .find('.bibtex-tab')
+    .each((_i, tab) => {
+      const on = dfDollar(tab).attr('data-format') === fmt;
+      dfDollar(tab)
+        .attr('aria-selected', String(on))
+        .attr('tabindex', on ? '0' : '-1');
+    });
   dfDollar(root._bar).find('.bibtex-copy').attr('aria-label', `Copy ${LABELS[fmt]}`);
 }
 
 /** UI side of setState (AGENTS.md "State API"): the attributes, the view, the copy feedback */
 function triggerStateChange(root, state) {
   // the copy feedback keeps the format on show when none is named
-  if (state.name === 'copied' && !state.config?.format && root._shown) state = { ...state, config: { ...state.config, format: root._shown } };
+  if (state.name === 'copied' && !state.config?.format && root._shown)
+    state = { ...state, config: { ...state.config, format: root._shown } };
   applyMarkup(root, state, root._authored);
   const fmt = dfDollar(root).attr('data-format');
   if (fmt !== root._shown) {
     root._shown = fmt;
     show(root, fmt);
     // Fires when the shown format changes - by a tab, the keyboard or setState; the format and the text a copy takes.
-    root.dispatchEvent(new CustomEvent<BibtexFormatDetail>('bibtex-format', { bubbles: true, detail: { format: fmt as BibtexStyle, text: root._text } }));
+    root.dispatchEvent(
+      new CustomEvent<BibtexFormatDetail>('bibtex-format', {
+        bubbles: true,
+        detail: { format: fmt as BibtexStyle, text: root._text },
+      }),
+    );
   }
   const copied = state.name === 'copied';
-  dfDollar(root._bar).find('.bibtex-copy-label').text(copied ? 'Copied' : 'Copy');
-  dfDollar(root._bar).find('.bibtex-status').text(copied ? `${LABELS[fmt]} copied to the clipboard` : '');
+  dfDollar(root._bar)
+    .find('.bibtex-copy-label')
+    .text(copied ? 'Copied' : 'Copy');
+  dfDollar(root._bar)
+    .find('.bibtex-status')
+    .text(copied ? `${LABELS[fmt]} copied to the clipboard` : '');
   clearTimeout(root._copiedTimer);
   if (copied) {
     root._copiedTimer = setTimeout(() => {
@@ -534,7 +657,10 @@ export const bibtexApi = componentState({
   states: bibtexStates,
   apply: (root, state) => triggerStateChange(root, state),
   // getState reports the format the block shows, whatever set it
-  read: (root, state) => ({ name: dfDollar(root).attr('data-state-name') || state.name, config: { ...state.config, format: dfDollar(root).attr('data-format') } }),
+  read: (root, state) => ({
+    name: dfDollar(root).attr('data-state-name') || state.name,
+    config: { ...state.config, format: dfDollar(root).attr('data-format') },
+  }),
   markup: (el, state) => {
     const authored = state.model.attrs.find(([name]) => name === 'data-format');
     applyMarkup(el, state, authored ? authored[1] : null);
@@ -556,7 +682,12 @@ async function copy(root) {
   }
   if (ok) root.api.setState('copied', { format: fmt });
   // Fires after a copy - the format, the text copied and whether the clipboard took it (false: the view was selected instead).
-  root.dispatchEvent(new CustomEvent<BibtexCopyDetail>('bibtex-copy', { bubbles: true, detail: { format: fmt as BibtexStyle, text: root._text, ok } }));
+  root.dispatchEvent(
+    new CustomEvent<BibtexCopyDetail>('bibtex-copy', {
+      bubbles: true,
+      detail: { format: fmt as BibtexStyle, text: root._text, ok },
+    }),
+  );
   return ok;
 }
 
@@ -574,13 +705,19 @@ df$.bibtex = {
    * @param options - bibtex only: align the = signs (default true), highlight the parts (default true)
    * @returns the markup, the plain text and whether it is a list
    */
-  format: (entries: BibtexEntry[] | string, style: BibtexStyle, options?: { align?: boolean; highlight?: boolean }): BibtexOutput => format(typeof entries === 'string' ? parse(entries) : entries, style, options),
+  format: (
+    entries: BibtexEntry[] | string,
+    style: BibtexStyle,
+    options?: { align?: boolean; highlight?: boolean },
+  ): BibtexOutput => format(typeof entries === 'string' ? parse(entries) : entries, style, options),
   /**
    * Show a format on an element (state 'default' with that format).
    * @param target - the .bibtex element or its selector
    * @param fmt - the format to show (one the element offers)
    */
-  show: (target: string | HTMLElement, fmt: BibtexStyle): void => { resolve(target)?.api.setState('default', { format: fmt }); },
+  show: (target: string | HTMLElement, fmt: BibtexStyle): void => {
+    resolve(target)?.api.setState('default', { format: fmt });
+  },
   /**
    * Copy what an element shows.
    * @param target - the .bibtex element or its selector

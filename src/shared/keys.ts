@@ -32,8 +32,7 @@ let listening = false;
 
 const isEditable = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
-  (target.isContentEditable ||
-    target.closest('input, textarea, select, [contenteditable="true"]') !== null);
+  (target.isContentEditable || target.closest('input, textarea, select, [contenteditable="true"]') !== null);
 
 /** Did this key event come from an editable element (a field being typed in)? */
 export const isEditableTarget = (event: Event): boolean => isEditable(event.target);

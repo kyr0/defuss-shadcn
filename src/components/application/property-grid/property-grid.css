@@ -175,8 +175,12 @@
     font-family: var(--font-mono);
     font-size: 0.92em;
 
-    &[data-value="true"] { color: var(--chart-2); }
-    &[data-value="false"] { color: var(--muted-foreground); }
+    &[data-value="true"] {
+      color: var(--chart-2);
+    }
+    &[data-value="false"] {
+      color: var(--muted-foreground);
+    }
   }
   .property-grid-color {
     display: inline-flex;
@@ -245,17 +249,28 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .property-grid-toggle::before { transition: none; }
+    .property-grid-toggle::before {
+      transition: none;
+    }
   }
   @media (prefers-contrast: more) {
     .property-grid-key,
-    .property-grid-table tbody tr + tr > * { border-color: var(--foreground); }
+    .property-grid-table tbody tr + tr > * {
+      border-color: var(--foreground);
+    }
   }
   @media (forced-colors: active) {
     .property-grid,
     .property-grid-key,
-    .property-grid-table thead th { border-color: CanvasText; }
-    .property-grid-value:focus-visible { outline: 2px solid Highlight; box-shadow: none; }
-    .property-grid-swatch { forced-color-adjust: none; }
+    .property-grid-table thead th {
+      border-color: CanvasText;
+    }
+    .property-grid-value:focus-visible {
+      outline: 2px solid Highlight;
+      box-shadow: none;
+    }
+    .property-grid-swatch {
+      forced-color-adjust: none;
+    }
   }
 }

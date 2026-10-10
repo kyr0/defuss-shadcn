@@ -23,7 +23,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, dataSource, parseFilter, virtualWindow, sizerHeight, scrollTopFor } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, dataSource, parseFilter, virtualWindow, sizerHeight, scrollTopFor, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const virtualListStates = ['default', 'loading', 'empty'];
@@ -112,7 +112,9 @@ const defaultRenderRow = (row, index) => {
  * the e2e render round trip proves they agree.
  */
 function applyMarkup(el, stateName) {
-    dfDollar(el).attr('data-state', stateName).attr('aria-busy', stateName === 'loading' ? 'true' : null);
+    dfDollar(el)
+        .attr('data-state', stateName)
+        .attr('aria-busy', stateName === 'loading' ? 'true' : null);
 }
 /**
  * A source's query changed (or its rows): evaluate it (cached per query in
@@ -127,7 +129,9 @@ function refresh(list, config) {
     if (columnsOf(list) > 1)
         list.setAttribute('aria-rowcount', String(rowCount(list)));
     if (list._rows) {
-        Array.from(list._rows.children).forEach((row) => { row._index = -1; });
+        Array.from(list._rows.children).forEach((row) => {
+            row._index = -1;
+        });
     }
     return itemCount(list);
 }
@@ -207,7 +211,9 @@ df$.virtualList = {
         list._result = list._source.query(query);
         if (render)
             list._render = render;
-        list._render ??= (el, record) => { el.textContent = String(record[idField]); };
+        list._render ??= (el, record) => {
+            el.textContent = String(record[idField]);
+        };
         if (list.store)
             virtualListApi.setState(list, 'default', { filters: [], sorters: [], ...query });
         else
@@ -247,7 +253,8 @@ if (!document.__virtualListQueryInit) {
             return;
         clearTimeout(list._filterTimer);
         list._filterTimer = setTimeout(() => {
-            const filters = dfDollar(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray()
+            const filters = dfDollar(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`)
+                .toArray()
                 .map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, (el.dataset.kind || 'text')))
                 .filter(Boolean);
             virtualListApi.setState(list, 'default', { filters });
@@ -259,11 +266,15 @@ if (!document.__virtualListQueryInit) {
         if (!list?._source || !list.store)
             return;
         const [field, direction] = select.value.split(':');
-        virtualListApi.setState(list, 'default', { sorters: field ? [{ field, direction: direction === 'desc' ? 'desc' : 'asc' }] : [] });
+        virtualListApi.setState(list, 'default', {
+            sorters: field ? [{ field, direction: direction === 'desc' ? 'desc' : 'asc' }] : [],
+        });
     });
 }
 function init() {
-    dfDollar('.virtual-list:not([data-init])').toArray().forEach((list) => {
+    dfDollar('.virtual-list:not([data-init])')
+        .toArray()
+        .forEach((list) => {
         list.dataset.init = '';
         // the sizer gives the scrollbar its length; the pool rides inside it
         let sizer = dfDollar(list).find('.virtual-list-sizer').get(0);
@@ -280,8 +291,7 @@ function init() {
         }
         list._rows = rows;
         list._renderRow = list._renderRow || defaultRenderRow;
-        list._rowHeight =
-            parseFloat(getComputedStyle(list).getPropertyValue('--virtual-list-row-height')) || 40;
+        list._rowHeight = parseFloat(getComputedStyle(list).getPropertyValue('--virtual-list-row-height')) || 40;
         // Data may arrive BEFORE this element is initialized: on SPA navigation the
         // page's setup runs synchronously after the content swap, while this init
         // is a MutationObserver callback that lands afterwards. Keep what setData

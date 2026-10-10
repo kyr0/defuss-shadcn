@@ -12,12 +12,37 @@
     max-height: 100vh;
     pointer-events: none;
 
-    &[data-position="bottom-right"] { bottom: 0; right: 0; }
-    &[data-position="bottom-left"]  { bottom: 0; left: 0; }
-    &[data-position="top-right"]    { top: 0; right: 0; flex-direction: column; }
-    &[data-position="top-left"]     { top: 0; left: 0; flex-direction: column; }
-    &[data-position="top-center"]   { top: 0; left: 50%; transform: translateX(-50%); flex-direction: column; align-items: center; }
-    &[data-position="bottom-center"]{ bottom: 0; left: 50%; transform: translateX(-50%); align-items: center; }
+    &[data-position="bottom-right"] {
+      bottom: 0;
+      right: 0;
+    }
+    &[data-position="bottom-left"] {
+      bottom: 0;
+      left: 0;
+    }
+    &[data-position="top-right"] {
+      top: 0;
+      right: 0;
+      flex-direction: column;
+    }
+    &[data-position="top-left"] {
+      top: 0;
+      left: 0;
+      flex-direction: column;
+    }
+    &[data-position="top-center"] {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: column;
+      align-items: center;
+    }
+    &[data-position="bottom-center"] {
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      align-items: center;
+    }
   }
 
   /* -- Toast ---------------------------------------------------- */
@@ -42,7 +67,9 @@
     pointer-events: auto;
     opacity: 0;
     transform: translateY(0.5rem);
-    transition: opacity 200ms ease, transform 200ms ease;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
 
     &:popover-open {
       opacity: 1;
@@ -52,25 +79,66 @@
     /* -- Corner placement (top layer - see note above) ------------
        --toast-stack: measured px offset of the stack below this toast;
        the first toast is 0, so default bottom-right lands at the edge. */
-    [data-position="bottom-right"] & { bottom: calc(1rem + var(--toast-stack, 0px)); right: 1rem; }
-    [data-position="bottom-left"] & { bottom: calc(1rem + var(--toast-stack, 0px)); left: 1rem; }
-    [data-position="top-right"] & { top: calc(1rem + var(--toast-stack, 0px)); right: 1rem; }
-    [data-position="top-left"] & { top: calc(1rem + var(--toast-stack, 0px)); left: 1rem; }
-    [data-position="top-center"] & { top: calc(1rem + var(--toast-stack, 0px)); left: 50%; translate: -50% 0; }
-    [data-position="bottom-center"] & { bottom: calc(1rem + var(--toast-stack, 0px)); left: 50%; translate: -50% 0; }
+    [data-position="bottom-right"] & {
+      bottom: calc(1rem + var(--toast-stack, 0px));
+      right: 1rem;
+    }
+    [data-position="bottom-left"] & {
+      bottom: calc(1rem + var(--toast-stack, 0px));
+      left: 1rem;
+    }
+    [data-position="top-right"] & {
+      top: calc(1rem + var(--toast-stack, 0px));
+      right: 1rem;
+    }
+    [data-position="top-left"] & {
+      top: calc(1rem + var(--toast-stack, 0px));
+      left: 1rem;
+    }
+    [data-position="top-center"] & {
+      top: calc(1rem + var(--toast-stack, 0px));
+      left: 50%;
+      translate: -50% 0;
+    }
+    [data-position="bottom-center"] & {
+      bottom: calc(1rem + var(--toast-stack, 0px));
+      left: 50%;
+      translate: -50% 0;
+    }
 
     /* -- Sizes + Density ------------------------------------------
        data-size scales the toast's width envelope (sm/md/lg, md == the
        unsized default); data-density is the whitespace policy - padding and
        the content gap at the shared 0.75 / 1 / 1.25 ratio, comfortable ==
        the unsized default. Both live on the .toast element itself. */
-    &[data-size="sm"] { min-width: 16rem; max-width: 20rem; }
-    &[data-size="md"] { min-width: 20rem; max-width: 26rem; }
-    &[data-size="lg"] { min-width: 24rem; max-width: 32rem; }
+    &[data-size="sm"] {
+      min-width: 16rem;
+      max-width: 20rem;
+    }
+    &[data-size="md"] {
+      min-width: 20rem;
+      max-width: 26rem;
+    }
+    &[data-size="lg"] {
+      min-width: 24rem;
+      max-width: 32rem;
+    }
 
-    &[data-density="compact"]    { padding: 0.75rem; & .toast-content { gap: 0.5rem; } }
-    &[data-density="comfortable"] { padding: 1rem; }
-    &[data-density="spacious"]   { padding: 1.25rem; & .toast-content { gap: 1rem; } }
+    &[data-density="compact"] {
+      padding: 0.75rem;
+      & .toast-content {
+        gap: 0.5rem;
+      }
+    }
+    &[data-density="comfortable"] {
+      padding: 1rem;
+    }
+    &[data-density="spacious"] {
+      padding: 1.25rem;
+      & .toast-content {
+        gap: 1rem;
+      }
+    }
 
     /* -- Variants ------------------------------------------------- */
     &[data-variant="destructive"] {
@@ -88,19 +156,25 @@
     &[data-variant="success"] {
       border-color: oklch(0.65 0.2 145);
 
-      & .toast-icon { color: oklch(0.65 0.2 145); }
+      & .toast-icon {
+        color: oklch(0.65 0.2 145);
+      }
     }
 
     &[data-variant="warning"] {
       border-color: oklch(0.75 0.18 75);
 
-      & .toast-icon { color: oklch(0.75 0.18 75); }
+      & .toast-icon {
+        color: oklch(0.75 0.18 75);
+      }
     }
 
     &[data-variant="info"] {
       border-color: oklch(0.6 0.15 250);
 
-      & .toast-icon { color: oklch(0.6 0.15 250); }
+      & .toast-icon {
+        color: oklch(0.6 0.15 250);
+      }
     }
   }
 
@@ -111,16 +185,25 @@
     }
   }
 
-
   /* -- Named animations (options.animation) ------------------------
      df$.anim plays the entrance / exit; the CSS fade stands down. */
   .toast[data-anim] {
-    transition: bottom 220ms ease, top 220ms ease, scale 220ms ease, opacity 220ms ease;
+    transition:
+      bottom 220ms ease,
+      top 220ms ease,
+      scale 220ms ease,
+      opacity 220ms ease;
 
-    &:popover-open { opacity: 1; transform: none; }
+    &:popover-open {
+      opacity: 1;
+      transform: none;
+    }
   }
   @starting-style {
-    .toast[data-anim]:popover-open { opacity: 1; transform: none; }
+    .toast[data-anim]:popover-open {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* -- Pile (df$.shadcn.toast.configure({ stack: 'pile' })) ----------
@@ -129,7 +212,12 @@
      into a list while the pointer or focus is inside the pile. A "+n" badge
      counts the hidden ones. */
   .toast-container[data-stack="pile"] .toast {
-    transition: opacity 200ms ease, transform 200ms ease, bottom 220ms cubic-bezier(0.2, 0.8, 0.2, 1), top 220ms cubic-bezier(0.2, 0.8, 0.2, 1), scale 220ms ease;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease,
+      bottom 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      top 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      scale 220ms ease;
   }
   .toast[data-piled] {
     opacity: 0 !important;
@@ -153,7 +241,10 @@
     text-align: center;
     box-shadow: var(--shadow-sm);
   }
-  .toast-container[data-position^="top"] .toast[data-more]::after { inset-block-start: auto; inset-block-end: -0.5rem; }
+  .toast-container[data-position^="top"] .toast[data-more]::after {
+    inset-block-start: auto;
+    inset-block-end: -0.5rem;
+  }
 
   /* -- Aura (options.aura) ------------------------------------------
      The toast is the ring of light (shapes.css .aura), its content sits on
@@ -170,7 +261,10 @@
     background-color: var(--popover);
     color: var(--popover-foreground);
 
-    .toast[data-variant="destructive"] > & { background-color: var(--destructive); color: var(--destructive-foreground); }
+    .toast[data-variant="destructive"] > & {
+      background-color: var(--destructive);
+      color: var(--destructive-foreground);
+    }
   }
 
   /* -- Inner elements ------------------------------------------- */
@@ -211,7 +305,9 @@
     cursor: pointer;
     flex-shrink: 0;
     border-radius: calc(var(--radius) * 0.5);
-    transition: color 150ms, background 150ms;
+    transition:
+      color 150ms,
+      background 150ms;
 
     &:hover {
       color: var(--foreground);

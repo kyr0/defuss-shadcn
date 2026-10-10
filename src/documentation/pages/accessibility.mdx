@@ -434,7 +434,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </p>
 
 ```html example schema="none" label="Extra context for a screen reader" hint="The link reads 'Read the changelog' on screen; a screen reader announces 'Read the changelog (opens the release history)'. The preview loads the real module - the phrase is in the accessibility tree, clipped to a 1px box."
-<a class="btn" data-variant="link" href="#">Read the changelog<span class="sr-only"> (opens the release history)</span></a>
+<a class="btn" data-variant="link" href="#"
+  >Read the changelog<span class="sr-only"> (opens the release history)</span></a
+>
 ```
 
 <p class="text-xs text-muted-foreground mt-3 mb-8">
@@ -444,9 +446,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 id="install" class="h2-display">Load the accessibility module</h2>
 
 ```html title="index.html · head"
-<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
 <!-- optional module: .sr-only / .not-sr-only -->
-<link rel="stylesheet" href="../theme/utils/accessibility.css">
+<link rel="stylesheet" href="../theme/utils/accessibility.css" />
 ```
 
 <p class="text-sm text-muted-foreground mt-8 mb-8"> Each component's <code>component-skill.md</code> includes a dedicated ARIA section listing the exact attributes required for that component. See the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener" class="btn" data-variant="link">WAI-ARIA APG</a> for the full specifications these patterns implement. </p>

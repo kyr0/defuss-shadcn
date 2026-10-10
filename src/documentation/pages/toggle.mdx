@@ -61,30 +61,70 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example label="Default" hint="Transparent at rest. Background appears on hover and when pressed."
 <div class="flex items-center gap-3">
   <button class="toggle" aria-pressed="false" aria-label="Bookmark (unpressed)">
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
     </svg>
   </button>
   <button class="toggle" aria-pressed="true" aria-label="Bookmark (pressed)">
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
     </svg>
   </button>
-  <span class="text-muted-foreground" style="font-size:0.75rem;margin-left:0.5rem;">← unpressed vs pressed</span>
+  <span class="text-muted-foreground" style="font-size: 0.75rem; margin-left: 0.5rem">← unpressed vs pressed</span>
 </div>
 ```
 
 ```html example label="Outline" hint="Visible border and subtle shadow at rest."
-<div style="display:flex;gap:0.5rem;">
+<div style="display: flex; gap: 0.5rem">
   <button class="toggle" data-variant="outline" aria-pressed="true" aria-label="Toggle italic">
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <line x1="19" x2="10" y1="4" y2="4"></line>
       <line x1="14" x2="5" y1="20" y2="20"></line>
       <line x1="15" x2="9" y1="4" y2="20"></line>
     </svg>
   </button>
   <button class="toggle" data-variant="outline" aria-pressed="false" aria-label="Toggle bold">
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path>
     </svg>
   </button>
@@ -92,7 +132,24 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```
 
 ```html example label="With Text" hint="Icon and label together."
-<button class="toggle" aria-pressed="false"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="10" y1="4" y2="4"></line><line x1="14" x2="5" y1="20" y2="20"></line><line x1="15" x2="9" y1="4" y2="20"></line></svg> Italic </button>
+<button class="toggle" aria-pressed="false"
+  ><svg
+    aria-hidden="true"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line x1="19" x2="10" y1="4" y2="4"></line>
+    <line x1="14" x2="5" y1="20" y2="20"></line>
+    <line x1="15" x2="9" y1="4" y2="20"></line>
+  </svg>
+  Italic
+</button>
 ```
 
 ```html example label="Size" hint="The full five-step scale via data-size - the default equals md."

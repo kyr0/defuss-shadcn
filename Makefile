@@ -2,7 +2,7 @@
 # KISS: every target delegates to package.json so there is one source of truth.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup dev test test-run coverage e2e e2e-all lint verify screenshots minify stats build docs purge-cdn bench metrics start stop restart status log
+.PHONY: help setup dev test test-run coverage e2e e2e-all lint format format-check verify screenshots minify stats build docs purge-cdn bench metrics start stop restart status log
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -29,8 +29,14 @@ e2e: ## E2E tests whose inputs changed since they last passed (tests/e2e/*.e2e.t
 e2e-all: ## Every E2E test, changed or not (releases: E2E_ALL=1)
 	bun run e2e --all
 
-lint: ## Lint src/, tests/ and scripts/ with oxlint
+lint: ## Lint src/, tests/ and scripts/ with oxlint, then the format check
 	bun run lint
+
+format: ## Format component ts/css, shared ts, theme css (oxfmt) and the html example fences of the doc pages (Prettier's HTML printer)
+	bun run format
+
+format-check: ## Fail on any file `make format` would change (part of `make lint`)
+	bun run format:check
 
 typecheck: ## Strict tsc type-check of tests/ and scripts/ (no emit)
 	bun run typecheck

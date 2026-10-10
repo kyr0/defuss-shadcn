@@ -36,7 +36,11 @@
     /* open: fade + slide in; closed: out of the layout */
     opacity: 0;
     translate: 0 -4px;
-    transition: opacity 120ms ease, translate 120ms ease, display 120ms allow-discrete, overlay 120ms allow-discrete;
+    transition:
+      opacity 120ms ease,
+      translate 120ms ease,
+      display 120ms allow-discrete,
+      overlay 120ms allow-discrete;
 
     &:popover-open {
       display: flex;
@@ -170,8 +174,13 @@
   }
 
   @keyframes autocomplete-pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.35; }
+    0%,
+    100% {
+      opacity: 0.7;
+    }
+    50% {
+      opacity: 0.35;
+    }
   }
 }
 

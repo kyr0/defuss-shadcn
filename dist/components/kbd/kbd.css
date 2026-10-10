@@ -24,7 +24,10 @@
     line-height: 1;
     white-space: nowrap;
     vertical-align: middle;
-    transition: translate 0.08s ease-out, border-bottom-width 0.08s ease-out, background-color 0.08s ease-out;
+    transition:
+      translate 0.08s ease-out,
+      border-bottom-width 0.08s ease-out,
+      background-color 0.08s ease-out;
 
     &[data-size="sm"] {
       --kbd-size: 1.125rem;

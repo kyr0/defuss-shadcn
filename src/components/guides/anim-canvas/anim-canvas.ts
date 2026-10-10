@@ -26,7 +26,17 @@
 // emitted binding can only destructure names that exist there. Name
 // validation below goes through anim.names, keeping the same fail-loud
 // contract animChannel has.
-import { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  defussQuery,
+  anim,
+  bindGlobalKeys,
+  entrance,
+  draw,
+  animateCount,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 import type { AnimChannel, AnimDirection, AnimOptions } from '../../../shared/anim.js';
 
 const df$ = defussGlobals();
@@ -140,8 +150,7 @@ function animOptsFor(slide: HTMLElement, travel: AnimDirection): AnimOptions {
 const transformFor = (v: BoardView): string => `translate(${v.tx}px, ${v.ty}px) scale(${v.s})`;
 
 const reducedMotion = (): boolean =>
-  typeof globalThis.matchMedia === 'function' &&
-  globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  typeof globalThis.matchMedia === 'function' && globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** Root-level pan duration (data-pan-duration, ms); 1500 default, 1 when reduced. */
 function panDuration(root: CanvasRoot): number {
@@ -231,11 +240,14 @@ function applySlideState(root: CanvasRoot, ctx: CanvasCtx): void {
     else s.setAttribute('aria-hidden', 'true');
   }
   // authored directional controls follow the active slide's relation map
-  dfDollar(root).find('[data-anim-canvas-go]').toArray().forEach((el) => {
-    const dir = el.getAttribute('data-anim-canvas-go');
-    if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
-    el.disabled = !ctx.active.dataset[dir as AnimDirection];
-  });
+  dfDollar(root)
+    .find('[data-anim-canvas-go]')
+    .toArray()
+    .forEach((el) => {
+      const dir = el.getAttribute('data-anim-canvas-go');
+      if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
+      el.disabled = !ctx.active.dataset[dir as AnimDirection];
+    });
 }
 
 /** The one place slide activation (and its mirrors) changes. */
@@ -283,9 +295,12 @@ function replayContent(slide: HTMLElement, offset: number): void {
   (dfDollar(slide).find('[data-df-entrance]').toArray() as HTMLElement[]).forEach((el) => {
     entrance(el, undefined, { delay: withOffset(el) });
   });
-  dfDollar(slide).find<SVGElement>('[data-df-draw]').toArray().forEach((el) => {
-    draw(el, { delay: withOffset(el) });
-  });
+  dfDollar(slide)
+    .find<SVGElement>('[data-df-draw]')
+    .toArray()
+    .forEach((el) => {
+      draw(el, { delay: withOffset(el) });
+    });
   (dfDollar(slide).find('[data-count]').toArray() as HTMLElement[]).forEach((el) => {
     animateCount(el, { delay: offset });
   });
@@ -411,17 +426,25 @@ function applyMarkup(root: Element, stateName: string, config: Record<string, un
   const slides = dfDollar(root).find('.anim-canvas-slide').toArray() as HTMLElement[];
   if (slides.length === 0) return;
   const overview = stateName === 'overview' && config.value !== false;
-  const active = slides.find((sl) => sl.id === config.slide) ?? slides.find((sl) => sl.hasAttribute('data-active')) ?? slides[0];
-  dfDollar(root).attr('data-overview', overview ? '' : null).attr('data-current-slide', active.id);
+  const active =
+    slides.find((sl) => sl.id === config.slide) ?? slides.find((sl) => sl.hasAttribute('data-active')) ?? slides[0];
+  dfDollar(root)
+    .attr('data-overview', overview ? '' : null)
+    .attr('data-current-slide', active.id);
   for (const sl of slides) {
     const on = overview || sl === active;
-    dfDollar(sl).attr('data-active', sl === active ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', on ? null : 'true');
+    dfDollar(sl)
+      .attr('data-active', sl === active ? '' : null)
+      .attr('inert', on ? null : '')
+      .attr('aria-hidden', on ? null : 'true');
   }
-  dfDollar(root).find('[data-anim-canvas-go]').each((_i, el) => {
-    const dir = el.getAttribute('data-anim-canvas-go');
-    if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
-    dfDollar(el).attr('disabled', active.dataset[dir as AnimDirection] ? null : '');
-  });
+  dfDollar(root)
+    .find('[data-anim-canvas-go]')
+    .each((_i, el) => {
+      const dir = el.getAttribute('data-anim-canvas-go');
+      if (dir === 'overview' || !(el instanceof HTMLButtonElement)) return;
+      dfDollar(el).attr('disabled', active.dataset[dir as AnimDirection] ? null : '');
+    });
 }
 
 function triggerStateChange(root: CanvasRoot, stateName: string, config: Record<string, unknown> = {}): void {
@@ -473,7 +496,7 @@ df$.animCanvasStates = animCanvasStates;
 function pickCanvas(target: EventTarget | null): CanvasRoot | null {
   const focused = target instanceof HTMLElement ? (target.closest('.anim-canvas') as CanvasRoot | null) : null;
   if (focused) return focused;
-  const all = Array.from((dfDollar('.anim-canvas').toArray() as CanvasRoot[]));
+  const all = Array.from(dfDollar('.anim-canvas').toArray() as CanvasRoot[]);
   return (
     all.find((r) => {
       const b = r.getBoundingClientRect();
@@ -491,7 +514,15 @@ function bindKeys(): void {
   bindGlobalKeys((e) => {
     const key = e.key;
     const dir: AnimDirection | null =
-      key === 'ArrowRight' ? 'east' : key === 'ArrowLeft' ? 'west' : key === 'ArrowDown' ? 'south' : key === 'ArrowUp' ? 'north' : null;
+      key === 'ArrowRight'
+        ? 'east'
+        : key === 'ArrowLeft'
+          ? 'west'
+          : key === 'ArrowDown'
+            ? 'south'
+            : key === 'ArrowUp'
+              ? 'north'
+              : null;
     const toggle = key === 'o' || key === 'O' || key === 'Escape';
     if (!dir && !toggle) return;
     const root = pickCanvas(e.target);
@@ -515,11 +546,11 @@ function init(): void {
     // the board: ONE transformed layer holding every slide. Reused when the
     // markup already carries one (the docs CodeExample round-trips serialized
     // live DOM back into the editor - init must stay idempotent for it).
-    let board = ((dfDollar(root).find(':scope > .anim-canvas-board').get(0) ?? null) as HTMLElement | null);
+    let board = (dfDollar(root).find(':scope > .anim-canvas-board').get(0) ?? null) as HTMLElement | null;
     if (!board) {
       board = document.createElement('div');
       board.className = 'anim-canvas-board';
-      for (const slide of Array.from((dfDollar(root).find(':scope > .anim-canvas-slide').toArray() as HTMLElement[]))) {
+      for (const slide of Array.from(dfDollar(root).find(':scope > .anim-canvas-slide').toArray() as HTMLElement[])) {
         dfDollar(board).append(slide);
       }
       root.prepend(board);
@@ -542,7 +573,9 @@ function init(): void {
     const byId = new Map<string, HTMLElement>();
     for (const s of slides) {
       if (!s.id) {
-        console.error('anim-canvas: every .anim-canvas-slide needs an id - the data-east/west/north/south relation map references slides by id');
+        console.error(
+          'anim-canvas: every .anim-canvas-slide needs an id - the data-east/west/north/south relation map references slides by id',
+        );
         continue;
       }
       byId.set(s.id, s);
@@ -616,7 +649,9 @@ function init(): void {
       // the leaving slide never animates - an authored out-animation would
       // be silently dead markup, so say so once at init
       if (s.dataset.animOut) {
-        console.warn(`anim-canvas: #${s.id || '(unnamed)'} declares data-anim-out="${s.dataset.animOut}" - ignored: only the ARRIVING slide animates (declare its data-anim-in)`);
+        console.warn(
+          `anim-canvas: #${s.id || '(unnamed)'} declares data-anim-out="${s.dataset.animOut}" - ignored: only the ARRIVING slide animates (declare its data-anim-in)`,
+        );
       }
     }
 
@@ -649,7 +684,12 @@ function init(): void {
     const frame = (): void => {
       const c = root._animCanvas;
       if (!c) return;
-      void panTo(root, c, root.hasAttribute('data-overview') ? overviewView(root, c) : focusView(root, c, c.active), false);
+      void panTo(
+        root,
+        c,
+        root.hasAttribute('data-overview') ? overviewView(root, c) : focusView(root, c, c.active),
+        false,
+      );
     };
     new ResizeObserver(frame).observe(root);
 

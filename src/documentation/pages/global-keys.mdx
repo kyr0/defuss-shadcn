@@ -43,7 +43,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <CodeWindow lang="javascript" title="opting in to keys typed into fields" mb="2.5rem" code={"const { bindGlobalKeys, isEditableTarget } = df$.shadcn.shared;\n\nbindGlobalKeys((event) => {\n  const inField = isEditableTarget(event);\n  if (inField && event.target.value !== '' && event.key !== 'Escape') return; // typing - hands off\n  if (event.key === '?') { event.preventDefault(); openHelp(); return true; }\n  if (event.key === '/' && !inField) { event.preventDefault(); search.focus(); return true; }\n  if (event.key === 'Escape' && inField) { event.target.blur(); return true; }\n}, { editable: true }); // ← without this, keys typed into fields never arrive here"} />
 
 ```html example schema="none" label="Help on ?, search on /" hint="One bindGlobalKeys handler registered with { editable: true }: ? opens help everywhere except inside a field that already holds text, / jumps into the search, Esc leaves the field. Click into the example first - keyboard focus has to be inside it." height="16"
-<div class="flex flex-col gap-3" style="max-width:24rem;outline:none;" tabindex="-1" id="keys-demo">
+<div class="flex flex-col gap-3" style="max-width: 24rem; outline: none" tabindex="-1" id="keys-demo">
   <p class="text-sm m-0">Press <kbd>?</kbd> for help or <kbd>/</kbd> to search.</p>
   <input class="input" type="search" id="keys-search" placeholder="Search… (Esc to leave)" aria-label="Search" />
   <p class="text-sm text-muted-foreground m-0">Last shortcut: <output id="keys-last">none</output></p>
@@ -52,7 +52,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <div class="dialog-content">
     <div class="dialog-header">
       <h2 class="dialog-title" id="keys-help-title">Keyboard shortcuts</h2>
-      <p class="dialog-description"><kbd>?</kbd> this help · <kbd>/</kbd> focus search · <kbd>Esc</kbd> leave the field / close</p>
+      <p class="dialog-description"
+        ><kbd>?</kbd> this help · <kbd>/</kbd> focus search · <kbd>Esc</kbd> leave the field / close</p
+      >
     </div>
     <div class="dialog-footer">
       <button class="btn" data-variant="default" data-dialog-close>Got it</button>
@@ -64,29 +66,32 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   // df$ selects (get(0) = the element); focus() and showModal() stay native
   const search = df$('#keys-search').get(0);
   const last = df$('#keys-last');
-  bindGlobalKeys((event) => {
-    const inField = isEditableTarget(event);
-    // a field that holds text: ? and / are characters - let the browser type them
-    if (inField && event.target.value !== '' && event.key !== 'Escape') return;
-    if (event.key === '?') {
-      event.preventDefault(); // keep a ? out of the empty field
-      df$('#keys-help').get(0).showModal();
-      last.val(inField ? '? - help (from the empty field)' : '? - help');
-      return true;
-    }
-    if (event.key === '/' && !inField) {
-      event.preventDefault(); // or the "/" would be typed into the field we focus
-      search.focus();
-      last.val('/ - search');
-      return true;
-    }
-    if (event.key === 'Escape' && inField) {
-      event.target.blur();
-      df$('#keys-demo').get(0).focus();
-      last.val('Esc - left the field');
-      return true;
-    }
-  }, { editable: true });
+  bindGlobalKeys(
+    (event) => {
+      const inField = isEditableTarget(event);
+      // a field that holds text: ? and / are characters - let the browser type them
+      if (inField && event.target.value !== '' && event.key !== 'Escape') return;
+      if (event.key === '?') {
+        event.preventDefault(); // keep a ? out of the empty field
+        df$('#keys-help').get(0).showModal();
+        last.val(inField ? '? - help (from the empty field)' : '? - help');
+        return true;
+      }
+      if (event.key === '/' && !inField) {
+        event.preventDefault(); // or the "/" would be typed into the field we focus
+        search.focus();
+        last.val('/ - search');
+        return true;
+      }
+      if (event.key === 'Escape' && inField) {
+        event.target.blur();
+        df$('#keys-demo').get(0).focus();
+        last.val('Esc - left the field');
+        return true;
+      }
+    },
+    { editable: true },
+  );
   df$('#keys-demo').get(0).focus({ focusVisible: false });
 </script>
 ```

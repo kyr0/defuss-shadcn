@@ -40,7 +40,10 @@ export const toggleApi = componentState({
     states: toggleStates,
     apply: (toggle, state) => triggerStateChange(toggle, state.name, state.config),
     // reflect reality: user clicks change aria-pressed without setState()
-    read: (toggle, state) => ({ name: dfDollar(toggle).attr('aria-pressed') === 'true' ? 'pressed' : 'default', config: state.config }),
+    read: (toggle, state) => ({
+        name: dfDollar(toggle).attr('aria-pressed') === 'true' ? 'pressed' : 'default',
+        config: state.config,
+    }),
     markup: (toggle, state) => {
         const authored = state.model.attrs.find(([name]) => name === 'aria-pressed');
         applyMarkup(toggle, state.name, authored ? authored[1] : 'false');

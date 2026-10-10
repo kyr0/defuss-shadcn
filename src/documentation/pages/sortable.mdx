@@ -61,7 +61,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example height="18"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" role="listbox" aria-label="Task priority" style="width:20rem;">
+  <ul class="sortable" role="listbox" aria-label="Task priority" style="width: 20rem">
     <li class="sortable-item" draggable="true" role="option" tabindex="0">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
@@ -96,7 +96,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example height="18"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" role="listbox" aria-label="Reorder tags" data-orientation="horizontal" style="max-width:28rem;">
+  <ul class="sortable" role="listbox" aria-label="Reorder tags" data-orientation="horizontal" style="max-width: 28rem">
     <li class="sortable-item" draggable="true" role="option" tabindex="0">
       <span>React</span>
     </li>
@@ -119,33 +119,39 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example height="18"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" role="listbox" aria-label="Prioritize features" style="width:22rem;">
+  <ul class="sortable" role="listbox" aria-label="Prioritize features" style="width: 22rem">
     <li class="sortable-item" draggable="true" role="option" tabindex="0">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
-      <i data-lucide="layout-dashboard" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
+      <i
+        data-lucide="layout-dashboard"
+        style="width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground)"
+      ></i>
       <span>Dashboard</span>
     </li>
     <li class="sortable-item" draggable="true" role="option" tabindex="-1">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
-      <i data-lucide="settings" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
+      <i data-lucide="settings" style="width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground)"></i>
       <span>Settings</span>
     </li>
     <li class="sortable-item" draggable="true" role="option" tabindex="-1">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
-      <i data-lucide="users" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
+      <i data-lucide="users" style="width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground)"></i>
       <span>Team</span>
     </li>
     <li class="sortable-item" draggable="true" role="option" tabindex="-1">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
-      <i data-lucide="bar-chart-3" style="width:1rem;height:1rem;flex-shrink:0;color:var(--muted-foreground);"></i>
+      <i
+        data-lucide="bar-chart-3"
+        style="width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground)"
+      ></i>
       <span>Analytics</span>
     </li>
   </ul>
@@ -158,7 +164,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example height="22"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" role="listbox" aria-label="Release steps" style="width:20rem;">
+  <ul class="sortable" role="listbox" aria-label="Release steps" style="width: 20rem">
     <li class="sortable-item" draggable="true" role="option" tabindex="0">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
@@ -175,7 +181,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
-      <i data-lucide="lock" style="width:0.875rem;height:0.875rem;flex-shrink:0;color:var(--muted-foreground);"></i>
+      <i
+        data-lucide="lock"
+        style="width: 0.875rem; height: 0.875rem; flex-shrink: 0; color: var(--muted-foreground)"
+      ></i>
       <span>Security review (locked)</span>
     </li>
     <li class="sortable-item" draggable="true" role="option" tabindex="-1">
@@ -206,7 +215,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example height="18"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" role="listbox" aria-label="Rank languages" style="width:20rem;">
+  <ul class="sortable" role="listbox" aria-label="Rank languages" style="width: 20rem">
     <li class="sortable-item" draggable="true" role="option" tabindex="0">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
@@ -243,15 +252,37 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example label="Move buttons" hint="Up / Down buttons per item (.sortable-moves > .sortable-move[data-move=up|down]) reorder by tap or click - the way to sort on a touch screen, where drag-and-drop mostly never starts, and a visible alternative to Alt+Arrow for anyone not using a mouse. Up disables on the first item, Down on the last; focus stays on the button you pressed, so repeated taps keep moving the same item. Each button is labelled for screen readers (&quot;Move Run tests up&quot;) and every move is announced. Dragging still works." height="22"
 <div class="flex items-center justify-center py-10">
-  <ul class="sortable" aria-label="Task priority" style="width:22rem;">
+  <ul class="sortable" aria-label="Task priority" style="width: 22rem">
     <li class="sortable-item" draggable="true" tabindex="0">
       <span class="sortable-handle">
         <i data-lucide="grip-vertical"></i>
       </span>
       <span>Build components</span>
       <span class="sortable-moves">
-        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
-        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="up"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m18 15-6-6-6 6" /></svg
+        ></button>
+        <button type="button" class="sortable-move" data-move="down"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m6 9 6 6 6-6" /></svg
+        ></button>
       </span>
     </li>
     <li class="sortable-item" draggable="true" tabindex="-1">
@@ -260,8 +291,30 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </span>
       <span>Write documentation</span>
       <span class="sortable-moves">
-        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
-        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="up"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m18 15-6-6-6 6" /></svg
+        ></button>
+        <button type="button" class="sortable-move" data-move="down"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m6 9 6 6 6-6" /></svg
+        ></button>
       </span>
     </li>
     <li class="sortable-item" draggable="true" tabindex="-1">
@@ -270,8 +323,30 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </span>
       <span>Deploy to production</span>
       <span class="sortable-moves">
-        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
-        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="up"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m18 15-6-6-6 6" /></svg
+        ></button>
+        <button type="button" class="sortable-move" data-move="down"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m6 9 6 6 6-6" /></svg
+        ></button>
       </span>
     </li>
     <li class="sortable-item" draggable="true" tabindex="-1">
@@ -280,8 +355,30 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       </span>
       <span>Run tests</span>
       <span class="sortable-moves">
-        <button type="button" class="sortable-move" data-move="up"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
-        <button type="button" class="sortable-move" data-move="down"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button type="button" class="sortable-move" data-move="up"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m18 15-6-6-6 6" /></svg
+        ></button>
+        <button type="button" class="sortable-move" data-move="down"
+          ><svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m6 9 6 6 6-6" /></svg
+        ></button>
       </span>
     </li>
   </ul>
@@ -292,11 +389,25 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-wrap gap-4">
   <div class="flex-1 min-w-48">
     <p class="demo-label">Backlog</p>
-    <ul class="sortable" id="bin-backlog" aria-label="Backlog" data-group="tasks" data-empty="Drop tasks here"><li class="sortable-item" draggable="true" tabindex="0"><span class="sortable-handle">⋮⋮</span><span>Design review</span></li><li class="sortable-item" draggable="true" tabindex="-1"><span class="sortable-handle">⋮⋮</span><span>Write tests</span></li><li class="sortable-item" draggable="true" tabindex="-1"><span class="sortable-handle">⋮⋮</span><span>Update changelog</span></li></ul>
+    <ul class="sortable" id="bin-backlog" aria-label="Backlog" data-group="tasks" data-empty="Drop tasks here"
+      ><li class="sortable-item" draggable="true" tabindex="0"
+        ><span class="sortable-handle">⋮⋮</span><span>Design review</span></li
+      ><li class="sortable-item" draggable="true" tabindex="-1"
+        ><span class="sortable-handle">⋮⋮</span><span>Write tests</span></li
+      ><li class="sortable-item" draggable="true" tabindex="-1"
+        ><span class="sortable-handle">⋮⋮</span><span>Update changelog</span></li
+      ></ul
+    >
   </div>
   <div class="flex-1 min-w-48">
     <p class="demo-label">Done</p>
-    <ul class="sortable" id="bin-done" aria-label="Done" data-group="tasks" data-empty="Drop tasks here"><li class="sortable-item" draggable="true" tabindex="0"><span class="sortable-handle">⋮⋮</span><span>Set up CI</span></li><li class="sortable-item" draggable="true" tabindex="-1"><span class="sortable-handle">⋮⋮</span><span>Pick a name</span></li></ul>
+    <ul class="sortable" id="bin-done" aria-label="Done" data-group="tasks" data-empty="Drop tasks here"
+      ><li class="sortable-item" draggable="true" tabindex="0"
+        ><span class="sortable-handle">⋮⋮</span><span>Set up CI</span></li
+      ><li class="sortable-item" draggable="true" tabindex="-1"
+        ><span class="sortable-handle">⋮⋮</span><span>Pick a name</span></li
+      ></ul
+    >
   </div>
 </div>
 <p class="text-sm text-muted-foreground mt-4 mb-0" id="bin-summary"></p>
@@ -316,15 +427,33 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-wrap gap-4">
   <div class="flex-1 min-w-48">
     <p class="demo-label">Compact</p>
-    <ul class="sortable" aria-label="Tasks compact" data-density="compact"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Build components</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li></ul>
+    <ul class="sortable" aria-label="Tasks compact" data-density="compact"
+      ><li class="sortable-item" draggable="true"
+        ><span class="sortable-handle">⋮⋮</span><span>Build components</span></li
+      ><li class="sortable-item" draggable="true"
+        ><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li
+      ></ul
+    >
   </div>
   <div class="flex-1 min-w-48">
     <p class="demo-label">Comfortable</p>
-    <ul class="sortable" aria-label="Tasks comfortable" data-density="comfortable"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Build components</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li></ul>
+    <ul class="sortable" aria-label="Tasks comfortable" data-density="comfortable"
+      ><li class="sortable-item" draggable="true"
+        ><span class="sortable-handle">⋮⋮</span><span>Build components</span></li
+      ><li class="sortable-item" draggable="true"
+        ><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li
+      ></ul
+    >
   </div>
   <div class="flex-1 min-w-48">
     <p class="demo-label">Spacious</p>
-    <ul class="sortable" aria-label="Tasks spacious" data-density="spacious"><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Build components</span></li><li class="sortable-item" draggable="true"><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li></ul>
+    <ul class="sortable" aria-label="Tasks spacious" data-density="spacious"
+      ><li class="sortable-item" draggable="true"
+        ><span class="sortable-handle">⋮⋮</span><span>Build components</span></li
+      ><li class="sortable-item" draggable="true"
+        ><span class="sortable-handle">⋮⋮</span><span>Write docs</span></li
+      ></ul
+    >
   </div>
 </div>
 ```

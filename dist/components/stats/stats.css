@@ -13,9 +13,17 @@
     padding-inline: 1.25rem;
   }
 
-  .mk-stats-layout { display: grid; gap: 2.25rem; }
+  .mk-stats-layout {
+    display: grid;
+    gap: 2.25rem;
+  }
 
-  .mk-stats-copy { display: flex; flex-direction: column; gap: 3rem; align-self: center; }
+  .mk-stats-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-self: center;
+  }
 
   .mk-stats-head {
     display: flex;
@@ -36,9 +44,18 @@
     text-wrap: balance;
   }
 
-  .mk-stats-desc { margin: 0; max-width: 42rem; color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
+  .mk-stats-desc {
+    margin: 0;
+    max-width: 42rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    text-wrap: pretty;
+  }
 
-  .mk-stats-grid { display: grid; gap: 1.25rem; }
+  .mk-stats-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
 
   /* each metric gets its own accent from the chart palette - the rule on
      its edge and the trend readout (the theme's chart tokens, so every
@@ -53,9 +70,15 @@
     border-left: 3px solid var(--_tone);
     padding-left: 1.25rem;
 
-    &:nth-child(4n + 2) { --_tone: var(--chart-2); }
-    &:nth-child(4n + 3) { --_tone: var(--chart-3); }
-    &:nth-child(4n + 4) { --_tone: var(--chart-4); }
+    &:nth-child(4n + 2) {
+      --_tone: var(--chart-2);
+    }
+    &:nth-child(4n + 3) {
+      --_tone: var(--chart-3);
+    }
+    &:nth-child(4n + 4) {
+      --_tone: var(--chart-4);
+    }
   }
 
   /* a trend chip beside the value - the Statistic component's colors */
@@ -71,14 +94,33 @@
     letter-spacing: 0;
     vertical-align: middle;
 
-    &[data-trend="up"] { background: color-mix(in oklch, #16a34a 14%, transparent); color: #16a34a; }
-    &[data-trend="down"] { background: color-mix(in oklch, #dc2626 14%, transparent); color: #dc2626; }
-    & svg { width: 0.75rem; height: 0.75rem; }
+    &[data-trend="up"] {
+      background: color-mix(in oklch, #16a34a 14%, transparent);
+      color: #16a34a;
+    }
+    &[data-trend="down"] {
+      background: color-mix(in oklch, #dc2626 14%, transparent);
+      color: #dc2626;
+    }
+    & svg {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
   }
 
-  .mk-stat-value { font-size: 1.875rem; font-weight: 500; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .mk-stat-value {
+    font-size: 1.875rem;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
 
-  .mk-stat-label { color: var(--muted-foreground); font-size: 1rem; text-wrap: pretty; }
+  .mk-stat-label {
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    text-wrap: pretty;
+  }
 
   /* link CTA flush-left inside the metric (source: `!px-0`) */
   .mk-stats .mk-stat-link {
@@ -95,18 +137,34 @@
     background: var(--muted);
     margin: 0;
 
-    & img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
   }
 
   @container mk-stats (min-width: 30rem) {
-    .mk-stats-grid { grid-template-columns: 1fr 1fr; }
+    .mk-stats-grid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   @container mk-stats (min-width: 52rem) {
-    .mk-stats-layout { grid-template-columns: 1fr 1fr; gap: 4rem; }
-    .mk-stats-copy { gap: 4rem; }
-    .mk-stats-title { font-size: 2.25rem; }
-    .mk-stats-grid { gap: 2.25rem 2.25rem; }
+    .mk-stats-layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+    .mk-stats-copy {
+      gap: 4rem;
+    }
+    .mk-stats-title {
+      font-size: 2.25rem;
+    }
+    .mk-stats-grid {
+      gap: 2.25rem 2.25rem;
+    }
   }
 
   /* cards: each metric on a card with a sparkline */
@@ -144,10 +202,17 @@
       border-inline-start: 1px solid color-mix(in oklch, var(--background) 15%, transparent);
       text-align: center;
 
-      &:first-child { border-inline-start: 0; }
+      &:first-child {
+        border-inline-start: 0;
+      }
     }
-    & .mk-stat-value { font-size: 2.5rem; font-weight: 700; }
-    & .mk-stat-label { color: color-mix(in oklch, var(--background) 70%, transparent); }
+    & .mk-stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    & .mk-stat-label {
+      color: color-mix(in oklch, var(--background) 70%, transparent);
+    }
   }
 
   /* rings: percentages as Radial Progress */
@@ -158,12 +223,19 @@
     justify-items: center;
     text-align: center;
 
-    & .mk-stat { align-items: center; border: 0; padding: 0; gap: 0.5rem; }
+    & .mk-stat {
+      align-items: center;
+      border: 0;
+      padding: 0;
+      gap: 0.5rem;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
 
   @media (forced-colors: active) {
-    .mk-stat { border-left-color: CanvasText; }
+    .mk-stat {
+      border-left-color: CanvasText;
+    }
   }
 }

@@ -21,7 +21,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-title">Payments team · week 32</span>
     <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-gap-x: 1rem">
     <div class="diagram-group" data-shape="column">
       <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
       <div class="diagram-node" data-node="tax-rules-for-ch">
@@ -85,13 +85,20 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Column by column" component="diagram" hint="data-step on each column group; its cards come with it."
-<figure class="diagram" id="dg-kanban-steps" data-type="kanban" data-steps data-autoplay aria-label="Team board with WIP limits">
+<figure
+  class="diagram"
+  id="dg-kanban-steps"
+  data-type="kanban"
+  data-steps
+  data-autoplay
+  aria-label="Team board with WIP limits"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Kanban</span>
     <span class="diagram-title">Payments team · week 32</span>
     <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-gap-x: 1rem">
     <div class="diagram-group" data-shape="column" data-step="1">
       <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
       <div class="diagram-node" data-node="tax-rules-for-ch">
@@ -158,10 +165,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Kanban, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-kanban-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-kanban-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-kanban-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
 <figure class="diagram" id="dg-kanban-live" data-interactive data-type="kanban" aria-label="Team board with WIP limits">
   <figcaption class="diagram-caption">
@@ -169,7 +184,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-title">Payments team · week 32</span>
     <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+  <div class="diagram-canvas" style="--cols: 4; --diagram-gap-x: 1rem">
     <div class="diagram-group" data-shape="column">
       <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
       <div class="diagram-node" data-node="tax-rules-for-ch">
@@ -236,18 +251,26 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Kanban, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-kanban-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-kanban-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-kanban-edit" data-interactive data-type="kanban" aria-label="Team board with WIP limits">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-kanban-edit"
+      data-interactive
+      data-type="kanban"
+      aria-label="Team board with WIP limits"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Kanban</span>
         <span class="diagram-title">Payments team · week 32</span>
         <span class="diagram-dek">Doing is over its WIP limit and one card is blocked - that is where to swarm.</span>
       </figcaption>
-      <div class="diagram-canvas" style="--cols:4;--diagram-gap-x:1rem">
+      <div class="diagram-canvas" style="--cols: 4; --diagram-gap-x: 1rem">
         <div class="diagram-group" data-shape="column">
           <span class="diagram-group-label">Ready <span class="diagram-group-meta">3/4</span></span>
           <div class="diagram-node" data-node="tax-rules-for-ch">
@@ -312,11 +335,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-kanban-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-kanban-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-kanban-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -350,14 +386,19 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <span class="diagram-eyebrow">Kanban · week 32 → 33</span>
     <span class="diagram-title">The swarm worked</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-gap-x:1rem">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-gap-x: 1rem">
     <div class="diagram-group" data-shape="column">
       <span class="diagram-group-label">Doing <span class="diagram-group-meta">3/3</span></span>
       <div class="diagram-node" data-node="3-d-secure-v2">
         <span class="diagram-node-name">3-D Secure v2</span>
         <span class="diagram-node-meta">PAY-198</span>
       </div>
-      <div class="diagram-node" data-node="refund-api" data-change="changed" data-change-note="unblocked: legal signed off">
+      <div
+        class="diagram-node"
+        data-node="refund-api"
+        data-change="changed"
+        data-change-note="unblocked: legal signed off"
+      >
         <span class="diagram-node-name">Refund API</span>
         <span class="diagram-node-meta">PAY-201</span>
       </div>
@@ -383,7 +424,14 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <span class="diagram-node-name">Apple Pay</span>
         <span class="diagram-node-meta">PAY-180</span>
       </div>
-      <div class="diagram-node" data-node="invoice-pdfs" data-tone="accent" data-status="done" data-change="added" data-change-note="shipped">
+      <div
+        class="diagram-node"
+        data-node="invoice-pdfs"
+        data-tone="accent"
+        data-status="done"
+        data-change="added"
+        data-change-note="shipped"
+      >
         <span class="diagram-node-name">Invoice PDFs</span>
         <span class="diagram-node-meta">PAY-205</span>
       </div>

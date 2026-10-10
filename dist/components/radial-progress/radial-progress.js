@@ -60,9 +60,12 @@ function text(el) {
             .replaceAll('{percent}', pctFmt.format(v / max));
     }
     switch (el.dataset.format) {
-        case 'fraction': return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
-        case 'value': return numFmt.format(Math.round(v));
-        default: return pctFmt.format(v / max);
+        case 'fraction':
+            return `${numFmt.format(Math.round(v))} / ${numFmt.format(max)}`;
+        case 'value':
+            return numFmt.format(Math.round(v));
+        default:
+            return pctFmt.format(v / max);
     }
 }
 /** Where the label goes: a .radial-progress-value child, or the ring itself
@@ -112,7 +115,10 @@ function commit(el, v) {
     const done = v >= maxOf(el);
     el.dataset.stateName = done ? 'complete' : 'default';
     // Fires when the value changes - value, max and the fraction done (0 to 1).
-    el.dispatchEvent(new CustomEvent('progress:change', { bubbles: true, detail: { value: v, max: maxOf(el), percent: v / maxOf(el) } }));
+    el.dispatchEvent(new CustomEvent('progress:change', {
+        bubbles: true,
+        detail: { value: v, max: maxOf(el), percent: v / maxOf(el) },
+    }));
     // Fires once when the value reaches max.
     if (done && before !== 'complete')
         el.dispatchEvent(new CustomEvent('progress:completed', { bubbles: true }));
@@ -158,7 +164,7 @@ function applyMarkup(el, stateName, config) {
         paint(el);
     }
     else
-        setValue(el, stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : authored ?? 0));
+        setValue(el, stateName === 'complete' ? maxOf(el) : clamp(el, config?.value != null ? config.value : (authored ?? 0)));
 }
 function triggerStateChange(el, stateName, config) {
     switch (stateName) {
@@ -166,7 +172,7 @@ function triggerStateChange(el, stateName, config) {
             // only a max that differs is written: setState(getState()) changes nothing
             if (config.max != null && Number(config.max) !== maxOf(el))
                 el.setAttribute('aria-valuemax', String(config.max));
-            const to = clamp(el, config.value != null ? config.value : el._authored ?? 0);
+            const to = clamp(el, config.value != null ? config.value : (el._authored ?? 0));
             if (config.duration > 0)
                 tween(el, to, config.duration);
             else {
@@ -244,13 +250,17 @@ function run(el, command) {
 }
 const COMMANDS = ['reset', 'increment', 'decrement', 'complete', 'indeterminate', 'play', 'pause'];
 function init() {
-    dfDollar(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
+    dfDollar(`${SELECTOR}:not([data-init])`)
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(el, radialProgressApi);
         el._authorValuetext = el.hasAttribute('aria-valuetext') && !el.dataset.format && !el.dataset.template;
         // CSS-only markup may carry only --value: adopt it as the value
-        if (!el.hasAttribute('aria-valuenow') && el.style.getPropertyValue('--value') !== '' && el.getAttribute('role') === 'progressbar') {
+        if (!el.hasAttribute('aria-valuenow') &&
+            el.style.getPropertyValue('--value') !== '' &&
+            el.getAttribute('role') === 'progressbar') {
             el.setAttribute('aria-valuenow', String((parseFloat(el.style.getPropertyValue('--value')) / 100) * maxOf(el)));
         }
         if (!el.hasAttribute('role'))

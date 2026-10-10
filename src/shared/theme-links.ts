@@ -61,8 +61,7 @@ export function parseThemeLinks(text: string): ThemeLinksFile {
     throw new Error(`theme links: invalid JSON - ${e instanceof Error ? e.message : e}`);
   }
   const file = raw as Partial<ThemeLinksFile>;
-  if (!file || file.schema !== 'v1')
-    throw new Error('theme links: $.schema must be "v1"');
+  if (!file || file.schema !== 'v1') throw new Error('theme links: $.schema must be "v1"');
   if (!Array.isArray(file.links)) throw new Error('theme links: $.links must be an array');
   for (const [i, node] of file.links.entries()) {
     if (!node || node.type !== 'link')

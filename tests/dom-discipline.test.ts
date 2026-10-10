@@ -52,6 +52,8 @@ describe('dom-discipline: render() detection', () => {
     // componentState() builds render() from the markup function
     expect(hasRender('toggle', "export const toggleApi = componentState({ component: 'toggle' });")).toBe(true);
     expect(hasRender('calendar', 'export const calendarApi = Object.assign(componentState({}), { setDays() {} });')).toBe(true);
+    // oxfmt wraps the long call: `Object.assign(` ends its line
+    expect(hasRender('calendar', "export const calendarApi = Object.assign(\n  componentState({\n    component: 'calendar',\n  }),\n  { setDays() {} },\n);")).toBe(true);
     expect(hasRender('cookie-consent', 'export const cookieConsentApi = componentState<HTMLElement>({});')).toBe(true);
   });
 });

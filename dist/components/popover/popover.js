@@ -15,7 +15,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const popoverStates = ['default', 'open'];
@@ -35,7 +35,9 @@ function triggerStateChange(popover, stateName, _config) {
             try {
                 popover.hidePopover();
             }
-            catch { /* already closed */ }
+            catch {
+                /* already closed */
+            }
             break;
         case 'open':
             // deferred show (safeShowPopover): showPopover() mid-exit (right after
@@ -54,7 +56,9 @@ export const popoverApi = componentState({
 df$.popoverApi = popoverApi;
 df$.popoverStates = popoverStates;
 function init() {
-    dfDollar('[popovertarget]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[popovertarget]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         const id = trigger.getAttribute('popovertarget');
         const popover = dfDollar('#' + CSS.escape(id)).get(0);
         // Ownership boundary (AGENTS.md "Each component owns its dialog", popover
@@ -71,7 +75,9 @@ function init() {
         popover.style.positionAnchor = anchorId;
     });
     // bind-scope the api per popover instance: `$('#demo').api.setState('open')`
-    dfDollar('.popover[popover]:not([data-init])').toArray().forEach((popover) => {
+    dfDollar('.popover[popover]:not([data-init])')
+        .toArray()
+        .forEach((popover) => {
         popover.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(popover, popoverApi);

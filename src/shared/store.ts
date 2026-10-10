@@ -44,7 +44,10 @@ export interface PersistOptions<T> {
 const areas: Partial<Record<'local' | 'session', ReturnType<typeof createWebStorage>>> = {};
 const inMemory = new Set<'local' | 'session'>();
 function storageOf(area: 'local' | 'session') {
-  return (areas[area] ??= createWebStorage(area, { fallback: createMemoryStorage(), onUnavailable: () => inMemory.add(area) }));
+  return (areas[area] ??= createWebStorage(area, {
+    fallback: createMemoryStorage(),
+    onUnavailable: () => inMemory.add(area),
+  }));
 }
 
 /** false once the browser refused the area and its values live in memory
@@ -69,7 +72,10 @@ export function sameShape(initial: unknown): (value: unknown) => boolean {
     if (Array.isArray(model)) return Array.isArray(value);
     if (typeof model === 'object') {
       if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
-      return Object.keys(model as object).every((k) => k in (value as object) && check((model as Record<string, unknown>)[k], (value as Record<string, unknown>)[k]));
+      return Object.keys(model as object).every(
+        (k) =>
+          k in (value as object) && check((model as Record<string, unknown>)[k], (value as Record<string, unknown>)[k]),
+      );
     }
     return typeof value === typeof model;
   };
@@ -93,7 +99,8 @@ function adoptingCodec(legacyVersion: number): Codec {
       } catch {
         return { format: 'defuss-store', formatVersion: 1, version: legacyVersion, value: serialized };
       }
-      const isEnvelope = typeof parsed === 'object' && parsed !== null && (parsed as { format?: unknown }).format === 'defuss-store';
+      const isEnvelope =
+        typeof parsed === 'object' && parsed !== null && (parsed as { format?: unknown }).format === 'defuss-store';
       return isEnvelope ? parsed : { format: 'defuss-store', formatVersion: 1, version: legacyVersion, value: parsed };
     },
   };
@@ -195,7 +202,12 @@ export interface ViewPersistence {
  * `<prefix>:<kind>:<id>` - `id` the element's id, else `fallbackId` (its
  * position among its kind on the page). null = not persisted.
  */
-export function viewPersistence(el: HTMLElement, kind: string, fallbackId: string, config: ViewPersistence = {}): { area: 'session' | 'local'; key: string } | null {
+export function viewPersistence(
+  el: HTMLElement,
+  kind: string,
+  fallbackId: string,
+  config: ViewPersistence = {},
+): { area: 'session' | 'local'; key: string } | null {
   const area = config.area ?? (el.dataset.persist as PersistArea | undefined) ?? 'session';
   if (area === 'none') return null;
   const path = (globalThis as { location?: Location }).location?.pathname ?? '';

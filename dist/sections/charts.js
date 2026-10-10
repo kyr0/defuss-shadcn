@@ -369,7 +369,12 @@ function chartStory(el, states, { loop = false } = {}) {
   };
   return { next: () => go(i + 1), prev: () => go(i - 1), go, index: () => i };
 }
-var DECK_TEMPO = { animationDuration: 1500, animationEasing: "cubicOut", animationDurationUpdate: 1500, animationEasingUpdate: "cubicInOut" };
+var DECK_TEMPO = {
+  animationDuration: 1500,
+  animationEasing: "cubicOut",
+  animationDurationUpdate: 1500,
+  animationEasingUpdate: "cubicInOut"
+};
 function chartDeck(deck, { base = {}, states }) {
   const stage = dfDollar(deck).find(":scope > .presentation-stage").get(0) ?? null;
   if (!stage)
@@ -481,5 +486,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=F794F57137E75AEE64756E2164756E21
+//# debugId=28034E84A551826B64756E2164756E21
 //# sourceMappingURL=charts.js.map

@@ -29,12 +29,15 @@ const fileInputStates = ['default', 'dragover', 'selected', 'error'];
 const inputOf = (el) => dfDollar(el).find('.file-drop-input').get(0);
 /** Does a file match the input's accept list (".pdf", "image/*", "image/png")? */
 function accepts(input, file) {
-    const list = (input.accept || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+    const list = (input.accept || '')
+        .split(',')
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
     if (!list.length)
         return true;
     const name = file.name.toLowerCase();
     const type = (file.type || '').toLowerCase();
-    return list.some((a) => (a.startsWith('.') ? name.endsWith(a) : a.endsWith('/*') ? type.startsWith(a.slice(0, -1)) : type === a));
+    return list.some((a) => a.startsWith('.') ? name.endsWith(a) : a.endsWith('/*') ? type.startsWith(a.slice(0, -1)) : type === a);
 }
 const lang = (el) => textLocale(el);
 /** 1536 → "1.5 kB" (Intl unit formatting, the locale's own). */
@@ -46,7 +49,12 @@ function formatSize(el, bytes) {
         n /= 1000;
         i++;
     }
-    return new Intl.NumberFormat(lang(el), { style: 'unit', unit: units[i], unitDisplay: 'short', maximumFractionDigits: i ? 1 : 0 }).format(n);
+    return new Intl.NumberFormat(lang(el), {
+        style: 'unit',
+        unit: units[i],
+        unitDisplay: 'short',
+        maximumFractionDigits: i ? 1 : 0,
+    }).format(n);
 }
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 /** Rebuild input.files from a File[] (DataTransfer is the only way to set it). */
@@ -64,7 +72,9 @@ function renderList(el) {
     (el._urls || []).forEach((u) => URL.revokeObjectURL(u));
     el._urls = [];
     // the list is rebuilt per change: emptied and refilled through df$
-    dfDollar(list).empty().append([...input.files].map((file, i) => {
+    dfDollar(list)
+        .empty()
+        .append([...input.files].map((file, i) => {
         const li = document.createElement('li');
         li.className = 'file-drop-item';
         const thumb = document.createElement('span');
@@ -118,7 +128,10 @@ function apply(el, rejected, quiet = false) {
     renderList(el);
     // Fires when chosen or dropped files are refused (type, size, count) - the files and the message shown.
     if (!quiet && rejected.length)
-        el.dispatchEvent(new CustomEvent('file-drop:rejected', { bubbles: true, detail: { files: rejected.map((r) => r.file), message } }));
+        el.dispatchEvent(new CustomEvent('file-drop:rejected', {
+            bubbles: true,
+            detail: { files: rejected.map((r) => r.file), message },
+        }));
 }
 /** Merge the new pick into the kept files, filter, write input.files back. */
 function onPick(el) {
@@ -179,7 +192,9 @@ function triggerStateChange(el, stateName, config) {
         case 'selected': {
             // config.files: [{ name, size, type }] - placeholder files (demos, tests)
             // { files: [{ name, size, type }] } - or getState()'s plain names
-            const files = (config?.files || [{ name: 'report.pdf', size: 248000, type: 'application/pdf' }]).map((f) => (typeof f === 'string' ? { name: f } : f)).map(
+            const files = (config?.files || [{ name: 'report.pdf', size: 248000, type: 'application/pdf' }])
+                .map((f) => (typeof f === 'string' ? { name: f } : f))
+                .map(
             // real bytes (capped at 5 MB) so size, type and name read true
             (f) => new File([new Uint8Array(Math.min(f.size ?? 0, 5e6))], f.name, { type: f.type || '' }));
             setFiles(input, files);
@@ -219,7 +234,9 @@ export const fileInputApi = componentState({
 df$.fileInputApi = fileInputApi;
 df$.fileInputStates = fileInputStates;
 function init() {
-    dfDollar('.file-drop:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.file-drop:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         const input = inputOf(el);
         if (!input)
             return;

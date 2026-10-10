@@ -3,27 +3,75 @@
 
 @layer components {
   /* every box in the block measures border-box - the same on any page */
-  :where(.mk-opening-hours, .mk-opening-hours *, .mk-opening-hours ::before, .mk-opening-hours ::after) { box-sizing: border-box; }
+  :where(.mk-opening-hours, .mk-opening-hours *, .mk-opening-hours ::before, .mk-opening-hours ::after) {
+    box-sizing: border-box;
+  }
 
-  .mk-opening-hours { display: grid; gap: 1rem; max-width: 24rem; padding: 1.5rem; border: 1px solid var(--border);
+  .mk-opening-hours {
+    display: grid;
+    gap: 1rem;
+    max-width: 24rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     background: var(--card);
-    color: var(--card-foreground); }
-  .mk-opening-hours-title { margin: 0; font-size: 1rem; font-weight: 600; }
-  .mk-opening-hours-status { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; color: #15803d; font-size: 0.875rem; font-weight: 600;
-    &::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px color-mix(in oklch, currentColor 20%, transparent); }
-    & span { color: var(--muted-foreground); font-weight: 400; }
+    color: var(--card-foreground);
+  }
+  .mk-opening-hours-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .mk-opening-hours-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: #15803d;
+    font-size: 0.875rem;
+    font-weight: 600;
+    &::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 3px color-mix(in oklch, currentColor 20%, transparent);
+    }
+    & span {
+      color: var(--muted-foreground);
+      font-weight: 400;
+    }
   }
   .mk-opening-hours-days {
     display: grid;
     margin: 0;
 
-    & div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0.75rem; border-radius: var(--radius-md); font-size: 0.9375rem; }
-    & dt { color: var(--muted-foreground); }
-    & dd { margin: 0; font-variant-numeric: tabular-nums; }
-    & [aria-current] { background: var(--muted); font-weight: 600; }
-    & [aria-current] dt { color: var(--foreground); }
-    & [data-closed] dd { color: var(--muted-foreground); }
+    & div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+    }
+    & dt {
+      color: var(--muted-foreground);
+    }
+    & dd {
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    & [aria-current] {
+      background: var(--muted);
+      font-weight: 600;
+    }
+    & [aria-current] dt {
+      color: var(--foreground);
+    }
+    & [data-closed] dd {
+      color: var(--muted-foreground);
+    }
   }
   .mk-opening-hours-exceptions {
     display: grid;
@@ -34,8 +82,14 @@
     list-style: none;
     font-size: 0.875rem;
 
-    & li { display: flex; justify-content: space-between; gap: 1rem; }
-    & span { color: var(--muted-foreground); }
+    & li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    & span {
+      color: var(--muted-foreground);
+    }
   }
 
   .mk-opening-hours[data-variant="compact"] {
@@ -44,12 +98,20 @@
     border: 0;
     background: transparent;
 
-    & p { margin: 0; font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
-    & strong { font-weight: 600; }
+    & p {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-variant-numeric: tabular-nums;
+    }
+    & strong {
+      font-weight: 600;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (forced-colors: active) {
-    .mk-opening-hours-days [aria-current] { outline: 1px solid Highlight; }
+    .mk-opening-hours-days [aria-current] {
+      outline: 1px solid Highlight;
+    }
   }
 }

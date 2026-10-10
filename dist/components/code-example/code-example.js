@@ -49,24 +49,27 @@ const VP_MODES = ['phone', 'tablet', 'desktop', 'full'];
 /** the frame's sandbox per data-sandbox: opaque origin; embed (a third-party player) and links (new-tab links) widen one card */
 const SANDBOXES = {
     default: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write' },
-    embed: { sandbox: 'allow-scripts allow-forms allow-same-origin allow-presentation allow-popups', allow: 'clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture' },
+    embed: {
+        sandbox: 'allow-scripts allow-forms allow-same-origin allow-presentation allow-popups',
+        allow: 'clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture',
+    },
     links: { sandbox: 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox', allow: 'clipboard-write' },
 };
 // lucide icons (ISC) - inline, so the card needs no icon library
 const ICONS = {
     'rotate-cw': '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
-    'smartphone': '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
-    'tablet': '<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
-    'monitor': '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+    smartphone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+    tablet: '<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
+    monitor: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
     'app-window': '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/>',
     'code-xml': '<path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>',
     'sliders-horizontal': '<path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/>',
     'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
-    'maximize': '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
-    'minimize': '<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>',
-    'x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
-    'copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
-    'check': '<path d="M20 6 9 17l-5-5"/>',
+    maximize: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
+    minimize: '<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
 };
 const icon = (name) => `<svg class="lucide lucide-${name}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
 /** a toolbar button's content: icon + label */
@@ -123,17 +126,21 @@ function discoverStyles() {
     return out;
 }
 /** a config entry list - an array or a function of the source */
-const entries = (value, source, fallback) => Promise.resolve(typeof value === 'function' ? value(source) : value ?? fallback());
+const entries = (value, source, fallback) => Promise.resolve(typeof value === 'function' ? value(source) : (value ?? fallback()));
 /** inline a script's text as a classic script in its own function scope (a bundle's top-level names stay local) */
 const scriptTag = (js) => `<script data-ce-chrome>(function(){\n${String(js).replace(/<\/script/gi, '<\\/script')}\n})();</script>`;
 function resolveStyles(source) {
-    return entries(config.styles, source, discoverStyles).then((list) => (list || []).map((e) => (typeof e === 'string' ? `<link rel="stylesheet" href="${esc(e)}" data-ce-chrome>` : `<style data-ce-chrome>${String(e.css ?? '').replace(/<\/style/gi, '<\\/style')}</style>`)).join('\n'));
+    return entries(config.styles, source, discoverStyles).then((list) => (list || [])
+        .map((e) => typeof e === 'string'
+        ? `<link rel="stylesheet" href="${esc(e)}" data-ce-chrome>`
+        : `<style data-ce-chrome>${String(e.css ?? '').replace(/<\/style/gi, '<\\/style')}</style>`)
+        .join('\n'));
 }
 function resolveScripts(source) {
     return entries(config.scripts, source, () => discoverScripts(source)).then((list) => Promise.all((list || []).map((e) => (typeof e === 'string' ? fetchText(e) : Promise.resolve(e.js ?? '')))).then((texts) => texts.map(scriptTag).join('\n')));
 }
 function resolveTheme() {
-    return Promise.resolve(typeof config.theme === 'function' ? config.theme() : config.theme ?? '').then((css) => String(css ?? ''), () => '');
+    return Promise.resolve(typeof config.theme === 'function' ? config.theme() : (config.theme ?? '')).then((css) => String(css ?? ''), () => '');
 }
 // -- the sandbox bridge ---------------------------------------------------------------------------
 /**
@@ -153,7 +160,11 @@ function sandboxBridge(ch, schema) {
     const all = (root, sel) => {
         const out = [];
         if ($)
-            $(root).find(sel).each((_i, n) => { out.push(n); });
+            $(root)
+                .find(sel)
+                .each((_i, n) => {
+                out.push(n);
+            });
         return out;
     };
     // forms run their handlers; the navigation a submit starts is cancelled
@@ -294,7 +305,11 @@ function sandboxBridge(ch, schema) {
             let v = !spec.observation && obs.kind === 'api' ? oel.classList.contains(obs.name) : readMop(oel, obs);
             if (typeof v === 'string' && /^(true|false)$/.test(v))
                 v = v === 'true';
-            if (spec.type === 'boolean' && spec.observation && obs.kind === 'api' && obs.name === '@state' && typeof v === 'string') {
+            if (spec.type === 'boolean' &&
+                spec.observation &&
+                obs.kind === 'api' &&
+                obs.name === '@state' &&
+                typeof v === 'string') {
                 v = v === (spec.mutation && spec.mutation.kind === 'api' ? spec.mutation.name : name);
             }
             if (spec.type === 'boolean' && obs.kind === 'attribute' && typeof v === 'string') {
@@ -340,10 +355,15 @@ function sandboxBridge(ch, schema) {
             post('error', { message: 'Example script failed to load or compile' });
             return;
         }
-        post('error', { message: String(e.message || 'Unknown error'), stack: e.error && e.error.stack ? String(e.error.stack) : undefined });
+        post('error', {
+            message: String(e.message || 'Unknown error'),
+            stack: e.error && e.error.stack ? String(e.error.stack) : undefined,
+        });
     }, true);
     addEventListener('unhandledrejection', (e) => {
-        post('error', { message: `Unhandled rejection: ${e.reason && e.reason.message ? e.reason.message : String(e.reason)}` });
+        post('error', {
+            message: `Unhandled rejection: ${e.reason && e.reason.message ? e.reason.message : String(e.reason)}`,
+        });
     });
     addEventListener('message', (e) => {
         const d = e.data;
@@ -412,9 +432,17 @@ function sandboxBridge(ch, schema) {
             return;
         post('escape');
     });
-    ['input', 'change', 'close', 'toggle', 'scroll'].forEach((ev) => document.addEventListener(ev, () => { sourceDirty = true; sync(); }, true));
+    ['input', 'change', 'close', 'toggle', 'scroll'].forEach((ev) => document.addEventListener(ev, () => {
+        sourceDirty = true;
+        sync();
+    }, true));
     document.addEventListener('click', sync, true);
-    new MutationObserver(sync).observe(document.body, { childList: true, attributes: true, subtree: true, characterData: true });
+    new MutationObserver(sync).observe(document.body, {
+        childList: true,
+        attributes: true,
+        subtree: true,
+        characterData: true,
+    });
     // height-only follow-up for what no mutation announces (transitions, late layout)
     let lastHeight = -1;
     let heightQueued = false;
@@ -434,7 +462,10 @@ function sandboxBridge(ch, schema) {
     if (typeof ResizeObserver === 'function')
         new ResizeObserver(syncHeight).observe(document.body);
     document.addEventListener('transitionend', syncHeight, true);
-    const ready = () => { post('ready'); sync(); };
+    const ready = () => {
+        post('ready');
+        sync();
+    };
     if (document.readyState === 'loading')
         addEventListener('DOMContentLoaded', ready);
     else
@@ -527,8 +558,10 @@ function shellMarkup(root) {
         `<div class="code-example-toolbar">` +
         `<span class="code-example-viewport" role="group" aria-label="Preview device">` +
         `<button type="button" class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">${buttonContent('rotate-cw', 'Rotate')}</button>` +
-        vp('phone', 'smartphone', 'Phone', 'Phone 390×844') + vp('tablet', 'tablet', 'Tablet', 'Tablet 834×1112') +
-        vp('desktop', 'monitor', 'Desktop', 'Desktop 1024') + vp('full', 'app-window', 'Full', 'Full width') +
+        vp('phone', 'smartphone', 'Phone', 'Phone 390×844') +
+        vp('tablet', 'tablet', 'Tablet', 'Tablet 834×1112') +
+        vp('desktop', 'monitor', 'Desktop', 'Desktop 1024') +
+        vp('full', 'app-window', 'Full', 'Full width') +
         `</span><span class="code-example-sep" aria-hidden="true"></span>` +
         `<span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)"><span class="code-example-vp-x" aria-hidden="true">×</span>` +
         `<input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled></span>` +
@@ -536,7 +569,9 @@ function shellMarkup(root) {
         `<span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)"><span class="code-example-vp-x" aria-hidden="true">%</span></span>` +
         `<span class="code-example-spacer"></span>` +
         `<button type="button" class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the source">${buttonContent('code-xml', 'Code')}</button>` +
-        (dfDollar(root).attr('data-schema') ? `<button type="button" class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state controls">${buttonContent('sliders-horizontal', 'State')}</button>` : '') +
+        (dfDollar(root).attr('data-schema')
+            ? `<button type="button" class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state controls">${buttonContent('sliders-horizontal', 'State')}</button>`
+            : '') +
         `<button type="button" class="code-example-reset" title="Restore the original source and rerun">${buttonContent('rotate-ccw', 'Reset')}</button>` +
         `<button type="button" class="code-example-full" title="Preview fullscreen (Esc to exit)">${buttonContent('maximize', 'Fullscreen')}</button>` +
         `</div>` +
@@ -574,7 +609,9 @@ let shikiModule = null;
 function loadShiki(shikiUrl) {
     if (!shikiModule) {
         shikiModule = Promise.resolve().then(() => import(/* @vite-ignore */ shikiUrl));
-        shikiModule.catch(() => { shikiModule = null; });
+        shikiModule.catch(() => {
+            shikiModule = null;
+        });
     }
     return shikiModule;
 }
@@ -588,13 +625,20 @@ function loadShiki(shikiUrl) {
 function highlight(code, language) {
     if (typeof config.highlight === 'function')
         return Promise.resolve().then(() => config.highlight(code, language));
-    return loadShiki(config.shiki).then((m) => m.codeToHtml(code, { lang: language, themes: config.themes, defaultColor: false, cssVariablePrefix: '--code-example-' })).then((html) => {
+    return loadShiki(config.shiki)
+        .then((m) => m.codeToHtml(code, {
+        lang: language,
+        themes: config.themes,
+        defaultColor: false,
+        cssVariablePrefix: '--code-example-',
+    }))
+        .then((html) => {
         const inner = /<code[^>]*>([\s\S]*)<\/code>/.exec(String(html ?? ''));
         return inner ? inner[1] : null;
     });
 }
 /** rendered at all - a closed panel says no, off-screen says yes */
-const rendered = (el) => (typeof el.checkVisibility === 'function' ? el.checkVisibility() : el.getClientRects().length > 0);
+const rendered = (el) => typeof el.checkVisibility === 'function' ? el.checkVisibility() : el.getClientRects().length > 0;
 /** paint the source - only while the editor shows; plain until the colours land */
 function paint(root) {
     const c = root._ce;
@@ -615,8 +659,10 @@ function paint(root) {
     };
     clearTimeout(c.plainTimer);
     // colours usually land within a frame; a slow first load shows the text plain meanwhile
-    c.plainTimer = setTimeout(() => { if (c.src.value === value && c.painted !== value)
-        apply(esc(value)); }, 100);
+    c.plainTimer = setTimeout(() => {
+        if (c.src.value === value && c.painted !== value)
+            apply(esc(value));
+    }, 100);
     highlight(value, dfDollar(root).attr('data-language') || 'html').then((html) => {
         if (c.src.value !== value)
             return;
@@ -682,7 +728,11 @@ function onKeydown(root, e) {
         const lineStart = value.lastIndexOf('\n', start - 1) + 1;
         if (start === end && !e.shiftKey)
             return void insertText(input, '  ');
-        const next = value.slice(lineStart, end).split('\n').map((l) => (e.shiftKey ? l.replace(/^( {1,2}|\t)/, '') : `  ${l}`)).join('\n');
+        const next = value
+            .slice(lineStart, end)
+            .split('\n')
+            .map((l) => (e.shiftKey ? l.replace(/^( {1,2}|\t)/, '') : `  ${l}`))
+            .join('\n');
         input.setSelectionRange(lineStart, end);
         insertText(input, next);
         input.setSelectionRange(lineStart, lineStart + next.length);
@@ -704,7 +754,10 @@ function onKeydown(root, e) {
 function editorFor(spec) {
     const byType = spec.type === 'boolean' ? 'checkbox' : spec.type === 'number' ? 'number' : spec.type === 'enum' ? 'radio' : 'text';
     const hint = spec.editor && spec.editor.component;
-    return { kind: ['text', 'number', 'checkbox', 'radio', 'select'].includes(hint) ? hint : byType, props: (spec.editor && spec.editor.props) || {} };
+    return {
+        kind: ['text', 'number', 'checkbox', 'radio', 'select'].includes(hint) ? hint : byType,
+        props: (spec.editor && spec.editor.props) || {},
+    };
 }
 function buildControls(root) {
     const c = root._ce;
@@ -752,8 +805,10 @@ function buildControls(root) {
                 r.type = 'radio';
                 r.value = v;
                 r.name = `${c.ch}-${name}`;
-                dfDollar(r).on('change', () => { if (r.checked)
-                    send(root, 'set-state', { state: name, value: v }); });
+                dfDollar(r).on('change', () => {
+                    if (r.checked)
+                        send(root, 'set-state', { state: name, value: v });
+                });
                 dfDollar(wrap).append(r);
                 dfDollar(wrap).append(document.createTextNode(` ${v}`));
                 dfDollar(control).append(wrap);
@@ -773,14 +828,23 @@ function buildControls(root) {
         control.classList.add('code-example-control');
         const sendControl = () => send(root, 'set-state', {
             state: name,
-            value: ed.kind === 'checkbox' ? control.checked : ed.kind === 'number' ? (control.value === '' ? null : Number(control.value)) : control.value,
+            value: ed.kind === 'checkbox'
+                ? control.checked
+                : ed.kind === 'number'
+                    ? control.value === ''
+                        ? null
+                        : Number(control.value)
+                    : control.value,
         });
         // radios send from their own inputs - the bubbling change must not send twice
         if (ed.kind !== 'radio')
             dfDollar(control).on('change', sendControl);
         if (ed.kind === 'text' || ed.kind === 'number') {
             let keyTimer = 0;
-            dfDollar(control).on('keyup', () => { clearTimeout(keyTimer); keyTimer = setTimeout(sendControl, 250); });
+            dfDollar(control).on('keyup', () => {
+                clearTimeout(keyTimer);
+                keyTimer = setTimeout(sendControl, 250);
+            });
         }
         for (const k of ['format', 'currency', 'locale'])
             if (ed.props[k])
@@ -815,7 +879,11 @@ function applyControl(root, name, value) {
     if (control.type === 'checkbox')
         control.checked = !!value;
     else if (control.classList.contains('code-example-radio-group'))
-        dfDollar(control).find('input').each((_i, r) => { r.checked = r.value === String(value); });
+        dfDollar(control)
+            .find('input')
+            .each((_i, r) => {
+            r.checked = r.value === String(value);
+        });
     else
         control.value = value === null || value === undefined ? '' : String(value);
 }
@@ -833,9 +901,15 @@ function previewHandle(root) {
                         send(root, 'set-state', { state: k, value: c.schema.states[k].default });
                 return;
             }
-            const v = value && typeof value === 'object' && 'value' in value ? value.value
-                : ['boolean', 'number', 'string'].includes(typeof value) ? value
-                    : spec.type === 'boolean' ? true : 'default' in spec ? spec.default : null;
+            const v = value && typeof value === 'object' && 'value' in value
+                ? value.value
+                : ['boolean', 'number', 'string'].includes(typeof value)
+                    ? value
+                    : spec.type === 'boolean'
+                        ? true
+                        : 'default' in spec
+                            ? spec.default
+                            : null;
             send(root, 'set-state', { state: name, value: v });
         },
         getState: () => ({ ...c.observed }),
@@ -885,7 +959,10 @@ function debounce(fn, wait) {
     if (typeof shared === 'function')
         return shared(fn, wait);
     let t = 0;
-    return () => { clearTimeout(t); t = setTimeout(fn, wait); };
+    return () => {
+        clearTimeout(t);
+        t = setTimeout(fn, wait);
+    };
 }
 // VERIFIED: (CPU profile of diagram.html, 12 cards) layout reads and style writes run in separate
 // passes over every card at once: a read after a write forces a synchronous layout of the whole
@@ -914,7 +991,9 @@ function vpZoomAll(roots) {
         const c = p.root._ce;
         const box = p.canvas.getBoundingClientRect();
         let fit = Math.max(c.stage.clientWidth - 24, 120) / (box.width || 1);
-        if (dfDollar(p.root).attr('data-fullscreen') != null && (c.vpMode === 'phone' || c.vpMode === 'tablet') && box.height) {
+        if (dfDollar(p.root).attr('data-fullscreen') != null &&
+            (c.vpMode === 'phone' || c.vpMode === 'tablet') &&
+            box.height) {
             fit = Math.min(fit, Math.max(c.stage.clientHeight - 24, 120) / box.height);
         }
         p.z = clamp(Math.floor(Math.min(fit, 1) * 20) * 5, 25, 100);
@@ -965,7 +1044,8 @@ function vpApplyAll(roots) {
     const wide = roots.map((root) => {
         const c = root._ce;
         const canvas = c.resizer || c.device;
-        return canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr('data-vp-zoom')) || 100) / 100) > c.stage.clientWidth - 24;
+        return (canvas.getBoundingClientRect().width * ((Number(dfDollar(root).attr('data-vp-zoom')) || 100) / 100) >
+            c.stage.clientWidth - 24);
     });
     roots.forEach((root, i) => {
         const c = root._ce;
@@ -1015,7 +1095,9 @@ function vpSetMode(root, mode) {
         c.vpH.value = '';
         c.vpH.placeholder = 'Full';
     }
-    dfDollar(root).find('.code-example-vp[data-vp]').each((_i, b) => {
+    dfDollar(root)
+        .find('.code-example-vp[data-vp]')
+        .each((_i, b) => {
         if (b.dataset.vp !== 'rotate')
             dfDollar(b).attr('aria-pressed', String(b.dataset.vp === mode));
     });
@@ -1030,7 +1112,9 @@ function initViewport(root) {
     if (!c.screen || !c.device || !c.vpW || !c.vpH)
         return;
     c.vpMode = 'full';
-    dfDollar(root).find('.code-example-vp[data-vp]').each((_i, b) => {
+    dfDollar(root)
+        .find('.code-example-vp[data-vp]')
+        .each((_i, b) => {
         if (b.dataset.vp !== 'rotate')
             dfDollar(b).on('click', () => vpSetMode(root, b.dataset.vp));
     });
@@ -1040,7 +1124,10 @@ function initViewport(root) {
     if (c.vpZ) {
         // an empty (Auto) zoom field steps from 100 on the first spinner click / arrow / wheel; an untouched seed reverts on blur
         let seeded = false;
-        dfDollar(c.vpZ).on('input', () => { seeded = false; vpZoomApply(root); });
+        dfDollar(c.vpZ).on('input', () => {
+            seeded = false;
+            vpZoomApply(root);
+        });
         const seed = (e) => {
             if (c.vpZ.value)
                 return;
@@ -1052,10 +1139,15 @@ function initViewport(root) {
         dfDollar(c.vpZ).on('pointerdown', seed);
         dfDollar(c.vpZ).on('keydown', seed);
         dfDollar(c.vpZ).on('wheel', seed);
-        dfDollar(c.vpZ).on('click', () => { if (seeded)
-            c.vpZ.select(); });
-        dfDollar(c.vpZ).on('blur', () => { if (seeded)
-            c.vpZ.value = ''; seeded = false; });
+        dfDollar(c.vpZ).on('click', () => {
+            if (seeded)
+                c.vpZ.select();
+        });
+        dfDollar(c.vpZ).on('blur', () => {
+            if (seeded)
+                c.vpZ.value = '';
+            seeded = false;
+        });
     }
     if (c.vpRotate) {
         dfDollar(c.vpRotate).on('click', () => {
@@ -1102,7 +1194,7 @@ function initViewport(root) {
 }
 // -- State API ----------------------------------------------------------------------------------------
 /** the panel a state opens */
-const panelOf = (name, cfg) => (name === 'code' || name === 'state' ? name : name === 'fullscreen' ? (cfg?.panel ?? null) : null);
+const panelOf = (name, cfg) => name === 'code' || name === 'state' ? name : name === 'fullscreen' ? (cfg?.panel ?? null) : null;
 /**
  * The markup of a state - the one place a state becomes attributes: the open
  * panel and its pressed tab, data-fullscreen with the Fullscreen button's
@@ -1116,11 +1208,17 @@ function applyMarkup(el, name, cfg) {
     let open = panelOf(name, cfg);
     if (open === 'state' && !hasState)
         open = null;
-    $el.find('.code-example-tab').each((_i, t) => { dfDollar(t).attr('aria-pressed', String(t.dataset.tab === open)); });
-    $el.find('.code-example-panel').each((_i, p) => { dfDollar(p).attr('hidden', p.dataset.panel === open ? null : ''); });
+    $el.find('.code-example-tab').each((_i, t) => {
+        dfDollar(t).attr('aria-pressed', String(t.dataset.tab === open));
+    });
+    $el.find('.code-example-panel').each((_i, p) => {
+        dfDollar(p).attr('hidden', p.dataset.panel === open ? null : '');
+    });
     const full = name === 'fullscreen';
     $el.attr('data-fullscreen', full ? '' : null);
-    $el.find('.code-example-full').html(full ? buttonContent('minimize', 'Exit fullscreen') : buttonContent('maximize', 'Fullscreen'));
+    $el
+        .find('.code-example-full')
+        .html(full ? buttonContent('minimize', 'Exit fullscreen') : buttonContent('maximize', 'Fullscreen'));
     const src = $el.find('textarea.code-example-src').get(0);
     const original = src ? src.defaultValue : '';
     $el.attr('data-edited', typeof cfg?.source === 'string' && cfg.source !== original ? '' : null);
@@ -1160,7 +1258,10 @@ function triggerStateChange(root, state, incoming) {
 /** the source changed - typing settles first (data-debounce, default the rerun delay) */
 function emitChange(root, origin) {
     // Fires after the source changed and the preview reran - typing (debounced), setSource(), reset(), setState() with a { source }; the source and where the change came from: 'input' or 'api'.
-    root.dispatchEvent(new CustomEvent('code-example-change', { bubbles: true, detail: { source: root._ce.src.value, origin } }));
+    root.dispatchEvent(new CustomEvent('code-example-change', {
+        bubbles: true,
+        detail: { source: root._ce.src.value, origin },
+    }));
 }
 /** Registry-level API; pass the card explicitly. Unknown names throw. */
 export const codeExampleApi = componentState({
@@ -1272,11 +1373,15 @@ df$.codeExample = {
      * @param target - the .code-example card or its selector
      * @returns a copy of the values the preview reported, by state name
      */
-    previewState: (target) => ({ ...resolveCard(target)?._ce?.observed }),
+    previewState: (target) => ({
+        ...resolveCard(target)?._ce?.observed,
+    }),
     /** Re-read the configured theme and hand it to every preview (no rebuild - the previews keep their state). */
     refreshTheme() {
-        resolveTheme().then((css) => { for (const root of registry.values())
-            send(root, 'set-theme', { css }); });
+        resolveTheme().then((css) => {
+            for (const root of registry.values())
+                send(root, 'set-theme', { css });
+        });
     },
     highlight,
     /**
@@ -1306,8 +1411,10 @@ if (!document.__codeExampleInit) {
             onMessage(root, d);
     });
     // a drag inside a preview released over the page: the preview never sees the pointerup
-    const release = () => { for (const root of registry.values())
-        send(root, 'pointer-release'); };
+    const release = () => {
+        for (const root of registry.values())
+            send(root, 'pointer-release');
+    };
     addEventListener('pointerup', release);
     addEventListener('pointercancel', release);
     addEventListener('blur', release);
@@ -1394,7 +1501,9 @@ function initCard(root) {
     buildControls(root);
     initViewport(root);
     // the tabs toggle: a second click on the open tab closes it
-    dfDollar(root).find('.code-example-tab').each((_i, tab) => {
+    dfDollar(root)
+        .find('.code-example-tab')
+        .each((_i, tab) => {
         dfDollar(tab).on('click', () => {
             const next = dfDollar(tab).attr('aria-pressed') === 'true' ? null : tab.dataset.tab;
             if (dfDollar(root).attr('data-fullscreen') != null)
@@ -1428,14 +1537,16 @@ function initCard(root) {
     }
     const full = part(root, '.code-example-full');
     if (full)
-        dfDollar(full).on('click', () => (dfDollar(root).attr('data-fullscreen') != null ? exitFullscreen(root) : enterFullscreen(root)));
+        dfDollar(full).on('click', () => dfDollar(root).attr('data-fullscreen') != null ? exitFullscreen(root) : enterFullscreen(root));
     const exit = part(root, '.code-example-full-exit');
     if (exit)
         dfDollar(exit).on('click', () => exitFullscreen(root));
     // in fullscreen the stage follows the screen and the panels - refit once per burst
     if (c.stage && typeof ResizeObserver === 'function') {
-        const settle = debounce(() => { if (dfDollar(root).attr('data-fullscreen') != null)
-            refit(root); }, 60);
+        const settle = debounce(() => {
+            if (dfDollar(root).attr('data-fullscreen') != null)
+                refit(root);
+        }, 60);
         new ResizeObserver(settle).observe(c.stage);
     }
     if (io)

@@ -26,24 +26,32 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <div class="diagram-node" data-node="automated-campus">
       <span class="diagram-node-eyebrow">Scenario A</span>
       <span class="diagram-node-name">Automated campus</span>
-      <span class="diagram-node-meta">Agents run the work; people come in to supervise and decide. Offices become control rooms.</span>
+      <span class="diagram-node-meta"
+        >Agents run the work; people come in to supervise and decide. Offices become control rooms.</span
+      >
     </div>
     <div class="diagram-node" data-node="agent-economy" data-tone="accent">
       <span class="diagram-node-eyebrow">Scenario B · our bet</span>
       <span class="diagram-node-name">Agent economy</span>
-      <span class="diagram-node-meta">Agents act for distributed teams across time zones; the org chart is a routing table.</span>
+      <span class="diagram-node-meta"
+        >Agents act for distributed teams across time zones; the org chart is a routing table.</span
+      >
     </div>
     <div class="diagram-node" data-node="digital-office">
       <span class="diagram-node-eyebrow">Scenario C</span>
       <span class="diagram-node-name">Digital office</span>
-      <span class="diagram-node-meta">Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span>
+      <span class="diagram-node-meta"
+        >Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span
+      >
     </div>
     <div class="diagram-node" data-node="distributed-studios">
       <span class="diagram-node-eyebrow">Scenario D</span>
       <span class="diagram-node-name">Distributed studios</span>
       <span class="diagram-node-meta">Small remote teams, assistive AI, craft over scale. Hiring goes global.</span>
     </div>
-    <div class="diagram-axis" data-axis="x"><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div>
+    <div class="diagram-axis" data-axis="x"
+      ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
+    >
   </div>
 </figure>
 ```
@@ -51,35 +59,52 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="Drivers, then futures" component="diagram" hint="Both axes on step 1, then one scenario a step."
-<figure class="diagram" id="dg-quad-steps" data-type="quadrant" data-steps data-autoplay aria-label="Future of work 2030 scenario matrix">
+<figure
+  class="diagram"
+  id="dg-quad-steps"
+  data-type="quadrant"
+  data-steps
+  data-autoplay
+  aria-label="Future of work 2030 scenario matrix"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Scenario matrix</span>
     <span class="diagram-title">Work in 2030: four futures</span>
     <span class="diagram-dek">Two independent drivers, each a range; the cells are named bets, not data points.</span>
   </figcaption>
   <div class="diagram-canvas">
-    <div class="diagram-axis" data-axis="y" data-step="1" data-step-label="The drivers"><span>Autonomous</span><b>AI agency</b><span>Assistive</span></div>
+    <div class="diagram-axis" data-axis="y" data-step="1" data-step-label="The drivers"
+      ><span>Autonomous</span><b>AI agency</b><span>Assistive</span></div
+    >
     <div class="diagram-node" data-node="automated-campus" data-step="2">
       <span class="diagram-node-eyebrow">Scenario A</span>
       <span class="diagram-node-name">Automated campus</span>
-      <span class="diagram-node-meta">Agents run the work; people come in to supervise and decide. Offices become control rooms.</span>
+      <span class="diagram-node-meta"
+        >Agents run the work; people come in to supervise and decide. Offices become control rooms.</span
+      >
     </div>
     <div class="diagram-node" data-node="agent-economy" data-tone="accent" data-step="3">
       <span class="diagram-node-eyebrow">Scenario B · our bet</span>
       <span class="diagram-node-name">Agent economy</span>
-      <span class="diagram-node-meta">Agents act for distributed teams across time zones; the org chart is a routing table.</span>
+      <span class="diagram-node-meta"
+        >Agents act for distributed teams across time zones; the org chart is a routing table.</span
+      >
     </div>
     <div class="diagram-node" data-node="digital-office" data-step="4">
       <span class="diagram-node-eyebrow">Scenario C</span>
       <span class="diagram-node-name">Digital office</span>
-      <span class="diagram-node-meta">Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span>
+      <span class="diagram-node-meta"
+        >Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span
+      >
     </div>
     <div class="diagram-node" data-node="distributed-studios" data-step="5">
       <span class="diagram-node-eyebrow">Scenario D</span>
       <span class="diagram-node-name">Distributed studios</span>
       <span class="diagram-node-meta">Small remote teams, assistive AI, craft over scale. Hiring goes global.</span>
     </div>
-    <div class="diagram-axis" data-axis="x" data-step="1"><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div>
+    <div class="diagram-axis" data-axis="x" data-step="1"
+      ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
+    >
   </div>
 </figure>
 ```
@@ -90,12 +115,26 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Quadrant, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-quad-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-quad-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-quad-live" data-interactive data-type="quadrant" aria-label="Future of work 2030 scenario matrix">
+<figure
+  class="diagram"
+  id="dg-quad-live"
+  data-interactive
+  data-type="quadrant"
+  aria-label="Future of work 2030 scenario matrix"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Scenario matrix</span>
     <span class="diagram-title">Work in 2030: four futures</span>
@@ -106,24 +145,32 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <div class="diagram-node" data-node="automated-campus">
       <span class="diagram-node-eyebrow">Scenario A</span>
       <span class="diagram-node-name">Automated campus</span>
-      <span class="diagram-node-meta">Agents run the work; people come in to supervise and decide. Offices become control rooms.</span>
+      <span class="diagram-node-meta"
+        >Agents run the work; people come in to supervise and decide. Offices become control rooms.</span
+      >
     </div>
     <div class="diagram-node" data-node="agent-economy" data-tone="accent">
       <span class="diagram-node-eyebrow">Scenario B · our bet</span>
       <span class="diagram-node-name">Agent economy</span>
-      <span class="diagram-node-meta">Agents act for distributed teams across time zones; the org chart is a routing table.</span>
+      <span class="diagram-node-meta"
+        >Agents act for distributed teams across time zones; the org chart is a routing table.</span
+      >
     </div>
     <div class="diagram-node" data-node="digital-office">
       <span class="diagram-node-eyebrow">Scenario C</span>
       <span class="diagram-node-name">Digital office</span>
-      <span class="diagram-node-meta">Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span>
+      <span class="diagram-node-meta"
+        >Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span
+      >
     </div>
     <div class="diagram-node" data-node="distributed-studios">
       <span class="diagram-node-eyebrow">Scenario D</span>
       <span class="diagram-node-name">Distributed studios</span>
       <span class="diagram-node-meta">Small remote teams, assistive AI, craft over scale. Hiring goes global.</span>
     </div>
-    <div class="diagram-axis" data-axis="x"><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div>
+    <div class="diagram-axis" data-axis="x"
+      ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
+    >
   </div>
 </figure>
 ```
@@ -134,40 +181,58 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="Quadrant, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-quad-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-quad-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-quad-edit" data-interactive data-type="quadrant" aria-label="Future of work 2030 scenario matrix">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-quad-edit"
+      data-interactive
+      data-type="quadrant"
+      aria-label="Future of work 2030 scenario matrix"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Scenario matrix</span>
         <span class="diagram-title">Work in 2030: four futures</span>
-        <span class="diagram-dek">Two independent drivers, each a range; the cells are named bets, not data points.</span>
+        <span class="diagram-dek"
+          >Two independent drivers, each a range; the cells are named bets, not data points.</span
+        >
       </figcaption>
       <div class="diagram-canvas">
         <div class="diagram-axis" data-axis="y"><span>Autonomous</span><b>AI agency</b><span>Assistive</span></div>
         <div class="diagram-node" data-node="automated-campus">
           <span class="diagram-node-eyebrow">Scenario A</span>
           <span class="diagram-node-name">Automated campus</span>
-          <span class="diagram-node-meta">Agents run the work; people come in to supervise and decide. Offices become control rooms.</span>
+          <span class="diagram-node-meta"
+            >Agents run the work; people come in to supervise and decide. Offices become control rooms.</span
+          >
         </div>
         <div class="diagram-node" data-node="agent-economy" data-tone="accent">
           <span class="diagram-node-eyebrow">Scenario B · our bet</span>
           <span class="diagram-node-name">Agent economy</span>
-          <span class="diagram-node-meta">Agents act for distributed teams across time zones; the org chart is a routing table.</span>
+          <span class="diagram-node-meta"
+            >Agents act for distributed teams across time zones; the org chart is a routing table.</span
+          >
         </div>
         <div class="diagram-node" data-node="digital-office">
           <span class="diagram-node-eyebrow">Scenario C</span>
           <span class="diagram-node-name">Digital office</span>
-          <span class="diagram-node-meta">Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span>
+          <span class="diagram-node-meta"
+            >Copilots in every tool, everyone back at the desk. Productivity up, shape unchanged.</span
+          >
         </div>
         <div class="diagram-node" data-node="distributed-studios">
           <span class="diagram-node-eyebrow">Scenario D</span>
           <span class="diagram-node-name">Distributed studios</span>
           <span class="diagram-node-meta">Small remote teams, assistive AI, craft over scale. Hiring goes global.</span>
         </div>
-        <div class="diagram-axis" data-axis="x"><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div>
+        <div class="diagram-axis" data-axis="x"
+          ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
+        >
       </div>
     </figure>
   </div>
@@ -176,11 +241,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-quad-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-quad-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-quad-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -209,14 +287,27 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="delta">Delta</H2>
 
 ```html example label="After the annual review" component="diagram" hint="The bet moves: data-before-tone keeps the old accent where it was."
-<figure class="diagram" id="dg-quad-delta" data-type="quadrant" data-delta aria-label="Scenario matrix after the annual review">
+<figure
+  class="diagram"
+  id="dg-quad-delta"
+  data-type="quadrant"
+  data-delta
+  aria-label="Scenario matrix after the annual review"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Annual review</span>
     <span class="diagram-title">One scenario renamed, the bet moved</span>
   </figcaption>
   <div class="diagram-canvas">
     <div class="diagram-axis" data-axis="y"><span>Autonomous</span><b>AI agency</b><span>Assistive</span></div>
-    <div class="diagram-node" data-node="automated-campus" data-tone="accent" data-change="changed" data-change-note="now the bet: return-to-office mandates held" data-before-tone="">
+    <div
+      class="diagram-node"
+      data-node="automated-campus"
+      data-tone="accent"
+      data-change="changed"
+      data-change-note="now the bet: return-to-office mandates held"
+      data-before-tone=""
+    >
       <span class="diagram-node-eyebrow" data-before="Scenario A">Scenario A · our bet</span>
       <span class="diagram-node-name">Automated campus</span>
       <span class="diagram-node-meta">Agents run the work; offices become control rooms.</span>
@@ -236,7 +327,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <span class="diagram-node-name" data-before="Distributed studios">Craft studios</span>
       <span class="diagram-node-meta">Small remote teams, craft over scale.</span>
     </div>
-    <div class="diagram-axis" data-axis="x"><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div>
+    <div class="diagram-axis" data-axis="x"
+      ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
+    >
   </div>
 </figure>
 ```

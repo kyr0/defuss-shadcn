@@ -52,22 +52,29 @@
 
       &::before,
       &::after {
-        content: '';
+        content: "";
         flex: 1 1 0;
         height: var(--_thick);
         background: var(--_line);
       }
 
       /* text position along the line */
-      &[data-align="start"]::before { display: none; }
-      &[data-align="end"]::after { display: none; }
+      &[data-align="start"]::before {
+        display: none;
+      }
+      &[data-align="end"]::after {
+        display: none;
+      }
 
       /* a bare glyph - an asterism, a dinkus, a fleuron - without the lines.
          VERIFIED: (separator.e2e "data-line=none") no pseudo lines, centred */
       &[data-line="none"] {
         justify-content: center;
 
-        &::before, &::after { display: none; }
+        &::before,
+        &::after {
+          display: none;
+        }
       }
 
       &[data-orientation="vertical"] {
@@ -85,31 +92,65 @@
     }
 
     /* -- Colors (the line; the text stays muted) -------------- */
-    &[data-variant="neutral"] { --_line: var(--foreground); }
-    &[data-variant="primary"] { --_line: var(--primary); }
+    &[data-variant="neutral"] {
+      --_line: var(--foreground);
+    }
+    &[data-variant="primary"] {
+      --_line: var(--primary);
+    }
     /* the tweakcn --secondary / --accent are pale surfaces, too faint for a
        line: the theme's vivid chart colors instead (like the status dot) */
-    &[data-variant="secondary"] { --_line: var(--chart-2); }
-    &[data-variant="accent"] { --_line: var(--chart-4); }
+    &[data-variant="secondary"] {
+      --_line: var(--chart-2);
+    }
+    &[data-variant="accent"] {
+      --_line: var(--chart-4);
+    }
     &[data-variant="destructive"],
-    &[data-variant="error"] { --_line: var(--destructive); }
+    &[data-variant="error"] {
+      --_line: var(--destructive);
+    }
     /* success / warning / info: literals - the token set has no such pairs */
-    &[data-variant="success"] { --_line: #16a34a; }
-    &[data-variant="warning"] { --_line: #f59e0b; }
-    &[data-variant="info"] { --_line: #0ea5e9; }
+    &[data-variant="success"] {
+      --_line: #16a34a;
+    }
+    &[data-variant="warning"] {
+      --_line: #f59e0b;
+    }
+    &[data-variant="info"] {
+      --_line: #0ea5e9;
+    }
 
     /* -- Thickness -------------------------------------------- */
-    &[data-size="sm"] { --_thick: 1px; }
-    &[data-size="md"] { --_thick: 2px; }
-    &[data-size="lg"] { --_thick: 4px; }
-    &[data-size="xl"] { --_thick: 8px; }
+    &[data-size="sm"] {
+      --_thick: 1px;
+    }
+    &[data-size="md"] {
+      --_thick: 2px;
+    }
+    &[data-size="lg"] {
+      --_thick: 4px;
+    }
+    &[data-size="xl"] {
+      --_thick: 8px;
+    }
 
     /* -- Gap between the text and the lines ------------------- */
-    &[data-gap="none"] { --_gap: 0; }
-    &[data-gap="sm"] { --_gap: 0.375rem; }
-    &[data-gap="md"] { --_gap: 0.75rem; }
-    &[data-gap="lg"] { --_gap: 1.5rem; }
-    &[data-gap="xl"] { --_gap: 2.5rem; }
+    &[data-gap="none"] {
+      --_gap: 0;
+    }
+    &[data-gap="sm"] {
+      --_gap: 0.375rem;
+    }
+    &[data-gap="md"] {
+      --_gap: 0.75rem;
+    }
+    &[data-gap="lg"] {
+      --_gap: 1.5rem;
+    }
+    &[data-gap="xl"] {
+      --_gap: 2.5rem;
+    }
 
     /* -- Responsive: a vertical line from a breakpoint up (DaisyUI's
        lg:divider-horizontal). The PARENT must turn into a row at the
@@ -124,7 +165,12 @@
           flex-direction: column;
           width: auto;
 
-          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+          &::before,
+          &::after {
+            width: var(--_thick);
+            height: auto;
+            min-height: 0.5rem;
+          }
         }
       }
     }
@@ -138,7 +184,12 @@
           flex-direction: column;
           width: auto;
 
-          &::before, &::after { width: var(--_thick); height: auto; min-height: 0.5rem; }
+          &::before,
+          &::after {
+            width: var(--_thick);
+            height: auto;
+            min-height: 0.5rem;
+          }
         }
       }
     }
@@ -151,7 +202,9 @@
     align-items: center;
     gap: 0.75rem;
 
-    & .separator { flex: 1; }
+    & .separator {
+      flex: 1;
+    }
 
     & span {
       font-size: 0.75rem;
@@ -175,7 +228,11 @@
   }
 
   @media (prefers-contrast: more) {
-    .separator:not([data-variant]) { --_line: var(--foreground); }
-    .separator:not([data-size]) { --_thick: 2px; }
+    .separator:not([data-variant]) {
+      --_line: var(--foreground);
+    }
+    .separator:not([data-size]) {
+      --_thick: 2px;
+    }
   }
 }

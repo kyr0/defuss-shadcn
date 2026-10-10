@@ -24,7 +24,10 @@
     box-shadow: var(--shadow-lg);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: scale 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      scale 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
 
     /* the triangle: a third of the button, nudged toward its point so it
        reads as centred (its visual centre is not its box's) */
@@ -41,7 +44,9 @@
       scale: 1.06;
       background-color: color-mix(in oklch, var(--_bg) 88%, var(--_fg));
     }
-    &:active:not(:disabled) { scale: 0.97; }
+    &:active:not(:disabled) {
+      scale: 0.97;
+    }
     &:focus-visible {
       outline: 3px solid var(--ring);
       outline-offset: 4px;
@@ -52,9 +57,15 @@
     }
 
     /* -- Sizes ------------------------------------------------------ */
-    &[data-size="sm"] { --play-button-size: 3rem; }
-    &[data-size="lg"] { --play-button-size: 6rem; }
-    &[data-size="xl"] { --play-button-size: 8rem; }
+    &[data-size="sm"] {
+      --play-button-size: 3rem;
+    }
+    &[data-size="lg"] {
+      --play-button-size: 6rem;
+    }
+    &[data-size="xl"] {
+      --play-button-size: 8rem;
+    }
 
     /* -- Variants --------------------------------------------------- */
     &[data-variant="secondary"] {
@@ -64,16 +75,22 @@
     &[data-variant="outline"] {
       --_bg: var(--background);
       --_fg: var(--foreground);
-      box-shadow: inset 0 0 0 2px var(--border), var(--shadow-sm);
+      box-shadow:
+        inset 0 0 0 2px var(--border),
+        var(--shadow-sm);
     }
     /* over a photo or a video poster: frosted, white, whatever the theme */
     &[data-variant="glass"] {
       --_bg: oklch(1 0 0 / 0.2);
       --_fg: oklch(1 0 0);
-      box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.4), 0 8px 32px oklch(0 0 0 / 0.3);
+      box-shadow:
+        inset 0 0 0 1px oklch(1 0 0 / 0.4),
+        0 8px 32px oklch(0 0 0 / 0.3);
       backdrop-filter: blur(12px) saturate(1.4);
 
-      &:hover:not(:disabled) { background-color: oklch(1 0 0 / 0.32); }
+      &:hover:not(:disabled) {
+        background-color: oklch(1 0 0 / 0.32);
+      }
     }
 
     /* -- Attention: a ring that keeps pulsing outward ---------------- */
@@ -88,8 +105,12 @@
   }
 
   @keyframes play-button-pulse {
-    from { box-shadow: 0 0 0 0 color-mix(in oklch, var(--_bg) 60%, transparent); }
-    to { box-shadow: 0 0 0 calc(var(--play-button-size) / 3) transparent; }
+    from {
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--_bg) 60%, transparent);
+    }
+    to {
+      box-shadow: 0 0 0 calc(var(--play-button-size) / 3) transparent;
+    }
   }
 
   /* -- Accessibility ------------------------------------------------- */
@@ -97,8 +118,13 @@
     .play-button {
       transition: none;
 
-      &:hover:not(:disabled), &:active:not(:disabled) { scale: none; }
-      &[data-pulse]::after { animation: none; }
+      &:hover:not(:disabled),
+      &:active:not(:disabled) {
+        scale: none;
+      }
+      &[data-pulse]::after {
+        animation: none;
+      }
     }
   }
 
@@ -114,8 +140,12 @@
       background-color: ButtonFace;
       color: ButtonText;
 
-      &::before { background-color: ButtonText; }
-      &:focus-visible { outline-color: Highlight; }
+      &::before {
+        background-color: ButtonText;
+      }
+      &:focus-visible {
+        outline-color: Highlight;
+      }
     }
   }
 }

@@ -49,33 +49,44 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="A request, end to end" hint="data-steps adds the toolbar: play, step, replay, show all. The edge list under the canvas is the source of the wires - and what a screen reader reads."
-<figure class="diagram" id="dg-demo" data-type="architecture" data-steps data-state-demo aria-label="Request path of a web app">
+<figure
+  class="diagram"
+  id="dg-demo"
+  data-type="architecture"
+  data-steps
+  data-state-demo
+  aria-label="Request path of a web app"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Architecture</span>
     <span class="diagram-title">A request, end to end</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-group" data-node="cloud" style="--col:2;--row:1;--span:3;--rspan:2"><span class="diagram-group-label">Cloud · eu-west-1</span></div>
-    <div class="diagram-node" data-node="browser" style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-group" data-node="cloud" style="--col: 2; --row: 1; --span: 3; --rspan: 2"
+      ><span class="diagram-group-label">Cloud · eu-west-1</span></div
+    >
+    <div class="diagram-node" data-node="browser" style="--col: 1; --row: 1">
       <span class="diagram-node-eyebrow">Client</span>
       <span class="diagram-node-name">Browser</span>
       <span class="diagram-node-meta">SPA</span>
     </div>
-    <div class="diagram-node" data-node="api" data-tone="accent" style="--col:2;--row:1">
+    <div class="diagram-node" data-node="api" data-tone="accent" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">Edge</span>
       <span class="diagram-node-name">API gateway</span>
       <span class="diagram-node-meta">auth · limits</span>
     </div>
-    <div class="diagram-node" data-node="svc" style="--col:3;--row:1">
+    <div class="diagram-node" data-node="svc" style="--col: 3; --row: 1">
       <span class="diagram-node-name">Orders service</span>
       <span class="diagram-node-meta">Go</span>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" style="--col:4;--row:1"><span class="diagram-node-name">Postgres</span></div>
-    <div class="diagram-node" data-node="queue" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="db" data-shape="store" style="--col: 4; --row: 1"
+      ><span class="diagram-node-name">Postgres</span></div
+    >
+    <div class="diagram-node" data-node="queue" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Queue</span>
       <span class="diagram-node-meta">async jobs</span>
     </div>
-    <div class="diagram-node" data-node="mail" data-tone="external" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="mail" data-tone="external" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Mailer</span>
       <span class="diagram-node-meta">external</span>
     </div>
@@ -139,23 +150,29 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="diagram-eyebrow">Flow</span>
     <span class="diagram-title">Order fulfilment</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="placed" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Order placed</span></div>
-    <div class="diagram-node" data-node="stock" data-shape="diamond" style="--col:2;--row:1"><span class="diagram-node-name">In stock?</span></div>
-    <div class="diagram-node" data-node="pick" data-tone="accent" style="--col:3;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-node" data-node="placed" data-shape="pill" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Order placed</span></div
+    >
+    <div class="diagram-node" data-node="stock" data-shape="diamond" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">In stock?</span></div
+    >
+    <div class="diagram-node" data-node="pick" data-tone="accent" style="--col: 3; --row: 1">
       <span class="diagram-node-name">Pick & pack</span>
       <span class="diagram-node-meta">warehouse</span>
     </div>
-    <div class="diagram-node" data-node="shipped" data-shape="pill" style="--col:4;--row:1"><span class="diagram-node-name">Shipped</span></div>
-    <div class="diagram-node" data-node="inventory" data-shape="store" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="shipped" data-shape="pill" style="--col: 4; --row: 1"
+      ><span class="diagram-node-name">Shipped</span></div
+    >
+    <div class="diagram-node" data-node="inventory" data-shape="store" style="--col: 2; --row: 2">
       <span class="diagram-node-name">Inventory</span>
       <span class="diagram-node-meta">stock levels</span>
     </div>
-    <div class="diagram-node" data-node="backorder" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="backorder" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Back-order</span>
       <span class="diagram-node-meta">customer notified</span>
     </div>
-    <div class="diagram-node" data-node="supplier" data-tone="external" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="supplier" data-tone="external" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Supplier</span>
       <span class="diagram-node-meta">EDI</span>
     </div>
@@ -178,32 +195,75 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="diagram-eyebrow">Health</span>
     <span class="diagram-title">Checkout, right now</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="cdn" data-tone="ok" data-detail="Serving 41k req/s from 212 edge locations, no errors." style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div
+      class="diagram-node"
+      data-node="cdn"
+      data-tone="ok"
+      data-detail="Serving 41k req/s from 212 edge locations, no errors."
+      style="--col: 1; --row: 1"
+    >
       <span class="diagram-node-name">CDN</span>
       <span class="diagram-node-meta">99.99% · ok</span>
     </div>
-    <div class="diagram-node" data-node="api" data-tone="ok" data-detail="Healthy - 6 pods, autoscaling idle." style="--col:2;--row:1">
+    <div
+      class="diagram-node"
+      data-node="api"
+      data-tone="ok"
+      data-detail="Healthy - 6 pods, autoscaling idle."
+      style="--col: 2; --row: 1"
+    >
       <span class="diagram-node-name">API</span>
       <span class="diagram-node-meta">p95 120 ms</span>
     </div>
-    <div class="diagram-node" data-node="cart" data-tone="warn" data-detail="Degraded: the tax provider answers slowly; carts still save." style="--col:3;--row:1">
+    <div
+      class="diagram-node"
+      data-node="cart"
+      data-tone="warn"
+      data-detail="Degraded: the tax provider answers slowly; carts still save."
+      style="--col: 3; --row: 1"
+    >
       <span class="diagram-node-name">Cart</span>
       <span class="diagram-node-meta">p95 1.9 s</span>
     </div>
-    <div class="diagram-node" data-node="tax" data-tone="external" data-detail="Third party - their status page reports elevated latency." style="--col:4;--row:1">
+    <div
+      class="diagram-node"
+      data-node="tax"
+      data-tone="external"
+      data-detail="Third party - their status page reports elevated latency."
+      style="--col: 4; --row: 1"
+    >
       <span class="diagram-node-name">Tax provider</span>
       <span class="diagram-node-meta">external</span>
     </div>
-    <div class="diagram-node" data-node="pay" data-tone="danger" data-detail="Failing: card authorizations time out since 14:02." style="--col:2;--row:2">
+    <div
+      class="diagram-node"
+      data-node="pay"
+      data-tone="danger"
+      data-detail="Failing: card authorizations time out since 14:02."
+      style="--col: 2; --row: 2"
+    >
       <span class="diagram-node-name">Payments</span>
       <span class="diagram-node-meta">5% errors</span>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" data-tone="muted" data-detail="Primary and replica in sync." style="--col:3;--row:2">
+    <div
+      class="diagram-node"
+      data-node="db"
+      data-shape="store"
+      data-tone="muted"
+      data-detail="Primary and replica in sync."
+      style="--col: 3; --row: 2"
+    >
       <span class="diagram-node-name">Orders DB</span>
       <span class="diagram-node-meta">lag 0 s</span>
     </div>
-    <div class="diagram-node" data-node="ic" data-tone="accent" data-detail="Open since 14:05 - payments degraded, rollback in progress." style="--col:4;--row:2">
+    <div
+      class="diagram-node"
+      data-node="ic"
+      data-tone="accent"
+      data-detail="Open since 14:05 - payments degraded, rollback in progress."
+      style="--col: 4; --row: 2"
+    >
       <span class="diagram-node-name">Incident #482</span>
       <span class="diagram-node-meta">commander: Mia</span>
     </div>
@@ -234,25 +294,27 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="diagram-eyebrow">Pipeline</span>
     <span class="diagram-title">From commit to production</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="commit" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Commit</span></div>
-    <div class="diagram-node" data-node="build" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-node" data-node="commit" data-shape="pill" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Commit</span></div
+    >
+    <div class="diagram-node" data-node="build" style="--col: 2; --row: 1">
       <span class="diagram-node-name">Build</span>
       <span class="diagram-node-meta">container image</span>
     </div>
-    <div class="diagram-node" data-node="test" style="--col:3;--row:1">
+    <div class="diagram-node" data-node="test" style="--col: 3; --row: 1">
       <span class="diagram-node-name">Test</span>
       <span class="diagram-node-meta">unit · e2e</span>
     </div>
-    <div class="diagram-node" data-node="staging" style="--col:4;--row:1">
+    <div class="diagram-node" data-node="staging" style="--col: 4; --row: 1">
       <span class="diagram-node-name">Staging</span>
       <span class="diagram-node-meta">smoke tests</span>
     </div>
-    <div class="diagram-node" data-node="rollback" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="rollback" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Rollback</span>
       <span class="diagram-node-meta">previous image</span>
     </div>
-    <div class="diagram-node" data-node="prod" data-tone="accent" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="prod" data-tone="accent" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Production</span>
       <span class="diagram-node-meta">canary → 100%</span>
     </div>
@@ -275,21 +337,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="diagram-eyebrow">UML class</span>
     <span class="diagram-title">A library, in classes</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:11rem">
-    <div class="diagram-node" data-node="lendable" data-shape="class" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 11rem">
+    <div class="diagram-node" data-node="lendable" data-shape="class" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">«interface»</span>
       <span class="diagram-node-name">Lendable</span>
       <ul class="diagram-node-ops">
         <li>+ lend(member)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="library" data-shape="class" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="library" data-shape="class" style="--col: 1; --row: 2">
       <span class="diagram-node-name">Library</span>
       <ul class="diagram-node-fields">
         <li data-field="__name"><span>- name</span><span>String</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="book" data-shape="class" data-tone="accent" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="book" data-shape="class" data-tone="accent" style="--col: 2; --row: 2">
       <span class="diagram-node-name">Book</span>
       <ul class="diagram-node-fields">
         <li data-field="__isbn"><span>- isbn</span><span>String</span></li>
@@ -298,25 +360,25 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         <li>+ lend(member)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="member" data-shape="class" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="member" data-shape="class" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Member</span>
       <ul class="diagram-node-fields">
         <li data-field="__card"><span>- card</span><span>String</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="shelf" data-shape="class" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="shelf" data-shape="class" style="--col: 1; --row: 3">
       <span class="diagram-node-name">Shelf</span>
       <ul class="diagram-node-fields">
         <li data-field="__code"><span>- code</span><span>String</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="ebook" data-shape="class" style="--col:2;--row:3">
+    <div class="diagram-node" data-node="ebook" data-shape="class" style="--col: 2; --row: 3">
       <span class="diagram-node-name">E-book</span>
       <ul class="diagram-node-fields">
         <li data-field="__drm"><span>- drm</span><span>bool</span></li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="notifier" data-shape="class" style="--col:3;--row:3">
+    <div class="diagram-node" data-node="notifier" data-shape="class" style="--col: 3; --row: 3">
       <span class="diagram-node-name">Notifier</span>
       <ul class="diagram-node-ops">
         <li>+ remind(member)</li>
@@ -326,9 +388,26 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="book" data-to="lendable" data-line="dashed" data-head="triangle"></li>
     <li class="diagram-edge" data-from="ebook" data-to="book" data-head="triangle"></li>
-    <li class="diagram-edge" data-from="library" data-to="shelf" data-head="none" data-tail="diamond" data-from-label="1" data-to-label="1..*">has</li>
+    <li
+      class="diagram-edge"
+      data-from="library"
+      data-to="shelf"
+      data-head="none"
+      data-tail="diamond"
+      data-from-label="1"
+      data-to-label="1..*"
+      >has</li
+    >
     <li class="diagram-edge" data-from="shelf" data-to="book" data-head="none" data-tail="diamond-open">holds</li>
-    <li class="diagram-edge" data-from="member" data-to="book" data-head="open" data-from-label="0..1" data-to-label="0..5">borrows</li>
+    <li
+      class="diagram-edge"
+      data-from="member"
+      data-to="book"
+      data-head="open"
+      data-from-label="0..1"
+      data-to-label="0..5"
+      >borrows</li
+    >
     <li class="diagram-edge" data-from="member" data-to="notifier" data-line="dashed" data-head="open">uses</li>
   </ol>
 </figure>
@@ -344,24 +423,24 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="diagram-eyebrow">Free canvas</span>
     <span class="diagram-title">Who builds on the library</span>
   </figcaption>
-  <div class="diagram-canvas" data-layout="free" style="--ratio:16/7">
-    <div class="diagram-node" data-node="core" data-tone="accent" style="--x:50;--y:50">
+  <div class="diagram-canvas" data-layout="free" style="--ratio: 16/7">
+    <div class="diagram-node" data-node="core" data-tone="accent" style="--x: 50; --y: 50">
       <span class="diagram-node-name">defuss-shadcn</span>
       <span class="diagram-node-meta">components · tokens</span>
     </div>
-    <div class="diagram-node" data-node="themes" style="--x:15;--y:20">
+    <div class="diagram-node" data-node="themes" style="--x: 15; --y: 20">
       <span class="diagram-node-name">Theme presets</span>
       <span class="diagram-node-meta">43 tweakcn themes</span>
     </div>
-    <div class="diagram-node" data-node="agents" style="--x:85;--y:20">
+    <div class="diagram-node" data-node="agents" style="--x: 85; --y: 20">
       <span class="diagram-node-name">Coding agents</span>
       <span class="diagram-node-meta">read the skills</span>
     </div>
-    <div class="diagram-node" data-node="apps" style="--x:15;--y:80">
+    <div class="diagram-node" data-node="apps" style="--x: 15; --y: 80">
       <span class="diagram-node-name">Your apps</span>
       <span class="diagram-node-meta">copy · CDN · npm</span>
     </div>
-    <div class="diagram-node" data-node="docs" style="--x:85;--y:80">
+    <div class="diagram-node" data-node="docs" style="--x: 85; --y: 80">
       <span class="diagram-node-name">This site</span>
       <span class="diagram-node-meta">uses every part</span>
     </div>
@@ -381,42 +460,99 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Walk the system" hint="Press Next again and again: the activation walks the boxes in order and the output reads each box's data-detail."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-tones-live">Press Next to walk the system, or click any box.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-tones-live"
+    >Press Next to walk the system, or click any box.</output
+  >
 </div>
-<figure class="diagram" id="dg-tones-live" data-interactive data-type="architecture" aria-label="Checkout health right now">
+<figure
+  class="diagram"
+  id="dg-tones-live"
+  data-interactive
+  data-type="architecture"
+  aria-label="Checkout health right now"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Health</span>
     <span class="diagram-title">Checkout, right now</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="cdn" data-tone="ok" data-detail="Serving 41k req/s from 212 edge locations, no errors." style="--col:1;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div
+      class="diagram-node"
+      data-node="cdn"
+      data-tone="ok"
+      data-detail="Serving 41k req/s from 212 edge locations, no errors."
+      style="--col: 1; --row: 1"
+    >
       <span class="diagram-node-name">CDN</span>
       <span class="diagram-node-meta">99.99% · ok</span>
     </div>
-    <div class="diagram-node" data-node="api" data-tone="ok" data-detail="Healthy - 6 pods, autoscaling idle." style="--col:2;--row:1">
+    <div
+      class="diagram-node"
+      data-node="api"
+      data-tone="ok"
+      data-detail="Healthy - 6 pods, autoscaling idle."
+      style="--col: 2; --row: 1"
+    >
       <span class="diagram-node-name">API</span>
       <span class="diagram-node-meta">p95 120 ms</span>
     </div>
-    <div class="diagram-node" data-node="cart" data-tone="warn" data-detail="Degraded: the tax provider answers slowly; carts still save." style="--col:3;--row:1">
+    <div
+      class="diagram-node"
+      data-node="cart"
+      data-tone="warn"
+      data-detail="Degraded: the tax provider answers slowly; carts still save."
+      style="--col: 3; --row: 1"
+    >
       <span class="diagram-node-name">Cart</span>
       <span class="diagram-node-meta">p95 1.9 s</span>
     </div>
-    <div class="diagram-node" data-node="tax" data-tone="external" data-detail="Third party - their status page reports elevated latency." style="--col:4;--row:1">
+    <div
+      class="diagram-node"
+      data-node="tax"
+      data-tone="external"
+      data-detail="Third party - their status page reports elevated latency."
+      style="--col: 4; --row: 1"
+    >
       <span class="diagram-node-name">Tax provider</span>
       <span class="diagram-node-meta">external</span>
     </div>
-    <div class="diagram-node" data-node="pay" data-tone="danger" data-detail="Failing: card authorizations time out since 14:02." style="--col:2;--row:2">
+    <div
+      class="diagram-node"
+      data-node="pay"
+      data-tone="danger"
+      data-detail="Failing: card authorizations time out since 14:02."
+      style="--col: 2; --row: 2"
+    >
       <span class="diagram-node-name">Payments</span>
       <span class="diagram-node-meta">5% errors</span>
     </div>
-    <div class="diagram-node" data-node="db" data-shape="store" data-tone="muted" data-detail="Primary and replica in sync." style="--col:3;--row:2">
+    <div
+      class="diagram-node"
+      data-node="db"
+      data-shape="store"
+      data-tone="muted"
+      data-detail="Primary and replica in sync."
+      style="--col: 3; --row: 2"
+    >
       <span class="diagram-node-name">Orders DB</span>
       <span class="diagram-node-meta">lag 0 s</span>
     </div>
-    <div class="diagram-node" data-node="ic" data-tone="accent" data-detail="Open since 14:05 - payments degraded, rollback in progress." style="--col:4;--row:2">
+    <div
+      class="diagram-node"
+      data-node="ic"
+      data-tone="accent"
+      data-detail="Open since 14:05 - payments degraded, rollback in progress."
+      style="--col: 4; --row: 2"
+    >
       <span class="diagram-node-name">Incident #482</span>
       <span class="diagram-node-meta">commander: Mia</span>
     </div>
@@ -441,42 +577,93 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Inspect and edit" hint="Click a box or an arrow, edit its name, tone, shape, label or line: the diagram follows. The × closes the inspector, the Inspector button toggles it."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-tones-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-tones-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-tones-edit" data-interactive data-type="architecture" aria-label="Checkout health right now">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-tones-edit"
+      data-interactive
+      data-type="architecture"
+      aria-label="Checkout health right now"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">Health</span>
         <span class="diagram-title">Checkout, right now</span>
       </figcaption>
-      <div class="diagram-canvas" style="--cols:4">
-        <div class="diagram-node" data-node="cdn" data-tone="ok" data-detail="Serving 41k req/s from 212 edge locations, no errors." style="--col:1;--row:1">
+      <div class="diagram-canvas" style="--cols: 4">
+        <div
+          class="diagram-node"
+          data-node="cdn"
+          data-tone="ok"
+          data-detail="Serving 41k req/s from 212 edge locations, no errors."
+          style="--col: 1; --row: 1"
+        >
           <span class="diagram-node-name">CDN</span>
           <span class="diagram-node-meta">99.99% · ok</span>
         </div>
-        <div class="diagram-node" data-node="api" data-tone="ok" data-detail="Healthy - 6 pods, autoscaling idle." style="--col:2;--row:1">
+        <div
+          class="diagram-node"
+          data-node="api"
+          data-tone="ok"
+          data-detail="Healthy - 6 pods, autoscaling idle."
+          style="--col: 2; --row: 1"
+        >
           <span class="diagram-node-name">API</span>
           <span class="diagram-node-meta">p95 120 ms</span>
         </div>
-        <div class="diagram-node" data-node="cart" data-tone="warn" data-detail="Degraded: the tax provider answers slowly; carts still save." style="--col:3;--row:1">
+        <div
+          class="diagram-node"
+          data-node="cart"
+          data-tone="warn"
+          data-detail="Degraded: the tax provider answers slowly; carts still save."
+          style="--col: 3; --row: 1"
+        >
           <span class="diagram-node-name">Cart</span>
           <span class="diagram-node-meta">p95 1.9 s</span>
         </div>
-        <div class="diagram-node" data-node="tax" data-tone="external" data-detail="Third party - their status page reports elevated latency." style="--col:4;--row:1">
+        <div
+          class="diagram-node"
+          data-node="tax"
+          data-tone="external"
+          data-detail="Third party - their status page reports elevated latency."
+          style="--col: 4; --row: 1"
+        >
           <span class="diagram-node-name">Tax provider</span>
           <span class="diagram-node-meta">external</span>
         </div>
-        <div class="diagram-node" data-node="pay" data-tone="danger" data-detail="Failing: card authorizations time out since 14:02." style="--col:2;--row:2">
+        <div
+          class="diagram-node"
+          data-node="pay"
+          data-tone="danger"
+          data-detail="Failing: card authorizations time out since 14:02."
+          style="--col: 2; --row: 2"
+        >
           <span class="diagram-node-name">Payments</span>
           <span class="diagram-node-meta">5% errors</span>
         </div>
-        <div class="diagram-node" data-node="db" data-shape="store" data-tone="muted" data-detail="Primary and replica in sync." style="--col:3;--row:2">
+        <div
+          class="diagram-node"
+          data-node="db"
+          data-shape="store"
+          data-tone="muted"
+          data-detail="Primary and replica in sync."
+          style="--col: 3; --row: 2"
+        >
           <span class="diagram-node-name">Orders DB</span>
           <span class="diagram-node-meta">lag 0 s</span>
         </div>
-        <div class="diagram-node" data-node="ic" data-tone="accent" data-detail="Open since 14:05 - payments degraded, rollback in progress." style="--col:4;--row:2">
+        <div
+          class="diagram-node"
+          data-node="ic"
+          data-tone="accent"
+          data-detail="Open since 14:05 - payments degraded, rollback in progress."
+          style="--col: 4; --row: 2"
+        >
           <span class="diagram-node-name">Incident #482</span>
           <span class="diagram-node-meta">commander: Mia</span>
         </div>
@@ -501,11 +688,24 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-tones-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-tones-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-tones-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -541,35 +741,99 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="diagram-eyebrow">Flow</span>
     <span class="diagram-title">Order fulfilment</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="placed" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Order placed</span></div>
-    <div class="diagram-node" data-node="stock" data-shape="diamond" style="--col:2;--row:1"><span class="diagram-node-name">In stock?</span></div>
-    <div class="diagram-node" data-node="pick" data-tone="accent" style="--col:3;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-node" data-node="placed" data-shape="pill" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Order placed</span></div
+    >
+    <div class="diagram-node" data-node="stock" data-shape="diamond" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">In stock?</span></div
+    >
+    <div class="diagram-node" data-node="pick" data-tone="accent" style="--col: 3; --row: 1">
       <span class="diagram-node-name">Pick & pack</span>
       <span class="diagram-node-meta">warehouse</span>
     </div>
-    <div class="diagram-node" data-node="shipped" data-shape="pill" style="--col:4;--row:1"><span class="diagram-node-name">Shipped</span></div>
-    <div class="diagram-node" data-node="inventory" data-shape="store" style="--col:2;--row:2">
+    <div class="diagram-node" data-node="shipped" data-shape="pill" style="--col: 4; --row: 1"
+      ><span class="diagram-node-name">Shipped</span></div
+    >
+    <div class="diagram-node" data-node="inventory" data-shape="store" style="--col: 2; --row: 2">
       <span class="diagram-node-name">Inventory</span>
       <span class="diagram-node-meta">stock levels</span>
     </div>
-    <div class="diagram-node" data-node="backorder" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="backorder" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Back-order</span>
       <span class="diagram-node-meta">customer notified</span>
     </div>
-    <div class="diagram-node" data-node="supplier" data-tone="external" style="--col:4;--row:2">
+    <div class="diagram-node" data-node="supplier" data-tone="external" style="--col: 4; --row: 2">
       <span class="diagram-node-name">Supplier</span>
       <span class="diagram-node-meta">EDI</span>
     </div>
   </div>
   <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="placed" data-to="stock" data-flow="2400" data-flow-tokens="2" data-flow-delay="0"></li>
-    <li class="diagram-edge" data-from="stock" data-to="pick" data-tone="accent" data-flow="2400" data-flow-tokens="2" data-flow-delay="600">yes</li>
-    <li class="diagram-edge" data-from="pick" data-to="shipped" data-flow="2400" data-flow-tokens="2" data-flow-delay="1200"></li>
-    <li class="diagram-edge" data-from="stock" data-to="inventory" data-line="dashed" data-head="open" data-flow="2400" data-flow-tokens="2" data-flow-delay="1800">reads</li>
-    <li class="diagram-edge" data-from="stock" data-to="backorder" data-flow="2400" data-flow-tokens="2" data-flow-delay="2400">no</li>
-    <li class="diagram-edge" data-from="backorder" data-to="supplier" data-line="dashed" data-flow="2400" data-flow-tokens="2" data-flow-delay="3000">reorder</li>
-    <li class="diagram-edge" data-from="supplier" data-to="pick" data-flow="2400" data-flow-tokens="2" data-flow-delay="3600">delivery</li>
+    <li
+      class="diagram-edge"
+      data-from="placed"
+      data-to="stock"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="0"
+    ></li>
+    <li
+      class="diagram-edge"
+      data-from="stock"
+      data-to="pick"
+      data-tone="accent"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="600"
+      >yes</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="pick"
+      data-to="shipped"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="1200"
+    ></li>
+    <li
+      class="diagram-edge"
+      data-from="stock"
+      data-to="inventory"
+      data-line="dashed"
+      data-head="open"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="1800"
+      >reads</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="stock"
+      data-to="backorder"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="2400"
+      >no</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="backorder"
+      data-to="supplier"
+      data-line="dashed"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="3000"
+      >reorder</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="supplier"
+      data-to="pick"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="3600"
+      >delivery</li
+    >
   </ol>
 </figure>
 ```
@@ -585,12 +849,46 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <button class="btn" data-variant="outline" data-size="sm" id="dg-drive-all">setState('default')</button>
 </div>
 <figure class="diagram" id="dg-driven" data-type="flow" aria-label="A diagram driven from code">
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="s1" data-shape="pill" data-step="1" data-step-label="Request" style="--col:1;--row:1"><span class="diagram-node-name">Request</span></div>
-    <div class="diagram-node" data-node="s2" data-shape="diamond" data-step="2" data-step-label="Validate" style="--col:2;--row:1"><span class="diagram-node-name">Valid?</span></div>
-    <div class="diagram-node" data-node="s3" data-tone="accent" data-step="3" data-step-label="Process" style="--col:3;--row:1"><span class="diagram-node-name">Process</span></div>
-    <div class="diagram-node" data-node="s4" data-step="3" style="--col:2;--row:2"><span class="diagram-node-name">Reject</span></div>
-    <div class="diagram-node" data-node="s5" data-shape="pill" data-step="4" data-step-label="Done" style="--col:4;--row:1"><span class="diagram-node-name">Done</span></div>
+  <div class="diagram-canvas" style="--cols: 4">
+    <div
+      class="diagram-node"
+      data-node="s1"
+      data-shape="pill"
+      data-step="1"
+      data-step-label="Request"
+      style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Request</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s2"
+      data-shape="diamond"
+      data-step="2"
+      data-step-label="Validate"
+      style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">Valid?</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s3"
+      data-tone="accent"
+      data-step="3"
+      data-step-label="Process"
+      style="--col: 3; --row: 1"
+      ><span class="diagram-node-name">Process</span></div
+    >
+    <div class="diagram-node" data-node="s4" data-step="3" style="--col: 2; --row: 2"
+      ><span class="diagram-node-name">Reject</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s5"
+      data-shape="pill"
+      data-step="4"
+      data-step-label="Done"
+      style="--col: 4; --row: 1"
+      ><span class="diagram-node-name">Done</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="s1" data-to="s2"></li>
@@ -607,7 +905,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   document.getElementById('dg-drive-all').addEventListener('click', () => fig.api.setState('default'));
   // every step change - from the buttons, the clock, or the toolbar
   fig.addEventListener('diagram-step', (e) => {
-    document.getElementById('dg-driven-log').textContent = 'Step ' + e.detail.step + ' of ' + e.detail.max + ' · ' + e.detail.label + ' (' + e.detail.state + ')';
+    document.getElementById('dg-driven-log').textContent =
+      'Step ' + e.detail.step + ' of ' + e.detail.max + ' · ' + e.detail.label + ' (' + e.detail.state + ')';
   });
 </script>
 ```
@@ -617,15 +916,28 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocText>Mark what changed on the one source - <code>data-change="added|removed|changed|moved|rewired"</code>, the old text in <code>data-before</code>, the old placement in <code>data-before-style</code>, old ends in <code>data-before-from</code> / <code>-to</code>, an old status / tone / badge in <code>data-before-status</code> / <code>-tone</code> / <code>-badge</code> - and add <code>data-delta</code>. The component derives three panels: Before, Changes (badges + ledger) and After; stacked (top, center, bottom) by default, side by side from a 96rem container or with <code>data-delta="columns"</code>.</DocText>
 
 ```html example label="Side by side" hint="data-delta=columns forces the three columns; data-delta-labels renames the panels."
-<figure class="diagram" id="dg-delta-cols" data-type="flow" data-delta="columns" data-delta-labels="v1|What changed|v2" aria-label="A small delta, side by side">
-  <div class="diagram-canvas" style="--cols:3">
-    <div class="diagram-node" data-node="a" style="--col:1;--row:1"><span class="diagram-node-name">Upload</span></div>
-    <div class="diagram-node" data-node="b" data-tone="accent" data-change="added" style="--col:2;--row:1"><span class="diagram-node-name">Virus scan</span></div>
-    <div class="diagram-node" data-node="c" data-change="changed" style="--col:3;--row:1">
+<figure
+  class="diagram"
+  id="dg-delta-cols"
+  data-type="flow"
+  data-delta="columns"
+  data-delta-labels="v1|What changed|v2"
+  aria-label="A small delta, side by side"
+>
+  <div class="diagram-canvas" style="--cols: 3">
+    <div class="diagram-node" data-node="a" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Upload</span></div
+    >
+    <div class="diagram-node" data-node="b" data-tone="accent" data-change="added" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">Virus scan</span></div
+    >
+    <div class="diagram-node" data-node="c" data-change="changed" style="--col: 3; --row: 1">
       <span class="diagram-node-name">Store</span>
       <span class="diagram-node-meta" data-before="S3">S3 · encrypted</span>
     </div>
-    <div class="diagram-node" data-node="d" data-change="removed" style="--col:3;--row:2"><span class="diagram-node-name">Email link</span></div>
+    <div class="diagram-node" data-node="d" data-change="removed" style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">Email link</span></div
+    >
   </div>
   <ol class="diagram-edges">
     <li class="diagram-edge" data-from="a" data-to="b" data-change="added"></li>
@@ -645,23 +957,33 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocText>Everything comes from the theme: paper is <code>--card</code>, ink <code>--foreground</code>, lines mix from them; the accent is <code>--chart-2</code>, links <code>--chart-4</code>, added / changed / removed <code>--chart-3</code> / <code>--chart-1</code> / <code>--destructive</code>; corners follow <code>--radius</code> (the wire elbows too), all text is <code>--font-mono</code>. The component-local properties re-key a figure:</DocText>
 
 ```html example label="Incident escalation" hint="style='--diagram-accent: var(--destructive)' on the figure. The other knobs: --diagram-link, --diagram-added, --diagram-removed, --diagram-changed, --diagram-gap-x / -y, --diagram-col-min, --diagram-node-w, --diagram-element-ms (900ms between two elements), --diagram-step-ms (800ms to appear) and --diagram-hold (400ms rest after a step)."
-<figure class="diagram" id="dg-rekey" data-type="flow" style="--diagram-accent: var(--destructive)" aria-label="Incident escalation">
+<figure
+  class="diagram"
+  id="dg-rekey"
+  data-type="flow"
+  style="--diagram-accent: var(--destructive)"
+  aria-label="Incident escalation"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Re-keyed accent</span>
     <span class="diagram-title">Incident escalation</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:4">
-    <div class="diagram-node" data-node="alert" data-shape="pill" style="--col:1;--row:1"><span class="diagram-node-name">Alert fires</span></div>
-    <div class="diagram-node" data-node="oncall" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-node" data-node="alert" data-shape="pill" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Alert fires</span></div
+    >
+    <div class="diagram-node" data-node="oncall" style="--col: 2; --row: 1">
       <span class="diagram-node-name">On-call</span>
       <span class="diagram-node-meta">acks in 5 min</span>
     </div>
-    <div class="diagram-node" data-node="sev" data-shape="diamond" style="--col:3;--row:1"><span class="diagram-node-name">SEV-1?</span></div>
-    <div class="diagram-node" data-node="ic" data-tone="accent" style="--col:4;--row:1">
+    <div class="diagram-node" data-node="sev" data-shape="diamond" style="--col: 3; --row: 1"
+      ><span class="diagram-node-name">SEV-1?</span></div
+    >
+    <div class="diagram-node" data-node="ic" data-tone="accent" style="--col: 4; --row: 1">
       <span class="diagram-node-name">Incident commander</span>
       <span class="diagram-node-meta">war room</span>
     </div>
-    <div class="diagram-node" data-node="ticket" style="--col:3;--row:2">
+    <div class="diagram-node" data-node="ticket" style="--col: 3; --row: 2">
       <span class="diagram-node-name">Ticket</span>
       <span class="diagram-node-meta">next business day</span>
     </div>

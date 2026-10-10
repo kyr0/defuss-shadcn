@@ -25,7 +25,9 @@
     font-family: var(--font-sans);
     box-shadow: var(--shadow-xs);
     cursor: text;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &:focus-within {
       border-color: var(--ring);
@@ -53,11 +55,18 @@
       font: inherit;
       appearance: none;
 
-      &::placeholder { color: var(--muted-foreground); }
+      &::placeholder {
+        color: var(--muted-foreground);
+      }
       /* the box brings its own clear button - drop the UA's */
       &::-webkit-search-cancel-button,
-      &::-webkit-search-decoration { appearance: none; display: none; }
-      &:disabled { cursor: not-allowed; }
+      &::-webkit-search-decoration {
+        appearance: none;
+        display: none;
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
 
     &:has(> input:disabled) {
@@ -69,7 +78,9 @@
 
     &:has(> input[aria-invalid="true"]) {
       border-color: var(--destructive);
-      &:focus-within { box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2); }
+      &:focus-within {
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
     }
 
     /* -- Clear button: a CSS-drawn ×, only while there is text -------- */
@@ -86,7 +97,9 @@
       background: transparent;
       color: var(--muted-foreground);
       cursor: pointer;
-      transition: background-color 150ms, color 150ms;
+      transition:
+        background-color 150ms,
+        color 150ms;
 
       &::before,
       &::after {
@@ -100,17 +113,29 @@
         translate: -50% -50%;
         rotate: 45deg;
       }
-      &::after { rotate: -45deg; }
+      &::after {
+        rotate: -45deg;
+      }
 
-      &:hover { background: var(--accent); color: var(--accent-foreground); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 1px;
+      }
     }
 
     /* the runtime names the state: filled / searching = there is a value */
     &:is([data-state-name="filled"], [data-state-name="searching"]) {
-      & > .search-box-clear { display: block; }
+      & > .search-box-clear {
+        display: block;
+      }
       /* a trailing hint (a <kbd> shortcut, a scope label) steps aside */
-      & > :is(kbd, .search-box-hint) { display: none; }
+      & > :is(kbd, .search-box-hint) {
+        display: none;
+      }
     }
 
     & > :is(kbd, .search-box-hint) {
@@ -138,8 +163,12 @@
     }
 
     &[data-state-name="searching"] {
-      &::before { display: block; }
-      & > :is(svg, i, .search-box-icon) { display: none; }
+      &::before {
+        display: block;
+      }
+      & > :is(svg, i, .search-box-icon) {
+        display: none;
+      }
     }
 
     /* -- Variants / shape / sizes ------------------------------------- */
@@ -158,14 +187,20 @@
       height: 2rem;
       padding-inline: 0.625rem 0.25rem;
       font-size: 0.8125rem;
-      & > .search-box-clear { width: 1.25rem; height: 1.25rem; }
+      & > .search-box-clear {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
     }
 
     &[data-size="lg"] {
       height: 2.75rem;
       padding-inline: 1rem 0.5rem;
       font-size: 1rem;
-      & > .search-box-clear { width: 1.75rem; height: 1.75rem; }
+      & > .search-box-clear {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
     }
   }
 
@@ -211,11 +246,20 @@
       /* choosing a chip never jumps: the others shrink to nothing and the
          reset grows, all in one glide, and the chosen chip slides along */
       transition:
-        background-color 150ms, color 150ms, border-color 150ms,
-        width 250ms ease, padding 250ms ease, margin 250ms ease, border-width 250ms ease,
-        opacity 200ms, scale 250ms ease, visibility 250ms allow-discrete;
+        background-color 150ms,
+        color 150ms,
+        border-color 150ms,
+        width 250ms ease,
+        padding 250ms ease,
+        margin 250ms ease,
+        border-width 250ms ease,
+        opacity 200ms,
+        scale 250ms ease,
+        visibility 250ms allow-discrete;
 
-      &:is([type="radio"], [type="checkbox"]):not(.filter-reset)::after { content: attr(aria-label); }
+      &:is([type="radio"], [type="checkbox"]):not(.filter-reset)::after {
+        content: attr(aria-label);
+      }
 
       /* a checkbox chip shows its box: several may be ticked */
       &[type="checkbox"]::before {
@@ -234,7 +278,8 @@
         background: currentColor;
         /* the tick is cut out of the filled box, so it shows the chip colour */
         mask:
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat,
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+            center / 85% no-repeat,
           linear-gradient(#000 0 0);
         mask-composite: exclude;
       }
@@ -258,7 +303,10 @@
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        &:hover { background: var(--background); color: var(--foreground); }
+        &:hover {
+          background: var(--background);
+          color: var(--foreground);
+        }
       }
     }
 
@@ -273,7 +321,9 @@
       font-weight: 400;
       color: var(--muted-foreground);
     }
-    & > .filter-reset::after { content: "×"; }
+    & > .filter-reset::after {
+      content: "×";
+    }
 
     /* -- Variants / shape / sizes ------------------------------------- */
     &[data-variant="secondary"] > input:checked {
@@ -289,20 +339,30 @@
       box-shadow: inset 0 0 0 1px var(--foreground);
     }
 
-    &[data-shape="pill"] > input { border-radius: 999px; }
+    &[data-shape="pill"] > input {
+      border-radius: 999px;
+    }
 
     &[data-size="sm"] > input {
       height: 1.75rem;
       padding-inline: 0.625rem;
       font-size: 0.75rem;
-      &:is([type="reset"], .filter-reset) { width: 1.75rem; padding: 0; font-size: 1rem; }
+      &:is([type="reset"], .filter-reset) {
+        width: 1.75rem;
+        padding: 0;
+        font-size: 1rem;
+      }
     }
 
     &[data-size="lg"] > input {
       height: 2.5rem;
       padding-inline: 1.125rem;
       font-size: 1rem;
-      &:is([type="reset"], .filter-reset) { width: 2.5rem; padding: 0; font-size: 1.5rem; }
+      &:is([type="reset"], .filter-reset) {
+        width: 2.5rem;
+        padding: 0;
+        font-size: 1.5rem;
+      }
     }
 
     /* -- Collapsed chips (after the sizes: these win) --------------------
@@ -312,7 +372,8 @@
        radio group's arrow keys (visibility flips at the END of the glide
        when hiding, at the start when showing). */
     &:not(:has(> input:checked:not(.filter-reset))) > :is(input[type="reset"], .filter-reset),
-    &:not([data-multiple]):has(> input:checked:not(.filter-reset)) > input:not(:checked, .filter-reset, [type="reset"]) {
+    &:not([data-multiple]):has(> input:checked:not(.filter-reset))
+      > input:not(:checked, .filter-reset, [type="reset"]) {
       width: 0;
       padding-inline: 0;
       margin-inline-end: 0;
@@ -326,30 +387,50 @@
   }
 
   @keyframes search-box-spin {
-    to { rotate: 360deg; }
+    to {
+      rotate: 360deg;
+    }
   }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .search-box,
     .search-box > .search-box-clear,
-    .filter > input { transition: none; }
+    .filter > input {
+      transition: none;
+    }
     /* the spinner still says "working" - slowly */
-    .search-box::before { animation-duration: 2s; }
+    .search-box::before {
+      animation-duration: 2s;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .search-box { border-color: var(--foreground); }
-    .search-box > .search-box-clear { color: var(--foreground); }
-    .filter > input { border-color: var(--foreground); }
+    .search-box {
+      border-color: var(--foreground);
+    }
+    .search-box > .search-box-clear {
+      color: var(--foreground);
+    }
+    .filter > input {
+      border-color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .search-box { border: 1px solid CanvasText; }
-    .search-box:focus-within { outline: 2px solid Highlight; }
+    .search-box {
+      border: 1px solid CanvasText;
+    }
+    .search-box:focus-within {
+      outline: 2px solid Highlight;
+    }
     .search-box > .search-box-clear::before,
-    .search-box > .search-box-clear::after { background: ButtonText; }
-    .filter > input { border: 1px solid ButtonText; }
+    .search-box > .search-box-clear::after {
+      background: ButtonText;
+    }
+    .filter > input {
+      border: 1px solid ButtonText;
+    }
     .filter > input:checked {
       background: Highlight;
       color: HighlightText;

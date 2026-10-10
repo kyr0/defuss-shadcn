@@ -17,7 +17,7 @@
        the native attribute already conveys the requirement to AT. */
     &:has(+ input[required])::after,
     &:has(+ textarea[required])::after {
-      content: ' \00a0*';
+      content: " \00a0*";
       color: var(--destructive);
       font-weight: 600;
     }
@@ -90,14 +90,18 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &:focus {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
-    &::placeholder { color: var(--muted-foreground); }
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
 
     /* -- Readonly state -------------------------------------- */
     /* :not(:disabled) is load-bearing: a disabled input ALSO matches
@@ -161,7 +165,9 @@
         cursor: pointer;
         transition: background 150ms;
 
-        &:hover { background: var(--accent); }
+        &:hover {
+          background: var(--accent);
+        }
       }
     }
 
@@ -176,11 +182,31 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
-    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;   font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem; font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;  font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;     font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;  font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding: 0 0.625rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding: 0 0.75rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding: 0 1rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      padding: 0 1.25rem;
+      font-size: 1.125rem;
+    }
   }
 
   /* -- Input group: icons, text and buttons inside the field ---
@@ -202,7 +228,9 @@
     box-shadow: var(--shadow-xs);
     color: var(--muted-foreground);
     font-size: 0.875rem;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     & > .input {
       flex: 1;
@@ -214,9 +242,15 @@
       box-shadow: none;
       font-size: inherit;
 
-      &:focus { box-shadow: none; }
-      &:not(:first-child) { padding-inline-start: 0.5rem; }
-      &:not(:last-child) { padding-inline-end: 0.5rem; }
+      &:focus {
+        box-shadow: none;
+      }
+      &:not(:first-child) {
+        padding-inline-start: 0.5rem;
+      }
+      &:not(:last-child) {
+        padding-inline-end: 0.5rem;
+      }
     }
 
     &:has(> .input:focus) {
@@ -224,7 +258,12 @@
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
-    &:has(> .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *))) {
+    &:has(
+      > .input:is(
+        [aria-invalid="true"],
+        :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)
+      )
+    ) {
       border-color: var(--destructive);
 
       &:has(> .input:focus) {
@@ -237,7 +276,9 @@
     &:has(> .input:read-only:not(:disabled)) {
       background: var(--muted);
 
-      & > .input { background: transparent; }
+      & > .input {
+        background: transparent;
+      }
       &:has(> .input:focus) {
         border-color: var(--input);
         box-shadow: var(--shadow-xs);
@@ -249,7 +290,9 @@
       box-shadow: none;
       cursor: not-allowed;
 
-      & > .input { background: transparent; }
+      & > .input {
+        background: transparent;
+      }
     }
 
     /* decorative icon (inline <svg> or lucide <i>) */
@@ -260,8 +303,12 @@
       color: var(--muted-foreground);
       pointer-events: none;
 
-      &:first-child { margin-inline-start: 0.75rem; }
-      &:last-child { margin-inline-end: 0.75rem; }
+      &:first-child {
+        margin-inline-start: 0.75rem;
+      }
+      &:last-child {
+        margin-inline-end: 0.75rem;
+      }
     }
 
     /* static text: a unit, a protocol, a domain */
@@ -271,8 +318,12 @@
       color: var(--muted-foreground);
       user-select: none;
 
-      &:first-child { margin-inline-start: 0.75rem; }
-      &:last-child { margin-inline-end: 0.75rem; }
+      &:first-child {
+        margin-inline-start: 0.75rem;
+      }
+      &:last-child {
+        margin-inline-end: 0.75rem;
+      }
     }
 
     /* an in-field action: copy, show/hide, clear, open a picker */
@@ -289,26 +340,64 @@
       background: transparent;
       color: var(--muted-foreground);
       cursor: pointer;
-      transition: background-color 150ms, color 150ms;
+      transition:
+        background-color 150ms,
+        color 150ms;
 
-      & svg { width: 1rem; height: 1rem; }
+      & svg {
+        width: 1rem;
+        height: 1rem;
+      }
       /* icon swaps (copy -> check, eye -> eye-off): the UA's [hidden] rule
          only covers HTML elements, so a hidden <svg> needs its own */
-      & svg[hidden] { display: none; }
-      &:hover { background: var(--accent); color: var(--accent-foreground); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-      &:disabled { cursor: not-allowed; background: transparent; color: var(--muted-foreground); }
-      &:first-child { margin-inline-start: 0.25rem; }
-      &:last-child { margin-inline-end: 0.25rem; }
-      & + .input-group-button { margin-inline-start: 0.125rem; }
+      & svg[hidden] {
+        display: none;
+      }
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 1px;
+      }
+      &:disabled {
+        cursor: not-allowed;
+        background: transparent;
+        color: var(--muted-foreground);
+      }
+      &:first-child {
+        margin-inline-start: 0.25rem;
+      }
+      &:last-child {
+        margin-inline-end: 0.25rem;
+      }
+      & + .input-group-button {
+        margin-inline-start: 0.125rem;
+      }
     }
 
     /* -- Sizes: the same ladder as .input, set on the group ------ */
-    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      font-size: 1.125rem;
+    }
   }
 
   /* -- Auto-growing textarea --------------------------------- */
@@ -372,7 +461,10 @@
       border-color: GrayText;
     }
 
-    .input:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+    .input:is(
+      [aria-invalid="true"],
+      :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)
+    ) {
       border-color: LinkText;
     }
 
@@ -384,10 +476,19 @@
       border-color: ButtonBorder;
       background: Field;
 
-      & > .input:focus { outline: none; }
-      &:has(> .input:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
-      &:has(> .input:disabled) { border-color: GrayText; }
-      & > .input-group-button { color: ButtonText; }
+      & > .input:focus {
+        outline: none;
+      }
+      &:has(> .input:focus) {
+        outline: 2px solid Highlight;
+        outline-offset: 1px;
+      }
+      &:has(> .input:disabled) {
+        border-color: GrayText;
+      }
+      & > .input-group-button {
+        color: ButtonText;
+      }
     }
   }
 }
@@ -457,7 +558,9 @@
     font-family: var(--font-mono);
     font-size: 1.125rem;
     font-variant-numeric: tabular-nums;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &[data-filled] {
       border-color: var(--ring);
@@ -507,8 +610,12 @@
   }
 
   @keyframes otp-input-caret {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 }
 
@@ -584,7 +691,9 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
     resize: vertical;
     field-sizing: content;
     line-height: 1.5;
@@ -592,30 +701,66 @@
     /* -- Rows: data-rows is the height it starts at, data-max-rows where it
        stops growing and scrolls instead (field-sizing grows it in between).
        1lh = one line of this textarea, + the padding and border. -------- */
-    &[data-rows="1"] { min-height: calc(1lh + 1rem + 2px); }
-    &[data-rows="2"] { min-height: calc(2lh + 1rem + 2px); }
-    &[data-rows="3"] { min-height: calc(3lh + 1rem + 2px); }
-    &[data-rows="4"] { min-height: calc(4lh + 1rem + 2px); }
-    &[data-rows="5"] { min-height: calc(5lh + 1rem + 2px); }
-    &[data-rows="6"] { min-height: calc(6lh + 1rem + 2px); }
-    &[data-rows="8"] { min-height: calc(8lh + 1rem + 2px); }
-    &[data-rows="10"] { min-height: calc(10lh + 1rem + 2px); }
-    &[data-max-rows="2"] { max-height: calc(2lh + 1rem + 2px); }
-    &[data-max-rows="3"] { max-height: calc(3lh + 1rem + 2px); }
-    &[data-max-rows="4"] { max-height: calc(4lh + 1rem + 2px); }
-    &[data-max-rows="5"] { max-height: calc(5lh + 1rem + 2px); }
-    &[data-max-rows="6"] { max-height: calc(6lh + 1rem + 2px); }
-    &[data-max-rows="8"] { max-height: calc(8lh + 1rem + 2px); }
-    &[data-max-rows="10"] { max-height: calc(10lh + 1rem + 2px); }
-    &[data-max-rows="12"] { max-height: calc(12lh + 1rem + 2px); }
-    &[data-resize="none"] { resize: none; }
+    &[data-rows="1"] {
+      min-height: calc(1lh + 1rem + 2px);
+    }
+    &[data-rows="2"] {
+      min-height: calc(2lh + 1rem + 2px);
+    }
+    &[data-rows="3"] {
+      min-height: calc(3lh + 1rem + 2px);
+    }
+    &[data-rows="4"] {
+      min-height: calc(4lh + 1rem + 2px);
+    }
+    &[data-rows="5"] {
+      min-height: calc(5lh + 1rem + 2px);
+    }
+    &[data-rows="6"] {
+      min-height: calc(6lh + 1rem + 2px);
+    }
+    &[data-rows="8"] {
+      min-height: calc(8lh + 1rem + 2px);
+    }
+    &[data-rows="10"] {
+      min-height: calc(10lh + 1rem + 2px);
+    }
+    &[data-max-rows="2"] {
+      max-height: calc(2lh + 1rem + 2px);
+    }
+    &[data-max-rows="3"] {
+      max-height: calc(3lh + 1rem + 2px);
+    }
+    &[data-max-rows="4"] {
+      max-height: calc(4lh + 1rem + 2px);
+    }
+    &[data-max-rows="5"] {
+      max-height: calc(5lh + 1rem + 2px);
+    }
+    &[data-max-rows="6"] {
+      max-height: calc(6lh + 1rem + 2px);
+    }
+    &[data-max-rows="8"] {
+      max-height: calc(8lh + 1rem + 2px);
+    }
+    &[data-max-rows="10"] {
+      max-height: calc(10lh + 1rem + 2px);
+    }
+    &[data-max-rows="12"] {
+      max-height: calc(12lh + 1rem + 2px);
+    }
+    &[data-resize="none"] {
+      resize: none;
+    }
 
     &:focus {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.2);
     }
 
-    &::placeholder { color: var(--muted-foreground); }
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
 
     /* Disabled = legible but inert: a muted surface and muted text inside
        the full-strength border - never an opacity fade that lets the box
@@ -633,8 +778,12 @@
         linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%),
         linear-gradient(135deg, transparent 0 46%, var(--muted-foreground) 46% 54%, transparent 54%);
       background-repeat: no-repeat;
-      background-size: 0.625rem 0.625rem, 0.3125rem 0.3125rem;
-      background-position: right 0.1875rem bottom 0.1875rem, right 0.1875rem bottom 0.1875rem;
+      background-size:
+        0.625rem 0.625rem,
+        0.3125rem 0.3125rem;
+      background-position:
+        right 0.1875rem bottom 0.1875rem,
+        right 0.1875rem bottom 0.1875rem;
     }
 
     &:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
@@ -663,7 +812,10 @@
     border-radius: var(--radius-lg);
     background: var(--background);
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms, background-color 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms,
+      background-color 150ms;
 
     & > .textarea {
       min-height: calc(2lh + 1rem);
@@ -674,7 +826,9 @@
       resize: none;
       padding: 0.75rem 0.875rem 0.25rem;
 
-      &:focus { box-shadow: none; }
+      &:focus {
+        box-shadow: none;
+      }
     }
 
     &:has(> .textarea:focus) {
@@ -694,8 +848,14 @@
       gap: 0.5rem;
       padding: 0.625rem 0.625rem 0;
 
-      &:empty { display: none; }
-      & > .file-drop-item { width: 13rem; max-width: 100%; box-sizing: border-box; }
+      &:empty {
+        display: none;
+      }
+      & > .file-drop-item {
+        width: 13rem;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
     }
 
     & > .textarea-group-actions {
@@ -705,7 +865,9 @@
       padding: 0.375rem;
 
       /* everything after the spacer sits at the end - usually send */
-      & > .textarea-group-spacer { flex: 1; }
+      & > .textarea-group-spacer {
+        flex: 1;
+      }
     }
 
     & .textarea-group-count {
@@ -720,15 +882,21 @@
       flex-flow: row wrap;
       align-items: flex-end;
 
-      & > .file-drop-list { flex-basis: 100%; }
+      & > .file-drop-list {
+        flex-basis: 100%;
+      }
       & > .textarea {
         flex: 1;
         min-width: 0;
         min-height: calc(1lh + 1rem);
         padding: 0.5rem 0.25rem;
       }
-      & > .textarea:first-child { padding-inline-start: 0.875rem; }
-      & > .textarea-group-actions { padding: 0.3125rem; }
+      & > .textarea:first-child {
+        padding-inline-start: 0.875rem;
+      }
+      & > .textarea-group-actions {
+        padding: 0.3125rem;
+      }
     }
 
     /* a file dragged over the composer: the page sets data-dragover */
@@ -752,7 +920,9 @@
     .textarea-group {
       border-width: 2px;
     }
-    .textarea-group > .textarea { border-width: 0; }
+    .textarea-group > .textarea {
+      border-width: 0;
+    }
 
     .textarea:disabled {
       border-color: var(--muted-foreground);
@@ -760,9 +930,16 @@
   }
 
   @media (forced-colors: active) {
-    .textarea-group { border-color: ButtonBorder; }
-    .textarea-group:has(> .textarea:focus) { outline: 2px solid Highlight; outline-offset: 1px; }
-    .textarea-group > .textarea:focus { outline: none; }
+    .textarea-group {
+      border-color: ButtonBorder;
+    }
+    .textarea-group:has(> .textarea:focus) {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+    .textarea-group > .textarea:focus {
+      outline: none;
+    }
 
     .textarea {
       border-color: ButtonBorder;
@@ -782,7 +959,10 @@
       border-color: GrayText;
     }
 
-    .textarea:is([aria-invalid="true"], :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)) {
+    .textarea:is(
+      [aria-invalid="true"],
+      :user-invalid:is(form *):not(form[data-validate="submit"]:not([data-submitted]) *)
+    ) {
       border-color: LinkText;
     }
   }
@@ -803,14 +983,16 @@
     cursor: pointer;
     flex-shrink: 0;
     position: relative;
-    transition: background-color 150ms, border-color 150ms;
+    transition:
+      background-color 150ms,
+      border-color 150ms;
 
     &:checked {
       background-color: var(--primary);
       border-color: var(--primary);
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         left: 50%;
         top: 45%;
@@ -830,7 +1012,7 @@
       border-color: var(--primary);
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         left: 50%;
         top: 50%;
@@ -908,7 +1090,7 @@
      label always sits after the control (block layouts place it in the
      second grid column). */
   :is(.checkbox-item, .checkbox-item-block) > .checkbox::before {
-    content: '';
+    content: "";
     position: absolute;
     inset-block: -0.25rem;
     inset-inline: -0.25rem calc(-1 * 0.5rem);
@@ -1023,17 +1205,27 @@
      fixed - this is spacing, not zoom. */
   .radio-group:where([data-density="compact"]) {
     gap: 0.25rem;
-    &[data-orientation="horizontal"] { gap: 0.75rem; }
-    & .radio-card { padding: 0.75rem 1rem; }
+    &[data-orientation="horizontal"] {
+      gap: 0.75rem;
+    }
+    & .radio-card {
+      padding: 0.75rem 1rem;
+    }
   }
   .radio-group:where([data-density="comfortable"]) {
     gap: 0.5rem;
-    &[data-orientation="horizontal"] { gap: 1rem; }
+    &[data-orientation="horizontal"] {
+      gap: 1rem;
+    }
   }
   .radio-group:where([data-density="spacious"]) {
     gap: 0.75rem;
-    &[data-orientation="horizontal"] { gap: 1.5rem; }
-    & .radio-card { padding: 1.25rem 1.5rem; }
+    &[data-orientation="horizontal"] {
+      gap: 1.5rem;
+    }
+    & .radio-card {
+      padding: 1.25rem 1.5rem;
+    }
   }
 
   /* Gap hit area: inside an item layout the radio's click target spans the
@@ -1042,7 +1234,7 @@
      the label's `for` covers the text itself. Inline-end only: the label
      always sits after the radio (the block layout's second grid column). */
   :is(.radio-item, .radio-item-block) > .radio::before {
-    content: '';
+    content: "";
     position: absolute;
     inset-block: -0.25rem;
     inset-inline: -0.25rem -0.5rem;
@@ -1058,7 +1250,9 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: border-color 150ms, background 150ms;
+    transition:
+      border-color 150ms,
+      background 150ms;
 
     &:hover {
       background: var(--accent);
@@ -1077,8 +1271,13 @@
       cursor: not-allowed;
       background: var(--muted);
 
-      &:hover { background: var(--muted); }
-      & > label { color: var(--muted-foreground); cursor: not-allowed; }
+      &:hover {
+        background: var(--muted);
+      }
+      & > label {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+      }
     }
 
     & > .radio {
@@ -1117,7 +1316,7 @@
       border-color: var(--primary);
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         left: 50%;
@@ -1148,10 +1347,15 @@
       &:checked {
         border-color: color-mix(in oklch, var(--primary) 45%, var(--background));
 
-        &::after { background: color-mix(in oklch, var(--primary) 45%, var(--background)); }
+        &::after {
+          background: color-mix(in oklch, var(--primary) 45%, var(--background));
+        }
       }
 
-      & + label { color: var(--muted-foreground); cursor: not-allowed; }
+      & + label {
+        color: var(--muted-foreground);
+        cursor: not-allowed;
+      }
     }
 
     &[aria-invalid="true"] {
@@ -1233,7 +1437,7 @@
 
     /* Thumb */
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 2px;
       left: 2px;
@@ -1278,7 +1482,10 @@
         background: color-mix(in oklch, var(--primary) 45%, var(--background));
         box-shadow: none;
 
-        &::after { background: var(--background); box-shadow: none; }
+        &::after {
+          background: var(--background);
+          box-shadow: none;
+        }
       }
     }
 
@@ -1399,14 +1606,14 @@
      label always sits after the control (block layouts place it in the
      second grid column). */
   :is(.switch-item) > .switch::before {
-    content: '';
+    content: "";
     position: absolute;
     inset-block: -0.25rem;
     inset-inline: -0.25rem calc(-1 * 0.5rem);
   }
 
   :is(.switch-item-block) > .switch::before {
-    content: '';
+    content: "";
     position: absolute;
     inset-block: -0.25rem;
     inset-inline: -0.25rem calc(-1 * 0.75rem);
@@ -1527,11 +1734,15 @@
       width: var(--_d);
       height: var(--_d);
       border-radius: 50%;
-      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      background:
+        var(--slider-thumb-image, none) center / 100% no-repeat,
+        var(--background);
       border: 2px solid var(--_fill);
       margin-top: calc((var(--_t) - var(--_d)) / 2);
       cursor: pointer;
-      transition: box-shadow 150ms, scale 150ms;
+      transition:
+        box-shadow 150ms,
+        scale 150ms;
     }
 
     /* Thumb - Firefox */
@@ -1539,10 +1750,14 @@
       width: var(--_d);
       height: var(--_d);
       border-radius: 50%;
-      background: var(--slider-thumb-image, none) center / 100% no-repeat, var(--background);
+      background:
+        var(--slider-thumb-image, none) center / 100% no-repeat,
+        var(--background);
       border: 2px solid var(--_fill);
       cursor: pointer;
-      transition: box-shadow 150ms, scale 150ms;
+      transition:
+        box-shadow 150ms,
+        scale 150ms;
     }
 
     /* Hover */
@@ -1572,12 +1787,18 @@
       opacity: 0.5;
       cursor: not-allowed;
 
-      &::-webkit-slider-thumb { cursor: not-allowed; }
-      &::-moz-range-thumb { cursor: not-allowed; }
+      &::-webkit-slider-thumb {
+        cursor: not-allowed;
+      }
+      &::-moz-range-thumb {
+        cursor: not-allowed;
+      }
     }
 
     /* RTL: the range runs right to left, so does the fill */
-    &:dir(rtl) { --_dir: to left; }
+    &:dir(rtl) {
+      --_dir: to left;
+    }
 
     /* Vertical orientation */
     &[data-orientation="vertical"] {
@@ -1587,7 +1808,10 @@
       width: var(--_t);
       height: 12rem;
 
-      &::-webkit-slider-runnable-track { width: var(--_t); height: auto; }
+      &::-webkit-slider-runnable-track {
+        width: var(--_t);
+        height: auto;
+      }
       &::-webkit-slider-thumb {
         margin-top: 0;
         margin-left: calc((var(--_t) - var(--_d)) / 2);
@@ -1600,28 +1824,61 @@
     &[data-thumb="emoji"] {
       --_d: var(--_thumb, 2rem);
 
-      &::-webkit-slider-thumb { border: 0; background-color: transparent; }
-      &::-moz-range-thumb { border: 0; background-color: transparent; }
-      &:active::-webkit-slider-thumb { scale: 1.15; }
-      &:active::-moz-range-thumb { scale: 1.15; }
+      &::-webkit-slider-thumb {
+        border: 0;
+        background-color: transparent;
+      }
+      &::-moz-range-thumb {
+        border: 0;
+        background-color: transparent;
+      }
+      &:active::-webkit-slider-thumb {
+        scale: 1.15;
+      }
+      &:active::-moz-range-thumb {
+        scale: 1.15;
+      }
     }
   }
 
   /* -- Sizes: track thickness + thumb diameter (md == the default) ----
      On a .slider or on a .slider-range (both inputs inherit). */
   :is(.slider, .slider-range, .slider-marks) {
-    &[data-size="xs"] { --_track: 0.25rem; --_thumb: 0.75rem; }
-    &[data-size="sm"] { --_track: 0.375rem; --_thumb: 1rem; }
-    &[data-size="md"] { --_track: 0.5rem; --_thumb: 1.25rem; }
-    &[data-size="lg"] { --_track: 0.625rem; --_thumb: 1.5rem; }
-    &[data-size="xl"] { --_track: 0.75rem; --_thumb: 1.75rem; }
+    &[data-size="xs"] {
+      --_track: 0.25rem;
+      --_thumb: 0.75rem;
+    }
+    &[data-size="sm"] {
+      --_track: 0.375rem;
+      --_thumb: 1rem;
+    }
+    &[data-size="md"] {
+      --_track: 0.5rem;
+      --_thumb: 1.25rem;
+    }
+    &[data-size="lg"] {
+      --_track: 0.625rem;
+      --_thumb: 1.5rem;
+    }
+    &[data-size="xl"] {
+      --_track: 0.75rem;
+      --_thumb: 1.75rem;
+    }
 
     /* -- Tones: success / warning / info / destructive; any other color
        via style="--slider-color: …" */
-    &[data-tone="success"] { --_c: oklch(0.6 0.15 150); }
-    &[data-tone="warning"] { --_c: oklch(0.78 0.16 75); }
-    &[data-tone="info"] { --_c: oklch(0.6 0.16 250); }
-    &[data-tone="destructive"] { --_c: var(--destructive); }
+    &[data-tone="success"] {
+      --_c: oklch(0.6 0.15 150);
+    }
+    &[data-tone="warning"] {
+      --_c: oklch(0.78 0.16 75);
+    }
+    &[data-tone="info"] {
+      --_c: oklch(0.6 0.16 250);
+    }
+    &[data-tone="destructive"] {
+      --_c: var(--destructive);
+    }
   }
 
   /* -- Marks: a CSS-only tick scale under a stepped slider ------------
@@ -1659,12 +1916,22 @@
       background: var(--border);
     }
     /* a tick without a label (an empty child) stays a short tick */
-    & > :empty::before { height: 0.25rem; }
+    & > :empty::before {
+      height: 0.25rem;
+    }
   }
-  :is(.slider, .slider-range)[data-size="xs"] + .slider-marks:not([data-size]) { --_thumb: 0.75rem; }
-  :is(.slider, .slider-range)[data-size="sm"] + .slider-marks:not([data-size]) { --_thumb: 1rem; }
-  :is(.slider, .slider-range)[data-size="lg"] + .slider-marks:not([data-size]) { --_thumb: 1.5rem; }
-  :is(.slider, .slider-range)[data-size="xl"] + .slider-marks:not([data-size]) { --_thumb: 1.75rem; }
+  :is(.slider, .slider-range)[data-size="xs"] + .slider-marks:not([data-size]) {
+    --_thumb: 0.75rem;
+  }
+  :is(.slider, .slider-range)[data-size="sm"] + .slider-marks:not([data-size]) {
+    --_thumb: 1rem;
+  }
+  :is(.slider, .slider-range)[data-size="lg"] + .slider-marks:not([data-size]) {
+    --_thumb: 1.5rem;
+  }
+  :is(.slider, .slider-range)[data-size="xl"] + .slider-marks:not([data-size]) {
+    --_thumb: 1.75rem;
+  }
 
   /* -- Range: two thumbs on one track ---------------------------------
      Two .slider inputs stacked in a .slider-range; only their thumbs take
@@ -1683,7 +1950,7 @@
     height: var(--_thumb, 1.25rem);
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       inset-inline: 0;
       top: 50%;
@@ -1698,7 +1965,9 @@
         var(--secondary) var(--range-to)
       );
     }
-    &:dir(rtl) { --_dir: to left; }
+    &:dir(rtl) {
+      --_dir: to left;
+    }
 
     & > .slider {
       position: absolute;
@@ -1709,16 +1978,30 @@
       background: none;
       pointer-events: none;
 
-      &::-webkit-slider-runnable-track { background: none; }
-      &::-moz-range-track { background: none; }
-      &::-moz-range-progress { background: none; }
-      &::-webkit-slider-thumb { pointer-events: auto; }
-      &::-moz-range-thumb { pointer-events: auto; }
+      &::-webkit-slider-runnable-track {
+        background: none;
+      }
+      &::-moz-range-track {
+        background: none;
+      }
+      &::-moz-range-progress {
+        background: none;
+      }
+      &::-webkit-slider-thumb {
+        pointer-events: auto;
+      }
+      &::-moz-range-thumb {
+        pointer-events: auto;
+      }
     }
     /* the thumb last moved stays on top (both can reach the same value) */
-    & > .slider[data-active] { z-index: 1; }
+    & > .slider[data-active] {
+      z-index: 1;
+    }
 
-    &:has(.slider:disabled) { opacity: 0.5; }
+    &:has(.slider:disabled) {
+      opacity: 0.5;
+    }
   }
 
   /* -- Field: icons, emojis and values around a slider ----------------- */
@@ -1728,7 +2011,10 @@
     gap: 0.75rem;
     width: 100%;
 
-    & > :is(.slider, .slider-range) { flex: 1 1 auto; min-width: 0; }
+    & > :is(.slider, .slider-range) {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
   }
   .slider-icon {
     display: inline-grid;
@@ -1740,7 +2026,10 @@
     line-height: 1;
     color: var(--muted-foreground);
 
-    & svg { width: 1.125rem; height: 1.25rem; }
+    & svg {
+      width: 1.125rem;
+      height: 1.25rem;
+    }
   }
   .slider-value {
     flex-shrink: 0;
@@ -1763,14 +2052,23 @@
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .slider {
-      &::-webkit-slider-thumb { transition: none; }
-      &::-moz-range-thumb { transition: none; }
+      &::-webkit-slider-thumb {
+        transition: none;
+      }
+      &::-moz-range-thumb {
+        transition: none;
+      }
     }
   }
 
   /* High contrast */
   @media (prefers-contrast: more) {
-    .slider-marks { color: var(--foreground); & > *::before { background: var(--foreground); } }
+    .slider-marks {
+      color: var(--foreground);
+      & > *::before {
+        background: var(--foreground);
+      }
+    }
     .slider {
       &::-webkit-slider-thumb {
         border-width: 3px;
@@ -1783,7 +2081,12 @@
 
   /* Forced colors (Windows High Contrast Mode) */
   @media (forced-colors: active) {
-    .slider-marks { color: CanvasText; & > *::before { background: CanvasText; } }
+    .slider-marks {
+      color: CanvasText;
+      & > *::before {
+        background: CanvasText;
+      }
+    }
     .slider {
       &::-webkit-slider-runnable-track {
         background: ButtonFace;
@@ -1814,7 +2117,9 @@
         }
       }
     }
-    .slider-range::before { background: Highlight; }
+    .slider-range::before {
+      background: Highlight;
+    }
   }
 }
 
@@ -1873,7 +2178,9 @@
       content: var(--rating-glyph, "★");
       font-size: var(--rating-size);
       color: var(--rating-empty);
-      transition: color 150ms, scale 150ms;
+      transition:
+        color 150ms,
+        scale 150ms;
     }
   }
 
@@ -2036,7 +2343,9 @@
     outline: none;
     box-shadow: var(--shadow-xs);
     cursor: pointer;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     /* Custom chevron */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -2098,7 +2407,10 @@
 
       & option:checked {
         /* a gradient beats the UA's opaque selection paint in every engine */
-        background: linear-gradient(color-mix(in oklch, var(--primary) 14%, transparent), color-mix(in oklch, var(--primary) 14%, transparent));
+        background: linear-gradient(
+          color-mix(in oklch, var(--primary) 14%, transparent),
+          color-mix(in oklch, var(--primary) 14%, transparent)
+        );
         font-weight: 500;
       }
 
@@ -2116,13 +2428,35 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
-    &[data-size="xs"] { height: 1.75rem; padding-left: 0.5rem;   font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    padding-left: 0.625rem; font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; padding-left: 0.75rem;  font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; padding-left: 1rem;     font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; padding-left: 1.25rem;  font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding-left: 0.5rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding-left: 0.625rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding-left: 0.75rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding-left: 1rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      padding-left: 1.25rem;
+      font-size: 1.125rem;
+    }
 
-    &[multiple][data-size] { height: auto; }
+    &[multiple][data-size] {
+      height: auto;
+    }
   }
 }
 
@@ -2208,7 +2542,9 @@
       cursor: pointer;
       font-size: 1rem;
       font-family: var(--font-sans);
-      transition: background 150ms, color 150ms;
+      transition:
+        background 150ms,
+        color 150ms;
       flex-shrink: 0;
 
       &:hover {
@@ -2243,23 +2579,37 @@
       cursor: text;
 
       /* edge of the box (no stepper on that side): field padding */
-      &:first-child { padding-inline-start: 0.75rem; }
-      &:last-child { padding-inline-end: 0.75rem; }
+      &:first-child {
+        padding-inline-start: 0.75rem;
+      }
+      &:last-child {
+        padding-inline-end: 0.75rem;
+      }
     }
 
     /* NOT user-select: none - the unit is part of the value when text is
        selected, copied or exported ("72,5 kg", not a bare "72,5") */
 
-    &:has(input:not([type="hidden"]) + .number-input-unit) input { text-align: end; }
-    &:has(.number-input-unit + input:not([type="hidden"])) input { text-align: start; }
+    &:has(input:not([type="hidden"]) + .number-input-unit) input {
+      text-align: end;
+    }
+    &:has(.number-input-unit + input:not([type="hidden"])) input {
+      text-align: start;
+    }
 
     /* currency fields carry grouped amounts ("1.234.567,89") */
-    &[data-currency] input { width: 8rem; }
+    &[data-currency] input {
+      width: 8rem;
+    }
 
     /* stepper-less field (currency, measurements): the input reaches the box
        edge - give it the regular field padding there */
-    & input:first-child { padding-inline-start: 0.75rem; }
-    & input:last-child { padding-inline-end: 0.75rem; }
+    & input:first-child {
+      padding-inline-start: 0.75rem;
+    }
+    & input:last-child {
+      padding-inline-end: 0.75rem;
+    }
 
     &:focus-within {
       border-color: var(--ring);
@@ -2273,32 +2623,77 @@
        height:100% so they can't fight the container. */
     &[data-size="xs"] {
       height: 1.75rem;
-      & input { height: 100%; width: 3rem; font-size: 0.75rem; }
-      & button { height: 100%; width: 1.5rem; font-size: 0.875rem; }
-      & .number-input-unit { font-size: 0.75rem; }
+      & input {
+        height: 100%;
+        width: 3rem;
+        font-size: 0.75rem;
+      }
+      & button {
+        height: 100%;
+        width: 1.5rem;
+        font-size: 0.875rem;
+      }
+      & .number-input-unit {
+        font-size: 0.75rem;
+      }
     }
     &[data-size="sm"] {
       height: 2rem;
-      & input { height: 100%; width: 3.5rem; font-size: 0.8125rem; }
-      & button { height: 100%; width: 1.75rem; font-size: 0.9375rem; }
-      & .number-input-unit { font-size: 0.8125rem; }
+      & input {
+        height: 100%;
+        width: 3.5rem;
+        font-size: 0.8125rem;
+      }
+      & button {
+        height: 100%;
+        width: 1.75rem;
+        font-size: 0.9375rem;
+      }
+      & .number-input-unit {
+        font-size: 0.8125rem;
+      }
     }
     &[data-size="md"] {
       height: 2.25rem;
-      & input { height: 100%; font-size: 0.875rem; }
-      & button { height: 100%; }
+      & input {
+        height: 100%;
+        font-size: 0.875rem;
+      }
+      & button {
+        height: 100%;
+      }
     }
     &[data-size="lg"] {
       height: 2.75rem;
-      & input { height: 100%; width: 4.5rem; font-size: 1rem; }
-      & button { height: 100%; width: 2.25rem; font-size: 1.125rem; }
-      & .number-input-unit { font-size: 1rem; }
+      & input {
+        height: 100%;
+        width: 4.5rem;
+        font-size: 1rem;
+      }
+      & button {
+        height: 100%;
+        width: 2.25rem;
+        font-size: 1.125rem;
+      }
+      & .number-input-unit {
+        font-size: 1rem;
+      }
     }
     &[data-size="xl"] {
       height: 3.25rem;
-      & input { height: 100%; width: 5rem; font-size: 1.125rem; }
-      & button { height: 100%; width: 2.5rem; font-size: 1.25rem; }
-      & .number-input-unit { font-size: 1.125rem; }
+      & input {
+        height: 100%;
+        width: 5rem;
+        font-size: 1.125rem;
+      }
+      & button {
+        height: 100%;
+        width: 2.5rem;
+        font-size: 1.25rem;
+      }
+      & .number-input-unit {
+        font-size: 1.125rem;
+      }
     }
   }
 }
@@ -2344,7 +2739,9 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
     padding: 0;
     cursor: pointer;
 
@@ -2365,7 +2762,9 @@
       cursor: pointer;
       transition: background 150ms;
 
-      &:hover { background: var(--accent); }
+      &:hover {
+        background: var(--accent);
+      }
     }
 
     &:focus {
@@ -2385,7 +2784,9 @@
         color: var(--muted-foreground);
         cursor: not-allowed;
 
-        &:hover { background: var(--muted); }
+        &:hover {
+          background: var(--muted);
+        }
       }
     }
 
@@ -2393,11 +2794,46 @@
        unsized default keeps the historical 2.5rem). The file-selector
        button fills the container (height:100%), so only the box and the
        font scale. */
-    &[data-size="xs"] { height: 1.75rem; font-size: 0.75rem;    &::file-selector-button { padding: 0 0.5rem; margin-right: 0.5rem; font-size: 0.75rem; } }
-    &[data-size="sm"] { height: 2rem;    font-size: 0.8125rem;  &::file-selector-button { padding: 0 0.625rem; margin-right: 0.625rem; font-size: 0.8125rem; } }
-    &[data-size="md"] { height: 2.25rem; font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; font-size: 1rem;       &::file-selector-button { padding: 0 1rem; margin-right: 1rem; font-size: 1rem; } }
-    &[data-size="xl"] { height: 3.25rem; font-size: 1.125rem;   &::file-selector-button { padding: 0 1.25rem; margin-right: 1.25rem; font-size: 1.125rem; } }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      font-size: 0.75rem;
+      &::file-selector-button {
+        padding: 0 0.5rem;
+        margin-right: 0.5rem;
+        font-size: 0.75rem;
+      }
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      font-size: 0.8125rem;
+      &::file-selector-button {
+        padding: 0 0.625rem;
+        margin-right: 0.625rem;
+        font-size: 0.8125rem;
+      }
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      font-size: 1rem;
+      &::file-selector-button {
+        padding: 0 1rem;
+        margin-right: 1rem;
+        font-size: 1rem;
+      }
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      font-size: 1.125rem;
+      &::file-selector-button {
+        padding: 0 1.25rem;
+        margin-right: 1.25rem;
+        font-size: 1.125rem;
+      }
+    }
   }
 
   /* -- Drop zone ---------------------------------------------------------
@@ -2426,11 +2862,22 @@
     color: var(--card-foreground);
     text-align: center;
     cursor: pointer;
-    transition: border-color 150ms ease, background-color 150ms ease, scale 150ms ease;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      scale 150ms ease;
 
-    &:hover { border-color: color-mix(in oklch, var(--foreground) 40%, transparent); }
-    &:has(.file-drop-input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
-    &:has(.file-drop-input:disabled) { opacity: 0.55; cursor: not-allowed; }
+    &:hover {
+      border-color: color-mix(in oklch, var(--foreground) 40%, transparent);
+    }
+    &:has(.file-drop-input:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+    &:has(.file-drop-input:disabled) {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
   }
   .file-drop-input {
     position: absolute;
@@ -2452,16 +2899,27 @@
     color: var(--muted-foreground);
     font-size: 1.5rem;
     line-height: 1;
-    transition: background-color 150ms ease, color 150ms ease, translate 150ms ease;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      translate 150ms ease;
 
-    & svg { width: 1.5rem; height: 1.5rem; }
+    & svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   }
   .file-drop-title {
     font-size: 0.9375rem;
     font-weight: 600;
     text-wrap: balance;
 
-    & u, & .file-drop-browse { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+    & u,
+    & .file-drop-browse {
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
   .file-drop-hint {
     font-size: 0.8125rem;
@@ -2476,16 +2934,24 @@
     background-color: color-mix(in oklch, var(--primary) 6%, var(--card));
     scale: 1.01;
 
-    & .file-drop-icon { background-color: var(--primary); color: var(--primary-foreground); translate: 0 -2px; }
+    & .file-drop-icon {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      translate: 0 -2px;
+    }
   }
   /* rejected files (wrong type, too big, too many) */
-  .file-drop[data-state-name="error"] .file-drop-zone { border-color: var(--destructive); }
+  .file-drop[data-state-name="error"] .file-drop-zone {
+    border-color: var(--destructive);
+  }
   .file-drop-error {
     margin: 0;
     font-size: 0.8125rem;
     color: var(--destructive);
 
-    &:empty { display: none; }
+    &:empty {
+      display: none;
+    }
   }
 
   /* compact: one row - icon, text, and the whole row is the target */
@@ -2499,7 +2965,17 @@
     text-align: start;
     border-radius: var(--radius-lg);
 
-    & .file-drop-icon { grid-row: span 2; width: 2.25rem; height: 2.25rem; margin: 0; font-size: 1.125rem; & svg { width: 1.125rem; height: 1.125rem; } }
+    & .file-drop-icon {
+      grid-row: span 2;
+      width: 2.25rem;
+      height: 2.25rem;
+      margin: 0;
+      font-size: 1.125rem;
+      & svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
   }
 
   /* -- The file list ---------------------------------------------------- */
@@ -2510,7 +2986,9 @@
     padding: 0;
     list-style: none;
 
-    &:empty { display: none; }
+    &:empty {
+      display: none;
+    }
   }
   .file-drop-item {
     display: grid;
@@ -2536,7 +3014,11 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
 
-    & img { width: 100%; height: 100%; object-fit: cover; }
+    & img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .file-drop-name {
     overflow: hidden;
@@ -2562,14 +3044,27 @@
     color: var(--muted-foreground);
     cursor: pointer;
 
-    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-    & svg { width: 1rem; height: 1rem; }
+    &:hover {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
   @media (forced-colors: active) {
-    .file-drop-zone { border-color: CanvasText; }
-    .file-drop[data-state-name="dragover"] .file-drop-zone { border-color: Highlight; }
+    .file-drop-zone {
+      border-color: CanvasText;
+    }
+    .file-drop[data-state-name="dragover"] .file-drop-zone {
+      border-color: Highlight;
+    }
   }
 }
 
@@ -2620,7 +3115,9 @@
       padding: 0;
       background: none;
 
-      &::-webkit-color-swatch-wrapper { padding: 0; }
+      &::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
       &::-webkit-color-swatch {
         border: none;
         border-radius: calc(var(--radius-sm) - 1px);
@@ -2670,11 +3167,59 @@
        xs 20+6+2 · sm 24+6+2 · md 28+6+2 · lg 32+10+2 · xl 40+10+2.
        The unsized default IS md (1.75rem swatch, 0.1875rem block padding = 36px)
        - exactly like .input defaults to the md step. */
-    &[data-size="xs"] { padding: 0.1875rem 0.5rem; gap: 0.375rem; & input[type="color"] { width: 1.25rem; height: 1.25rem; } & .color-picker-value { font-size: 0.6875rem; } }
-    &[data-size="sm"] { padding: 0.1875rem 0.625rem; gap: 0.375rem; & input[type="color"] { width: 1.5rem; height: 1.5rem; } & .color-picker-value { font-size: 0.75rem; } }
-    &[data-size="md"] { padding: 0.1875rem 0.75rem; & input[type="color"] { width: 1.75rem; height: 1.75rem; } & .color-picker-value { font-size: 0.8125rem; } }
-    &[data-size="lg"] { padding: 0.3125rem 0.875rem; & input[type="color"] { width: 2rem; height: 2rem; } & .color-picker-value { font-size: 0.875rem; } }
-    &[data-size="xl"] { padding: 0.3125rem 1rem; gap: 0.625rem; & input[type="color"] { width: 2.5rem; height: 2.5rem; } & .color-picker-value { font-size: 1rem; } }
+    &[data-size="xs"] {
+      padding: 0.1875rem 0.5rem;
+      gap: 0.375rem;
+      & input[type="color"] {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+      & .color-picker-value {
+        font-size: 0.6875rem;
+      }
+    }
+    &[data-size="sm"] {
+      padding: 0.1875rem 0.625rem;
+      gap: 0.375rem;
+      & input[type="color"] {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+      & .color-picker-value {
+        font-size: 0.75rem;
+      }
+    }
+    &[data-size="md"] {
+      padding: 0.1875rem 0.75rem;
+      & input[type="color"] {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+      & .color-picker-value {
+        font-size: 0.8125rem;
+      }
+    }
+    &[data-size="lg"] {
+      padding: 0.3125rem 0.875rem;
+      & input[type="color"] {
+        width: 2rem;
+        height: 2rem;
+      }
+      & .color-picker-value {
+        font-size: 0.875rem;
+      }
+    }
+    &[data-size="xl"] {
+      padding: 0.3125rem 1rem;
+      gap: 0.625rem;
+      & input[type="color"] {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+      & .color-picker-value {
+        font-size: 1rem;
+      }
+    }
   }
 }
 
@@ -2699,7 +3244,9 @@
     color: var(--foreground);
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
     cursor: pointer;
 
     &:focus {
@@ -2720,11 +3267,31 @@
     /* -- Sizes: same ladder as .input (md = 2.25rem; the unsized default
        stays at the historical 2.5rem) so date fields sit in the same row
        rhythm as text inputs at every step. */
-    &[data-size="xs"] { height: 1.75rem; padding: 0 0.5rem;    font-size: 0.75rem; }
-    &[data-size="sm"] { height: 2rem;    padding: 0 0.625rem;  font-size: 0.8125rem; }
-    &[data-size="md"] { height: 2.25rem; padding: 0 0.75rem;   font-size: 0.875rem; }
-    &[data-size="lg"] { height: 2.75rem; padding: 0 1rem;      font-size: 1rem; }
-    &[data-size="xl"] { height: 3.25rem; padding: 0 1.25rem;   font-size: 1.125rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding: 0 0.625rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding: 0 0.75rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding: 0 1rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      padding: 0 1.25rem;
+      font-size: 1.125rem;
+    }
 
     /* -- Out of range / invalid ----------------------------------
        The browser already rejects a TYPED date outside min/max (validity
@@ -2747,7 +3314,9 @@
       opacity: 0.6;
       transition: opacity 150ms;
 
-      &:hover { opacity: 1; }
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
@@ -2763,11 +3332,12 @@
     color: var(--muted-foreground);
   }
 
-  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+  .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *))
+    ~ .date-input-hint {
     color: var(--destructive);
 
     &::before {
-      content: '⚠\FE0E  ';
+      content: "⚠\FE0E  ";
       font-weight: 600;
     }
   }
@@ -2803,7 +3373,8 @@
       border-width: 2px;
     }
 
-    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *)) ~ .date-input-hint {
+    .date-input:is([aria-invalid="true"], :user-invalid:not(form[data-validate="submit"]:not([data-submitted]) *))
+      ~ .date-input-hint {
       color: LinkText;
     }
   }
@@ -2822,23 +3393,57 @@
        the .input default - via the .combobox-trigger rule below, md = 2.25rem
        is the ladder's md, exactly like .input goes 2.5rem → 2.25rem at md. */
     &[data-size="xs"] {
-      & .combobox-trigger { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
-      & .combobox-item, & .combobox-group-label { font-size: 0.75rem; padding-block: 0.25rem; }
+      & .combobox-trigger {
+        height: 1.75rem;
+        padding: 0 0.5rem;
+        font-size: 0.75rem;
+      }
+      & .combobox-item,
+      & .combobox-group-label {
+        font-size: 0.75rem;
+        padding-block: 0.25rem;
+      }
     }
     &[data-size="sm"] {
-      & .combobox-trigger { height: 2rem; padding: 0 0.625rem; font-size: 0.8125rem; }
-      & .combobox-item, & .combobox-group-label { font-size: 0.8125rem; padding-block: 0.3125rem; }
+      & .combobox-trigger {
+        height: 2rem;
+        padding: 0 0.625rem;
+        font-size: 0.8125rem;
+      }
+      & .combobox-item,
+      & .combobox-group-label {
+        font-size: 0.8125rem;
+        padding-block: 0.3125rem;
+      }
     }
     &[data-size="md"] {
-      & .combobox-trigger { height: 2.25rem; }
+      & .combobox-trigger {
+        height: 2.25rem;
+      }
     }
     &[data-size="lg"] {
-      & .combobox-trigger { height: 2.75rem; padding: 0 1rem; font-size: 1rem; }
-      & .combobox-item, & .combobox-group-label { font-size: 1rem; padding-block: 0.5rem; }
+      & .combobox-trigger {
+        height: 2.75rem;
+        padding: 0 1rem;
+        font-size: 1rem;
+      }
+      & .combobox-item,
+      & .combobox-group-label {
+        font-size: 1rem;
+        padding-block: 0.5rem;
+      }
     }
     &[data-size="xl"] {
-      & .combobox-trigger { height: 3.25rem; padding: 0 1.25rem; font-size: 1.125rem; }
-      & .combobox-item, & .combobox-group-label { font-size: 1.125rem; padding-block: 0.625rem; }
+      & .combobox-trigger {
+        height: 3.25rem;
+        padding: 0 1.25rem;
+        font-size: 1.125rem;
+      }
+      & .combobox-item,
+      & .combobox-group-label {
+        font-size: 1.125rem;
+        padding-block: 0.625rem;
+      }
     }
   }
 
@@ -2894,13 +3499,22 @@
     color: var(--muted-foreground);
     cursor: pointer;
 
-    &:hover { color: var(--foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+    &:hover {
+      color: var(--foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
   }
 
   .combobox:has(.combobox-value:not([data-placeholder])) {
-    & .combobox-clear { display: grid; }
-    & .combobox-chevron { display: none; }
+    & .combobox-clear {
+      display: grid;
+    }
+    & .combobox-chevron {
+      display: none;
+    }
   }
 
   /* -- Multi-select (data-multiple) --------------------------------
@@ -2912,7 +3526,7 @@
     padding-inline-start: 1.875rem;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       inset-inline-start: 0.5rem;
       top: 50%;
@@ -2933,7 +3547,7 @@
     }
 
     &[aria-selected="true"]::after {
-      content: '';
+      content: "";
       position: absolute;
       inset-inline-start: 0.625rem;
       top: 50%;
@@ -2941,7 +3555,8 @@
       height: 0.75rem;
       transform: translateY(-50%);
       background-color: var(--primary-foreground);
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+        center / contain no-repeat;
     }
   }
 
@@ -3011,7 +3626,9 @@
     background: var(--background);
     box-shadow: var(--shadow-xs);
     cursor: text;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &:focus-within {
       border-color: var(--ring);
@@ -3053,7 +3670,8 @@
       border: none;
       border-radius: 0;
       background-color: currentColor;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E")
+        center / contain no-repeat;
     }
 
     &[data-highlighted] {
@@ -3083,8 +3701,10 @@
     /* -- Animation --------------------------------------------- */
     opacity: 0;
     transform: scale(0.96) translateY(-0.25rem);
-    transition: opacity 150ms ease, transform 150ms ease,
-                display 150ms allow-discrete;
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease,
+      display 150ms allow-discrete;
 
     &:popover-open {
       opacity: 1;
@@ -3121,7 +3741,9 @@
     color: var(--foreground);
     outline: none;
 
-    &::placeholder { color: var(--muted-foreground); }
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
   }
 
   .combobox-listbox {
@@ -3146,7 +3768,8 @@
     padding-inline-start: 1.5rem;
     position: relative;
 
-    &:hover, &[data-highlighted] {
+    &:hover,
+    &[data-highlighted] {
       background-color: var(--accent);
       color: var(--accent-foreground);
     }
@@ -3156,7 +3779,7 @@
        Masking paints it with background-color: currentColor - the real text
        color, hover/foreground included. */
     &[aria-selected="true"]::before {
-      content: '';
+      content: "";
       position: absolute;
       inset-inline-start: 0.375rem;
       top: 50%;
@@ -3219,7 +3842,8 @@
       border-color: ButtonText;
     }
     .combobox-item {
-      &:hover, &[data-highlighted] {
+      &:hover,
+      &[data-highlighted] {
         forced-color-adjust: none;
         background: Highlight;
         color: HighlightText;
@@ -3256,7 +3880,9 @@
     font-family: var(--font-sans);
     box-shadow: var(--shadow-xs);
     cursor: text;
-    transition: border-color 150ms, box-shadow 150ms;
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
 
     &:focus-within {
       border-color: var(--ring);
@@ -3284,11 +3910,18 @@
       font: inherit;
       appearance: none;
 
-      &::placeholder { color: var(--muted-foreground); }
+      &::placeholder {
+        color: var(--muted-foreground);
+      }
       /* the box brings its own clear button - drop the UA's */
       &::-webkit-search-cancel-button,
-      &::-webkit-search-decoration { appearance: none; display: none; }
-      &:disabled { cursor: not-allowed; }
+      &::-webkit-search-decoration {
+        appearance: none;
+        display: none;
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
 
     &:has(> input:disabled) {
@@ -3300,7 +3933,9 @@
 
     &:has(> input[aria-invalid="true"]) {
       border-color: var(--destructive);
-      &:focus-within { box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2); }
+      &:focus-within {
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.2);
+      }
     }
 
     /* -- Clear button: a CSS-drawn ×, only while there is text -------- */
@@ -3317,7 +3952,9 @@
       background: transparent;
       color: var(--muted-foreground);
       cursor: pointer;
-      transition: background-color 150ms, color 150ms;
+      transition:
+        background-color 150ms,
+        color 150ms;
 
       &::before,
       &::after {
@@ -3331,17 +3968,29 @@
         translate: -50% -50%;
         rotate: 45deg;
       }
-      &::after { rotate: -45deg; }
+      &::after {
+        rotate: -45deg;
+      }
 
-      &:hover { background: var(--accent); color: var(--accent-foreground); }
-      &:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 1px;
+      }
     }
 
     /* the runtime names the state: filled / searching = there is a value */
     &:is([data-state-name="filled"], [data-state-name="searching"]) {
-      & > .search-box-clear { display: block; }
+      & > .search-box-clear {
+        display: block;
+      }
       /* a trailing hint (a <kbd> shortcut, a scope label) steps aside */
-      & > :is(kbd, .search-box-hint) { display: none; }
+      & > :is(kbd, .search-box-hint) {
+        display: none;
+      }
     }
 
     & > :is(kbd, .search-box-hint) {
@@ -3369,8 +4018,12 @@
     }
 
     &[data-state-name="searching"] {
-      &::before { display: block; }
-      & > :is(svg, i, .search-box-icon) { display: none; }
+      &::before {
+        display: block;
+      }
+      & > :is(svg, i, .search-box-icon) {
+        display: none;
+      }
     }
 
     /* -- Variants / shape / sizes ------------------------------------- */
@@ -3389,14 +4042,20 @@
       height: 2rem;
       padding-inline: 0.625rem 0.25rem;
       font-size: 0.8125rem;
-      & > .search-box-clear { width: 1.25rem; height: 1.25rem; }
+      & > .search-box-clear {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
     }
 
     &[data-size="lg"] {
       height: 2.75rem;
       padding-inline: 1rem 0.5rem;
       font-size: 1rem;
-      & > .search-box-clear { width: 1.75rem; height: 1.75rem; }
+      & > .search-box-clear {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
     }
   }
 
@@ -3442,11 +4101,20 @@
       /* choosing a chip never jumps: the others shrink to nothing and the
          reset grows, all in one glide, and the chosen chip slides along */
       transition:
-        background-color 150ms, color 150ms, border-color 150ms,
-        width 250ms ease, padding 250ms ease, margin 250ms ease, border-width 250ms ease,
-        opacity 200ms, scale 250ms ease, visibility 250ms allow-discrete;
+        background-color 150ms,
+        color 150ms,
+        border-color 150ms,
+        width 250ms ease,
+        padding 250ms ease,
+        margin 250ms ease,
+        border-width 250ms ease,
+        opacity 200ms,
+        scale 250ms ease,
+        visibility 250ms allow-discrete;
 
-      &:is([type="radio"], [type="checkbox"]):not(.filter-reset)::after { content: attr(aria-label); }
+      &:is([type="radio"], [type="checkbox"]):not(.filter-reset)::after {
+        content: attr(aria-label);
+      }
 
       /* a checkbox chip shows its box: several may be ticked */
       &[type="checkbox"]::before {
@@ -3465,7 +4133,8 @@
         background: currentColor;
         /* the tick is cut out of the filled box, so it shows the chip colour */
         mask:
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat,
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+            center / 85% no-repeat,
           linear-gradient(#000 0 0);
         mask-composite: exclude;
       }
@@ -3489,7 +4158,10 @@
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        &:hover { background: var(--background); color: var(--foreground); }
+        &:hover {
+          background: var(--background);
+          color: var(--foreground);
+        }
       }
     }
 
@@ -3504,7 +4176,9 @@
       font-weight: 400;
       color: var(--muted-foreground);
     }
-    & > .filter-reset::after { content: "×"; }
+    & > .filter-reset::after {
+      content: "×";
+    }
 
     /* -- Variants / shape / sizes ------------------------------------- */
     &[data-variant="secondary"] > input:checked {
@@ -3520,20 +4194,30 @@
       box-shadow: inset 0 0 0 1px var(--foreground);
     }
 
-    &[data-shape="pill"] > input { border-radius: 999px; }
+    &[data-shape="pill"] > input {
+      border-radius: 999px;
+    }
 
     &[data-size="sm"] > input {
       height: 1.75rem;
       padding-inline: 0.625rem;
       font-size: 0.75rem;
-      &:is([type="reset"], .filter-reset) { width: 1.75rem; padding: 0; font-size: 1rem; }
+      &:is([type="reset"], .filter-reset) {
+        width: 1.75rem;
+        padding: 0;
+        font-size: 1rem;
+      }
     }
 
     &[data-size="lg"] > input {
       height: 2.5rem;
       padding-inline: 1.125rem;
       font-size: 1rem;
-      &:is([type="reset"], .filter-reset) { width: 2.5rem; padding: 0; font-size: 1.5rem; }
+      &:is([type="reset"], .filter-reset) {
+        width: 2.5rem;
+        padding: 0;
+        font-size: 1.5rem;
+      }
     }
 
     /* -- Collapsed chips (after the sizes: these win) --------------------
@@ -3543,7 +4227,8 @@
        radio group's arrow keys (visibility flips at the END of the glide
        when hiding, at the start when showing). */
     &:not(:has(> input:checked:not(.filter-reset))) > :is(input[type="reset"], .filter-reset),
-    &:not([data-multiple]):has(> input:checked:not(.filter-reset)) > input:not(:checked, .filter-reset, [type="reset"]) {
+    &:not([data-multiple]):has(> input:checked:not(.filter-reset))
+      > input:not(:checked, .filter-reset, [type="reset"]) {
       width: 0;
       padding-inline: 0;
       margin-inline-end: 0;
@@ -3557,30 +4242,50 @@
   }
 
   @keyframes search-box-spin {
-    to { rotate: 360deg; }
+    to {
+      rotate: 360deg;
+    }
   }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .search-box,
     .search-box > .search-box-clear,
-    .filter > input { transition: none; }
+    .filter > input {
+      transition: none;
+    }
     /* the spinner still says "working" - slowly */
-    .search-box::before { animation-duration: 2s; }
+    .search-box::before {
+      animation-duration: 2s;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .search-box { border-color: var(--foreground); }
-    .search-box > .search-box-clear { color: var(--foreground); }
-    .filter > input { border-color: var(--foreground); }
+    .search-box {
+      border-color: var(--foreground);
+    }
+    .search-box > .search-box-clear {
+      color: var(--foreground);
+    }
+    .filter > input {
+      border-color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .search-box { border: 1px solid CanvasText; }
-    .search-box:focus-within { outline: 2px solid Highlight; }
+    .search-box {
+      border: 1px solid CanvasText;
+    }
+    .search-box:focus-within {
+      outline: 2px solid Highlight;
+    }
     .search-box > .search-box-clear::before,
-    .search-box > .search-box-clear::after { background: ButtonText; }
-    .filter > input { border: 1px solid ButtonText; }
+    .search-box > .search-box-clear::after {
+      background: ButtonText;
+    }
+    .filter > input {
+      border: 1px solid ButtonText;
+    }
     .filter > input:checked {
       background: Highlight;
       color: HighlightText;

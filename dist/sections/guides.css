@@ -52,21 +52,62 @@
     /* transform-channel entrances pair with the fade (composition: add keeps
        the element's own transform underneath); clip-path entrances need no
        fade - the clip alone reveals the content */
-    &[data-df-entrance="up"] { animation-name: df-enter-up, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="down"] { animation-name: df-enter-down, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="left"] { animation-name: df-enter-left, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="right"] { animation-name: df-enter-right, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="zoom"] { animation-name: df-enter-zoom, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="zoom-out"] { animation-name: df-enter-zoom-out, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="pop"] { animation-name: df-enter-pop, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="spin"] { animation-name: df-enter-spin, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="flip"] { animation-name: df-enter-flip, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="skew"] { animation-name: df-enter-skew, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="blur"] { animation-name: df-enter-blur, df-enter-fade; animation-composition: add, replace; }
-    &[data-df-entrance="wipe"] { animation-name: df-enter-wipe; }
-    &[data-df-entrance="wipe-up"] { animation-name: df-enter-wipe-up; }
-    &[data-df-entrance="iris"] { animation-name: df-enter-iris; }
-    &[data-df-entrance="fade"] { animation-name: df-enter-fade; }
+    &[data-df-entrance="up"] {
+      animation-name: df-enter-up, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="down"] {
+      animation-name: df-enter-down, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="left"] {
+      animation-name: df-enter-left, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="right"] {
+      animation-name: df-enter-right, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="zoom"] {
+      animation-name: df-enter-zoom, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="zoom-out"] {
+      animation-name: df-enter-zoom-out, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="pop"] {
+      animation-name: df-enter-pop, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="spin"] {
+      animation-name: df-enter-spin, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="flip"] {
+      animation-name: df-enter-flip, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="skew"] {
+      animation-name: df-enter-skew, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="blur"] {
+      animation-name: df-enter-blur, df-enter-fade;
+      animation-composition: add, replace;
+    }
+    &[data-df-entrance="wipe"] {
+      animation-name: df-enter-wipe;
+    }
+    &[data-df-entrance="wipe-up"] {
+      animation-name: df-enter-wipe-up;
+    }
+    &[data-df-entrance="iris"] {
+      animation-name: df-enter-iris;
+    }
+    &[data-df-entrance="fade"] {
+      animation-name: df-enter-fade;
+    }
   }
 
   /* stagger: children of a [data-df-stagger] container get graded delays
@@ -76,14 +117,30 @@
      still wins (inline beats any stylesheet rule). */
   [data-df-stagger] {
     --df-motion-stagger-step: 120ms;
-    & > :nth-child(1) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 0); }
-    & > :nth-child(2) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 1); }
-    & > :nth-child(3) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 2); }
-    & > :nth-child(4) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 3); }
-    & > :nth-child(5) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 4); }
-    & > :nth-child(6) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 5); }
-    & > :nth-child(7) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 6); }
-    & > :nth-child(n + 8) { --df-motion-delay: calc(var(--df-motion-stagger-step) * 7); }
+    & > :nth-child(1) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 0);
+    }
+    & > :nth-child(2) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 1);
+    }
+    & > :nth-child(3) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 2);
+    }
+    & > :nth-child(4) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 3);
+    }
+    & > :nth-child(5) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 4);
+    }
+    & > :nth-child(6) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 5);
+    }
+    & > :nth-child(7) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 6);
+    }
+    & > :nth-child(n + 8) {
+      --df-motion-delay: calc(var(--df-motion-stagger-step) * 7);
+    }
   }
 
   /* SVG draw-in - a distinct primitive, not a DOM entrance: pathLength="1"
@@ -93,83 +150,144 @@
   [data-df-draw][pathLength="1"] {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation:
-      df-draw
-      var(--df-motion-duration)
-      var(--df-motion-ease)
-      var(--df-motion-delay)
-      both;
+    animation: df-draw var(--df-motion-duration) var(--df-motion-ease) var(--df-motion-delay) both;
   }
 
   /* vocabulary - every direction is exactly one keyframes rule */
 
   @keyframes df-enter-fade {
-    from { opacity: 0; }
-    to { opacity: var(--df-motion-base-opacity); }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: var(--df-motion-base-opacity);
+    }
   }
 
   /* "up" travels upward into its final position (from below) */
   @keyframes df-enter-up {
-    from { transform: translateY(var(--df-motion-distance)); }
-    to { transform: translateY(0); }
+    from {
+      transform: translateY(var(--df-motion-distance));
+    }
+    to {
+      transform: translateY(0);
+    }
   }
   @keyframes df-enter-down {
-    from { transform: translateY(calc(-1 * var(--df-motion-distance))); }
-    to { transform: translateY(0); }
+    from {
+      transform: translateY(calc(-1 * var(--df-motion-distance)));
+    }
+    to {
+      transform: translateY(0);
+    }
   }
   @keyframes df-enter-left {
-    from { transform: translateX(var(--df-motion-distance)); }
-    to { transform: translateX(0); }
+    from {
+      transform: translateX(var(--df-motion-distance));
+    }
+    to {
+      transform: translateX(0);
+    }
   }
   @keyframes df-enter-right {
-    from { transform: translateX(calc(-1 * var(--df-motion-distance))); }
-    to { transform: translateX(0); }
+    from {
+      transform: translateX(calc(-1 * var(--df-motion-distance)));
+    }
+    to {
+      transform: translateX(0);
+    }
   }
   @keyframes df-enter-zoom {
-    from { transform: scale(var(--df-motion-scale-in)); }
-    to { transform: scale(1); }
+    from {
+      transform: scale(var(--df-motion-scale-in));
+    }
+    to {
+      transform: scale(1);
+    }
   }
   @keyframes df-enter-zoom-out {
-    from { transform: scale(var(--df-motion-scale-out)); }
-    to { transform: scale(1); }
+    from {
+      transform: scale(var(--df-motion-scale-out));
+    }
+    to {
+      transform: scale(1);
+    }
   }
   @keyframes df-enter-pop {
-    0% { transform: scale(0.65); }
-    65% { transform: scale(1.07); }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(0.65);
+    }
+    65% {
+      transform: scale(1.07);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
   @keyframes df-enter-spin {
-    from { transform: rotate(var(--df-motion-spin)); }
-    to { transform: rotate(0deg); }
+    from {
+      transform: rotate(var(--df-motion-spin));
+    }
+    to {
+      transform: rotate(0deg);
+    }
   }
   @keyframes df-enter-flip {
-    from { transform: perspective(900px) rotateY(-70deg); }
-    to { transform: perspective(900px) rotateY(0deg); }
+    from {
+      transform: perspective(900px) rotateY(-70deg);
+    }
+    to {
+      transform: perspective(900px) rotateY(0deg);
+    }
   }
   @keyframes df-enter-skew {
-    from { transform: skewX(var(--df-motion-angle)); }
-    to { transform: skewX(0deg); }
+    from {
+      transform: skewX(var(--df-motion-angle));
+    }
+    to {
+      transform: skewX(0deg);
+    }
   }
   @keyframes df-enter-blur {
-    from { filter: blur(var(--df-motion-blur)); }
-    to { filter: blur(0); }
+    from {
+      filter: blur(var(--df-motion-blur));
+    }
+    to {
+      filter: blur(0);
+    }
   }
   @keyframes df-enter-wipe {
-    from { clip-path: inset(0 100% 0 0); }
-    to { clip-path: inset(0); }
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
   }
   @keyframes df-enter-wipe-up {
-    from { clip-path: inset(100% 0 0 0); }
-    to { clip-path: inset(0); }
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
   }
   @keyframes df-enter-iris {
-    from { clip-path: circle(0% at 50% 50%); }
-    to { clip-path: circle(150% at 50% 50%); }
+    from {
+      clip-path: circle(0% at 50% 50%);
+    }
+    to {
+      clip-path: circle(150% at 50% 50%);
+    }
   }
 
   @keyframes df-draw {
-    from { stroke-dashoffset: 1; }
-    to { stroke-dashoffset: 0; }
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
   }
 
   /* accessibility: near-instant instead of none - the JS finished/cancel
@@ -346,16 +464,35 @@
 
     & > img,
     & > video,
-    & > svg { width: 100%; height: 100%; object-fit: cover; }
+    & > svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-    &[data-depth="far"] { --_speed: var(--parallax-speed, 50%); z-index: -4; }
-    &[data-depth="mid"] { --_speed: var(--parallax-speed, 25%); z-index: -3; }
-    &[data-depth="near"] { --_speed: var(--parallax-speed, -15%); z-index: -2; }
-    &[data-depth="front"] { --_speed: var(--parallax-speed, -35%); z-index: 2; }
+    &[data-depth="far"] {
+      --_speed: var(--parallax-speed, 50%);
+      z-index: -4;
+    }
+    &[data-depth="mid"] {
+      --_speed: var(--parallax-speed, 25%);
+      z-index: -3;
+    }
+    &[data-depth="near"] {
+      --_speed: var(--parallax-speed, -15%);
+      z-index: -2;
+    }
+    &[data-depth="front"] {
+      --_speed: var(--parallax-speed, -35%);
+      z-index: 2;
+    }
   }
 
   /* the content plane: in flow, interactive */
-  .parallax-content { position: relative; z-index: 1; }
+  .parallax-content {
+    position: relative;
+    z-index: 1;
+  }
 
   /* sticky scene: tall (data-sticky sets the scroll distance, default 300%
      of the stage), the stage pins while the scene passes - the layers play
@@ -373,58 +510,119 @@
   }
 
   /* horizontal scenes (a sideways scroller) */
-  .parallax[data-axis="inline"] { view-timeline-axis: inline; }
+  .parallax[data-axis="inline"] {
+    view-timeline-axis: inline;
+  }
 
   /* in-flow elements at their own speed - a length (6rem) or a percentage */
-  .parallax-drift { --_speed: var(--parallax-speed, 4rem); }
+  .parallax-drift {
+    --_speed: var(--parallax-speed, 4rem);
+  }
 
   @keyframes parallax-shift {
-    from { translate: 0 calc(var(--_speed) * -1); }
-    to { translate: 0 var(--_speed); }
+    from {
+      translate: 0 calc(var(--_speed) * -1);
+    }
+    to {
+      translate: 0 var(--_speed);
+    }
   }
   @keyframes parallax-shift-inline {
-    from { translate: calc(var(--_speed) * -1) 0; }
-    to { translate: var(--_speed) 0; }
+    from {
+      translate: calc(var(--_speed) * -1) 0;
+    }
+    to {
+      translate: var(--_speed) 0;
+    }
   }
   @keyframes parallax-zoom {
-    from { scale: 1; }
-    to { scale: var(--parallax-scale, 2.5); }
+    from {
+      scale: 1;
+    }
+    to {
+      scale: var(--parallax-scale, 2.5);
+    }
   }
   @keyframes parallax-fade {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
   @keyframes parallax-spin {
-    to { rotate: var(--parallax-turn, 90deg); }
+    to {
+      rotate: var(--parallax-turn, 90deg);
+    }
   }
   /* pass: in from small and transparent, hold, out large - words flying by */
   @keyframes parallax-pass {
-    0% { opacity: 0; scale: 0.5; }
-    35%, 65% { opacity: 1; scale: 1; }
-    100% { opacity: 0; scale: 1.8; }
+    0% {
+      opacity: 0;
+      scale: 0.5;
+    }
+    35%,
+    65% {
+      opacity: 1;
+      scale: 1;
+    }
+    100% {
+      opacity: 0;
+      scale: 1.8;
+    }
   }
   @keyframes parallax-reveal {
-    from { opacity: 0; translate: 0 var(--parallax-rise, 3rem); scale: 0.98; }
+    from {
+      opacity: 0;
+      translate: 0 var(--parallax-rise, 3rem);
+      scale: 0.98;
+    }
   }
   @keyframes parallax-reveal-zoom {
-    from { opacity: 0; scale: 0.85; }
+    from {
+      opacity: 0;
+      scale: 0.85;
+    }
   }
   @keyframes parallax-reveal-fade {
-    from { opacity: 0; }
+    from {
+      opacity: 0;
+    }
   }
 
   .parallax-layer,
-  .parallax-drift { animation: parallax-shift linear both; }
-  .parallax[data-axis="inline"] .parallax-layer { animation-name: parallax-shift-inline; }
+  .parallax-drift {
+    animation: parallax-shift linear both;
+  }
+  .parallax[data-axis="inline"] .parallax-layer {
+    animation-name: parallax-shift-inline;
+  }
   /* layer motions - stacked on the shift */
-  .parallax-layer[data-motion="zoom"] { animation-name: parallax-shift, parallax-zoom; }
-  .parallax-layer[data-motion="fade"] { animation-name: parallax-shift, parallax-fade; }
-  .parallax-layer[data-motion="spin"] { animation-name: parallax-shift, parallax-spin; }
-  .parallax-layer[data-motion="zoom fade"] { animation-name: parallax-shift, parallax-zoom, parallax-fade; }
-  .parallax-layer[data-motion="pass"] { animation-name: parallax-shift, parallax-pass; }
-  .parallax-reveal { animation: parallax-reveal ease-out both; }
-  .parallax-reveal[data-reveal="zoom"] { animation-name: parallax-reveal-zoom; }
-  .parallax-reveal[data-reveal="fade"] { animation-name: parallax-reveal-fade; }
+  .parallax-layer[data-motion="zoom"] {
+    animation-name: parallax-shift, parallax-zoom;
+  }
+  .parallax-layer[data-motion="fade"] {
+    animation-name: parallax-shift, parallax-fade;
+  }
+  .parallax-layer[data-motion="spin"] {
+    animation-name: parallax-shift, parallax-spin;
+  }
+  .parallax-layer[data-motion="zoom fade"] {
+    animation-name: parallax-shift, parallax-zoom, parallax-fade;
+  }
+  .parallax-layer[data-motion="pass"] {
+    animation-name: parallax-shift, parallax-pass;
+  }
+  .parallax-reveal {
+    animation: parallax-reveal ease-out both;
+  }
+  .parallax-reveal[data-reveal="zoom"] {
+    animation-name: parallax-reveal-zoom;
+  }
+  .parallax-reveal[data-reveal="fade"] {
+    animation-name: parallax-reveal-fade;
+  }
 
   /* the timelines live in their own rules: a minifier must not fold them
      into the animation shorthand (reset-only there - dropped) */
@@ -433,7 +631,9 @@
       animation-timeline: --parallax;
       animation-range: cover;
     }
-    .parallax[data-sticky] .parallax-layer { animation-range: contain; }
+    .parallax[data-sticky] .parallax-layer {
+      animation-range: contain;
+    }
     .parallax-drift {
       animation-timeline: view();
       animation-range: cover;
@@ -447,17 +647,23 @@
   @supports not (animation-timeline: view()) {
     .parallax-layer,
     .parallax-drift,
-    .parallax-reveal { animation: none; }
+    .parallax-reveal {
+      animation: none;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .parallax-layer,
     .parallax-drift,
-    .parallax-reveal { animation: none; }
+    .parallax-reveal {
+      animation: none;
+    }
   }
 
   @media (forced-colors: active) {
-    .parallax-layer { forced-color-adjust: none; }
+    .parallax-layer {
+      forced-color-adjust: none;
+    }
   }
 }

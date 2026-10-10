@@ -41,7 +41,11 @@ export function captureAuthored(root: Element): void {
   const copy = inert.importNode(root, true) as Element;
   const live = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
   const twin = document.createTreeWalker(copy, NodeFilter.SHOW_ELEMENT);
-  for (let a: Node | null = live.currentNode, b: Node | null = twin.currentNode; a && b; a = live.nextNode(), b = twin.nextNode())
+  for (
+    let a: Node | null = live.currentNode, b: Node | null = twin.currentNode;
+    a && b;
+    a = live.nextNode(), b = twin.nextNode()
+  )
     if (!AUTHORED.has(a as Element)) AUTHORED.set(a as Element, b as Element);
 }
 
@@ -69,7 +73,9 @@ export function elementModel(el: Element, runtimeAttrs: readonly string[] = []):
 export function settleTemplates(root: Element, markup: string): void {
   if (!markup.includes('<template')) return;
   const $ = defussQuery();
-  const parsed = $(new DOMParser().parseFromString(markup, 'text/html').body).find('template').toArray() as HTMLTemplateElement[];
+  const parsed = $(new DOMParser().parseFromString(markup, 'text/html').body)
+    .find('template')
+    .toArray() as HTMLTemplateElement[];
   ($(root).find('template').toArray() as HTMLTemplateElement[]).forEach((t, i) => {
     if (parsed[i]) t.content.replaceChildren(document.importNode(parsed[i].content, true));
   });

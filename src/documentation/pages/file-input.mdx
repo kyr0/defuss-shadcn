@@ -49,9 +49,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Drag and drop" hint="A card to drop files on - or click it. The native input covers the card, so the drop lands on it and forms submit it as usual; the script highlights the drag, keeps only images and PDFs up to 10 MB (a drop bypasses accept), appends to the selection and lists the files with previews and remove buttons." height="30"
-<div class="file-drop" data-max-size="10000000" style="max-width:32rem;">
+<div class="file-drop" data-max-size="10000000" style="max-width: 32rem">
   <label class="file-drop-zone">
-    <input class="file-drop-input" type="file" name="files" multiple accept="image/*,.pdf">
+    <input class="file-drop-input" type="file" name="files" multiple accept="image/*,.pdf" />
     <span class="file-drop-icon" aria-hidden="true"><i data-lucide="cloud-upload"></i></span>
     <span class="file-drop-title">Drop files here or <span class="file-drop-browse">browse</span></span>
     <span class="file-drop-hint">PNG, JPG, GIF or PDF · up to 10 MB each</span>
@@ -62,9 +62,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Several images, nothing else" hint="multiple + accept='image/*' + data-max-files='4': the picker shows images only, and dropped PDFs or a fifth image are named in the error line instead of being added." height="30"
-<div class="file-drop" data-max-files="4" style="max-width:32rem;">
+<div class="file-drop" data-max-files="4" style="max-width: 32rem">
   <label class="file-drop-zone">
-    <input class="file-drop-input" type="file" name="photos" multiple accept="image/*">
+    <input class="file-drop-input" type="file" name="photos" multiple accept="image/*" />
     <span class="file-drop-icon" aria-hidden="true">🖼️</span>
     <span class="file-drop-title">Add up to 4 photos</span>
     <span class="file-drop-hint">Any image format - drag several at once</span>
@@ -75,9 +75,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="One document" hint="Without multiple a new pick replaces the old one; accept lists extensions (.pdf, .doc, .docx) and MIME types alike." height="22"
-<div class="file-drop" data-max-size="5000000" style="max-width:32rem;">
+<div class="file-drop" data-max-size="5000000" style="max-width: 32rem">
   <label class="file-drop-zone">
-    <input class="file-drop-input" type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf">
+    <input class="file-drop-input" type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf" />
     <span class="file-drop-icon" aria-hidden="true"><i data-lucide="file-text"></i></span>
     <span class="file-drop-title">Upload your CV</span>
     <span class="file-drop-hint">PDF or Word · max. 5 MB</span>
@@ -88,9 +88,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Compact drop zone" hint="data-size='sm' - one row, for forms. It is still the whole drop target." height="16"
-<div class="file-drop" data-size="sm" style="max-width:32rem;">
+<div class="file-drop" data-size="sm" style="max-width: 32rem">
   <label class="file-drop-zone">
-    <input class="file-drop-input" type="file" name="attachments" multiple>
+    <input class="file-drop-input" type="file" name="attachments" multiple />
     <span class="file-drop-icon" aria-hidden="true"><i data-lucide="paperclip"></i></span>
     <span class="file-drop-title">Attach files</span>
     <span class="file-drop-hint">Drop them here or click to choose</span>
@@ -100,43 +100,43 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 ```html example label="Default" hint="Single file selection." previewStyle="margin:1.25rem;"
-<div style="max-width:40rem;">
-<input class="file-input" type="file" id="avatar">
+<div style="max-width: 40rem">
+  <input class="file-input" type="file" id="avatar" />
 </div>
 ```
 
 ```html example label="Multiple files" hint="The native multiple attribute - the picker allows several files; the field names the count." previewStyle="margin:1.25rem;"
-<div style="max-width:40rem;">
-<input class="file-input" type="file" multiple>
+<div style="max-width: 40rem">
+  <input class="file-input" type="file" multiple />
 </div>
 ```
 
 ```html example label="Accept filter" hint="accept limits the picker to types - here images; list extensions and MIME types comma-separated (.pdf,image/*)." previewStyle="margin:1.25rem;"
-<div style="max-width:40rem;">
-<input class="file-input" type="file" accept="image/*">
+<div style="max-width: 40rem">
+  <input class="file-input" type="file" accept="image/*" />
 </div>
 ```
 
 ```html example label="Sizes" hint="The control follows the shared input ladder via data-size - md is 2.25rem, matching .input."
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra small</span>
-  <input class="file-input flex-1" type="file" data-size="xs" aria-label="Upload xs" style="max-width:40rem;" ></input>
+  <input class="file-input flex-1" type="file" data-size="xs" aria-label="Upload xs" style="max-width: 40rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Small</span>
-  <input class="file-input flex-1" type="file" data-size="sm" aria-label="Upload sm" style="max-width:40rem;" ></input>
+  <input class="file-input flex-1" type="file" data-size="sm" aria-label="Upload sm" style="max-width: 40rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Medium</span>
-  <input class="file-input flex-1" type="file" data-size="md" aria-label="Upload md" style="max-width:40rem;" ></input>
+  <input class="file-input flex-1" type="file" data-size="md" aria-label="Upload md" style="max-width: 40rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Large</span>
-  <input class="file-input flex-1" type="file" data-size="lg" aria-label="Upload lg" style="max-width:40rem;" ></input>
+  <input class="file-input flex-1" type="file" data-size="lg" aria-label="Upload lg" style="max-width: 40rem" />
 </div>
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra large</span>
-  <input class="file-input flex-1" type="file" data-size="xl" aria-label="Upload xl" style="max-width:40rem;" ></input>
+  <input class="file-input flex-1" type="file" data-size="xl" aria-label="Upload xl" style="max-width: 40rem" />
 </div>
 ```
 

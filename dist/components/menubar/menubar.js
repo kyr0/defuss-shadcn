@@ -21,14 +21,16 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 /** default = every menu closed; open = one menu open ({ menu: id | index }). */
 const menubarStates = ['default', 'open'];
 const triggersOf = (bar) => Array.from(dfDollar(bar).find('.menubar-trigger').toArray()).filter((t) => t.closest('.menubar') === bar && !t.disabled && t.getAttribute('aria-disabled') !== 'true');
 const menuOf = (trigger) => dfDollar('#' + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute('popovertarget') || '')).get(0);
-const openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(':popover-open')) ?? null;
+const openMenuOf = (bar) => triggersOf(bar)
+    .map(menuOf)
+    .find((m) => m?.matches(':popover-open')) ?? null;
 function setRoving(bar, active) {
     triggersOf(bar).forEach((t) => t.setAttribute('tabindex', t === active ? '0' : '-1'));
 }
@@ -51,7 +53,9 @@ function openMenu(bar, trigger, quiet = false) {
 }
 /** Focus the first (or last) own item of an open menu. */
 function focusItem(menu, last = false) {
-    const own = Array.from(dfDollar(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute('aria-disabled') !== 'true');
+    const own = Array.from(dfDollar(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu &&
+        !x.disabled &&
+        x.getAttribute('aria-disabled') !== 'true');
     own.forEach((x) => x.removeAttribute('data-highlighted'));
     const item = last ? own.at(-1) : own[0];
     item?.setAttribute('data-highlighted', '');
@@ -76,13 +80,19 @@ function triggerStateChange(bar, stateName, config) {
                 try {
                     open.hidePopover();
                 }
-                catch { /* closed */ }
+                catch {
+                    /* closed */
+                }
             }
             break;
         }
         case 'open': {
             const ts = triggersOf(bar);
-            const t = typeof config.menu === 'number' ? ts[config.menu] : config.menu ? ts.find((x) => x.dataset.dropdownTrigger === config.menu) : ts[0];
+            const t = typeof config.menu === 'number'
+                ? ts[config.menu]
+                : config.menu
+                    ? ts.find((x) => x.dataset.dropdownTrigger === config.menu)
+                    : ts[0];
             if (t)
                 openMenu(bar, t);
             break;
@@ -106,19 +116,25 @@ export const menubarApi = componentState({
 df$.menubarApi = menubarApi;
 df$.menubarStates = menubarStates;
 function init() {
-    dfDollar('.menubar:not([data-init])').toArray().forEach((bar) => {
+    dfDollar('.menubar:not([data-init])')
+        .toArray()
+        .forEach((bar) => {
         bar.dataset.init = '';
         if (!bar.hasAttribute('role'))
             bar.setAttribute('role', 'menubar');
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(bar, menubarApi);
         const triggers = triggersOf(bar);
-        triggers.forEach((t) => { if (!t.hasAttribute('role'))
-            t.setAttribute('role', 'menuitem'); });
+        triggers.forEach((t) => {
+            if (!t.hasAttribute('role'))
+                t.setAttribute('role', 'menuitem');
+        });
         setRoving(bar, triggers[0]);
         // keep the state name honest whatever opened / closed a menu
         triggers.forEach((t) => {
-            menuOf(t)?.addEventListener('toggle', () => { bar.dataset.stateName = openMenuOf(bar) ? 'open' : 'default'; });
+            menuOf(t)?.addEventListener('toggle', () => {
+                bar.dataset.stateName = openMenuOf(bar) ? 'open' : 'default';
+            });
         });
         // hover switching while a menu is open
         bar.addEventListener('pointerover', (e) => {
@@ -143,12 +159,14 @@ function init() {
             if (onTrigger) {
                 // with a menu open (hover switching left focus on its trigger), the
                 // arrows switch the open menu; otherwise they just move focus
-                const moveTo = (t) => { if (openMenuEl)
-                    openMenu(bar, t);
-                else {
-                    setRoving(bar, t);
-                    t.focus();
-                } };
+                const moveTo = (t) => {
+                    if (openMenuEl)
+                        openMenu(bar, t);
+                    else {
+                        setRoving(bar, t);
+                        t.focus();
+                    }
+                };
                 switch (e.key) {
                     case next:
                         e.preventDefault();
@@ -181,8 +199,10 @@ function init() {
                         // after the dropdown's own handler highlighted the first one (the
                         // toggle event is a queued task; a timer raced it under load)
                         if (menu && !menu.matches(':popover-open')) {
-                            menu.addEventListener('toggle', (ev) => { if (ev.newState === 'open')
-                                focusItem(menu, true); }, { once: true });
+                            menu.addEventListener('toggle', (ev) => {
+                                if (ev.newState === 'open')
+                                    focusItem(menu, true);
+                            }, { once: true });
                             openMenu(bar, ts[i]);
                         }
                         else {

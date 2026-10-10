@@ -28,19 +28,25 @@
       pointer-events: none;
       flex-shrink: 0;
 
-      &:not([class*="size-"]) { width: 1rem; height: 1rem; }
+      &:not([class*="size-"]) {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
     /* a loading .spinner inside a button takes the button's own text color —
        spinner.css defaults it to --muted-foreground, invisible on a primary */
-    & .spinner { color: inherit; }
+    & .spinner {
+      color: inherit;
+    }
 
     &:focus-visible {
       outline: 2px solid var(--ring);
       outline-offset: 2px;
     }
 
-    &:disabled, &[aria-disabled="true"] {
+    &:disabled,
+    &[aria-disabled="true"] {
       pointer-events: none;
       opacity: 0.5;
     }
@@ -58,7 +64,9 @@
       background-color: var(--primary);
       color: var(--primary-foreground);
 
-      &:hover { opacity: 0.9; }
+      &:hover {
+        opacity: 0.9;
+      }
     }
 
     &[data-variant="secondary"] {
@@ -101,7 +109,9 @@
       background-color: var(--destructive);
       color: var(--destructive-foreground);
 
-      &:hover { opacity: 0.9; }
+      &:hover {
+        opacity: 0.9;
+      }
     }
 
     &[data-variant="link"] {
@@ -111,7 +121,9 @@
       padding: 0;
       text-underline-offset: 4px;
 
-      &:hover { text-decoration: underline; }
+      &:hover {
+        text-decoration: underline;
+      }
     }
 
     /* soft: a tint of the color, text in the color */
@@ -119,7 +131,9 @@
       background-color: color-mix(in oklch, var(--primary) 12%, transparent);
       color: color-mix(in oklch, var(--primary) 80%, var(--foreground));
 
-      &:hover { background-color: color-mix(in oklch, var(--primary) 20%, transparent); }
+      &:hover {
+        background-color: color-mix(in oklch, var(--primary) 20%, transparent);
+      }
     }
 
     /* dashed: a drop-zone / "add" look */
@@ -146,59 +160,129 @@
       --_tone-fg: var(--btn-color-fg, #fff);
       --_tone-ink: color-mix(in oklch, var(--_tone) 78%, var(--foreground));
     }
-    &[data-tone="success"] { --_tone: oklch(0.6 0.15 150); }
-    &[data-tone="warning"] { --_tone: oklch(0.8 0.16 80); --_tone-fg: oklch(0.28 0.06 60); }
-    &[data-tone="info"] { --_tone: oklch(0.6 0.16 250); }
-    &[data-tone="destructive"] { --_tone: var(--destructive); --_tone-fg: var(--destructive-foreground, #fff); }
+    &[data-tone="success"] {
+      --_tone: oklch(0.6 0.15 150);
+    }
+    &[data-tone="warning"] {
+      --_tone: oklch(0.8 0.16 80);
+      --_tone-fg: oklch(0.28 0.06 60);
+    }
+    &[data-tone="info"] {
+      --_tone: oklch(0.6 0.16 250);
+    }
+    &[data-tone="destructive"] {
+      --_tone: var(--destructive);
+      --_tone-fg: var(--destructive-foreground, #fff);
+    }
 
     &[data-tone]:is(:not([data-variant]), [data-variant="default"]) {
       background-color: var(--_tone);
       color: var(--_tone-fg);
 
-      &:hover { opacity: 0.9; }
+      &:hover {
+        opacity: 0.9;
+      }
     }
     &[data-tone][data-variant="outline"] {
       background-color: transparent;
       color: var(--_tone-ink);
       border-color: var(--_tone);
 
-      &:hover { background-color: color-mix(in oklch, var(--_tone) 12%, transparent); color: var(--_tone-ink); }
+      &:hover {
+        background-color: color-mix(in oklch, var(--_tone) 12%, transparent);
+        color: var(--_tone-ink);
+      }
     }
     &[data-tone]:is([data-variant="ghost"], [data-variant="dashed"]) {
       color: var(--_tone-ink);
 
-      &:hover { background-color: color-mix(in oklch, var(--_tone) 14%, transparent); color: var(--_tone-ink); }
+      &:hover {
+        background-color: color-mix(in oklch, var(--_tone) 14%, transparent);
+        color: var(--_tone-ink);
+      }
     }
-    &[data-tone][data-variant="dashed"] { border-color: var(--_tone); }
+    &[data-tone][data-variant="dashed"] {
+      border-color: var(--_tone);
+    }
     &[data-tone][data-variant="soft"] {
       background-color: color-mix(in oklch, var(--_tone) 16%, transparent);
       color: var(--_tone-ink);
 
-      &:hover { background-color: color-mix(in oklch, var(--_tone) 26%, transparent); }
+      &:hover {
+        background-color: color-mix(in oklch, var(--_tone) 26%, transparent);
+      }
     }
-    &[data-tone][data-variant="link"] { color: var(--_tone-ink); }
+    &[data-tone][data-variant="link"] {
+      color: var(--_tone-ink);
+    }
 
     /* -- RTL: arrows and other directional icons mirror ----------
        mark them data-rtl-flip; symmetric icons stay as they are */
-    &:dir(rtl) [data-rtl-flip] { scale: -1 1; }
+    &:dir(rtl) [data-rtl-flip] {
+      scale: -1 1;
+    }
 
     /* -- Sizes ----------------------------------------------- */
-    &[data-size="xs"]      { height: 1.75rem; padding: 0 0.5rem;  font-size: 0.75rem; border-radius: var(--radius-sm); }
-    &[data-size="sm"]      { height: 2rem;    padding: 0 0.75rem; font-size: 0.8125rem; }
-    &[data-size="md"]      { height: 2.25rem; padding: 0 1rem;    font-size: 0.875rem; }
-    &[data-size="lg"]      { height: 2.75rem; padding: 0 2rem;    font-size: 1rem; }
-    &[data-size="xl"]      { height: 3.25rem; padding: 0 2.5rem;  font-size: 1.125rem; }
-    &[data-size="icon"]    { height: 2.25rem; width: 2.25rem;  padding: 0; }
-    &[data-size="icon-xs"] { height: 1.75rem; width: 1.75rem;  padding: 0; border-radius: var(--radius-sm); }
-    &[data-size="icon-sm"] { height: 2rem;    width: 2rem;     padding: 0; }
-    &[data-size="icon-lg"] { height: 2.75rem; width: 2.75rem;  padding: 0; }
-    &[data-size="icon-xl"] { height: 3.25rem; width: 3.25rem;  padding: 0; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+      border-radius: var(--radius-sm);
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding: 0 0.75rem;
+      font-size: 0.8125rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding: 0 1rem;
+      font-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      height: 2.75rem;
+      padding: 0 2rem;
+      font-size: 1rem;
+    }
+    &[data-size="xl"] {
+      height: 3.25rem;
+      padding: 0 2.5rem;
+      font-size: 1.125rem;
+    }
+    &[data-size="icon"] {
+      height: 2.25rem;
+      width: 2.25rem;
+      padding: 0;
+    }
+    &[data-size="icon-xs"] {
+      height: 1.75rem;
+      width: 1.75rem;
+      padding: 0;
+      border-radius: var(--radius-sm);
+    }
+    &[data-size="icon-sm"] {
+      height: 2rem;
+      width: 2rem;
+      padding: 0;
+    }
+    &[data-size="icon-lg"] {
+      height: 2.75rem;
+      width: 2.75rem;
+      padding: 0;
+    }
+    &[data-size="icon-xl"] {
+      height: 3.25rem;
+      width: 3.25rem;
+      padding: 0;
+    }
   }
 
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-reduced-motion: reduce) {
-    .btn { transition: none; }
+    .btn {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
@@ -222,7 +306,8 @@
     .btn {
       border: 1px solid ButtonText;
 
-      &:disabled, &[aria-disabled="true"] {
+      &:disabled,
+      &[aria-disabled="true"] {
         border-color: GrayText;
         color: GrayText;
       }
@@ -254,17 +339,46 @@
     display: flex;
 
     /* -- Position: the corner (or edge center) it floats in ------------- */
-    &[data-position="bottom-start"] { inset-inline-end: auto; inset-inline-start: var(--_edge); }
-    &[data-position="top-end"] { inset-block-end: auto; inset-block-start: var(--_edge); }
-    &[data-position="top-start"] { inset: var(--_edge) auto auto var(--_edge); }
-    &[data-position="bottom-center"] { inset-inline: 0; justify-content: center; pointer-events: none; & > * { pointer-events: auto; } }
+    &[data-position="bottom-start"] {
+      inset-inline-end: auto;
+      inset-inline-start: var(--_edge);
+    }
+    &[data-position="top-end"] {
+      inset-block-end: auto;
+      inset-block-start: var(--_edge);
+    }
+    &[data-position="top-start"] {
+      inset: var(--_edge) auto auto var(--_edge);
+    }
+    &[data-position="bottom-center"] {
+      inset-inline: 0;
+      justify-content: center;
+      pointer-events: none;
+      & > * {
+        pointer-events: auto;
+      }
+    }
     /* inside a positioned container (a card, a panel) instead of the page */
-    &[data-attach="container"] { position: absolute; }
+    &[data-attach="container"] {
+      position: absolute;
+    }
 
     /* -- Sizes: trigger + actions scale together (md == default) --------- */
-    &[data-size="sm"] { --_trig: 2.75rem; --_act: 2.25rem; --_gap: 0.5rem; }
-    &[data-size="md"] { --_trig: 3.5rem; --_act: 2.75rem; --_gap: 0.75rem; }
-    &[data-size="lg"] { --_trig: 4.25rem; --_act: 3.25rem; --_gap: 0.875rem; }
+    &[data-size="sm"] {
+      --_trig: 2.75rem;
+      --_act: 2.25rem;
+      --_gap: 0.5rem;
+    }
+    &[data-size="md"] {
+      --_trig: 3.5rem;
+      --_act: 2.75rem;
+      --_gap: 0.75rem;
+    }
+    &[data-size="lg"] {
+      --_trig: 4.25rem;
+      --_act: 3.25rem;
+      --_gap: 0.875rem;
+    }
   }
 
   /* -- Trigger ------------------------------------------------------------ */
@@ -276,13 +390,30 @@
     border-radius: 9999px;
     box-shadow: var(--shadow-lg);
 
-    & svg { width: 1.375rem; height: 1.375rem; }
-    & .fab-icon { display: inline-grid; place-items: center; font-size: 1.375rem; line-height: 1; transition: rotate 200ms ease; }
+    & svg {
+      width: 1.375rem;
+      height: 1.375rem;
+    }
+    & .fab-icon {
+      display: inline-grid;
+      place-items: center;
+      font-size: 1.375rem;
+      line-height: 1;
+      transition: rotate 200ms ease;
+    }
 
     /* extended: icon + label, a pill */
     /* icon-only width == the round trigger, so a folded label leaves a circle */
-    &:has(.fab-text) { width: auto; min-width: var(--_trig); padding-inline: calc((var(--_trig) - 1.375rem) / 2); gap: 0; }
-    & .fab-text { margin-inline-start: 0.625rem; padding-inline-end: 0.25rem; }
+    &:has(.fab-text) {
+      width: auto;
+      min-width: var(--_trig);
+      padding-inline: calc((var(--_trig) - 1.375rem) / 2);
+      gap: 0;
+    }
+    & .fab-text {
+      margin-inline-start: 0.625rem;
+      padding-inline-end: 0.25rem;
+    }
   }
   .fab-text {
     overflow: hidden;
@@ -291,9 +422,13 @@
   }
   /* open: the trigger's icon turns (+ becomes ×) - or swaps with
      .fab-icon-open / .fab-icon-closed */
-  .fab:has(.fab-menu:popover-open) .fab-trigger .fab-icon:not(.fab-icon-open, .fab-icon-closed) { rotate: 45deg; }
+  .fab:has(.fab-menu:popover-open) .fab-trigger .fab-icon:not(.fab-icon-open, .fab-icon-closed) {
+    rotate: 45deg;
+  }
   .fab:not(:has(.fab-menu:popover-open)) .fab-icon-open,
-  .fab:has(.fab-menu:popover-open) .fab-icon-closed { display: none; }
+  .fab:has(.fab-menu:popover-open) .fab-icon-closed {
+    display: none;
+  }
 
   /* -- The menu (a popover in the top layer, anchored to the trigger) ----- */
   .fab-menu[popover] {
@@ -319,14 +454,20 @@
     flex-direction: column-reverse;
     padding-block-end: calc(var(--_trig) + var(--_gap));
 
-    &:popover-open { display: flex; }
+    &:popover-open {
+      display: flex;
+    }
 
     /* the menu box overlaps the trigger (its padding leaves room for it) - only
        the actions take the pointer, so the trigger stays clickable to close */
     pointer-events: none;
-    & > * { pointer-events: auto; }
+    & > * {
+      pointer-events: auto;
+    }
 
-    transition: display 180ms allow-discrete, overlay 180ms allow-discrete;
+    transition:
+      display 180ms allow-discrete,
+      overlay 180ms allow-discrete;
   }
   .fab[data-direction="down"] .fab-menu[popover] {
     bottom: auto;
@@ -364,7 +505,8 @@
     translate: none;
     align-items: flex-end;
   }
-  .fab:is([data-position="bottom-start"], [data-position="top-start"]) .fab-menu[popover]:has(> .fab-action > .fab-text) {
+  .fab:is([data-position="bottom-start"], [data-position="top-start"])
+    .fab-menu[popover]:has(> .fab-action > .fab-text) {
     right: auto;
     left: anchor(left);
     align-items: flex-start;
@@ -388,30 +530,79 @@
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
-    transition: opacity 160ms ease, scale 160ms ease, translate 160ms ease, background-color 150ms ease;
+    transition:
+      opacity 160ms ease,
+      scale 160ms ease,
+      translate 160ms ease,
+      background-color 150ms ease;
     transition-delay: calc(var(--_i, 0) * 35ms);
 
-    &:hover { background-color: var(--accent); color: var(--accent-foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-    & svg { width: 1.125rem; height: 1.125rem; }
+    &:hover {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+    & svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
     /* .btn tones / variants work on an action too */
-    &.btn { border-radius: 9999px; width: var(--_act); height: var(--_act); padding: 0; }
+    &.btn {
+      border-radius: 9999px;
+      width: var(--_act);
+      height: var(--_act);
+      padding: 0;
+    }
   }
   /* text actions: a pill with the words inside */
-  .fab-action:has(> .fab-text) { display: inline-flex; align-items: center; width: auto; padding-inline: 0.875rem 1.125rem; gap: 0.5rem; white-space: nowrap; font-size: 0.875rem; font-weight: 500; }
-  .fab-action .fab-text { font-size: inherit; }
+  .fab-action:has(> .fab-text) {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    padding-inline: 0.875rem 1.125rem;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .fab-action .fab-text {
+    font-size: inherit;
+  }
 
   /* the stagger: actions pop out from the trigger one after another */
-  .fab-menu > :nth-child(2) { --_i: 1; }
-  .fab-menu > :nth-child(3) { --_i: 2; }
-  .fab-menu > :nth-child(4) { --_i: 3; }
-  .fab-menu > :nth-child(5) { --_i: 4; }
-  .fab-menu > :nth-child(6) { --_i: 5; }
-  .fab-menu > :nth-child(7) { --_i: 6; }
-  .fab-menu:not(:popover-open) > * { opacity: 0; scale: 0.6; }
+  .fab-menu > :nth-child(2) {
+    --_i: 1;
+  }
+  .fab-menu > :nth-child(3) {
+    --_i: 2;
+  }
+  .fab-menu > :nth-child(4) {
+    --_i: 3;
+  }
+  .fab-menu > :nth-child(5) {
+    --_i: 4;
+  }
+  .fab-menu > :nth-child(6) {
+    --_i: 5;
+  }
+  .fab-menu > :nth-child(7) {
+    --_i: 6;
+  }
+  .fab-menu:not(:popover-open) > * {
+    opacity: 0;
+    scale: 0.6;
+  }
   @starting-style {
-    .fab-menu:popover-open > * { opacity: 0; scale: 0.6; }
-    .fab[data-layout="flower"] .fab-menu:popover-open > * { translate: -50% -50%; }
+    .fab-menu:popover-open > * {
+      opacity: 0;
+      scale: 0.6;
+    }
+    .fab[data-layout="flower"] .fab-menu:popover-open > * {
+      translate: -50% -50%;
+    }
   }
 
   /* label chips beside the actions (toward the screen's middle) */
@@ -455,11 +646,21 @@
     box-shadow: var(--shadow-lg);
     font-size: 1.375rem;
 
-    &:hover { background-color: color-mix(in oklch, var(--primary) 88%, var(--primary-foreground)); color: var(--primary-foreground); }
-    & svg { width: 1.375rem; height: 1.375rem; }
+    &:hover {
+      background-color: color-mix(in oklch, var(--primary) 88%, var(--primary-foreground));
+      color: var(--primary-foreground);
+    }
+    & svg {
+      width: 1.375rem;
+      height: 1.375rem;
+    }
   }
-  .fab-menu:has(> .fab-main) { padding: 0 !important; }
-  .fab-menu:has(> .fab-main) > :not(.fab-main) { --_i: 1; }
+  .fab-menu:has(> .fab-main) {
+    padding: 0 !important;
+  }
+  .fab-menu:has(> .fab-main) > :not(.fab-main) {
+    --_i: 1;
+  }
 
   /* -- Flower: the actions on a quarter circle around the trigger --------
      The arc opens toward the screen's middle (up-left from bottom-end);
@@ -472,8 +673,12 @@
     --_sx: -1;
     --_sy: -1;
 
-    &:is([data-position="bottom-start"], [data-position="top-start"]) { --_sx: 1; }
-    &:is([data-position="top-end"], [data-position="top-start"]) { --_sy: 1; }
+    &:is([data-position="bottom-start"], [data-position="top-start"]) {
+      --_sx: 1;
+    }
+    &:is([data-position="top-end"], [data-position="top-start"]) {
+      --_sy: 1;
+    }
     /* from the center of an edge (a dock's raised action): a semicircle */
     /* the upper arc only (30° - 150°): the ends stay clear of whatever sits
        level with the trigger (a dock's neighbouring items) */
@@ -483,8 +688,12 @@
       --_sx: -1;
       --_r: calc(var(--_trig) + var(--_act) * 0.9);
     }
-    &[data-position="bottom-center"] { --_sy: -1; }
-    &[data-position="top-center"] { --_sy: 1; }
+    &[data-position="bottom-center"] {
+      --_sy: -1;
+    }
+    &[data-position="top-center"] {
+      --_sy: 1;
+    }
 
     & .fab-menu[popover] {
       top: anchor(center);
@@ -496,7 +705,9 @@
       padding: 0;
       translate: none;
       display: none;
-      &:popover-open { display: block; }
+      &:popover-open {
+        display: block;
+      }
     }
     & .fab-menu > * {
       --_step: var(--_arc);
@@ -504,23 +715,57 @@
       position: absolute;
       left: 0;
       top: 0;
-      translate: calc(-50% + var(--_sx) * cos(var(--_a)) * var(--_r)) calc(-50% + var(--_sy) * sin(var(--_a)) * var(--_r));
+      translate: calc(-50% + var(--_sx) * cos(var(--_a)) * var(--_r))
+        calc(-50% + var(--_sy) * sin(var(--_a)) * var(--_r));
     }
-    & .fab-menu:not(:popover-open) > * { translate: -50% -50%; }
-    & .fab-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0; }
+    & .fab-menu:not(:popover-open) > * {
+      translate: -50% -50%;
+    }
+    & .fab-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      border: 0;
+    }
 
     /* k = 0 … n-1 along the arc (the main action, if any, stays centered) */
-    & .fab-menu > :not(.fab-main):nth-child(1 of :not(.fab-main)) { --_k: 0; }
-    & .fab-menu > :not(.fab-main):nth-child(2 of :not(.fab-main)) { --_k: 1; }
-    & .fab-menu > :not(.fab-main):nth-child(3 of :not(.fab-main)) { --_k: 2; }
-    & .fab-menu > :not(.fab-main):nth-child(4 of :not(.fab-main)) { --_k: 3; }
-    & .fab-menu > :not(.fab-main):nth-child(5 of :not(.fab-main)) { --_k: 4; }
-    & .fab-menu > :not(.fab-main):nth-child(6 of :not(.fab-main)) { --_k: 5; }
-    & .fab-menu:has(> :not(.fab-main):nth-child(3 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 2); }
-    & .fab-menu:has(> :not(.fab-main):nth-child(4 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 3); }
-    & .fab-menu:has(> :not(.fab-main):nth-child(5 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 4); --_r: calc(var(--_trig) + var(--_act) * 2.1); }
-    & .fab-menu:has(> :not(.fab-main):nth-child(6 of :not(.fab-main))) > * { --_step: calc(var(--_arc) / 5); }
-    & .fab-menu > .fab-main { translate: -50% -50%; }
+    & .fab-menu > :not(.fab-main):nth-child(1 of :not(.fab-main)) {
+      --_k: 0;
+    }
+    & .fab-menu > :not(.fab-main):nth-child(2 of :not(.fab-main)) {
+      --_k: 1;
+    }
+    & .fab-menu > :not(.fab-main):nth-child(3 of :not(.fab-main)) {
+      --_k: 2;
+    }
+    & .fab-menu > :not(.fab-main):nth-child(4 of :not(.fab-main)) {
+      --_k: 3;
+    }
+    & .fab-menu > :not(.fab-main):nth-child(5 of :not(.fab-main)) {
+      --_k: 4;
+    }
+    & .fab-menu > :not(.fab-main):nth-child(6 of :not(.fab-main)) {
+      --_k: 5;
+    }
+    & .fab-menu:has(> :not(.fab-main):nth-child(3 of :not(.fab-main))) > * {
+      --_step: calc(var(--_arc) / 2);
+    }
+    & .fab-menu:has(> :not(.fab-main):nth-child(4 of :not(.fab-main))) > * {
+      --_step: calc(var(--_arc) / 3);
+    }
+    & .fab-menu:has(> :not(.fab-main):nth-child(5 of :not(.fab-main))) > * {
+      --_step: calc(var(--_arc) / 4);
+      --_r: calc(var(--_trig) + var(--_act) * 2.1);
+    }
+    & .fab-menu:has(> :not(.fab-main):nth-child(6 of :not(.fab-main))) > * {
+      --_step: calc(var(--_arc) / 5);
+    }
+    & .fab-menu > .fab-main {
+      translate: -50% -50%;
+    }
   }
 
   /* -- Extended FAB that shrinks to its icon as the page scrolls ----------
@@ -529,7 +774,12 @@
      for a scrolling container, name its timeline (scroll-timeline: --list;
      timeline-scope on a shared ancestor) and set --fab-timeline: --list. */
   @keyframes fab-shrink {
-    to { max-width: 0; opacity: 0; margin-inline-start: 0; padding-inline-end: 0; }
+    to {
+      max-width: 0;
+      opacity: 0;
+      margin-inline-start: 0;
+      padding-inline-end: 0;
+    }
   }
   .fab[data-shrink="scroll"] .fab-trigger {
     & .fab-text {
@@ -549,7 +799,11 @@
      (default 160px - 320px); visibility follows, so it is not focusable
      while hidden. The timeline is a var() - minifiers leave it alone. */
   @keyframes fab-appear {
-    from { opacity: 0; scale: 0.6; visibility: hidden; }
+    from {
+      opacity: 0;
+      scale: 0.6;
+      visibility: hidden;
+    }
   }
   .fab[data-scroll-top] .fab-trigger {
     animation: fab-appear linear both;
@@ -558,17 +812,30 @@
   }
   /* the jump glides - for people who have not asked for less motion */
   @media (prefers-reduced-motion: no-preference) {
-    html:has(.fab[data-scroll-top]) { scroll-behavior: smooth; }
+    html:has(.fab[data-scroll-top]) {
+      scroll-behavior: smooth;
+    }
   }
 
   /* -- Accessibility -------------------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .fab-action, .fab-trigger .fab-icon, .fab-menu[popover] { transition: none; }
-    .fab[data-shrink="scroll"] .fab-trigger .fab-text { animation: none; }
-    .fab[data-scroll-top] .fab-trigger { animation: none; }
+    .fab-action,
+    .fab-trigger .fab-icon,
+    .fab-menu[popover] {
+      transition: none;
+    }
+    .fab[data-shrink="scroll"] .fab-trigger .fab-text {
+      animation: none;
+    }
+    .fab[data-scroll-top] .fab-trigger {
+      animation: none;
+    }
   }
   @media (forced-colors: active) {
-    .fab-action, .fab-label { border: 1px solid CanvasText; }
+    .fab-action,
+    .fab-label {
+      border: 1px solid CanvasText;
+    }
   }
 }
 
@@ -599,7 +866,10 @@
     box-shadow: var(--shadow-lg);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: scale 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      scale 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
 
     /* the triangle: a third of the button, nudged toward its point so it
        reads as centred (its visual centre is not its box's) */
@@ -616,7 +886,9 @@
       scale: 1.06;
       background-color: color-mix(in oklch, var(--_bg) 88%, var(--_fg));
     }
-    &:active:not(:disabled) { scale: 0.97; }
+    &:active:not(:disabled) {
+      scale: 0.97;
+    }
     &:focus-visible {
       outline: 3px solid var(--ring);
       outline-offset: 4px;
@@ -627,9 +899,15 @@
     }
 
     /* -- Sizes ------------------------------------------------------ */
-    &[data-size="sm"] { --play-button-size: 3rem; }
-    &[data-size="lg"] { --play-button-size: 6rem; }
-    &[data-size="xl"] { --play-button-size: 8rem; }
+    &[data-size="sm"] {
+      --play-button-size: 3rem;
+    }
+    &[data-size="lg"] {
+      --play-button-size: 6rem;
+    }
+    &[data-size="xl"] {
+      --play-button-size: 8rem;
+    }
 
     /* -- Variants --------------------------------------------------- */
     &[data-variant="secondary"] {
@@ -639,16 +917,22 @@
     &[data-variant="outline"] {
       --_bg: var(--background);
       --_fg: var(--foreground);
-      box-shadow: inset 0 0 0 2px var(--border), var(--shadow-sm);
+      box-shadow:
+        inset 0 0 0 2px var(--border),
+        var(--shadow-sm);
     }
     /* over a photo or a video poster: frosted, white, whatever the theme */
     &[data-variant="glass"] {
       --_bg: oklch(1 0 0 / 0.2);
       --_fg: oklch(1 0 0);
-      box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.4), 0 8px 32px oklch(0 0 0 / 0.3);
+      box-shadow:
+        inset 0 0 0 1px oklch(1 0 0 / 0.4),
+        0 8px 32px oklch(0 0 0 / 0.3);
       backdrop-filter: blur(12px) saturate(1.4);
 
-      &:hover:not(:disabled) { background-color: oklch(1 0 0 / 0.32); }
+      &:hover:not(:disabled) {
+        background-color: oklch(1 0 0 / 0.32);
+      }
     }
 
     /* -- Attention: a ring that keeps pulsing outward ---------------- */
@@ -663,8 +947,12 @@
   }
 
   @keyframes play-button-pulse {
-    from { box-shadow: 0 0 0 0 color-mix(in oklch, var(--_bg) 60%, transparent); }
-    to { box-shadow: 0 0 0 calc(var(--play-button-size) / 3) transparent; }
+    from {
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--_bg) 60%, transparent);
+    }
+    to {
+      box-shadow: 0 0 0 calc(var(--play-button-size) / 3) transparent;
+    }
   }
 
   /* -- Accessibility ------------------------------------------------- */
@@ -672,8 +960,13 @@
     .play-button {
       transition: none;
 
-      &:hover:not(:disabled), &:active:not(:disabled) { scale: none; }
-      &[data-pulse]::after { animation: none; }
+      &:hover:not(:disabled),
+      &:active:not(:disabled) {
+        scale: none;
+      }
+      &[data-pulse]::after {
+        animation: none;
+      }
     }
   }
 
@@ -689,8 +982,12 @@
       background-color: ButtonFace;
       color: ButtonText;
 
-      &::before { background-color: ButtonText; }
-      &:focus-visible { outline-color: Highlight; }
+      &::before {
+        background-color: ButtonText;
+      }
+      &:focus-visible {
+        outline-color: Highlight;
+      }
     }
   }
 }
@@ -714,7 +1011,10 @@
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
     outline: none;
     flex-shrink: 0;
     height: 2.25rem;
@@ -751,7 +1051,10 @@
       pointer-events: none;
       flex-shrink: 0;
 
-      &:not([class*="size-"]) { width: 1rem; height: 1rem; }
+      &:not([class*="size-"]) {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
     /* -- Variants -------------------------------------------- */
@@ -776,15 +1079,39 @@
     }
 
     /* -- Sizes ----------------------------------------------- */
-    &[data-size="xs"]  { height: 1.75rem; padding: 0 0.25rem;  min-width: 1.75rem; font-size: 0.75rem; }
-    &[data-size="sm"]  { height: 2rem;  padding: 0 0.375rem; min-width: 2rem; }
-    &[data-size="md"]  { height: 2.25rem; padding: 0 0.5rem;   min-width: 2.25rem; }
-    &[data-size="lg"]  { height: 2.5rem; padding: 0 0.625rem; min-width: 2.5rem; }
-    &[data-size="xl"]  { height: 3rem;  padding: 0 0.75rem;  min-width: 3rem; font-size: 1rem; }
+    &[data-size="xs"] {
+      height: 1.75rem;
+      padding: 0 0.25rem;
+      min-width: 1.75rem;
+      font-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      height: 2rem;
+      padding: 0 0.375rem;
+      min-width: 2rem;
+    }
+    &[data-size="md"] {
+      height: 2.25rem;
+      padding: 0 0.5rem;
+      min-width: 2.25rem;
+    }
+    &[data-size="lg"] {
+      height: 2.5rem;
+      padding: 0 0.625rem;
+      min-width: 2.5rem;
+    }
+    &[data-size="xl"] {
+      height: 3rem;
+      padding: 0 0.75rem;
+      min-width: 3rem;
+      font-size: 1rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .toggle { transition: none; }
+    .toggle {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
@@ -880,55 +1207,85 @@
     }
 
     /* -- Faces: default (off) ------------------------------- */
-    & .swap-off { opacity: 1; }
+    & .swap-off {
+      opacity: 1;
+    }
 
     /* -- Faces: indeterminate ------------------------------- */
     &:has(> input:indeterminate) {
-      & .swap-off { opacity: 0; }
-      & .swap-indeterminate { opacity: 1; }
+      & .swap-off {
+        opacity: 0;
+      }
+      & .swap-indeterminate {
+        opacity: 1;
+      }
     }
 
     /* -- Faces: on (checked, or forced via data-active) ------ */
     &:has(> input:checked),
     &[data-active] {
       & .swap-off,
-      & .swap-indeterminate { opacity: 0; }
-      & .swap-on { opacity: 1; }
+      & .swap-indeterminate {
+        opacity: 0;
+      }
+      & .swap-on {
+        opacity: 1;
+      }
     }
 
     /* -- Variant: rotate ------------------------------------ */
     &[data-variant="rotate"] {
       & .swap-on,
-      & .swap-indeterminate { rotate: -45deg; }
+      & .swap-indeterminate {
+        rotate: -45deg;
+      }
 
       &:has(> input:indeterminate) {
-        & .swap-off { rotate: 45deg; }
-        & .swap-indeterminate { rotate: 0deg; }
+        & .swap-off {
+          rotate: 45deg;
+        }
+        & .swap-indeterminate {
+          rotate: 0deg;
+        }
       }
 
       &:has(> input:checked),
       &[data-active] {
         & .swap-off,
-        & .swap-indeterminate { rotate: 45deg; }
-        & .swap-on { rotate: 0deg; }
+        & .swap-indeterminate {
+          rotate: 45deg;
+        }
+        & .swap-on {
+          rotate: 0deg;
+        }
       }
     }
 
     /* -- Variant: flip -------------------------------------- */
     &[data-variant="flip"] {
       & .swap-on,
-      & .swap-indeterminate { rotate: y 180deg; }
+      & .swap-indeterminate {
+        rotate: y 180deg;
+      }
 
       &:has(> input:indeterminate) {
-        & .swap-off { rotate: y -180deg; }
-        & .swap-indeterminate { rotate: y 0deg; }
+        & .swap-off {
+          rotate: y -180deg;
+        }
+        & .swap-indeterminate {
+          rotate: y 0deg;
+        }
       }
 
       &:has(> input:checked),
       &[data-active] {
         & .swap-off,
-        & .swap-indeterminate { rotate: y -180deg; }
-        & .swap-on { rotate: y 0deg; }
+        & .swap-indeterminate {
+          rotate: y -180deg;
+        }
+        & .swap-on {
+          rotate: y 0deg;
+        }
       }
     }
 
@@ -938,7 +1295,10 @@
       min-height: 2rem;
       font-size: 0.75rem;
 
-      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+      & svg:not([class*="size-"]) {
+        width: 1rem;
+        height: 1rem;
+      }
     }
 
     &[data-size="lg"] {
@@ -946,11 +1306,17 @@
       min-height: 2.75rem;
       font-size: 1.125rem;
 
-      & svg:not([class*="size-"]) { width: 1.5rem; height: 1.5rem; }
+      & svg:not([class*="size-"]) {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
     }
 
     /* -- Interaction states --------------------------------- */
-    &:hover:not(:has(> input:disabled)) { background-color: var(--accent); color: var(--accent-foreground); }
+    &:hover:not(:has(> input:disabled)) {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
 
     &:has(> input:focus-visible) {
       outline: 2px solid var(--ring);
@@ -980,7 +1346,9 @@
       border: 2px solid transparent;
 
       &:has(> input:checked),
-      &[data-active] { border-color: currentColor; }
+      &[data-active] {
+        border-color: currentColor;
+      }
     }
   }
 
@@ -996,7 +1364,10 @@
         color: HighlightText;
       }
 
-      &:has(> input:disabled) { border-color: GrayText; color: GrayText; }
+      &:has(> input:disabled) {
+        border-color: GrayText;
+        color: GrayText;
+      }
     }
   }
 }
@@ -1050,7 +1421,10 @@
       padding: 0 0.375rem;
       min-width: 2rem;
 
-      & svg { width: 0.875rem; height: 0.875rem; }
+      & svg {
+        width: 0.875rem;
+        height: 0.875rem;
+      }
     }
 
     &[data-size="md"] > .toggle {
@@ -1071,7 +1445,10 @@
       min-width: 3rem;
       font-size: 1rem;
 
-      & svg { width: 1.125rem; height: 1.125rem; }
+      & svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
     }
 
     /* -- Vertical orientation ----------------------------------- */
@@ -1123,7 +1500,10 @@
       & > .toggle {
         opacity: 0.5;
         cursor: not-allowed;
-        &:hover { background-color: transparent; color: inherit; }
+        &:hover {
+          background-color: transparent;
+          color: inherit;
+        }
       }
     }
   }
@@ -1186,8 +1566,12 @@
        not border + rule + border with rounded inner corners (which read as
        two buttons with a gap). */
     &:where(:not([data-orientation="vertical"])) {
-      & > .btn:has(+ [role="separator"]) { border-inline-end-width: 0; }
-      & > [role="separator"] + .btn { border-inline-start-width: 0; }
+      & > .btn:has(+ [role="separator"]) {
+        border-inline-end-width: 0;
+      }
+      & > [role="separator"] + .btn {
+        border-inline-start-width: 0;
+      }
     }
 
     /* Ensure hovered/focused button stacks above its neighbors */
@@ -1240,8 +1624,12 @@
         height: 1px;
       }
 
-      & > .btn:has(+ [role="separator"]) { border-block-end-width: 0; }
-      & > [role="separator"] + .btn { border-block-start-width: 0; }
+      & > .btn:has(+ [role="separator"]) {
+        border-block-end-width: 0;
+      }
+      & > [role="separator"] + .btn {
+        border-block-start-width: 0;
+      }
     }
   }
 
@@ -1274,27 +1662,45 @@
     &[data-size="xs"] {
       gap: 0.125rem;
       padding: 0.125rem;
-      & :is(.btn, .toggle) { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; }
+      & :is(.btn, .toggle) {
+        height: 1.75rem;
+        padding: 0 0.5rem;
+        font-size: 0.75rem;
+      }
     }
     &[data-size="sm"] {
       gap: 0.1875rem;
       padding: 0.1875rem;
-      & :is(.btn, .toggle) { height: 2rem; padding: 0 0.75rem; font-size: 0.8125rem; }
+      & :is(.btn, .toggle) {
+        height: 2rem;
+        padding: 0 0.75rem;
+        font-size: 0.8125rem;
+      }
     }
     &[data-size="md"] {
       gap: 0.25rem;
       padding: 0.25rem;
-      & :is(.btn, .toggle) { height: 2.25rem; }
+      & :is(.btn, .toggle) {
+        height: 2.25rem;
+      }
     }
     &[data-size="lg"] {
       gap: 0.375rem;
       padding: 0.375rem;
-      & :is(.btn, .toggle) { height: 2.75rem; padding: 0 1rem; font-size: 1rem; }
+      & :is(.btn, .toggle) {
+        height: 2.75rem;
+        padding: 0 1rem;
+        font-size: 1rem;
+      }
     }
     &[data-size="xl"] {
       gap: 0.5rem;
       padding: 0.5rem;
-      & :is(.btn, .toggle) { height: 3.25rem; padding: 0 1.25rem; font-size: 1.125rem; }
+      & :is(.btn, .toggle) {
+        height: 3.25rem;
+        padding: 0 1.25rem;
+        font-size: 1.125rem;
+      }
     }
 
     /* Vertical separators stretch to fill toolbar height */

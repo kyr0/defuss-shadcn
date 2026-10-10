@@ -25,10 +25,15 @@
     font-size: 0.875rem;
     color: var(--foreground);
     cursor: grab;
-    transition: box-shadow 150ms ease, opacity 150ms ease, border-color 150ms ease;
+    transition:
+      box-shadow 150ms ease,
+      opacity 150ms ease,
+      border-color 150ms ease;
     user-select: none;
 
-    &:active { cursor: grabbing; }
+    &:active {
+      cursor: grabbing;
+    }
 
     /* Keyboard focus (roving tabindex) */
     &:focus-visible {
@@ -85,8 +90,13 @@
     display: inline-flex;
     align-items: center;
 
-    &:active { cursor: grabbing; }
-    & svg { width: 1rem; height: 1rem; }
+    &:active {
+      cursor: grabbing;
+    }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 
   /* -- Move buttons: reorder by tap / click --------------------
@@ -112,11 +122,22 @@
     background: var(--background);
     color: var(--foreground);
     cursor: pointer;
-    transition: background-color 150ms, color 150ms;
+    transition:
+      background-color 150ms,
+      color 150ms;
 
-    & svg { width: 1rem; height: 1rem; }
-    &:hover { background: var(--accent); color: var(--accent-foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
 
     /* legible but inert, like every disabled control (no opacity fade) */
     &:disabled {
@@ -148,7 +169,9 @@
       color: var(--muted-foreground);
       font-size: 0.875rem;
 
-      &::before { content: attr(data-empty); }
+      &::before {
+        content: attr(data-empty);
+      }
     }
   }
 
@@ -172,15 +195,24 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sortable-item, .sortable-move { transition: none; }
+    .sortable-item,
+    .sortable-move {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
     .sortable-item {
       border-width: 2px;
-      &[data-active] { outline: 2px solid LinkText; }
-      &[data-over="before"] { border-top-width: 3px; }
-      &[data-over="after"] { border-bottom-width: 3px; }
+      &[data-active] {
+        outline: 2px solid LinkText;
+      }
+      &[data-over="before"] {
+        border-top-width: 3px;
+      }
+      &[data-over="after"] {
+        border-bottom-width: 3px;
+      }
     }
   }
 
@@ -189,34 +221,58 @@
       border-color: ButtonBorder;
       color: ButtonText;
       background-color: ButtonFace;
-      &[data-active] { border-color: Highlight; color: HighlightText; }
-      &[data-dragging] { border-color: GrayText; }
-      &[data-over="before"] { border-top-color: Highlight; }
-      &[data-over="after"] { border-bottom-color: Highlight; }
-      &[aria-disabled="true"] { color: GrayText; border-color: GrayText; }
+      &[data-active] {
+        border-color: Highlight;
+        color: HighlightText;
+      }
+      &[data-dragging] {
+        border-color: GrayText;
+      }
+      &[data-over="before"] {
+        border-top-color: Highlight;
+      }
+      &[data-over="after"] {
+        border-bottom-color: Highlight;
+      }
+      &[aria-disabled="true"] {
+        color: GrayText;
+        border-color: GrayText;
+      }
     }
-    .sortable-handle { color: GrayText; }
+    .sortable-handle {
+      color: GrayText;
+    }
     .sortable-move {
       border-color: ButtonText;
       color: ButtonText;
-      &:disabled { border-color: GrayText; color: GrayText; }
+      &:disabled {
+        border-color: GrayText;
+        color: GrayText;
+      }
     }
-    .sortable[data-over="end"] { outline-color: Highlight; }
+    .sortable[data-over="end"] {
+      outline-color: Highlight;
+    }
   }
   /* -- Density ----------------------------------------------------
      data-density on the .sortable root scales the list gap and the item
      padding. comfortable == the unsized default. */
   .sortable:where([data-density="compact"]) {
     gap: 0.125rem;
-    & .sortable-item { padding: 0.375rem 0.5rem; }
+    & .sortable-item {
+      padding: 0.375rem 0.5rem;
+    }
   }
   .sortable:where([data-density="comfortable"]) {
     gap: 0.25rem;
-    & .sortable-item { padding: 0.5rem 0.75rem; }
+    & .sortable-item {
+      padding: 0.5rem 0.75rem;
+    }
   }
   .sortable:where([data-density="spacious"]) {
     gap: 0.375rem;
-    & .sortable-item { padding: 0.625rem 1rem; }
+    & .sortable-item {
+      padding: 0.625rem 1rem;
+    }
   }
-
 }

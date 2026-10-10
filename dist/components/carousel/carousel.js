@@ -63,7 +63,9 @@ export const carouselApi = componentState({
 df$.carouselApi = carouselApi;
 df$.carouselStates = carouselStates;
 function init() {
-    dfDollar('.carousel:not([data-init])').toArray().forEach((carousel) => {
+    dfDollar('.carousel:not([data-init])')
+        .toArray()
+        .forEach((carousel) => {
         carousel.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(carousel, carouselApi);
@@ -135,12 +137,16 @@ function init() {
             if (dotsContainer)
                 dfDollar(dotsContainer)
                     .find('.carousel-dot')
-                    .each(function (i) { dfDollar(this).attr('aria-current', i === currentIndex ? 'true' : 'false'); });
+                    .each(function (i) {
+                    dfDollar(this).attr('aria-current', i === currentIndex ? 'true' : 'false');
+                });
             // Counter (literal template text, consumer-visible label)
             if (counter)
                 dfDollar(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
             // ARIA labels on slides
-            allSlides.forEach((slide, i) => { dfDollar(slide).attr('aria-label', `${i + 1} of ${allSlides.length}`); });
+            allSlides.forEach((slide, i) => {
+                dfDollar(slide).attr('aria-label', `${i + 1} of ${allSlides.length}`);
+            });
         };
         // ── IntersectionObserver for current slide ──
         const observer = new IntersectionObserver((entries) => {

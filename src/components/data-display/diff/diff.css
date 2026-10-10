@@ -24,7 +24,7 @@
 
     /* the divider line */
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       z-index: 2;
       top: 0;
@@ -57,7 +57,9 @@
     z-index: 1;
     clip-path: inset(0 calc(100% - var(--diff-pos)) 0 0);
   }
-  .diff-item-2 { z-index: 0; }
+  .diff-item-2 {
+    z-index: 0;
+  }
 
   /* a corner caption on either side (Before / After) */
   .diff-label {
@@ -72,7 +74,10 @@
     font-weight: 500;
     pointer-events: none;
   }
-  .diff-item-2 .diff-label { left: auto; right: 0.75rem; }
+  .diff-item-2 .diff-label {
+    left: auto;
+    right: 0.75rem;
+  }
 
   /* -- The range: a knob-high strip across the middle (diff.js makes the
      whole figure a drag surface and keeps keyboard / AT on the range) -- */
@@ -91,15 +96,22 @@
     cursor: ew-resize;
     outline: none;
 
-    &::-webkit-slider-runnable-track { height: 100%; background: transparent; }
-    &::-moz-range-track { height: 100%; background: transparent; }
+    &::-webkit-slider-runnable-track {
+      height: 100%;
+      background: transparent;
+    }
+    &::-moz-range-track {
+      height: 100%;
+      background: transparent;
+    }
     &::-webkit-slider-thumb {
       appearance: none;
       width: var(--_knob);
       height: var(--_knob);
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: var(--background) center / 1.125rem no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
+      background: var(--background) center / 1.125rem no-repeat
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
       box-shadow: var(--shadow-md);
       transition: scale 120ms ease;
     }
@@ -108,40 +120,82 @@
       height: var(--_knob);
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: var(--background) center / 1.125rem no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
+      background: var(--background) center / 1.125rem no-repeat
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E");
       box-shadow: var(--shadow-md);
     }
-    &:active::-webkit-slider-thumb { scale: 1.08; }
-    &:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--ring); outline-offset: 2px; }
-    &:focus-visible::-moz-range-thumb { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:active::-webkit-slider-thumb {
+      scale: 1.08;
+    }
+    &:focus-visible::-webkit-slider-thumb {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+    &:focus-visible::-moz-range-thumb {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
   }
   /* RTL: the range runs right → left, so item 1 is revealed from the right */
   .diff:dir(rtl):not([data-orientation="vertical"]) {
-    &::after { left: calc(100% - var(--diff-pos)); }
-    & .diff-item-1 { clip-path: inset(0 0 0 calc(100% - var(--diff-pos))); }
-    & .diff-item-1 .diff-label { left: auto; right: 0.75rem; }
-    & .diff-item-2 .diff-label { right: auto; left: 0.75rem; }
+    &::after {
+      left: calc(100% - var(--diff-pos));
+    }
+    & .diff-item-1 {
+      clip-path: inset(0 0 0 calc(100% - var(--diff-pos)));
+    }
+    & .diff-item-1 .diff-label {
+      left: auto;
+      right: 0.75rem;
+    }
+    & .diff-item-2 .diff-label {
+      right: auto;
+      left: 0.75rem;
+    }
   }
 
   /* -- Aspect ratios (or set aspect-ratio / a height yourself) -------- */
-  .diff[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
-  .diff[data-ratio="4/3"] { aspect-ratio: 4 / 3; }
-  .diff[data-ratio="1/1"] { aspect-ratio: 1; }
-  .diff[data-ratio="3/4"] { aspect-ratio: 3 / 4; }
+  .diff[data-ratio="16/9"] {
+    aspect-ratio: 16 / 9;
+  }
+  .diff[data-ratio="4/3"] {
+    aspect-ratio: 4 / 3;
+  }
+  .diff[data-ratio="1/1"] {
+    aspect-ratio: 1;
+  }
+  .diff[data-ratio="3/4"] {
+    aspect-ratio: 3 / 4;
+  }
 
   /* -- Knob variants ---------------------------------------------------- */
   /* line: no knob - just the divider (the whole figure is still the hit area) */
   .diff[data-variant="line"] .diff-range {
-    &::-webkit-slider-thumb { opacity: 0; }
-    &::-moz-range-thumb { opacity: 0; }
-    &:focus-visible::-webkit-slider-thumb { opacity: 1; }
+    &::-webkit-slider-thumb {
+      opacity: 0;
+    }
+    &::-moz-range-thumb {
+      opacity: 0;
+    }
+    &:focus-visible::-webkit-slider-thumb {
+      opacity: 1;
+    }
   }
-  .diff[data-variant="line"]::after { width: 3px; }
+  .diff[data-variant="line"]::after {
+    width: 3px;
+  }
   /* primary: a --primary divider + knob ring */
   .diff[data-variant="primary"] {
-    &::after { background-color: var(--primary); box-shadow: none; }
-    & .diff-range::-webkit-slider-thumb { border: 2px solid var(--primary); }
-    & .diff-range::-moz-range-thumb { border: 2px solid var(--primary); }
+    &::after {
+      background-color: var(--primary);
+      box-shadow: none;
+    }
+    & .diff-range::-webkit-slider-thumb {
+      border: 2px solid var(--primary);
+    }
+    & .diff-range::-moz-range-thumb {
+      border: 2px solid var(--primary);
+    }
   }
 
   /* -- Vertical: before on top, after below; the range runs top → bottom */
@@ -158,8 +212,15 @@
       height: 2px;
       translate: 0 -50%;
     }
-    & .diff-item-1 { clip-path: inset(0 0 calc(100% - var(--diff-pos)) 0); }
-    & .diff-item-2 .diff-label { top: auto; bottom: 0.75rem; left: 0.75rem; right: auto; }
+    & .diff-item-1 {
+      clip-path: inset(0 0 calc(100% - var(--diff-pos)) 0);
+    }
+    & .diff-item-2 .diff-label {
+      top: auto;
+      bottom: 0.75rem;
+      left: 0.75rem;
+      right: auto;
+    }
     & .diff-range {
       writing-mode: vertical-lr;
       top: calc(var(--_knob) / -2);
@@ -169,19 +230,35 @@
       translate: -50% 0;
       cursor: ns-resize;
 
-      &::-webkit-slider-runnable-track { width: 100%; height: auto; }
-      &::-webkit-slider-thumb { rotate: 90deg; }
-      &::-moz-range-thumb { rotate: 90deg; }
+      &::-webkit-slider-runnable-track {
+        width: 100%;
+        height: auto;
+      }
+      &::-webkit-slider-thumb {
+        rotate: 90deg;
+      }
+      &::-moz-range-thumb {
+        rotate: 90deg;
+      }
     }
   }
-  .diff[data-orientation="vertical"][data-variant="line"]::after { height: 3px; width: auto; }
+  .diff[data-orientation="vertical"][data-variant="line"]::after {
+    height: 3px;
+    width: auto;
+  }
 
   /* -- Accessibility ------------------------------------------------------ */
   @media (prefers-reduced-motion: reduce) {
-    .diff-range::-webkit-slider-thumb { transition: none; }
+    .diff-range::-webkit-slider-thumb {
+      transition: none;
+    }
   }
   @media (forced-colors: active) {
-    .diff::after { background-color: CanvasText; }
-    .diff-range::-webkit-slider-thumb { border-color: CanvasText; }
+    .diff::after {
+      background-color: CanvasText;
+    }
+    .diff-range::-webkit-slider-thumb {
+      border-color: CanvasText;
+    }
   }
 }

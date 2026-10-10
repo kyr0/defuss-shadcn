@@ -15,53 +15,118 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
 ```html example label="Error analysis at corpus scale" schema="none" hint="Sort the grid by a header, filter in the filter row (WER takes > 10, text matches anywhere) - each query runs over all 100,000 rows. Open branches in the tree with the chevrons or the arrow keys. The data is synthetic and deterministic: row i always reads the same."
 <article class="paper" aria-labelledby="pb-title">
   <header class="paper-hero">
-    <p class="paper-venue"><span class="badge" data-variant="secondary">Short paper</span><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p>
-    <h1 class="paper-title" id="pb-title">Error Analysis at Corpus Scale<span class="paper-title-sub">Browsing every utterance of an evaluation in the paper itself</span></h1>
-    <ul class="paper-authors"><li>Aron Homberg</li><li>Claude</li></ul>
+    <p class="paper-venue"
+      ><span class="badge" data-variant="secondary">Short paper</span
+      ><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p
+    >
+    <h1 class="paper-title" id="pb-title"
+      >Error Analysis at Corpus Scale<span class="paper-title-sub"
+        >Browsing every utterance of an evaluation in the paper itself</span
+      ></h1
+    >
+    <ul class="paper-authors"
+      ><li>Aron Homberg</li
+      ><li>Claude</li></ul
+    >
   </header>
 
   <section class="paper-abstract" aria-labelledby="pb-abstract">
     <h2 id="pb-abstract">Abstract</h2>
-    <p>A word error rate is an average; the errors are in the utterances. We show how a reader can browse all of them in the paper: a grid of 100,000 utterances with their speaker, source, duration and errors, and a tree of the corpus they come from. The data here is synthetic - generated deterministically - so that the page stays small and every reader sees the same rows.</p>
+    <p
+      >A word error rate is an average; the errors are in the utterances. We show how a reader can browse all of them in
+      the paper: a grid of 100,000 utterances with their speaker, source, duration and errors, and a tree of the corpus
+      they come from. The data here is synthetic - generated deterministically - so that the page stays small and every
+      reader sees the same rows.</p
+    >
   </section>
 
   <nav class="paper-toc" aria-labelledby="pb-toc">
     <h2 id="pb-toc">Contents</h2>
     <ol>
-      <li><a href="#pb-s1"><span class="paper-num">1</span>Every utterance</a></li>
-      <li><a href="#pb-s2"><span class="paper-num">2</span>The corpus</a></li>
-      <li><a href="#pb-cite"><span class="paper-num">·</span>Citation and references</a></li>
+      <li
+        ><a href="#pb-s1"><span class="paper-num">1</span>Every utterance</a></li
+      >
+      <li
+        ><a href="#pb-s2"><span class="paper-num">2</span>The corpus</a></li
+      >
+      <li
+        ><a href="#pb-cite"><span class="paper-num">·</span>Citation and references</a></li
+      >
     </ol>
   </nav>
-
 
   <section class="paper-section typeset" lang="en" data-leading="tight" data-align="justify" aria-labelledby="pb-s1">
     <h2 id="pb-s1"><span class="paper-num">1</span>Every utterance</h2>
     <div class="paper-wide">
-      <div class="data-grid" id="pb-grid" aria-label="Evaluation utterances" data-empty-text="No utterance matches." style="height: 22rem;">
+      <div
+        class="data-grid"
+        id="pb-grid"
+        aria-label="Evaluation utterances"
+        data-empty-text="No utterance matches."
+        style="height: 22rem"
+      >
         <div class="data-grid-viewport">
           <div class="data-grid-head">
             <div class="data-grid-row">
-              <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem" data-filter="number" data-locked>Utterance</div>
+              <div
+                class="data-grid-header"
+                data-field="id"
+                data-type="number"
+                data-format=""
+                data-width="6rem"
+                data-filter="number"
+                data-locked
+                >Utterance</div
+              >
               <div class="data-grid-header" data-field="source" data-width="10rem" data-filter="select">Source</div>
               <div class="data-grid-header" data-field="speaker" data-width="8rem" data-filter="text">Speaker</div>
-              <div class="data-grid-header" data-field="seconds" data-type="number" data-width="6rem" data-filter="number">Seconds</div>
-              <div class="data-grid-header" data-field="words" data-type="number" data-width="6rem" data-filter="number">Words</div>
-              <div class="data-grid-header" data-field="errors" data-type="number" data-width="6rem" data-filter="number">Errors</div>
-              <div class="data-grid-header" data-field="wer" data-type="number" data-width="6rem" data-filter="number">WER %</div>
+              <div
+                class="data-grid-header"
+                data-field="seconds"
+                data-type="number"
+                data-width="6rem"
+                data-filter="number"
+                >Seconds</div
+              >
+              <div class="data-grid-header" data-field="words" data-type="number" data-width="6rem" data-filter="number"
+                >Words</div
+              >
+              <div
+                class="data-grid-header"
+                data-field="errors"
+                data-type="number"
+                data-width="6rem"
+                data-filter="number"
+                >Errors</div
+              >
+              <div class="data-grid-header" data-field="wer" data-type="number" data-width="6rem" data-filter="number"
+                >WER %</div
+              >
             </div>
           </div>
           <div class="data-grid-body"></div>
         </div>
       </div>
     </div>
-    <p>Sorting by WER puts the hardest utterances first; filtering a source and a minimum duration narrows the analysis without leaving the page.</p>
+    <p
+      >Sorting by WER puts the hardest utterances first; filtering a source and a minimum duration narrows the analysis
+      without leaving the page.</p
+    >
   </section>
 
   <section class="paper-section typeset" lang="en" data-leading="tight" data-align="justify" aria-labelledby="pb-s2">
     <h2 id="pb-s2"><span class="paper-num">2</span>The corpus</h2>
-    <div class="data-tree" id="pb-tree" aria-label="Corpus" data-empty-text="Nothing matches." style="height: 16rem;"></div>
-    <p>Three sources, a hundred speaker groups each, ten speakers per group and thirty utterances per speaker - 93,303 nodes - the hierarchy a reviewer walks to find where the errors cluster.</p>
+    <div
+      class="data-tree"
+      id="pb-tree"
+      aria-label="Corpus"
+      data-empty-text="Nothing matches."
+      style="height: 16rem"
+    ></div>
+    <p
+      >Three sources, a hundred speaker groups each, ten speakers per group and thirty utterances per speaker - 93,303
+      nodes - the hierarchy a reviewer walks to find where the errors cluster.</p
+    >
   </section>
   <section class="paper-bibtex" aria-labelledby="pb-cite">
     <h2 id="pb-cite">Citation and references</h2>
@@ -134,7 +199,8 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../lib/components/ind
         for (let k = 1; k <= 10; k++) {
           const speaker = ++id;
           nodes.push({ id: speaker, parentId: group, name: 'Speaker ' + g + '.' + k });
-          for (let u = 1; u <= 30; u++) nodes.push({ id: ++id, parentId: speaker, name: 'Utterance ' + g + '.' + k + '.' + u });
+          for (let u = 1; u <= 30; u++)
+            nodes.push({ id: ++id, parentId: speaker, name: 'Utterance ' + g + '.' + k + '.' + u });
         }
       }
     }

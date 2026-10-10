@@ -36,7 +36,16 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
 
 ```html example label="Project link" hint="A labelled QR with a visible caption. The link is an ordinary sibling so the destination is also available without a scanner." height="20"
 <div class="flex flex-col items-start gap-3">
-  <figure id="project-qr" class="qr-code" data-value="https://kyr0.github.io/defuss-shadcn/" data-ecc="M" data-version="auto" data-size="md" data-variant="outline" data-state-demo>
+  <figure
+    id="project-qr"
+    class="qr-code"
+    data-value="https://kyr0.github.io/defuss-shadcn/"
+    data-ecc="M"
+    data-version="auto"
+    data-size="md"
+    data-variant="outline"
+    data-state-demo
+  >
     <div class="qr-code-symbol" role="img" aria-label="QR code for defuss-shadcn documentation"></div>
     <output class="qr-code-status" hidden></output>
     <figcaption class="qr-code-caption">Project documentation</figcaption>
@@ -99,7 +108,14 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
 ```
 
 ```html example label="Fixed version and custom size" hint="data-version fixes the matrix; --qr-code-size sets its display size. Increase the square for dense payloads and test with the intended scanner." height="31"
-<figure class="qr-code" data-value="Longer payloads need a larger printed or displayed square. Version 10 keeps a fixed matrix size for this example." data-version="10" data-ecc="M" data-variant="outline" style="--qr-code-size: 360px;">
+<figure
+  class="qr-code"
+  data-value="Longer payloads need a larger printed or displayed square. Version 10 keeps a fixed matrix size for this example."
+  data-version="10"
+  data-ecc="M"
+  data-variant="outline"
+  style="--qr-code-size: 360px"
+>
   <div class="qr-code-symbol" role="img" aria-label="Version 10 QR code with sizing guidance"></div>
   <output class="qr-code-status" hidden></output>
   <figcaption class="qr-code-caption">Version 10 · 360px</figcaption>
@@ -109,7 +125,10 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
 <DocText>The opaque background includes a <DocLink href="https://www.qrcode.com/en/howto/code.html">four-module quiet zone</DocLink> on every side. Outer padding and a rounded frame do not replace it. Keep that whole square visible; SVG sharpness does not make every payload readable at every CSS size. Local <code>--qr-code-dark</code> and <code>--qr-code-light</code> overrides need sufficient contrast and scanning checks.</DocText>
 
 ```html example label="Dark surface" hint="The frame and caption follow dark-mode tokens while the QR stays black on white. A direct link remains available beside the figure." height="22"
-<div class="dark flex flex-col items-start gap-3 p-4" style="background:var(--background);color:var(--foreground);border-radius:var(--radius-lg);">
+<div
+  class="dark flex flex-col items-start gap-3 p-4"
+  style="background: var(--background); color: var(--foreground); border-radius: var(--radius-lg)"
+>
   <figure class="qr-code" data-value="https://example.com" data-variant="outline">
     <div class="qr-code-symbol" role="img" aria-label="QR code for example.com"></div>
     <output class="qr-code-status" hidden></output>
@@ -128,7 +147,13 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
 ```
 
 ```html example label="Capacity error" hint="This URL cannot fit version 1 at H. The error clears the symbol; change version to auto in the State tab to recover." height="19"
-<figure class="qr-code" data-value="https://example.com/this-payload-is-too-long-for-version-one-high-error-correction" data-version="1" data-ecc="H" data-variant="outline">
+<figure
+  class="qr-code"
+  data-value="https://example.com/this-payload-is-too-long-for-version-one-high-error-correction"
+  data-version="1"
+  data-ecc="H"
+  data-variant="outline"
+>
   <div class="qr-code-symbol" role="img" aria-label="QR code with insufficient capacity"></div>
   <output class="qr-code-status" hidden></output>
   <figcaption class="qr-code-caption">Capacity exceeded</figcaption>
@@ -138,7 +163,7 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
 ```html example label="Live value, feedback and recovery" hint="Typing applies a partial state update. Empty and Error clear the symbol but retain its input; Render restores it. The controls are ordinary siblings of the QR atom." height="28"
 <div class="flex flex-col items-start gap-3">
   <label class="label" for="qr-live-value">Text to encode</label>
-  <input class="input" id="qr-live-value" value="https://example.com/live" style="max-width:28rem;">
+  <input class="input" id="qr-live-value" value="https://example.com/live" style="max-width: 28rem" />
   <div class="flex flex-wrap gap-2">
     <button class="btn" type="button" id="qr-live-render">Render</button>
     <button class="btn" type="button" data-variant="outline" id="qr-live-empty">Empty</button>
@@ -175,7 +200,7 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
   </figure>
   <output id="qr-store-summary"></output>
   <label class="label" for="qr-store-markup">Rendered snapshot markup</label>
-  <textarea class="textarea" id="qr-store-markup" rows="5" readonly style="font-family:var(--font-mono);"></textarea>
+  <textarea class="textarea" id="qr-store-markup" rows="5" readonly style="font-family: var(--font-mono)"></textarea>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -187,11 +212,13 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
     };
     qr.store.subscribe(show);
     show();
-    df$('#qr-store-change').on('click', () => qr.api.setState('default', {
-      value: 'https://example.com/updated',
-      label: 'QR code for the updated page',
-      ecc: 'Q'
-    }));
+    df$('#qr-store-change').on('click', () =>
+      qr.api.setState('default', {
+        value: 'https://example.com/updated',
+        label: 'QR code for the updated page',
+        ecc: 'Q',
+      }),
+    );
     df$('#qr-store-restore').on('click', () => qr.store.set({ name: original.name, config: original.config }));
     df$('#qr-store-render').on('click', () => df$('#qr-store-markup').val(qr.api.render(qr.api.getState())));
   });

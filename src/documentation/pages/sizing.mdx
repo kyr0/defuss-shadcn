@@ -75,23 +75,23 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <div class="flex items-end gap-8" data-demo="sizing-scale">
   <div class="flex flex-col items-center gap-2">
-    <div class="demo-tile" style="inline-size:var(--size-xs);block-size:var(--size-xs);"></div>
+    <div class="demo-tile" style="inline-size: var(--size-xs); block-size: var(--size-xs)"></div>
     <span class="demo-label demo-label-inline">xs</span>
   </div>
   <div class="flex flex-col items-center gap-2">
-    <div class="demo-tile" style="inline-size:var(--size-sm);block-size:var(--size-sm);"></div>
+    <div class="demo-tile" style="inline-size: var(--size-sm); block-size: var(--size-sm)"></div>
     <span class="demo-label demo-label-inline">sm</span>
   </div>
   <div class="flex flex-col items-center gap-2">
-    <div class="demo-tile" style="inline-size:var(--size-md);block-size:var(--size-md);"></div>
+    <div class="demo-tile" style="inline-size: var(--size-md); block-size: var(--size-md)"></div>
     <span class="demo-label demo-label-inline">md</span>
   </div>
   <div class="flex flex-col items-center gap-2">
-    <div class="demo-tile" style="inline-size:var(--size-lg);block-size:var(--size-lg);"></div>
+    <div class="demo-tile" style="inline-size: var(--size-lg); block-size: var(--size-lg)"></div>
     <span class="demo-label demo-label-inline">lg</span>
   </div>
   <div class="flex flex-col items-center gap-2">
-    <div class="demo-tile" style="inline-size:var(--size-xl);block-size:var(--size-xl);"></div>
+    <div class="demo-tile" style="inline-size: var(--size-xl); block-size: var(--size-xl)"></div>
     <span class="demo-label demo-label-inline">xl</span>
   </div>
 </div>
@@ -113,16 +113,57 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html example schema="none"
 <div class="stack gap-6" data-demo="sizing-toolbox">
   <div class="flex items-center gap-3">
-    <div class="size-10 shrink-0" style="border-radius:9999px;background:var(--primary);color:var(--primary-foreground);display:flex;align-items:center;justify-content:center;font-size:0.8125rem;">AL</div>
-    <div class="flex-1 min-w-0" style="overflow-wrap:anywhere;">
-      <p style="margin:0;font-size:0.875rem;font-weight:500;">Ada Lovelace</p>
-      <p style="margin:0;font-size:0.8125rem;color:var(--muted-foreground);">ada.lovelace@analytical-engines.example</p>
+    <div
+      class="size-10 shrink-0"
+      style="
+        border-radius: 9999px;
+        background: var(--primary);
+        color: var(--primary-foreground);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8125rem;
+      "
+      >AL</div
+    >
+    <div class="flex-1 min-w-0" style="overflow-wrap: anywhere">
+      <p style="margin: 0; font-size: 0.875rem; font-weight: 500">Ada Lovelace</p>
+      <p style="margin: 0; font-size: 0.8125rem; color: var(--muted-foreground)"
+        >ada.lovelace@analytical-engines.example</p
+      >
     </div>
     <button class="btn shrink-0" type="button" data-variant="outline" data-size="sm">Follow</button>
   </div>
   <div class="flex flex-wrap gap-2">
-    <button class="btn" type="button"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v12M2 8h12" /></svg> New project </button>
-    <button class="btn" type="button" data-variant="outline"><svg class="size-4" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg> Search </button>
+    <button class="btn" type="button"
+      ><svg
+        class="size-4"
+        viewBox="0 0 16 16"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      >
+        <path d="M8 2v12M2 8h12" />
+      </svg>
+      New project
+    </button>
+    <button class="btn" type="button" data-variant="outline"
+      ><svg
+        class="size-4"
+        viewBox="0 0 16 16"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      >
+        <circle cx="7" cy="7" r="4.5" />
+        <path d="m10.5 10.5 3.5 3.5" />
+      </svg>
+      Search
+    </button>
   </div>
 </div>
 ```
@@ -167,10 +208,9 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocText>Use 44px minimum dimensions as a starting point for touch-oriented controls; assess the actual clickable shape and surrounding targets. A minimum-size declaration alone does not certify WCAG conformance. Existing buttons are not silently resized by this module.</DocText>
 
 ```html
-<button class="btn" type="button" aria-label="Add project"
-  style="min-inline-size:44px;min-block-size:44px;">
+<button class="btn" type="button" aria-label="Add project" style="min-inline-size: 44px; min-block-size: 44px">
   <svg class="size-4" viewBox="0 0 16 16" aria-hidden="true">
-    <path d="M8 2v12M2 8h12" fill="none" stroke="currentColor"/>
+    <path d="M8 2v12M2 8h12" fill="none" stroke="currentColor" />
   </svg>
 </button>
 ```
@@ -181,12 +221,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 id="install" class="h2-display">Install only what you use</h2>
 
 ```html
-<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
-<link rel="stylesheet" href="../theme/utils/sizing.css">
-<link rel="stylesheet" href="../theme/utils/layout.css">
-<link rel="stylesheet" href="../theme/utils/accessibility.css">
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
+<link rel="stylesheet" href="../theme/utils/sizing.css" />
+<link rel="stylesheet" href="../theme/utils/layout.css" />
+<link rel="stylesheet" href="../theme/utils/accessibility.css" />
 <!-- Load the component stylesheets you actually use next. -->
-<link rel="stylesheet" href="../components/button/button.css">
+<link rel="stylesheet" href="../components/button/button.css" />
 ```
 
 
@@ -213,7 +253,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 ```html
 <section class="compact-panel" data-size-scope>
   <div class="w-16 h-8">Local scale</div>
-  <div style="padding:var(--size-sm);">Named local size</div>
+  <div style="padding: var(--size-sm)">Named local size</div>
 </section>
 ```
 

@@ -399,7 +399,10 @@ function init2() {
         if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5)
           applySize(wrapper, axis, v);
       }
-    }).observe(wrapper, { attributes: true, attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"] });
+    }).observe(wrapper, {
+      attributes: true,
+      attributeFilter: ["data-width", "data-height", "data-handles", "data-axis"]
+    });
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
@@ -499,7 +502,10 @@ function collapse(layout, side, collapsed) {
   region.toggleAttribute("data-collapsed", collapsed);
   aria(layout);
   save(layout);
-  layout.dispatchEvent(new CustomEvent("border-layout-collapse", { bubbles: true, detail: { region: side, collapsed } }));
+  layout.dispatchEvent(new CustomEvent("border-layout-collapse", {
+    bubbles: true,
+    detail: { region: side, collapsed }
+  }));
   syncState(layout);
 }
 function syncState(layout) {
@@ -787,7 +793,14 @@ var panelApi = componentState4({
     triggerStateChange4(panel, state.name);
     queueMicrotask(() => syncToggles(panel));
     if (from !== state.name) {
-      panel.dispatchEvent(new CustomEvent("panel-change", { bubbles: true, detail: { state: state.name, previous: from, region: sideOf(regionOf2(panel)) } }));
+      panel.dispatchEvent(new CustomEvent("panel-change", {
+        bubbles: true,
+        detail: {
+          state: state.name,
+          previous: from,
+          region: sideOf(regionOf2(panel))
+        }
+      }));
     }
   },
   markup: (el, state) => applyMarkup4(el, state.name)
@@ -1034,7 +1047,10 @@ function renderRows(root) {
     table.className = "property-grid-table";
     const head = document.createElement("thead");
     const tr = document.createElement("tr");
-    for (const [label, cls] of [[root.dataset.keyLabel || "Property", "property-grid-key"], [root.dataset.valueLabel || "Value", "property-grid-value"]]) {
+    for (const [label, cls] of [
+      [root.dataset.keyLabel || "Property", "property-grid-key"],
+      [root.dataset.valueLabel || "Value", "property-grid-value"]
+    ]) {
       const th = document.createElement("th");
       th.scope = "col";
       th.className = cls;
@@ -1203,7 +1219,11 @@ function editorFor(root, row, value) {
     return null;
   if (custom instanceof HTMLElement) {
     const el = custom;
-    return { el, immediate: el.type === "checkbox" || el.tagName === "SELECT", getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value };
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
   }
   if (custom && custom.el)
     return custom;
@@ -1305,7 +1325,13 @@ function commit(root, then = "stay") {
   if (!problem)
     problem = ruleProblem(confOf(root, row._path), value);
   if (!problem) {
-    const answer = optionsOf(root).validateFn?.(key, value, { path: [...row._path], type: row.dataset.type, config: confOf(root, row._path), source: configOf(root).source, grid: root });
+    const answer = optionsOf(root).validateFn?.(key, value, {
+      path: [...row._path],
+      type: row.dataset.type,
+      config: confOf(root, row._path),
+      source: configOf(root).source,
+      grid: root
+    });
     if (typeof answer === "string" && answer)
       problem = answer;
     else if (answer === false)
@@ -1318,7 +1344,11 @@ function commit(root, then = "stay") {
   const oldValue = ed.value;
   closeEditor(root);
   const same = JSON.stringify(value) === JSON.stringify(oldValue);
-  const before = new CustomEvent("property-grid-beforechange", { bubbles: true, cancelable: true, detail: { path, key, value, oldValue } });
+  const before = new CustomEvent("property-grid-beforechange", {
+    bubbles: true,
+    cancelable: true,
+    detail: { path, key, value, oldValue }
+  });
   if (same || !root.dispatchEvent(before)) {
     root.api.setState("default", { editing: null });
     restoreFocus(root, path, then);
@@ -1326,7 +1356,10 @@ function commit(root, then = "stay") {
   }
   const source = setAt(configOf(root).source, row._path, value);
   root.api.setState("default", { source, editing: null });
-  root.dispatchEvent(new CustomEvent("property-grid-change", { bubbles: true, detail: { path, key, value, oldValue, source: clone(source) } }));
+  root.dispatchEvent(new CustomEvent("property-grid-change", {
+    bubbles: true,
+    detail: { path, key, value, oldValue, source: clone(source) }
+  }));
   restoreFocus(root, path, then);
   return true;
 }
@@ -1404,8 +1437,14 @@ df$5.propertyGrid = {
     const p = toPath(path);
     const oldValue = getAt(configOf(root).source, p);
     const source = setAt(configOf(root).source, p, clone(value));
-    root.api.setState(root.store.value.name === "editing" ? "default" : root.store.value.name, { source, editing: null });
-    root.dispatchEvent(new CustomEvent("property-grid-change", { bubbles: true, detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) } }));
+    root.api.setState(root.store.value.name === "editing" ? "default" : root.store.value.name, {
+      source,
+      editing: null
+    });
+    root.dispatchEvent(new CustomEvent("property-grid-change", {
+      bubbles: true,
+      detail: { path: pathKey(p), key: p[p.length - 1], value: clone(value), oldValue, source: clone(source) }
+    }));
   },
   getProperty: (target, path) => clone(getAt(configOf(resolve3(target)).source, toPath(path))),
   edit: (target, path) => {
@@ -1785,7 +1824,11 @@ function create(options = {}) {
   const controls = document.createElement("form");
   controls.method = "dialog";
   controls.className = "window-controls";
-  for (const [cls, label, type] of [["window-minimize", "Minimize", "button"], ["window-maximize", "Maximize", "button"], ["window-close", "Close", "submit"]]) {
+  for (const [cls, label, type] of [
+    ["window-minimize", "Minimize", "button"],
+    ["window-maximize", "Maximize", "button"],
+    ["window-close", "Close", "submit"]
+  ]) {
     const b = document.createElement("button");
     b.type = type;
     b.className = cls;
@@ -2170,7 +2213,10 @@ var docCommentsApi = componentState7({
 df$7.docCommentsApi = docCommentsApi;
 df$7.docCommentsStates = docCommentsStates;
 function emitChange(el, id) {
-  el.dispatchEvent(new CustomEvent("doc-comments-change", { bubbles: true, detail: { comments: runtimeOf(el).data.comments.length, id } }));
+  el.dispatchEvent(new CustomEvent("doc-comments-change", {
+    bubbles: true,
+    detail: { comments: runtimeOf(el).data.comments.length, id }
+  }));
 }
 function select(el, id, source) {
   if (!runtimeOf(el).data.comments.some((c) => c.id === id))
@@ -2204,7 +2250,10 @@ function flash(el, quote) {
     scrollTo(marks[0], "center");
     setTimeout(() => marks.forEach(unwrap), FLASH_MS);
   }
-  el.dispatchEvent(new CustomEvent("doc-comments-flash", { bubbles: true, detail: { block: quote.block, text: quote.text, found } }));
+  el.dispatchEvent(new CustomEvent("doc-comments-flash", {
+    bubbles: true,
+    detail: { block: quote.block, text: quote.text, found }
+  }));
   return found;
 }
 function addComment(el, comment) {
@@ -2219,7 +2268,14 @@ function addComment(el, comment) {
   while (data.comments.some((c) => c.id === id))
     id = `${id}-${Math.random().toString(36).slice(2, 6)}`;
   const parent = comment.parent ? data.comments.find((c) => c.id === comment.parent) : undefined;
-  const full = { ...comment, id, author: comment.author || dfDollar7(el).attr("data-author") || "You", time: comment.time ?? new Date().toISOString(), body: comment.body.trim(), color: comment.color ?? parent?.color };
+  const full = {
+    ...comment,
+    id,
+    author: comment.author || dfDollar7(el).attr("data-author") || "You",
+    time: comment.time ?? new Date().toISOString(),
+    body: comment.body.trim(),
+    color: comment.color ?? parent?.color
+  };
   runtimeOf(el).data = { version: 1, comments: [...data.comments, full] };
   placeMarks(el);
   renderColumn(el);
@@ -2361,5 +2417,5 @@ df$7.docComments = {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=3E6A272511F6211964756E2164756E21
+//# debugId=6A9EAD83AC8C882C64756E2164756E21
 //# sourceMappingURL=application.js.map

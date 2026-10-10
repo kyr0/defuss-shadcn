@@ -71,8 +71,13 @@
       min-height: 1.75rem;
       color: var(--muted-foreground);
 
-      & svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
-      &:hover:not(:has(> input:disabled)) { color: var(--accent-foreground); }
+      & svg:not([class*="size-"]) {
+        width: 1rem;
+        height: 1rem;
+      }
+      &:hover:not(:has(> input:disabled)) {
+        color: var(--accent-foreground);
+      }
     }
 
     /* -- Body ----------------------------------------------------------- */
@@ -83,7 +88,9 @@
       padding: var(--_pad, 1rem);
     }
     /* a body that brings its own layout (a list, a table, a code view) */
-    & > .panel-body[data-flush] { padding: 0; }
+    & > .panel-body[data-flush] {
+      padding: 0;
+    }
 
     & > .panel-footer {
       display: flex;
@@ -99,8 +106,12 @@
 
     /* -- Minimized: the title bar only ------------------------------------- */
     &[data-minimized] {
-      & > :not(.panel-header) { display: none; }
-      & > .panel-header { border-block-end-color: transparent; }
+      & > :not(.panel-header) {
+        display: none;
+      }
+      & > .panel-header {
+        border-block-end-color: transparent;
+      }
     }
     /* the authored height (inline, or the resizer's px) gives way to the bar */
     &[data-minimized]:not([data-region="west"], [data-region="east"]) {
@@ -123,14 +134,25 @@
         border-block-end: 0;
       }
       /* the restore tool leads, like ExtJS's collapsed placeholder */
-      & .panel-tools { order: -1; margin-inline: 0 0.25rem; }
-      & .panel-maximize { display: none; }
+      & .panel-tools {
+        order: -1;
+        margin-inline: 0 0.25rem;
+      }
+      & .panel-maximize {
+        display: none;
+      }
     }
 
     /* the minimize chevron points where the panel folds to */
-    &[data-region="south"] .panel-minimize { rotate: 180deg; }
-    &[data-region="west"] .panel-minimize { rotate: -90deg; }
-    &[data-region="east"] .panel-minimize { rotate: 90deg; }
+    &[data-region="south"] .panel-minimize {
+      rotate: 180deg;
+    }
+    &[data-region="west"] .panel-minimize {
+      rotate: -90deg;
+    }
+    &[data-region="east"] .panel-minimize {
+      rotate: 90deg;
+    }
 
     /* -- Maximized: fills the viewport ... -------------------------------- */
     &[data-maximized] {
@@ -162,13 +184,17 @@
   .border-layout[data-panel-maximized] > .resizer {
     position: static;
 
-    & > .resizer-handle { visibility: hidden; }
+    & > .resizer-handle {
+      visibility: hidden;
+    }
   }
   /* the region holding it rises too: a region may be a stacking context of
      its own (a <main> with a view-transition-name) that would trap the
      panel's z-index - grid items take z-index without being positioned, so
      the layout stays the containing block */
-  .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) { z-index: 20; }
+  .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) {
+    z-index: 20;
+  }
 
   /* -- In a border layout: the region frames the panel ---------------------- */
   :where(.border-layout > .resizer, .border-layout > .border-layout-center, .border-layout) > .panel {
@@ -176,24 +202,42 @@
     border-radius: 0;
   }
   /* the region shrinks with the panel: its pane is the panel */
-  .border-layout > .resizer[data-panel-minimized] > .panel { overflow: hidden; }
+  .border-layout > .resizer[data-panel-minimized] > .panel {
+    overflow: hidden;
+  }
   /* closed: the panel and its region leave the layout */
   .panel[hidden],
-  .border-layout > [data-panel-closed] { display: none; }
+  .border-layout > [data-panel-closed] {
+    display: none;
+  }
 
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .panel .panel-minimize { transition: none; }
+    .panel .panel-minimize {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .panel > .panel-header { border-block-end-color: var(--foreground); }
-    .panel .panel-title { font-weight: 700; }
+    .panel > .panel-header {
+      border-block-end-color: var(--foreground);
+    }
+    .panel .panel-title {
+      font-weight: 700;
+    }
   }
 
   @media (forced-colors: active) {
-    .panel { border: 1px solid CanvasText; }
-    .panel > .panel-header { border-block-end: 1px solid CanvasText; background: Canvas; color: CanvasText; }
-    .panel .panel-icon { color: CanvasText; }
+    .panel {
+      border: 1px solid CanvasText;
+    }
+    .panel > .panel-header {
+      border-block-end: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
+    .panel .panel-icon {
+      color: CanvasText;
+    }
   }
 }

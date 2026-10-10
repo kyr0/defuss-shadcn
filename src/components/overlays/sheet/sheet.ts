@@ -65,33 +65,42 @@ df$.sheetApi = sheetApi;
 df$.sheetStates = sheetStates;
 
 function init() {
-dfDollar('[data-sheet-trigger]:not([data-init])').toArray().forEach((trigger) => {
-  trigger.dataset.init = '';
-  const sheet = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
-  if (!sheet) return;
-  trigger.addEventListener('click', () => {
-    sheet._trigger = trigger;
-    sheet.showModal();
-  });
-});
-dfDollar<HTMLDialogElement>('dialog.sheet:not([data-init])').toArray().forEach((sheet) => {
-  sheet.dataset.init = '';
-  // el.store + el.api (AGENTS.md "State through stores")
-  bindComponent(sheet, sheetApi, { name: shown(sheet), config: {} });
-  sheet.addEventListener('click', (e) => {
-    if (e.target === sheet) sheet.close();
-  });
-  dfDollar(sheet).find('[data-sheet-close]').toArray().forEach((btn) => {
-    btn.addEventListener('click', () => { sheet.close(); });
-  });
-  sheet.addEventListener('close', () => {
-    // `close` fires AFTER the exit transition (display allow-discrete), so a
-    // fast re-open can beat it - a stale event must not yank focus out of an
-    // open sheet. The state itself follows `open` through read().
-    if (sheet.open) return;
-    if (sheet._trigger) sheet._trigger.focus();
-  });
-});
+  dfDollar('[data-sheet-trigger]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const sheet = dfDollar<HTMLDialogElement>('#' + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
+      if (!sheet) return;
+      trigger.addEventListener('click', () => {
+        sheet._trigger = trigger;
+        sheet.showModal();
+      });
+    });
+  dfDollar<HTMLDialogElement>('dialog.sheet:not([data-init])')
+    .toArray()
+    .forEach((sheet) => {
+      sheet.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(sheet, sheetApi, { name: shown(sheet), config: {} });
+      sheet.addEventListener('click', (e) => {
+        if (e.target === sheet) sheet.close();
+      });
+      dfDollar(sheet)
+        .find('[data-sheet-close]')
+        .toArray()
+        .forEach((btn) => {
+          btn.addEventListener('click', () => {
+            sheet.close();
+          });
+        });
+      sheet.addEventListener('close', () => {
+        // `close` fires AFTER the exit transition (display allow-discrete), so a
+        // fast re-open can beat it - a stale event must not yank focus out of an
+        // open sheet. The state itself follows `open` through read().
+        if (sheet.open) return;
+        if (sheet._trigger) sheet._trigger.focus();
+      });
+    });
 }
 
 init();

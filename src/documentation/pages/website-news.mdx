@@ -17,7 +17,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
 <DocText>The News blocks composed into one page - the source is the page.</DocText>
 
 ```html example label="A news front" schema="none" hint="News Header (masthead) and a breaking News Ticker above a lead story, a compact headline list beside it and story rows below - composed only from the News blocks and layout utilities." previewStyle="align-items:stretch;"
-<div style="display:flex;flex-direction:column;gap:1.5rem;width:100%">
+<div style="display: flex; flex-direction: column; gap: 1.5rem; width: 100%">
   <header class="mk-news-header" data-variant="masthead">
     <div class="mk-news-header-top">
       <span class="mk-news-header-kicker">Vol. 12 · No. 274</span>
@@ -36,19 +36,33 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
     <div class="mk-news-ticker-viewport">
       <div class="mk-news-ticker-track">
         <ul class="mk-news-ticker-items">
-          <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-          <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-          <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+          <li
+            ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+          >
+          <li
+            ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+          >
+          <li
+            ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+          >
         </ul>
         <ul class="mk-news-ticker-items" aria-hidden="true" inert>
-          <li><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li>
-          <li><a href="#"><time>09:12</time> Shared spaces open to every team</a></li>
-          <li><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li>
+          <li
+            ><a href="#"><time>09:41</time> Acme 4.0 ships with offline sync</a></li
+          >
+          <li
+            ><a href="#"><time>09:12</time> Shared spaces open to every team</a></li
+          >
+          <li
+            ><a href="#"><time>08:30</time> Passkeys become the default sign-in</a></li
+          >
         </ul>
       </div>
     </div>
   </section>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:2rem;align-items:start">
+  <div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 2rem; align-items: start"
+  >
     <article class="mk-news-item" data-variant="lead">
       <div class="mk-news-item-body">
         <div class="mk-news-item-meta">
@@ -56,12 +70,19 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
           <time datetime="2026-10-01">1 Oct 2026</time>
         </div>
         <h3 class="mk-news-item-title"><a href="#">Acme 4.0: the calmest release we have ever shipped</a></h3>
-        <p class="mk-news-item-summary">Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since launch.</p>
+        <p class="mk-news-item-summary"
+          >Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since
+          launch.</p
+        >
       </div>
-      <figure class="mk-news-item-media"><img src="images/mk-wide3.png" alt="The new shared spaces view"></figure>
+      <figure class="mk-news-item-media"><img src="images/mk-wide3.png" alt="The new shared spaces view" /></figure>
     </article>
     <section aria-labelledby="latest-title">
-      <h2 id="latest-title" style="margin:0 0 .25rem;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase">Latest</h2>
+      <h2
+        id="latest-title"
+        style="margin: 0 0 0.25rem; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase"
+        >Latest</h2
+      >
       <article class="mk-news-item" data-variant="compact">
         <div class="mk-news-item-body">
           <div class="mk-news-item-meta">
@@ -108,9 +129,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
           <time datetime="2026-09-28">28 Sep 2026</time>
         </div>
         <h3 class="mk-news-item-title"><a href="#">A million weekly users, still forty people</a></h3>
-        <p class="mk-news-item-summary">The company crossed a million weekly users this summer - and kept its team at forty people.</p>
+        <p class="mk-news-item-summary"
+          >The company crossed a million weekly users this summer - and kept its team at forty people.</p
+        >
       </div>
-      <figure class="mk-news-item-media"><img src="images/mk-wide2.png" alt="The Acme team at their offsite"></figure>
+      <figure class="mk-news-item-media"><img src="images/mk-wide2.png" alt="The Acme team at their offsite" /></figure>
     </article>
     <article class="mk-news-item">
       <div class="mk-news-item-body">
@@ -121,7 +144,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../lib/components/index";
         <h3 class="mk-news-item-title"><a href="#">What Tuesday's outage taught us</a></h3>
         <p class="mk-news-item-summary">A post-mortem of Tuesday's 42-minute outage and the three changes it led to.</p>
       </div>
-      <figure class="mk-news-item-media"><img src="images/mk-wide.png" alt="A whiteboard with the incident timeline"></figure>
+      <figure class="mk-news-item-media"
+        ><img src="images/mk-wide.png" alt="A whiteboard with the incident timeline"
+      /></figure>
     </article>
   </div>
 </div>

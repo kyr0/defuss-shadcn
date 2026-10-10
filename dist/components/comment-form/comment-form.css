@@ -13,9 +13,13 @@
     width: 100%;
     margin: 0;
 
-    & > .avatar { margin-block-start: 0.25rem; }
+    & > .avatar {
+      margin-block-start: 0.25rem;
+    }
     /* without an avatar the form takes the full row */
-    &:not(:has(> .avatar)) { grid-template-columns: minmax(0, 1fr); }
+    &:not(:has(> .avatar)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .mk-comment-form-main {
@@ -38,7 +42,11 @@
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
     gap: 0.625rem;
 
-    & > div { display: flex; flex-direction: column; gap: 0.375rem; }
+    & > div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
   }
 
   .mk-comment-form-footer {
@@ -71,33 +79,64 @@
     border: 1px solid var(--input);
     border-radius: var(--radius-lg);
     background: var(--background);
-    transition: border-color 120ms, box-shadow 120ms;
+    transition:
+      border-color 120ms,
+      box-shadow 120ms;
 
-    &:focus-within { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent); }
-    & .mk-comment-form-toolbar { padding: 0.375rem; border-block-end: 1px solid var(--border); background: color-mix(in oklch, var(--muted) 50%, transparent); }
-    & .textarea { border: 0; border-radius: 0; box-shadow: none; outline: none; background: transparent; }
-    & .mk-comment-form-footer { padding: 0.5rem 0.625rem; border-block-start: 1px solid var(--border); }
-    & .tabs { gap: 0; }
-    & .tab-content { padding: 0; }
+    &:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent);
+    }
+    & .mk-comment-form-toolbar {
+      padding: 0.375rem;
+      border-block-end: 1px solid var(--border);
+      background: color-mix(in oklch, var(--muted) 50%, transparent);
+    }
+    & .textarea {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      outline: none;
+      background: transparent;
+    }
+    & .mk-comment-form-footer {
+      padding: 0.5rem 0.625rem;
+      border-block-start: 1px solid var(--border);
+    }
+    & .tabs {
+      gap: 0;
+    }
+    & .tab-content {
+      padding: 0;
+    }
   }
 
   /* reply: compact, under a comment */
   .mk-comment-form[data-variant="reply"] {
     gap: 0.5rem;
 
-    & .mk-comment-form-main .textarea { min-height: 3.5rem; font-size: 0.875rem; }
+    & .mk-comment-form-main .textarea {
+      min-height: 3.5rem;
+      font-size: 0.875rem;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .mk-comment-form[data-variant="framed"] .mk-comment-form-main { transition: none; }
+    .mk-comment-form[data-variant="framed"] .mk-comment-form-main {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .mk-comment-form-hint { color: var(--foreground); }
+    .mk-comment-form-hint {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-comment-form-main .textarea { border: 1px solid CanvasText; }
+    .mk-comment-form-main .textarea {
+      border: 1px solid CanvasText;
+    }
   }
 }

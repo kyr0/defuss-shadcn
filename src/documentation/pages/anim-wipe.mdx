@@ -28,10 +28,15 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   }
 </style>
 <div id="anim-wipe-target">Wipe</div>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-top:0.75rem;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.75rem">
   <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-in">In</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-out">Out</button>
-  <span id="anim-wipe-dirs" role="group" aria-label="Direction" style="display:inline-flex; gap:0.25rem; margin-inline:0.5rem;">
+  <span
+    id="anim-wipe-dirs"
+    role="group"
+    aria-label="Direction"
+    style="display: inline-flex; gap: 0.25rem; margin-inline: 0.5rem"
+  >
     <button class="btn" data-variant="outline" data-size="sm" data-dir="north" aria-pressed="false">N</button>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="south" aria-pressed="false">S</button>
     <button class="btn" data-variant="outline" data-size="sm" data-dir="west" aria-pressed="true">W</button>
@@ -41,7 +46,16 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-resume">Resume</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-finish">Finish</button>
   <button class="btn" data-variant="outline" data-size="sm" id="anim-wipe-reset">Reset</button>
-  <input class="input" id="anim-wipe-duration" type="number" min="50" step="50" value="1500" aria-label="Duration in milliseconds" style="width:6rem;">
+  <input
+    class="input"
+    id="anim-wipe-duration"
+    type="number"
+    min="50"
+    step="50"
+    value="1500"
+    aria-label="Duration in milliseconds"
+    style="width: 6rem"
+  />
   <select class="select" id="anim-wipe-easing" aria-label="Easing">
     <option value="cubic-bezier(0.16, 1, 0.3, 1)" selected>default ease-out</option>
     <option value="ease">ease</option>
@@ -72,14 +86,16 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
   for (const btn of document.querySelectorAll('#anim-wipe-dirs [data-dir]')) {
     btn.addEventListener('click', () => {
       direction = btn.dataset.dir;
-      document.querySelectorAll('#anim-wipe-dirs [data-dir]').forEach((b) =>
-        b.setAttribute('aria-pressed', String(b === btn)));
+      document
+        .querySelectorAll('#anim-wipe-dirs [data-dir]')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
     });
   }
 
   for (const action of ['pause', 'resume', 'finish', 'reset']) {
-    document.getElementById(`anim-wipe-${action}`).addEventListener('click', () =>
-      df$.anim[lastChannel][action](target));
+    document
+      .getElementById(`anim-wipe-${action}`)
+      .addEventListener('click', () => df$.anim[lastChannel][action](target));
   }
 </script>
 ```
@@ -87,10 +103,36 @@ import { DocPage, PageHeader, SourceFiles, SourceNote } from "../lib/components/
 ## Scroll binding
 
 ```html example label="Scroll-driven wipe" schema="none" hint="opts.scroll ties progress to a scroll position instead of time - here the element's own scroll container drives wipeIn, so the reveal scrubs as you scroll."
-<div id="anim-wipe-scroller" style="height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem;">
-  <div style="height: 600px; display:flex; align-items:flex-start; color:var(--muted-foreground); font-size:0.85rem;">Scroll down - the reveal below is scrubbed by this box's scroll position ↓</div>
-  <div id="anim-wipe-scroll-target" style="width:160px; height:100px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--card); color:var(--card-foreground); font-weight:600;">Wipe</div>
-  <div style="height: 80px;"></div>
+<div
+  id="anim-wipe-scroller"
+  style="
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div style="height: 600px; display: flex; align-items: flex-start; color: var(--muted-foreground); font-size: 0.85rem"
+    >Scroll down - the reveal below is scrubbed by this box's scroll position ↓</div
+  >
+  <div
+    id="anim-wipe-scroll-target"
+    style="
+      width: 160px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      color: var(--card-foreground);
+      font-weight: 600;
+    "
+    >Wipe</div
+  >
+  <div style="height: 80px"></div>
 </div>
 <script type="module">
   // bind on load: core installs df$ after this script parses

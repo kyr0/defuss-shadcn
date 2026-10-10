@@ -55,11 +55,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <div class="mk-blog-header-copy">
     <span class="mk-blog-header-eyebrow">The Acme Blog</span>
     <h1 class="mk-blog-header-title">Notes on building calm software</h1>
-    <p class="mk-blog-header-desc">Essays on product, engineering and design from the team behind Acme - one post a week, no hot takes.</p>
+    <p class="mk-blog-header-desc"
+      >Essays on product, engineering and design from the team behind Acme - one post a week, no hot takes.</p
+    >
   </div>
   <div class="mk-blog-header-actions">
     <a class="btn" data-size="sm" href="#"><i data-lucide="mail"></i> Subscribe</a>
-    <a class="btn" data-variant="outline" data-size="sm" href="#" type="application/rss+xml"><i data-lucide="rss"></i> RSS</a>
+    <a class="btn" data-variant="outline" data-size="sm" href="#" type="application/rss+xml"
+      ><i data-lucide="rss"></i> RSS</a
+    >
   </div>
   <nav class="mk-blog-header-categories" aria-label="Categories">
     <a href="#" aria-current="page">All posts</a>
@@ -92,13 +96,23 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <div class="mk-blog-header-copy">
     <span class="mk-blog-header-eyebrow">The Acme Blog</span>
     <h1 class="mk-blog-header-title">Notes on building calm software</h1>
-    <p class="mk-blog-header-desc">One essay a week on product, engineering and design. No hot takes, no growth hacks.</p>
+    <p class="mk-blog-header-desc"
+      >One essay a week on product, engineering and design. No hot takes, no growth hacks.</p
+    >
     <form class="mk-blog-header-subscribe" aria-label="Subscribe">
-      <input class="input" type="email" name="email" placeholder="you@company.com" autocomplete="email" required aria-label="Email">
+      <input
+        class="input"
+        type="email"
+        name="email"
+        placeholder="you@company.com"
+        autocomplete="email"
+        required
+        aria-label="Email"
+      />
       <button class="btn" type="submit">Subscribe</button>
     </form>
   </div>
-  <figure class="mk-blog-header-media"><img src="images/mk-wide3.png" alt="The Acme team writing together"></figure>
+  <figure class="mk-blog-header-media"><img src="images/mk-wide3.png" alt="The Acme team writing together" /></figure>
 </header>
 ```
 
@@ -115,13 +129,19 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     <a href="#">Company <span class="mk-blog-header-count">15</span></a>
   </nav>
   <div class="mk-blog-header-toolbar">
-    <input class="input" type="search" placeholder="Search posts…" aria-label="Search posts" style="max-width:18rem">
+    <input class="input" type="search" placeholder="Search posts…" aria-label="Search posts" style="max-width: 18rem" />
     <div class="flex items-center gap-2">
       <div class="toggle-group" role="group" aria-label="View" data-type="single" data-size="sm">
-        <button class="toggle" aria-pressed="true" value="grid" aria-label="Grid"><i data-lucide="layout-grid"></i></button>
+        <button class="toggle" aria-pressed="true" value="grid" aria-label="Grid"
+          ><i data-lucide="layout-grid"></i
+        ></button>
         <button class="toggle" aria-pressed="false" value="list" aria-label="List"><i data-lucide="list"></i></button>
       </div>
-      <select class="select" data-size="sm" aria-label="Sort posts"><option>Newest</option><option>Most read</option><option>Oldest</option></select>
+      <select class="select" data-size="sm" aria-label="Sort posts"
+        ><option>Newest</option
+        ><option>Most read</option
+        ><option>Oldest</option></select
+      >
     </div>
   </div>
 </header>

@@ -435,7 +435,7 @@ export function parseArgs(params: string): ApiArg[] {
     if (eqL >= 0) { def = left.slice(eqL + 1).trim(); left = left.slice(0, eqL); }
     left = left.trim();
     const optional = left.endsWith('?') || def !== '';
-    return { name: left.replace(/\?$/, '').replace(/\s+/g, ' '), type: right.replace(/\s+/g, ' ').trim(), optional, default: def.replace(/\s+/g, ' '), doc: '' };
+    return { name: left.replace(/\?$/, '').replace(/\s+/g, ' '), type: tidyType(right), optional, default: def.replace(/\s+/g, ' '), doc: '' };
   });
 }
 
@@ -580,6 +580,22 @@ function membersOf(src: string, body: string): ApiMember[] {
 }
 
 /** the members of a type literal / interface body: `/** doc *\/ name?: T;` and `name(a: T): R;` */
+/** a type as one line: whitespace collapsed; a formatter's line layout undone - the LEADING `|` of a union
+ *  set one member per line (at the start, or after `<`, `(`, `,`, `:`), the space it leaves after an
+ *  opening `<` / `(` and before a closing `>` / `)`, the `;` before `}`. VERIFIED: without it the regenerated
+ *  skills showed `\| 'box'` and `{ …; }` after oxfmt (tests/component-api.test.ts pins the cases) */
+export function tidyType(s: string): string {
+  return s
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^\|\s*/, '')
+    .replace(/([<(,:])\s*\|\s*/g, '$1 ')
+    .replace(/([<(])\s+/g, '$1')
+    .replace(/\s+([>)])/g, '$1')
+    .replace(/;\s*}/g, ' }')
+    .replace(/;$/, '');
+}
+
 function typeMembers(body: string): ApiMember[] {
   const out: ApiMember[] = [];
   for (const entry of typeEntries(body)) {
@@ -598,7 +614,7 @@ function typeMembers(body: string): ApiMember[] {
     if (!prop) continue;
     const name = prop[3] ?? prop[4];
     // the type as shown: without its fields' doc comments (those become the field table)
-    const type = prop[5].replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
+    const type = tidyType(prop[5].replace(/\/\*[\s\S]*?\*\//g, ''));
     // a property typed as a function (`setState: (name: string) => void`) is a method: its arguments are documented
     const fnClose = type.startsWith('(') ? matchBracket(type, 0) : -1;
     if (fnClose > 0 && /^\s*=>/.test(type.slice(fnClose + 1))) {
@@ -630,8 +646,11 @@ function typeEntries(body: string): string[] {
       buf += `${line}\n`;
       if (code) {
         hasCode = true;
-        const bare = t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(['"`])(?:\\.|(?!\1).)*\1/g, '');
-        depth += (bare.match(/[{([]/g) ?? []).length - (bare.match(/[})\]]/g) ?? []).length;
+        // generics count as brackets too (`=>` arrows are not closers). VERIFIED: oxfmt set the questionnaire's
+        // `validate?: Record<` ⏎ `string,` ⏎ `| A[]` ⏎ `>` over several lines and the member was cut at `Record<`
+        // (tests/component-api.test.ts)
+        const bare = t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(['"`])(?:\\.|(?!\1).)*\1/g, '').replace(/=>/g, '');
+        depth += (bare.match(/[{([<]/g) ?? []).length - (bare.match(/[})\]>]/g) ?? []).length;
       }
     }
     if (buf.trim()) out.push(buf);
@@ -665,7 +684,7 @@ function declaredType(src: string, name: string): { raw: string; body: string | 
     const at = alias.index + alias[0].length;
     if (src[at] === '{') return { raw: docAboveRaw(src, alias.index + alias[1].length), body: src.slice(at + 1, matchBracket(src, at)), alias: '' };
     const end = src.indexOf(';', at);
-    return { raw: docAboveRaw(src, alias.index + alias[1].length), body: null, alias: src.slice(at, end < 0 ? undefined : end).replace(/\s+/g, ' ').trim() };
+    return { raw: docAboveRaw(src, alias.index + alias[1].length), body: null, alias: tidyType(src.slice(at, end < 0 ? undefined : end)) };
   }
   return null;
 }
@@ -787,13 +806,19 @@ export function readComponentApi(component: string, src: string, sharedSrc = '')
     }
     for (const k of detail) if (!ev.detail.includes(k)) ev.detail.push(k);
     if (!ev.doc) {
-      // the comment above the statement that dispatches it
-      // (or above the statement, when the call opens on the line before:
-      // `el.dispatchEvent(` ⏎ `new CustomEvent('x', …)`)
+      // the comment above the statement that dispatches it. The statement may
+      // open on the lines before: a call left open (`el.dispatchEvent(` ⏎
+      // `new CustomEvent('x', …)`) or a brace-less `if (…)` / `else` head -
+      // walk up through those, at most four lines. VERIFIED: oxfmt sets a long
+      // consequent on its own line (`if (announce)` ⏎ `wrapper.dispatchEvent(`
+      // ⏎ `new CustomEvent(…)`); combobox:change and session-drop lost their
+      // descriptions until the walk-up (tests/component-api.test.ts)
       let lineStart = src.lastIndexOf('\n', m.index!) + 1;
       ev.doc = docAbove(src, lineStart);
-      const prevStart = src.lastIndexOf('\n', lineStart - 2) + 1;
-      if (!ev.doc && /\(\s*$/.test(src.slice(prevStart, lineStart - 1))) {
+      for (let up = 0; !ev.doc && up < 4 && lineStart > 0; up++) {
+        const prevStart = src.lastIndexOf('\n', lineStart - 2) + 1;
+        const prev = src.slice(prevStart, lineStart - 1).trim();
+        if (!/\($/.test(prev) && !/^(?:\}?\s*else(?:\s+if\s*\(.*\))?|if\s*\(.*\))$/.test(prev)) break;
         lineStart = prevStart;
         ev.doc = docAbove(src, lineStart);
       }

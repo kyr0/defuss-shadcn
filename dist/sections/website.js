@@ -346,11 +346,22 @@ class Controller {
     }
     const { revision, decisionMade, language, acceptedServices, updatedAt } = this.state;
     this.storageFailed = false;
-    this.saved.set({ schemaVersion: 1, revision, decisionMade, language, acceptedServices: [...acceptedServices], updatedAt });
+    this.saved.set({
+      schemaVersion: 1,
+      revision,
+      decisionMade,
+      language,
+      acceptedServices: [...acceptedServices],
+      updatedAt
+    });
     this.storageFailed ||= !persistOk(this.saved);
   }
   getConsent() {
-    return { ...this.state, acceptedServices: [...this.state.acceptedServices], acceptedCategories: [...this.state.acceptedCategories] };
+    return {
+      ...this.state,
+      acceptedServices: [...this.state.acceptedServices],
+      acceptedCategories: [...this.state.acceptedCategories]
+    };
   }
   getDraft() {
     return [...this.draft].sort();
@@ -483,7 +494,10 @@ class Controller {
     this.root.dispatchEvent(new CustomEvent("cookie-consent:error", { bubbles: true, detail: { kind, error } }));
   }
   emit(reason) {
-    this.root.dispatchEvent(new CustomEvent("cookie-consent:change", { bubbles: true, detail: { state: this.getConsent(), reason } }));
+    this.root.dispatchEvent(new CustomEvent("cookie-consent:change", {
+      bubbles: true,
+      detail: { state: this.getConsent(), reason }
+    }));
     try {
       this.config.onChange?.(this.getConsent(), reason);
     } catch (error) {
@@ -516,11 +530,19 @@ class Controller {
   messages() {
     const base = translations[this.state.language] ?? translations.en;
     const overrides = this.config.translations?.[this.state.language];
-    return { ...base, ...overrides, categoryNames: { ...base.categoryNames, ...overrides?.categoryNames }, categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions } };
+    return {
+      ...base,
+      ...overrides,
+      categoryNames: { ...base.categoryNames, ...overrides?.categoryNames },
+      categoryDescriptions: { ...base.categoryDescriptions, ...overrides?.categoryDescriptions }
+    };
   }
   links() {
     const tr = this.messages();
-    return [[this.config.privacyPolicyUrl, tr.privacyPolicy], [this.config.legalNoticeUrl, tr.legalNotice]].map(([value, label]) => {
+    return [
+      [this.config.privacyPolicyUrl, tr.privacyPolicy],
+      [this.config.legalNoticeUrl, tr.legalNotice]
+    ].map(([value, label]) => {
       const url = safeUrl(localize(value, this.state.language), this.doc);
       return url ? `<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>` : "";
     }).join("");
@@ -874,7 +896,10 @@ function init2() {
       cookieConsent.create(root, JSON.parse(q(configTag).text()));
     } catch (error) {
       q(root).attr("data-init", "").attr("data-cookie-consent-error", "");
-      root.dispatchEvent(new CustomEvent("cookie-consent:error", { bubbles: true, detail: { kind: "config", error } }));
+      root.dispatchEvent(new CustomEvent("cookie-consent:error", {
+        bubbles: true,
+        detail: { kind: "config", error }
+      }));
       console.error(error);
     }
   }
@@ -885,5 +910,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=E54C764FB383E1FB64756E2164756E21
+//# debugId=1C3A4B3A3D5EA39464756E2164756E21
 //# sourceMappingURL=website.js.map

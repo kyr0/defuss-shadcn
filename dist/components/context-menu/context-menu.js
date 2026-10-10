@@ -16,7 +16,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const contextMenuStates = ['default', 'open'];
@@ -35,8 +35,10 @@ function keepInView(menu, x, y) {
     if (menu.matches(':popover-open'))
         fit();
     else
-        menu.addEventListener('toggle', (e) => { if (e.newState === 'open')
-            fit(); }, { once: true });
+        menu.addEventListener('toggle', (e) => {
+            if (e.newState === 'open')
+                fit();
+        }, { once: true });
 }
 /**
  * The markup of a state: none - 'open' lives in the top layer
@@ -109,7 +111,9 @@ if (!document.__ctxMenuReleaseInit) {
         pendingOpen = null;
         openMenuAt(menu, x, y);
     });
-    document.addEventListener('pointercancel', () => { pendingOpen = null; });
+    document.addEventListener('pointercancel', () => {
+        pendingOpen = null;
+    });
 }
 /** Show a context menu fixed at the pointer coords. */
 function openMenuAt(menu, x, y) {
@@ -121,7 +125,9 @@ function openMenuAt(menu, x, y) {
     menu.dataset.stateName = 'open';
 }
 function init() {
-    dfDollar('[data-context-menu]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-context-menu]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const menu = dfDollar('#' + CSS.escape(trigger.dataset.contextMenu)).get(0);
         if (!menu)

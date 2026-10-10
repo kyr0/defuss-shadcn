@@ -5,7 +5,13 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, safeShowPopover, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  safeShowPopover,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -36,7 +42,11 @@ function applyMarkup(_el, _stateName) {}
 function triggerStateChange(content, stateName, _config) {
   switch (stateName) {
     case 'default':
-      try { content.hidePopover(); } catch { /* already closed */ }
+      try {
+        content.hidePopover();
+      } catch {
+        /* already closed */
+      }
       break;
     case 'open':
       // deferred show (safeShowPopover): calling showPopover() on an element
@@ -65,23 +75,27 @@ function init() {
   // .nav-menu ancestor. Scanning wrappers left those panels unanchored —
   // position-anchor stayed 'normal' and the popover fell back to the viewport
   // top-left (reported twice: site-header Default + Sticky).
-  dfDollar('.nav-menu-trigger[popovertarget]:not([data-init])').toArray().forEach((trigger) => {
-    trigger.dataset.init = '';
-    const content = dfDollar('#' + CSS.escape(trigger.getAttribute('popovertarget'))).get(0);
-    if (!content) return;
+  dfDollar('.nav-menu-trigger[popovertarget]:not([data-init])')
+    .toArray()
+    .forEach((trigger) => {
+      trigger.dataset.init = '';
+      const content = dfDollar('#' + CSS.escape(trigger.getAttribute('popovertarget'))).get(0);
+      if (!content) return;
 
-    // CSS anchor positioning - unique name per trigger-content pair
-    const anchorId = `--nav-menu-${content.id}`;
-    trigger.style.anchorName = anchorId;
-    content.style.positionAnchor = anchorId;
-  });
+      // CSS anchor positioning - unique name per trigger-content pair
+      const anchorId = `--nav-menu-${content.id}`;
+      trigger.style.anchorName = anchorId;
+      content.style.positionAnchor = anchorId;
+    });
 
   // bind-scope the api per content element: `$('#nav-products').api.setState('open')`
-  dfDollar('.nav-menu-content[popover]:not([data-init])').toArray().forEach((content) => {
-    content.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(content, navigationMenuApi);
-  });
+  dfDollar('.nav-menu-content[popover]:not([data-init])')
+    .toArray()
+    .forEach((content) => {
+      content.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(content, navigationMenuApi);
+    });
 }
 
 init();

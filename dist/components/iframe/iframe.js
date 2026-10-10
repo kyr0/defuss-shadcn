@@ -112,7 +112,9 @@ function onLoad(el, frame) {
     follow(el, frame);
 }
 function init() {
-    dfDollar('.iframe:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.iframe:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(el, iframeApi);
@@ -144,23 +146,34 @@ if (!document.__iframeInit) {
             // the host asks for the height (it may have missed the first report)
             if (data.kind === 'hello') {
                 if (document.documentElement.hasAttribute('data-iframe-child'))
-                    sendToParent({ type: PROTOCOL, kind: 'size', height: Math.ceil(document.documentElement.getBoundingClientRect().height) });
+                    sendToParent({
+                        type: PROTOCOL,
+                        kind: 'size',
+                        height: Math.ceil(document.documentElement.getBoundingClientRect().height),
+                    });
                 return;
             }
             if (data.kind !== 'message')
                 return;
             // Fires on the framed page's document when its host page posts a message (df$.shadcn.iframe.post) - the name, the payload and the host's origin.
-            document.dispatchEvent(new CustomEvent('iframe-message', { detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin } }));
+            document.dispatchEvent(new CustomEvent('iframe-message', {
+                detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin },
+            }));
             return;
         }
-        const el = dfDollar('.iframe[data-init]').toArray().find((f) => frameOf(f)?.contentWindow === e.source);
+        const el = dfDollar('.iframe[data-init]')
+            .toArray()
+            .find((f) => frameOf(f)?.contentWindow === e.source);
         if (!el || !accepts(el, e.origin))
             return;
         if (data.kind === 'size' && dfDollar(el).attr('data-fit') === 'content' && typeof data.height === 'number')
             setHeight(el, data.height);
         if (data.kind === 'message') {
             // Fires on the .iframe element when its framed page posts a message (df$.shadcn.iframe.send) - the name, the payload and the origin it came from.
-            el.dispatchEvent(new CustomEvent('iframe-message', { bubbles: true, detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin } }));
+            el.dispatchEvent(new CustomEvent('iframe-message', {
+                bubbles: true,
+                detail: { name: String(data.name ?? ''), detail: data.detail, origin: e.origin },
+            }));
         }
     });
 }
@@ -184,7 +197,7 @@ if (framed() && document.documentElement.hasAttribute('data-iframe-child') && !d
         }
     }).observe(document.documentElement);
 }
-const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
+const resolve = (target) => typeof target === 'string' ? dfDollar(target).get(0) : target;
 df$.iframe = {
     /**
      * Post a named message into a framed page; it arrives there as an iframe-message event on the document (or as a plain message event carrying { type: 'defuss:iframe', kind: 'message', name, detail }).

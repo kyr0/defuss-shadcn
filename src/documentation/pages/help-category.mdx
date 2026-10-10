@@ -42,14 +42,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </SkillPanel>
 
 ```html example label="Grid" hint="Default cards: an icon tile, the topic link covering the card, what it covers, the article count - and the most-read articles as links raised above the stretched one." previewStyle="align-items:stretch;"
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;width:100%">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; width: 100%">
   <article class="mk-help-category">
     <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
     <div class="mk-help-category-body">
       <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
       <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
       <p class="mk-help-category-count">18 articles</p>
-      <ul class="mk-help-category-top"><li><a href="#">Create a workspace</a></li><li><a href="#">Invite teammates</a></li><li><a href="#">Import from Notion</a></li></ul>
+      <ul class="mk-help-category-top"
+        ><li><a href="#">Create a workspace</a></li
+        ><li><a href="#">Invite teammates</a></li
+        ><li><a href="#">Import from Notion</a></li></ul
+      >
     </div>
   </article>
   <article class="mk-help-category">
@@ -58,7 +62,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       <h3 class="mk-help-category-title"><a href="#">Billing & plans</a></h3>
       <p class="mk-help-category-desc">Invoices, seats, upgrades and refunds.</p>
       <p class="mk-help-category-count">24 articles</p>
-      <ul class="mk-help-category-top"><li><a href="#">Change your plan</a></li><li><a href="#">Download an invoice</a></li></ul>
+      <ul class="mk-help-category-top"
+        ><li><a href="#">Change your plan</a></li
+        ><li><a href="#">Download an invoice</a></li></ul
+      >
     </div>
   </article>
   <article class="mk-help-category">
@@ -67,7 +74,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       <h3 class="mk-help-category-title"><a href="#">Sync & offline</a></h3>
       <p class="mk-help-category-desc">How your work stays in sync everywhere.</p>
       <p class="mk-help-category-count">12 articles</p>
-      <ul class="mk-help-category-top"><li><a href="#">Sync is stuck</a></li><li><a href="#">Work offline</a></li></ul>
+      <ul class="mk-help-category-top"
+        ><li><a href="#">Sync is stuck</a></li
+        ><li><a href="#">Work offline</a></li></ul
+      >
     </div>
   </article>
   <article class="mk-help-category">
@@ -76,14 +86,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       <h3 class="mk-help-category-title"><a href="#">Security</a></h3>
       <p class="mk-help-category-desc">Two-factor, SSO, data handling.</p>
       <p class="mk-help-category-count">15 articles</p>
-      <ul class="mk-help-category-top"><li><a href="#">Turn on two-factor</a></li><li><a href="#">Set up SSO</a></li></ul>
+      <ul class="mk-help-category-top"
+        ><li><a href="#">Turn on two-factor</a></li
+        ><li><a href="#">Set up SSO</a></li></ul
+      >
     </div>
   </article>
 </div>
 ```
 
 ```html example label="Compact" hint="data-variant='compact': icon, topic and count on one row." previewStyle="align-items:stretch;"
-<div style="display:grid;gap:0.5rem;max-width:30rem;width:100%">
+<div style="display: grid; gap: 0.5rem; max-width: 30rem; width: 100%">
   <article class="mk-help-category" data-variant="compact">
     <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
     <div class="mk-help-category-body">

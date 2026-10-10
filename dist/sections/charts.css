@@ -15,10 +15,10 @@
     min-inline-size: 0;
     height: 20rem;
 
-    &[data-size='sm'] {
+    &[data-size="sm"] {
       height: 14rem;
     }
-    &[data-size='lg'] {
+    &[data-size="lg"] {
       height: 28rem;
     }
 

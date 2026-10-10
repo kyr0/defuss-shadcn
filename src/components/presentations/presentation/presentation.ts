@@ -21,7 +21,19 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/, and
 // the same functions are published under the global `ddf$` alias.
-import { defussGlobals, animateCount, bindGlobalKeys, clampIndex, coerceIndex, draw, entrance, anim, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  animateCount,
+  bindGlobalKeys,
+  clampIndex,
+  coerceIndex,
+  draw,
+  entrance,
+  anim,
+  defussQuery,
+  componentState,
+  bindComponent,
+} from '../../../shared/state-api.js';
 import type { AnimChannel, AnimDirection, AnimOptions } from '../../../shared/anim.js';
 
 const df$ = defussGlobals();
@@ -97,7 +109,12 @@ function channelFor(name: string): AnimChannel {
  * -color), else the mount's deck-wide declaration, else fade. Direction
  * defaults to the travel: forward arrives from the east and leaves west.
  */
-function animSpec(root: HTMLElement, slide: HTMLElement, phase: 'in' | 'out', forward: boolean): { name: string; opts: AnimOptions } {
+function animSpec(
+  root: HTMLElement,
+  slide: HTMLElement,
+  phase: 'in' | 'out',
+  forward: boolean,
+): { name: string; opts: AnimOptions } {
   const p = phase === 'in' ? 'animIn' : 'animOut';
   const pick = (suffix = ''): string | undefined =>
     (slide.dataset as Record<string, string | undefined>)[p + suffix] ??
@@ -176,7 +193,7 @@ function curtainColor(root: HTMLElement, from: HTMLElement, to: HTMLElement, dec
 
 /** The mount's slide elements, document order (direct children only). */
 const slidesOf = (root: HTMLElement): HTMLElement[] =>
-  Array.from((dfDollar(root).find(':scope > [data-slide]').toArray() as HTMLElement[]));
+  Array.from(dfDollar(root).find(':scope > [data-slide]').toArray() as HTMLElement[]);
 
 /** The live 0-based index, mirrored by activate() for ddf$ / bridge reads. */
 const indexOf = (root: HTMLElement): number => coerceIndex(root.dataset.currentSlide, 0);
@@ -249,12 +266,16 @@ function applyMarkup(root: HTMLElement, stateName: string, config: Record<string
     const target = slides[clampIndex(want, slides.length)];
     slides.forEach((slide) => {
       const on = slide === target;
-      dfDollar(slide).attr('data-active', on ? '' : null).attr('inert', on ? null : '').attr('aria-hidden', String(!on));
+      dfDollar(slide)
+        .attr('data-active', on ? '' : null)
+        .attr('inert', on ? null : '')
+        .attr('aria-hidden', String(!on));
     });
   }
   if (stateName === 'notes') root.toggleAttribute('data-notes', config.value !== false);
   else if (typeof config.notes === 'boolean') root.toggleAttribute('data-notes', config.notes);
-  else if (stateName === 'default' && want === undefined && config.fullscreen === undefined) root.removeAttribute('data-notes');
+  else if (stateName === 'default' && want === undefined && config.fullscreen === undefined)
+    root.removeAttribute('data-notes');
 }
 
 function triggerStateChange(root: Deck, stateName: string, config: Record<string, unknown> = {}): void {
@@ -445,9 +466,12 @@ function init(): void {
       (dfDollar(target).find('[data-df-entrance]').toArray() as HTMLElement[]).forEach((el) => {
         entrance(el);
       });
-      dfDollar(target).find<SVGElement>('[data-df-draw]').toArray().forEach((el) => {
-        draw(el);
-      });
+      dfDollar(target)
+        .find<SVGElement>('[data-df-draw]')
+        .toArray()
+        .forEach((el) => {
+          draw(el);
+        });
     };
 
     /**
@@ -538,8 +562,10 @@ function init(): void {
         progress.setAttribute('value', String(clamped + 1));
       }
       const loop = root.hasAttribute('data-loop');
-      const prev = ((dfDollar(root).find('[data-presentation-action="prev"]').get(0) ?? null) as HTMLButtonElement | null);
-      const next = ((dfDollar(root).find('[data-presentation-action="next"]').get(0) ?? null) as HTMLButtonElement | null);
+      const prev = (dfDollar(root).find('[data-presentation-action="prev"]').get(0) ??
+        null) as HTMLButtonElement | null;
+      const next = (dfDollar(root).find('[data-presentation-action="next"]').get(0) ??
+        null) as HTMLButtonElement | null;
       if (prev) prev.disabled = clamped === 0 && !loop;
       if (next) next.disabled = clamped === slides.length - 1 && !loop;
 

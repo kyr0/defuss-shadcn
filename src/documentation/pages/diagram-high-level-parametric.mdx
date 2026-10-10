@@ -22,12 +22,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       "eyebrow": "High-level · parametric",
       "title": "Built from a spec",
       "cols": 4,
-      "phases": [
-        "Sources",
-        "Ingest",
-        "Lake",
-        "Serve"
-      ],
+      "phases": ["Sources", "Ingest", "Lake", "Serve"],
       "groups": [
         {
           "id": "k8s",
@@ -136,19 +131,20 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="From a spec, step by step" component="diagram" hint="A node’s step field becomes data-step; data-steps on the figure adds the toolbar."
-<figure class="diagram" id="dg-param-steps" data-steps data-autoplay aria-label="High-level stack from a spec, step by step">
+<figure
+  class="diagram"
+  id="dg-param-steps"
+  data-steps
+  data-autoplay
+  aria-label="High-level stack from a spec, step by step"
+>
   <script type="application/json" class="diagram-spec">
     {
       "type": "high-level",
       "eyebrow": "High-level · parametric",
       "title": "Built from a spec, step by step",
       "cols": 4,
-      "phases": [
-        "Sources",
-        "Ingest",
-        "Lake",
-        "Serve"
-      ],
+      "phases": ["Sources", "Ingest", "Lake", "Serve"],
       "groups": [
         {
           "id": "k8s",
@@ -267,10 +263,18 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="High-level Parametric, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-param-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-param-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
 <figure class="diagram" id="dg-param-live" data-interactive aria-label="High-level stack built from a JSON spec">
   <script type="application/json" class="diagram-spec">
@@ -279,12 +283,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       "eyebrow": "High-level · parametric",
       "title": "Built from a spec",
       "cols": 4,
-      "phases": [
-        "Sources",
-        "Ingest",
-        "Lake",
-        "Serve"
-      ],
+      "phases": ["Sources", "Ingest", "Lake", "Serve"],
       "groups": [
         {
           "id": "k8s",
@@ -396,11 +395,13 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="High-level Parametric, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-param-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-param-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex flex-col gap-3">
-  <div style="flex:1 1 0;min-width:0">
+  <div style="flex: 1 1 0; min-width: 0">
     <figure class="diagram" id="dg-param-edit" data-interactive aria-label="High-level stack built from a JSON spec">
       <script type="application/json" class="diagram-spec">
         {
@@ -408,12 +409,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
           "eyebrow": "High-level · parametric",
           "title": "Built from a spec",
           "cols": 4,
-          "phases": [
-            "Sources",
-            "Ingest",
-            "Lake",
-            "Serve"
-          ],
+          "phases": ["Sources", "Ingest", "Lake", "Serve"],
           "groups": [
             {
               "id": "k8s",
@@ -523,11 +519,24 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-param-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-param-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-param-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -566,12 +575,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         "eyebrow": "High-level · parametric",
         "title": "Built from a spec",
         "cols": 4,
-        "phases": [
-          "Sources",
-          "Ingest",
-          "Lake",
-          "Serve"
-        ],
+        "phases": ["Sources", "Ingest", "Lake", "Serve"],
         "groups": [
           {
             "id": "k8s",
@@ -678,12 +682,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         "eyebrow": "High-level · parametric",
         "title": "Two specs, one delta",
         "cols": 4,
-        "phases": [
-          "Sources",
-          "Ingest",
-          "Lake",
-          "Serve"
-        ],
+        "phases": ["Sources", "Ingest", "Lake", "Serve"],
         "groups": [
           {
             "id": "k8s",
@@ -795,9 +794,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```html example label="Inputs → spec → diagram" component="diagram" hint="The slider and checkboxes feed a function that returns a spec; build() re-renders the figure on every input."
 <div class="flex flex-wrap items-center gap-4 mb-3">
   <label class="label" for="dg-sources">Sources</label>
-  <input class="slider" id="dg-sources" type="range" min="1" max="5" value="3" style="width:10rem">
-  <label class="label"><input class="checkbox" id="dg-stream" type="checkbox"> Streaming</label>
-  <label class="label"><input class="checkbox" id="dg-semantic" type="checkbox" checked> Semantic layer</label>
+  <input class="slider" id="dg-sources" type="range" min="1" max="5" value="3" style="width: 10rem" />
+  <label class="label"><input class="checkbox" id="dg-stream" type="checkbox" /> Streaming</label>
+  <label class="label"><input class="checkbox" id="dg-semantic" type="checkbox" checked /> Semantic layer</label>
 </div>
 <figure class="diagram" id="dg-param-inputs" data-type="high-level" aria-label="A generated data stack"></figure>
 <script>
@@ -805,9 +804,31 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   // the inputs → a spec → df$.shadcn.diagram.build(): same inputs, same picture
   function specFor({ sources, stream, semantic }) {
     const rows = Math.max(sources, 2);
-    const nodes = SOURCES.slice(0, sources).map((name, i) => ({ id: 's' + i, name, col: 1, row: i + 2, tone: 'external' }));
-    nodes.push({ id: 'ingest', name: stream ? 'Kafka + NiFi' : 'NiFi', meta: stream ? 'stream + batch' : 'batch', col: 2, row: 2, rspan: rows });
-    nodes.push({ id: 'lake', name: 'Lake', meta: 'Iceberg', col: 3, row: 2, rspan: rows, shape: 'store', tone: 'accent' });
+    const nodes = SOURCES.slice(0, sources).map((name, i) => ({
+      id: 's' + i,
+      name,
+      col: 1,
+      row: i + 2,
+      tone: 'external',
+    }));
+    nodes.push({
+      id: 'ingest',
+      name: stream ? 'Kafka + NiFi' : 'NiFi',
+      meta: stream ? 'stream + batch' : 'batch',
+      col: 2,
+      row: 2,
+      rspan: rows,
+    });
+    nodes.push({
+      id: 'lake',
+      name: 'Lake',
+      meta: 'Iceberg',
+      col: 3,
+      row: 2,
+      rspan: rows,
+      shape: 'store',
+      tone: 'accent',
+    });
     nodes.push({ id: 'bi', name: 'Dashboards', col: 4, row: 2, rspan: semantic ? 1 : rows });
     if (semantic) nodes.push({ id: 'cube', name: 'Semantic layer', meta: 'metrics', col: 4, row: 3, rspan: rows - 1 });
     const edges = nodes.filter((n) => n.id.startsWith('s')).map((n) => ({ from: n.id, to: 'ingest' }));
@@ -822,7 +843,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     semantic: document.getElementById('dg-semantic').checked,
   });
   const draw = () => df$.shadcn.diagram.build('#dg-param-inputs', specFor(read()));
-  document.querySelectorAll('#dg-sources, #dg-stream, #dg-semantic').forEach((input) => input.addEventListener('input', draw));
+  document
+    .querySelectorAll('#dg-sources, #dg-stream, #dg-semantic')
+    .forEach((input) => input.addEventListener('input', draw));
   addEventListener('load', draw);
 </script>
 ```

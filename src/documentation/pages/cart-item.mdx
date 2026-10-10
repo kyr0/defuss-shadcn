@@ -52,7 +52,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 ```html example label="Cart" hint="Rows in a list (.mk-cart-list): thumbnail, name link, options and unit price, a Number Input (its hidden label names the product), the line total (<output for>) and a labelled remove button." previewStyle="align-items:stretch;"
 <ul class="mk-cart-list" aria-label="Cart, 2 items">
   <li class="mk-cart-item">
-    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-shirt/240/300" alt="">
+    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-shirt/240/300" alt="" />
     <div class="mk-cart-item-info">
       <h3 class="mk-cart-item-name"><a href="#">Linen shirt</a></h3>
       <p class="mk-cart-item-options">Sand · Size M</p>
@@ -60,13 +60,23 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
     <div class="mk-cart-item-qty">
       <label class="sr-only" for="ci-1-qty">Quantity of Linen shirt</label>
-      <div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease quantity of Linen shirt">−</button><input type="number" id="ci-1-qty" name="qty" min="0" max="10" value="1" inputmode="numeric"><button type="button" data-action="increment" aria-label="Increase quantity of Linen shirt">+</button></div>
+      <div class="number-input"
+        ><button type="button" data-action="decrement" aria-label="Decrease quantity of Linen shirt">−</button
+        ><input type="number" id="ci-1-qty" name="qty" min="0" max="10" value="1" inputmode="numeric" /><button
+          type="button"
+          data-action="increment"
+          aria-label="Increase quantity of Linen shirt"
+          >+</button
+        ></div
+      >
     </div>
     <output class="mk-cart-item-total" for="ci-1-qty">€64.00</output>
-    <button class="mk-cart-item-remove" type="button" aria-label="Remove Linen shirt from cart"><i data-lucide="x"></i></button>
+    <button class="mk-cart-item-remove" type="button" aria-label="Remove Linen shirt from cart"
+      ><i data-lucide="x"></i
+    ></button>
   </li>
   <li class="mk-cart-item">
-    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-mug/240/300" alt="">
+    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-mug/240/300" alt="" />
     <div class="mk-cart-item-info">
       <h3 class="mk-cart-item-name"><a href="#">Stoneware mug</a></h3>
       <p class="mk-cart-item-options">Oat · 350 ml</p>
@@ -74,18 +84,28 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
     <div class="mk-cart-item-qty">
       <label class="sr-only" for="ci-2-qty">Quantity of Stoneware mug</label>
-      <div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease quantity of Stoneware mug">−</button><input type="number" id="ci-2-qty" name="qty" min="0" max="10" value="2" inputmode="numeric"><button type="button" data-action="increment" aria-label="Increase quantity of Stoneware mug">+</button></div>
+      <div class="number-input"
+        ><button type="button" data-action="decrement" aria-label="Decrease quantity of Stoneware mug">−</button
+        ><input type="number" id="ci-2-qty" name="qty" min="0" max="10" value="2" inputmode="numeric" /><button
+          type="button"
+          data-action="increment"
+          aria-label="Increase quantity of Stoneware mug"
+          >+</button
+        ></div
+      >
     </div>
     <output class="mk-cart-item-total" for="ci-2-qty">€44.00</output>
-    <button class="mk-cart-item-remove" type="button" aria-label="Remove Stoneware mug from cart"><i data-lucide="x"></i></button>
+    <button class="mk-cart-item-remove" type="button" aria-label="Remove Stoneware mug from cart"
+      ><i data-lucide="x"></i
+    ></button>
   </li>
 </ul>
 ```
 
 ```html example label="Mini cart" hint="data-variant='compact': a small picture and &quot;Qty 2&quot; as text - for a cart sheet or popover." previewStyle="align-items:stretch;"
-<ul class="mk-cart-list" aria-label="Cart" style="max-width:22rem">
+<ul class="mk-cart-list" aria-label="Cart" style="max-width: 22rem">
   <li class="mk-cart-item" data-variant="compact">
-    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-shirt/240/300" alt="">
+    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-shirt/240/300" alt="" />
     <div class="mk-cart-item-info">
       <h3 class="mk-cart-item-name"><a href="#">Linen shirt</a></h3>
       <p class="mk-cart-item-options">Sand · M</p>
@@ -93,10 +113,12 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
     <div class="mk-cart-item-qty"><span>Qty 1</span></div>
     <output class="mk-cart-item-total" for="cc-1-qty">€64.00</output>
-    <button class="mk-cart-item-remove" type="button" aria-label="Remove Linen shirt from cart"><i data-lucide="x"></i></button>
+    <button class="mk-cart-item-remove" type="button" aria-label="Remove Linen shirt from cart"
+      ><i data-lucide="x"></i
+    ></button>
   </li>
   <li class="mk-cart-item" data-variant="compact">
-    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-mug/240/300" alt="">
+    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-mug/240/300" alt="" />
     <div class="mk-cart-item-info">
       <h3 class="mk-cart-item-name"><a href="#">Stoneware mug</a></h3>
       <p class="mk-cart-item-options">Oat</p>
@@ -104,7 +126,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
     <div class="mk-cart-item-qty"><span>Qty 2</span></div>
     <output class="mk-cart-item-total" for="cc-2-qty">€44.00</output>
-    <button class="mk-cart-item-remove" type="button" aria-label="Remove Stoneware mug from cart"><i data-lucide="x"></i></button>
+    <button class="mk-cart-item-remove" type="button" aria-label="Remove Stoneware mug from cart"
+      ><i data-lucide="x"></i
+    ></button>
   </li>
 </ul>
 ```

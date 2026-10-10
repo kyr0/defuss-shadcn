@@ -79,7 +79,8 @@ let moduleUrl = '';
  * @returns the Mermaid module, imported once per URL
  */
 function load(url?: string): Promise<MermaidLike> {
-  const vendorUrl = url || ((dfDollar('meta[name="mermaid-module"]').get(0) ?? null) as HTMLMetaElement | null)?.content || MERMAID_URL;
+  const vendorUrl =
+    url || ((dfDollar('meta[name="mermaid-module"]').get(0) ?? null) as HTMLMetaElement | null)?.content || MERMAID_URL;
   if (modulePromise && vendorUrl === moduleUrl) return modulePromise;
   moduleUrl = vendorUrl;
   // the ONE vendor import (verify: VENDOR_IMPORTS) - the official renderer, never our code
@@ -205,19 +206,25 @@ export function mermaidTheme(el: Element): Record<string, unknown> {
  * to it), so hand-written and generated markup agree.
  */
 function sourceOf(fig: HTMLElement): string {
-  const pre = ((dfDollar(fig).find(':scope > pre.mermaid').get(0) ?? null) as HTMLElement | null);
+  const pre = (dfDollar(fig).find(':scope > pre.mermaid').get(0) ?? null) as HTMLElement | null;
   if (!pre) return '';
   // text nodes carry the decoded characters; an element written in the
   // diagram (a literal <br>) is kept as markup - serialized through df$
   return Array.from(pre.childNodes)
-    .map((n) => (n.nodeType === Node.TEXT_NODE ? (n as Text).data : n.nodeType === Node.ELEMENT_NODE ? dfDollar('<div></div>').append(n.cloneNode(true)).html() ?? '' : ''))
+    .map((n) =>
+      n.nodeType === Node.TEXT_NODE
+        ? (n as Text).data
+        : n.nodeType === Node.ELEMENT_NODE
+          ? (dfDollar('<div></div>').append(n.cloneNode(true)).html() ?? '')
+          : '',
+    )
     .join('')
     .replace(/^\n+|\s+$/g, '');
 }
 
 /** The runtime-made output node (SVG host) - CodeExample chrome, never source. */
 function outputOf(fig: HTMLElement): HTMLElement {
-  let out = ((dfDollar(fig).find(':scope > .mermaid-output').get(0) ?? null) as HTMLElement | null);
+  let out = (dfDollar(fig).find(':scope > .mermaid-output').get(0) ?? null) as HTMLElement | null;
   if (!out) {
     out = document.createElement('div');
     out.className = 'mermaid-output';
@@ -340,12 +347,18 @@ function applyMarkup(fig: HTMLElement, stateName: string, config: Record<string,
     dfDollar(fig).attr('data-state', 'rendered');
     return;
   }
-  const out = dfDollar('<output class="mermaid-error" role="alert" data-ce-chrome></output>').text(typeof config.message === 'string' ? config.message : 'This diagram could not be rendered.');
+  const out = dfDollar('<output class="mermaid-error" role="alert" data-ce-chrome></output>').text(
+    typeof config.message === 'string' ? config.message : 'This diagram could not be rendered.',
+  );
   dfDollar(fig).children('pre.mermaid').after(out);
   dfDollar(fig).attr('data-state', 'error');
 }
 
-function triggerStateChange(fig: HTMLElement, stateName: string, config: Record<string, unknown>): Promise<boolean> | void {
+function triggerStateChange(
+  fig: HTMLElement,
+  stateName: string,
+  config: Record<string, unknown>,
+): Promise<boolean> | void {
   switch (stateName) {
     case 'default':
       clearError(fig);

@@ -77,7 +77,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   document.addEventListener('DOMContentLoaded', () => {
     const tw = document.getElementById('once');
     const status = document.getElementById('once-status');
-    tw.addEventListener('typewriter-done', () => { status.value = 'done'; });
+    tw.addEventListener('typewriter-done', () => {
+      status.value = 'done';
+    });
     document.getElementById('once-replay').addEventListener('click', () => {
       status.value = 'typing…';
       tw.api.setState('default');
@@ -88,24 +90,61 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="Cursor styles" schema="none" hint="data-cursor: the default bar, block, underscore or none; data-cursor-hide='typing' shows it only while the line is idle."
 <div class="flex flex-col gap-2 text-lg">
-  <p class="m-0">bar: <span class="typewriter" data-loop><span>a thin bar</span><span>the default</span></span></p>
-  <p class="m-0">block: <span class="typewriter" data-loop data-cursor="block"><span>a solid block</span><span>like a terminal</span></span></p>
-  <p class="m-0">underscore: <span class="typewriter" data-loop data-cursor="underscore"><span>an underscore</span><span>old school</span></span></p>
-  <p class="m-0">idle only: <span class="typewriter" data-loop data-cursor-hide="typing"><span>hidden while typing</span><span>back when idle</span></span></p>
-  <p class="m-0">none: <span class="typewriter" data-loop data-cursor="none"><span>no cursor at all</span><span>just the text</span></span></p>
+  <p class="m-0"
+    >bar: <span class="typewriter" data-loop><span>a thin bar</span><span>the default</span></span></p
+  >
+  <p class="m-0"
+    >block:
+    <span class="typewriter" data-loop data-cursor="block"
+      ><span>a solid block</span><span>like a terminal</span></span
+    ></p
+  >
+  <p class="m-0"
+    >underscore:
+    <span class="typewriter" data-loop data-cursor="underscore"
+      ><span>an underscore</span><span>old school</span></span
+    ></p
+  >
+  <p class="m-0"
+    >idle only:
+    <span class="typewriter" data-loop data-cursor-hide="typing"
+      ><span>hidden while typing</span><span>back when idle</span></span
+    ></p
+  >
+  <p class="m-0"
+    >none:
+    <span class="typewriter" data-loop data-cursor="none"
+      ><span>no cursor at all</span><span>just the text</span></span
+    ></p
+  >
 </div>
 ```
 
 ```html example label="Speed and natural rhythm" schema="none" hint="data-speed / data-delete-speed set the ms per character, data-pause the hold; data-variable jitters every keystroke (0.5×-1.5×) so it reads like a person typing, not a metronome."
 <div class="flex flex-col gap-2 text-lg">
-  <p class="m-0">steady: <span class="typewriter" data-loop data-speed="80" data-pause="1200"><span>every key the same</span><span>tick, tick, tick</span></span></p>
-  <p class="m-0">natural: <span class="typewriter" data-loop data-variable data-speed="80" data-pause="1200"><span>a little uneven</span><span>like a real hand</span></span></p>
-  <p class="m-0">fast: <span class="typewriter" data-loop data-speed="25" data-delete-speed="12" data-pause="900"><span>in a hurry</span><span>no time to waste</span></span></p>
+  <p class="m-0"
+    >steady:
+    <span class="typewriter" data-loop data-speed="80" data-pause="1200"
+      ><span>every key the same</span><span>tick, tick, tick</span></span
+    ></p
+  >
+  <p class="m-0"
+    >natural:
+    <span class="typewriter" data-loop data-variable data-speed="80" data-pause="1200"
+      ><span>a little uneven</span><span>like a real hand</span></span
+    ></p
+  >
+  <p class="m-0"
+    >fast:
+    <span class="typewriter" data-loop data-speed="25" data-delete-speed="12" data-pause="900"
+      ><span>in a hurry</span><span>no time to waste</span></span
+    ></p
+  >
 </div>
 ```
 
 ```html example label="Reserved width" schema="none" hint="In centred text a growing line pushes its neighbours around; data-reserve makes the box as wide as the longest string from the start, and data-align='center' centres the shorter ones inside it."
-<p class="h3 m-0" style="text-align:center;">
+<p class="h3 m-0" style="text-align: center">
   The
   <span class="typewriter" data-loop data-reserve data-align="center">
     <span>fastest</span>
@@ -135,11 +174,15 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const tw = document.getElementById('ctl');
-    tw.addEventListener('typewriter-typed', (e) => { document.getElementById('ctl-log').value = `typed #${e.detail.index + 1}`; });
-    document.querySelectorAll('[data-set]').forEach((b) => b.addEventListener('click', () => {
-      const s = b.dataset.set;
-      tw.api.setState(s, s === 'done' ? { index: 2 } : {});
-    }));
+    tw.addEventListener('typewriter-typed', (e) => {
+      document.getElementById('ctl-log').value = `typed #${e.detail.index + 1}`;
+    });
+    document.querySelectorAll('[data-set]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const s = b.dataset.set;
+        tw.api.setState(s, s === 'done' ? { index: 2 } : {});
+      }),
+    );
   });
 </script>
 ```
@@ -154,7 +197,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 ```html example label="In a terminal" schema="none" hint="Inside a code mockup line: the command types itself behind a block cursor - the mockup draws the prompt, the typewriter the keystrokes."
 <div class="mockup-code" data-chrome="mac" data-title="zsh">
-  <pre data-prefix="$"><code><span class="typewriter" data-cursor="block" data-loop data-pause="2000" data-speed="60"><span>npm i defuss-shadcn</span><span>bun run build</span><span>bun run deploy</span></span></code></pre>
+  <pre
+    data-prefix="$"
+  ><code><span class="typewriter" data-cursor="block" data-loop data-pause="2000" data-speed="60"><span>npm i defuss-shadcn</span><span>bun run build</span><span>bun run deploy</span></span></code></pre>
 </div>
 ```
 

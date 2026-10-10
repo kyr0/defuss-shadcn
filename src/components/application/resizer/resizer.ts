@@ -96,7 +96,10 @@ function targetOf(wrapper: HTMLElement): HTMLElement | null {
  *  against a cursor that promises nothing). */
 function handleSet(wrapper: HTMLElement): Handle[] {
   const spec = (wrapper.dataset.handles || 'se').trim();
-  const requested = spec === 'all' ? [...HANDLES] : spec.split(/[\s,]+/).filter((h): h is Handle => (HANDLES as readonly string[]).includes(h));
+  const requested =
+    spec === 'all'
+      ? [...HANDLES]
+      : spec.split(/[\s,]+/).filter((h): h is Handle => (HANDLES as readonly string[]).includes(h));
   const axis = wrapper.dataset.axis || 'both';
   if (axis === 'both') return requested;
   const moves = (h: string): boolean => (axis === 'w' ? /e|w/.test(h) : /n|s/.test(h));
@@ -138,7 +141,10 @@ function nearestToken(wrapper: HTMLElement, ladder: string[], wantedPx: number, 
   let bestD = Infinity;
   for (const token of ladder) {
     const d = Math.abs(tokenPx(wrapper, token, axis) - wantedPx);
-    if (d < bestD) { bestD = d; best = token; }
+    if (d < bestD) {
+      bestD = d;
+      best = token;
+    }
   }
   return best;
 }
@@ -224,8 +230,18 @@ function applySize(wrapper: HTMLElement, axis: 'w' | 'h', px: number): void {
       bubbles: true,
       detail: {
         axis,
-        width: axis === 'w' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'w')) : currentPx(wrapper, 'w'),
-        height: axis === 'h' ? (mode === 'controlled' ? Math.round(wanted) : currentPx(wrapper, 'h')) : currentPx(wrapper, 'h'),
+        width:
+          axis === 'w'
+            ? mode === 'controlled'
+              ? Math.round(wanted)
+              : currentPx(wrapper, 'w')
+            : currentPx(wrapper, 'w'),
+        height:
+          axis === 'h'
+            ? mode === 'controlled'
+              ? Math.round(wanted)
+              : currentPx(wrapper, 'h')
+            : currentPx(wrapper, 'h'),
       },
     }),
   );
@@ -249,8 +265,10 @@ function applyMarkup(_el, _stateName) {
  */
 function triggerStateChange(wrapper: HTMLElement, stateName: string, config: Record<string, unknown> = {}): void {
   if (stateName !== 'default') return;
-  if (config.width !== undefined || wrapper._defaultSize) applySize(wrapper, 'w', Number(config.width ?? wrapper._defaultSize?.[0]));
-  if (config.height !== undefined || wrapper._defaultSize) applySize(wrapper, 'h', Number(config.height ?? wrapper._defaultSize?.[1]));
+  if (config.width !== undefined || wrapper._defaultSize)
+    applySize(wrapper, 'w', Number(config.width ?? wrapper._defaultSize?.[0]));
+  if (config.height !== undefined || wrapper._defaultSize)
+    applySize(wrapper, 'h', Number(config.height ?? wrapper._defaultSize?.[1]));
 }
 
 /** Registry-level API; pass the .resizer wrapper explicitly. Unknown names throw. */
@@ -277,8 +295,14 @@ df$.resizerApi = resizerApi;
 df$.resizerStates = resizerStates;
 
 const HANDLE_LABEL: Record<string, string> = {
-  n: 'top edge', s: 'bottom edge', e: 'right edge', w: 'left edge',
-  ne: 'top-right corner', nw: 'top-left corner', se: 'bottom-right corner', sw: 'bottom-left corner',
+  n: 'top edge',
+  s: 'bottom edge',
+  e: 'right edge',
+  w: 'left edge',
+  ne: 'top-right corner',
+  nw: 'top-left corner',
+  se: 'bottom-right corner',
+  sw: 'bottom-left corner',
 };
 
 function makeHandle(wrapper: HTMLElement, h: Handle): HTMLElement {
@@ -311,7 +335,8 @@ function syncHandles(wrapper: HTMLElement): void {
     if (!want.includes((el as HTMLElement).dataset.handle as Handle)) el.remove();
   }
   for (const h of want) {
-    if (!dfDollar(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0)) dfDollar(wrapper).append(makeHandle(wrapper, h));
+    if (!dfDollar(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
+      dfDollar(wrapper).append(makeHandle(wrapper, h));
   }
 }
 
@@ -328,8 +353,16 @@ function handleKeys(wrapper: HTMLElement, handle: HTMLElement, ev: KeyboardEvent
   const OUT: Record<string, string> = { e: 'ArrowRight', w: 'ArrowLeft', s: 'ArrowDown', n: 'ArrowUp' };
   const IN: Record<string, string> = { e: 'ArrowLeft', w: 'ArrowRight', s: 'ArrowUp', n: 'ArrowDown' };
   const dir = edge
-    ? ev.key === OUT[sides] ? 1 : ev.key === IN[sides] ? -1 : 0
-    : ev.key === 'ArrowRight' || ev.key === 'ArrowUp' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown' ? -1 : 0;
+    ? ev.key === OUT[sides]
+      ? 1
+      : ev.key === IN[sides]
+        ? -1
+        : 0
+    : ev.key === 'ArrowRight' || ev.key === 'ArrowUp'
+      ? 1
+      : ev.key === 'ArrowLeft' || ev.key === 'ArrowDown'
+        ? -1
+        : 0;
   if (dir === 0 && ev.key !== 'Home' && ev.key !== 'End') return;
   ev.preventDefault();
   const step = (numAttr(wrapper, 'stepKey', 10) || 10) * (ev.shiftKey ? 10 : 1);
@@ -396,10 +429,13 @@ function startDrag(wrapper: HTMLElement, handle: HTMLElement, ev: PointerEvent):
 }
 
 function init(): void {
-  const fresh = dfDollar('.resizer:not([data-init])').toArray().filter((wrapper): wrapper is HTMLElement => wrapper instanceof HTMLElement).filter((wrapper) => {
-    wrapper.dataset.init = '';
-    return !!targetOf(wrapper); // a resizer wraps exactly ONE element
-  });
+  const fresh = dfDollar('.resizer:not([data-init])')
+    .toArray()
+    .filter((wrapper): wrapper is HTMLElement => wrapper instanceof HTMLElement)
+    .filter((wrapper) => {
+      wrapper.dataset.init = '';
+      return !!targetOf(wrapper); // a resizer wraps exactly ONE element
+    });
   // authored snapshot for the 'default' state (computed - works for px and classes authored
   // alike), measured for every wrapper BEFORE any is bound: a measure after a write forces a
   // layout of the whole page, once per wrapper (the code-example cards on a docs page)
@@ -427,7 +463,10 @@ function init(): void {
         // mirror write lands here too - same value, so it no-ops)
         if (Number.isFinite(v) && Math.abs(currentPx(wrapper, axis) - v) > 0.5) applySize(wrapper, axis, v);
       }
-    }).observe(wrapper, { attributes: true, attributeFilter: ['data-width', 'data-height', 'data-handles', 'data-axis'] });
+    }).observe(wrapper, {
+      attributes: true,
+      attributeFilter: ['data-width', 'data-height', 'data-handles', 'data-axis'],
+    });
 
     // schema action surface: `resizer-reset` → authored size
     wrapper.addEventListener('resizer-reset', () => resizerApi.setState(wrapper, 'default'));

@@ -53,15 +53,23 @@
       color: var(--_dim);
       background: currentColor;
       opacity: 0.45;
-      box-shadow: 1.25rem 0 0 currentColor, 2.5rem 0 0 currentColor;
+      box-shadow:
+        1.25rem 0 0 currentColor,
+        2.5rem 0 0 currentColor;
     }
     &[data-chrome="mac"]::before {
       opacity: 1;
       background: oklch(0.68 0.2 25);
-      box-shadow: 1.25rem 0 0 oklch(0.82 0.16 85), 2.5rem 0 0 oklch(0.74 0.17 145);
+      box-shadow:
+        1.25rem 0 0 oklch(0.82 0.16 85),
+        2.5rem 0 0 oklch(0.74 0.17 145);
     }
-    &[data-chrome="none"] { padding-block-start: 1rem; }
-    &[data-chrome="none"]::before { display: none; }
+    &[data-chrome="none"] {
+      padding-block-start: 1rem;
+    }
+    &[data-chrome="none"]::before {
+      display: none;
+    }
 
     /* -- A title in the bar: data-title="bash - 80x24" -------------- */
     &[data-title]:not([data-chrome="none"])::after {
@@ -110,21 +118,41 @@
       color: var(--_dim);
       user-select: none;
     }
-    & > pre[data-prefix]::before { content: attr(data-prefix); }
+    & > pre[data-prefix]::before {
+      content: attr(data-prefix);
+    }
 
     /* data-numbers on the window: every line without its own prefix is
        numbered (CSS counters - nothing to keep in sync) */
-    &[data-numbers] { counter-reset: mockup-line; }
-    &[data-numbers] > pre { counter-increment: mockup-line; }
-    &[data-numbers] > pre:not([data-prefix])::before { content: counter(mockup-line); }
+    &[data-numbers] {
+      counter-reset: mockup-line;
+    }
+    &[data-numbers] > pre {
+      counter-increment: mockup-line;
+    }
+    &[data-numbers] > pre:not([data-prefix])::before {
+      content: counter(mockup-line);
+    }
 
     /* -- Tones: output lines --------------------------------------- */
-    & > pre[data-tone] { color: var(--_tone); }
-    & > pre[data-tone="success"] { --_tone: var(--_success); }
-    & > pre[data-tone="warning"] { --_tone: var(--_warning); }
-    & > pre[data-tone="info"] { --_tone: var(--_info); }
-    & > pre[data-tone="destructive"] { --_tone: var(--_destructive); }
-    & > pre[data-tone="muted"] { --_tone: var(--_dim); }
+    & > pre[data-tone] {
+      color: var(--_tone);
+    }
+    & > pre[data-tone="success"] {
+      --_tone: var(--_success);
+    }
+    & > pre[data-tone="warning"] {
+      --_tone: var(--_warning);
+    }
+    & > pre[data-tone="info"] {
+      --_tone: var(--_info);
+    }
+    & > pre[data-tone="destructive"] {
+      --_tone: var(--_destructive);
+    }
+    & > pre[data-tone="muted"] {
+      --_tone: var(--_dim);
+    }
 
     /* -- Highlighted line: a tinted band in the line's tone (or the
        text colour); data-highlight="solid" fills it -------------- */
@@ -134,7 +162,10 @@
     & > pre[data-highlight="solid"] {
       background: var(--_tone, var(--_fg));
       color: var(--_bg);
-      &::before { color: inherit; opacity: 0.7; }
+      &::before {
+        color: inherit;
+        opacity: 0.7;
+      }
     }
 
     /* -- Diff: data-diff="add" / "remove" lines ----------------------
@@ -148,20 +179,30 @@
       width: 2ch;
       user-select: none;
     }
-    & > pre[data-diff="add"] { --_tone: var(--_success); }
-    & > pre[data-diff="remove"] { --_tone: var(--_destructive); }
+    & > pre[data-diff="add"] {
+      --_tone: var(--_success);
+    }
+    & > pre[data-diff="remove"] {
+      --_tone: var(--_destructive);
+    }
     & > pre[data-diff] {
       color: var(--_tone);
       background: color-mix(in oklch, var(--_tone) 14%, transparent);
     }
-    & > pre[data-diff="add"] > code::before { content: "+"; }
-    & > pre[data-diff="remove"] > code::before { content: "-"; }
+    & > pre[data-diff="add"] > code::before {
+      content: "+";
+    }
+    & > pre[data-diff="remove"] > code::before {
+      content: "-";
+    }
     & > pre > code :is(ins, del) {
       border-radius: 0.2em;
       color: inherit;
       text-decoration: none;
     }
-    & > pre > code ins { background: color-mix(in oklch, var(--_success) 32%, transparent); }
+    & > pre > code ins {
+      background: color-mix(in oklch, var(--_success) 32%, transparent);
+    }
     & > pre > code del {
       background: color-mix(in oklch, var(--_destructive) 32%, transparent);
       text-decoration: line-through;
@@ -184,7 +225,9 @@
     }
     &[data-animate] > pre[data-diff="remove"] {
       animation: mockup-code-remove 450ms ease-out var(--_delay) both;
-      & > code { animation: mockup-code-strike 450ms ease-out var(--_delay) both; }
+      & > code {
+        animation: mockup-code-strike 450ms ease-out var(--_delay) both;
+      }
     }
     &[data-animate] > pre[data-diff="add"] {
       animation: mockup-code-add 450ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--_delay) both;
@@ -203,7 +246,9 @@
     }
 
     /* -- Wrap instead of scrolling --------------------------------- */
-    &[data-wrap] { grid-template-columns: minmax(0, 1fr); }
+    &[data-wrap] {
+      grid-template-columns: minmax(0, 1fr);
+    }
     &[data-wrap] > pre {
       white-space: pre-wrap;
       overflow-wrap: anywhere;
@@ -225,7 +270,9 @@
       --_info: oklch(0.52 0.14 250);
       --_destructive: var(--destructive);
     }
-    &[data-variant="muted"] { --_bg: var(--muted); }
+    &[data-variant="muted"] {
+      --_bg: var(--muted);
+    }
     &[data-variant="outline"] {
       --_bg: var(--card);
       border: 1px solid var(--border);
@@ -237,69 +284,138 @@
     }
 
     /* -- Sizes ------------------------------------------------------ */
-    &[data-size="sm"] { font-size: 0.75rem; --_px: 1rem; padding-block: 1rem 0.75rem; }
-    &[data-size="lg"] { font-size: 1rem; --_px: 1.5rem; }
+    &[data-size="sm"] {
+      font-size: 0.75rem;
+      --_px: 1rem;
+      padding-block: 1rem 0.75rem;
+    }
+    &[data-size="lg"] {
+      font-size: 1rem;
+      --_px: 1.5rem;
+    }
   }
 
   @keyframes mockup-code-cursor {
-    50% { opacity: 0; }
+    50% {
+      opacity: 0;
+    }
   }
   /* each keyframe starts neutral and ends on the line's own diff styles */
   @keyframes mockup-code-remove {
-    from { color: var(--_fg); background: transparent; opacity: 1; }
+    from {
+      color: var(--_fg);
+      background: transparent;
+      opacity: 1;
+    }
   }
   @keyframes mockup-code-strike {
-    from { text-decoration-color: transparent; }
+    from {
+      text-decoration-color: transparent;
+    }
   }
   @keyframes mockup-code-add {
-    from { color: var(--_fg); background: transparent; opacity: 0; translate: -1.5rem 0; }
+    from {
+      color: var(--_fg);
+      background: transparent;
+      opacity: 0;
+      translate: -1.5rem 0;
+    }
   }
 
   /* the line's position drives the stagger: sibling-index() where the
      browser has it, a counted fallback for the first 24 lines elsewhere */
   @supports (order: sibling-index()) {
-    .mockup-code[data-animate] > pre { --_i: sibling-index(); }
+    .mockup-code[data-animate] > pre {
+      --_i: sibling-index();
+    }
   }
   @supports not (order: sibling-index()) {
-    .mockup-code[data-animate] > pre:nth-child(2) { --_i: 2; }
-    .mockup-code[data-animate] > pre:nth-child(3) { --_i: 3; }
-    .mockup-code[data-animate] > pre:nth-child(4) { --_i: 4; }
-    .mockup-code[data-animate] > pre:nth-child(5) { --_i: 5; }
-    .mockup-code[data-animate] > pre:nth-child(6) { --_i: 6; }
-    .mockup-code[data-animate] > pre:nth-child(7) { --_i: 7; }
-    .mockup-code[data-animate] > pre:nth-child(8) { --_i: 8; }
-    .mockup-code[data-animate] > pre:nth-child(9) { --_i: 9; }
-    .mockup-code[data-animate] > pre:nth-child(10) { --_i: 10; }
-    .mockup-code[data-animate] > pre:nth-child(11) { --_i: 11; }
-    .mockup-code[data-animate] > pre:nth-child(12) { --_i: 12; }
-    .mockup-code[data-animate] > pre:nth-child(13) { --_i: 13; }
-    .mockup-code[data-animate] > pre:nth-child(14) { --_i: 14; }
-    .mockup-code[data-animate] > pre:nth-child(15) { --_i: 15; }
-    .mockup-code[data-animate] > pre:nth-child(16) { --_i: 16; }
-    .mockup-code[data-animate] > pre:nth-child(n + 17) { --_i: 17; }
+    .mockup-code[data-animate] > pre:nth-child(2) {
+      --_i: 2;
+    }
+    .mockup-code[data-animate] > pre:nth-child(3) {
+      --_i: 3;
+    }
+    .mockup-code[data-animate] > pre:nth-child(4) {
+      --_i: 4;
+    }
+    .mockup-code[data-animate] > pre:nth-child(5) {
+      --_i: 5;
+    }
+    .mockup-code[data-animate] > pre:nth-child(6) {
+      --_i: 6;
+    }
+    .mockup-code[data-animate] > pre:nth-child(7) {
+      --_i: 7;
+    }
+    .mockup-code[data-animate] > pre:nth-child(8) {
+      --_i: 8;
+    }
+    .mockup-code[data-animate] > pre:nth-child(9) {
+      --_i: 9;
+    }
+    .mockup-code[data-animate] > pre:nth-child(10) {
+      --_i: 10;
+    }
+    .mockup-code[data-animate] > pre:nth-child(11) {
+      --_i: 11;
+    }
+    .mockup-code[data-animate] > pre:nth-child(12) {
+      --_i: 12;
+    }
+    .mockup-code[data-animate] > pre:nth-child(13) {
+      --_i: 13;
+    }
+    .mockup-code[data-animate] > pre:nth-child(14) {
+      --_i: 14;
+    }
+    .mockup-code[data-animate] > pre:nth-child(15) {
+      --_i: 15;
+    }
+    .mockup-code[data-animate] > pre:nth-child(16) {
+      --_i: 16;
+    }
+    .mockup-code[data-animate] > pre:nth-child(n + 17) {
+      --_i: 17;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   @layer components {
-    .mockup-code > pre[data-cursor] > code::after { animation: none; }
+    .mockup-code > pre[data-cursor] > code::after {
+      animation: none;
+    }
     /* the diff shows its end state at once */
     .mockup-code[data-animate] > pre,
-    .mockup-code[data-animate] > pre > code { animation: none; }
+    .mockup-code[data-animate] > pre > code {
+      animation: none;
+    }
   }
 }
 
 @media (prefers-contrast: more) {
   @layer components {
-    .mockup-code { --_dim: var(--_fg); border: 1px solid var(--_fg); }
+    .mockup-code {
+      --_dim: var(--_fg);
+      border: 1px solid var(--_fg);
+    }
   }
 }
 
 @media (forced-colors: active) {
   @layer components {
-    .mockup-code { border: 1px solid CanvasText; }
-    .mockup-code > pre[data-highlight] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+    .mockup-code {
+      border: 1px solid CanvasText;
+    }
+    .mockup-code > pre[data-highlight] {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
+    }
     /* the +/- signs carry the diff; <ins>/<del> get system marks */
-    .mockup-code > pre > code :is(ins, del) { outline: 1px solid CanvasText; }
+    .mockup-code > pre > code :is(ins, del) {
+      outline: 1px solid CanvasText;
+    }
   }
 }

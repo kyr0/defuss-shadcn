@@ -38,7 +38,13 @@ function realOffset(scrollTop: number, viewport: number, total: number, rowHeigh
 }
 
 /** The rows that belong in the pool at this scroll position. */
-export function virtualWindow(scrollTop: number, viewport: number, rowHeight: number, total: number, overscan = OVERSCAN): VirtualWindow {
+export function virtualWindow(
+  scrollTop: number,
+  viewport: number,
+  rowHeight: number,
+  total: number,
+  overscan = OVERSCAN,
+): VirtualWindow {
   const visible = Math.ceil(viewport / rowHeight) + overscan * 2;
   const offset = realOffset(scrollTop, viewport, total, rowHeight);
   let first = Math.max(0, Math.floor(offset / rowHeight) - overscan);
@@ -54,7 +60,13 @@ export function scrollTopFor(index: number, viewport: number, rowHeight: number,
 }
 
 /** The scrollTop that brings row `index` into view, moving as little as possible. */
-export function scrollIntoViewTop(index: number, scrollTop: number, viewport: number, rowHeight: number, total: number): number {
+export function scrollIntoViewTop(
+  index: number,
+  scrollTop: number,
+  viewport: number,
+  rowHeight: number,
+  total: number,
+): number {
   const top = scrollTopFor(index, viewport, rowHeight, total);
   const shown = realOffset(scrollTop, viewport, total, rowHeight);
   const row = index * rowHeight;

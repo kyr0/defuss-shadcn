@@ -35,7 +35,8 @@ describe('ENTRANCES', () => {
   });
 
   it('every direction ships a CSS rule (source-file twin of the e2e sync check)', () => {
-    for (const dir of ENTRANCES) expect(motionCss).toContain(`[data-df-entrance="${dir}"]`);
+    // either quote: the attribute selector's quote style is the formatter's (oxfmt), not the contract
+    for (const dir of ENTRANCES) expect(motionCss).toMatch(new RegExp(`\\[data-df-entrance=["']${dir}["']\\]`));
   });
 });
 

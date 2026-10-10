@@ -1441,7 +1441,9 @@ check(
   // the element (this exact bug disabled the docs search palette once).
   {
     const dialogSrc = readFileSync(componentFile(COMPS, 'dialog', 'dialog.ts'), 'utf8');
-    const claim = dialogSrc.match(/(?:querySelectorAll|dfDollar)(?:<[^>()]*>)?\((['"])dialog:not\([\s\S]*?\1\)/);
+    // the selector on the same line or on its own. VERIFIED: oxfmt wraps the
+    // long call; this gate reported the selector lost until it accepted that
+    const claim = dialogSrc.match(/(?:querySelectorAll|dfDollar)(?:<[^>()]*>)?\(\s*(['"])dialog:not\([\s\S]*?\1,?\s*\)/);
     const owned = ['alert-dialog', 'sheet', 'command', 'window', 'cookie-consent-dialog'].filter(
       (c) => claim && !claim[0].includes(`not(.${c})`),
     );
@@ -2123,6 +2125,25 @@ check(
       'one source per example: fix the fence/props on the flagged page (plan §21/§22); empty examples, placeholder elements ("...") and dual-source props are rejected - an example fence is executed verbatim',
     );
   }
+
+// 29. the rendered pages carry no SSR error text. VERIFIED: defuss's JSX error
+// boundary renders `FATAL ERROR: [JsxError] …` INTO the page and the SSG exits
+// 0 - 369 pages once shipped a dead code-example toolbar that way: the
+// toolbar's icon reader over the component's source had stopped matching
+// after oxfmt unquoted the icon table's keys, and no gate read the output
+// (only sizing-layout.e2e noticed, as a 320px overflow of the error text).
+{
+  const problems: string[] = [];
+  for (const f of docPages) {
+    const m = readFileSync(join(DOCS_DIST, f), 'utf8').match(/FATAL ERROR: \[[A-Za-z]+Error\][^<]{0,160}/);
+    if (m) problems.push(`dist/documentation/${f}: ${m[0]}`);
+  }
+  check(
+    'rendered pages are error-free',
+    problems,
+    'fix the component that threw during the SSG render (the message names it), then rebuild the docs - an error boundary message in a page is a broken page',
+  );
+}
 
   console.log(
   failed

@@ -90,7 +90,13 @@ interface EditorLike {
     getBlockIndex(id: string): number;
     convert(id: string, type: string, data?: Record<string, unknown>): Promise<unknown>;
     update(id: string, data: Record<string, unknown>): Promise<unknown>;
-    insert(type?: string, data?: Record<string, unknown>, config?: Record<string, unknown>, index?: number, needToFocus?: boolean): unknown;
+    insert(
+      type?: string,
+      data?: Record<string, unknown>,
+      config?: Record<string, unknown>,
+      index?: number,
+      needToFocus?: boolean,
+    ): unknown;
     render(data: EditorjsDocument): Promise<void>;
     getBlocksCount(): number;
   };
@@ -129,8 +135,14 @@ function loadModule(vendorUrl: string): Promise<unknown> {
 }
 
 /** every vendor module: the editor, the tools an element uses, the Markdown parser */
-async function loadVendor(toolNames: string[]): Promise<{ EditorJS: unknown; tools: Record<string, unknown>; marked: MarkedLike }> {
-  const [EditorJS, marked, ...tools] = await Promise.all([loadModule(EDITORJS_URL), loadModule(MARKED_URL), ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n]))]);
+async function loadVendor(
+  toolNames: string[],
+): Promise<{ EditorJS: unknown; tools: Record<string, unknown>; marked: MarkedLike }> {
+  const [EditorJS, marked, ...tools] = await Promise.all([
+    loadModule(EDITORJS_URL),
+    loadModule(MARKED_URL),
+    ...toolNames.map((n) => loadModule(EDITORJS_TOOLS[n])),
+  ]);
   return { EditorJS, marked: marked as MarkedLike, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
 
@@ -138,28 +150,83 @@ async function loadVendor(toolNames: string[]): Promise<{ EditorJS: unknown; too
  * deterministic (b1, b2, ... in document order), so comments and links can address a Markdown document. */
 function markdownToBlocks(md: string, marked: MarkedLike): EditorjsBlock[] {
   // the tools' sanitizer keeps <b> / <i> (the inline tools' tags), not <strong> / <em>
-  const inline = (t: string) => marked.parseInline(t).replace(/<code>/g, '<code class="inline-code">').replace(/<(\/?)strong>/g, '<$1b>').replace(/<(\/?)em>/g, '<$1i>');
+  const inline = (t: string) =>
+    marked
+      .parseInline(t)
+      .replace(/<code>/g, '<code class="inline-code">')
+      .replace(/<(\/?)strong>/g, '<$1b>')
+      .replace(/<(\/?)em>/g, '<$1i>');
   const items = (list: MarkedToken): { content: string; meta: Record<string, unknown>; items: unknown[] }[] =>
     (list.items ?? []).map((it) => {
       const own = (it.tokens ?? []).filter((t) => t.type !== 'list');
       const sub = (it.tokens ?? []).find((t) => t.type === 'list');
-      return { content: inline(own.map((t) => t.text ?? t.raw ?? '').join(' ').trim()), meta: it.task ? { checked: !!it.checked } : {}, items: sub ? items(sub) : [] };
+      return {
+        content: inline(
+          own
+            .map((t) => t.text ?? t.raw ?? '')
+            .join(' ')
+            .trim(),
+        ),
+        meta: it.task ? { checked: !!it.checked } : {},
+        items: sub ? items(sub) : [],
+      };
     });
   const blocks: EditorjsBlock[] = [];
   for (const t of marked.lexer(md)) {
     switch (t.type) {
-      case 'heading': blocks.push({ type: 'header', data: { text: inline(t.text ?? ''), level: Math.min(6, Math.max(1, t.depth ?? 2)) } }); break;
-      case 'paragraph': blocks.push({ type: 'paragraph', data: { text: inline(t.text ?? '') } }); break;
-      case 'list': blocks.push({ type: 'list', data: { style: t.items?.some((i) => i.task) ? 'checklist' : t.ordered ? 'ordered' : 'unordered', meta: {}, items: items(t) } }); break;
-      case 'blockquote': blocks.push({ type: 'quote', data: { text: inline((t.tokens ?? []).map((x) => x.text ?? '').join('\n')), caption: '', alignment: 'left' } }); break;
-      case 'code': blocks.push({ type: 'code', data: { code: t.text ?? '' } }); break;
-      case 'hr': blocks.push({ type: 'delimiter', data: {} }); break;
-      case 'table': blocks.push({ type: 'table', data: { withHeadings: true, content: [(t.header ?? []).map((c) => inline(c.text)), ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text)))] } }); break;
-      case 'html': blocks.push({ type: 'paragraph', data: { text: t.raw ?? '' } }); break;
-      default: break; // space
+      case 'heading':
+        blocks.push({
+          type: 'header',
+          data: { text: inline(t.text ?? ''), level: Math.min(6, Math.max(1, t.depth ?? 2)) },
+        });
+        break;
+      case 'paragraph':
+        blocks.push({ type: 'paragraph', data: { text: inline(t.text ?? '') } });
+        break;
+      case 'list':
+        blocks.push({
+          type: 'list',
+          data: {
+            style: t.items?.some((i) => i.task) ? 'checklist' : t.ordered ? 'ordered' : 'unordered',
+            meta: {},
+            items: items(t),
+          },
+        });
+        break;
+      case 'blockquote':
+        blocks.push({
+          type: 'quote',
+          data: { text: inline((t.tokens ?? []).map((x) => x.text ?? '').join('\n')), caption: '', alignment: 'left' },
+        });
+        break;
+      case 'code':
+        blocks.push({ type: 'code', data: { code: t.text ?? '' } });
+        break;
+      case 'hr':
+        blocks.push({ type: 'delimiter', data: {} });
+        break;
+      case 'table':
+        blocks.push({
+          type: 'table',
+          data: {
+            withHeadings: true,
+            content: [
+              (t.header ?? []).map((c) => inline(c.text)),
+              ...(t.rows ?? []).map((r) => r.map((c) => inline(c.text))),
+            ],
+          },
+        });
+        break;
+      case 'html':
+        blocks.push({ type: 'paragraph', data: { text: t.raw ?? '' } });
+        break;
+      default:
+        break; // space
     }
   }
-  blocks.forEach((b, i) => { b.id = `b${i + 1}`; });
+  blocks.forEach((b, i) => {
+    b.id = `b${i + 1}`;
+  });
   return blocks;
 }
 
@@ -174,37 +241,67 @@ function inlineToMarkdown(html: string): string {
     .replace(/<mark[^>]*>([\s\S]*?)<\/mark>/gi, '$1')
     .replace(/<a [^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)')
     .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
     .trim();
 }
 
 /** Editor.js blocks → Markdown. */
 function blocksToMarkdown(blocks: EditorjsBlock[]): string {
-  const list = (items: { content: string; meta?: { checked?: boolean }; items?: unknown[] }[], style: string, depth: number): string =>
-    items.map((it, i) => {
-      const bullet = style === 'ordered' ? `${i + 1}.` : style === 'checklist' ? `- [${it.meta?.checked ? 'x' : ' '}]` : '-';
-      const sub = it.items?.length ? '\n' + list(it.items as typeof items, style, depth + 1) : '';
-      return `${'  '.repeat(depth)}${bullet} ${inlineToMarkdown(it.content)}${sub}`;
-    }).join('\n');
-  return blocks.map((b) => {
-    const d = b.data as Record<string, any>;
-    switch (b.type) {
-      case 'header': return `${'#'.repeat(Number(d.level) || 2)} ${inlineToMarkdown(String(d.text ?? ''))}`;
-      case 'paragraph': return inlineToMarkdown(String(d.text ?? ''));
-      case 'list': return list(d.items ?? [], String(d.style ?? 'unordered'), 0);
-      case 'quote': return inlineToMarkdown(String(d.text ?? '')).split('\n').map((l) => `> ${l}`).join('\n') + (d.caption ? `\n> - ${inlineToMarkdown(String(d.caption))}` : '');
-      case 'code': return '```\n' + String(d.code ?? '') + '\n```';
-      case 'delimiter': return '---';
-      case 'table': {
-        const rows = (d.content ?? []) as string[][];
-        if (!rows.length) return '';
-        const line = (r: string[]) => `| ${r.map(inlineToMarkdown).join(' | ')} |`;
-        const [head, ...body] = rows;
-        return d.withHeadings === false ? rows.map(line).join('\n') : [line(head), `| ${head.map(() => '---').join(' | ')} |`, ...body.map(line)].join('\n');
-      }
-      default: return '';
-    }
-  }).filter(Boolean).join('\n\n') + '\n';
+  const list = (
+    items: { content: string; meta?: { checked?: boolean }; items?: unknown[] }[],
+    style: string,
+    depth: number,
+  ): string =>
+    items
+      .map((it, i) => {
+        const bullet =
+          style === 'ordered' ? `${i + 1}.` : style === 'checklist' ? `- [${it.meta?.checked ? 'x' : ' '}]` : '-';
+        const sub = it.items?.length ? '\n' + list(it.items as typeof items, style, depth + 1) : '';
+        return `${'  '.repeat(depth)}${bullet} ${inlineToMarkdown(it.content)}${sub}`;
+      })
+      .join('\n');
+  return (
+    blocks
+      .map((b) => {
+        const d = b.data as Record<string, any>;
+        switch (b.type) {
+          case 'header':
+            return `${'#'.repeat(Number(d.level) || 2)} ${inlineToMarkdown(String(d.text ?? ''))}`;
+          case 'paragraph':
+            return inlineToMarkdown(String(d.text ?? ''));
+          case 'list':
+            return list(d.items ?? [], String(d.style ?? 'unordered'), 0);
+          case 'quote':
+            return (
+              inlineToMarkdown(String(d.text ?? ''))
+                .split('\n')
+                .map((l) => `> ${l}`)
+                .join('\n') + (d.caption ? `\n> - ${inlineToMarkdown(String(d.caption))}` : '')
+            );
+          case 'code':
+            return '```\n' + String(d.code ?? '') + '\n```';
+          case 'delimiter':
+            return '---';
+          case 'table': {
+            const rows = (d.content ?? []) as string[][];
+            if (!rows.length) return '';
+            const line = (r: string[]) => `| ${r.map(inlineToMarkdown).join(' | ')} |`;
+            const [head, ...body] = rows;
+            return d.withHeadings === false
+              ? rows.map(line).join('\n')
+              : [line(head), `| ${head.map(() => '---').join(' | ')} |`, ...body.map(line)].join('\n');
+          }
+          default:
+            return '';
+        }
+      })
+      .filter(Boolean)
+      .join('\n\n') + '\n'
+  );
 }
 
 /** The markup of a state: readonly marks the element; the editor itself follows in apply. */
@@ -239,7 +336,11 @@ function sourceOf(el: HTMLElement): { markdown?: string; data?: EditorjsDocument
   const text = script?.textContent ?? '';
   if (!script || !text.trim()) return { markdown: '' };
   if (/json/i.test(script.type)) {
-    try { return { data: JSON.parse(text) as EditorjsDocument }; } catch { return { markdown: text }; }
+    try {
+      return { data: JSON.parse(text) as EditorjsDocument };
+    } catch {
+      return { markdown: text };
+    }
   }
   return { markdown: text.replace(/^\n/, '') };
 }
@@ -285,11 +386,28 @@ async function runCommand(el: HTMLElement, name: string): Promise<boolean> {
   const current = currentBlock(el, editor);
   if (kind === 'delimiter' || kind === 'table') {
     const index = current ? editor.blocks.getBlockIndex(current.id) : editor.blocks.getBlocksCount() - 1;
-    editor.blocks.insert(kind, kind === 'table' ? { withHeadings: true, content: [['', ''], ['', '']] } : {}, {}, index + 1, true);
+    editor.blocks.insert(
+      kind,
+      kind === 'table'
+        ? {
+            withHeadings: true,
+            content: [
+              ['', ''],
+              ['', ''],
+            ],
+          }
+        : {},
+      {},
+      index + 1,
+      true,
+    );
     return true;
   }
   if (!current) return false;
-  if (kind === 'paragraph') { await editor.blocks.convert(current.id, 'paragraph'); return true; }
+  if (kind === 'paragraph') {
+    await editor.blocks.convert(current.id, 'paragraph');
+    return true;
+  }
   if (kind === 'header') {
     const level = Math.min(6, Math.max(1, Number(arg) || 2));
     if (current.name !== 'header') await editor.blocks.convert(current.id, 'header', { level });
@@ -303,7 +421,10 @@ async function runCommand(el: HTMLElement, name: string): Promise<boolean> {
     else await editor.blocks.update(current.id, { style });
     return true;
   }
-  if (kind === 'quote' || kind === 'code') { await editor.blocks.convert(current.id, kind); return true; }
+  if (kind === 'quote' || kind === 'code') {
+    await editor.blocks.convert(current.id, kind);
+    return true;
+  }
   return false;
 }
 
@@ -319,20 +440,30 @@ function syncToolbar(el: HTMLElement): void {
   const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? (anchor as HTMLElement) : anchor.parentElement);
   const holder = node && el.contains(node) ? node.closest<HTMLElement>('.ce-block') : null;
   const level = holder ? (dfDollar(holder).find('.ce-header').get(0)?.tagName.replace(/^H/i, '') ?? '') : '';
-  const listStyle = holder && dfDollar(holder).find('.cdx-list').length ? (dfDollar(holder).find('.cdx-list--checklist').length ? 'checklist' : dfDollar(holder).find('.cdx-list--ordered').length ? 'ordered' : 'unordered') : '';
-  dfDollar(bar).find('[data-editor-command]').toArray().forEach((b: HTMLElement) => {
-    const name = b.dataset.editorCommand ?? '';
-    const [kind, arg] = name.split(':');
-    let on: boolean | null = null;
-    if (kind === 'bold') on = !!node?.closest('b, strong');
-    else if (kind === 'italic') on = !!node?.closest('i, em');
-    else if (kind === 'underline') on = !!node?.closest('u');
-    else if (kind === 'paragraph') on = current?.name === 'paragraph';
-    else if (kind === 'header') on = current?.name === 'header' && (!arg || arg === level);
-    else if (kind === 'list') on = current?.name === 'list' && (!arg || arg === listStyle);
-    else if (kind === 'quote' || kind === 'code') on = current?.name === kind;
-    if (on !== null && b.hasAttribute('aria-pressed')) dfDollar(b).attr('aria-pressed', String(on));
-  });
+  const listStyle =
+    holder && dfDollar(holder).find('.cdx-list').length
+      ? dfDollar(holder).find('.cdx-list--checklist').length
+        ? 'checklist'
+        : dfDollar(holder).find('.cdx-list--ordered').length
+          ? 'ordered'
+          : 'unordered'
+      : '';
+  dfDollar(bar)
+    .find('[data-editor-command]')
+    .toArray()
+    .forEach((b: HTMLElement) => {
+      const name = b.dataset.editorCommand ?? '';
+      const [kind, arg] = name.split(':');
+      let on: boolean | null = null;
+      if (kind === 'bold') on = !!node?.closest('b, strong');
+      else if (kind === 'italic') on = !!node?.closest('i, em');
+      else if (kind === 'underline') on = !!node?.closest('u');
+      else if (kind === 'paragraph') on = current?.name === 'paragraph';
+      else if (kind === 'header') on = current?.name === 'header' && (!arg || arg === level);
+      else if (kind === 'list') on = current?.name === 'list' && (!arg || arg === listStyle);
+      else if (kind === 'quote' || kind === 'code') on = current?.name === kind;
+      if (on !== null && b.hasAttribute('aria-pressed')) dfDollar(b).attr('aria-pressed', String(on));
+    });
 }
 
 async function mount(el: HTMLElement): Promise<void> {
@@ -352,7 +483,14 @@ async function mount(el: HTMLElement): Promise<void> {
   const config: Record<string, unknown> = {};
   for (const name of tools) {
     const cls = loaded[name];
-    config[name] = name === 'list' ? { class: cls, inlineToolbar: true, config: { defaultStyle: 'unordered' } } : name === 'header' ? { class: cls, inlineToolbar: true, config: { levels: [1, 2, 3, 4], defaultLevel: 2 } } : name === 'quote' || name === 'table' ? { class: cls, inlineToolbar: true } : cls;
+    config[name] =
+      name === 'list'
+        ? { class: cls, inlineToolbar: true, config: { defaultStyle: 'unordered' } }
+        : name === 'header'
+          ? { class: cls, inlineToolbar: true, config: { levels: [1, 2, 3, 4], defaultLevel: 2 } }
+          : name === 'quote' || name === 'table'
+            ? { class: cls, inlineToolbar: true }
+            : cls;
   }
   const Ctor = EditorJS as new (opts: Record<string, unknown>) => EditorLike;
   const editor = new Ctor({
@@ -364,7 +502,12 @@ async function mount(el: HTMLElement): Promise<void> {
     minHeight: 0,
     onChange: async () => {
       // Fires after the document changed (typing, a block added or converted, a toolbar command) - how many blocks it has now.
-      el.dispatchEvent(new CustomEvent<EditorjsChangeDetail>('editorjs-change', { bubbles: true, detail: { blocks: editor.blocks.getBlocksCount() } }));
+      el.dispatchEvent(
+        new CustomEvent<EditorjsChangeDetail>('editorjs-change', {
+          bubbles: true,
+          detail: { blocks: editor.blocks.getBlocksCount() },
+        }),
+      );
     },
   });
   el._editorjs = editor;
@@ -372,28 +515,36 @@ async function mount(el: HTMLElement): Promise<void> {
   if (!el.isConnected) return;
   dfDollar(el).attr('data-ready', '');
   // Fires once the editor mounted its blocks - the count it started with.
-  el.dispatchEvent(new CustomEvent<EditorjsReadyDetail>('editorjs-ready', { bubbles: true, detail: { blocks: data.blocks.length } }));
+  el.dispatchEvent(
+    new CustomEvent<EditorjsReadyDetail>('editorjs-ready', { bubbles: true, detail: { blocks: data.blocks.length } }),
+  );
 }
 
 function init() {
-  dfDollar('.editorjs:not([data-init])').toArray().forEach((el: HTMLElement) => {
-    el.dataset.init = '';
-    // el.store + el.api (AGENTS.md "State through stores")
-    bindComponent(el, editorjsApi);
-    const barId = dfDollar(el).attr('data-toolbar');
-    const bar = barId ? dfDollar<HTMLElement>('#' + CSS.escape(barId)).get(0) : undefined;
-    if (bar) {
-      el._toolbar = bar;
-      // a toolbar button must not take the selection from the editor
-      dfDollar(bar).on('mousedown', (e: Event) => { if ((e.target as HTMLElement).closest('[data-editor-command]')) e.preventDefault(); });
-      dfDollar(bar).on('click', (e: Event) => {
-        const button = (e.target as HTMLElement).closest<HTMLElement>('[data-editor-command]');
-        if (!button) return;
-        runCommand(el, button.dataset.editorCommand ?? '').then(() => syncToolbar(el));
+  dfDollar('.editorjs:not([data-init])')
+    .toArray()
+    .forEach((el: HTMLElement) => {
+      el.dataset.init = '';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(el, editorjsApi);
+      const barId = dfDollar(el).attr('data-toolbar');
+      const bar = barId ? dfDollar<HTMLElement>('#' + CSS.escape(barId)).get(0) : undefined;
+      if (bar) {
+        el._toolbar = bar;
+        // a toolbar button must not take the selection from the editor
+        dfDollar(bar).on('mousedown', (e: Event) => {
+          if ((e.target as HTMLElement).closest('[data-editor-command]')) e.preventDefault();
+        });
+        dfDollar(bar).on('click', (e: Event) => {
+          const button = (e.target as HTMLElement).closest<HTMLElement>('[data-editor-command]');
+          if (!button) return;
+          runCommand(el, button.dataset.editorCommand ?? '').then(() => syncToolbar(el));
+        });
+      }
+      mount(el).catch(() => {
+        dfDollar(el).attr('data-error', '');
       });
-    }
-    mount(el).catch(() => { dfDollar(el).attr('data-error', ''); });
-  });
+    });
 }
 
 if (!document.__editorjsInit) {
@@ -403,8 +554,10 @@ if (!document.__editorjsInit) {
   });
 }
 
-const resolve = (target: string | HTMLElement): HTMLElement | undefined => (typeof target === 'string' ? dfDollar(target).get(0) : target);
-const editorOf = (target: string | HTMLElement): EditorLike | undefined => resolve(target)?._editorjs as EditorLike | undefined;
+const resolve = (target: string | HTMLElement): HTMLElement | undefined =>
+  typeof target === 'string' ? dfDollar(target).get(0) : target;
+const editorOf = (target: string | HTMLElement): EditorLike | undefined =>
+  resolve(target)?._editorjs as EditorLike | undefined;
 
 df$.editorjs = {
   /**

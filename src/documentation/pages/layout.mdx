@@ -67,7 +67,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <h3>Projects</h3>
     <button class="btn" type="button">New project</button>
   </div>
-  <div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;">
+  <div class="grid grid-cols-auto gap-4" style="--layout-min: 12rem">
     <div class="demo-box">Research</div>
     <div class="demo-box">Design</div>
     <div class="demo-box">Engineering</div>
@@ -87,7 +87,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <div class="flex flex-wrap items-center justify-between gap-3">…</div>
 
 <!-- Equal-width cards: intrinsic auto-fit grid, no breakpoints. -->
-<div class="grid grid-cols-auto gap-4" style="--layout-min:12rem;">…</div>
+<div class="grid grid-cols-auto gap-4" style="--layout-min: 12rem">…</div>
 ```
 
 
@@ -140,9 +140,21 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 ```html example hint="Three overflow policies at work - shrink the canvas (Phone) and watch each box react on its own axis." schema="none"
 <div class="stack gap-4" data-demo="layout-overflow">
-  <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content:flex-start;"><span class="w-64 shrink-0" style="padding-inline:0.5rem;">overflow-x-auto - the tile scrolls instead of widening the page when the stage gets narrower →</span></div>
-  <div class="truncate h-8 demo-tile" data-variant="outline" style="display:block;line-height:2rem;padding-inline:0.5rem;">truncate - a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div>
-  <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content:flex-start;">wrap-anywhere - PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the track open</div>
+  <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content: flex-start"
+    ><span class="w-64 shrink-0" style="padding-inline: 0.5rem"
+      >overflow-x-auto - the tile scrolls instead of widening the page when the stage gets narrower →</span
+    ></div
+  >
+  <div
+    class="truncate h-8 demo-tile"
+    data-variant="outline"
+    style="display: block; line-height: 2rem; padding-inline: 0.5rem"
+    >truncate - a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div
+  >
+  <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content: flex-start"
+    >wrap-anywhere - PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the
+    track open</div
+  >
 </div>
 ```
 
@@ -252,12 +264,12 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <h2 id="install" class="h2-display">Load the optional modules</h2>
 
 ```html
-<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css">
-<link rel="stylesheet" href="../theme/utils/sizing.css">
-<link rel="stylesheet" href="../theme/utils/layout.css">
-<link rel="stylesheet" href="../theme/utils/accessibility.css">
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
+<link rel="stylesheet" href="../theme/utils/sizing.css" />
+<link rel="stylesheet" href="../theme/utils/layout.css" />
+<link rel="stylesheet" href="../theme/utils/accessibility.css" />
 <!-- Load the component stylesheets you actually use next. -->
-<link rel="stylesheet" href="../components/button/button.css">
+<link rel="stylesheet" href="../components/button/button.css" />
 ```
 
 

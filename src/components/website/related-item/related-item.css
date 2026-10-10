@@ -15,8 +15,13 @@
     border-radius: var(--radius-lg);
     transition: background-color 120ms;
 
-    &:hover { background: var(--accent); }
-    &:has(.mk-related-item-title a:focus-visible) { outline: 2px solid var(--ring); outline-offset: 0; }
+    &:hover {
+      background: var(--accent);
+    }
+    &:has(.mk-related-item-title a:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 0;
+    }
   }
 
   .mk-related-item-media {
@@ -28,7 +33,12 @@
     border-radius: var(--radius-md);
     background: var(--muted);
 
-    & img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    & img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   .mk-related-item-body {
@@ -63,11 +73,19 @@
       text-decoration: none;
       outline: none;
 
-      &::after { content: ""; position: absolute; inset: 0; }
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
     }
   }
 
-  .mk-related-item-meta { margin: 0; color: var(--muted-foreground); font-size: 0.75rem; }
+  .mk-related-item-meta {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
 
   /* the arrow of the text variant */
   .mk-related-item-arrow {
@@ -77,14 +95,19 @@
     color: var(--muted-foreground);
     transition: translate 150ms ease;
   }
-  .mk-related-item:hover .mk-related-item-arrow { translate: 0.25rem 0; }
+  .mk-related-item:hover .mk-related-item-arrow {
+    translate: 0.25rem 0;
+  }
 
   /* card: image above the copy */
   .mk-related-item[data-variant="card"] {
     flex-direction: column;
     align-items: stretch;
 
-    & .mk-related-item-media { width: 100%; aspect-ratio: 16 / 9; }
+    & .mk-related-item-media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
   }
 
   /* text: no image, rules between the items */
@@ -94,12 +117,19 @@
     border-block-end: 1px solid var(--border);
     border-radius: 0;
 
-    &:hover { background: transparent; }
-    &:hover .mk-related-item-title { text-decoration: underline; text-underline-offset: 0.2em; }
+    &:hover {
+      background: transparent;
+    }
+    &:hover .mk-related-item-title {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
   }
 
   /* a label on the thumbnail (duration, "Live") */
-  .mk-related-item-media { position: relative; }
+  .mk-related-item-media {
+    position: relative;
+  }
   .mk-related-item-badge {
     position: absolute;
     inset-block-end: 0.25rem;
@@ -128,7 +158,9 @@
       line-height: 1.1;
       font-variant-numeric: tabular-nums;
     }
-    & .mk-related-item-media { display: none; }
+    & .mk-related-item-media {
+      display: none;
+    }
   }
 
   /* overlay: the title over the image */
@@ -142,7 +174,9 @@
     border-radius: var(--radius-lg);
     color: #fff;
 
-    &:hover { background: transparent; }
+    &:hover {
+      background: transparent;
+    }
     & .mk-related-item-media {
       position: absolute;
       inset: 0;
@@ -151,28 +185,53 @@
       aspect-ratio: auto;
       border-radius: 0;
 
-      & img { transition: scale 300ms ease; }
-      &::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / 0.85), transparent 70%); }
+      & img {
+        transition: scale 300ms ease;
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgb(0 0 0 / 0.85), transparent 70%);
+      }
     }
-    &:hover .mk-related-item-media img { scale: 1.05; }
-    & :is(.mk-related-item-kind, .mk-related-item-meta) { color: rgb(255 255 255 / 0.8); }
-    & .mk-related-item-badge { inset-block: 0.5rem auto; }
+    &:hover .mk-related-item-media img {
+      scale: 1.05;
+    }
+    & :is(.mk-related-item-kind, .mk-related-item-meta) {
+      color: rgb(255 255 255 / 0.8);
+    }
+    & .mk-related-item-badge {
+      inset-block: 0.5rem auto;
+    }
   }
 
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .mk-related-item,
-    .mk-related-item-arrow { transition: none; }
-    .mk-related-item:hover .mk-related-item-arrow { translate: none; }
-    .mk-related-item-media img { transition: none; }
-    .mk-related-item:hover .mk-related-item-media img { scale: none; }
+    .mk-related-item-arrow {
+      transition: none;
+    }
+    .mk-related-item:hover .mk-related-item-arrow {
+      translate: none;
+    }
+    .mk-related-item-media img {
+      transition: none;
+    }
+    .mk-related-item:hover .mk-related-item-media img {
+      scale: none;
+    }
   }
 
   @media (prefers-contrast: more) {
-    .mk-related-item-meta { color: var(--foreground); }
+    .mk-related-item-meta {
+      color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .mk-related-item-title a { color: LinkText; }
+    .mk-related-item-title a {
+      color: LinkText;
+    }
   }
 }

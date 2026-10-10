@@ -55,7 +55,9 @@
     contain-intrinsic-size: auto 3.5rem;
     overflow-clip-margin: 1rem;
 
-    &[data-current] { scroll-margin-block-start: 1rem; }
+    &[data-current] {
+      scroll-margin-block-start: 1rem;
+    }
   }
 
   /* data-animate: new rows enter - rise (the default) from below, fade in
@@ -64,7 +66,9 @@
      animate, only rows added later. VERIFIED: (session.e2e "data-animate")
      slide from each row's own side, fade, tokens; none under reduced motion. */
   .session[data-animate] .session-item {
-    transition: opacity 250ms ease, translate 250ms ease;
+    transition:
+      opacity 250ms ease,
+      translate 250ms ease;
 
     @starting-style {
       opacity: 0;
@@ -72,16 +76,22 @@
     }
   }
   .session[data-animate="fade"] .session-item {
-    @starting-style { translate: none; }
+    @starting-style {
+      translate: none;
+    }
   }
   .session[data-animate="slide"] .session-item {
     transition-duration: 320ms;
     transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-    @starting-style { translate: -1.5rem 0; }
+    @starting-style {
+      translate: -1.5rem 0;
+    }
   }
   .session[data-animate="slide"] .session-item:has(> .message[data-align="end"]) {
-    @starting-style { translate: 1.5rem 0; }
+    @starting-style {
+      translate: 1.5rem 0;
+    }
   }
 
   /* a streamed word: wrap each in .session-token as it arrives and it fades
@@ -89,7 +99,9 @@
   .session[data-animate] .session-token {
     transition: opacity 180ms ease;
 
-    @starting-style { opacity: 0; }
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   /* -- Scroll buttons: float over the transcript, stuck to its edge -- */
@@ -113,7 +125,11 @@
     opacity: 0;
     scale: 0.85;
     visibility: hidden;
-    transition: opacity 150ms, scale 150ms, visibility 150ms allow-discrete, background-color 150ms;
+    transition:
+      opacity 150ms,
+      scale 150ms,
+      visibility 150ms allow-discrete,
+      background-color 150ms;
 
     /* a chevron, drawn */
     &::before {
@@ -126,8 +142,14 @@
       translate: 0 -0.125rem;
     }
 
-    &:hover { background: var(--accent); color: var(--accent-foreground); }
-    &:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
 
     /* to the end: at the bottom edge, overlaying the last row */
     &[data-to="end"] {
@@ -140,7 +162,10 @@
       order: -1;
       inset-block-start: 0.5rem;
       margin-block-end: -2.25rem;
-      &::before { rotate: -135deg; translate: 0 0.125rem; }
+      &::before {
+        rotate: -135deg;
+        translate: 0 0.125rem;
+      }
     }
   }
 
@@ -186,18 +211,29 @@
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .session-scroll-button,
-    .session[data-animate] :is(.session-item, .session-token) { transition: none; }
+    .session[data-animate] :is(.session-item, .session-token) {
+      transition: none;
+    }
   }
 
   @media (prefers-contrast: more) {
     .session,
     .session-footer,
-    .session-scroll-button { border-color: var(--foreground); }
+    .session-scroll-button {
+      border-color: var(--foreground);
+    }
   }
 
   @media (forced-colors: active) {
-    .session { border: 1px solid CanvasText; }
-    .session-scroll-button { border: 1px solid ButtonText; }
-    .session[data-drop-active]::after { border-color: Highlight; forced-color-adjust: none; }
+    .session {
+      border: 1px solid CanvasText;
+    }
+    .session-scroll-button {
+      border: 1px solid ButtonText;
+    }
+    .session[data-drop-active]::after {
+      border-color: Highlight;
+      forced-color-adjust: none;
+    }
   }
 }

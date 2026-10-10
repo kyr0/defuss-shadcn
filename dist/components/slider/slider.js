@@ -127,7 +127,10 @@ function initRange(range) {
     lo.addEventListener('input', () => clamp(lo));
     hi.addEventListener('input', () => clamp(hi));
     for (const s of [lo, hi])
-        s.addEventListener('pointerdown', () => { lo.toggleAttribute('data-active', s === lo); hi.toggleAttribute('data-active', s === hi); });
+        s.addEventListener('pointerdown', () => {
+            lo.toggleAttribute('data-active', s === lo);
+            hi.toggleAttribute('data-active', s === hi);
+        });
     paintRange(range);
 }
 /**
@@ -175,11 +178,15 @@ export const sliderApi = componentState({
 df$.sliderApi = sliderApi;
 df$.sliderStates = sliderStates;
 function init() {
-    dfDollar('.slider-range:not([data-init])').toArray().forEach((range) => {
+    dfDollar('.slider-range:not([data-init])')
+        .toArray()
+        .forEach((range) => {
         range.dataset.init = '';
         initRange(range);
     });
-    dfDollar('.slider:not([data-init])').toArray().forEach((el) => {
+    dfDollar('.slider:not([data-init])')
+        .toArray()
+        .forEach((el) => {
         el.dataset.init = '';
         // remember the authored disabled state so setState('default') restores it
         el._defaultDisabled = el.disabled;

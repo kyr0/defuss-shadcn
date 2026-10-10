@@ -20,7 +20,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, safeShowPopover, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, safeShowPopover, componentState, bindComponent, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const comboboxStates = ['default', 'open'];
@@ -148,7 +148,10 @@ function initTags(wrapper) {
     // the State API, like every other combobox: setState('open' | 'default')
     // drives the list (the tag path returns before the main init binds it -
     // without this the docs' State "open" switch did nothing on a tag input)
-    popover._open = () => { open(); filter(); };
+    popover._open = () => {
+        open();
+        filter();
+    };
     popover._close = close;
     // el.store + el.api (AGENTS.md "State through stores")
     bindComponent(popover, comboboxApi);
@@ -174,7 +177,7 @@ function initTags(wrapper) {
         }
         if (empty)
             dfDollar(empty).prop('hidden', any || (!!createRow && !createRow.hidden));
-        highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
+        highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? (visible()[0] ?? null) : null));
     };
     /** Tags + hidden inputs + combobox:change - the tag input's single renderer. */
     const render = (announce = true, created = null) => {
@@ -185,14 +188,21 @@ function initTags(wrapper) {
         dfDollar(tags).morph(labels
             .map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc(label)}<button type="button" class="combobox-tag-remove" data-value="${esc(values[i])}" aria-label="Remove ${esc(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`)
             .join('') +
-            (name ? values.map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`).join('') : '')); // escaped text + static icon (§5.1)
+            (name
+                ? values
+                    .map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`)
+                    .join('')
+                : '')); // escaped text + static icon (§5.1)
         // the placeholder only while there are no tags (it would read as a value)
         if (input.dataset.placeholder === undefined)
             input.dataset.placeholder = input.placeholder;
         input.placeholder = labels.length ? '' : input.dataset.placeholder;
         // Fires when the user changes the selection - the selected values, their labels, and the values created from typed text.
         if (announce)
-            wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels, created } }));
+            wrapper.dispatchEvent(new CustomEvent('combobox:change', {
+                bubbles: true,
+                detail: { values, labels, created },
+            }));
     };
     /** Commit: exact match / highlighted row / new tag from the text. */
     const commit = (row) => {
@@ -257,8 +267,14 @@ function initTags(wrapper) {
         filter();
         input.focus();
     });
-    input.addEventListener('focus', () => { open(); filter(); });
-    input.addEventListener('input', () => { open(); filter(); });
+    input.addEventListener('focus', () => {
+        open();
+        filter();
+    });
+    input.addEventListener('input', () => {
+        open();
+        filter();
+    });
     input.addEventListener('keydown', (e) => {
         const rows = visible();
         const at = highlighted ? rows.indexOf(highlighted) : -1;
@@ -323,10 +339,14 @@ function initTags(wrapper) {
     });
     // toggle events are queued: a close fired just before a re-open arrives after
     // it - mirror the popover's REAL state instead of assuming "closed"
-    popover.addEventListener('toggle', () => { dfDollar(input).attr('aria-expanded', String(isOpen())); });
+    popover.addEventListener('toggle', () => {
+        dfDollar(input).attr('aria-expanded', String(isOpen()));
+    });
 }
 function init() {
-    dfDollar('.combobox:not([data-init])').toArray().forEach((wrapper) => {
+    dfDollar('.combobox:not([data-init])')
+        .toArray()
+        .forEach((wrapper) => {
         wrapper.dataset.init = '';
         if (wrapper.hasAttribute('data-tags')) {
             initTags(wrapper);
@@ -381,7 +401,11 @@ function init() {
             tags = document.createElement('div');
             tags.className = 'combobox-tags';
             tags.setAttribute('role', 'list');
-            tags.setAttribute('aria-label', `Selected ${trigger.getAttribute('aria-label') || dfDollar('#' + CSS.escape(trigger.getAttribute('aria-labelledby') || '')).get(0)?.textContent?.trim() || 'options'}`);
+            tags.setAttribute('aria-label', `Selected ${trigger.getAttribute('aria-label') ||
+                dfDollar('#' + CSS.escape(trigger.getAttribute('aria-labelledby') || ''))
+                    .get(0)
+                    ?.textContent?.trim() ||
+                'options'}`);
             dfDollar(clearBtn).after(tags);
             // a tag's × removes its option; focus moves to the neighbouring tag
             // (or back to the trigger) so keyboard users never lose their place
@@ -423,7 +447,11 @@ function init() {
                 dfDollar(tags).morph(labels
                     .map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc(label)}<button type="button" class="combobox-tag-remove" data-value="${esc(values[i])}" aria-label="Remove ${esc(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`)
                     .join('') +
-                    (name ? values.map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`).join('') : '')); // escaped option text + static icon (§5.1: text is never parsed as markup)
+                    (name
+                        ? values
+                            .map((v) => `<input type="hidden" name="${esc(name)}" value="${esc(v)}" id="${uid}-input-${idPart(v)}">`)
+                            .join('')
+                        : '')); // escaped option text + static icon (§5.1: text is never parsed as markup)
             }
             if (announce)
                 wrapper.dispatchEvent(new CustomEvent('combobox:change', { bubbles: true, detail: { values, labels } }));
@@ -469,24 +497,38 @@ function init() {
         const filter = (query) => {
             const q = query.toLowerCase();
             let hasVisible = false;
-            allItems.forEach((item) => { const match = !q || item.textContent.trim().toLowerCase().includes(q); dfDollar(item).prop('hidden', !match); if (match)
-                hasVisible = true; });
+            allItems.forEach((item) => {
+                const match = !q || item.textContent.trim().toLowerCase().includes(q);
+                dfDollar(item).prop('hidden', !match);
+                if (match)
+                    hasVisible = true;
+            });
             $listbox.find('.combobox-group-label').each(function () {
                 const label = this;
                 let next = label.nextElementSibling;
                 let groupHasVisible = false;
-                while (next && !next.classList.contains('combobox-group-label') && !next.classList.contains('combobox-separator')) {
+                while (next &&
+                    !next.classList.contains('combobox-group-label') &&
+                    !next.classList.contains('combobox-separator')) {
                     if (next.getAttribute('role') === 'option' && !next.hidden)
                         groupHasVisible = true;
                     next = next.nextElementSibling;
                 }
                 dfDollar(label).prop('hidden', !groupHasVisible);
             });
-            $listbox.find('.combobox-separator').each(function () { const sep = this; const prev = sep.previousElementSibling; const next = sep.nextElementSibling; dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden))); });
+            $listbox.find('.combobox-separator').each(function () {
+                const sep = this;
+                const prev = sep.previousElementSibling;
+                const next = sep.nextElementSibling;
+                dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden)));
+            });
             if ($empty.length)
                 $empty.prop('hidden', hasVisible);
         };
-        const clearHighlight = () => { allItems.data('highlighted', null); highlighted = -1; };
+        const clearHighlight = () => {
+            allItems.data('highlighted', null);
+            highlighted = -1;
+        };
         const doHighlight = (index) => {
             const items = getVisibleItems();
             clearHighlight();
@@ -513,13 +555,18 @@ function init() {
             renderSelection();
             close();
         };
-        trigger.addEventListener('click', () => { if (isOpen()) {
-            close();
-        }
-        else {
-            open();
-        } });
-        searchInput.addEventListener('input', () => { filter(searchInput.value); doHighlight(0); });
+        trigger.addEventListener('click', () => {
+            if (isOpen()) {
+                close();
+            }
+            else {
+                open();
+            }
+        });
+        searchInput.addEventListener('input', () => {
+            filter(searchInput.value);
+            doHighlight(0);
+        });
         searchInput.addEventListener('keydown', (e) => {
             const items = getVisibleItems();
             switch (e.key) {
@@ -566,12 +613,18 @@ function init() {
                 }
             }
         });
-        listbox.addEventListener('click', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden && item.getAttribute('aria-disabled') !== 'true')
-            selectItem(item); });
-        listbox.addEventListener('mousemove', (e) => { const item = e.target.closest('[role="option"]'); if (item && !item.hidden) {
-            const items = getVisibleItems();
-            doHighlight(items.indexOf(item));
-        } });
+        listbox.addEventListener('click', (e) => {
+            const item = e.target.closest('[role="option"]');
+            if (item && !item.hidden && item.getAttribute('aria-disabled') !== 'true')
+                selectItem(item);
+        });
+        listbox.addEventListener('mousemove', (e) => {
+            const item = e.target.closest('[role="option"]');
+            if (item && !item.hidden) {
+                const items = getVisibleItems();
+                doHighlight(items.indexOf(item));
+            }
+        });
         popover.addEventListener('toggle', () => {
             // queued toggle events may arrive after a re-open - mirror the real state
             const nowOpen = popover.matches(':popover-open');

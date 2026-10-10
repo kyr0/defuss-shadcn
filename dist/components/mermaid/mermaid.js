@@ -193,7 +193,11 @@ function sourceOf(fig) {
     // text nodes carry the decoded characters; an element written in the
     // diagram (a literal <br>) is kept as markup - serialized through df$
     return Array.from(pre.childNodes)
-        .map((n) => (n.nodeType === Node.TEXT_NODE ? n.data : n.nodeType === Node.ELEMENT_NODE ? dfDollar('<div></div>').append(n.cloneNode(true)).html() ?? '' : ''))
+        .map((n) => n.nodeType === Node.TEXT_NODE
+        ? n.data
+        : n.nodeType === Node.ELEMENT_NODE
+            ? (dfDollar('<div></div>').append(n.cloneNode(true)).html() ?? '')
+            : '')
         .join('')
         .replace(/^\n+|\s+$/g, '');
 }

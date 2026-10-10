@@ -51,26 +51,58 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, SkillField, S
 ```html example label="Anatomy" hint="One attribute is the entire API: data-df-entrance picks the effect, the --df-motion-* custom properties tune it (any ancestor, container or inline style - inline wins). The live grid below runs all fifteen; press Replay to re-fire them." previewStyle="align-items:flex-start;"
 <table class="table mini-table">
   <tbody>
-    <tr><td><code>data-df-entrance="up"</code></td><td>drift in from below (also down / left / right)</td></tr>
-    <tr><td><code>data-df-entrance="pop"</code></td><td>scale with overshoot (also zoom / zoom-out)</td></tr>
-    <tr><td><code>data-df-entrance="flip"</code></td><td>rotational (also spin / skew)</td></tr>
-    <tr><td><code>data-df-entrance="wipe"</code></td><td>clip-path reveals (also wipe-up / iris)</td></tr>
-    <tr><td><code>style="--df-motion-delay:400ms"</code></td><td>timing surface (also -duration / -ease / -distance …)</td></tr>
-    <tr><td><code>data-df-stagger=""</code></td><td>container grader for child delays</td></tr>
-    <tr><td><code>data-df-draw</code> + <code>pathLength="1"</code></td><td>SVG draw-in primitive</td></tr>
+    <tr
+      ><td><code>data-df-entrance="up"</code></td
+      ><td>drift in from below (also down / left / right)</td></tr
+    >
+    <tr
+      ><td><code>data-df-entrance="pop"</code></td
+      ><td>scale with overshoot (also zoom / zoom-out)</td></tr
+    >
+    <tr
+      ><td><code>data-df-entrance="flip"</code></td
+      ><td>rotational (also spin / skew)</td></tr
+    >
+    <tr
+      ><td><code>data-df-entrance="wipe"</code></td
+      ><td>clip-path reveals (also wipe-up / iris)</td></tr
+    >
+    <tr
+      ><td><code>style="--df-motion-delay:400ms"</code></td
+      ><td>timing surface (also -duration / -ease / -distance …)</td></tr
+    >
+    <tr
+      ><td><code>data-df-stagger=""</code></td
+      ><td>container grader for child delays</td></tr
+    >
+    <tr
+      ><td><code>data-df-draw</code> + <code>pathLength="1"</code></td
+      ><td>SVG draw-in primitive</td></tr
+    >
   </tbody>
 </table>
 ```
 
 ```html example label="The vocabulary" hint="All fifteen entrances are one attribute each - they run on application (fresh DOM included; animations, unlike transitions, need no rendered from-state). Each plays for 1500 ms on an evenly paced ease-in-out, so the whole motion is visible (pop keeps its overshoot curve). Replay them with the button." previewStyle="align-items:flex-start;"
-<div id="vocab" style="--df-motion-duration:1500ms; --df-motion-ease:cubic-bezier(0.45, 0, 0.55, 1); display:grid; grid-template-columns:repeat(3, 1fr); gap:0.75rem 1.25rem; font-family:var(--font-mono); font-size:0.85rem;">
+<div
+  id="vocab"
+  style="
+    --df-motion-duration: 1500ms;
+    --df-motion-ease: cubic-bezier(0.45, 0, 0.55, 1);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  "
+>
   <code data-df-entrance="up">up</code>
   <code data-df-entrance="down">down</code>
   <code data-df-entrance="left">left</code>
   <code data-df-entrance="right">right</code>
   <code data-df-entrance="zoom">zoom</code>
   <code data-df-entrance="zoom-out">zoom-out</code>
-  <code data-df-entrance="pop" style="--df-motion-ease:cubic-bezier(.34,1.56,.64,1);">pop</code>
+  <code data-df-entrance="pop" style="--df-motion-ease: cubic-bezier(0.34, 1.56, 0.64, 1)">pop</code>
   <code data-df-entrance="spin">spin</code>
   <code data-df-entrance="flip">flip</code>
   <code data-df-entrance="skew">skew</code>
@@ -80,39 +112,95 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, SkillField, S
   <code data-df-entrance="iris">iris</code>
   <code data-df-entrance="fade">fade</code>
 </div>
-<button class="btn" data-size="sm" style="margin-top:1.25rem;" onclick="document.querySelectorAll('#vocab [data-df-entrance]').forEach((el) => ddf$.entrance(el))">Replay all</button>
+<button
+  class="btn"
+  data-size="sm"
+  style="margin-top: 1.25rem"
+  onclick="document.querySelectorAll('#vocab [data-df-entrance]').forEach((el) => ddf$.entrance(el))"
+  >Replay all</button
+>
 ```
 
 ```html example label="Stagger + timing" hint="data-df-stagger grades children by --df-motion-stagger-step (first 8, then capped) while each keeps its own direction; duration/ease/distance are plain custom properties - set them on any ancestor, container or element (inline wins). Run it again with the button." previewStyle="align-items:flex-start;"
-<section id="stagger-demo" style="--df-motion-duration:520ms; --df-motion-distance:28px;">
-  <h4 data-df-entrance="wipe" style="margin:0 0 0.75rem;">Release 2.4</h4>
-  <ul data-df-stagger style="--df-motion-stagger-step:140ms; margin:0 0 0.85rem; padding:0; list-style:none; display:grid; gap:0.5rem;">
-    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">Entrance vocabulary - fifteen directions, zero JS</li>
-    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">animation-composition: add - your transforms survive</li>
-    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">Deterministic replay: cancel → play, finished/cancel handles</li>
-    <li data-df-entrance="up" class="card" style="padding:0.5rem 0.85rem;">1ms under prefers-reduced-motion - contract intact</li>
+<section id="stagger-demo" style="--df-motion-duration: 520ms; --df-motion-distance: 28px">
+  <h4 data-df-entrance="wipe" style="margin: 0 0 0.75rem">Release 2.4</h4>
+  <ul
+    data-df-stagger
+    style="
+      --df-motion-stagger-step: 140ms;
+      margin: 0 0 0.85rem;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.5rem;
+    "
+  >
+    <li data-df-entrance="up" class="card" style="padding: 0.5rem 0.85rem"
+      >Entrance vocabulary - fifteen directions, zero JS</li
+    >
+    <li data-df-entrance="up" class="card" style="padding: 0.5rem 0.85rem"
+      >animation-composition: add - your transforms survive</li
+    >
+    <li data-df-entrance="up" class="card" style="padding: 0.5rem 0.85rem"
+      >Deterministic replay: cancel → play, finished/cancel handles</li
+    >
+    <li data-df-entrance="up" class="card" style="padding: 0.5rem 0.85rem"
+      >1ms under prefers-reduced-motion - contract intact</li
+    >
   </ul>
-  <button class="btn" data-size="sm" onclick="document.querySelectorAll('#stagger-demo [data-df-entrance]').forEach((el) => ddf$.entrance(el))">Run stagger</button>
+  <button
+    class="btn"
+    data-size="sm"
+    onclick="document.querySelectorAll('#stagger-demo [data-df-entrance]').forEach((el) => ddf$.entrance(el))"
+    >Run stagger</button
+  >
 </section>
 ```
 
 ```html example label="SVG draw-in" hint="data-df-draw is its own primitive: pathLength=1 calibrates distance-along-path, so one dash rule (1 → 0) fits any geometry. Replay via ddf$.draw(pathEl) - the button does exactly that." previewStyle="align-items:flex-start;"
-<svg id="draw-demo" width="360" height="110" viewBox="0 0 360 110" fill="none" stroke="var(--primary)" stroke-width="5" stroke-linecap="round" style="display:block; margin-bottom:0.85rem;">
-  <path data-df-draw pathLength="1" style="--df-motion-duration:900ms;" d="M8 90 C 90 85, 150 20, 210 40 S 320 95, 352 14" />
+<svg
+  id="draw-demo"
+  width="360"
+  height="110"
+  viewBox="0 0 360 110"
+  fill="none"
+  stroke="var(--primary)"
+  stroke-width="5"
+  stroke-linecap="round"
+  style="display: block; margin-bottom: 0.85rem"
+>
+  <path
+    data-df-draw
+    pathLength="1"
+    style="--df-motion-duration: 900ms"
+    d="M8 90 C 90 85, 150 20, 210 40 S 320 95, 352 14"
+  />
 </svg>
 <button class="btn" data-size="sm" onclick="ddf$.draw(document.querySelector('#draw-demo path'))">Draw again</button>
 ```
 
 ```html example label="JS controller" hint="The imperative half: entrance() retriggers the same keyframes with per-call timing, returns a finished promise + cancel - no class toggling, no forced reflow. Unknown effects throw. Each call here plays for 1500 ms on an evenly paced ease-in-out. Pick an effect chip." previewStyle="align-items:flex-start;"
-<div class="card" id="m-console" style="max-width:26rem; padding:1rem;">
-  <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.85rem;">
-    <code style="font-size:0.8rem;">ddf$.entrance(card, effect)</code>
+<div class="card" id="m-console" style="max-width: 26rem; padding: 1rem">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.85rem">
+    <code style="font-size: 0.8rem">ddf$.entrance(card, effect)</code>
     <span class="badge" data-variant="secondary" id="m-status">idle</span>
   </div>
-  <div id="m-card" class="card" data-df-entrance="up" style="--df-motion-duration:1500ms; --df-motion-ease:cubic-bezier(0.45, 0, 0.55, 1); padding:1.25rem 1rem; text-align:center; font-weight:600; margin-bottom:1.25rem;">
-    Ship it. <span class="badge" data-variant="outline" id="m-effect" style="margin-left:0.4rem;">up</span>
+  <div
+    id="m-card"
+    class="card"
+    data-df-entrance="up"
+    style="
+      --df-motion-duration: 1500ms;
+      --df-motion-ease: cubic-bezier(0.45, 0, 0.55, 1);
+      padding: 1.25rem 1rem;
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    "
+  >
+    Ship it. <span class="badge" data-variant="outline" id="m-effect" style="margin-left: 0.4rem">up</span>
   </div>
-  <div id="m-chips" style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+  <div id="m-chips" style="display: flex; flex-wrap: wrap; gap: 0.4rem">
     <button class="btn" data-variant="outline" data-size="sm" data-effect="flip">flip</button>
     <button class="btn" data-variant="outline" data-size="sm" data-effect="pop">pop</button>
     <button class="btn" data-variant="outline" data-size="sm" data-effect="spin">spin</button>
@@ -132,7 +220,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, SkillField, S
     const status = document.getElementById('m-status');
     document.getElementById('m-effect').textContent = chip.dataset.effect;
     status.textContent = 'animating…';
-    const motion = ddf$.entrance(card, chip.dataset.effect, { duration: 1500, easing: 'cubic-bezier(0.45, 0, 0.55, 1)' });
+    const motion = ddf$.entrance(card, chip.dataset.effect, {
+      duration: 1500,
+      easing: 'cubic-bezier(0.45, 0, 0.55, 1)',
+    });
     await motion.finished; // resolves on settle (or cancel)
     status.textContent = 'settled';
   });

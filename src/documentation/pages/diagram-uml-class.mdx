@@ -19,20 +19,30 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">UML class diagram</span>
     <span class="diagram-title">Payments domain</span>
-    <span class="diagram-dek">Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one, dependency a dashed open arrow.</span>
+    <span class="diagram-dek"
+      >Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one,
+      dependency a dashed open arrow.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:12rem">
-    <div class="diagram-node" data-node="method" data-shape="class" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 12rem">
+    <div class="diagram-node" data-node="method" data-shape="class" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">«interface»</span>
       <span class="diagram-node-name">PaymentMethod</span>
-      <ul class="diagram-node-fields">
-      </ul>
+      <ul class="diagram-node-fields"> </ul>
       <ul class="diagram-node-ops">
         <li>+ authorize(amount): Auth</li>
         <li>+ capture(auth): Receipt</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="payment" data-shape="class" data-tone="accent" data-abstract data-step-label="The abstraction" style="--col:2;--row:2">
+    <div
+      class="diagram-node"
+      data-node="payment"
+      data-shape="class"
+      data-tone="accent"
+      data-abstract
+      data-step-label="The abstraction"
+      style="--col: 2; --row: 2"
+    >
       <span class="diagram-node-name">Payment</span>
       <ul class="diagram-node-fields">
         <li data-field="__id"><span>- id</span><span>UUID</span></li>
@@ -42,7 +52,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ refund(): Refund</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="card" data-shape="class" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="card" data-shape="class" style="--col: 1; --row: 3">
       <span class="diagram-node-name">CardPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__token"><span>- token</span><span>String</span></li>
@@ -52,7 +62,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="sepa" data-shape="class" style="--col:3;--row:3">
+    <div class="diagram-node" data-node="sepa" data-shape="class" style="--col: 3; --row: 3">
       <span class="diagram-node-name">SepaPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__mandate"><span>- mandate</span><span>Mandate</span></li>
@@ -61,7 +71,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="order" data-shape="class" style="--col:1;--row:1">
+    <div class="diagram-node" data-node="order" data-shape="class" style="--col: 1; --row: 1">
       <span class="diagram-node-name">Order</span>
       <ul class="diagram-node-fields">
         <li data-field="__lines"><span>- lines</span><span>LineItem[]</span></li>
@@ -71,10 +81,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ checkout(): Payment</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="tax" data-shape="class" style="--col:3;--row:1">
+    <div class="diagram-node" data-node="tax" data-shape="class" style="--col: 3; --row: 1">
       <span class="diagram-node-name">TaxService</span>
-      <ul class="diagram-node-fields">
-      </ul>
+      <ul class="diagram-node-fields"> </ul>
       <ul class="diagram-node-ops">
         <li>+ rate(country): Decimal</li>
       </ul>
@@ -84,7 +93,16 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <li class="diagram-edge" data-from="payment" data-to="method" data-line="dashed" data-head="triangle"></li>
     <li class="diagram-edge" data-from="card" data-to="payment" data-head="triangle"></li>
     <li class="diagram-edge" data-from="sepa" data-to="payment" data-head="triangle"></li>
-    <li class="diagram-edge" data-from="order" data-to="payment" data-head="none" data-tail="diamond-open" data-from-label="1" data-to-label="0..*">pays with</li>
+    <li
+      class="diagram-edge"
+      data-from="order"
+      data-to="payment"
+      data-head="none"
+      data-tail="diamond-open"
+      data-from-label="1"
+      data-to-label="0..*"
+      >pays with</li
+    >
     <li class="diagram-edge" data-from="order" data-to="tax" data-line="dashed" data-head="open">uses</li>
   </ol>
 </figure>
@@ -93,24 +111,42 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="step-by-step">Step by step</H2>
 
 ```html example label="From the interface down" component="diagram" hint="Interface, abstraction, implementations, then the collaborators."
-<figure class="diagram" id="dg-uml-steps" data-type="uml-class" data-steps data-autoplay aria-label="Payments domain class diagram">
+<figure
+  class="diagram"
+  id="dg-uml-steps"
+  data-type="uml-class"
+  data-steps
+  data-autoplay
+  aria-label="Payments domain class diagram"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">UML class diagram</span>
     <span class="diagram-title">Payments domain</span>
-    <span class="diagram-dek">Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one, dependency a dashed open arrow.</span>
+    <span class="diagram-dek"
+      >Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one,
+      dependency a dashed open arrow.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:12rem">
-    <div class="diagram-node" data-node="method" data-shape="class" data-step="1" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 12rem">
+    <div class="diagram-node" data-node="method" data-shape="class" data-step="1" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">«interface»</span>
       <span class="diagram-node-name">PaymentMethod</span>
-      <ul class="diagram-node-fields">
-      </ul>
+      <ul class="diagram-node-fields"> </ul>
       <ul class="diagram-node-ops">
         <li>+ authorize(amount): Auth</li>
         <li>+ capture(auth): Receipt</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="payment" data-shape="class" data-tone="accent" data-abstract data-step="2" data-step-label="The abstraction" style="--col:2;--row:2">
+    <div
+      class="diagram-node"
+      data-node="payment"
+      data-shape="class"
+      data-tone="accent"
+      data-abstract
+      data-step="2"
+      data-step-label="The abstraction"
+      style="--col: 2; --row: 2"
+    >
       <span class="diagram-node-name">Payment</span>
       <ul class="diagram-node-fields">
         <li data-field="__id"><span>- id</span><span>UUID</span></li>
@@ -120,7 +156,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ refund(): Refund</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="card" data-shape="class" data-step="3" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="card" data-shape="class" data-step="3" style="--col: 1; --row: 3">
       <span class="diagram-node-name">CardPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__token"><span>- token</span><span>String</span></li>
@@ -130,7 +166,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="sepa" data-shape="class" data-step="3" style="--col:3;--row:3">
+    <div class="diagram-node" data-node="sepa" data-shape="class" data-step="3" style="--col: 3; --row: 3">
       <span class="diagram-node-name">SepaPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__mandate"><span>- mandate</span><span>Mandate</span></li>
@@ -139,7 +175,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="order" data-shape="class" data-step="4" style="--col:1;--row:1">
+    <div class="diagram-node" data-node="order" data-shape="class" data-step="4" style="--col: 1; --row: 1">
       <span class="diagram-node-name">Order</span>
       <ul class="diagram-node-fields">
         <li data-field="__lines"><span>- lines</span><span>LineItem[]</span></li>
@@ -149,10 +185,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ checkout(): Payment</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="tax" data-shape="class" data-step="4" style="--col:3;--row:1">
+    <div class="diagram-node" data-node="tax" data-shape="class" data-step="4" style="--col: 3; --row: 1">
       <span class="diagram-node-name">TaxService</span>
-      <ul class="diagram-node-fields">
-      </ul>
+      <ul class="diagram-node-fields"> </ul>
       <ul class="diagram-node-ops">
         <li>+ rate(country): Decimal</li>
       </ul>
@@ -162,7 +197,16 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <li class="diagram-edge" data-from="payment" data-to="method" data-line="dashed" data-head="triangle"></li>
     <li class="diagram-edge" data-from="card" data-to="payment" data-head="triangle"></li>
     <li class="diagram-edge" data-from="sepa" data-to="payment" data-head="triangle"></li>
-    <li class="diagram-edge" data-from="order" data-to="payment" data-head="none" data-tail="diamond-open" data-from-label="1" data-to-label="0..*">pays with</li>
+    <li
+      class="diagram-edge"
+      data-from="order"
+      data-to="payment"
+      data-head="none"
+      data-tail="diamond-open"
+      data-from-label="1"
+      data-to-label="0..*"
+      >pays with</li
+    >
     <li class="diagram-edge" data-from="order" data-to="tax" data-line="dashed" data-head="open">uses</li>
   </ol>
 </figure>
@@ -174,29 +218,53 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="UML Class, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-uml-live" data-diagram-action="prev">Previous</button>
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-uml-live" data-diagram-action="next">Next</button>
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-uml-live" data-diagram-action="clear">Clear</button>
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-uml-live">Click a box or an arrow - or press Next.</output>
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-uml-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-uml-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-uml-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-uml-live"
+    >Click a box or an arrow - or press Next.</output
+  >
 </div>
-<figure class="diagram" id="dg-uml-live" data-interactive data-type="uml-class" aria-label="Payments domain class diagram">
+<figure
+  class="diagram"
+  id="dg-uml-live"
+  data-interactive
+  data-type="uml-class"
+  aria-label="Payments domain class diagram"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">UML class diagram</span>
     <span class="diagram-title">Payments domain</span>
-    <span class="diagram-dek">Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one, dependency a dashed open arrow.</span>
+    <span class="diagram-dek"
+      >Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one,
+      dependency a dashed open arrow.</span
+    >
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:12rem">
-    <div class="diagram-node" data-node="method" data-shape="class" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 12rem">
+    <div class="diagram-node" data-node="method" data-shape="class" style="--col: 2; --row: 1">
       <span class="diagram-node-eyebrow">«interface»</span>
       <span class="diagram-node-name">PaymentMethod</span>
-      <ul class="diagram-node-fields">
-      </ul>
+      <ul class="diagram-node-fields"> </ul>
       <ul class="diagram-node-ops">
         <li>+ authorize(amount): Auth</li>
         <li>+ capture(auth): Receipt</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="payment" data-shape="class" data-tone="accent" data-abstract data-step-label="The abstraction" style="--col:2;--row:2">
+    <div
+      class="diagram-node"
+      data-node="payment"
+      data-shape="class"
+      data-tone="accent"
+      data-abstract
+      data-step-label="The abstraction"
+      style="--col: 2; --row: 2"
+    >
       <span class="diagram-node-name">Payment</span>
       <ul class="diagram-node-fields">
         <li data-field="__id"><span>- id</span><span>UUID</span></li>
@@ -206,7 +274,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ refund(): Refund</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="card" data-shape="class" style="--col:1;--row:3">
+    <div class="diagram-node" data-node="card" data-shape="class" style="--col: 1; --row: 3">
       <span class="diagram-node-name">CardPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__token"><span>- token</span><span>String</span></li>
@@ -216,7 +284,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="sepa" data-shape="class" style="--col:3;--row:3">
+    <div class="diagram-node" data-node="sepa" data-shape="class" style="--col: 3; --row: 3">
       <span class="diagram-node-name">SepaPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__mandate"><span>- mandate</span><span>Mandate</span></li>
@@ -225,7 +293,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="order" data-shape="class" style="--col:1;--row:1">
+    <div class="diagram-node" data-node="order" data-shape="class" style="--col: 1; --row: 1">
       <span class="diagram-node-name">Order</span>
       <ul class="diagram-node-fields">
         <li data-field="__lines"><span>- lines</span><span>LineItem[]</span></li>
@@ -235,10 +303,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ checkout(): Payment</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="tax" data-shape="class" style="--col:3;--row:1">
+    <div class="diagram-node" data-node="tax" data-shape="class" style="--col: 3; --row: 1">
       <span class="diagram-node-name">TaxService</span>
-      <ul class="diagram-node-fields">
-      </ul>
+      <ul class="diagram-node-fields"> </ul>
       <ul class="diagram-node-ops">
         <li>+ rate(country): Decimal</li>
       </ul>
@@ -248,7 +315,16 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
     <li class="diagram-edge" data-from="payment" data-to="method" data-line="dashed" data-head="triangle"></li>
     <li class="diagram-edge" data-from="card" data-to="payment" data-head="triangle"></li>
     <li class="diagram-edge" data-from="sepa" data-to="payment" data-head="triangle"></li>
-    <li class="diagram-edge" data-from="order" data-to="payment" data-head="none" data-tail="diamond-open" data-from-label="1" data-to-label="0..*">pays with</li>
+    <li
+      class="diagram-edge"
+      data-from="order"
+      data-to="payment"
+      data-head="none"
+      data-tail="diamond-open"
+      data-from-label="1"
+      data-to-label="0..*"
+      >pays with</li
+    >
     <li class="diagram-edge" data-from="order" data-to="tax" data-line="dashed" data-head="open">uses</li>
   </ol>
 </figure>
@@ -260,29 +336,47 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 ```html example label="UML Class, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
 <div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-uml-edit-panel"><i data-lucide="panel-right"></i> Inspector</button>
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-uml-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
   <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
 </div>
 <div class="flex gap-3 items-start">
-  <div style="flex:1 1 0;min-width:0">
-    <figure class="diagram" id="dg-uml-edit" data-interactive data-type="uml-class" aria-label="Payments domain class diagram">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure
+      class="diagram"
+      id="dg-uml-edit"
+      data-interactive
+      data-type="uml-class"
+      aria-label="Payments domain class diagram"
+    >
       <figcaption class="diagram-caption">
         <span class="diagram-eyebrow">UML class diagram</span>
         <span class="diagram-title">Payments domain</span>
-        <span class="diagram-dek">Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one, dependency a dashed open arrow.</span>
+        <span class="diagram-dek"
+          >Inheritance and realization are hollow triangles, composition a filled diamond, aggregation a hollow one,
+          dependency a dashed open arrow.</span
+        >
       </figcaption>
-      <div class="diagram-canvas" style="--cols:3;--diagram-node-w:12rem">
-        <div class="diagram-node" data-node="method" data-shape="class" style="--col:2;--row:1">
+      <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 12rem">
+        <div class="diagram-node" data-node="method" data-shape="class" style="--col: 2; --row: 1">
           <span class="diagram-node-eyebrow">«interface»</span>
           <span class="diagram-node-name">PaymentMethod</span>
-          <ul class="diagram-node-fields">
-          </ul>
+          <ul class="diagram-node-fields"> </ul>
           <ul class="diagram-node-ops">
             <li>+ authorize(amount): Auth</li>
             <li>+ capture(auth): Receipt</li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="payment" data-shape="class" data-tone="accent" data-abstract data-step-label="The abstraction" style="--col:2;--row:2">
+        <div
+          class="diagram-node"
+          data-node="payment"
+          data-shape="class"
+          data-tone="accent"
+          data-abstract
+          data-step-label="The abstraction"
+          style="--col: 2; --row: 2"
+        >
           <span class="diagram-node-name">Payment</span>
           <ul class="diagram-node-fields">
             <li data-field="__id"><span>- id</span><span>UUID</span></li>
@@ -292,7 +386,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li>+ refund(): Refund</li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="card" data-shape="class" style="--col:1;--row:3">
+        <div class="diagram-node" data-node="card" data-shape="class" style="--col: 1; --row: 3">
           <span class="diagram-node-name">CardPayment</span>
           <ul class="diagram-node-fields">
             <li data-field="__token"><span>- token</span><span>String</span></li>
@@ -302,7 +396,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li>+ authorize(amount)</li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="sepa" data-shape="class" style="--col:3;--row:3">
+        <div class="diagram-node" data-node="sepa" data-shape="class" style="--col: 3; --row: 3">
           <span class="diagram-node-name">SepaPayment</span>
           <ul class="diagram-node-fields">
             <li data-field="__mandate"><span>- mandate</span><span>Mandate</span></li>
@@ -311,7 +405,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li>+ authorize(amount)</li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="order" data-shape="class" style="--col:1;--row:1">
+        <div class="diagram-node" data-node="order" data-shape="class" style="--col: 1; --row: 1">
           <span class="diagram-node-name">Order</span>
           <ul class="diagram-node-fields">
             <li data-field="__lines"><span>- lines</span><span>LineItem[]</span></li>
@@ -321,10 +415,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
             <li>+ checkout(): Payment</li>
           </ul>
         </div>
-        <div class="diagram-node" data-node="tax" data-shape="class" style="--col:3;--row:1">
+        <div class="diagram-node" data-node="tax" data-shape="class" style="--col: 3; --row: 1">
           <span class="diagram-node-name">TaxService</span>
-          <ul class="diagram-node-fields">
-          </ul>
+          <ul class="diagram-node-fields"> </ul>
           <ul class="diagram-node-ops">
             <li>+ rate(country): Decimal</li>
           </ul>
@@ -334,21 +427,43 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li class="diagram-edge" data-from="payment" data-to="method" data-line="dashed" data-head="triangle"></li>
         <li class="diagram-edge" data-from="card" data-to="payment" data-head="triangle"></li>
         <li class="diagram-edge" data-from="sepa" data-to="payment" data-head="triangle"></li>
-        <li class="diagram-edge" data-from="order" data-to="payment" data-head="none" data-tail="diamond-open" data-from-label="1" data-to-label="0..*">pays with</li>
+        <li
+          class="diagram-edge"
+          data-from="order"
+          data-to="payment"
+          data-head="none"
+          data-tail="diamond-open"
+          data-from-label="1"
+          data-to-label="0..*"
+          >pays with</li
+        >
         <li class="diagram-edge" data-from="order" data-to="tax" data-line="dashed" data-head="open">uses</li>
       </ol>
     </figure>
   </div>
-  <section class="card panel" id="dg-uml-edit-panel" aria-labelledby="dg-uml-edit-title" style="flex:0 0 17rem">
+  <section class="card panel" id="dg-uml-edit-panel" aria-labelledby="dg-uml-edit-title" style="flex: 0 0 17rem">
     <header class="panel-header">
       <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
       <h3 class="panel-title" id="dg-uml-edit-title">Inspector</h3>
       <div class="panel-tools">
-        <button type="button" class="btn panel-close" data-variant="ghost" data-size="icon-sm" aria-label="Close Inspector"><i data-lucide="x"></i></button>
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
       </div>
     </header>
     <div class="panel-body" data-flush>
-      <div class="property-grid" id="dg-uml-edit-grid" data-frame="none" data-empty-text="Click a box or an arrow." aria-label="Selection properties"></div>
+      <div
+        class="property-grid"
+        id="dg-uml-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
     </div>
   </section>
 </div>
@@ -377,13 +492,27 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="delta">Delta</H2>
 
 ```html example label="Wallets, a renamed operation" component="diagram" hint="A removed attribute row, a changed class with a note, an added subclass."
-<figure class="diagram" id="dg-uml-delta" data-type="uml-class" data-delta aria-label="Payments classes after adding wallets">
+<figure
+  class="diagram"
+  id="dg-uml-delta"
+  data-type="uml-class"
+  data-delta
+  aria-label="Payments classes after adding wallets"
+>
   <figcaption class="diagram-caption">
     <span class="diagram-eyebrow">Refactor</span>
     <span class="diagram-title">Wallets, and a renamed operation</span>
   </figcaption>
-  <div class="diagram-canvas" style="--cols:3;--diagram-node-w:12rem">
-    <div class="diagram-node" data-node="payment" data-shape="class" data-abstract data-change="changed" data-change-note="refund() → refund(reason); legacyRef dropped" style="--col:2;--row:1">
+  <div class="diagram-canvas" style="--cols: 3; --diagram-node-w: 12rem">
+    <div
+      class="diagram-node"
+      data-node="payment"
+      data-shape="class"
+      data-abstract
+      data-change="changed"
+      data-change-note="refund() → refund(reason); legacyRef dropped"
+      style="--col: 2; --row: 1"
+    >
       <span class="diagram-node-name">Payment</span>
       <ul class="diagram-node-fields">
         <li data-field="__id"><span>- id</span><span>UUID</span></li>
@@ -394,7 +523,7 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ refund(reason): Refund</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="card" data-shape="class" style="--col:1;--row:2">
+    <div class="diagram-node" data-node="card" data-shape="class" style="--col: 1; --row: 2">
       <span class="diagram-node-name">CardPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__token"><span>- token</span><span>String</span></li>
@@ -403,7 +532,14 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
         <li>+ authorize(amount)</li>
       </ul>
     </div>
-    <div class="diagram-node" data-node="wallet" data-shape="class" data-tone="accent" data-change="added" style="--col:3;--row:2">
+    <div
+      class="diagram-node"
+      data-node="wallet"
+      data-shape="class"
+      data-tone="accent"
+      data-change="added"
+      style="--col: 3; --row: 2"
+    >
       <span class="diagram-node-name">WalletPayment</span>
       <ul class="diagram-node-fields">
         <li data-field="__provider"><span>- provider</span><span>ApplePay | GPay</span></li>

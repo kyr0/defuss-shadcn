@@ -20,7 +20,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.8') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, bindGlobalKeys } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, bindGlobalKeys, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const commandStates = ['default', 'open'];
@@ -102,7 +102,9 @@ function highlightItem(list, index) {
     return clamped;
 }
 function init() {
-    dfDollar('dialog.command:not([data-init])').toArray().forEach((dialog) => {
+    dfDollar('dialog.command:not([data-init])')
+        .toArray()
+        .forEach((dialog) => {
         dialog.dataset.init = '';
         // el.store + el.api (AGENTS.md "State through stores")
         bindComponent(dialog, commandApi, { name: shown(dialog), config: {} });
@@ -126,7 +128,9 @@ function init() {
                 if (match)
                     hasVisible = true;
             });
-            dfDollar(list).find('.command-group').each(function () {
+            dfDollar(list)
+                .find('.command-group')
+                .each(function () {
                 dfDollar(this).prop('hidden', dfDollar(this).find('.command-item:not([hidden])').length === 0);
             });
             dfDollar(list).find('.command-separator').prop('hidden', !!query);
@@ -134,7 +138,9 @@ function init() {
                 dfDollar(empty).prop('hidden', hasVisible);
             highlightIndex = highlightItem(list, 0);
         };
-        input.addEventListener('input', () => { filter(input.value); });
+        input.addEventListener('input', () => {
+            filter(input.value);
+        });
         input.addEventListener('keydown', (e) => {
             const visible = getVisibleItems(list);
             if (e.key === 'ArrowDown') {
@@ -180,7 +186,9 @@ function init() {
             highlightIndex = -1;
         });
     });
-    dfDollar('[data-command-trigger]:not([data-init])').toArray().forEach((trigger) => {
+    dfDollar('[data-command-trigger]:not([data-init])')
+        .toArray()
+        .forEach((trigger) => {
         trigger.dataset.init = '';
         const dialog = dfDollar('#' + CSS.escape(trigger.dataset.commandTrigger)).get(0);
         if (!dialog)
