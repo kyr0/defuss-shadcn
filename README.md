@@ -18,7 +18,7 @@ Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla 
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
-**[Documentation & Live Demos →](https://kyr0.github.io/defuss-shadcn/)** · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
+**[Documentation & Live Demos →](https://shadcn.defuss.org/)** · [Theme Designer](https://shadcn.defuss.org/guides/theme-designer.html) · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
 
 ## TL;DR
 
@@ -95,7 +95,7 @@ flowchart LR
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
 ```
 
-Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). One component is kept out of `all.*`: the HTML Preview Editor (`code-example` - editable source + sandboxed live preview, the card every docs example renders in) ships as the extra bundle `wysiwyg.css` / `wysiwyg.js`, loaded after `all.*` or core. Pin a release instead of `@latest` for production: [Installation → Pinning a version](https://kyr0.github.io/defuss-shadcn/introduction/installation.html).
+Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). One component is kept out of `all.*`: the HTML Preview Editor (`code-example` - editable source + sandboxed live preview, the card every docs example renders in) ships as the extra bundle `wysiwyg.css` / `wysiwyg.js`, loaded after `all.*` or core. Pin a release instead of `@latest` for production: [Installation → Pinning a version](https://shadcn.defuss.org/introduction/installation.html).
 
 ### Via npm
 
@@ -118,7 +118,7 @@ Download the full system and drop it into any project. All the files are static 
 
 **[Download latest (.zip)](https://github.com/kyr0/defuss-shadcn/archive/refs/heads/main.zip)**
 
-Need less than everything? Every sidebar section also ships as its own bundle in `dist/sections/`, and each release attaches one ZIP per section - see [Bundles & Downloads](https://kyr0.github.io/defuss-shadcn/introduction/bundles.html).
+Need less than everything? Every sidebar section also ships as its own bundle in `dist/sections/`, and each release attaches one ZIP per section - see [Bundles & Downloads](https://shadcn.defuss.org/introduction/bundles.html).
 
 ## Quick start
 
@@ -168,13 +168,13 @@ One page, one dialog, driven by name - the markup is the [Dialog skill](dist/com
 </html>
 ```
 
-Every component page shows this pattern live: [Dialog](https://kyr0.github.io/defuss-shadcn/overlays/dialog.html), and every other component in the [sidebar](https://kyr0.github.io/defuss-shadcn/).
+Every component page shows this pattern live: [Dialog](https://shadcn.defuss.org/overlays/dialog.html), and every other component in the [sidebar](https://shadcn.defuss.org/).
 
 ## Using components
 
 ### Data attributes
 
-Components use `data-*` attributes for variants and sizes - one base class says *what* it is, the attributes say *which version*. Flat specificity, one API for every component, and a `class` attribute an agent can read. Guide: [Data Attribute API](https://kyr0.github.io/defuss-shadcn/guides/data-attributes.html).
+Components use `data-*` attributes for variants and sizes - one base class says *what* it is, the attributes say *which version*. Flat specificity, one API for every component, and a `class` attribute an agent can read. Guide: [Data Attribute API](https://shadcn.defuss.org/guides/data-attributes.html).
 
 | Attribute | Values (example) | Meaning |
 |---|---|---|
@@ -185,7 +185,7 @@ Components use `data-*` attributes for variants and sizes - one base class says 
 
 ### State API
 
-Every interactive component declares its states by name (`const dialogStates = ['default', 'open']`) and binds them to each element it initializes. Guide: [State API](https://kyr0.github.io/defuss-shadcn/guides/state-api.html).
+Every interactive component declares its states by name (`const dialogStates = ['default', 'open']`) and binds them to each element it initializes. Guide: [State API](https://shadcn.defuss.org/guides/state-api.html).
 
 | Member | Type | Description |
 |---|---|---|
@@ -199,11 +199,12 @@ Every declared state is covered by four artifacts - a screenshot in both color s
 
 ### Theming
 
-Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. A theme is one plain stylesheet with `:root` + `.dark` token blocks - switching themes means switching that file. Guide: [Theming](https://kyr0.github.io/defuss-shadcn/guides/theming.html).
+Tokens are compatible with [tweakcn.com](https://tweakcn.com) theme exports. A theme is one plain stylesheet with `:root` + `.dark` token blocks - switching themes means switching that file. Guide: [Theming](https://shadcn.defuss.org/guides/theming.html).
 
 1. **Ship it at build time** - link a theme file instead of the token file: every [tweakcn](https://tweakcn.com) preset ships generated in [`dist/theme/`](dist/theme/) (`claude.css`, `vercel.css`, ..., 43 presets; regenerated by `bun run build`, gated by `verify`). Or export your own from tweakcn and replace `dist/theme/utils/default-semantic-tokens.css` - components see the same tokens either way.
-2. **Switch it at runtime** - the [Theme Switcher](https://kyr0.github.io/defuss-shadcn/navigation/theme-switcher.html) component loads/unloads one `<link id="theme-css">` (the theme rides on top of the token file; no JS token objects). That is exactly what the theme picker on the documentation site does.
-3. Everything updates automatically - all components, the doc site, dark mode (each theme file carries both palettes).
+2. **Switch it at runtime** - the [Theme Switcher](https://shadcn.defuss.org/navigation/theme-switcher.html) component loads/unloads one `<link id="theme-css">` (the theme rides on top of the token file; no JS token objects). That is exactly what the theme picker on the documentation site does.
+3. **Design your own** - the [Theme Designer](https://shadcn.defuss.org/guides/theme-designer.html) edits every token live on the whole site, saves custom themes in your browser as you go, and imports / exports them in the tweakcn shape.
+4. Everything updates automatically - all components, the doc site, dark mode (each theme file carries both palettes).
 
 ### Optional modules
 
@@ -214,7 +215,7 @@ Four standalone stylesheets live beside the token file and are opt-in - no compo
 - [`dist/theme/utils/accessibility.css`](dist/theme/utils/accessibility.css) - screen-reader-only content (`.sr-only` / `.not-sr-only`, the clip pattern)
 - [`dist/theme/utils/shapes.css`](dist/theme/utils/shapes.css) - reusable silhouettes to mix a design up (radius scale, organic / cut / notch / scoop corners, clip-path shapes, section edges, shadow scale + stylized shadows, frames, background patterns)
 
-Load them after the tokens, before component CSS. Docs: [Sizing](https://kyr0.github.io/defuss-shadcn/guides/sizing.html) · [Layout](https://kyr0.github.io/defuss-shadcn/guides/layout.html) · [Shapes](https://kyr0.github.io/defuss-shadcn/guides/shapes.html) · [Accessibility](https://kyr0.github.io/defuss-shadcn/guides/accessibility.html)
+Load them after the tokens, before component CSS. Docs: [Sizing](https://shadcn.defuss.org/guides/sizing.html) · [Layout](https://shadcn.defuss.org/guides/layout.html) · [Shapes](https://shadcn.defuss.org/guides/shapes.html) · [Accessibility](https://shadcn.defuss.org/guides/accessibility.html)
 
 ### The component folder
 
@@ -230,7 +231,7 @@ components/
     └── dialog.js             ← interaction behavior (binds to core, when needed)
 ```
 
-Some components - like Button and Badge - are CSS-only. No JavaScript needed. The full list, with live demos: **[kyr0.github.io/defuss-shadcn →](https://kyr0.github.io/defuss-shadcn/)**
+Some components - like Button and Badge - are CSS-only. No JavaScript needed. The full list, with live demos: **[shadcn.defuss.org →](https://shadcn.defuss.org/)**
 
 ## For AI agents
 
@@ -255,7 +256,7 @@ Three task skills ship next to it (`skills/shadcn-*/`, generated from the releas
 | **`shadcn-theme`** | writes or updates a theme from text, colours, a design guide or images | `scripts/theme-check.mjs` checks tokens, radius and WCAG contrast and names the nearest passing lightness |
 | **`shadcn-review`** | reviews markup or a new component against the guides | `scripts/markup-check.mjs` finds modifier classes, unknown parts, values and tokens, loading mistakes, globals and unnamed icon buttons |
 
-`npx skills add kyr0/defuss-shadcn --skill '*'` installs all four; the Claude Code plugin carries them (`/defuss-shadcn:shadcn-theme`, ...). Per-agent flags, global installs and updates: [Vibe Coding / Agentic Engineering → Install as an AI Agent Skill](https://kyr0.github.io/defuss-shadcn/introduction/vibe-coding.html#install-as-an-ai-agent-skill).
+`npx skills add kyr0/defuss-shadcn --skill '*'` installs all four; the Claude Code plugin carries them (`/defuss-shadcn:shadcn-theme`, ...). Per-agent flags, global installs and updates: [Vibe Coding / Agentic Engineering → Install as an AI Agent Skill](https://shadcn.defuss.org/introduction/vibe-coding.html#install-as-an-ai-agent-skill).
 
 ## When to use it
 
@@ -360,11 +361,11 @@ bun run e2e        # the per-component smoke tests
 
 ### Deliberate limits
 
-No framework bindings, no polyfills for the native APIs the components build on, no runtime theme API beyond a stylesheet, no data fetching inside components, no SSR helpers beyond pasting HTML. The documentation site is a release snapshot: a page merged between releases goes live with the next release. The interactive components require `core.js` (or `all.js`) loaded before them, and the one component outside `all.*` - the HTML Preview Editor - ships as its own bundle. Release history lives in the [Changelog](https://kyr0.github.io/defuss-shadcn/introduction/changelog.html).
+No framework bindings, no polyfills for the native APIs the components build on, no runtime theme API beyond a stylesheet, no data fetching inside components, no SSR helpers beyond pasting HTML. The documentation site is a release snapshot: a page merged between releases goes live with the next release. The interactive components require `core.js` (or `all.js`) loaded before them, and the one component outside `all.*` - the HTML Preview Editor - ships as its own bundle. Release history lives in the [Changelog](https://shadcn.defuss.org/introduction/changelog.html).
 
 ## Requirements
 
-- **Browsers** - current evergreen Chromium, Firefox and Safari: the components use `<dialog>`, `popover`, CSS nesting, `@layer`, `:has()`, CSS anchor positioning and `@starting-style` natively (guide: [Native Web APIs](https://kyr0.github.io/defuss-shadcn/guides/native-web-apis.html))
+- **Browsers** - current evergreen Chromium, Firefox and Safari: the components use `<dialog>`, `popover`, CSS nesting, `@layer`, `:has()`, CSS anchor positioning and `@starting-style` natively (guide: [Native Web APIs](https://shadcn.defuss.org/guides/native-web-apis.html))
 - **Consumers** - nothing else: no runtime dependencies, no build step; `lucide` is the only optional third-party script, for the icons
 - **Maintainers** - [Bun](https://bun.sh) 1.x for every script and the tests, Node.js for the docs renderer (`bun run build` invokes defuss-ssg under node), Playwright's Chromium for the unit suite, the e2e tests and the screenshots
 
